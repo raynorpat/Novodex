@@ -10214,6 +10214,12 @@ The registered deterministic `NxPhysicsSimulationTests` staged-pair path reaches
 
 phys_fn_004172 articulation island rebuild stdout_delta=226; restored stdout_delta=0.
 
+
+## Phase 7 Scene deleting destructor closure — `phys_fn_000663`
+
+The registered `NxPhysicsPopulatedSceneTeardownTests` control is exact (`stdout_delta=0`, both exits zero, exact stderr). Replacing `NxSceneInternal::scalarDeletingDestructor` with a no-op leaves 51 tracked blocks outstanding instead of releasing 39; the candidate exits 1 while the oracle exits 0 (`stdout_delta=18`). The source was restored byte-for-byte and the rebuilt control returned to an exact match. See [phase7-scene-destructor-000663.md](phase7-scene-destructor-000663.md).
+
 ## Phase 6 updated closure ledger — 2026-10-10
 
 After adding `phys_fn_004172`, Phase 6 records 151 closed rows (149 mutation-falsified and two oracle differentials) and 282 deferred rows: 260 reconstructed rows remain without an individual mutation, and 22 in-phase rows remain unreconstructed. A fresh Phase 6 gate evaluated 1,596 coverage assertions against the 1,267 floor and passed.
+phys_fn_000663 whole-row no-op mutation: retained blocks 51 (expected release 39), candidate exit 1, oracle exit 0, stdout_delta=18; restored control stdout_delta=0.

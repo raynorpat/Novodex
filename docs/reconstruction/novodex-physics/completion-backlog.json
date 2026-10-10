@@ -7,7 +7,7 @@
     "code_bytes": 938498,
     "open_code_rows": 2787,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1727,
+    "mapped_code_rows": 1728,
     "source_correspondence_only_rows": 487,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3551,
@@ -95,19 +95,19 @@
       },
       "6": {
         "phase": 6,
-        "closed_rows": 97,
-        "deferred_rows": 336,
+        "closed_rows": 151,
+        "deferred_rows": 282,
         "deferred_reasons": {
-          "not_reconstructed_in_phase": 24,
-          "reconstructed_not_falsified": 312
+          "not_reconstructed_in_phase": 22,
+          "reconstructed_not_falsified": 260
         }
       },
       "7": {
         "phase": 7,
-        "closed_rows": 54,
-        "deferred_rows": 507,
+        "closed_rows": 55,
+        "deferred_rows": 506,
         "deferred_reasons": {
-          "not_reconstructed_in_phase": 224,
+          "not_reconstructed_in_phase": 223,
           "reconstructed_not_falsified": 283
         }
       }
@@ -166,12 +166,12 @@
         "rows": 433,
         "bytes": 147006,
         "open_rows": 433,
-        "rows_without_implementation_mapping": 38,
+        "rows_without_implementation_mapping": 37,
         "rows_with_unresolved_indirect_calls": 247,
         "by_state": {
-          "discovered": 20,
-          "dynamically_gated": 97,
-          "reconstructed": 316
+          "discovered": 19,
+          "dynamically_gated": 151,
+          "reconstructed": 263
         }
       },
       "7": {
@@ -181,8 +181,8 @@
         "rows_without_implementation_mapping": 398,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
-          "discovered": 212,
-          "dynamically_gated": 53,
+          "discovered": 211,
+          "dynamically_gated": 54,
           "reconstructed": 295,
           "statically_reviewed": 1
         }
@@ -27573,7 +27573,7 @@
           {
             "id": "phys_fn_004103",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -29157,22 +29157,22 @@
       "size": 906,
       "phase": 7,
       "kind": "code",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "label": "phys_fn_000663",
       "implementation": {
         "path": null,
         "role": "unmapped",
         "symbol": null,
         "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
+        "oracle_source": "Physics/src/Scene.cpp",
+        "source_correspondence_recorded": true,
         "candidate_map_reference_recorded": false,
         "candidate_map_reference_basis": null
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsPopulatedSceneTeardownTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -29376,22 +29376,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsPopulatedSceneTeardownTests",
+        "falsification_recorded": true
       },
       "next_packet": {
         "owner_phase": 7,
         "row_id": "phys_fn_000663",
         "rva": "0x00013f30",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "record_candidate_implementation_mapping",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -29607,7 +29607,7 @@
           {
             "id": "phys_fn_000663",
             "kind": "code",
-            "state": "discovered"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -31802,7 +31802,7 @@
           {
             "id": "phys_fn_004172",
             "kind": "code",
-            "state": "discovered"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -33423,7 +33423,7 @@
           {
             "id": "phys_fn_004172",
             "kind": "code",
-            "state": "discovered"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -171761,7 +171761,7 @@
           {
             "id": "phys_fn_004145",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_005716",
@@ -174162,7 +174162,7 @@
       "size": 142,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004103",
       "implementation": {
         "path": "Physics/src/core/Joint.cpp",
@@ -174177,7 +174177,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -174217,22 +174217,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004103",
         "rva": "0x00097c10",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -174243,7 +174243,7 @@
       "size": 133,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004105",
       "implementation": {
         "path": null,
@@ -174258,7 +174258,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsSimulationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -174294,26 +174294,26 @@
       },
       "applicable_contexts": {
         "four_digit_hex_literals": [],
-        "simulation_mentioned": false,
+        "simulation_mentioned": true,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsSimulationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
         "owner_phase": 6,
         "row_id": "phys_fn_004105",
         "rva": "0x00097ca0",
         "action": "record_candidate_implementation_mapping",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -175507,7 +175507,7 @@
       "size": 41,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004137",
       "implementation": {
         "path": "Physics/src/core/Joint.cpp",
@@ -175522,7 +175522,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -175555,22 +175555,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004137",
         "rva": "0x00099e00",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -175581,7 +175581,7 @@
       "size": 41,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004139",
       "implementation": {
         "path": "Physics/src/core/Joint.cpp",
@@ -175596,7 +175596,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -175629,22 +175629,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004139",
         "rva": "0x00099e30",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -175655,7 +175655,7 @@
       "size": 464,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004141",
       "implementation": {
         "path": "Physics/src/core/Joint.cpp",
@@ -175670,7 +175670,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -175710,22 +175710,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004141",
         "rva": "0x00099e60",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -175736,7 +175736,7 @@
       "size": 860,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004143",
       "implementation": {
         "path": "Physics/src/core/Joint.cpp",
@@ -175751,7 +175751,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsCoreDumpTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -175799,22 +175799,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsCoreDumpTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004143",
         "rva": "0x0009a0d0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -175825,7 +175825,7 @@
       "size": 174,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004145",
       "implementation": {
         "path": "Physics/src/core/Joint.cpp",
@@ -175840,7 +175840,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsCoreDumpTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -175891,22 +175891,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsCoreDumpTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004145",
         "rva": "0x0009a430",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -176830,13 +176830,13 @@
       "size": 69,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "label": "phys_fn_004172",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
+        "path": "Physics/src/core/Articulation.cpp",
+        "role": "reconstruction",
         "symbol": null,
-        "file_exists": null,
+        "file_exists": true,
         "oracle_source": "Physics/src/core/Articulation.cpp",
         "source_correspondence_recorded": true,
         "candidate_map_reference_recorded": false,
@@ -176845,7 +176845,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsSimulationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -176878,26 +176878,26 @@
       },
       "applicable_contexts": {
         "four_digit_hex_literals": [],
-        "simulation_mentioned": false,
+        "simulation_mentioned": true,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsSimulationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004172",
         "rva": "0x0009b0d0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -178367,7 +178367,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004204",
@@ -178893,7 +178893,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004218",
@@ -179385,7 +179385,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004531",
@@ -180010,7 +180010,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004244",
@@ -180543,7 +180543,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004591",
@@ -181129,7 +181129,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004617",
@@ -182037,7 +182037,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004284",
@@ -182950,7 +182950,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004675",
@@ -183332,7 +183332,7 @@
       "size": 281,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004330",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183347,7 +183347,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -183390,22 +183390,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004330",
         "rva": "0x000a8d40",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183416,7 +183416,7 @@
       "size": 171,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004332",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183425,13 +183425,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/core/RevoluteJoint.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": true,
-        "candidate_map_reference_basis": "dynamic_proof"
+        "candidate_map_reference_recorded": false,
+        "candidate_map_reference_basis": null
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183454,22 +183454,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004332",
         "rva": "0x000a8e60",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183480,7 +183480,7 @@
       "size": 147,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004334",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183495,7 +183495,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183522,22 +183522,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004334",
         "rva": "0x000a8f10",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183548,7 +183548,7 @@
       "size": 7,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004336",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183563,7 +183563,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183586,22 +183586,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004336",
         "rva": "0x000a8fb0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183612,7 +183612,7 @@
       "size": 62,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004338",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183627,7 +183627,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183654,22 +183654,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004338",
         "rva": "0x000a8fc0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183680,7 +183680,7 @@
       "size": 189,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004340",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183695,7 +183695,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183722,22 +183722,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004340",
         "rva": "0x000a9000",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183748,7 +183748,7 @@
       "size": 58,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004342",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183763,7 +183763,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183786,22 +183786,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004342",
         "rva": "0x000a90c0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183812,7 +183812,7 @@
       "size": 171,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004344",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183827,7 +183827,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183854,22 +183854,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004344",
         "rva": "0x000a9100",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183880,7 +183880,7 @@
       "size": 42,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004346",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183895,7 +183895,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183918,22 +183918,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004346",
         "rva": "0x000a91b0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183944,7 +183944,7 @@
       "size": 171,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004348",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -183959,7 +183959,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -183986,22 +183986,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004348",
         "rva": "0x000a91e0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -184012,7 +184012,7 @@
       "size": 43,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004350",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -184027,7 +184027,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -184050,22 +184050,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004350",
         "rva": "0x000a9290",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -184758,12 +184758,12 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004332",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004725",
@@ -184897,7 +184897,7 @@
       "size": 202,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004370",
       "implementation": {
         "path": "Physics/src/core/RevoluteJoint.cpp",
@@ -184912,7 +184912,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -184942,7 +184942,7 @@
           {
             "id": "phys_fn_004332",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -184967,22 +184967,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004370",
         "rva": "0x000ac630",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -185323,7 +185323,7 @@
           {
             "id": "phys_fn_004141",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004378",
@@ -187356,7 +187356,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004435",
       "implementation": {
         "path": "Physics/src/core/NpD6Joint.cpp",
@@ -187371,7 +187371,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -187422,22 +187422,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004435",
         "rva": "0x000b0610",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -187716,7 +187716,7 @@
       "size": 36,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004443",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -187731,7 +187731,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -187778,22 +187778,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004443",
         "rva": "0x000b0730",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -188031,7 +188031,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -188342,7 +188342,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004457",
       "implementation": {
         "path": "Physics/src/core/NpD6Joint.cpp",
@@ -188357,7 +188357,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -188403,22 +188403,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004457",
         "rva": "0x000b0990",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -189284,7 +189284,7 @@
       "size": 50,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004479",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -189299,7 +189299,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -189346,22 +189346,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004479",
         "rva": "0x000b0d20",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -189464,7 +189464,7 @@
       "size": 36,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004483",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -189479,7 +189479,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -189526,22 +189526,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004483",
         "rva": "0x000b0dc0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -189687,7 +189687,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -189821,7 +189821,7 @@
       "size": 38,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004491",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -189836,7 +189836,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -189883,22 +189883,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004491",
         "rva": "0x000b0f10",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -190086,7 +190086,7 @@
       "size": 43,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004497",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -190101,7 +190101,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -190127,7 +190127,7 @@
           {
             "id": "phys_fn_004137",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -190148,22 +190148,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004497",
         "rva": "0x000b0ff0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -190174,7 +190174,7 @@
       "size": 43,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004499",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -190189,7 +190189,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -190215,7 +190215,7 @@
           {
             "id": "phys_fn_004139",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -190236,22 +190236,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004499",
         "rva": "0x000b1020",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -191063,7 +191063,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -191836,7 +191836,7 @@
       "size": 98,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004539",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -191851,7 +191851,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -191891,22 +191891,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004539",
         "rva": "0x000b1600",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -192328,7 +192328,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -193305,7 +193305,7 @@
       "size": 44,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004573",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -193320,7 +193320,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -193367,22 +193367,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004573",
         "rva": "0x000b1bd0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -193485,7 +193485,7 @@
       "size": 45,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004577",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -193500,7 +193500,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -193547,22 +193547,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004577",
         "rva": "0x000b1c60",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -193616,7 +193616,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -194728,7 +194728,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -195840,7 +195840,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -195974,7 +195974,7 @@
       "size": 50,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004635",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -195989,7 +195989,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -196015,7 +196015,7 @@
           {
             "id": "phys_fn_004145",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -196036,22 +196036,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004635",
         "rva": "0x000b25d0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -197214,7 +197214,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -197915,7 +197915,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004681",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -197930,7 +197930,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -197981,22 +197981,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004681",
         "rva": "0x000b2d10",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198007,7 +198007,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004683",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198022,7 +198022,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198073,22 +198073,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004683",
         "rva": "0x000b2d70",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198099,7 +198099,7 @@
       "size": 89,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004685",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198114,7 +198114,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198165,22 +198165,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004685",
         "rva": "0x000b2dd0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198191,7 +198191,7 @@
       "size": 89,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004687",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198200,13 +198200,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/core/NpRevoluteJoint.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": true,
-        "candidate_map_reference_basis": "dynamic_proof"
+        "candidate_map_reference_recorded": false,
+        "candidate_map_reference_basis": null
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198257,22 +198257,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004687",
         "rva": "0x000b2e30",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198283,7 +198283,7 @@
       "size": 97,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004689",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198292,13 +198292,13 @@
         "file_exists": true,
         "oracle_source": "Physics/src/core/NpRevoluteJoint.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": true,
-        "candidate_map_reference_basis": "dynamic_proof"
+        "candidate_map_reference_recorded": false,
+        "candidate_map_reference_basis": null
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198326,7 +198326,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -198349,22 +198349,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004689",
         "rva": "0x000b2e90",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198375,7 +198375,7 @@
       "size": 74,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004691",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198390,7 +198390,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198434,22 +198434,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004691",
         "rva": "0x000b2f00",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198460,7 +198460,7 @@
       "size": 88,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004693",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198475,7 +198475,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198526,22 +198526,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004693",
         "rva": "0x000b2f50",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198552,7 +198552,7 @@
       "size": 74,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004695",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198567,7 +198567,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198611,22 +198611,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004695",
         "rva": "0x000b2fb0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198637,7 +198637,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004697",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198652,7 +198652,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198698,22 +198698,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004697",
         "rva": "0x000b3000",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198724,7 +198724,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004699",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198739,7 +198739,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198785,22 +198785,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004699",
         "rva": "0x000b3060",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198898,7 +198898,7 @@
       "size": 36,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004703",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198913,7 +198913,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -198957,22 +198957,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004703",
         "rva": "0x000b3120",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198983,7 +198983,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004705",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -198998,7 +198998,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199044,22 +199044,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004705",
         "rva": "0x000b3150",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199070,7 +199070,7 @@
       "size": 36,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004707",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199085,7 +199085,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199129,22 +199129,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004707",
         "rva": "0x000b31b0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199155,7 +199155,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004709",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199170,7 +199170,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199198,7 +199198,7 @@
           {
             "id": "phys_fn_004340",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -199221,22 +199221,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004709",
         "rva": "0x000b31e0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199247,7 +199247,7 @@
       "size": 45,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004711",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199262,7 +199262,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199288,7 +199288,7 @@
           {
             "id": "phys_fn_004342",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -199309,22 +199309,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004711",
         "rva": "0x000b3240",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199335,7 +199335,7 @@
       "size": 8,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004713",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199350,7 +199350,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -199373,22 +199373,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004713",
         "rva": "0x000b3270",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199399,7 +199399,7 @@
       "size": 45,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004715",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199414,7 +199414,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199440,7 +199440,7 @@
           {
             "id": "phys_fn_004346",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -199461,22 +199461,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004715",
         "rva": "0x000b3280",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199487,7 +199487,7 @@
       "size": 84,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004717",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199502,7 +199502,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199530,7 +199530,7 @@
           {
             "id": "phys_fn_004348",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -199553,22 +199553,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004717",
         "rva": "0x000b32b0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199579,7 +199579,7 @@
       "size": 45,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004719",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199594,7 +199594,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199620,7 +199620,7 @@
           {
             "id": "phys_fn_004350",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -199641,22 +199641,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004719",
         "rva": "0x000b3310",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199667,7 +199667,7 @@
       "size": 42,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004721",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199682,7 +199682,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199729,22 +199729,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004721",
         "rva": "0x000b3340",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199755,7 +199755,7 @@
       "size": 42,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004723",
       "implementation": {
         "path": "Physics/src/core/NpRevoluteJoint.cpp",
@@ -199770,7 +199770,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -199817,22 +199817,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004723",
         "rva": "0x000b3370",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -200470,7 +200470,7 @@
           {
             "id": "phys_fn_004143",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -200604,7 +200604,7 @@
       "size": 40,
       "phase": 6,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004743",
       "implementation": {
         "path": "Physics/src/core/NpJointShared.cpp",
@@ -200619,7 +200619,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -200666,22 +200666,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 6,
+        "owner_phase": 8,
         "row_id": "phys_fn_004743",
         "rva": "0x000b3670",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -230966,7 +230966,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "9942d49a86b5a736538787247c8b9f603490edf6ded2be2e3f33847c7584f3fb",
+    "inventory_sha256": "3d4da62a3cb180ea0e2f61f39b0472651bb713aa36597146072cfbf5066735a9",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230975,8 +230975,8 @@
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "47e74da639b6419ca95b468e3991c9ccd9991e3f30ec4c3164f8a02f8bdc5c95",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "0644d3701ea278cb6b6db06ad68e9b27bf68fb28e6c79af49ecdfae3235f7221",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",
-      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "404e79fb95d7544efa6394a2937afb81422fdb2eb57f4d7fb6a005d55a35a6e1",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "bf21901cd0eb4ab61a0e1d17b50bbfd9eb7c2aa9cb6e4eb26915e86401b5e340"
+      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "2029ad015aa57c0c1d09c8b2d580102946ee71882ac8fe9b27b908d2776eac77",
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "fa8e4d3ee97e287cb7ef3694b912dba32c40fea7f7888da9bbcb5ec08679095a"
     }
   }
 }

@@ -1,0 +1,7 @@
+# Scene deleting destructor `phys_fn_000663`
+
+`phys_fn_000663` is the 906-byte Scene scalar deleting destructor at RVA `0x00013f30` (ending at `0x000142ba`). The pinned Ghidra decompile and Capstone range were checked against the candidate entry `NxSceneInternal::scalarDeletingDestructor` in `Physics/src/Scene.cpp`, which dispatches cleanup through `nxSceneDelete`.
+
+The registered `NxPhysicsPopulatedSceneTeardownTests` staged-pair fixture passes on the restored candidate: all scene teardown cases match with both exits zero, `stdout_delta=0`, and exact stderr. As a row-specific negative control, the scalar deleting destructor was replaced with a no-op and `NxPhysics.dll` rebuilt. The first static-first scene release then retained all 51 tracked allocator blocks instead of releasing the oracle's 39; the candidate exited 1, the oracle exited 0, and the staged transcripts differed by 18 bytes. The mutant candidate SHA-256 was `9c857ff74ca222ffd6b61cce69b7e4607386cab27a095d9d0f2cfb413c815bf0`. After restoring the original source and rebuilding, the candidate returned to an exact differential; its recorded SHA-256 was `1b421182452ce1bd6478e4da322c345341ae6a13a7faf17bc8a0ec75596277c9`.
+
+The target also exercises retained contact pairs, static/dynamic pruner owners, an attached controller, deferred contact reports, retained joints, and an orphaned body record on the restored path. This closes the no-op mutation proof for the destructor row at the Phase 7 intermediate gate; terminal Phase 8 audit remains required.
