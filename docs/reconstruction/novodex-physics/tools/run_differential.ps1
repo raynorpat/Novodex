@@ -31,6 +31,7 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
 $toolsRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+. (Join-Path $toolsRoot 'assert_gate_transcript.ps1')
 if (-not $RepoRoot) {
     $RepoRoot = (Resolve-Path -LiteralPath (Join-Path $toolsRoot '..\..\..\..')).Path
 }
@@ -138,6 +139,7 @@ function Invoke-Child([string] $Target, $Pair) {
     Write-Host 'child_stderr_end'
 
     $lines = @($stdout -split "`r?`n")
+    Assert-NoCandidateFailures -Lines $lines -Context "$Target/$($Pair.Name)"
     foreach ($module in @(@{ Name = 'NxPhysics.dll'; Sha256 = $Pair.PhysicsSha256 }, @{ Name = 'NxFoundation.dll'; Sha256 = $Pair.FoundationSha256 })) {
         $expected = "loaded module=$($module.Name) path=$(Join-Path $Pair.Directory $module.Name) sha256=$($module.Sha256)"
         Assert-True ($lines -ccontains $expected) "$Target/$($Pair.Name) reported the staged identity: $expected"

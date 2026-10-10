@@ -31,6 +31,7 @@ from pathlib import Path
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 GATE_TARGETS = TOOLS_DIR / "gate_targets.ps1"
 RUN_DIFFERENTIAL = TOOLS_DIR / "run_differential.ps1"
+GATE_TRANSCRIPT_CHECK = TOOLS_DIR / "assert_gate_transcript.ps1"
 # The harness sources of THIS tree. They were absolute paths into the main
 # checkout, so a worktree's registry was checked against another tree's
 # harness (convex-mesh gap Task 2a: the blocks it adds are in its own harness).
@@ -466,6 +467,7 @@ class TargetRegistry(unittest.TestCase):
             self.skipTest("powershell.exe is not on PATH")
         with tempfile.TemporaryDirectory() as directory:
             shutil.copy2(RUN_DIFFERENTIAL, Path(directory) / "run_differential.ps1")
+            shutil.copy2(GATE_TRANSCRIPT_CHECK, Path(directory) / "assert_gate_transcript.ps1")
             registry = GATE_TARGETS.read_text(encoding="utf-8")
             shutil.copy2(GATE_TARGETS, Path(directory) / "gate_targets.ps1")
 
