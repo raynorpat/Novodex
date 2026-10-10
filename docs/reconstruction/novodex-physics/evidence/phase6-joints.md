@@ -10134,3 +10134,10 @@ The existing revolute fixture independently falsifies all six `NpRevoluteJoint` 
 For `phys_fn_004709`, the limit setter wrapper mutation produced `stdout_delta=6`; `phys_fn_004711`, limit getter wrapper: `stdout_delta=2`; `phys_fn_004713`, motor setter wrapper: `stdout_delta=6`; `phys_fn_004715`, motor getter wrapper: `stdout_delta=2`; `phys_fn_004717`, spring setter wrapper: `stdout_delta=6`; `phys_fn_004719`, spring getter wrapper: `stdout_delta=2`.
 
 The full Phase 6 gate passed with 1,578 assertions run (minimum required: 1,267). Phase 6 now has 123 closed rows (121 mutation-falsified plus 2 oracle differentials) and 310 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — revolute public descriptor and projection wrappers (`phys_fn_004697`, `004699`, `004705`, `004707`)
+
+The existing revolute staged-pair case loads and saves descriptors and sets then reads projection mode. Each public wrapper mutation was independently caught with both processes exiting 0 and exact stderr. For `phys_fn_004697`, omitting `loadFromDesc` dispatch produced `stdout_delta=4`; for `phys_fn_004699`, omitting `saveToDesc` dispatch produced `stdout_delta=110`; for `phys_fn_004705`, omitting `setProjectionMode` dispatch produced `stdout_delta=4`; and for `phys_fn_004707`, returning `NX_JPM_NONE` without reading the internal mode produced `stdout_delta=2`. The restored build returned `stdout_delta=0` with exact stderr. See [phase6-joint-revolute-public-wrappers-004697-004707.md](phase6-joint-revolute-public-wrappers-004697-004707.md).
+
+The full Phase 6 gate passed with 1,578 coverage assertions run (minimum required: 1,267). Phase 6 now has 127 closed rows (125 mutation-falsified plus 2 oracle differentials) and 306 deferred rows; 23 in-phase rows remain unreconstructed.
