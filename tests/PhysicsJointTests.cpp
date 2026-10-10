@@ -1389,6 +1389,9 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 			const NxVec3 planePoint(1.25f, -0.5f, 2.0f);
 			const bool planeAdded = d6->addLimitPlane(planeNormal, planePoint);
 			d6->resetLimitPlaneIterator();
+			const bool hasMorePlanes = d6->hasMoreLimitPlanes();
+			printf("case=d6 index=%u limit_plane has_more=%u\n", index,
+				hasMorePlanes ? 1u : 0u);
 			NxVec3 planeNormalReadback(0.0f, 0.0f, 0.0f);
 			NxReal planeD = 0.0f;
 			const bool planeRead = d6->getNextLimitPlane(planeNormalReadback, planeD);

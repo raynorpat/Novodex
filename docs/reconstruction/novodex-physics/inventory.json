@@ -83580,13 +83580,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1682",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15208",
       "static_proof": "static review of the recorded shape: lock-bracketed global-flag read (0xb0f10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
-      "dynamic_proof": "confirmed via globalflag4491 differential (3z176): the non-zero and zero flag arms both failures=0, with the data word 0x10127180 bound and the lock API bound",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests mutation differential: inverted the shared `hasMoreLimitPlanes` return value. Oracle/candidate exits 0, stdout_delta=2, exact stderr. Restored clean control: stdout_delta=0, both exits 0, exact stderr. Mutant candidate SHA-256 8585916524954f6df7379b2951906c4ffb188122cb27e72397836e89740f0933; restored candidate SHA-256 3e39471a4d7d26b95ed860395ef348768c71fb92b7d0f9f3de6ec1b7e95ba56d. Evidence: evidence/phase6-joint-shared-has-more-limit-planes-004491.md.",
+      "notes": "Phase 6 closure: evidence/phase6-joint-shared-has-more-limit-planes-004491.md",
       "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
