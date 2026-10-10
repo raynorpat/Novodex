@@ -1,4 +1,8 @@
-// NOVODEX: retain original x87 helpers; typed scalar arms on other backends.
+/* NOVODEX LOCAL MODIFICATION
+ * Portable-only scalar arms; the shipped Win32 memory path retains its
+ * original rep-stos behavior, observed in SAP_PairData::Init at oracle
+ * 0x000e6c10. Scalar behavior is gated by Portable.ConvexContact.IceTopology.
+ */
 #include "NxPhysicsBackend.h"
 #include <string.h>
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

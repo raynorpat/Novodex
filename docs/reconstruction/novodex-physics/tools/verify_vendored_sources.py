@@ -45,11 +45,12 @@ LIBRARIES = {
     "opcode": ("External/opcode/upstream/Opcode", "opcode13/Opcode"),
 }
 
-# Files under novodex/ that deliberately have no upstream counterpart: the two
-# host seam headers. Anything else without one is a mistake.
+# Files under novodex/ that deliberately have no upstream counterpart: the host
+# seam headers and the scalar-only ray/triangle include. Anything else without
+# one is a mistake.
 DECLARED_ADDITIONS = {
     "qhull": {"QhullNovodeXHost.h"},
-    "opcode": {"OpcodeNovodeXHost.h"},
+    "opcode": {"OpcodeNovodeXHost.h", "OPC_RayTriOverlapScalar.inl"},
 }
 
 MARKER = "NOVODEX LOCAL MODIFICATION"

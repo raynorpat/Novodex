@@ -1,3 +1,9 @@
+/* NOVODEX LOCAL MODIFICATION
+ * Portable-only double accumulation in InvertPRMatrix. The original x87
+ * expression path remains selected by the shipped backend; oracle rows are
+ * 0x000e4200, 0x000e42a0, 0x000e43a0, and 0x000e4400. Scalar acceptance is
+ * recorded under Portable.ConvexContact.IceMatrix4x4.
+ */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *	Contains code for 4x4 matrices.

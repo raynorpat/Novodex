@@ -130,6 +130,11 @@ class NovodexIsExactlyTheModifications(VendoredTreeFixture):
         self.assertTrue(any("declared an addition but upstream has a file" in f
                             for f in failures), failures)
 
+    def test_portable_ray_tri_include_is_a_declared_addition(self):
+        write(self.repo / "External/opcode/novodex/OPC_RayTriOverlapScalar.inl",
+              MARKER_BLOCK + "// Scalar-only implementation.\n")
+        self.assertEqual(self.run_check(), [])
+
     def test_dropping_the_qhull_copyright_header_fails(self):
         """Clause 1 of COPYING.txt forbids it, so the checker does too."""
         overlay = self.repo / "External/qhull/novodex/mem.c"

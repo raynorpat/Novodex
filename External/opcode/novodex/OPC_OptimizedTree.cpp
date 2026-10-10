@@ -1,7 +1,8 @@
 /* NOVODEX LOCAL MODIFICATION
  * upstream: External/opcode/upstream/Opcode/OPC_OptimizedTree.cpp
  * Task5d1b1 preserves binary32 assignment points after binary64 expression
- * evaluation. The complete retained backend1 source remains selected below.
+ * evaluation. The complete retained backend1 source remains selected below;
+ * shipped tree build/quantization witnesses are 0x000f3010 and 0x000f34c0.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*

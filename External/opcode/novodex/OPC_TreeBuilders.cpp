@@ -1,7 +1,8 @@
 /* NOVODEX LOCAL MODIFICATION
  * upstream: External/opcode/upstream/Opcode/OPC_TreeBuilders.cpp
  * Task5d1b1 preserves binary32 assignment points after binary64 expression
- * evaluation. The complete retained backend1 source remains selected below.
+ * evaluation. The complete retained backend1 source remains selected below;
+ * shipped triangle-center computation is at 0x000e98f0.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*

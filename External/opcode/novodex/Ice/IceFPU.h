@@ -1,4 +1,8 @@
-// NOVODEX: retain original x87 helpers; typed scalar arms on other backends.
+/* NOVODEX LOCAL MODIFICATION
+ * Portable-only scalar arms; the original x87 helpers remain selected for
+ * the shipped Win32 backend. The inline OPCODE sqrt is present at oracle
+ * 0x000e3274. Scalar behavior is gated by Portable.ConvexContact.IceTopology.
+ */
 #include "NxPhysicsBackend.h"
 #include <string.h>
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,3 +1,10 @@
+/* NOVODEX LOCAL MODIFICATION
+ * Portable-only scalar include selected for RayCollider; the shipped x87
+ * implementation remains in OPC_RayTriOverlap.h. Its oracle call sites include
+ * 0x000b5aef and 0x000b873b. Scalar acceptance is recorded by the portable
+ * ray-triangle fixtures.
+ */
+
 // Preserve the binary32 Point and dot-result stores after each complete
 // three-term expression; products and cross differences remain binary64.
 static inline Point nxOpcodeRayCross(const Point &a, const Point &b)
