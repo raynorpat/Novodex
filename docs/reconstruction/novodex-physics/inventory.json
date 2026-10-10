@@ -11524,13 +11524,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/234",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1538",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_000608 (0x00011190, 124 bytes): after the broadphase/contact-pair auxiliary-link walk, iterates Scene+[0x56c,0x570), obtains each sleep-group root through phys_fn_000713, retains self-parented awake roots, grows and appends to Scene+[0x57c,0x580), then continues with effectors and solver passes. Implemented in NxSceneInternal::simulateFrame.",
+      "dynamic_proof": "Registered Phase 7 NxPhysicsSimulationTests staged-pair differential: changing the active-root retention condition to always continue (no roots appended to Scene+[0x57c,0x580)) is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=6726; joint-break notify callback count fails). Restored control: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. See evidence/phase7-scene-active-root-collection-000608.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::simulateFrame (active-root collection)"
     },
     {
       "id": "phys_fn_000609",

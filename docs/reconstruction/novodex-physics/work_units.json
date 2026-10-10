@@ -579,14 +579,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 19,
-    "dynamically_gated": 18,
+    "discovered": 18,
+    "dynamically_gated": 19,
     "reconstructed": 45,
     "statically_reviewed": 1
    },
    "bytes": {
-    "discovered": 3848,
-    "dynamically_gated": 8184,
+    "discovered": 3724,
+    "dynamically_gated": 8308,
     "reconstructed": 4679,
     "statically_reviewed": 57
    },

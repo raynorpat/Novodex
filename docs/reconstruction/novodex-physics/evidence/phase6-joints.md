@@ -10019,3 +10019,8 @@ For `phys_fn_000606`, the registered `NxPhysicsPopulatedSceneTeardownTests` fixt
 ## Phase 7 Scene retained-body-record destruction row `phys_fn_000602`
 
 For `phys_fn_000602`, the registered `NxPhysicsPopulatedSceneTeardownTests` fixture leaves a 608-byte dynamic body record in the Scene's `[+0x56c,+0x570)` range after normal actor/root teardown. The oracle and restored candidate report `freed=1`; a no-op mutation reports `freed=0` and is rejected (`stdout_delta=2`, candidate exit 1). See [phase7-scene-body-record-destroy-000602.md](phase7-scene-body-record-destroy-000602.md). The enclosing Scene destructor `phys_fn_000663` remains open for its other ownership paths.
+
+
+## Phase 7 Scene active-root collection row `phys_fn_000608`
+
+For `phys_fn_000608`, the registered `NxPhysicsSimulationTests` staged-pair differential rejects a mutation that omits all awake self-parented roots from Scene+[0x57c,0x580) (`stdout_delta=6726`; oracle exits 0, candidate exits 1 at the joint-break notification assertion). Restoring the root-collection condition returns both exits to 0, `stdout_delta=0`, and exact stderr. See [phase7-scene-active-root-collection-000608.md](phase7-scene-active-root-collection-000608.md).
