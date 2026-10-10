@@ -470,10 +470,37 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 
 void nxSceneVisualizeCollisionBounds(void* engine, NxDebugRenderable* renderable, NxU32 colour, bool compounds)
 	{
-	(void)engine;
-	(void)renderable;
-	(void)colour;
-	(void)compounds;
+	// phys_fn_000638 draws each visualization-enabled shape's current pruner
+	// AABB. The compounds mode is restricted to the internal compound-group
+	// shape type (5).
+	const auto visualizePruner = [renderable, colour, compounds](Pruner* pruner)
+		{
+		const PruningPool& pool = pruner->mPool;
+		const unsigned count = pool.mNbObjects[1] + pool.mNbObjects[2];
+		for(unsigned index = 0; index < count; ++index)
+			{
+			Prunable* const prunable = pool.mObjects[pool.mNbObjects[0] + index];
+			const unsigned char* const shape = static_cast<const unsigned char*>(prunable->mOwner);
+			unsigned short flags;
+			unsigned type;
+			memcpy(&flags, shape + 0xde, sizeof(flags));
+			if((flags & 8u) == 0)
+				continue;
+			memcpy(&type, shape + 0xd0, sizeof(type));
+			if(compounds && type != 5u)
+				continue;
+			NxBounds3 bounds;
+			memcpy(&bounds, prunable->GetWorldAABB(), sizeof(bounds));
+			renderable->addAABB(bounds, colour, false);
+			}
+		};
+
+	unsigned char* const bytes = static_cast<unsigned char*>(engine);
+	Pruner* const staticPruner = *reinterpret_cast<Pruner**>(bytes + 0x1c);
+	visualizePruner(staticPruner);
+	const unsigned selectedType = *reinterpret_cast<unsigned*>(bytes + 0x70);
+	Pruner* const dynamicPruner = *reinterpret_cast<Pruner**>(bytes + 0x1c + selectedType * 4);
+	visualizePruner(dynamicPruner);
 	}
 
 void nxSceneVisualizeCollisionShapes(void* engine, NxDebugRenderable* renderable)

@@ -46,6 +46,7 @@
 #include "NxUserOutputStream.h"
 #include "NxDebugRenderable.h"
 #include "NxUserDebugRenderer.h"
+#include "NxRay.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -131,14 +132,15 @@ static const NxParameter nxVisParameters[] =
 	{
 	NX_VISUALIZATION_SCALE, NX_VISUALIZE_WORLD_AXES, NX_VISUALIZE_ACTOR_AXES, NX_VISUALIZE_BODY_AXES,
 	NX_VISUALIZE_BODY_MASS_AXES, NX_VISUALIZE_BODY_LIN_VELOCITY, NX_VISUALIZE_BODY_ANG_VELOCITY,
-	NX_VISUALIZE_BODY_JOINT_GROUPS, NX_VISUALIZE_COLLISION_SHAPES
+	NX_VISUALIZE_BODY_JOINT_GROUPS, NX_VISUALIZE_COLLISION_SHAPES, NX_VISUALIZE_COLLISION_AABBS,
+	NX_VISUALIZE_COLLISION_COMPOUNDS
 	};
 static const unsigned kVisParameterCount = sizeof(nxVisParameters) / sizeof(nxVisParameters[0]);
 
 struct NxStage
 	{
 	const char* name;
-	NxReal values[9];		// in nxVisParameters' order
+	NxReal values[11];		// in nxVisParameters' order
 	};
 
 static const NxStage nxStages[] =
@@ -153,7 +155,8 @@ static const NxStage nxStages[] =
 	{ "ang_velocity", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.7f, 0.0f } },
 	{ "joint_groups", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
 	{ "collision_shapes", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
-	{ "all", { 0.5f, 1.0f, 2.0f, 1.25f, 3.0f, 1.0f, 1.0f, 1.0f, 0.0f } },
+	{ "collision_aabbs", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
+	{ "all", { 0.5f, 1.0f, 2.0f, 1.25f, 3.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f } },
 	};
 static const unsigned kStageCount = sizeof(nxStages) / sizeof(nxStages[0]);
 
@@ -305,6 +308,13 @@ int wmain(int argc, wchar_t** argv)
 
 	for(unsigned i = 0; i < kActorCaseCount; i++)
 		nxActors[i] = nxCreateCase(scene, i);
+	// Build the static and dynamic pruner bounds before exercising the cached
+	// AABB visualizer. The ray misses the fixture, but forces both pruners to
+	// populate their world-box caches from the owning shapes.
+	const NxRay boundsCacheWarmRay(NxVec3(-100.0f, -100.0f, -100.0f), NxVec3(1.0f, 0.0f, 0.0f));
+	const bool boundsCacheWarmHit = scene->raycastAnyShape(boundsCacheWarmRay, NX_ALL_SHAPES,
+		0xffffffff, 500.0f);
+	printf("visualize bounds_cache_warm hit=%u\n", boundsCacheWarmHit ? 1u : 0u);
 
 	for(unsigned s = 0; s < kStageCount; s++)
 		nxRunStage(sdk, scene, nxStages[s], "created");
