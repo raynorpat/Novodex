@@ -90,6 +90,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
         'fluid emitter flags cases=2 mismatches=0'
+		'fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0'
         'fluid emitter aggregate cases=6 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
@@ -5696,7 +5697,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2616  # corrected to current registry count, including the fluid-emitter flag line
+    '5' = 2617  # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
                # plus both joint-break callback return paths
@@ -5741,7 +5742,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1444  # corrected to current registry count, including the fluid-emitter flag line
+    '7' = 1445  # plus callback routing/state assertions for all three backend-backed emitter flags
                # previous 1429 plus the D6 public global-anchor readback
                # previous 1425 plus three contended D6 drive write-lock reports
                # previous 1424 plus the D6 contended drive-position write-lock report

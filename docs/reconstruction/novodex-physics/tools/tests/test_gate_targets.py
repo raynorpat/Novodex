@@ -18,6 +18,7 @@ coverage must be registered.
 """
 
 import collections
+from functools import lru_cache
 import json
 import re
 import shutil
@@ -297,22 +298,29 @@ def harness_formats(source_path):
     return formats
 
 
-def is_prefix_of_format(line, pieces):
-    """Could this registration be a prefix of a line that format prints?
+@lru_cache(maxsize=None)
+def _format_prefix_pattern(pieces):
+    """Compile the complete and partial boundaries for this format once."""
+    patterns = []
+    conversion_pieces = (r"\S+", r"[-+0-9a-fA-Fx.]+")
+    for index, piece in enumerate(pieces):
+        previous = "".join(pieces[:index])
+        patterns.append(previous + piece)
+        if piece not in conversion_pieces:
+            # A registration may end inside any fixed run, including before a
+            # later conversion. Decode this run, then add each literal prefix.
+            literal = re.sub(r"\\(.)", r"\1", piece)
+            if literal:
+                prefixes = "|".join(re.escape(literal[:end])
+                                    for end in range(len(literal), 0, -1))
+                patterns.append(previous + "(?:" + prefixes + ")")
+    patterns.append("".join(pieces) + r".*")
+    return re.compile("(?:" + "|".join(patterns) + ")")
 
-    Truncating the pattern after each piece and asking for a full match is
-    enough: the pieces alternate fixed text and one conversion, so a
-    registration that stops inside a number still matches the truncation that
-    ends with the preceding fixed text plus a partial one.
-    """
-    for count in range(1, len(pieces) + 1):
-        pattern = "".join(pieces[:count])
-        if re.fullmatch(pattern, line):
-            return True
-        # A registration may also stop part way through a fixed run.
-        if count == len(pieces) and re.fullmatch(pattern + r".*", line):
-            return True
-    return False
+
+def is_prefix_of_format(line, pieces):
+    """Could this registration be a prefix of a line that format prints?"""
+    return _format_prefix_pattern(tuple(pieces)).fullmatch(line) is not None
 
 
 class RegistrationsAreCheckedAgainstTheHarness(unittest.TestCase):
@@ -339,6 +347,13 @@ class RegistrationsAreCheckedAgainstTheHarness(unittest.TestCase):
              ("NxPhysicsCollisionTests", COLLISION_SOURCE),
              ("NxPhysicsAssetTests", ASSET_SOURCE),
              ("NxPhysicsThirdPartyTests", THIRDPARTY_SOURCE))
+
+    def test_registration_can_stop_before_later_fixed_printf_text(self):
+        line = ("collision coverage name=contact_mesh_mesh_heightfield_dispatch "
+                "cases=1")
+        matching = [fmt for fmt, pieces in harness_formats(COLLISION_SOURCE)
+                    if is_prefix_of_format(line, pieces)]
+        self.assertEqual(len(matching), 1)
 
     def test_every_registration_is_a_prefix_of_exactly_one_printed_line(self):
         registry = registered_lines()
@@ -502,7 +517,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 6, "3": 542, "4": 260, "5": 2616, "6": 1245, "7": 1444}
+    MINIMUM = {"2": 6, "3": 542, "4": 260, "5": 2617, "6": 1245, "7": 1445}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()

@@ -871,13 +871,23 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode NxQhull)
 
 	# Public NxFluidEmitter aggregate-return ABI probe. It drives the six
-	# public-interface getters against the pinned oracle and the candidate
-	# wrapper compiled into this harness.
+	# public-interface getters and extension-backed flag setter against the
+	# pinned oracle and the actual candidate DLL.
+	add_library(NxPhysicsFluidModelCallbackFixture SHARED
+		tests/FluidModelFlagCallbackFixture.cpp)
+	set_target_properties(NxPhysicsFluidModelCallbackFixture PROPERTIES
+		OUTPUT_NAME FluidModel PREFIX "")
 	add_executable(NxPhysicsFluidEmitterAbiTests tests/PhysicsFluidEmitterAbiTests.cpp
 		Physics/src/NpFluidEmitter.cpp)
 	target_include_directories(NxPhysicsFluidEmitterAbiTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	target_link_libraries(NxPhysicsFluidEmitterAbiTests NxFoundation bcrypt)
+	add_dependencies(NxPhysicsFluidEmitterAbiTests NxPhysics NxPhysicsFluidModelCallbackFixture)
+	add_custom_command(TARGET NxPhysicsFluidEmitterAbiTests POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:NxPhysics>
+			$<TARGET_FILE_DIR:NxPhysicsFluidEmitterAbiTests>/NxPhysicsCandidate.dll
+		COMMENT "Staging NxPhysics.dll under a distinct module name for direct DLL-row testing")
 	if(MSVC)
 		target_compile_options(NxPhysicsFluidEmitterAbiTests PRIVATE /arch:IA32)
 	endif()

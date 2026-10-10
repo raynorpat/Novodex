@@ -2,6 +2,7 @@
 #include "NpSceneGuard.h"
 #include "FoundationSDK.h"
 
+#include <windows.h>
 #include <string.h>
 
 #define NX_NPFLUIDEMITTER_CPP "\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluidEmitter.cpp"
@@ -11,6 +12,44 @@ static void nxFluidEmitterReportWriteLocked(unsigned line)
 	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 		NX_NPFLUIDEMITTER_CPP, line, 0,
 		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+	}
+
+// phys_fn_003593 (0x00088090) owns the internal bitfield transition. The
+// extension callbacks are resolved from FluidModel.DLL when a live emitter is
+// possible; the FluidManager has already loaded that module and populated the
+// corresponding exports before it can construct an emitter.
+static void nxFluidEmitterSetInternalFlag(void* internal, NxFluidEmitterFlag flag,
+	bool enabled)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	const unsigned mask = static_cast<unsigned>(flag);
+	unsigned* flags = reinterpret_cast<unsigned*>(bytes + 0x10);
+	if(enabled)
+		*flags |= mask;
+	else
+		*flags &= ~mask;
+
+	const char* exportName = 0;
+	switch(mask)
+		{
+		case 4: exportName = "EmitterSetBodyRepulsionFlag"; break;
+		case 8: exportName = "EmitterSetAddBodyVelocityFlag"; break;
+		case 16: exportName = "EmitterSetEnabledFlag"; break;
+		default: return;
+		}
+
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	typedef int (__cdecl *FluidEmitterFlagCallback)(unsigned, unsigned, unsigned, unsigned char);
+	FluidEmitterFlagCallback callback = reinterpret_cast<FluidEmitterFlagCallback>(
+		GetProcAddress(fluidModel, exportName));
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	void* backend = *reinterpret_cast<void**>(static_cast<unsigned char*>(fluid) + 0x7c);
+	const unsigned argument0 = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned argument1 = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(fluid) + 0x80);
+	const unsigned argument2 = *reinterpret_cast<unsigned*>(bytes + 8);
+	callback(argument0, argument1, argument2, enabled ? 1 : 0);
 	}
 
 // phys_fn_003792 (0x0008c2d0). The oracle first installs the interface and
@@ -84,10 +123,8 @@ NxMat33 NpFluidEmitter::getLocalOrientationVal() const
 	}
 
 // phys_fn_003850 (0x0008cec0). The wrapper uses the emitter's write link at
-// +0x0c, updates the mask at internal+0x10, and reports a failed try-lock at
-// source line 0xdd. Backend callbacks for masks 4/8/16 remain owned by the
-// fluid-manager reconstruction; this implementation covers the local mask
-// transition used by visualization and other wrapper-only bits.
+// +0x0c, delegates the mask transition to phys_fn_003593, and reports a failed
+// try-lock at source line 0xdd.
 void NpFluidEmitter::setFlag(NxFluidEmitterFlag flag, bool enabled)
 	{
 	void* link = mUnknown0c;
@@ -96,13 +133,7 @@ void NpFluidEmitter::setFlag(NxFluidEmitterFlag flag, bool enabled)
 		nxFluidEmitterReportWriteLocked(0xdd);
 		return;
 		}
-	unsigned* flags = reinterpret_cast<unsigned*>(
-			static_cast<unsigned char*>(mInternal) + 0x10);
-	const unsigned mask = static_cast<unsigned>(flag);
-	if(enabled)
-		*flags |= mask;
-	else
-		*flags &= ~mask;
+	nxFluidEmitterSetInternalFlag(mInternal, flag, enabled);
 	nxNpSceneGuardLeave(link);
 	}
 

@@ -67073,12 +67073,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1350",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12509",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA disassembly and the recorded call graph establish the write-try wrapper, internal bitfield update, exact callback masks, callback export names, and four callback arguments; see evidence/fluid-emitter-set-flag-backend-003593-003850.md.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the setter resolved from the candidate NxPhysics.map and compares all six set/clear transitions plus a non-backend flag to the pinned oracle, including callback identity, all arguments, and preserved flag bits; both the row-specific mutation and restored control are recorded in evidence/fluid-emitter-set-flag-backend-003593-003850.md.",
       "notes": ""
     },
     {
@@ -71720,12 +71720,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1439",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12952",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA disassembly and the recorded call graph establish the write-try wrapper, internal bitfield update, exact callback masks, callback export names, and four callback arguments; see evidence/fluid-emitter-set-flag-backend-003593-003850.md.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the setter resolved from the candidate NxPhysics.map and compares all six set/clear transitions plus a non-backend flag to the pinned oracle, including callback identity, all arguments, and preserved flag bits; both the row-specific mutation and restored control are recorded in evidence/fluid-emitter-set-flag-backend-003593-003850.md.",
       "notes": ""
     },
     {
