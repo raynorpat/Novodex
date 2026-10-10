@@ -10957,13 +10957,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/220",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1477",
       "static_proof": "Transcribed from the Ghidra decompile at oracle/ghidra/manifest.json#/functions/220 and checked against the Capstone listing: repeatedly dispatch Scene+0x620 head slot 0, advance to the event +4 link, free through the Foundation allocator slot +0x14, then clear the list. Implemented as NxSceneInternal::processJointBreakEvents; invoked from NpScene::fetchResults in oracle call order.",
-      "dynamic_proof": "Candidate break-event trace and staged differential recorded in evidence/joint-break-events.md: processJointBreakEvents and row004113/handleBreakEvent execute on the low-force fixed-joint fixture; the fixture is byte-identical to the oracle and all eight Phase 7 staged targets pass (stdout_delta=0, stderr_exact=True).",
-      "notes": "Reconstructs phys_fn_000577. The tested path is the default no-notify branch; the NxUserNotify handled/release path is tracked separately."
+      "dynamic_proof": "Candidate break-event trace and staged differential recorded in evidence/joint-break-events.md: processJointBreakEvents and row004113/handleBreakEvent execute on the low-force fixed-joint fixture; the fixture is byte-identical to the oracle and all eight Phase 7 staged targets pass (stdout_delta=0, stderr_exact=True). M6.11 row-specific mutation: inserting an immediate return suppresses both joint-break callbacks and is rejected by registered Phase 7 NxPhysicsSimulationTests at its callback-count assertion (oracle exit 0, candidate exit 1, stdout_delta=801); candidate stderr contains the assertion failure. Restored control is exact. See evidence/phase7-scene-joint-break-events-000577.md.",
+      "notes": " Mutation-gated 2026-10-10 by the Phase 7 joint-break callback staged-pair differential."
     },
     {
       "id": "phys_fn_000578",
