@@ -10347,3 +10347,8 @@ The direct `NxPhysicsJointSupportTests` oracle differential calls the wrapper at
 The direct `NxPhysicsJointSupportTests` oracle differential calls the row at RVA `0x000af790` on nine independently initialized scratch records. It covers linear and angular-only updates, null and populated body slots, zero and nonzero inverse mass, signed impulses, both x87 control words, and opaque second-argument values. The restored oracle and candidate output digests are both `1e9bf6cbf7c6576a`; the input digest is `cf0a288f38c68f7c`, with `mismatches=0`.
 
 A mutation that skips every body's update produces candidate digest `f2647d06b2b61d05`, `mismatches=39`, and exit 1. Rebuilding the restored helper returns to exact equality. The Phase 6 closure now records 154 closed rows and 279 deferred rows. See [phase6-joint-support-apply-impulse-004395.md](phase6-joint-support-apply-impulse-004395.md) for the ABI trace and focused verification.
+
+
+### Active-body integration row `phys_fn_000726`
+
+The registered `NxPhysicsSimulationTests` staged-pair differential reaches `phys_fn_000726` via the public scene `simulate` path. A rebuilt zero-timestep mutant is caught (`stdout_delta=6845`, oracle exit 0, candidate exit 1); the exact source was restored and the clean control returned `stdout_delta=0`, both exits 0, exact stderr. Full run details: [phase7-body-integration-000726.md](phase7-body-integration-000726.md).

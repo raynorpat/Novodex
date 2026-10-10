@@ -1626,3 +1626,8 @@ The static-first fixture now captures the 8-byte tracked-shape array at Scene `+
 ### Continuation — Scene debug-renderable teardown (2026-10-10)
 
 The teardown fixture enables visualization to create the Foundation-owned debug renderable at Scene `+0x6b8`, then checks its 52-byte allocation after Scene deletion. Oracle and candidate both release it with exact output; replacing the `releaseDebugRenderable` call with a no-op is caught (`freed=0`, candidate exit 1, oracle exit 0). Phase 3 and Phase 7 gates pass at 560/560 and 1,649/1,649, with all 810 tooling tests passing. This closes only the renderable release; the destructor and DLL remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-debug-renderable-teardown-000663.md`.
+
+
+### Continuation — active-body integration row mutation closure (2026-10-10)
+
+Phase 7 row `phys_fn_000726` (`Row000726Fixture::row000726`) is reached by `NxSceneInternal::row000610` through the public `simulate` path. Rebuilding with a zero timestep passed into the row is caught by the registered `NxPhysicsSimulationTests` staged-pair differential (oracle exit 0, candidate exit 1, `stdout_delta=6845`; the expected joint-break callback is lost). After byte-exact source restoration and rebuild, the control is exact (`stdout_delta=0`, exact stderr). Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-integration-000726.md`. The full Phase 7 gate passes at 1,649/1,649 assertions; the 810-test tooling suite passes. The all-scene Viewer sweep runs 39 scene entrypoints: 34 pass and five are skipped for documented PMap/material baseline blockers. ViewerPhysicsStep and ViewerPhysicsContact also pass. Full DLL completion remains open.
