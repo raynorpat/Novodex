@@ -3239,6 +3239,10 @@ static void nxSceneDelete(void* self, int flags)
 			scene->at<void*>(listOffset) = next;
 			}
 		}
+	// phys_fn_000602 follows the joint-list pass at 0x13fa5. It destroys and
+	// frees body records that remained in Scene+[0x56c, 0x570) after actor
+	// teardown, including records without a remaining actor pose link.
+	nxSceneDestroyBodyRecords(scene);
 	// The joint record array (0x13ffb-0x14013) and the joint pointer array
 	// (0x14195-0x141b9, which also zeroes end and capacity). These three
 	// frees go through nxFoundationSDKAllocator (`[[0x101041bc]]` slot
@@ -3377,6 +3381,23 @@ void nxSceneResetBodyRecords(NxSceneInternal* scene)
 		return;
 	for(; records != end; ++records)
 		reinterpret_cast<Row000760Fixture*>(*records)->row000760();
+	}
+
+// phys_fn_000602 (0x00011060, 68 B): after the retained-joint lists, destroy
+// every non-null dynamic body record left in the Scene range and release its
+// storage through the Foundation allocator.
+void nxSceneDestroyBodyRecords(NxSceneInternal* scene)
+	{
+	void** records = scene->at<void**>(0x56c);
+	void** end = scene->at<void**>(0x570);
+	if(!records || !end)
+		return;
+	for(; records != end; ++records)
+		if(DynamicBody* body = static_cast<DynamicBody*>(*records))
+			{
+			body->destruct();
+			nxFoundationSDKAllocator->free(body);
+			}
 	}
 
 void NxSceneInternal::scalarDeletingDestructor(int flags)

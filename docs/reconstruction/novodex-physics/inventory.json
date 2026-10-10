@@ -11416,13 +11416,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp#nxSceneDestroyBodyRecords",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/232",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1525",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The registered Phase 7 NxPhysicsPopulatedSceneTeardownTests fixture keeps a 608-byte dynamic body record in Scene+[0x56c,0x570) after the actor pose link is cleared and normal actor/root teardown runs. Oracle and restored candidate report freed=1 (stdout_delta=0, stderr_exact=True, both exits 0). A no-op mutation of nxSceneDestroyBodyRecords reports freed=0 and is caught (candidate exit 1, stdout_delta=2). Evidence: evidence/phase7-scene-body-record-destroy-000602.md.",
+      "notes": "nxSceneDestroyBodyRecords reproduces IDA's loop at 0x10011060: each non-null record receives DynamicBody::destruct, then Foundation allocator free. nxSceneDelete calls it after the joint-list loop at 0x13fa5. This closes phys_fn_000602 only; the enclosing Scene destructor phys_fn_000663 remains open."
     },
     {
       "id": "phys_fn_000603",

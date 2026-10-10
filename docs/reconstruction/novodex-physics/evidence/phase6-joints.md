@@ -10015,3 +10015,7 @@ For `phys_fn_000604`, the Phase 7 `NxPhysicsInternalTests` static proof seeds th
 ## Phase 7 Scene retained-joint teardown row `phys_fn_000606`
 
 For `phys_fn_000606`, the registered `NxPhysicsPopulatedSceneTeardownTests` fixture leaves a fixed joint attached to a dynamic actor until `releaseScene`. The pinned oracle and restored candidate both free 35 tracked blocks during Scene release (`release_delta=-35`; `stdout_delta=0`, exact stderr). A temporary mutation that skipped the `[+0x59c,+0x5a0]` joint-list loop leaves two fewer blocks freed (`release_delta=-33`) and is rejected by the staged-pair differential (`stdout_delta=2`, both exits zero). See [phase7-scene-joint-list-teardown-000606.md](phase7-scene-joint-list-teardown-000606.md). The enclosing Scene destructor `phys_fn_000663` remains open for its other ownership paths.
+
+## Phase 7 Scene retained-body-record destruction row `phys_fn_000602`
+
+For `phys_fn_000602`, the registered `NxPhysicsPopulatedSceneTeardownTests` fixture leaves a 608-byte dynamic body record in the Scene's `[+0x56c,+0x570)` range after normal actor/root teardown. The oracle and restored candidate report `freed=1`; a no-op mutation reports `freed=0` and is rejected (`stdout_delta=2`, candidate exit 1). See [phase7-scene-body-record-destroy-000602.md](phase7-scene-body-record-destroy-000602.md). The enclosing Scene destructor `phys_fn_000663` remains open for its other ownership paths.

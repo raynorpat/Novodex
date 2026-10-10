@@ -343,6 +343,46 @@ int wmain(int argc, wchar_t** argv)
 	printf("teardown joint_owner joint_created=1 release_delta=%d\n",
 		static_cast<int>(jointBlocksAfter) - static_cast<int>(jointBlocksBefore));
 
+	// Preserve the body record while the public actor follows its normal teardown
+	// path. Clearing the pose's record link makes nxActorDestroy remove the actor
+	// and its root while leaving the record in [Scene+0x56c, Scene+0x570), where
+	// phys_fn_000602 must still destroy and free it.
+	NxScene* retainedBodyScene = sdk->createScene(sceneDesc);
+	if(!retainedBodyScene)
+		return nxFail("retained-body-record scene creation failed");
+	NxActor* retainedBodyActor = retainedBodyScene->createActor(dynamicDesc);
+	if(!retainedBodyActor)
+		return nxFail("retained-body-record actor creation failed");
+	unsigned char* retainedBodyWrapper =
+		reinterpret_cast<unsigned char*>(retainedBodyScene);
+	unsigned char* retainedBodyInternal =
+		*reinterpret_cast<unsigned char**>(retainedBodyWrapper + 0x24);
+	void** actorBegin = *reinterpret_cast<void***>(retainedBodyInternal + 0x55c);
+	void** actorEnd = *reinterpret_cast<void***>(retainedBodyInternal + 0x560);
+	void** bodyRecords = *reinterpret_cast<void***>(retainedBodyInternal + 0x56c);
+	void** bodyRecordEnd = *reinterpret_cast<void***>(retainedBodyInternal + 0x570);
+	unsigned char* retainedBodyPose =
+		*reinterpret_cast<unsigned char**>(
+			reinterpret_cast<unsigned char*>(retainedBodyActor) + 0x14);
+	unsigned char* retainedBodyRecord = retainedBodyPose
+		? *reinterpret_cast<unsigned char**>(retainedBodyPose + 8) : 0;
+	if(!actorBegin || !actorEnd || actorEnd - actorBegin != 1 ||
+		!bodyRecords || !bodyRecordEnd || bodyRecordEnd - bodyRecords != 1 ||
+		bodyRecords[0] != retainedBodyRecord ||
+		!allocator.allocationSize(retainedBodyRecord))
+		return nxFail("retained-body-record fixture did not match the oracle layout");
+	const size_t retainedBodyRecordBytes =
+		allocator.allocationSize(retainedBodyRecord);
+	*reinterpret_cast<unsigned char**>(retainedBodyPose + 8) = 0;
+	sdk->releaseScene(*retainedBodyScene);
+	const size_t retainedBodyRecordAfter =
+		allocator.allocationSize(retainedBodyRecord);
+	printf("teardown retained_body_record bytes=%u freed=%u\n",
+		static_cast<unsigned>(retainedBodyRecordBytes),
+		retainedBodyRecordAfter == 0 ? 1u : 0u);
+	if(retainedBodyRecordAfter != 0)
+		return nxFail("Scene teardown retained its orphaned dynamic body record");
+
 	sdk->release();
 	foundationSDK->release();
 	return nxReportPairIdentity(pairDirectory);

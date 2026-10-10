@@ -127,7 +127,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'teardown pruner_owner static_calls=1 dynamic_calls=1 flags=1/1 selected=2 outstanding_after=15',
         'teardown controller_owner actors_before=1 outstanding_before=49 outstanding_after=15 delta=-34',
         'teardown contact_report before_release=6 after_release=7 events=0000000e',
-        'teardown joint_owner joint_created=1 release_delta=-35' # phys_fn_000606 destroys retained joint list entries
+        'teardown joint_owner joint_created=1 release_delta=-35', # phys_fn_000606 destroys retained joint list entries
+        'teardown retained_body_record bytes=608 freed=1' # phys_fn_000602 destroys orphaned body records
     )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
@@ -5704,7 +5705,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 550  # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
+    '3' = 551  # includes retained body-record destruction during Scene teardown
+               # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
                # includes controller-owned proxy cleanup during Scene destruction
                # includes body-create oracle-versus-candidate path selection
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
@@ -5760,7 +5762,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1456  # includes pending contact-report and retained joint teardown, plus current scene/emitter assertions
+    '7' = 1457  # includes retained body-record destruction, pending contact-report and retained joint teardown
+               # plus current scene/emitter assertions
                # prior floor includes registered scene, teardown, and emitter assertions
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # previous 1429 plus the D6 public global-anchor readback
