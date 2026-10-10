@@ -33,7 +33,7 @@ Closed `phys_fn_004469`. Nulling its internal D6 pointer is caught by the staged
 M1.2 implementation commits: 4cf9bfb8 and 505c1f1a (both on local main). Merged-main verification: fresh Phase 6 1,238/1,238; Phase 7 1,429/1,429; full tools suite 800/800; retained JSON proofs equal the gate outputs.
 
 
-### M1.3 — Joint matrix oracle-only proof
+### M1.3 ï¿½ Joint matrix oracle-only proof
 
 Added a `joint_matrix` proof format and pinned the real `NxPhysicsJointTests` transcript: 122 cases over ten joint families, 284 descriptor and transformed-fixture input lines, and 2,873 oracle output lines. The proof excludes only machine-specific pair paths/module counts while binding the oracle image and normalized fixture source. Committed as 9a6409a9 on main. Phase 6 passed 1,238/1,238, Phase 7 passed 1,429/1,429, all three retained proof files match runner outputs, and the full tools suite passed 803/803.
 
@@ -84,3 +84,7 @@ Task M7.1: complete (phys_fn_003593 internal backend-flag dispatch and phys_fn_0
 
 
 Verification update for Task M7.1: final candidate DLL rebuild/probe passed with zero constructor, raw ABI, flag, backend callback, state, and aggregate mismatches; Phase 5 and Phase 7 passed at 2,617/2,617 and 1,445/1,445; inventory validation passed (6,338 functions, 5,138 data objects, zero unexplained); focused inventory/gate/completion tests passed 251/251, 39/39, and 11/11; public headers passed 80/80. The fixture drives the successful write-lock path; lock-contention reporting is disassembly-backed but not separately exercised.
+
+Task M1.5: Ruling: promote the six fluid-emitter aggregate getters into an actual candidate-DLL public-vtable probe using the candidate linker map and constructed wrapper -- M1 explicitly requires actual-DLL routing, and the current aggregate probe exercises a test-executable copy while resolving only setFlag into the candidate DLL -- cost if wrong: the abstract wrapper's synthetic construction may not cover the disabled factory's unreachable production route, so no claim will be made about fluid creation or the remaining emitter methods. Contract: task-M1.5-brief.md.
+
+Task M1.5: complete (commit fc651e7c; six aggregate getters called through the candidate NxPhysics.dll vtable after candidate-map constructor resolution; exact oracle bytes, hidden result pointers, and stack balance; DLL-only local-position offset mutation caught, restored candidate hash 63F29A35BE21FD9F23E2FA2B333C44F98C0FFBAFEB3A02DC81A001F7D4F73B57 passes direct probe; Phase 5 2,619/2,619, Phase 7 1,447/1,447, Python tools 816 tests + 732 subtests; evidence: docs/reconstruction/novodex-physics/evidence/fluid-emitter-candidate-dll-aggregate-abi-2026-10-09.md). M1 remains open for lifecycle and other harness gaps.
