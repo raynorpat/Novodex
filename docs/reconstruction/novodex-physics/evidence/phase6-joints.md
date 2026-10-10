@@ -10088,3 +10088,12 @@ The revolute staged-pair fixture now serializes limit, motor, and spring getter 
 For `phys_fn_004342`, the limit-getter inversion produced `stdout_delta=28`; for `phys_fn_004346`, the motor-getter inversion produced `stdout_delta=28`; and for `phys_fn_004350`, the spring-getter inversion produced `stdout_delta=28`. Each restored differential returned to `stdout_delta=0`.
 
 The oracle-only joint matrix proof was refreshed from the pinned oracle pair: source SHA-256 `6d3fdd596d2c2f700de43f7a2d30d4fa8b83f31757130bfd9d01dc6116f40d4c`, 3,174 output lines, digest `bb56dbdf98f44134ed833b273dff2245a7db5fb07b8c065b1a3d772061535ded`. The full Phase 6 gate passed with 1,568 coverage assertions run (minimum required: 1,267). Phase 6 now has 108 closed rows (106 mutation-falsified plus 2 oracle differentials) and 325 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — revolute descriptor setters (`phys_fn_004340`, `004344`, `004348`)
+
+The index-0 fixture now calls the public limit, motor, and spring setters with distinct descriptor values and prints the complete getter readback plus enabled flags. Each mutation omitted only one descriptor store; the registered staged-pair differential caught each wrong readback with `stdout_delta=2`, equal zero exits, and exact stderr. Each restored control was exact. See [phase6-joint-revolute-setters-004340-004344-004348.md](phase6-joint-revolute-setters-004340-004344-004348.md).
+
+For `phys_fn_004340`, the limit setter mutation produced `stdout_delta=2`; for `phys_fn_004344`, the motor setter mutation produced `stdout_delta=2`; for `phys_fn_004348`, the spring setter mutation produced `stdout_delta=2`.
+
+The pinned oracle matrix proof now records fixture source SHA-256 `5a848a7b06211a37fc68cecb0fe15a73d0bf2f8ad4bbe61bf78a6747c7694ed9`, 3,178 output lines, and digest `e8154157ac713741993b48ae4ca623a85778442f467ad5479c1462492d646c62`. The full Phase 6 gate passed with 1,572 assertions run (minimum required: 1,267). Phase 6 now has 111 closed rows (109 mutation-falsified plus 2 oracle differentials) and 322 deferred rows; 23 in-phase rows remain unreconstructed.

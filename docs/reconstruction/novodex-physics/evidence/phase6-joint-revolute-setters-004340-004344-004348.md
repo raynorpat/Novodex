@@ -1,0 +1,7 @@
+# Phase 6 closure: revolute limit, motor, and spring setters
+
+The index-0 revolute case in `NxPhysicsJointStagedPairTests` now sets distinct values for its limit pair, motor, and spring, then serializes every value read back from the public getters plus the resulting flags. The coverage registry requires the exact values.
+
+Each setter row was mutated independently by omitting only its descriptor store. `phys_fn_004340` (`setLimits`) returned the default limits instead of the requested values; `phys_fn_004344` (`setMotor`) returned the default motor; and `phys_fn_004348` (`setSpring`) returned the default spring. Each mutation was caught by the registered staged-pair differential with equal zero exits, `stdout_delta=2`, and exact stderr. Mutant candidate SHA-256 values were respectively `f6f43013a3812830d4bcdeb6f75376b3ad36a9dcc89117370fab4e5104321154`, `063aa3579d3a07b4ef94bd6a45bcc315ff37ff25eeb8e4e7e62990f26f9a06c1`, and `1eeef3d9693f2317d343248a6b382709b5156f4c1b80865dd381fbfa6e8fd2dc`.
+
+After restoring the stores, the candidate returned the requested descriptor values. The restored differential passed with both exits 0, `stdout_delta=0`, and exact stderr; restored candidate SHA-256: `8d96341af4c86b3e054024e862123bc1fc4ee32486f0343543e0c45c0ca12d04`. Full mutation, build, and restored-control logs are retained in the ignored `build/phase6-00434*-*` and `build/phase6-revolute-setters-*` files.

@@ -405,6 +405,41 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 		printf("case=revolute index=%u spring enabled=%u values=%08x.%08x.%08x\n",
 			index, springEnabled ? 1u : 0u, nxU(spring.spring), nxU(spring.damper),
 			nxU(spring.targetValue));
+		if(index == 0)
+			{
+			NxJointLimitPairDesc updatedLimits;
+			updatedLimits.low.value = 1.25f;
+			updatedLimits.low.restitution = 0.5f;
+			updatedLimits.low.hardness = 0.75f;
+			updatedLimits.high.value = 2.5f;
+			updatedLimits.high.restitution = 0.25f;
+			updatedLimits.high.hardness = 1.0f;
+			revolute->setLimits(updatedLimits);
+			const NxMotorDesc updatedMotor(2.5f, 5.0f, true);
+			revolute->setMotor(updatedMotor);
+			const NxSpringDesc updatedSpring(10.0f, 0.5f, -0.25f);
+			revolute->setSpring(updatedSpring);
+
+			NxJointLimitPairDesc gotLimits;
+			const bool gotLimitsEnabled = revolute->getLimits(gotLimits);
+			NxMotorDesc gotMotor;
+			const bool gotMotorEnabled = revolute->getMotor(gotMotor);
+			NxSpringDesc gotSpring;
+			const bool gotSpringEnabled = revolute->getSpring(gotSpring);
+			printf("case=revolute index=0 updated limits enabled=%u low=%08x.%08x.%08x high=%08x.%08x.%08x\n",
+				gotLimitsEnabled ? 1u : 0u, nxU(gotLimits.low.value),
+				nxU(gotLimits.low.restitution), nxU(gotLimits.low.hardness),
+				nxU(gotLimits.high.value), nxU(gotLimits.high.restitution),
+				nxU(gotLimits.high.hardness));
+			printf("case=revolute index=0 updated motor enabled=%u values=%08x.%08x.%08x\n",
+				gotMotorEnabled ? 1u : 0u, nxU(gotMotor.velTarget),
+				nxU(gotMotor.maxForce), static_cast<unsigned>(gotMotor.freeSpin));
+			printf("case=revolute index=0 updated spring enabled=%u values=%08x.%08x.%08x\n",
+				gotSpringEnabled ? 1u : 0u, nxU(gotSpring.spring),
+				nxU(gotSpring.damper), nxU(gotSpring.targetValue));
+			printf("case=revolute index=0 updated flags=%08x\n",
+				static_cast<unsigned>(revolute->getFlags()));
+			}
 		NxRevoluteJointDesc saved;
 		revolute->saveToDesc(saved);
 		nxPrintSavedFrames("revolute", index, saved);
