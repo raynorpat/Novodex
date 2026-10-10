@@ -221,15 +221,27 @@ int wmain(int argc, wchar_t** argv)
 	void* supportArray = *reinterpret_cast<void**>(supportInternal + 0x5ac);
 	void* supportAllocation = supportArray
 		? static_cast<unsigned char*>(supportArray) - sizeof(unsigned) : 0;
+	void* supportRecords = *reinterpret_cast<void**>(supportInternal + 0x5b8);
+	void* jointReferences = *reinterpret_cast<void**>(supportInternal + 0x58c);
 	const size_t supportBytes = allocator.allocationSize(supportAllocation);
+	const size_t supportRecordBytes = allocator.allocationSize(supportRecords);
+	const size_t jointReferenceBytes = allocator.allocationSize(jointReferences);
 	if(!supportArray || !supportBytes)
 		return nxFail("joint simulation did not retain its support-body array");
+	if(!supportRecords || !supportRecordBytes || !jointReferences || !jointReferenceBytes)
+		return nxFail("joint simulation did not retain its solver-record and joint-reference arrays");
 	sdk->releaseScene(*supportScene);
 	const bool supportFreed = allocator.allocationSize(supportAllocation) == 0;
+	const bool supportRecordsFreed = allocator.allocationSize(supportRecords) == 0;
+	const bool jointReferencesFreed = allocator.allocationSize(jointReferences) == 0;
 	printf("teardown joint_support_body_buffer bytes=%u freed=%u\n",
 		static_cast<unsigned>(supportBytes), supportFreed ? 1u : 0u);
-	if(!supportFreed)
-		return nxFail("Scene teardown did not free its joint-support body array");
+	printf("teardown joint_metadata_buffers records_bytes=%u records_freed=%u "
+		"joint_refs_bytes=%u refs_freed=%u\n",
+		static_cast<unsigned>(supportRecordBytes), supportRecordsFreed ? 1u : 0u,
+		static_cast<unsigned>(jointReferenceBytes), jointReferencesFreed ? 1u : 0u);
+	if(!supportFreed || !supportRecordsFreed || !jointReferencesFreed)
+		return nxFail("Scene teardown did not free its joint solver metadata arrays");
 
 	if(!scene->createActor(staticDesc) || !scene->createActor(dynamicDesc))
 		return nxFail("static-first populated actor fixture failed");
