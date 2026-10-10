@@ -450,3 +450,10 @@ path remain independent work.
 ## 15. 2026-10-10 follow-up: bounded octree query traversal
 
 `phys_fn_005562` (`0x000f1df0`, 605 bytes) is closed through the registered staged-pair `NxPhysicsSceneRaycastTests` differential. The tree-backed fixture checks exact result ordering across full, partial, moved, expanded-bound and sphere queries. A throwaway mutation changed only the contained-subtree recursive child bound from `<= 8` to `< 8`; candidate output lost child-slot-8 results and the staged differential reported `stdout_delta=8` with both child processes exiting zero. Restoring the bound returned exact output, and the complete Phase 4 gate passed at 518/269 coverage assertions. Full setup, baseline transcript, mutation output, restored build and gate result are recorded in [phase4-bounded-tree-walk-005562.md](phase4-bounded-tree-walk-005562.md).
+
+
+---
+
+## 16. 2026-10-10 follow-up: bounded-query setup wrapper
+
+`phys_fn_005564` (`0x000f2050`, 57 bytes) is closed through the registered staged-pair `NxPhysicsSceneRaycastTests` differential. IDA shows it packages query state and dispatches the bounded tree walk at root node 0. Omitting the equivalent candidate root dispatch after query preparation changes the transcript by `stdout_delta=14` while both processes exit zero. Restoring the call returns exact output; the fresh full Phase 4 gate passes at 518/269 assertions and both public-header checks pass. This call-site mutation is separate from the recursive `phys_fn_005562` child-slot-8 mutation in section 15. Full proof and transcripts are in [phase4-query-wrapper-005564.md](phase4-query-wrapper-005564.md).

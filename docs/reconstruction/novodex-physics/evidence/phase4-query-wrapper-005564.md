@@ -1,0 +1,7 @@
+# Phase 4 bounded-query setup wrapper: phys_fn_005564
+
+`phys_fn_005564` is the 57-byte oracle row at RVA `0x000f2050`. IDA shows a setup adapter: it copies two query words from its receiver into a five-word stack context, fills the remaining words from its three arguments, and calls the recursive bounded-tree query `phys_fn_005562` at root node 0. Candidate setup and root dispatch are implemented by `BoundedDynamicPruner::OverlapQuery` in `Physics/src/opcode/IcePruner.cpp`; the candidate builds a stack-local query context plus per-query node-head and subtree-count arrays.
+
+The registered `NxPhysicsSceneRaycastTests` fixture checks exact bounded-tree overlap order for full and partial bounds, moved objects, expanded bounds, and sphere queries. For independent caller-row falsification, a throwaway source mutation omitted only the root call to `nxBoundedTreeQueryNode` after query preparation. The staged differential detected `stdout_delta=14` while oracle and candidate both exited 0.
+
+Restoring the root dispatch returned the focused test to `stdout_delta=0`, exact stderr, and two zero exits. The complete Phase 4 gate then passed with 518 coverage assertions against a 269 floor; both immutable public-header checks passed. The recursive callee row `phys_fn_005562` remains separately falsified by its child-slot-8 mutation, recorded in [phase4-bounded-tree-walk-005562.md](phase4-bounded-tree-walk-005562.md).

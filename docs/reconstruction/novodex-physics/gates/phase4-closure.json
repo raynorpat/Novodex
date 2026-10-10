@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 32 closed and 1,021 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The two AABB tree rows phys_fn_005517 and phys_fn_005523 still have shared-overlay layout evidence but no isolated per-row falsification. The 2026-10-10 bounded octree traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the registered NxPhysicsSceneRaycastTests staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 33 closed and 1,020 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The two AABB tree rows phys_fn_005517 and phys_fn_005523 still have shared-overlay layout evidence but no isolated per-row falsification. The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway source copy, rebuilt and run through a registered Phase 4 staged-pair differential. Phase 4 now registers NxPhysicsTriangleMeshApiTests for the live-reference refusal path; bypassing the mReferenceCount guard changes the candidate transcript by stdout_delta=6 while the pinned oracle remains unchanged, and the restored control matches exactly.",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -55,9 +55,9 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 750,
-    "deferred_not_reconstructed_in_phase": 181,
+    "deferred_not_reconstructed_in_phase": 180,
     "deferred_vendored_not_falsified": 90,
-    "differential_falsified": 2,
+    "differential_falsified": 3,
     "oracle_differential_falsified": 30
   },
   "closed": [
@@ -385,6 +385,17 @@
         "detected": "stdout_delta=8"
       },
       "note": "Restored source and rebuilt; the focused scene-query differential and full Phase 4 gate returned exact candidate/oracle output. The unmutated bounded_tree all fixture reports all 12 handles in the expected octree traversal order."
+    },
+    {
+      "id": "phys_fn_005564",
+      "rva": "0x000f2050",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "In a throwaway source edit to Physics/src/opcode/IcePruner.cpp, omitted only BoundedDynamicPruner::OverlapQuery's root call to nxBoundedTreeQueryNode after constructing the query context and node-index arrays. Rebuilt NxPhysics and NxPhysicsSceneRaycastTests and ran the registered staged-pair differential. The candidate lost bounded-tree overlap results; oracle_exit=0 and candidate_exit=0.",
+        "detected": "stdout_delta=14"
+      },
+      "note": "Restored root dispatch returned exact output in the focused scene-query differential and full Phase 4 gate. This setup/call-site row is separate from the recursive walker row phys_fn_005562, which has its own child-slot-8 mutation."
     }
   ],
   "deferred": [
@@ -8290,14 +8301,6 @@
       "id": "phys_fn_005560",
       "rva": "0x000f1db0",
       "size": 49,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005564",
-      "rva": "0x000f2050",
-      "size": 57,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []
