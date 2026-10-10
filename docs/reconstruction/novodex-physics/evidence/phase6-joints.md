@@ -10330,3 +10330,8 @@ The registered `NxPhysicsJointStagedPairTests` differential exercises joint iter
 ## Phase 7 joint-break event insertion `phys_fn_000571` — `stdout_delta=801`
 
 The registered `NxPhysicsSimulationTests` broken-joint fixture reaches the event producer. Clearing the Scene event-list head suppresses the expected joint-break callbacks and fails the candidate callback-count assertion (`candidate_exit=1`, `stdout_delta=801`). The restored candidate and all Phase 7 targets are exact. Details: [phase7-scene-add-joint-break-event-000571.md](phase7-scene-add-joint-break-event-000571.md).
+
+
+## Phase 6 per-island joint-support solver wrapper `phys_fn_004174` — `stdout_delta=835`
+
+`NxPhysicsSimulationTests` rejects an immediate-return mutation of `nxSolveJointSupportRecords` and a narrower mutation that skips its iterative solver-pass loop (each `stdout_delta=835`, candidate exit 1). The restored Phase 6 gate passes all 10 staged targets and 1,597/1,267 coverage assertions. Details: [phase6-joint-support-solver-wrapper-004174.md](phase6-joint-support-solver-wrapper-004174.md).

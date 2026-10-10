@@ -77716,13 +77716,15 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1577",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13880",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/Capstone contract at RVA 0x0009b120 (278-byte row): iterate support records for each configured solver pass, dispatch kind-specific constraints when either body is active for that pass, copy support-body velocity state back to body records, then run the final solve pass. The candidate map resolves nxSolveJointSupportRecords in JointSupport.obj.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests baseline matched the pinned oracle. Replacing nxSolveJointSupportRecords with an immediate return was rejected (candidate_exit=1, stdout_delta=835). A narrower mutant that skipped the iterative solver-pass loop was also rejected (candidate_exit=1, stdout_delta=835). Restored Phase 6 gate passes all targets; see evidence/phase6-joint-support-solver-wrapper-004174.md.",
+      "notes": "Recovered solver wrapper at RVA 0x0009b120 through nxSolveJointSupportRecords; the adjacent custom-row reset row phys_fn_004176 remains separately open.",
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "?nxSolveJointSupportRecords@@YAXPAVNxSceneInternal@@MI_N@Z"
     },
     {
       "id": "phys_fn_004175",

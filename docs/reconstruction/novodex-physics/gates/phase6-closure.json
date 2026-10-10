@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 151 rows are closed (2 oracle differentials, 149 mutation-falsified); 282 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 152 rows are closed (2 oracle differentials, 150 mutation-falsified); 281 rows remain open. Full DLL reconstruction remains pending. The per-island joint-support solver wrapper phys_fn_004174 is mutation-falsified through NxPhysicsSimulationTests: an immediate return and a skipped solver-pass loop each change the transcript by 835 bytes; the restored Phase 6 gate passes. See evidence/phase6-joint-support-solver-wrapper-004174.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -53,21 +53,21 @@
       "NxPhysicsEffectorTests, registered as a Phase 6 STAGED-PAIR differential: a throwaway mutation that skips the public wrapper deletion in phys_fn_003977 is caught during effector lifecycle tests (candidate access violation, stdout_delta=76); the restored control is exact.",
       "NxPhysicsSimulationTests, registered as a Phase 6 STAGED-PAIR differential: the approved three-step public effector simulation observes damperForce at nonzero relative velocity; returning zero changes third-step vx from 3f0a9508 to 3f0de49b (stdout_delta=2), with both processes exiting 0 and the restored control exact.",
       "NxPhysicsSimulationTests, registered as a Phase 6 STAGED-PAIR differential: the three-step public effector simulation observes slot-3 apply through actor velocity; a no-op changes second/third-step vx from 3e8e38e3/3f0a9508 to 00000000/00000000 (stdout_delta=4), with both processes exiting 0 and the restored control exact.",
-      "NxPhysicsJointSlotTests, registered as a Phase 6 STAGED-PAIR differential: its rotated multi-family joint fixture deliberately displaces body 1 and invokes projection slot 8 for both held body records under two x87 control words. A +1.0 mutation to body 0\u2019s transformed anchor X in phys_fn_004064 is caught with stdout_delta=250; restored output is exact.",
-      "NxPhysicsJointStagedPairTests, registered as a Phase 6 STAGED-PAIR differential: its rotated multi-family cases create joints, save each descriptor, and print the base maxForce/maxTorque values. Zeroing phys_fn_004066\u2019s saved maxForce is caught with stdout_delta=216; restored output is exact.",
-      "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: its named multi-family joint dump serializes public actor references obtained through phys_fn_004068. Returning null for body 0\u2019s owner is caught with stdout_delta=128; restored output is exact.",
+      "NxPhysicsJointSlotTests, registered as a Phase 6 STAGED-PAIR differential: its rotated multi-family joint fixture deliberately displaces body 1 and invokes projection slot 8 for both held body records under two x87 control words. A +1.0 mutation to body 0’s transformed anchor X in phys_fn_004064 is caught with stdout_delta=250; restored output is exact.",
+      "NxPhysicsJointStagedPairTests, registered as a Phase 6 STAGED-PAIR differential: its rotated multi-family cases create joints, save each descriptor, and print the base maxForce/maxTorque values. Zeroing phys_fn_004066’s saved maxForce is caught with stdout_delta=216; restored output is exact.",
+      "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: its named multi-family joint dump serializes public actor references obtained through phys_fn_004068. Returning null for body 0’s owner is caught with stdout_delta=128; restored output is exact.",
       "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: the named multi-family dump selects each derived joint serializer through Joint::is. Returning null for every requested type is caught (candidate access violation, stdout_delta=2206, exact stderr); restored output is exact.",
       "NxPhysicsJointSlotTests, registered as a Phase 6 STAGED-PAIR differential: its multi-family slot fixture exercises the shared Joint::row004093 allocator and reads each Scene support-record window. Incrementing the record count by two is caught with stdout_delta=2918; restored output is exact.",
-      "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: the fixture sets non-default break force/torque thresholds on cylindrical and fixed joints and serializes them. Storing zero for phys_fn_004074\u2019s maxForce changes the transcript by 20 bytes; restored output is exact.",
+      "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: the fixture sets non-default break force/torque thresholds on cylindrical and fixed joints and serializes them. Storing zero for phys_fn_004074’s maxForce changes the transcript by 20 bytes; restored output is exact.",
       "NxPhysicsCoreDumpTests, registered as a Phase 6 STAGED-PAIR differential: its cylindrical joint case sets break thresholds, reads them back through NxJoint::getBreakable, and prints their raw words. Returning zero for maxForce in phys_fn_004076 changes the transcript by two bytes; restored output is exact.",
       "NxPhysicsJointAllocatorTests, registered as a Phase 6 STAGED-PAIR differential: the allocator-A/B fixture creates and releases a prismatic joint. Omitting the public-wrapper delete in phys_fn_004382 reduces Foundation allocator frees from 2 to 1 (stdout_delta=2); restoring the delete returns the oracle/candidate transcript to exact equality."
     ]
   },
   "counts": {
-    "differential_falsified": 149,
+    "differential_falsified": 150,
     "oracle_differential_falsified": 2,
     "deferred_reconstructed_not_falsified": 260,
-    "deferred_not_reconstructed_in_phase": 22
+    "deferred_not_reconstructed_in_phase": 21
   },
   "closed": [
     {
@@ -246,7 +246,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsEffectorTests",
       "falsification": {
-        "mutation": "In a throwaway git archive, changed the constructor\u2019s public-wrapper allocation request from 0x18 to 0x1c bytes. NxPhysicsEffectorTests observes allocation sizes and constructed state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=78 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr.",
+        "mutation": "In a throwaway git archive, changed the constructor’s public-wrapper allocation request from 0x18 to 0x1c bytes. NxPhysicsEffectorTests observes allocation sizes and constructed state; the oracle exited 0 and the mutated candidate hit an access violation, with stdout_delta=78 and exact stderr. The restored control passed with both exits zero, stdout_delta=0, and exact stderr.",
         "detected": "stdout_delta=78"
       }
     },
@@ -476,7 +476,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsJointSlotTests",
       "falsification": {
-        "mutation": "In the clean isolated worktree at mainline commit 58f0d3a3, changed body 0\u2019s transformed X anchor in Joint::row004064 by +1.0. The registered NxPhysicsJointSlotTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=250, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran the target; the restored control had both exits 0, stdout_delta=0, and exact stderr.",
+        "mutation": "In the clean isolated worktree at mainline commit 58f0d3a3, changed body 0’s transformed X anchor in Joint::row004064 by +1.0. The registered NxPhysicsJointSlotTests staged-pair differential rejected the mutant: oracle_exit=0, candidate_exit=0, stdout_delta=250, stderr_exact=True. Restored Joint.cpp, rebuilt NxPhysics, and reran the target; the restored control had both exits 0, stdout_delta=0, and exact stderr.",
         "detected": "stdout_delta=250"
       }
     },
@@ -636,7 +636,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsCoreDumpTests",
       "falsification": {
-        "mutation": "Row-specific falsification (2026-10-09, mainline base 36ba492d): omitted only Joint::~Joint\u2019s call to purgeLimitPlanes in an isolated Win32 Release build. Registered NxPhysicsCoreDumpTests changed the post-release outstanding count from 14 (oracle) to 17 (candidate), with both exits zero, stdout_delta=2 and exact stderr. Restored rebuild returned 14/14, both exits zero, stdout_delta=0 and exact stderr. Mutation DLL sha256 8c0641e8e3f3495327f0c9032fb079b91a8ff318833e7eb59cbaff35a7e880b4; restored DLL sha256 513ef5f352a01d967ea72ffbee840eae1c203dbf27b5b2a821bce0e1f8cf60e2. Evidence: evidence/phase6-joint-row004095-destructor.md.",
+        "mutation": "Row-specific falsification (2026-10-09, mainline base 36ba492d): omitted only Joint::~Joint’s call to purgeLimitPlanes in an isolated Win32 Release build. Registered NxPhysicsCoreDumpTests changed the post-release outstanding count from 14 (oracle) to 17 (candidate), with both exits zero, stdout_delta=2 and exact stderr. Restored rebuild returned 14/14, both exits zero, stdout_delta=0 and exact stderr. Mutation DLL sha256 8c0641e8e3f3495327f0c9032fb079b91a8ff318833e7eb59cbaff35a7e880b4; restored DLL sha256 513ef5f352a01d967ea72ffbee840eae1c203dbf27b5b2a821bce0e1f8cf60e2. Evidence: evidence/phase6-joint-row004095-destructor.md.",
         "detected": "stdout_delta=2"
       }
     },
@@ -1581,6 +1581,17 @@
         "mutation": "Row-specific source mutation: replaced phys_fn_004172 with a no-op. The registered staged-pair deterministic simulation differential reported stdout_delta=226; both exits were zero and stderr was exact. Restored control returned stdout_delta=0 with both exits zero and exact stderr. Mutant candidate SHA-256 c29ed3245f78c7ab2507c7df1ba2bf33f27a2e61dc90a8da67a4f0d50d4ab6c5; restored candidate SHA-256 57f328a441ff5f677e8f0359b6bd1f09e428632c7858e8745c574ca4e899387c. Evidence: evidence/phase6-island-rebuild-004172.md.",
         "detected": "stdout_delta=226"
       }
+    },
+    {
+      "id": "phys_fn_004174",
+      "rva": "0x0009b120",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Replaced the mapped nxSolveJointSupportRecords wrapper with an immediate return; a second row-focused mutant skipped the configured solver-pass loop while retaining finalization.",
+        "detected": "stdout_delta=835"
+      },
+      "note": "The registered staged simulation rejects both missing iterative solving and the full wrapper no-op (candidate_exit=1). Restored controls and the complete Phase 6 gate pass; see evidence/phase6-joint-support-solver-wrapper-004174.md."
     }
   ],
   "deferred": [
@@ -2004,14 +2015,6 @@
       "id": "phys_fn_004171",
       "rva": "0x0009ae50",
       "size": 640,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004174",
-      "rva": "0x0009b120",
-      "size": 278,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []

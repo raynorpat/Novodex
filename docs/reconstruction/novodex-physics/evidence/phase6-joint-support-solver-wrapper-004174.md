@@ -1,0 +1,7 @@
+# Per-island joint-support solver wrapper mutation closure (`phys_fn_004174`)
+
+`phys_fn_004174` is the 278-byte solver wrapper at RVA `0x0009b120`. IDA and Capstone show the per-island pass over joint-support records: for each configured iteration, dispatch each supported constraint kind when either body is active for that pass; copy solver velocity state back to the body records; then execute the final solve pass. The reconstructed implementation is `nxSolveJointSupportRecords` in `Physics/src/core/JointSupport.cpp`, resolved by the candidate map to `JointSupport.obj`.
+
+The registered Phase 6 `NxPhysicsSimulationTests` baseline matched the pinned oracle. Replacing the mapped wrapper with an immediate return was rejected with `candidate_exit=1` and `stdout_delta=835`. A narrower mutation that skipped only the configured iterative solver-pass loop, preserving the later copy-back and final pass, was also rejected with `candidate_exit=1` and `stdout_delta=835`. These mutations establish that the wrapper's iterative solve work is exercised by the fixture.
+
+After restoring the source, the complete Phase 6 gate passed all 10 registered staged-pair targets with exact outputs, 1,597 coverage assertions against a 1,267 floor, and both immutable public-header checks. The adjacent custom-row callback row `phys_fn_004176` remains open and is not claimed by this evidence. Phase 8 full-DLL terminal closure remains open.
