@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 133 rows are closed (2 oracle differentials, 131 mutation-falsified); 300 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 134 rows are closed (2 oracle differentials, 132 mutation-falsified); 299 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the remaining Phase 6 falsification work: 277 rows.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the remaining Phase 6 falsification work: 276 rows.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 131,
+    "differential_falsified": 132,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 277,
+    "deferred_reconstructed_not_falsified": 276,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1399,6 +1399,16 @@
       "gate": "NxPhysicsJointStagedPairTests",
       "falsification": {
         "mutation": "Row-specific falsification (source revision in this worktree): inverted the returned `getLimitPoint` presence flag. Registered staged-pair oracle/candidate runs both exited 0, stdout_delta=2, exact stderr. Restored clean control returned stdout_delta=0 with exact stderr. Mutant candidate SHA-256 8fbb6b20e07defbc291033bd902d12c6b97be10f87325a6b6b933190aab50d7d; restored candidate SHA-256 82e69e457661b60568814b96d96cb18c44de8e00afd4787526301bf3b3c01d75. Evidence: evidence/phase6-joint-shared-breakable-limitpoint-004573-004577.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004635",
+      "rva": "0x000b25d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): inverted the shared `getNextLimitPlane` return value. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with exact stderr. Mutant candidate SHA-256 9805c1114a38d2c793c1c2a3920542924611e7bbd4914699596e7b33966e28e9; restored candidate SHA-256 f65e990b21276bd1c84fcb490a4ee35acf6515835fdbcb1e2bcf53b404de87c7. Evidence: evidence/phase6-joint-shared-next-limit-plane-004635.md.",
         "detected": "stdout_delta=2"
       }
     }
@@ -3524,15 +3534,6 @@
       "id": "phys_fn_004633",
       "rva": "0x000b2580",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004635",
-      "rva": "0x000b25d0",
-      "size": 50,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

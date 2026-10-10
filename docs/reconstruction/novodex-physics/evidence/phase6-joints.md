@@ -10162,3 +10162,10 @@ The full Phase 6 gate passed with 1,579 coverage assertions run (minimum require
 Omitting the shared `getBreakable` readback in `phys_fn_004573` changed the D6 staged transcript with `stdout_delta=2`; inverting `getLimitPoint` presence in `phys_fn_004577` also changed it with `stdout_delta=2`. Both mutations were caught with equal zero exits and exact stderr. Both restored controls returned `stdout_delta=0` with exact stderr. See [phase6-joint-shared-breakable-limitpoint-004573-004577.md](phase6-joint-shared-breakable-limitpoint-004573-004577.md).
 
 The full Phase 6 gate passed with 1,579 coverage assertions run (minimum required: 1,267). Phase 6 now has 133 closed rows (131 mutation-falsified plus 2 oracle differentials) and 300 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — shared next-limit-plane getter (`phys_fn_004635`)
+
+For `phys_fn_004635`, inverting the shared `getNextLimitPlane` result changed the D6 staged case with `stdout_delta=2`; the mutation was caught with equal zero exits and exact stderr. The restored control returned `stdout_delta=0` with exact stderr. See [phase6-joint-shared-next-limit-plane-004635.md](phase6-joint-shared-next-limit-plane-004635.md).
+
+The full Phase 6 gate passed with 1,579 coverage assertions run (minimum required: 1,267). Phase 6 now has 134 closed rows (132 mutation-falsified plus 2 oracle differentials) and 299 deferred rows; 23 in-phase rows remain unreconstructed.
