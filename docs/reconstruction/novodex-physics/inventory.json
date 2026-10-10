@@ -10772,13 +10772,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/215",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1462",
-      "static_proof": "if [this+0x6bc] non-null store [*ptr+0x10] back to [this+0x6bc] else 0; ret; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "confirmed via smallflag differential (3z105): failures=0; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 137 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::getNextJoint in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: link-advance (0x108a0).",
+      "static_proof": "IDA/Capstone contract at RVA 0x000108a0: read the cursor at Scene+0x6bc; if non-null, advance it to Joint+0x10 (mNextJoint) and return the current Joint; otherwise return null. Candidate map resolves NxSceneInternal::getNextJoint in Scene.obj.",
+      "dynamic_proof": "Registered Phase 7 NxPhysicsJointStagedPairTests baseline matched the pinned oracle. A mutation clearing Scene+0x6bc after reading the current joint was detected with stdout_delta=90 (both exits zero, exact stderr). Restored focused differential and full Phase 7 gate pass; see evidence/phase7-scene-get-next-joint-000567.md.",
+      "notes": "NxSceneInternal::getNextJoint in Physics/src/Scene.cpp. Mutation falsification covers iterator advancement and end-of-list behavior through public joint enumeration.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {

@@ -10320,3 +10320,8 @@ Phase 7 coherent-pruner cache row `phys_fn_001974`: the coherent Scene fixture r
 ## Phase 7 Scene joint iterator reset `phys_fn_000563` — `stdout_delta=296`
 
 The registered `NxPhysicsJointStagedPairTests` differential exercises Scene joint enumeration. Clearing the reset cursor instead of copying the list head from `Scene + 0x59c` changes the transcript by 296 bytes (both processes exit zero, exact stderr). The restored focused differential is exact, and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. Details: [phase7-scene-joint-iterator-000563.md](phase7-scene-joint-iterator-000563.md).
+
+
+## Phase 7 Scene get-next-joint `phys_fn_000567` — `stdout_delta=90`
+
+The registered `NxPhysicsJointStagedPairTests` differential exercises joint iterator order and termination. Clearing the cursor instead of advancing through `Joint + 0x10` changes the transcript by 90 bytes (both processes exit zero, exact stderr). The restored focused differential is exact, and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. Details: [phase7-scene-get-next-joint-000567.md](phase7-scene-get-next-joint-000567.md).
