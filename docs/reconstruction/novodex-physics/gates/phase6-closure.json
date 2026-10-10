@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 134 rows are closed (2 oracle differentials, 132 mutation-falsified); 299 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 139 rows are closed (2 oracle differentials, 137 mutation-falsified); 294 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the remaining Phase 6 falsification work: 276 rows.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the remaining Phase 6 falsification work: 271 rows.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 132,
+    "differential_falsified": 137,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 276,
+    "deferred_reconstructed_not_falsified": 271,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1409,6 +1409,56 @@
       "gate": "NxPhysicsJointStagedPairTests",
       "falsification": {
         "mutation": "Row-specific falsification (source revision in this worktree): inverted the shared `getNextLimitPlane` return value. The registered staged-pair differential reported stdout_delta=2; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with exact stderr. Mutant candidate SHA-256 9805c1114a38d2c793c1c2a3920542924611e7bbd4914699596e7b33966e28e9; restored candidate SHA-256 f65e990b21276bd1c84fcb490a4ee35acf6515835fdbcb1e2bcf53b404de87c7. Evidence: evidence/phase6-joint-shared-next-limit-plane-004635.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004443",
+      "rva": "0x000b0730",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): reported `NX_JOINT_FIXED` for every joint family instead of reading the internal type. The registered staged-pair oracle exited 0; the candidate access-violated after the transcript diverged, with exact stderr and stdout_delta=3128. Restored clean control returned stdout_delta=0 with both exits 0 and exact stderr. Mutant candidate SHA-256 c731cd1890d7188554e67f0f9ea6a207715626e75c424ca157bf7ffea75d3009; restored candidate SHA-256 9b7c705c122d5ce3adf3cd231668d07e5f83b3c426350681b624e60a0c6e7a2a. Evidence: evidence/phase6-joint-shared-type-actors-values-name-004443-004539-004497-004499-004743.md.",
+        "detected": "stdout_delta=3128"
+      }
+    },
+    {
+      "id": "phys_fn_004539",
+      "rva": "0x000b1600",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): returned null for actor 0 instead of reading its joint-body owner. The registered staged-pair oracle and candidate both exited 0, with exact stderr and stdout_delta=244. Restored clean control returned stdout_delta=0 with both exits 0 and exact stderr. Mutant candidate SHA-256 54bc55756a16cb2e7f2d67d9918161c222362330b4d5a26e372e5ca02057311b; restored candidate SHA-256 fd0ca20035953968f416d19abfdafb5f5c4d4fce64591e21756586004ca01e62. Evidence: evidence/phase6-joint-shared-type-actors-values-name-004443-004539-004497-004499-004743.md.",
+        "detected": "stdout_delta=244"
+      }
+    },
+    {
+      "id": "phys_fn_004497",
+      "rva": "0x000b0ff0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): returned a zero vector instead of the global-anchor value. The registered staged-pair oracle and candidate both exited 0, with exact stderr and stdout_delta=224. Restored clean control returned stdout_delta=0 with both exits 0 and exact stderr. Mutant candidate SHA-256 21d32bd7be52b5312874237e6edaa76b01e76817007a1c3950b037d414eab2f5; restored candidate SHA-256 033a651fb47ecc7b67047c54ccd7de3a5b576b7a90bad5ab7398e3367e076f70. Evidence: evidence/phase6-joint-shared-type-actors-values-name-004443-004539-004497-004499-004743.md.",
+        "detected": "stdout_delta=224"
+      }
+    },
+    {
+      "id": "phys_fn_004499",
+      "rva": "0x000b1020",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): returned a zero vector instead of the global-axis value. The registered staged-pair oracle and candidate both exited 0, with exact stderr and stdout_delta=244. Restored clean control returned stdout_delta=0 with both exits 0 and exact stderr. Mutant candidate SHA-256 59680f6bc7c8435fcfe4f360605da60cd7b3edf90b4a21980e9c1dbd9d8416f3; restored candidate SHA-256 3134a54d601bf867b60c7e00adc8a7852f17441a2cdf82bcba3c356525891938. Evidence: evidence/phase6-joint-shared-type-actors-values-name-004443-004539-004497-004499-004743.md.",
+        "detected": "stdout_delta=244"
+      }
+    },
+    {
+      "id": "phys_fn_004743",
+      "rva": "0x000b3670",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): returned null instead of looking up the joint name. The registered staged-pair oracle and candidate both exited 0, with exact stderr and stdout_delta=2. Restored clean control returned stdout_delta=0 with both exits 0 and exact stderr. Mutant candidate SHA-256 12b069ecd3b7bab554f619d9e1d2315988d771ddb853c50e32faa90bdb438fc8; restored candidate SHA-256 472bf64fa073f5f88c267d65bc8d5f42f9669d78744d1c6d896c5798f5378cd7. Evidence: evidence/phase6-joint-shared-type-actors-values-name-004443-004539-004497-004499-004743.md.",
         "detected": "stdout_delta=2"
       }
     }
@@ -2812,15 +2862,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004443",
-      "rva": "0x000b0730",
-      "size": 36,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004451",
       "rva": "0x000b0890",
       "size": 74,
@@ -2932,24 +2973,6 @@
       "id": "phys_fn_004495",
       "rva": "0x000b0fa0",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004497",
-      "rva": "0x000b0ff0",
-      "size": 43,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004499",
-      "rva": "0x000b1020",
-      "size": 43,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
@@ -3124,15 +3147,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004539",
-      "rva": "0x000b1600",
-      "size": 98,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_004541",
@@ -3912,15 +3926,6 @@
       "id": "phys_fn_004741",
       "rva": "0x000b3620",
       "size": 74,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004743",
-      "rva": "0x000b3670",
-      "size": 40,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
