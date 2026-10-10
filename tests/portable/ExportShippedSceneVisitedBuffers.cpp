@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <map>
+#include "SceneVisitedGuardAllocator.h"
 #include <vector>
 #include <float.h>
 #include "../PhysicsPairLoader.h"
@@ -25,46 +25,6 @@ static void exact(unsigned word)
 { observations.push_back({0,group,unsigned(observations.size()),0,word}); }
 static unsigned bits(const void* pointer)
 { unsigned word; std::memcpy(&word,pointer,4); return word; }
-class GuardAllocator : public NxUserAllocator
-{
-public:
-    std::map<void*,size_t> blocks;
-    std::vector<void*> freed;
-    unsigned allocations=0, releases=0, failAt=0;
-    void* mallocDEBUG(size_t size,const char*,int) override { return malloc(size); }
-    void* malloc(size_t size) override
-    {
-        if(++allocations==failAt) return nullptr;
-        unsigned char* memory=static_cast<unsigned char*>(std::malloc(size+32));
-        if(!memory) std::abort();
-        std::memset(memory,0x6a,16); std::memset(memory+16,0xcd,size);
-        std::memset(memory+16+size,0x7b,16); blocks[memory+16]=size;
-        return memory+16;
-    }
-    void canaries()
-    {
-        for(const auto& item:blocks)
-            for(unsigned i=0;i<16;++i)
-            {
-                const unsigned char* p=static_cast<unsigned char*>(item.first);
-                check(p[int(i)-16]==0x6a && p[item.second+i]==0x7b,"allocator guards");
-            }
-    }
-    void free(void* pointer) override
-    {
-        if(!pointer) return;
-        check(blocks.count(pointer)==1,"release actual ownership");
-        if(!blocks.count(pointer)) std::abort();
-        canaries(); blocks.erase(pointer); freed.push_back(pointer); ++releases;
-        std::free(static_cast<unsigned char*>(pointer)-16);
-    }
-    void* realloc(void* pointer,size_t size) override
-    {
-        if(!pointer) return malloc(size);
-        void* next=malloc(size); if(!next) return nullptr;
-        std::memcpy(next,pointer,std::min(size,blocks.at(pointer))); free(pointer); return next;
-    }
-};
 
 static unsigned readWord(const unsigned char* scene,unsigned offset) { return bits(scene+offset); }
 static void put(FILE* file,unsigned word) { std::fwrite(&word,4,1,file); }
@@ -87,7 +47,7 @@ int wmain(int argc,wchar_t** argv)
     using Update=void (__thiscall*)(void*,unsigned);
     Create create=reinterpret_cast<Create>(GetProcAddress(physics,"NxCreatePhysicsSDK"));
     Update update=reinterpret_cast<Update>(reinterpret_cast<unsigned char*>(physics)+0x100a0);
-    GuardAllocator allocator; NxPhysicsSDK* sdk=create(NX_PHYSICS_SDK_VERSION,&allocator,nullptr);
+    GuardAllocator allocator(check); NxPhysicsSDK* sdk=create(NX_PHYSICS_SDK_VERSION,&allocator,nullptr);
     check(sdk!=nullptr,"genuine original SDK constructor"); if(!sdk) return 4;
     for(unsigned pass=0;pass<3;++pass) {
         NxSceneDesc descriptor; descriptor.setToDefault(); descriptor.gravity=NxVec3(0,0,0);

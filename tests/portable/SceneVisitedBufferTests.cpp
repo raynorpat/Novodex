@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <map>
+#include "SceneVisitedGuardAllocator.h"
 #include <vector>
 #include "FoundationSDK.h"
 #include "NxSdkAllocator.h"
@@ -26,46 +26,6 @@ static void exact(unsigned word)
 { observations.push_back({0,group,unsigned(observations.size()),0,word}); }
 static unsigned bits(const void* pointer)
 { unsigned word; std::memcpy(&word,pointer,4); return word; }
-class GuardAllocator : public NxUserAllocator
-{
-public:
-    std::map<void*,size_t> blocks;
-    std::vector<void*> freed;
-    unsigned allocations=0, releases=0, failAt=0;
-    void* mallocDEBUG(size_t size,const char*,int) override { return malloc(size); }
-    void* malloc(size_t size) override
-    {
-        if(++allocations==failAt) return nullptr;
-        unsigned char* memory=static_cast<unsigned char*>(std::malloc(size+32));
-        if(!memory) std::abort();
-        std::memset(memory,0x6a,16); std::memset(memory+16,0xcd,size);
-        std::memset(memory+16+size,0x7b,16); blocks[memory+16]=size;
-        return memory+16;
-    }
-    void canaries()
-    {
-        for(const auto& item:blocks)
-            for(unsigned i=0;i<16;++i)
-            {
-                const unsigned char* p=static_cast<unsigned char*>(item.first);
-                check(p[int(i)-16]==0x6a && p[item.second+i]==0x7b,"allocator guards");
-            }
-    }
-    void free(void* pointer) override
-    {
-        if(!pointer) return;
-        check(blocks.count(pointer)==1,"release actual ownership");
-        if(!blocks.count(pointer)) std::abort();
-        canaries(); blocks.erase(pointer); freed.push_back(pointer); ++releases;
-        std::free(static_cast<unsigned char*>(pointer)-16);
-    }
-    void* realloc(void* pointer,size_t size) override
-    {
-        if(!pointer) return malloc(size);
-        void* next=malloc(size); if(!next) return nullptr;
-        std::memcpy(next,pointer,std::min(size,blocks.at(pointer))); free(pointer); return next;
-    }
-};
 class FoundationHostAllocator : public SdkAllocator
 {
 public:
@@ -189,7 +149,7 @@ int main(int argc,char** argv)
 #else
     check(std::fegetround()==FE_TONEAREST,"actual scalar nearest fenv");
 #endif
-    GuardAllocator allocator; FoundationHostAllocator host;
+    GuardAllocator allocator(check); FoundationHostAllocator host;
     NxFoundationSDK* foundation=NxCreateFoundationSDK(NX_FOUNDATION_SDK_VERSION,nullptr,&allocator);
     check(foundation && nxFoundationSDKAllocator==&allocator,"genuine Foundation allocator producer");
     nxSetSdkAllocatorBridge(&host); visitedDomain(allocator);

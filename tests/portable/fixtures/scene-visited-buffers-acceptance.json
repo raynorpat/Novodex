@@ -11,11 +11,12 @@
     "Physics/src/include/NxSceneVisitedBuffers.h": "9ca18437bc3f6e5d1885cb7d1f58896688969bbb80be785e1a127e2959aa63e4",
     "Physics/src/include/NxScenePrunerCollection.h": "31e96282839fc1245774e2fd079cb5c96395ba032e3c2a9848f09c007b2f5fc2",
     "Physics/src/include/NxIceContainerExternalBuffer.h": "525717806bdb88d75aae4df7b0ba5289e8e75bee2919c3ef55dc62a61fe00bbf",
-    "tests/portable/SceneVisitedBufferTests.cpp": "c198aea9a338accc50964673fd2cc9d2d612178d5773ae9822d855a0bfca220a",
-    "tests/portable/ExportShippedSceneVisitedBuffers.cpp": "095ca215115b9c148e064035e949791f67fa67247015839acb9fac92d9b40b45",
+    "tests/portable/SceneVisitedBufferTests.cpp": "ad4dfd350ba26654b085da7b0a67158fb1f217dc1d2d2311b8aebb16ea460758",
+    "tests/portable/ExportShippedSceneVisitedBuffers.cpp": "72e49f189bcbb2862e7a0dc76b237c747497f6a38b2f45552e5919d054d6e4ab",
     "tests/portable/SceneVisitedBufferTargets.cmake": "88dbcf26a8b795ae31bfdb083804abee464d1106f4b83a1d790f97ffc7ed1f9d",
     "tests/portable/SceneVisitedBufferPlacementTests.py": "ce845ea17ad2c7fc333f1985e8745f4fa69daf2f196f90d3b17443d1d257ecfb",
-    "docs/reconstruction/novodex-physics/tools/capture_scene_visited_buffers.py": "85fceb311c172a6d19fed8518da3a8ff7f3b8fbd381f74aca09708c83da9cc36"
+    "docs/reconstruction/novodex-physics/tools/capture_scene_visited_buffers.py": "8d238af88d30778a986422bee2a3de1264a03c5aac824b0148aab059021ad6fc",
+    "tests/portable/SceneVisitedGuardAllocator.h": "89ea57bec8e6a83f512075c95f5e63baf8159d4051c149538a90ba4d815a4f5c"
   },
   "reference": "direct pinned shipped SDK-created Scene; row000503/RVA100a0/thiscallret4",
   "acceptance_domain": {
@@ -78,5 +79,11 @@
     }
   },
   "chronology": "integer/type helpers written after source/compile RED; independent shipped capture and139preintegration snapshots then Scene/static/engine integration; fixture null observation encoding corrected after first comparison. Never a pretranslation claim.",
-  "unsupported": "original allocation failure/unsigned-overflow and malformed physical owners not exercised; no undersized-state success recovery; full reconstructed public Scene/SDK, shapes/AABB/slot5/CCD and Tasks6-9 remain"
+  "unsupported": "original allocation failure/unsigned-overflow and malformed physical owners not exercised; no undersized-state success recovery; full reconstructed public Scene/SDK, shapes/AABB/slot5/CCD and Tasks6-9 remain",
+  "fix_round_1": {
+    "base_revision": "6c7d78290efd72ec971e4cd1fc7f7a22e826ba10",
+    "change": "Extract identical allocator into shared test-only header; each executable supplies its own check callback. Scene drivers and observations stay independent.",
+    "provenance": "Current test/exporter/header/capture-tool hashes updated after reviewed support extraction. Original139 snapshots/fixture/index/manifest remain unchanged; no recapture or pretranslation claim.",
+    "observations": "All246 protected words remain exact; scalar37 allocations/37 releases; shipped113 allocations/113 releases; no production change."
+  }
 }
