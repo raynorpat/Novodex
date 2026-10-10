@@ -327,3 +327,19 @@ passed after the fix (`matrix_wrong=0`, exit 0). Win32 Release builds pass for
 `docs/reconstruction/novodex-physics/evidence/phase3-mesh-mesh-overlap-dispatch.md`.
 This is a dispatch closure only; matrix-A contact entry `phys_fn_001876` and its
 dependent branches remain open. Public headers unchanged.
+
+Continuation — shape-family and controller-cache destruction (2026-10-10).
+
+The five collision-object families already landed in main at 27493b7f. Verified
+Phase 5's secondary-vtable differential: five family rows and primary deleting
+destructors report zero mismatches; the retired member-only model negative
+control reports five mismatches. Phase 5 passes at 2,621/2,621 coverage.
+
+Closed a controller-owner leak slice in Scene teardown at d884677f: call the
+recovered phys_fn_002320 cached-list destructor after effectors and before joint
+lists. The focused public controller fixture reports oracle 49 -> 15 tracked
+blocks. Omitting the call is caught (stdout_delta=2); restored output matches.
+Phase 3 passes (548 assertions) and Phase 7 passes (1,454 assertions). The
+Scene destructor phys_fn_000663 remains open for its other ownership paths.
+All 810 reconstruction tooling tests pass; inventory unexplained=0. Local main
+was fast-forwarded to d884677f. Public Physics headers remain unchanged.
