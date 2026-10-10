@@ -11452,13 +11452,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "statically_reviewed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/233",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1529",
-      "static_proof": null,
+      "static_proof": "Transcribed the Capstone range 0x000110b0-0x000110e8: iterate Scene+[0x56c,0x570) and call phys_fn_000760 on each body record. NxPhysicsInternalTests checks three records, the island-root reset, wake-floor word, and bit-8 wake suppression. A no-op mutation of nxSceneResetBodyRecords leaves both unsuppressed wake words unchanged and the static proof fails. Evidence: evidence/phase7-scene-body-record-reset-000604.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "The helper is called by nxSceneDelete after cached-controller destruction and before the joint teardown lists, matching phys_fn_000663 at 0x13f9e. This closes phys_fn_000604 only; phys_fn_000663 remains open for its other ownership paths."
     },
     {
       "id": "phys_fn_000605",

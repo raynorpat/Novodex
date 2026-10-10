@@ -27,6 +27,8 @@
 
 #include "PhysicsInternal.h"
 #include "Containers.h"
+#include "Scene.h"
+#include "core/JointSupport.h"
 #include "TriangleMesh.h"
 #include "NxFoundationSDK.h"
 #include "NxUserAllocator.h"
@@ -550,6 +552,51 @@ static int testInternalTriangleMeshModel()
 	return 0;
 	}
 
+// phys_fn_000604 walks Scene+[0x56c, 0x570) and applies 000760 to every
+// surviving body record before the joint lists are destroyed. Exercise all
+// three records, including 000760's bit-8 wake-counter suppression branch.
+static int testSceneBodyRecordTeardownReset()
+	{
+	NxSceneInternal scene;
+	alignas(16) unsigned char recordsMemory[3][0x260] = {};
+	void* records[3] = { recordsMemory[0], recordsMemory[1], recordsMemory[2] };
+	const NxU32 wakeWords[3] = { 0x3dcccccd, 0x3e4ccccd, 0x3e800000 };
+	for(unsigned index = 0; index != 3; ++index)
+		{
+		unsigned char* record = recordsMemory[index];
+		*reinterpret_cast<void**>(record + 0x1bc) = record;
+		*reinterpret_cast<NxU32*>(record + 0x4c) = wakeWords[index];
+		}
+	*reinterpret_cast<NxU32*>(recordsMemory[2] + 0x114) = 0x100;
+	scene.at<void**>(0x56c) = records;
+	scene.at<void**>(0x570) = records + 3;
+
+	nxSceneResetBodyRecords(&scene);
+	const NxU32 actualWake[3] = {
+		*reinterpret_cast<NxU32*>(recordsMemory[0] + 0x4c),
+		*reinterpret_cast<NxU32*>(recordsMemory[1] + 0x4c),
+		*reinterpret_cast<NxU32*>(recordsMemory[2] + 0x4c)
+		};
+	printf("scene body_record_cleanup records=3 wake=%08x/%08x/%08x\n",
+		actualWake[0], actualWake[1], actualWake[2]);
+	if(!check(actualWake[0] == 0x3ecccccc && actualWake[1] == 0x3ecccccc,
+		"000604 applies 000760 to each unsuppressed remaining body record"))
+		return fail("Scene body-record teardown did not reset wake counters");
+	if(!check(actualWake[2] == wakeWords[2],
+		"000604 preserves the 000760 bit-8 wake-counter suppression"))
+		return fail("Scene body-record teardown ignored its suppression flag");
+	if(!check(*reinterpret_cast<void**>(recordsMemory[0] + 0x1bc) == recordsMemory[0] &&
+		*reinterpret_cast<void**>(recordsMemory[1] + 0x1bc) == recordsMemory[1] &&
+		*reinterpret_cast<void**>(recordsMemory[2] + 0x1bc) == recordsMemory[2],
+		"000604 leaves each record as its own island root"))
+		return fail("Scene body-record teardown left an island root linked");
+
+	scene.at<void**>(0x56c) = 0;
+	scene.at<void**>(0x570) = 0;
+	scene.scalarDeletingDestructor(0);
+	return 0;
+	}
+
 // The TriangleMesh destructor's cleanup helper at 0x00054a80 owns more than
 // the embedded mesh arrays: two Foundation arrays, three polymorphic deleting
 // slots, the EdgeList and Adjacencies caches, and the allocation at +0x3c.
@@ -641,6 +688,8 @@ int main()
 		status = testInternalTriangleMeshRows();
 	if(!status)
 		status = testInternalTriangleMeshModel();
+	if(!status)
+		status = testSceneBodyRecordTeardownReset();
 	if(!status)
 		status = testTriangleMeshDestructorOwnership();
 

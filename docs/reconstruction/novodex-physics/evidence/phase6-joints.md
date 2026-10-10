@@ -10006,3 +10006,8 @@ For `phys_fn_001982`, the registered `NxPhysicsPopulatedSceneTeardownTests` gate
 ## Phase 7 pruner-owner cleanup row `phys_fn_001963`
 
 For `phys_fn_001963`, the registered `NxPhysicsPopulatedSceneTeardownTests` gate rejects omitting the vtable slot-0 deleting-destructor dispatch (`stdout_delta=2`; both static and selected-dynamic owner call counts and deleting flags fall from one to zero). The restored control matches the oracle for both owner callbacks. See [phase7-pruner-owner-cleanup-001963.md](phase7-pruner-owner-cleanup-001963.md).
+
+
+## Phase 7 Scene body-record reset row `phys_fn_000604`
+
+For `phys_fn_000604`, the Phase 7 `NxPhysicsInternalTests` static proof seeds three records in the Scene's `[+0x56c,+0x570)` range and checks the `000760` island-root reset, exact wake-floor word, and bit-8 wake suppression. Replacing the helper with an immediate return is rejected by `check_failed 000604 applies 000760 to each unsuppressed remaining body record`; the restored helper passes. See [phase7-scene-body-record-reset-000604.md](phase7-scene-body-record-reset-000604.md). The enclosing Scene destructor `phys_fn_000663` remains open for its other ownership paths.

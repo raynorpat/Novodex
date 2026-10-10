@@ -32,7 +32,7 @@ $NxPhaseStaticProofTargets = [ordered] @{
     '4' = @()
     '5' = @('NxPhysicsRangeIterationTests')
     '6' = @()
-    '7' = @()
+    '7' = @('NxPhysicsInternalTests')
     '8' = @()
 }
 

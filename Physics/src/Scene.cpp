@@ -3212,13 +3212,17 @@ static void nxSceneDelete(void* self, int flags)
 	// this list owns proxy allocations their actor teardown does not free. The
 	// oracle clears the cache after effectors and before the joint lists.
 	nxDestroyCachedList(self);
+	// phys_fn_000604 walks the body-record range after actor and controller
+	// teardown, resetting each record's island state before 000606 destroys the
+	// remaining joint lists.
+	nxSceneResetBodyRecords(scene);
 	// The joints still registered (phys_fn_000606, the continuation of
 	// phys_fn_000604 that the oracle's Scene destructor phys_fn_000663 calls at
 	// 0x13f9e, after the actors): for each list, +0x59c then +0x5a0, the head
 	// joint's link, mScene and flag bit 0 are cleared (so its ~Joint does not
 	// call removeJoint), it is destroyed through slot 5 with 1, and the head
 	// moves to the saved link (0x110f0-0x1118a). 000604's first loop (000760
-	// over the +0x56c records) is not reproduced here.
+	// over the +0x56c records) was executed above, before this joint-list loop.
 	for(unsigned listOffset = 0x59c; listOffset <= 0x5a0; listOffset += 4)
 		{
 		while(Joint* joint = scene->at<Joint*>(listOffset))
@@ -3359,6 +3363,20 @@ static void nxSceneDelete(void* self, int flags)
 #endif
 	if(flags & 1)
 		nxFoundationSDKAllocator->free(self);
+	}
+
+// phys_fn_000604 (0x000110b0, 57 B): for each remaining body record in
+// [Scene+0x56c, Scene+0x570), dispatch phys_fn_000760. The array may be empty
+// after ordinary actor teardown; controller-owned and other retained records
+// still take this path before the joint-list cleanup.
+void nxSceneResetBodyRecords(NxSceneInternal* scene)
+	{
+	void** records = scene->at<void**>(0x56c);
+	void** end = scene->at<void**>(0x570);
+	if(!records || !end)
+		return;
+	for(; records != end; ++records)
+		reinterpret_cast<Row000760Fixture*>(*records)->row000760();
 	}
 
 void NxSceneInternal::scalarDeletingDestructor(int flags)

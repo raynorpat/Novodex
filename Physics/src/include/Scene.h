@@ -265,6 +265,10 @@ class NxSceneInternal
 	unsigned char mBytes[SIZE];
 	};
 
+// phys_fn_000604 (0x000110b0): resets each remaining body record in the
+// Scene's [0x56c, 0x570) pointer range before the joint teardown lists.
+void nxSceneResetBodyRecords(NxSceneInternal* scene);
+
 // The oracle allocates 0x710 bytes for this object (phys_fn_000476's literal) and
 // the highest field the reconstruction writes is +0x70c. A different size means the
 // allocation and the object disagree, and a write past the end lands in whatever the

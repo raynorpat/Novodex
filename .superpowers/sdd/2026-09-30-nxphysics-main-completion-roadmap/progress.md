@@ -361,3 +361,16 @@ pinned-oracle asset skips; ViewerPhysicsStep and ViewerPhysicsContact pass.
 All 810 tooling tests pass, inventory unexplained=0, and all 80 public Physics
 headers match their manifest. No public Physics headers changed.
 `phys_fn_000663` remains open for the destructor's remaining ownership paths.
+
+Continuation — Scene body-record reset (phys_fn_000604, 2026-10-10).
+
+Reconstructed the 57-byte helper at RVA 0x110b0: it walks Scene+[0x56c,
+0x570) and applies phys_fn_000760 to every remaining body record after cached
+controller cleanup and before joint-list teardown. NxPhysicsInternalTests
+seeds three records and checks both wake-floor resets, the bit-8 suppression
+case, and island-root values. A temporary immediate-return mutation fails the
+static proof; the restored test passes with 88 checks. Phase 3 passes 549/549
+and Phase 7 passes 1455/1455. All 810 tooling tests pass; `git diff --check`
+passes, inventory validation reports zero unexplained entries, and all 80
+public Physics headers remain unchanged. `phys_fn_000663` remains open for its
+other ownership paths; full DLL reconstruction remains active.
