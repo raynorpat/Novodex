@@ -10055,3 +10055,9 @@ For `phys_fn_004143`, the registered NxPhysicsCoreDumpTests differential caught 
 
 Changing the fixed-family type mapping to distance was caught by the registered `NxPhysicsJointStagedPairTests` matrix (`stdout_delta=6006`, both exits 0, exact stderr); the restored clean control is exact. See [phase6-joint-constructor-type-004141.md](phase6-joint-constructor-type-004141.md).
 For phys_fn_004141, the staged-pair fixed-family type mutation was caught with stdout_delta=6006 and exact stderr; the restored control is exact.
+
+
+## Phase 6 closure measurement — limit-plane iterator result (`phys_fn_004145`)
+
+For `phys_fn_004145`, the registered core-dump iterator fixture caught an inverted in-front result (`stdout_delta=2`, both exits 0, exact stderr); restored control is exact. See [phase6-joint-limit-plane-iteration-004145.md](phase6-joint-limit-plane-iteration-004145.md).
+For phys_fn_004145, the core-dump limit-plane iterator mutation was caught with stdout_delta=2; restored control was exact.

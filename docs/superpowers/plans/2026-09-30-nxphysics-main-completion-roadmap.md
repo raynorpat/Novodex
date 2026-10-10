@@ -1,3 +1,7 @@
+### Continuation — limit-plane iterator result row closure (2026-10-10)
+
+Closed Phase 6 row `phys_fn_004145` (`Joint::getNextLimitPlane`) with the core-dump iterator fixture. Inverting the returned in-front value changed the transcript (`stdout_delta=2`, both exits 0, exact stderr); the clean restored control matched exactly. Phase 6 has 102 closed and 331 open function rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-limit-plane-iteration-004145.md`.
+
 ### Continuation — shared joint constructor map row closure (2026-10-10)
 
 Closed Phase 6 row `phys_fn_004141` (`Joint::Joint`) using the staged-pair family matrix. Changing fixed’s type mapping to distance produced `stdout_delta=6006` with both exits 0 and exact stderr; a clean restored build matched exactly. Phase 6 has 101 closed and 332 open function rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-constructor-type-004141.md`.

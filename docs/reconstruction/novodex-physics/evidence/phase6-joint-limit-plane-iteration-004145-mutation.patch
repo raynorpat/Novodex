@@ -1,0 +1,6 @@
+diff --git a/Physics/src/core/Joint.cpp b/Physics/src/core/Joint.cpp
+--- a/Physics/src/core/Joint.cpp
++++ b/Physics/src/core/Joint.cpp
+@@ -1641,1 +1641,1 @@
+-	return inFront;
++	return !inFront;

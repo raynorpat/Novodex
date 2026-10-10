@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 101 rows are closed (2 oracle differentials, 99 mutation-falsified); 332 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 102 rows are closed (2 oracle differentials, 100 mutation-falsified); 331 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 99,
+    "differential_falsified": 100,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 309,
+    "deferred_reconstructed_not_falsified": 308,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1081,6 +1081,16 @@
         "mutation": "Row-specific falsification (source revision 2d5db9d1): changed the common constructor case 0x200 from NX_JOINT_FIXED to NX_JOINT_DISTANCE. The registered NxPhysicsJointStagedPairTests family matrix caught the wrong public type/family behavior: oracle/candidate exit 0, stdout_delta=6006, stderr_exact=True. Restored clean build: stdout_delta=0, exact stderr. Mutant and restored hashes/transcripts: evidence/phase6-joint-constructor-type-004141-mutant.log and evidence/phase6-joint-constructor-type-004141-restored.log; restored SHA-256 40eff15c1448bd0d594020fcaa5fd0744cc89eae42c1bec90026b39659542efd. Evidence: evidence/phase6-joint-constructor-type-004141.md.",
         "detected": "stdout_delta=6006"
       }
+    },
+    {
+      "id": "phys_fn_004145",
+      "rva": "0x0009a430",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsCoreDumpTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision 1817f23f): inverted `Joint::getNextLimitPlane` in-front return. The registered NxPhysicsCoreDumpTests limit-plane iterator transcript detected the wrong result: oracle/candidate exit 0, stdout_delta=2, stderr_exact=True. Restored clean build: stdout_delta=0, exact stderr. Mutant SHA-256 cf313cea979d8b2ba81d4c247587c6f3d8bcc0499ed1e39699bcb8d399ad16df; restored candidate 980a1189a65ddd20067490f9e515016eb9010a4659bfeecd2753dabe216fae6a. Evidence: evidence/phase6-joint-limit-plane-iteration-004145.md.",
+        "detected": "stdout_delta=2"
+      }
     }
   ],
   "deferred": [
@@ -1429,15 +1439,6 @@
       "id": "phys_fn_004139",
       "rva": "0x00099e30",
       "size": 41,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004145",
-      "rva": "0x0009a430",
-      "size": 174,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
