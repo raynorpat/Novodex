@@ -34,6 +34,7 @@
 #include "NxVec3.h"
 #include "NxBodyDesc.h"
 #include "NpActorDynamicMath.h"
+#include "IcePrunable.h"
 #include "X87Sqrt.h"
 
 #include <string.h>
@@ -477,8 +478,30 @@ void nxSceneVisualizeCollisionBounds(void* engine, NxDebugRenderable* renderable
 
 void nxSceneVisualizeCollisionShapes(void* engine, NxDebugRenderable* renderable)
 	{
-	(void)engine;
-	(void)renderable;
+	// phys_fn_000581 walks section 1 and section 2 of the static pruner;
+	// phys_fn_000583 continues over the same sections of the engine-selected dynamic
+	// pruner. Each pool entry is a Prunable; its owner at +4 is the ShapeBase
+	// object, whose virtual slot 3 draws the shape into the Scene renderable.
+	const auto visualizePruner = [renderable](Pruner* pruner)
+		{
+		const PruningPool& pool = pruner->mPool;
+		const unsigned count = pool.mNbObjects[1] + pool.mNbObjects[2];
+		for(unsigned index = 0; index < count; ++index)
+			{
+			Prunable* const prunable = pool.mObjects[pool.mNbObjects[0] + index];
+			void* const shape = prunable->mOwner;
+			void** const vtable = *reinterpret_cast<void***>(shape);
+			typedef void (__thiscall* NxShapeVisualizeFn)(void*, NxDebugRenderable*);
+			(reinterpret_cast<NxShapeVisualizeFn>(vtable[3]))(shape, renderable);
+			}
+		};
+
+	unsigned char* const bytes = static_cast<unsigned char*>(engine);
+	Pruner* const staticPruner = *reinterpret_cast<Pruner**>(bytes + 0x1c);
+	visualizePruner(staticPruner);
+	const unsigned selectedType = *reinterpret_cast<unsigned*>(bytes + 0x70);
+	Pruner* const dynamicPruner = *reinterpret_cast<Pruner**>(bytes + 0x1c + selectedType * 4);
+	visualizePruner(dynamicPruner);
 	}
 
 void nxSceneVisualizeFluids(void* fluids, NxDebugRenderable* renderable)

@@ -1,0 +1,9 @@
+# Scene collision-shape pruner visualization (`phys_fn_000581`, `000583`)
+
+IDA decompilation at RVA `0x00010a50` shows two loops. The first iterates sections 1 and 2 of the static pruner at engine `+0x1c`; the continuation iterates the same sections of the selected pruner at `+0x1c + selectedType*4`. Each pool entry is a `Prunable`; its owner at `+4` receives a virtual slot `+0x0c` call with the Scene renderable. `SceneVisualize.cpp` now follows those pool ranges and dispatches the recovered shape slot.
+
+The registered `NxPhysicsSceneVisualizeTests` fixture adds a `collision_shapes` stage. It contains static and dynamic boxes with visualization enabled; sphere and capsule visualization is disabled in this loop-specific stage because their separate debug-renderer geometry currently has one-ULP differences. The restored oracle/candidate control is exact (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, exact stderr) and records 60 lines, including the static and dynamic box cases.
+
+The two pruner loops were mutation-tested independently. Replacing only the static-pruner dispatch with a no-op is rejected with `stdout_delta=1382` (both exits zero, exact stderr); mutant DLL SHA-256: `78e7b29500715830896a4ce041ba8ac67f538a5d584adb9eb1eb7c9055756294`. Replacing only the selected dynamic-pruner dispatch with a no-op is rejected with `stdout_delta=1322` (both exits zero, exact stderr); mutant DLL SHA-256: `43d8fc655ac473b6eb6efb0859c0123335a30aad541d61dcebf09e5a22c2675d`.
+
+After restoring both loops, the candidate DLL SHA-256 is `302f8f09af2065e6deca9d952effb961b54f17c2958a2e94d307c38f875257d5`, and the differential returns `stdout_delta=0`, exact stderr. The full Phase 7 gate and inventory validation are recorded with this task's commit. The separate sphere/capsule rounding differences remain open reconstruction work.

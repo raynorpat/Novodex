@@ -3012,6 +3012,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize created stage=scale_zero renderables=0'
         'visualize created stage=scale_only renderable=1 points=0 lines=0 triangles=0'
         'visualize created stage=scale_only renderables=1'
+        'visualize created stage=collision_shapes renderable=1 points=0 lines=60 triangles=0'
+        'visualize created stage=collision_shapes line=0 p0=bf800000.bf800000.bf800000 p1=3f800000.bf800000.bf800000 color=ffffffff'
+        'visualize created stage=collision_shapes line=24 p0=bf000000.00000000.40600000 p1=3f000000.00000000.40600000 color=ffffffff'
+        'visualize created stage=collision_shapes line=48 p0=41980000.bf800000.40800000 p1=41a80000.bf800000.40800000 color=ffffffff'
+        'visualize created stage=collision_shapes renderables=1'
         'visualize created stage=world_axes renderable=1 points=0 lines=15 triangles=0'
         'visualize created stage=world_axes line=0 p0=00000000.00000000.00000000 p1=3fc00000.00000000.00000000 color=ffff0000'
         'visualize created stage=world_axes line=1 p0=3fc00000.00000000.00000000 p1=3fa33333.3e666667.00000000 color=ffff0000'
@@ -5804,7 +5809,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1457  # includes retained body-record destruction, pending contact-report and retained joint teardown
+    '7' = 1467  # includes collision-pruner shape visualization and retained joint teardown
                # plus current scene/emitter assertions
                # prior floor includes registered scene, teardown, and emitter assertions
                # plus callback routing/state assertions for all three backend-backed emitter flags

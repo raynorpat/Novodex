@@ -10271,3 +10271,7 @@ The registered `NxPhysicsEffectorTests` fixture exercises public effector releas
 ## Phase 7 Scene create-effector row `phys_fn_000587` — `stdout_delta=85`
 
 The registered `NxPhysicsEffectorTests` fixture observes effector creation and subsequent list, count, iterator, parameter, actor-release, and Scene-teardown state. Inserting an immediate null return changes `effector create created=yes` to `created=no`; the differential rejects the mutant with both exits zero, exact stderr, and `stdout_delta=85`. Restoring allocation, list insertion, count/cursor updates, and descriptor initialization returns an exact differential. Mutant DLL hash: `8385eafd26be1b7b96a1c1c810834c47a3a580886cdd11eee854bdb1c6579879`. Restored DLL hash: `73bc361af8d7976c1170b8a37f6de284da9365b920a8f3a5c586b4d7bd85b54e`. See [phase7-scene-create-effector-000587.md](phase7-scene-create-effector-000587.md).
+
+## Phase 7 Scene collision-shape pruner rows `phys_fn_000581` and `phys_fn_000583`
+
+The registered `NxPhysicsSceneVisualizeTests` collision-shapes stage falsifies the static and selected dynamic pruner loops independently. The static loop `phys_fn_000581` mutation is rejected with `stdout_delta=1382`; both exits are zero and stderr is exact. The selected dynamic loop `phys_fn_000583` mutation is rejected with `stdout_delta=1322`; both exits are zero and stderr is exact. Restoring both loops returns an exact staged-pair differential. See [phase7-scene-collision-shape-pruners-000581-000583.md](phase7-scene-collision-shape-pruners-000581-000583.md).

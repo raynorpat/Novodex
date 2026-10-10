@@ -131,14 +131,14 @@ static const NxParameter nxVisParameters[] =
 	{
 	NX_VISUALIZATION_SCALE, NX_VISUALIZE_WORLD_AXES, NX_VISUALIZE_ACTOR_AXES, NX_VISUALIZE_BODY_AXES,
 	NX_VISUALIZE_BODY_MASS_AXES, NX_VISUALIZE_BODY_LIN_VELOCITY, NX_VISUALIZE_BODY_ANG_VELOCITY,
-	NX_VISUALIZE_BODY_JOINT_GROUPS
+	NX_VISUALIZE_BODY_JOINT_GROUPS, NX_VISUALIZE_COLLISION_SHAPES
 	};
 static const unsigned kVisParameterCount = sizeof(nxVisParameters) / sizeof(nxVisParameters[0]);
 
 struct NxStage
 	{
 	const char* name;
-	NxReal values[8];		// in nxVisParameters' order
+	NxReal values[9];		// in nxVisParameters' order
 	};
 
 static const NxStage nxStages[] =
@@ -152,7 +152,8 @@ static const NxStage nxStages[] =
 	{ "lin_velocity", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f, 0.0f, 0.0f } },
 	{ "ang_velocity", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.7f, 0.0f } },
 	{ "joint_groups", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
-	{ "all", { 0.5f, 1.0f, 2.0f, 1.25f, 3.0f, 1.0f, 1.0f, 1.0f } },
+	{ "collision_shapes", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
+	{ "all", { 0.5f, 1.0f, 2.0f, 1.25f, 3.0f, 1.0f, 1.0f, 1.0f, 0.0f } },
 	};
 static const unsigned kStageCount = sizeof(nxStages) / sizeof(nxStages[0]);
 
@@ -231,6 +232,8 @@ static NxActor* nxCreateCase(NxScene* scene, unsigned index)
 		default:
 			return 0;
 		}
+	if(c.type != NX_SHAPE_BOX)
+		shape->shapeFlags &= ~NX_SF_VISUALIZATION;
 	NxActorDesc actor;
 	actor.shapes.pushBack(shape);
 	actor.globalPose.t = c.position;

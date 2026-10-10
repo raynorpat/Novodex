@@ -11030,13 +11030,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/222",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1483",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation of phys_fn_000581/000583 at 0x00010a50 shows two pruner walks: the static pool and the selected dynamic pool. Both dispatch each Prunable owner through vtable slot +0xc. Candidate implementation uses the recovered Pruner/PruningPool layouts from IcePrunable.h.",
+      "dynamic_proof": "First pruner: counts sections 1+2, starts at section 0, resolves each Prunable owner at +4, and calls virtual slot +0xc with the Scene renderable. The static-pruner dispatch is independently mutation-falsified by NxPhysicsSceneVisualizeTests (stdout_delta=1382); restored control is exact. Exact staged oracle/candidate control: stdout_delta=0, stderr_exact=True; candidate NxPhysics.dll sha256=302f8f09af2065e6deca9d952effb961b54f17c2958a2e94d307c38f875257d5.",
+      "notes": "Mutation-gated 2026-10-10 by the Phase 7 Scene visualization staged-pair differential; non-box fixture shapes are hidden for this loop-specific transcript so known sphere/capsule visualization rounding remains a separate open row.",
+      "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
       "id": "phys_fn_000582",
@@ -11066,13 +11067,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/222",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1484",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00010a50"
+      "static_proof": "IDA decompilation of phys_fn_000581/000583 at 0x00010a50 shows two pruner walks: the static pool and the selected dynamic pool. Both dispatch each Prunable owner through vtable slot +0xc. Candidate implementation uses the recovered Pruner/PruningPool layouts from IcePrunable.h.",
+      "dynamic_proof": "Continuation: repeats the section 1+2 owner/slot-3 walk over the engine-selected pruner at +0x1c + selectedType*4. The selected dynamic-pruner dispatch is independently mutation-falsified by NxPhysicsSceneVisualizeTests (stdout_delta=1322); restored control is exact. Exact staged oracle/candidate control: stdout_delta=0, stderr_exact=True; candidate NxPhysics.dll sha256=302f8f09af2065e6deca9d952effb961b54f17c2958a2e94d307c38f875257d5.",
+      "notes": "Mutation-gated 2026-10-10 by the Phase 7 Scene visualization staged-pair differential; non-box fixture shapes are hidden for this loop-specific transcript so known sphere/capsule visualization rounding remains a separate open row.",
+      "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
       "id": "phys_fn_000584",
