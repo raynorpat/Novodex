@@ -11380,13 +11380,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/231",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1521",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "RVA 0x00010fe0 (122 bytes): stores the used count at Scene+0x5b0; if capacity at +0x5b4 is insufficient, frees the count-prefixed allocation at [+0x5ac]-4, allocates count*0x60+4 bytes, writes the count header, publishes the payload at +0x5ac, and updates capacity. The vector-constructor iterator strides 0x60 and calls the no-op phys_fn_00027F00 element constructor. Consumed by phys_fn_000611.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests staged-pair differential exercises active simulation scenes. A temporary used-count-only mutation omitted the step-body allocation/count header/capacity update: oracle_exit=0, candidate_exit=-1073741819, stdout_delta=3731. After restoring and rebuilding, oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. See evidence/phase7-scene-step-body-array-000600.md.",
+      "notes": "The candidate clears the allocated records after writing the count header; the oracle element constructor is a no-op. The broader solver and per-frame behavior remain open under M6.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxSceneEnsureStepBodies"
     },
     {
       "id": "phys_fn_000601",

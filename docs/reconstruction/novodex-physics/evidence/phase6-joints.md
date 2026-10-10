@@ -10024,3 +10024,7 @@ For `phys_fn_000602`, the registered `NxPhysicsPopulatedSceneTeardownTests` fixt
 ## Phase 7 Scene active-root collection row `phys_fn_000608`
 
 For `phys_fn_000608`, the registered `NxPhysicsSimulationTests` staged-pair differential rejects a mutation that omits all awake self-parented roots from Scene+[0x57c,0x580) (`stdout_delta=6726`; oracle exits 0, candidate exits 1 at the joint-break notification assertion). Restoring the root-collection condition returns both exits to 0, `stdout_delta=0`, and exact stderr. See [phase7-scene-active-root-collection-000608.md](phase7-scene-active-root-collection-000608.md).
+
+## Phase 7 Scene step-body array row `phys_fn_000600`
+
+For `phys_fn_000600`, the registered `NxPhysicsSimulationTests` staged-pair differential rejects a used-count-only mutation that omits the count-prefixed 0x60-byte record allocation (`candidate_exit=-1073741819`, `stdout_delta=3731`; oracle exits 0). Rebuilding the restored helper returns both exits to 0 with `stdout_delta=0` and exact stderr. See [phase7-scene-step-body-array-000600.md](phase7-scene-step-body-array-000600.md).
