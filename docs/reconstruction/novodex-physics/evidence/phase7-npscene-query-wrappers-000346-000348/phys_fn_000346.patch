@@ -1,0 +1,5 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@ -708 +708 @@
+-	return stats;
++	return 0;

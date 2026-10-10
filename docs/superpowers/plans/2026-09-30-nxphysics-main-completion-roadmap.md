@@ -1601,3 +1601,8 @@ Phase 7 row `phys_fn_000617` (`NxSceneInternal::getSceneStats`) is now mutation-
 ### Continuation — scene limits row mutation closure (2026-10-10)
 
 Phase 7 row `phys_fn_000621` (`NxSceneInternal::getLimits`) is now mutation-falsified through the registered `NxPhysicsSimulationTests` differential. The actor-count +1 mutation changes the active scene-limits transcript from 8 to 9 actors for selectors 0/1/2 and is caught (`stdout_delta=8`, both exits zero, exact stderr); the restored control is exact. Phase 7 accounting advances to 69 closed / 492 deferred. The full gate passes at 1,504/1,475 assertions; inventory validates with zero unexplained rows and all 80 public Physics headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-limits-000621/README.md`.
+
+
+### Continuation — public scene query wrapper closures (2026-10-10)
+
+Phase 7 rows `phys_fn_000346` (`NpScene::getSceneStats`) and `phys_fn_000348` (`NpScene::getLimits`) are now independently mutation-falsified through the registered `NxPhysicsSimulationTests` differential. The null stats-return mutant changes the transcript by 12 bytes; the suppressed limit-forwarding mutant changes it by 6 bytes. Both restored controls are exact. Phase 7 accounting advances to 71 closed / 490 deferred. The mutations exercise empty and populated scenes across selectors 0/1/2; no public headers or production source changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-query-wrappers-000346-000348/README.md`.

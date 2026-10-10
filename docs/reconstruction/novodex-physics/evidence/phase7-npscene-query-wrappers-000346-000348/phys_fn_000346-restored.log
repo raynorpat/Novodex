@@ -1,0 +1,10 @@
+child target=NxPhysicsSimulationTests pair=oracle command="D:\github\Novodex\build\mutant-npscene-346-348\build\Release\NxPhysicsSimulationTests.exe" "D:\github\Novodex\build\pairs-npscene-346-restored\oracle" exit=0
+simulation scene-stats phase=active selector=0 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=1 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=2 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+child target=NxPhysicsSimulationTests pair=candidate command="D:\github\Novodex\build\mutant-npscene-346-348\build\Release\NxPhysicsSimulationTests.exe" "D:\github\Novodex\build\pairs-npscene-346-restored\candidate" exit=0
+simulation scene-stats phase=active selector=0 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=1 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=2 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+differential target=NxPhysicsSimulationTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
+differential=pass

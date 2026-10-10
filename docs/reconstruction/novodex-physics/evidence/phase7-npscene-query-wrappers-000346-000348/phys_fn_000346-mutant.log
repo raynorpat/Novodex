@@ -1,0 +1,10 @@
+child target=NxPhysicsSimulationTests pair=oracle command="D:\github\Novodex\build\mutant-npscene-346-348\build\Release\NxPhysicsSimulationTests.exe" "D:\github\Novodex\build\pairs-npscene-346-mutant\oracle" exit=0
+simulation scene-stats phase=active selector=0 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=1 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+simulation scene-stats phase=active selector=2 present=1 contacts=0 max_contacts=0 actors=8 joints=0 awake=0 asleep=0 static_shapes=3
+child target=NxPhysicsSimulationTests pair=candidate command="D:\github\Novodex\build\mutant-npscene-346-348\build\Release\NxPhysicsSimulationTests.exe" "D:\github\Novodex\build\pairs-npscene-346-mutant\candidate" exit=0
+simulation scene-stats phase=active selector=0 present=0 contacts=-1 max_contacts=-1 actors=-1 joints=-1 awake=-1 asleep=-1 static_shapes=-1
+simulation scene-stats phase=active selector=1 present=0 contacts=-1 max_contacts=-1 actors=-1 joints=-1 awake=-1 asleep=-1 static_shapes=-1
+simulation scene-stats phase=active selector=2 present=0 contacts=-1 max_contacts=-1 actors=-1 joints=-1 awake=-1 asleep=-1 static_shapes=-1
+differential target=NxPhysicsSimulationTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=12 stderr_exact=True
+GATE FAILED: requirement not met: every requested target produces identical oracle and candidate results

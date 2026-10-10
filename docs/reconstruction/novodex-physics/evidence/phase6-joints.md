@@ -10285,3 +10285,8 @@ The registered `NxPhysicsSimulationTests` scene-stats fixture exercises empty an
 ## Phase 7 Scene limits row `phys_fn_000621` — `stdout_delta=8`
 
 The registered `NxPhysicsSimulationTests` scene-limits fixture exercises active scene limits under broadphase selectors 0, 1, and 2. In a byte-preserving isolated archive, changing the actor count from `actorEnd - actorBegin` to `actorEnd - actorBegin + 1` reports 9 instead of 8 for all three selectors; the staged-pair differential catches it (`stdout_delta=8`, both exits zero, exact stderr). Restoring the exact source and rebuilding returns an exact differential. See [phase7-scene-limits-000621/README.md](phase7-scene-limits-000621/README.md).
+
+
+## Phase 7 `NpScene` query wrappers `phys_fn_000346` and `phys_fn_000348`
+
+The registered `NxPhysicsSimulationTests` fixture exercises both public wrappers for empty and populated scenes under selectors 0, 1, and 2. `phys_fn_000346` (`NpScene::getSceneStats`) is caught with `stdout_delta=12` when its return is changed to null. `phys_fn_000348` (`NpScene::getLimits`) is caught with `stdout_delta=6` when its forwarding call is suppressed. Both mutant runs exit zero with exact stderr, and each restored control matches exactly. See [phase7-npscene-query-wrappers-000346-000348/README.md](phase7-npscene-query-wrappers-000346-000348/README.md).
