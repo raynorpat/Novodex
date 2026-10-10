@@ -1,0 +1,7 @@
+diff --git a/Physics/src/core/Joint.cpp b/Physics/src/core/Joint.cpp
+--- a/Physics/src/core/Joint.cpp
++++ b/Physics/src/core/Joint.cpp
+@@ -1591,1 +1591,2 @@
+-	plane->d = (NxReal)((((py * plane->normal.y) * -1.0f) - pz * plane->normal.z) - px * plane->normal.x);
++	plane->d = (NxReal)((((py * plane->normal.y) * -1.0f) - pz * plane->normal.z) - px * plane->normal.x);
++	plane->d += 1.0f;

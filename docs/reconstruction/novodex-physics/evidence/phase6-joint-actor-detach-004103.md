@@ -1,5 +1,5 @@
 
-The full Phase 6 gate passed after registering NxPhysicsActorShapeMutationTests for this row: phase_gate=6 status=pass, 1,554/1,554 coverage assertions, all ten differential targets exact. Inventory validation reports 99 closed and 334 deferred Phase 6 functions.
+The full Phase 6 gate passed after registering NxPhysicsActorShapeMutationTests for this row: phase_gate=6 status=pass, 1,554 coverage assertions run (minimum required: 1,267), all ten differential targets exact. Inventory validation reports 99 closed and 334 deferred Phase 6 functions.
 
 
 Reproduction commands:

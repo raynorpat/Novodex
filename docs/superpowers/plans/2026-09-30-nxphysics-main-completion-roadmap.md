@@ -1,3 +1,7 @@
+### Continuation — joint limit-plane construction row closure (2026-10-10)
+
+Closed Phase 6 row `phys_fn_004143` (`Joint::addLimitPlane`) with the registered core-dump fixture. Adding `1.0f` to the constructed plane distance changed serialized limit-plane observations (`stdout_delta=4452`, both exits 0, exact stderr); a clean restored build matched exactly. The Phase 6 gate passes with 1,554 assertions run (minimum required: 1,267); Phase 6 now has 100 closed and 333 open functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-add-limit-plane-004143.md`.
+
 ### Continuation — actor-change joint detach row closure (2026-10-10)
 
 Closed Phase 6 row `phys_fn_004103` (`Joint::row004103`) with the existing jointed-actor `setDynamic` case in `NxPhysicsActorShapeMutationTests`. Omitting the no-body-list registration made a later joint release report that the joint was not in the scene (`stdout_delta=75`, both exits 0, exact stderr); restored control matched exactly. Full mutation and restored logs plus patch are retained in `docs/reconstruction/novodex-physics/evidence/phase6-joint-actor-detach-004103*`. Phase 6 now has 99 closed and 334 open function rows and remains pending.

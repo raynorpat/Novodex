@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 99 rows are closed (2 oracle differentials, 97 mutation-falsified); 334 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 100 rows are closed (2 oracle differentials, 98 mutation-falsified); 333 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 97,
+    "differential_falsified": 98,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 311,
+    "deferred_reconstructed_not_falsified": 310,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1061,6 +1061,16 @@
         "mutation": "Row-specific falsification (source revision f16ba81c): omitted only `scene->pushJointWithoutBodies(this)` in `Joint::row004103`. The existing jointed-actor setDynamic case reaches the row; the mutant later reports `Scene::removeJoint: joint is not in the scene.` during joint release. Oracle and candidate both exit 0, `stdout_delta=75`, `stderr_exact=True`. Restored control: both exit 0, `stdout_delta=0`, exact stderr. Mutant NxPhysics.dll SHA-256 `c0a187eae47184b731b82dcb6711b20d074dc1dc42fbda748f9782410f3838dd`; restored candidate `e47f71d2e31b4f50488e68fd30e205b4a6d1d720c785a869f96fe319fd124972`; pinned oracle `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`. See `evidence/phase6-joint-actor-detach-004103.md`.",
         "detected": "stdout_delta=75"
       }
+    },
+    {
+      "id": "phys_fn_004143",
+      "rva": "0x0009a0d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsCoreDumpTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision ca07c339): added `1.0f` to the computed `plane->d` in `Joint::addLimitPlane`. The registered NxPhysicsCoreDumpTests transcript changed on serialized joint limit-plane observations: oracle/candidate exit 0, stdout_delta=4452, stderr_exact=True. Restored clean build returned stdout_delta=0 and exact stderr. Mutant NxPhysics.dll SHA-256 `2a657062a7b5d93fd59c13ba304c588f8dc9da0d3428a17eee38730c1aa3dba7`; restored candidate `8e5f244603cbfd7d74a8d9fb465c43c0d131d20998bf2ed3700def778310a6ad`; pinned oracle `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`. See `evidence/phase6-joint-add-limit-plane-004143.md`.",
+        "detected": "stdout_delta=4452"
+      }
     }
   ],
   "deferred": [
@@ -1418,15 +1428,6 @@
       "id": "phys_fn_004141",
       "rva": "0x00099e60",
       "size": 464,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004143",
-      "rva": "0x0009a0d0",
-      "size": 860,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

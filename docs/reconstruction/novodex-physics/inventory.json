@@ -77138,13 +77138,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1562",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13740",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 28 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "previous source: Physics/src/Joint.cpp",
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 28 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6) Row-specific mutation closure (2026-10-10, source revision ca07c339): adding 1.0f to `plane->d` was caught by registered NxPhysicsCoreDumpTests (oracle/candidate exit 0, stdout_delta=4452, stderr exact). Restored clean build: stdout_delta=0, exact stderr. Mutant SHA-256 2a657062a7b5d93fd59c13ba304c588f8dc9da0d3428a17eee38730c1aa3dba7; restored candidate 8e5f244603cbfd7d74a8d9fb465c43c0d131d20998bf2ed3700def778310a6ad. Evidence: evidence/phase6-joint-add-limit-plane-004143.md.",
+      "notes": "addLimitPlane distance mutation-falsified by serialized core-dump limit-plane observations; no public header changes",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

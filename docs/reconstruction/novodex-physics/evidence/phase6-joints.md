@@ -10042,4 +10042,10 @@ For row `phys_fn_004105`, the registered `NxPhysicsSimulationTests` retained-bre
 
 For `phys_fn_004103` (`Joint::row004103`, RVA `0x00097c10`), the registered jointed-actor `setDynamic` case in `NxPhysicsActorShapeMutationTests` reaches the row. The clean staged-pair differential passed with `stdout_delta=0` and exact stderr. A temporary mutation omitted only `scene->pushJointWithoutBodies(this)`. Actor conversion still completed, but later joint release emitted `Scene::removeJoint: joint is not in the scene.`; both processes exited 0 and the differential caught `stdout_delta=75` with exact stderr. Restoring the row and rebuilding clean returned to `stdout_delta=0`, exact stderr. Mutant candidate SHA-256 `c0a187eae47184b731b82dcb6711b20d074dc1dc42fbda748f9782410f3838dd`; restored candidate `e47f71d2e31b4f50488e68fd30e205b4a6d1d720c785a869f96fe319fd124972`; oracle `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`. Mutation patch and full mutant/restored transcripts are retained next to this file.
 
-The complete Phase 6 gate was rerun after registering the actor-shape mutation target for this row: all ten differentials passed (stdout_delta=0, exact stderr) and all 1,554/1,554 registered coverage assertions passed. Phase 6 remains pending with 99 closed and 334 deferred functions.
+The complete Phase 6 gate was rerun after registering the actor-shape mutation target for this row: all ten differentials passed (stdout_delta=0, exact stderr) and all 1,554 registered coverage assertions run (minimum required: 1,267) passed. Phase 6 remains pending with 99 closed and 334 deferred functions.
+
+
+## Phase 6 closure measurement — add joint limit plane (`phys_fn_004143`)
+
+The registered `NxPhysicsCoreDumpTests` joint-family fixture catches a `1.0f` mutation to `plane->d` through serialized limit-plane observations (`stdout_delta=4452`, equal zero exits, exact stderr); the restored clean build is exact. See [phase6-joint-add-limit-plane-004143.md](phase6-joint-add-limit-plane-004143.md). The full Phase 6 gate passed at 1,554 assertions run (minimum required: 1,267); Phase 6 remains pending with 100 closed and 333 deferred functions.
+For `phys_fn_004143`, the registered NxPhysicsCoreDumpTests differential caught the plane-distance mutation with stdout_delta=4452; the restored clean control is exact.
