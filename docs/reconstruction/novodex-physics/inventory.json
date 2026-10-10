@@ -76438,13 +76438,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1544",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13585",
       "static_proof": "Transcribed from the Ghidra decompile at oracle/ghidra/manifest.json#/functions/1544: save Scene, removeJoint while body pointers are live, set (mFlags & ~8) | 0x10, raise both wake counters, clear both body pointers, and push the joint onto Scene+0x5a0. Implemented as Joint::handleBreakEvent.",
-      "dynamic_proof": "Candidate breakpoint on Joint::handleBreakEvent hits once on the staged low-force fixed-joint fixture; the four-step body trajectory matches the oracle exactly. See evidence/joint-break-events.md and the Phase 7 registered differential.",
-      "notes": "The remove-before-clear order is required to dissolve the joint from the active island correctly; row004103 has a different order because it is the body-removal path."
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair fixture retains a broken fixed joint, checks both returned actor pointers are null, and later releases the scene. Omitting Joint::handleBreakEvent mBody[0] clearing is caught by the explicit retained-broken-joint actor assertion (candidate exit 1, stdout_delta=796); the clean rebuilt differential is exact. See evidence/phase6-joint-handle-break-event-004105.md.",
+      "notes": "The registered retained-break fixture falsifies leaving either actor body attached after handleBreakEvent."
     },
     {
       "id": "phys_fn_004106",

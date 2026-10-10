@@ -1,3 +1,7 @@
+### Continuation — retained broken-joint detach row closure (2026-10-10)
+
+Closed Phase 6 row `phys_fn_004105` (`Joint::handleBreakEvent`) using the registered retained-break case in `NxPhysicsSimulationTests`. Omitting the `mBody[0] = 0` store made the candidate fail the detached-actors assertion (oracle exit 0, candidate exit 1, `stdout_delta=796`). The clean restored control returned to an exact staged differential. The full Phase 6 gate passes at 1,267/1,267 registered coverage assertions; inventory validation passes with 98 closed and 335 remaining Phase 6 function rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-handle-break-event-004105.md`.
+
 ### Continuation — fresh Phase 7 registered-gate validation (2026-10-09)
 
 Re-ran the current-worktree Phase 7 gate against the pinned oracle. All 14

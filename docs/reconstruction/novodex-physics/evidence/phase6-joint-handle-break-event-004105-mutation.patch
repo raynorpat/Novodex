@@ -1,0 +1,10 @@
+diff --git a/Physics/src/core/Joint.cpp b/Physics/src/core/Joint.cpp
+--- a/Physics/src/core/Joint.cpp
++++ b/Physics/src/core/Joint.cpp
+@@ Joint::handleBreakEvent
+ 	jointRaiseWakeCounter(mBody[0]);
+ 	jointRaiseWakeCounter(mBody[1]);
+-	mBody[0] = 0;
++	// mutation: preserve body0 pointer
+ 	mBody[1] = 0;
+ 	scene->pushJointWithoutBodies(this);
