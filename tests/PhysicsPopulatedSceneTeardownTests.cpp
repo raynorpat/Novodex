@@ -245,15 +245,26 @@ int wmain(int argc, wchar_t** argv)
 
 	if(!scene->createActor(staticDesc) || !scene->createActor(dynamicDesc))
 		return nxFail("static-first populated actor fixture failed");
+	unsigned char* initialSceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(scene) + 0x24);
+	void* trackedShapeArray = *reinterpret_cast<void**>(initialSceneInternal + 0x6a4);
+	const size_t trackedShapeArrayBytes = allocator.allocationSize(trackedShapeArray);
+	if(!trackedShapeArray || !trackedShapeArrayBytes)
+		return nxFail("static-first scene did not retain its tracked-shape array");
 
 	const unsigned beforeScene = allocator.outstanding();
 	sdk->releaseScene(*scene);
 	const unsigned afterScene = allocator.outstanding();
+	const bool trackedShapeArrayFreed = allocator.allocationSize(trackedShapeArray) == 0;
 	const int releaseDelta = static_cast<int>(afterScene) - static_cast<int>(beforeScene);
 	printf("teardown static_first release_delta=%d\n", releaseDelta);
+	printf("teardown tracked_shape_array bytes=%u freed=%u\n",
+		static_cast<unsigned>(trackedShapeArrayBytes), trackedShapeArrayFreed ? 1u : 0u);
 
 	if(releaseDelta != -39)
 		return nxFail("scene teardown did not release the oracle's 39 scene-owned blocks");
+	if(!trackedShapeArrayFreed)
+		return nxFail("Scene teardown did not free its tracked-shape array");
 
 	// Leave a live broadphase pair in the pruning engine, then release the
 	// scene before another simulation step can retire it. phys_fn_001953 must
