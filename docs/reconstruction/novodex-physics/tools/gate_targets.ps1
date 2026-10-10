@@ -122,7 +122,8 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsPopulatedSceneTeardownTests' = @(
         'teardown static_first outstanding_before=51 outstanding_after=12 delta=-39',
-        'teardown contact_pair pairs_before=1 outstanding_after=15'
+        'teardown contact_pair pairs_before=1 outstanding_after=15',
+        'teardown contact_pair hash_storage buckets=8 links=8 entries=16'
     )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)

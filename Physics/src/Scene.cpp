@@ -331,7 +331,6 @@ static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char*
 // prunable (ObjectModel.cpp); scene-raycast block Task 3.
 bool nxSceneEngineAddShape(void* engine, void* shape, unsigned type, unsigned section);
 bool nxSceneEngineRemoveShape(void* engine, void* shape);
-void nxSceneEngineDestroyPruners(void* engine);
 void nxSceneEngineSetExternalBuffer(void* engine, unsigned capacity, void* entries);
 void nxShapeFactoryInstallPrunable(void* shape);
 bool nxShapeFactoryLoadBox(void* shape, const void* descriptor);
@@ -3248,6 +3247,8 @@ static void nxSceneDelete(void* self, int flags)
 	scene->at<void*>(0x58c) = 0;
 	scene->at<void*>(0x590) = 0;
 	scene->at<void*>(0x594) = 0;
+	nxSceneEngineDestroyPrunableOwners(static_cast<unsigned char*>(self) + 0x624);
+	nxSceneEngineReleaseCoherent(static_cast<unsigned char*>(self) + 0x624);
 	// The debug renderable phys_fn_000579 creates (0x14066-0x14092): released
 	// through the Foundation's releaseDebugRenderable (slot +0x20, which takes
 	// the field by reference), then the field is cleared. Scene-raycast block

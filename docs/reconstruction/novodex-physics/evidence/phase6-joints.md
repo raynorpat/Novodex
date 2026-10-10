@@ -9996,3 +9996,8 @@ For `phys_fn_000596`, the registered `NxPhysicsCoreDumpTests` gate rejects the p
 ## Phase 7 stale contact-pair release row `phys_fn_001953`
 
 For `phys_fn_001953`, the registered `NxPhysicsPopulatedSceneTeardownTests` gate rejects disabling the Scene destructor stale-pair sweep (`stdout_delta=2`; mutant leaves 17 allocator blocks against the oracle 15). The restored control matches the oracle (`stdout_delta=0`, exact stderr). See [phase7-pruning-stale-pair-release-001953.md](phase7-pruning-stale-pair-release-001953.md).
+
+
+## Phase 7 pruning-engine storage teardown row `phys_fn_001982`
+
+For `phys_fn_001982`, the registered `NxPhysicsPopulatedSceneTeardownTests` gate rejects disabling the Scene pruning-engine pair-storage release (`stdout_delta=2`; mutant leaves 18 blocks versus the oracle 15). The restored control matches exactly. See [phase7-pruning-engine-storage-001982.md](phase7-pruning-engine-storage-001982.md).

@@ -22,7 +22,7 @@ typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32,
 class TrackingAllocator : public NxUserAllocator
 	{
 	public:
-	TrackingAllocator() : mOutstanding(0) {}
+	TrackingAllocator() : mOutstanding(0), mAllocationCount(0) {}
 
 	virtual void* malloc(size_t size) { return allocate(size); }
 	virtual void* malloc(size_t size, NxMemoryType) { return allocate(size); }
@@ -44,11 +44,24 @@ class TrackingAllocator : public NxUserAllocator
 	virtual void free(void* memory)
 		{
 		if(!memory) return;
+		for(unsigned i = mAllocationCount; i > 0; --i)
+			if(mPointers[i - 1] == memory)
+				{
+				mPointers[i - 1] = 0;
+				break;
+				}
 		::free(static_cast<unsigned*>(memory) - 2);
 		--mOutstanding;
 		}
 
 	unsigned outstanding() const { return mOutstanding; }
+	size_t allocationSize(const void* memory) const
+		{
+		for(unsigned i = mAllocationCount; i > 0; --i)
+			if(mPointers[i - 1] == memory)
+				return mSizes[i - 1];
+		return 0;
+		}
 
 	private:
 	void* allocate(size_t size)
@@ -57,11 +70,20 @@ class TrackingAllocator : public NxUserAllocator
 		if(!header) return 0;
 		header[0] = static_cast<unsigned>(size);
 		header[1] = 0x54454152;
+		if(mAllocationCount < sizeof(mPointers) / sizeof(mPointers[0]))
+			{
+			mPointers[mAllocationCount] = header + 2;
+			mSizes[mAllocationCount] = size;
+			++mAllocationCount;
+			}
 		++mOutstanding;
 		return header + 2;
 		}
 
 	unsigned mOutstanding;
+	unsigned mAllocationCount;
+	void* mPointers[8192];
+	size_t mSizes[8192];
 	};
 
 int wmain(int argc, wchar_t** argv)
@@ -144,6 +166,17 @@ int wmain(int argc, wchar_t** argv)
 		pairNode = *reinterpret_cast<unsigned char**>(pairNode + 8);
 		}
 	if(!contactPairs) return nxFail("contact-pair teardown fixture did not retain a broadphase pair");
+	unsigned char* contactEngine = contactInternal + 0x624;
+	unsigned char* pairHash = contactEngine + 0x34;
+	const size_t bucketBytes = allocator.allocationSize(
+		*reinterpret_cast<void**>(pairHash + 0x08));
+	const size_t linkBytes = allocator.allocationSize(
+		*reinterpret_cast<void**>(pairHash + 0x0c));
+	const size_t entryBytes = allocator.allocationSize(
+		*reinterpret_cast<void**>(pairHash + 0x14));
+	printf("teardown contact_pair hash_storage buckets=%u links=%u entries=%u\n",
+		static_cast<unsigned>(bucketBytes), static_cast<unsigned>(linkBytes),
+		static_cast<unsigned>(entryBytes));
 	sdk->releaseScene(*contactScene);
 	const unsigned afterContactScene = allocator.outstanding();
 	printf("teardown contact_pair pairs_before=%u outstanding_after=%u\n",

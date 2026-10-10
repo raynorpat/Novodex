@@ -819,7 +819,9 @@ static void cpmPairHashGrow(CpmPairHash* hash)
 	{
 	NxU8* bytes = reinterpret_cast<NxU8*>(hash);
 	const NxU32 oldCapacity = *reinterpret_cast<NxU32*>(bytes + 4) + 1;
-	const NxU32 newCapacity = oldCapacity > 1 ? oldCapacity * 2 : 8;
+	// The shipped hash starts with two slots (0x9a533 initializes its mask to
+	// 0xffffffff, then the first grow allocates 2 buckets, 2 links and 2 entries).
+	const NxU32 newCapacity = oldCapacity > 1 ? oldCapacity * 2 : 2;
 	NxI32* buckets = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(
 		newCapacity * sizeof(NxI32), NX_MEMORY_PERSISTENT));
 	NxI32* links = static_cast<NxI32*>(nxFoundationSDKAllocator->malloc(
@@ -972,6 +974,9 @@ void cpmDestroyScenePairStorage(NxSceneInternal* scene)
 	{
 	NxU8* const engine = scene->bytes() + 0x624;
 	reinterpret_cast<SdkContainer*>(engine + 0x78)->empty();
+	// The oracle's NxFluidAssert hook is a one-byte ret; it has no observable
+	// work, and keeping it out of this helper avoids a link dependency in the
+	// collision-only test library.
 	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(engine + 0x34);
 	NxU8* const bytes = reinterpret_cast<NxU8*>(hash);
 	void*& links = *reinterpret_cast<void**>(bytes + 0x0c);

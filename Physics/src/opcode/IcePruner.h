@@ -112,6 +112,11 @@ bool		nxPruningEngineRemoveObject(void* engine, Prunable* object);
 Pruner*		nxPruningEngineCreatePruner(udword type);
 // Destroys a pruner the engine created (its destructor, then its storage).
 void		nxPruningEngineDestroyPruner(Pruner* pruner);
+// Scene destructor row 001963 snapshots and deletes owners in the static and
+// selected dynamic pruner; row 001982 releases the cache, root, pair hash and
+// all four pruner slots.
+void		nxSceneEngineDestroyPrunableOwners(void* engine);
+void		nxSceneEngineDestroyPruners(void* engine);
 // Release the scene-owned coherent broadphase cache before pool mutation or
 // engine destruction.
 void		nxSceneEngineReleaseCoherent(void* engine);

@@ -29,6 +29,7 @@ Runs at API time under 0x027f like IcePruner.cpp; default architecture.
 
 #include <string.h>
 #include <new>
+#include <malloc.h>
 
 // Scene.cpp's emulation of the process-wide object 0x000b4cc0 creates.
 #if NX_PHYSICS_USE_X87
@@ -181,12 +182,43 @@ bool nxSceneEngineRemoveShape(void* engine, void* shape)
 
 void nxSceneEngineDestroyPruners(void* engine)
 {
-	nxSceneEngineReleaseCoherent(engine);
 	for(udword type = 0; type < 4; type++)
 	{
 		nxPruningEngineDestroyPruner(nxEnginePruner(engine, type));
 		nxEnginePruner(engine, type) = null;
 	}
+}
+
+// phys_fn_001963 (0x0004bf10) destroys the owners held by section 1 and 2
+// entries in the static pruner and in the scene-selected dynamic pruner. The
+// owners' deleting destructors remove their entries, so snapshot the owner
+// pointers before dispatching any destructor, as the oracle does on its stack.
+static void nxSceneEngineDestroyPrunerOwners(Pruner* pruner)
+{
+	if(!pruner)
+		return;
+	PruningPool& pool = pruner->mPool;
+	const udword first = pool.mNbObjects[0];
+	const udword count = pool.mNbObjects[1] + pool.mNbObjects[2];
+	if(!count)
+		return;
+	void** owners = static_cast<void**>(_alloca(sizeof(void*) * count));
+	for(udword i = 0; i < count; ++i)
+		owners[i] = pool.mObjects[first + i]->mOwner;
+	typedef void* (__thiscall *DeletingDestructor)(void*, int);
+	for(udword i = 0; i < count; ++i)
+		{
+		void* owner = owners[i];
+		if(owner)
+			reinterpret_cast<DeletingDestructor>(*reinterpret_cast<void**>(owner))(owner, 1);
+		}
+}
+
+void nxSceneEngineDestroyPrunableOwners(void* engine)
+{
+	const udword selected = *reinterpret_cast<udword*>(static_cast<ubyte*>(engine) + 0x70);
+	nxSceneEngineDestroyPrunerOwners(nxEnginePruner(engine, 0));
+	nxSceneEngineDestroyPrunerOwners(nxEnginePruner(engine, selected));
 }
 
 void nxSceneEngineReleaseCoherent(void* engine)
