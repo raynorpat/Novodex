@@ -104,11 +104,11 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 42,
-        "deferred_rows": 519,
+        "closed_rows": 43,
+        "deferred_rows": 518,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 234,
-          "reconstructed_not_falsified": 285
+          "reconstructed_not_falsified": 284
         }
       }
     },
@@ -182,8 +182,8 @@
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "discovered": 222,
-          "dynamically_gated": 42,
-          "reconstructed": 297
+          "dynamically_gated": 43,
+          "reconstructed": 296
         }
       }
     }
@@ -14064,7 +14064,7 @@
           {
             "id": "phys_fn_000653",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002364",
@@ -28639,7 +28639,7 @@
       "size": 126,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000653",
       "implementation": {
         "path": "Physics/src/Scene.cpp",
@@ -28654,7 +28654,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointStagedPairTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -28693,22 +28693,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointStagedPairTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000653",
         "rva": "0x00013760",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -174598,7 +174598,7 @@
           {
             "id": "phys_fn_000653",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -230965,7 +230965,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "4ac1143c79cd2553a98709af3f1a1b52638eb46f22af39abb76a1c006788ef1a",
+    "inventory_sha256": "0ec66b1df0cfe962cc3f167b81e2098ffec9da09e68d3e69eaa49f611897cdff",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230975,7 +230975,7 @@
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "0644d3701ea278cb6b6db06ad68e9b27bf68fb28e6c79af49ecdfae3235f7221",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "404e79fb95d7544efa6394a2937afb81422fdb2eb57f4d7fb6a005d55a35a6e1",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "68989e76e734f6bbc02542100473e1a827eaa02db247f27d6185533f418527ef"
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "35bd08ba7112c0ba6355a9827bd84c309ac1e02d10e55878d0ddb2963a0ea704"
     }
   }
 }

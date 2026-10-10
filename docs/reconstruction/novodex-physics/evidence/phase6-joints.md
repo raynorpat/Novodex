@@ -9976,3 +9976,8 @@ Phase 7 fluid emitter backend setter rows `phys_fn_003593` and `phys_fn_003850` 
 ## Scene scheduler row `phys_fn_000659`
 
 The `phys_fn_000659` immediate-return mutation at the start of `NxSceneInternal::simulateFrame` was rejected from a throwaway `git archive` by the registered `NxPhysicsSimulationTests` Phase 7 staged-pair differential (`stdout_delta=3829`; oracle exit 0, candidate exit 1). The restored control was exact (`stdout_delta=0`, both exits 0, stderr exact). Full build and SHA details: `evidence/phase7-scene-scheduler-000659-mutation.md`.
+
+
+## Scene joint-release row `phys_fn_000653`
+
+The `phys_fn_000653` immediate-return mutation to `NxSceneInternal::releaseJoint` was rejected from a throwaway `git archive` by the registered `NxPhysicsJointStagedPairTests` Phase 7 staged-pair differential (`stdout_delta=494`; both processes exited 0, stderr exact). The restored control was exact (`stdout_delta=0`). Full build and SHA details: `evidence/phase7-scene-release-joint-000653-mutation.md`.
