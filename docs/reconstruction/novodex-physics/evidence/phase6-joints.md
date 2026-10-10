@@ -10241,3 +10241,9 @@ The source was restored byte-for-byte (`Scene.cpp` SHA-256 `5806d9cb903e2c11d863
 `NxPhysicsEffectorTests` observes effector iteration through create, two-effector cycles, release, actor teardown, and live-scene states. Changing `resetEffectorIterator` to clear the cursor instead of copying the list head at `Scene + 0x5a4` makes each candidate iterator report `none`; the registered Phase 7 differential rejects the mutant with both exits zero, exact stderr, and `stdout_delta=14`. The mutant DLL hash was `0699857de65c749b4a83795a872312b580cf2b68f99641871916a3ddb58e8896`.
 
 The source was restored byte-for-byte (`Scene.cpp` SHA-256 `5806d9cb903e2c11d863ee69ae6202d3c6c7ce481b0937e73c99080383bd7cf9` before and after), and the rebuilt control reports both exits zero, `stdout_delta=0`, and exact stderr. The restored DLL hash was `a28439dce15708b30ae7fd502ace5be25a76981abd27f6e39b83b62b9b6151e3`. See [phase7-scene-effector-iterator-000565.md](phase7-scene-effector-iterator-000565.md).
+
+## Phase 7 Scene get-next-effector row `phys_fn_000569` — `stdout_delta=14`
+
+`NxPhysicsEffectorTests` observes `getNextEffector` in create, multi-effector cycle, release, actor-release, and live-scene states. Changing the non-null return to null while leaving the cursor advance intact makes each candidate iterator report `none`; the registered Phase 7 differential rejects the mutant with both exits zero, exact stderr, and `stdout_delta=14`. The mutant DLL hash was `c76176f763e1f3f81afc8097f8031d4632411f1dbc074cf2d1daf2e4e8020d22`.
+
+The source was restored byte-for-byte (`Scene.cpp` SHA-256 `5806d9cb903e2c11d863ee69ae6202d3c6c7ce481b0937e73c99080383bd7cf9` before and after), and the rebuilt control reports both exits zero, `stdout_delta=0`, and exact stderr. The restored DLL hash was `b8cea7cf84bbb9fb29fd6c245582d41763870591786a93a90cc8a4dde2690730`. See [phase7-scene-effector-next-000569.md](phase7-scene-effector-next-000569.md).
