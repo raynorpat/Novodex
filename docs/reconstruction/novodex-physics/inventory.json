@@ -11307,12 +11307,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/229",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1512",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "The registered Phase 7 NxPhysicsCoreDumpTests differential exercises Scene actor teardown. Restoring the swap-removing releaseActor loop changes the Scene B allocator free prefix and is rejected with stdout_delta=2; the snapshot/destructor implementation matches the pinned oracle exactly (stdout_delta=0, stderr_exact=True). Detailed evidence: evidence/phase7-scene-actor-teardown-000596.md.",
       "notes": ""
     },
     {

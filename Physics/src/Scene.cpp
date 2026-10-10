@@ -3174,16 +3174,23 @@ static void nxSceneDelete(void* self, int flags)
 	if(p[0x1b3])
 		delete reinterpret_cast<NpScene*>(p[0x1b3]);
 	NxSceneInternal* scene = static_cast<NxSceneInternal*>(self);
-	while(NxActor** actors = scene->at<NxActor**>(0x55c))
+	// phys_fn_000596 walks the actor range as it existed at entry. This is not
+	// the public releaseActor path: it does not swap-remove actor pointers or
+	// notify the optional fluid manager. Each body destructor removes its own
+	// scene record and the separate body allocation is then freed.
+	NxActor** actors = scene->at<NxActor**>(0x55c);
+	NxActor** actorEnd = scene->at<NxActor**>(0x560);
+	const unsigned actorCount = actors && actorEnd
+		? static_cast<unsigned>(actorEnd - actors) : 0;
+	for(unsigned index = 0; index < actorCount; ++index)
 		{
-		NxActor** end = scene->at<NxActor**>(0x560);
-		if(!end || actors == end) break;
-		unsigned char* actor = reinterpret_cast<unsigned char*>(*actors);
-		if(!actor) break;
+		unsigned char* actor = reinterpret_cast<unsigned char*>(actors[index]);
 		unsigned char* body = *reinterpret_cast<unsigned char**>(actor + 0x14);
-		if(!body) break;
-		scene->releaseActor(body);
-		if(scene->at<NxActor**>(0x560) == end) break;
+		if(body)
+			{
+			nxActorDestroy(body);
+			nxFoundationSDKAllocator->free(body);
+			}
 		}
 	// The effectors (phys_fn_000575, which the oracle's Scene destructor
 	// phys_fn_000663 calls at 0x13f90, after the actors and before the

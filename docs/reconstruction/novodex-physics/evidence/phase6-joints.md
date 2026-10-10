@@ -9986,3 +9986,8 @@ The `phys_fn_000653` immediate-return mutation to `NxSceneInternal::releaseJoint
 ## Scene joint-insertion row `phys_fn_000661`
 
 The `phys_fn_000661` immediate-return mutation to `NxSceneInternal::addJoint` was rejected from the disposable archive by the registered `NxPhysicsJointStagedPairTests` Phase 7 staged-pair differential (`stdout_delta=3282`; oracle exit 0, candidate access violation, stderr exact). The restored control was exact (`stdout_delta=0`). Full build and SHA details: `evidence/phase7-scene-add-joint-000661-mutation.md`.
+
+
+## Phase 7 Scene actor-array teardown row `phys_fn_000596`
+
+For `phys_fn_000596`, the registered `NxPhysicsCoreDumpTests` gate rejects the prior swap-removing actor teardown (`stdout_delta=2`; the Scene B free prefix diverges at 228 versus 552 bytes) and the restored snapshot/destructor implementation matches the pinned oracle (`stdout_delta=0`, exact stderr). See [phase7-scene-actor-teardown-000596.md](phase7-scene-actor-teardown-000596.md). The enclosing Scene destructor `phys_fn_000663` remains open.

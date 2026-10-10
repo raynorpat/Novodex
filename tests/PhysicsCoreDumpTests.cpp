@@ -141,6 +141,27 @@ static NxU32 nxU(NxReal value)
 	return bits;
 	}
 
+static void nxPrintAllocatorWindow(const char* name, unsigned allocationsBefore,
+	unsigned freesBefore, bool includeEventSizes)
+	{
+	const unsigned allocations = gAllocator.allocations() - allocationsBefore;
+	const unsigned frees = gAllocator.frees() - freesBefore;
+	printf("allocator window %s allocations=%u frees=%u", name, allocations, frees);
+	if(includeEventSizes)
+		{
+		printf(" alloc_sizes=");
+		for(unsigned i = allocations; i; --i)
+			printf("%s%u", i == allocations ? "" : ",",
+				gAllocator.allocSizeFromEnd(i - 1));
+		const unsigned freePrefix = frees < 16 ? frees : 16;
+		printf(" free_prefix=");
+		for(unsigned i = 0; i < freePrefix; ++i)
+			printf("%s%u", i ? "," : "",
+				gAllocator.freedSizeFromEnd(frees - 1 - i));
+		}
+	printf("\n");
+	}
+
 static void nxProbeLimitPlaneIteration(const char* name, NxJoint& joint)
 	{
 	joint.resetLimitPlaneIterator();
@@ -991,9 +1012,15 @@ int wmain(int argc, wchar_t** argv)
 	nxDump(*sdk, "binary_addendum", "coredump_binary_addendum", true, "# addendum for the binary dump");
 	nxDeadlockCase(*sdk, *sceneA, *sceneB);
 
+	const unsigned sceneBAllocationsBefore = gAllocator.allocations();
+	const unsigned sceneBFreesBefore = gAllocator.frees();
 	sdk->releaseScene(*sceneB);
+	nxPrintAllocatorWindow("scene_b_release", sceneBAllocationsBefore, sceneBFreesBefore, true);
 	nxDump(*sdk, "one_scene", "coredump_one_scene", false, 0);
+	const unsigned sceneAAllocationsBefore = gAllocator.allocations();
+	const unsigned sceneAFreesBefore = gAllocator.frees();
 	sdk->releaseScene(*sceneA);
+	nxPrintAllocatorWindow("scene_a_release", sceneAAllocationsBefore, sceneAFreesBefore, false);
 	nxDump(*sdk, "no_scene", "coredump_no_scene", true, "");
 	printf("scene=released\n");
 	// Before the pointer epoch below resets: the SDK blocks still outstanding
