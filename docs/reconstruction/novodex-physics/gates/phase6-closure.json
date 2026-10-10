@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 104 rows are closed (2 oracle differentials, 102 mutation-falsified); 329 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 105 rows are closed (2 oracle differentials, 103 mutation-falsified); 328 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 102,
+    "differential_falsified": 103,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 306,
+    "deferred_reconstructed_not_falsified": 305,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1110,6 +1110,16 @@
       "falsification": {
         "mutation": "Row-specific falsification (source revision f6d4d383): added 1.0f to X returned by `Joint::getGlobalAxisVal`. `PhysicsJointTests.cpp` serializes the value-return vector bits in the family matrix. Registered NxPhysicsJointStagedPairTests caught the mutation: both exits 0, stdout_delta=244, exact stderr. Restored clean differential: stdout_delta=0, exact stderr. Mutant SHA-256 74b466dde168e268a53f6ef99195c60ac4db329e184466da7852182275954251; restored candidate SHA-256 9db5d159746e828b20a333fe0261cb9e7599877184aaca292cc324eb9a1e20ce. Evidence: evidence/phase6-joint-global-axis-value-004139.md.",
         "detected": "stdout_delta=244"
+      }
+    },
+    {
+      "id": "phys_fn_004336",
+      "rva": "0x000a8fb0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): changed only `RevoluteJoint::getFlags` to return `mRevoluteFlags + 1`. The revolute index-0 public getter transcript changed from flags=00000000 to flags=00000001; oracle/candidate exit 0, stdout_delta=28, stderr_exact=True. Restored clean Release build: stdout_delta=0, exact stderr. Mutant candidate SHA-256 6c9f6a9188a97a3410ff8e663f6fb46df9ebab04cb148eb8a5b34db126263d15; restored candidate SHA-256 69c471776465bc8dad7fa7ed88df9c44bb0773350a55658f4b0e4bc60c4aaf13. Evidence: evidence/phase6-joint-revolute-get-flags-004336.md.",
+        "detected": "stdout_delta=28"
       }
     }
   ],
@@ -2214,15 +2224,6 @@
       "id": "phys_fn_004334",
       "rva": "0x000a8f10",
       "size": 147,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004336",
-      "rva": "0x000a8fb0",
-      "size": 7,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],

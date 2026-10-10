@@ -387,6 +387,8 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 	NxRevoluteJoint* revolute = joint->isRevoluteJoint();
 	if(revolute)
 		{
+		printf("case=revolute index=%u flags=%08x\n", index,
+			static_cast<unsigned>(revolute->getFlags()));
 		NxRevoluteJointDesc saved;
 		revolute->saveToDesc(saved);
 		nxPrintSavedFrames("revolute", index, saved);

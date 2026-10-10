@@ -10072,3 +10072,10 @@ For `phys_fn_004137`, the staged-pair anchor-value mutation was caught with stdo
 For `phys_fn_004139`, the staged-pair axis-value mutation was caught with stdout_delta=244; restored clean control exact. See [phase6-joint-global-axis-value-004139.md](phase6-joint-global-axis-value-004139.md).
 
 The full Phase 6 gate after adding these ten value-return assertions passed with all ten staged-pair differentials exact and 1,564 assertions run (minimum required: 1,267). Phase 6 remains pending with 104 closed and 329 deferred functions.
+
+
+## Phase 6 closure measurement — revolute flags getter (`phys_fn_004336`)
+
+The revolute staged-pair fixture now prints `NxRevoluteJoint::getFlags()` and the gate registry requires the default index-0 result. For `phys_fn_004336`, the mutation changed the transcript with `stdout_delta=28`; both processes exited 0 with exact stderr. A clean restored build returned the differential to exact. See [phase6-joint-revolute-get-flags-004336.md](phase6-joint-revolute-get-flags-004336.md).
+
+The refreshed oracle-only `NxPhysicsJointTests` proof pins the updated source SHA-256 `5c5160a5027d8e85d61074dd7310ef8166532daea020047b245ad453c47d7554` and 3,132 oracle output lines (digest `0ffa84123dd30fb98e9a97996984e737c60eb04df526f524b21b530a82c34bfe`). The full Phase 6 gate passed with 1,565 assertions run (minimum required: 1,267); all staged-pair differentials and oracle proofs pass. Phase 6 now has 105 closed rows (103 mutation-falsified plus 2 oracle differentials) and 328 deferred rows; 23 in-phase rows remain unreconstructed.

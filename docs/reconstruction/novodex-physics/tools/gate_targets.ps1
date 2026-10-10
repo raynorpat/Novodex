@@ -2355,6 +2355,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=revolute index=0 created=yes',
         'case=revolute index=0 abi_sret_values anchor=00000000.00000000.00000000 axis=3f800000.00000000.00000000',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
+        'case=revolute index=0 flags=00000000',
         'case=revolute index=0 actors a=match b=match',
         'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=prismatic index=0 created=yes',

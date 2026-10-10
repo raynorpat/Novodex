@@ -80707,13 +80707,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2096",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14718",
       "static_proof": "mov eax,[ecx+0x1a8]; ret; transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0",
-      "notes": "previous source: field getter [this+0x1a8] (0xa8fb0)",
+      "dynamic_proof": "The registered NxPhysicsJointStagedPairTests transcript now prints the revolute index-0 getFlags result. Changing the getter to return mRevoluteFlags + 1 changed flags=00000000 to flags=00000001 (both exits 0, stdout_delta=28, exact stderr); restored clean differential exact. Mutant SHA-256 6c9f6a9188a97a3410ff8e663f6fb46df9ebab04cb148eb8a5b34db126263d15; restored SHA-256 69c471776465bc8dad7fa7ed88df9c44bb0773350a55658f4b0e4bc60c4aaf13. Evidence: evidence/phase6-joint-revolute-get-flags-004336.md.",
+      "notes": "Revolute getFlags mutation-falsified by the staged-pair public getter transcript.",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
