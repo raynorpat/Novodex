@@ -16,3 +16,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-
 The differential passed against the pinned `NxPhysics.dll` (`4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`): oracle and candidate both exited 0, `stdout_delta=0`, and `stderr_exact=True`. Both reported `triangle_mesh release_in_use refused=1 errors=1 code=2 line=173`, then the mesh-backed actor settled at `y=0x3f73332a` with zero velocity and fetched results successfully.
 
 This row is reconstructed and dynamically checked, but remains deferred in the Phase 4 closure ledger until a throwaway-source mutation aimed at the row is measured under that ledger's falsification protocol.
+
+
+The live-reference refusal guard is independently mutation-falsified through the registered Phase 4 staged pair. Bypassing `mReferenceCount` changes the candidate transcript (`stdout_delta=6`, candidate exit 1) while the oracle exits 0; restoring the guard returns an exact differential. See [phase4-row-002258-release-guard-mutation-2026-10-09.md](phase4-row-002258-release-guard-mutation-2026-10-09.md). The successful-release cleanup helpers remain separate rows.

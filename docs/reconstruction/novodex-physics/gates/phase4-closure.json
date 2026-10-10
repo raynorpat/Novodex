@@ -2,9 +2,9 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 30 closed and 1,023 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The two AABB tree rows phys_fn_005517 and phys_fn_005523 still have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 31 closed and 1,022 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The two AABB tree rows phys_fn_005517 and phys_fn_005523 still have shared-overlay layout evidence but no isolated per-row falsification. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13.",
   "proof_kinds": {
-    "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt and run through a staged-pair differential. Phase 4 registers no staged-pair target -- `run_differential.ps1 -Phase 4` resolves none and exits the skip code -- so it closes no row this way",
+    "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway source copy, rebuilt and run through a registered Phase 4 staged-pair differential. Phase 4 now registers NxPhysicsTriangleMeshApiTests for the live-reference refusal path; bypassing the mReferenceCount guard changes the candidate transcript by stdout_delta=6 while the pinned oracle remains unchanged, and the restored control matches exactly.",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
     "oracle_differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy of the branch, rebuilt, and run through NxPhysicsAssetTests or NxPhysicsThirdPartyTests -- targets that load the pinned DLL in their own process, re-hash it and call the recorded internal addresses, because nothing Phase 4 owns is exported except NxReleasePMap. They run once rather than once per pair, so there is no transcript to diff and the detection is a mismatch count against the shipped bytes. Every closure here was re-measured on this branch between two un-mutated controls built and run in the same session, and the ORACLE-SIDE digest is unmoved in every run -- eaefc573 for the asset target, b87c3219 for the third-party target -- which is what says the mutation moved the candidate and not the measurement. Where a row carries more than one mutation the largest single count is recorded and the mutation field names the rest; where an edit's source statement reaches other census rows the mutation field names that split and only the row the edit belongs to is closed"
   },
@@ -47,16 +47,18 @@
     ],
     "differentials": [
       "NxPhysicsAssetTests",
-      "NxPhysicsThirdPartyTests"
+      "NxPhysicsThirdPartyTests",
+      "NxPhysicsTriangleMeshApiTests"
     ],
-    "method": "every address above but four is called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four -- 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772) and 0x000b3ac0 (phys_fn_004774) -- appear in no harness source: they are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly and which calls 0x000b3aa0 four times, 0x000b3ac0 twice, then 0x0004ff80 and 0x00050110. Each closed row was entered by a block that prints an oracle-side digest, and every digest and coverage line is registered in tools/gate_targets.ps1 with a per-phase floor -- 100 for Phase 4, 34 from NxPhysicsAssetTests and 66 from NxPhysicsThirdPartyTests -- so a generator that degrades to nothing fails the gate rather than passing it",
+    "method": "every address above but four is called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four -- 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772) and 0x000b3ac0 (phys_fn_004774) -- appear in no harness source: they are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly and which calls 0x000b3aa0 four times, 0x000b3ac0 twice, then 0x0004ff80 and 0x00050110. Those oracle-only rows were entered by blocks that print an oracle-side digest; the public staged-pair exception is phys_fn_002258, exercised through NxPhysicsTriangleMeshApiTests, and its row mutation is recorded in section 14. Each direct-call block prints an oracle-side digest, and every digest and coverage line is registered in tools/gate_targets.ps1 with a per-phase floor -- 100 for Phase 4, 34 from NxPhysicsAssetTests and 66 from NxPhysicsThirdPartyTests -- so a generator that degrades to nothing fails the gate rather than passing it",
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "oracle_differential_falsified": 30,
-    "deferred_reconstructed_not_falsified": 751,
+    "deferred_reconstructed_not_falsified": 750,
     "deferred_not_reconstructed_in_phase": 182,
-    "deferred_vendored_not_falsified": 90
+    "deferred_vendored_not_falsified": 90,
+    "differential_falsified": 1,
+    "oracle_differential_falsified": 30
   },
   "closed": [
     {
@@ -131,6 +133,17 @@
       }
     },
     {
+      "id": "phys_fn_002258",
+      "rva": "0x00055810",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "In a throwaway source copy, changed TriangleMesh::release from `if(mReferenceCount)` to `if(false && mReferenceCount)`, bypassing the live-reference refusal guard.",
+        "detected": "stdout_delta=6"
+      },
+      "note": "The bypass candidate exits 1 while the oracle exits 0; restored guard differential has stdout_delta=0, two zero exits, and exact stderr. Closes the live-reference refusal branch only. Successful cleanup helpers phys_fn_002239 and phys_fn_002085 remain independent rows."
+    },
+    {
       "id": "phys_fn_002262",
       "rva": "0x00055cb0",
       "proof": "oracle_differential_falsified",
@@ -139,17 +152,6 @@
         "mutation": "mutation N: both stream tags read before either is tested (3, dwords_read=2/1 on the three bad_tag0 cases). Mutation O, the second tag constant one nibble out, is NOT the recorded one on this branch although it reads 10: the constant is file-scope and TriangleMesh::save (phys_fn_002162) stores it too, so O moves mesh.bad_tag1 (1) and all nine writer cases (9) -- a count that is mostly another row's. Only the two tag tests of this 511-byte row are reconstructed; fields 3 to 19 of the reader are not, and no recorded fixture reaches them. Re-measured on branch p4-close-port in a `git archive` copy of de56592: control `asset candidate mismatches=0` before and after, `asset oracle digest=eaefc573 expect_mismatches=0` in every run. evidence/phase4-falsification.md section 5",
         "detected": "mismatches=3"
       }
-    },
-    {
-      "id": "phys_fn_005493",
-      "rva": "0x000f0560",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsThirdPartyTests",
-      "falsification": {
-        "mutation": "In a throwaway git-archive copy of main at 1f9b4fe6, changed only Segment::SquareDistance's final return to add 1.0f, rebuilt NxPhysicsThirdPartyTests, and ran it against the pinned oracle. The grid family reported 40,000 differing words and the wide family 6; the oracle digest remained 7199b521. Restoring the return and rebuilding produced zero mismatches in both families, the same oracle digest, and exit 0. The candidate implementation is linked directly into the harness from the same NxOpcode sources used by NxPhysics.dll; this proves the source row's behavior, not DLL-level routing.",
-        "detected": "mismatches=40000"
-      },
-      "note": "Grid: 40,000/60,000 words differ (worst ULP 47,782,659); wide: 6/40,000 (worst ULP 4). Restored control: both exact, zero candidate mismatches and zero layout failures. The test verifies the pinned oracle DLL SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Public-DLL routing remains a separate reconstruction milestone; see evidence/phase4-falsification.md section 13."
     },
     {
       "id": "phys_fn_004772",
@@ -361,6 +363,17 @@
         "detected": "mismatches=1"
       },
       "note": "MARGINAL, and recorded as such. This is the thinnest closure in the Phase 4 set: seven bytes, six of them the vptr store `mov [ecx], 0x1011ba1c`, a module-specific value that cannot be compared across two modules, leaving one byte of comparable body and a delta of 1. It meets the standard -- the mutation is inside this row's own censused extent and the count is measured and non-zero -- and what it falsifies is the NEGATIVE half of the claim, that the destructor writes nothing besides the vptr. It is not evidence that the positive half is right"
+    },
+    {
+      "id": "phys_fn_005493",
+      "rva": "0x000f0560",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway git-archive copy of main at 1f9b4fe6, changed only Segment::SquareDistance's final return to add 1.0f, rebuilt NxPhysicsThirdPartyTests, and ran it against the pinned oracle. The grid family reported 40,000 differing words and the wide family 6; the oracle digest remained 7199b521. Restoring the return and rebuilding produced zero mismatches in both families, the same oracle digest, and exit 0. The candidate implementation is linked directly into the harness from the same NxOpcode sources used by NxPhysics.dll; this proves the source row's behavior, not DLL-level routing.",
+        "detected": "mismatches=40000"
+      },
+      "note": "Grid: 40,000/60,000 words differ (worst ULP 47,782,659); wide: 6/40,000 (worst ULP 4). Restored control: both exact, zero candidate mismatches and zero layout failures. The test verifies the pinned oracle DLL SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Public-DLL routing remains a separate reconstruction milestone; see evidence/phase4-falsification.md section 13."
     }
   ],
   "deferred": [
@@ -1756,15 +1769,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002258",
-      "rva": "0x00055810",
-      "size": 115,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Reconstructed in Physics/src/TriangleMesh.cpp and matched against the pinned oracle by NxPhysicsTriangleMeshApiTests; live shape release is refused with the exact code/line/message, and release succeeds after actor teardown. Still deferred: no isolated mutation has yet falsified this row under the Phase 4 closure protocol. See evidence/triangle-mesh-release.md."
     },
     {
       "id": "phys_fn_002260",

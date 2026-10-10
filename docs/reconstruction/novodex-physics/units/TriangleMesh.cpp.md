@@ -3054,7 +3054,7 @@ void __thiscall FUN_100556c0(void *this,int *param_1)
 
 ```
 
-## phys_fn_002258 (0x00055810, 115 B, reconstructed)
+## phys_fn_002258 (0x00055810, 115 B, dynamically_gated)
 
 - ambiguous: no
 - source: Physics/src/TriangleMesh.cpp

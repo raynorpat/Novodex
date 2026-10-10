@@ -101,6 +101,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'triangle_mesh case=precomputed_convex created=1',
         'triangle_mesh convex_cook case=welded_pair',
         'triangle_mesh convex_cook case=five_clusters',
+        'triangle_mesh release_in_use refused=1 errors=1 code=2 line=173',
         'triangle_mesh invalid_desc rejected=1'
     )
     'NxPhysicsTriangleMeshReleaseLockTests' = @(
@@ -5699,7 +5700,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
+    '4' = 269  # plus the live TriangleMesh release-refusal differential line
+               # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
     '5' = 2621  # includes body-create pair path selection and the pinned BOX-sweep input digest

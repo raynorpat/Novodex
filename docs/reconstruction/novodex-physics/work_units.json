@@ -2224,13 +2224,13 @@
    "ambiguous_rows": [],
    "rows": {
     "discovered": 16,
-    "dynamically_gated": 2,
-    "reconstructed": 35
+    "dynamically_gated": 3,
+    "reconstructed": 34
    },
    "bytes": {
     "discovered": 4281,
-    "dynamically_gated": 924,
-    "reconstructed": 4018
+    "dynamically_gated": 1039,
+    "reconstructed": 3903
    },
    "phases": {
     "4": 53

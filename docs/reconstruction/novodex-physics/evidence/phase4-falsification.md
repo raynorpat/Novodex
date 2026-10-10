@@ -429,3 +429,17 @@ worst ULP 0, candidate mismatches were 0, layout failures were 0, the oracle dig
 `7199b521`, and the target exited 0. This falsifies the reconstructed source row. It does not
 establish that Unreal routes calls through the rebuilt DLL; map retention and DLL-level routing
 remain separate checks for the complete reconstruction.
+
+---
+
+## 14. 2026-10-09 follow-up: TriangleMesh release guard
+
+`phys_fn_002258` is now closed with a staged-pair mutation through
+`NxPhysicsTriangleMeshApiTests`. Phase 4 registers the exact live-reference
+refusal transcript and its fresh gate passes at 269/268 coverage assertions.
+The isolated source mutation for `phys_fn_002258` bypassed `TriangleMesh::release`'s `mReferenceCount` guard and produced `stdout_delta=6`; the oracle refused release while the candidate reported `refused=0` and exited 1 at the fixture assertion. Restoring the guard returned the focused staged pair to
+`stdout_delta=0`, two zero exits, and exact stderr. Full setup, mutation,
+restored-control, and binary hashes are in
+[`phase4-row-002258-release-guard-mutation-2026-10-09.md`](phase4-row-002258-release-guard-mutation-2026-10-09.md).
+This closes the guard branch only; the cleanup rows on the successful-release
+path remain independent work.
