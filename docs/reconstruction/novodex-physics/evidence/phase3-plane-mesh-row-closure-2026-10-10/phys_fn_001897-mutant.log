@@ -1,0 +1,8 @@
+oracle module path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+oracle base=10000000 control_word=027f
+oracle pin=matched
+collision name=contact_plane_mesh index=4 rva=0x00048760 owner=phys_fn_001895 checks=872 oracle=3dc2d3277f3fc523 candidate=1cdce4ea696f8aad mismatches=54 contacts=38
+collision name=overlap_plane_mesh index=4 rva=0x00048680 owner=phys_fn_001893 checks=8 oracle_true=8 mismatches=54
+collision coverage name=contact_plane_mesh cases=4 control_words=2
+collision input name=contact_plane_mesh words=214 input=56da60596c2f7b34
+collision plane_mesh mismatches=54

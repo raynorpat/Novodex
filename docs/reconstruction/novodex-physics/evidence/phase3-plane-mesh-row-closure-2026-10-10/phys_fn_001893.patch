@@ -1,0 +1,5 @@
+--- a/Physics/src/ContactPlaneMesh.cpp
++++ b/Physics/src/ContactPlaneMesh.cpp
+@@ -104 +104 @@
+-	return querySucceeded && (contextFlags & 4) != 0;
++	return false; // mutation for phys_fn_001893

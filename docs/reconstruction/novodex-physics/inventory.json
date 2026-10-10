@@ -35142,12 +35142,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPlaneMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/742",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5705",
       "static_proof": null,
-      "dynamic_proof": "Pinned NxPhysicsCollisionTests plane/mesh differential (RVA 0x00048680): 4 plane/mesh fixtures under both x87 control words; oracle and candidate overlap state agree for all 8 checks. Temporary query-disable mutation is detected (24 mismatches). See evidence/phase3-contact-plane-mesh.md.",
+      "dynamic_proof": "Pinned NxPhysicsCollisionTests direct-oracle differential at 0x00048680; isolated git-archive mutation forcing NxOverlapPlaneMesh to return false was detected (mismatches=8). Restored control: overlap 8/8, 872 contact comparisons, 38 contacts, zero mismatches. Evidence: evidence/phase3-plane-mesh-row-closure-2026-10-10/phys_fn_001893-mutant.log and restored-control.log.",
       "notes": "Uses the scene PlanesCollider/PlanesCache context and OPCODE touched-primitive results."
     },
     {
@@ -35178,12 +35178,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPlaneMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/743",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5707",
       "static_proof": null,
-      "dynamic_proof": "Pinned NxPhysicsCollisionTests plane/mesh differential (RVA 0x00048760): 4 fixtures under both x87 control words, 872 ordered contact comparisons, 38 contacts; oracle and candidate digest 3dc2d3277f3fc523 with zero mismatches. Temporary query-disable mutation is detected (24 mismatches). Full Phase 3 gate passed. See evidence/phase3-contact-plane-mesh.md.",
+      "dynamic_proof": "Pinned NxPhysicsCollisionTests direct-oracle differential at 0x00048760; isolated git-archive mutation returning before the touched-face loop was detected (mismatches=16). Restored control: overlap 8/8, 872 contact comparisons, 38 contacts, zero mismatches. Evidence: evidence/phase3-plane-mesh-row-closure-2026-10-10/phys_fn_001895-mutant.log and restored-control.log.",
       "notes": "Contact vertices follow OPCODE touched-face order and per-query vertex-stamp deduplication."
     },
     {
@@ -35214,12 +35214,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPlaneMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/743",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5715",
       "static_proof": null,
-      "dynamic_proof": "Covered by the direct contact differential for phys_fn_001895: the transformed-vertex tail is reached by all four plane/mesh fixtures under both x87 control words. Adding 1.0 to the candidate world-x transform is detected (54 mismatches); restored digest 3dc2d3277f3fc523. See evidence/phase3-contact-plane-mesh.md.",
+      "dynamic_proof": "Pinned NxPhysicsCollisionTests direct-oracle differential at 0x000488f0; isolated git-archive mutation adding +1.0 to transformed world x was detected (mismatches=54). Restored control: overlap 8/8, 872 contact comparisons, 38 contacts, zero mismatches. Evidence: evidence/phase3-plane-mesh-row-closure-2026-10-10/phys_fn_001897-mutant.log and restored-control.log.",
       "notes": "Continuation block of the 0x00048760 contact routine; IDA groups this extent with the parent function."
     },
     {

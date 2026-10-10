@@ -1,0 +1,105 @@
+phase=none resolved_targets=NxPhysicsTriangleMeshApiTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsTriangleMeshApiTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysics.dll source_sha256=ae7e7e9599ba4f1e5c57e12b4f6c6d913ea7f5dd926af553538d7cd9bea987ec staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll staged_sha256=ae7e7e9599ba4f1e5c57e12b4f6c6d913ea7f5dd926af553538d7cd9bea987ec
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxFoundation.dll source_sha256=a9bda63c361f1c62b8e9574267700be083ba7ad273b3db45820534c7046bb5fa staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll staged_sha256=a9bda63c361f1c62b8e9574267700be083ba7ad273b3db45820534c7046bb5fa
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysics.map staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysicsTriangleMeshApiTests.exe
+child target=NxPhysicsTriangleMeshApiTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysicsTriangleMeshApiTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pmap_compute density=32 created=1 size=10444 hash=9a70de00aaf0edd4
+triangle_mesh case=descriptor16 created=1 vertices=4 triangles=2 vertex_hash=b08a8f02841b2ae5 triangle_hash=15ea361ae49aae26 flags=00000000 material_hash=ed0f2487f3f560b9
+triangle_mesh case=implicit_indices created=1 vertices=4 triangles=2 vertex_hash=f9066b93ff223e05 triangle_hash=15ea361ae49aae26 flags=00000000 material_hash=cbf29ce484222325
+triangle_mesh case=precomputed_convex created=1 vertices=4 triangles=4 vertex_hash=5fe8434307f2fc85 triangle_hash=536b96c766e0c945 flags=00000004 material_hash=cbf29ce484222325
+triangle_mesh reload step=computed_convex loaded=1 flags=00000004 hull=4.4 arrays=5fe8434307f2fc85.536b96c766e0c945 hull_hash=5fe8434307f2fc85
+triangle_mesh reload step=precomputed_convex loaded=1 flags=00000004 hull=4.4 arrays=834af86364f24325.536b96c766e0c945 hull_hash=5fe8434307f2fc85
+triangle_mesh reload step=plain loaded=1 flags=00000004 hull=4.4 arrays=3918da4ef84637a5.15ea361ae49aae26 hull_hash=5fe8434307f2fc85
+triangle_mesh lifecycle returned_to_baseline=1
+triangle_mesh invalid_desc rejected=1 errors=1 code=1 line=498 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::createTriangleMesh: desc.isValid() is false!
+triangle_mesh convex_cook case=welded_pair input=0a1938240c703fe8 created=1 vertices=8 triangles=12 arrays=8022558ef6484001.4b6bddef5321c465
+triangle_mesh convex_cook case=five_clusters input=b8b2f31a81db0797 created=1 topology=1
+triangle_mesh created=1
+triangle_mesh pmap descriptor_has=1
+triangle_mesh geometry=8.12
+triangle_mesh arrays vertices=b358b4da777eaee5 triangles=de3e8705a22195a4
+triangle_mesh pmap valid_load=1 has=1
+triangle_mesh pmap export size=24 success=1 bytes=504d415004000000010000001fffffff800000003fffffff
+triangle_mesh pmap cell_run load=1 export=1 size=4124 hash=575faca3773bc417
+triangle_mesh pmap invalid_load=0 has=0 size=0 export=0
+triangle_mesh actor=1 shapes=1
+triangle_mesh release_in_use refused=1 errors=1 code=2 line=173
+triangle_mesh mass=41000000 inertia=40aaaaab.40aaaaab.40aaaaab
+triangle_mesh settle=00000000.3f73332a.00000000 velocity=00000000.00000000.00000000 fetched=1
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsTriangleMeshApiTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsTriangleMeshApiTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysicsTriangleMeshApiTests.exe
+child target=NxPhysicsTriangleMeshApiTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-plane-mesh-opcode\Novodex\build\Release\NxPhysicsTriangleMeshApiTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\candidate" exit=0
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\candidate
+modules pair=2 trusted_system=7 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ae7e7e9599ba4f1e5c57e12b4f6c6d913ea7f5dd926af553538d7cd9bea987ec
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=a9bda63c361f1c62b8e9574267700be083ba7ad273b3db45820534c7046bb5fa
+pmap_compute density=32 created=1 size=10444 hash=9a70de00aaf0edd4
+triangle_mesh case=descriptor16 created=1 vertices=4 triangles=2 vertex_hash=b08a8f02841b2ae5 triangle_hash=15ea361ae49aae26 flags=00000000 material_hash=ed0f2487f3f560b9
+triangle_mesh case=implicit_indices created=1 vertices=4 triangles=2 vertex_hash=f9066b93ff223e05 triangle_hash=15ea361ae49aae26 flags=00000000 material_hash=cbf29ce484222325
+triangle_mesh case=precomputed_convex created=1 vertices=4 triangles=4 vertex_hash=5fe8434307f2fc85 triangle_hash=536b96c766e0c945 flags=00000004 material_hash=cbf29ce484222325
+triangle_mesh reload step=computed_convex loaded=1 flags=00000004 hull=4.4 arrays=5fe8434307f2fc85.536b96c766e0c945 hull_hash=5fe8434307f2fc85
+triangle_mesh reload step=precomputed_convex loaded=1 flags=00000004 hull=4.4 arrays=834af86364f24325.536b96c766e0c945 hull_hash=5fe8434307f2fc85
+triangle_mesh reload step=plain loaded=1 flags=00000004 hull=4.4 arrays=3918da4ef84637a5.15ea361ae49aae26 hull_hash=5fe8434307f2fc85
+triangle_mesh lifecycle returned_to_baseline=1
+triangle_mesh invalid_desc rejected=1 errors=1 code=1 line=498 file=\Epic\Novodex\SDKs\Physics\src\PhysicsSDK.cpp message=PhysicsSDK::createTriangleMesh: desc.isValid() is false!
+triangle_mesh convex_cook case=welded_pair input=0a1938240c703fe8 created=1 vertices=8 triangles=12 arrays=8022558ef6484001.4b6bddef5321c465
+triangle_mesh convex_cook case=five_clusters input=b8b2f31a81db0797 created=1 topology=1
+triangle_mesh created=1
+triangle_mesh pmap descriptor_has=1
+triangle_mesh geometry=8.12
+triangle_mesh arrays vertices=b358b4da777eaee5 triangles=de3e8705a22195a4
+triangle_mesh pmap valid_load=1 has=1
+triangle_mesh pmap export size=24 success=1 bytes=504d415004000000010000001fffffff800000003fffffff
+triangle_mesh pmap cell_run load=1 export=1 size=4124 hash=575faca3773bc417
+triangle_mesh pmap invalid_load=0 has=0 size=0 export=0
+triangle_mesh actor=1 shapes=1
+triangle_mesh release_in_use refused=1 errors=1 code=2 line=173
+triangle_mesh mass=41000000 inertia=40aaaaab.40aaaaab.40aaaaab
+triangle_mesh settle=00000000.3f73332a.00000000 velocity=00000000.00000000.00000000 fetched=1
+modules pair=2 trusted_system=8 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ae7e7e9599ba4f1e5c57e12b4f6c6d913ea7f5dd926af553538d7cd9bea987ec
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=a9bda63c361f1c62b8e9574267700be083ba7ad273b3db45820534c7046bb5fa
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsTriangleMeshApiTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ae7e7e9599ba4f1e5c57e12b4f6c6d913ea7f5dd926af553538d7cd9bea987ec
+pass: NxPhysicsTriangleMeshApiTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=a9bda63c361f1c62b8e9574267700be083ba7ad273b3db45820534c7046bb5fa
+differential target=NxPhysicsTriangleMeshApiTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
+differential_targets=NxPhysicsTriangleMeshApiTests
+differential_pairs=D:\FlamingEnt__\novodex-analysis\pairs\oracle,D:\FlamingEnt__\novodex-analysis\pairs\candidate
+pass: every requested target produces identical oracle and candidate results
+differential=pass

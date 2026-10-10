@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "phase": 3,
-  "note": "Phase 3 closes on an exception list, the same shape Phase 2 closed on, and it is a partial close: 69 of its 392 function rows are closed. Its 102 data objects stand at `classified`, the terminal rung a data object's structural proof gives it, so they are accounted for by that state and appear in neither list. Every Phase 3 function row in inventory.json appears exactly once below and validate_inventory.py enforces that, recomputes the counts from these entries, checks every gate against the real target registry and rejects a closure claiming a falsification it does not carry. What the 61 amount to: the 27 named exports and the four continuation rows the census splits them into, closed by the staged-pair differentials; the contact emitter, the primitive half of matrix B, and eight of the nine non-mesh matrix A entries with the vtable slot-5 partners they dispatch into, closed by NxPhysicsCollisionTests, which loads the pinned DLL in its own process, re-hashes it and calls the recorded RVAs directly. What they do not amount to is the phase: the mesh column, the compound entries, the rest of matrix B's primitive half, the broad phase and the continuous-collision subtree are all still open, and 300 rows below say only that Phase 3 ran out of dispatches -- 74 of which the census has since raised to `reconstructed` through later work that recorded a proof and aimed no mutation at them; their reason predates that and is carried as written. Three limits are in the numbers themselves. First, the sixteen first-dispatch export rows record the measurement completely and the edit not at all, and the two have to be separated because they are not the same weakness. The measurement is traceable: evidence/phase3-leaf-kernels.md carries a per-row `mutation delta` column for all sixteen, those sixteen deltas sum to the 67 differing cases its own totals block states, the positive control in the same run read 142, and every one of the sixteen is a leaf whose Ghidra `called` list is empty -- so no delta there can have been produced by a callee, which is the misattribution that later reassigned `phys_fn_001010`'s 242 to NxRayCapsuleIntersect. The edit is not reproducible: the evidence records the sixteen mutations collectively -- one per row, each perturbing that kernel alone -- and never names the line any one of them changed, so the mutation field paraphrases the collective statement and re-running a single row means deriving its edit again. That is a reproducibility gap, and it is the smaller of the two this ledger has to declare. The sharper one is `phys_fn_001741`/`phys_fn_001743`, now the only place here where a delta is published without the site that produced it: evidence/phase3-narrow-phase.md tables all eight of that row's mutations, but only the closing one -- the corner depth test written as a float compare -- is recorded against a site, and the three further non-zero counts (557,830, 120 + 57,942 and 3,053) are carried by every committed record as bare numbers. The row closes on the one that names its site; the other three are published as counts, because choosing a site for them now would be a reconstruction rather than a reading. Second, `phys_fn_001901` is deferred rather than closed although Phase 3's own record calls it closed, because every mutation recorded for its dispatch changes the emitter it calls; its deferral entry says so. Third, two rows here are closed on algorithmic agreement under a control word they do not execute under, with the divergence pinned -- `phys_fn_001775` at 43 words and `phys_fn_001010` at 242, and the 242 has since been shown to belong to its callee NxRayCapsuleIntersect, a Phase 2-era Task 2 export. gates/phase3.json carries that as an escalation. Where the guarantee ends is where Phase 2 left it and one step further. Recomputed counts and a required non-zero delta make the strongest claim the costly one; they do not make a false one impossible, because the probe transcripts are not committed artifacts. And Phase 3 itself demonstrated the deeper limit: evidence in this programme is relative to the reachability graph known at the time, and recovering the dispatch matrix moved five rows Task 2 had already closed into a different floating-point environment. That is why nothing here is `closed` in the inventory: these rows are `dynamically_gated`, which says a gate entered them and caught a mutation, and the terminal rung stays Phase 8's to grant. P4 Task 1c removed seven rows from this ledger because the census no longer gives them to Phase 3: five IcePrunable.cpp rows and phys_fn_004842/004844, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. All seven were deferred not_reconstructed_in_phase, so no closure left with them and the 61 is unchanged. The census has since given 42 of this phase's rows to Phase 5, none of them closed here, which is why the function count is 392. And the port of the Phase 4 close re-deferred phys_fn_002344, which the Phase 5 remover-chain round had closed here on Phase 5's NxPhysicsObjectLayoutTests: that gate does not run when this phase is gated, so the closure rested on nothing this phase's gate executes. Its deferral carries the mutation, both readings and the dirty control, and the 61 closed rows are the same 61 described above. Latest reclose: phys_fn_002423 is now dynamically_gated by NxPhysicsBodyCreationTests; the shape pointer mutation changed six transcript lines, and the clean Phase 3 gate passes 527/527. See evidence/scene-registration-002423.md. Scene release continuation (2026-10-07): phys_fn_001275 is dynamically gated by the Phase 3 NxPhysicsSDKTests target; its deletion path was observed through the allocator checkpoint after two explicit releases. Phase 5 discharged five collision-object family deleting-destructor rows (phys_fn_001079, 001127, 001163, 001197, and 001245) through NxPhysicsShapeVtableTests; the member-only negative control reports mismatches=5 and each restored family reports mismatches=0. Phase 5 later discharged phys_fn_001315 using the registered NxPhysicsObjectLayoutTests owned-pruning differential; see evidence/phase3-owner-update-pruning-001315.md.",
+  "note": "Phase 3 closes on an exception list, the same shape Phase 2 closed on, and it is a partial close: 69 of its 392 function rows are closed. Its 102 data objects stand at `classified`, the terminal rung a data object's structural proof gives it, so they are accounted for by that state and appear in neither list. Every Phase 3 function row in inventory.json appears exactly once below and validate_inventory.py enforces that, recomputes the counts from these entries, checks every gate against the real target registry and rejects a closure claiming a falsification it does not carry. What the 61 amount to: the 27 named exports and the four continuation rows the census splits them into, closed by the staged-pair differentials; the contact emitter, the primitive half of matrix B, and eight of the nine non-mesh matrix A entries with the vtable slot-5 partners they dispatch into, closed by NxPhysicsCollisionTests, which loads the pinned DLL in its own process, re-hashes it and calls the recorded RVAs directly. What they do not amount to is the phase: the mesh column, the compound entries, the rest of matrix B's primitive half, the broad phase and the continuous-collision subtree are all still open, and 300 rows below say only that Phase 3 ran out of dispatches -- 74 of which the census has since raised to `reconstructed` through later work that recorded a proof and aimed no mutation at them; their reason predates that and is carried as written. Three limits are in the numbers themselves. First, the sixteen first-dispatch export rows record the measurement completely and the edit not at all, and the two have to be separated because they are not the same weakness. The measurement is traceable: evidence/phase3-leaf-kernels.md carries a per-row `mutation delta` column for all sixteen, those sixteen deltas sum to the 67 differing cases its own totals block states, the positive control in the same run read 142, and every one of the sixteen is a leaf whose Ghidra `called` list is empty -- so no delta there can have been produced by a callee, which is the misattribution that later reassigned `phys_fn_001010`'s 242 to NxRayCapsuleIntersect. The edit is not reproducible: the evidence records the sixteen mutations collectively -- one per row, each perturbing that kernel alone -- and never names the line any one of them changed, so the mutation field paraphrases the collective statement and re-running a single row means deriving its edit again. That is a reproducibility gap, and it is the smaller of the two this ledger has to declare. The sharper one is `phys_fn_001741`/`phys_fn_001743`, now the only place here where a delta is published without the site that produced it: evidence/phase3-narrow-phase.md tables all eight of that row's mutations, but only the closing one -- the corner depth test written as a float compare -- is recorded against a site, and the three further non-zero counts (557,830, 120 + 57,942 and 3,053) are carried by every committed record as bare numbers. The row closes on the one that names its site; the other three are published as counts, because choosing a site for them now would be a reconstruction rather than a reading. Second, `phys_fn_001901` is deferred rather than closed although Phase 3's own record calls it closed, because every mutation recorded for its dispatch changes the emitter it calls; its deferral entry says so. Third, two rows here are closed on algorithmic agreement under a control word they do not execute under, with the divergence pinned -- `phys_fn_001775` at 43 words and `phys_fn_001010` at 242, and the 242 has since been shown to belong to its callee NxRayCapsuleIntersect, a Phase 2-era Task 2 export. gates/phase3.json carries that as an escalation. Where the guarantee ends is where Phase 2 left it and one step further. Recomputed counts and a required non-zero delta make the strongest claim the costly one; they do not make a false one impossible, because the probe transcripts are not committed artifacts. And Phase 3 itself demonstrated the deeper limit: evidence in this programme is relative to the reachability graph known at the time, and recovering the dispatch matrix moved five rows Task 2 had already closed into a different floating-point environment. That is why nothing here is `closed` in the inventory: these rows are `dynamically_gated`, which says a gate entered them and caught a mutation, and the terminal rung stays Phase 8's to grant. P4 Task 1c removed seven rows from this ledger because the census no longer gives them to Phase 3: five IcePrunable.cpp rows and phys_fn_004842/004844, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. All seven were deferred not_reconstructed_in_phase, so no closure left with them and the 61 is unchanged. The census has since given 42 of this phase's rows to Phase 5, none of them closed here, which is why the function count is 392. And the port of the Phase 4 close re-deferred phys_fn_002344, which the Phase 5 remover-chain round had closed here on Phase 5's NxPhysicsObjectLayoutTests: that gate does not run when this phase is gated, so the closure rested on nothing this phase's gate executes. Its deferral carries the mutation, both readings and the dirty control, and the 61 closed rows are the same 61 described above. Latest reclose: phys_fn_002423 is now dynamically_gated by NxPhysicsBodyCreationTests; the shape pointer mutation changed six transcript lines, and the clean Phase 3 gate passes 527/527. See evidence/scene-registration-002423.md. Scene release continuation (2026-10-07): phys_fn_001275 is dynamically gated by the Phase 3 NxPhysicsSDKTests target; its deletion path was observed through the allocator checkpoint after two explicit releases. Phase 5 discharged five collision-object family deleting-destructor rows (phys_fn_001079, 001127, 001163, 001197, and 001245) through NxPhysicsShapeVtableTests; the member-only negative control reports mismatches=5 and each restored family reports mismatches=0. Phase 5 later discharged phys_fn_001315 using the registered NxPhysicsObjectLayoutTests owned-pruning differential; see evidence/phase3-owner-update-pruning-001315.md. Plane/mesh row closure (2026-10-10): after Phase 4 supplied the mesh assets and NxPhysicsCollisionTests could drive the three internal rows directly, the stale Phase 3 deferrals for phys_fn_001893, phys_fn_001895 and phys_fn_001897 were discharged with isolated git-archive mutations. The overlap mutation produced 8 mismatches, the contact early-return mutation 16, and the transformed-vertex +1.0 x mutation 54; the restored control produced zero mismatches. The public triangle-mesh simulation differential remained exact, but its overlap-disable mutation also remained exact, so it does not claim overlap coverage. The current totals are 76 closed and 316 deferred; the remaining later-phase blocked rows are separately counted.",
   "proof_kinds": {
     "differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a Phase 3 staged-pair target. NxPhysicsGeometryTests prints one line per case and NxPhysicsKernelFuzzTests one digest per export, so what a per-row probe reports is a count of differing cases or differing digests rather than the whole-target `stdout_delta` run_differential.ps1 prints; the detection records the unit it was measured in rather than converting it, and the gate is the target that produced it. Every one of these runs was accompanied by an un-mutated copy of the same tree built and run in the same session reading zero",
     "static_proof_falsified": "a mutation was aimed at this row and the static-proof gate failed the named check; there is no oracle side, so this is weaker than any differential. Phase 3 closes no row this way",
     "oracle_differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt, and run through NxPhysicsCollisionTests -- a target that loads the pinned DLL in its own process, checks its hash and calls the recorded internal address directly, because none of these rows is exported and the public path that would reach them is Phase 4, 5 and 7 work that does not exist. It runs once rather than once per pair, so there is no transcript to diff and the detection is a mismatch count against the shipped bytes. Where one mutation was measured on more than one block or under both control words the largest single count is recorded and the mutation names the split"
   },
   "deferred_reasons": {
-    "blocked_on_later_phase": "the row, or something it must dispatch into to be driven at all, belongs to a phase after 3. Seventeen rows: the thirteen that make up the dispatch matrix's mesh column and its continuations, three of the four rows of the continuous-collision subtree (its pose helper phys_fn_001653 was reconstructed by convex-mesh gap Task 2e and driven exactly in NxPhysicsThirdPartyTests), and phys_fn_002344, whose only falsification runs on Phase 5's NxPhysicsObjectLayoutTests. Matrix B's and matrix A's [BOX][CAPSULE] entries were here (twenty rows) until convex-mesh gap Task 2a reconstructed them with the Phase 4 box distance rows they were blocked on and the box raycast phys_fn_000949 bound from the oracle in the harness",
+    "blocked_on_later_phase": "The row, or something it must dispatch into to be driven at all, belongs to a phase after 3. The current five rows are phys_fn_001876, 001925 and 001929 (TriangleMesh, Phase 4), phys_fn_002264 (Shape, Phases 4/5/7), and phys_fn_002344 (Scene, Phase 5). The plane/mesh rows 001893, 001895 and 001897 were removed from this category on 2026-10-10 after direct oracle differentials became possible with Phase 4 mesh assets; see evidence/phase3-plane-mesh-row-closure-2026-10-10. Earlier matrix B and matrix A [BOX][CAPSULE] entries (twenty rows) were here until convex-mesh gap Task 2a reconstructed them with the Phase 4 box distance rows they were blocked on and the box raycast phys_fn_000949 bound from the oracle in the harness.",
     "unreachable_in_phase_2": "Phase 2's reason, unused here",
     "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own. Unused here",
     "homeless_shared_code": "Phase 2's reason for shared code with no translation unit span. Unused here",
@@ -54,10 +54,10 @@
   },
   "counts": {
     "differential_falsified": 33,
-    "oracle_differential_falsified": 40,
+    "oracle_differential_falsified": 43,
     "deferred_not_reconstructed_in_phase": 210,
     "deferred_reconstructed_not_falsified": 101,
-    "deferred_blocked_on_later_phase": 8
+    "deferred_blocked_on_later_phase": 5
   },
   "closed": [
     {
@@ -718,6 +718,36 @@
       "falsification": {
         "mutation": "matrix A [PLANE][CAPSULE]: the contact point scales the normal by the radius instead of by the plane distance -- the plane/sphere convention -- 162,288 of 2,180,528 words",
         "detected": "mismatches=162288"
+      }
+    },
+    {
+      "id": "phys_fn_001893",
+      "rva": "0x00048680",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "NxOverlapPlaneMesh returning false, applied and rebuilt in an isolated git archive of 6a2a861f; see evidence/phase3-plane-mesh-row-closure-2026-10-10/phys_fn_001893-mutant.patch and .log",
+        "detected": "mismatches=8"
+      }
+    },
+    {
+      "id": "phys_fn_001895",
+      "rva": "0x00048760",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "NxContactPlaneMesh returning before the touched-face loop, applied and rebuilt in an isolated git archive of 6a2a861f; see evidence/phase3-plane-mesh-row-closure-2026-10-10/phys_fn_001895-mutant.patch and .log",
+        "detected": "mismatches=16"
+      }
+    },
+    {
+      "id": "phys_fn_001897",
+      "rva": "0x000488f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the transformed-vertex tail adding +1.0 to world x, applied and rebuilt in an isolated git archive of 6a2a861f; see evidence/phase3-plane-mesh-row-closure-2026-10-10/phys_fn_001897-mutant.patch and .log",
+        "detected": "mismatches=54"
       }
     },
     {
@@ -3355,42 +3385,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001893",
-      "rva": "0x00048680",
-      "size": 219,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "matrix B [PLANE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
-    },
-    {
-      "id": "phys_fn_001895",
-      "rva": "0x00048760",
-      "size": 390,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "matrix A [PLANE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
-    },
-    {
-      "id": "phys_fn_001897",
-      "rva": "0x000488f0",
-      "size": 296,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "continuation at 0x000488f0 of matrix A [PLANE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
     },
     {
       "id": "phys_fn_001901",

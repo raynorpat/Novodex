@@ -1584,3 +1584,10 @@ The public convex-mesh cooking differential is exact on current mainline (`NxPhy
 
 - `phys_fn_004057` (`SceneDump::writeAsset` actor shape-label continuation) is mutation-falsified through the registered `NxPhysicsCoreDumpTests` staged-pair differential. Changing the `PsShape Shape%d` label to a constant changes the transcript by 58 bytes; the restored differential is exact.
 - Phase 6 now has 50 closed function rows and 383 deferred function rows. No public Physics headers or production behavior changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-coredump-004057-asset-shape-label.md`.
+
+
+### Continuation — plane/mesh row closure and collision-object destructor verification (2026-10-10)
+
+The stale Phase 3 deferrals for `phys_fn_001893`, `phys_fn_001895` and `phys_fn_001897` are now closed after isolated git-archive mutations against the pinned oracle. The internal plane/mesh control matches at overlap 8/8 and 872 ordered contact comparisons with 38 contacts; forcing overlap false yields 8 mismatches, returning before touched faces yields 16, and adding 1.0 to transformed world X yields 54. The public triangle-mesh settling differential is exact, but its overlap-disable mutant is also exact, so that fixture is not credited for the overlap row. Phase 3 accounting is 76 closed / 316 deferred, and the current Phase 3 gate passes 551/551 assertions. Evidence and applicable unified mutation patches are in `docs/reconstruction/novodex-physics/evidence/phase3-plane-mesh-row-closure-2026-10-10/`.
+
+The approved five-family collision-object model is already present on main: each family has `CollisionObject` as primary base and `EmbeddedHookBase` as secondary base, with final shape-family classes emitting the secondary deleting-destructor adjustor. A fresh shape-vtable run confirms all five secondary and primary deleting paths match, and the member-only negative control fails all five. The full Phase 5 gate passes 2,621/2,621 assertions. Public Physics headers remain unchanged. Full DLL completion is still open.

@@ -1,0 +1,5 @@
+--- a/Physics/src/ContactPlaneMesh.cpp
++++ b/Physics/src/ContactPlaneMesh.cpp
+@@ -74 +74 @@
+-			(double)r[2] * point.z) + (double)r[0] * point.x + t[0]);
++			(double)r[2] * point.z) + (double)r[0] * point.x + t[0] + 1.0);

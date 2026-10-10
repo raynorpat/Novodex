@@ -1,0 +1,5 @@
+--- a/Physics/src/ContactPlaneMesh.cpp
++++ b/Physics/src/ContactPlaneMesh.cpp
+@@ -114 +114 @@
+-	if(!nxPlaneMeshQuery(plane, shape, context, true))
++	if(true) // mutation for phys_fn_001895
