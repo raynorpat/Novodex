@@ -6,6 +6,7 @@
 #endif
 #include <windows.h>
 
+#if NX_PHYSICS_USE_X87
 // The public Scene and actor wrappers hold a pointer to a four-byte link;
 // that link points to a 0x20-byte block containing a CRITICAL_SECTION and
 // the writer flag/thread ID at +0x18/+0x1c.
@@ -44,5 +45,11 @@ inline void nxNpSceneGuardLeave(void* link)
 	::InterlockedCompareExchange(reinterpret_cast<volatile long*>(state), 0, 1);
 	::LeaveCriticalSection(cs);
 	}
+#else
+// Scalar links and their state have real class lifetimes; call the actual methods.
+void nxNpSceneGuardEnter(void* link);
+bool nxNpSceneGuardWriteTry(void* link);
+void nxNpSceneGuardLeave(void* link);
+#endif
 
 #endif

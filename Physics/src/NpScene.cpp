@@ -30,6 +30,9 @@
 
 #include "NpScene.h"
 #include "NpSceneGuard.h"
+#if !NX_PHYSICS_USE_X87
+#include "ReadWriteLockLifetime.h"
+#endif
 #include <stdio.h>
 #include <string.h>
 
@@ -52,7 +55,9 @@
 // ---------------------------------------------------------------------------
 // Lock and condition-object helpers.
 // ---------------------------------------------------------------------------
+#if NX_PHYSICS_USE_X87
 static void* nxLockConstruct(void* memory);
+#endif
 static bool nxLockTryLock(void* lock);
 static bool nxLockUnlock(void* lock);
 static void* nxConditionConstruct(void* memory, void* a, void* b, void* c);
@@ -69,12 +74,20 @@ static bool gWaitWarningEmitted = false;
 
 NpScene::NpScene(NxSceneInternal* scene)
 	{
+#if !NX_PHYSICS_USE_X87
+	static_assert(alignof(NpScene)==4,"actual Scene wrapper alignment");
+	static_assert(offsetof(NpScene,mWriteLock)==0x0c,"original write link placement");
+	static_assert(offsetof(NpScene,mReadLock)==0x10,"original read link placement");
+	static_assert(offsetof(NpScene,mLockA)==0x14 && offsetof(NpScene,mLockB)==0x18,"original event placement");
+	static_assert(offsetof(NpScene,mCondition)==0x1c && offsetof(NpScene,mScene)==0x24,"original condition/owner placement");
+#endif
 	mWriteLock = 0;
 	mReadLock = 0;
 	mCondition = 0;
 	mFlag = 0;
 	mScene = scene;
 
+#if NX_PHYSICS_USE_X87
 	// The inner lock at +8, then the two locks at +0xc and +0x10 through
 	// phys_fn_0005b6a0, then the two at +0x14 and +0x18, then the 0x18-byte object
 	// at +0x1c linked to them.
@@ -104,6 +117,13 @@ NpScene::NpScene(NxSceneInternal* scene)
 	mLockB[0] = mLockB[1] = mLockB[2] = mLockB[3] = 0;
 	*reinterpret_cast<HANDLE*>(mLockA) = ::CreateEventA(0, TRUE, FALSE, 0);
 	*reinterpret_cast<HANDLE*>(mLockB) = ::CreateEventA(0, TRUE, FALSE, 0);
+#else
+	// Original C310 constructs events14/18 before the real write/read links.
+	*reinterpret_cast<HANDLE*>(mLockA) = ::CreateEventA(0, TRUE, FALSE, 0);
+	*reinterpret_cast<HANDLE*>(mLockB) = ::CreateEventA(0, TRUE, FALSE, 0);
+	mWriteLock = nxSceneLockCreate();
+	mReadLock = nxSceneLockCreate();
+#endif
 
 	mCondition = nxGetSdkAllocator()->malloc(0x18, NX_MEMORY_PERSISTENT);
 	if(mCondition)
@@ -123,6 +143,7 @@ NpScene::~NpScene()
 			static_cast<unsigned char*>(mCondition) + 4));
 		nxFoundationSDKAllocator->free(mCondition);
 		}
+#if NX_PHYSICS_USE_X87
 	if(*reinterpret_cast<HANDLE*>(mLockA))
 		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockA));
 	if(*reinterpret_cast<HANDLE*>(mLockB))
@@ -143,6 +164,15 @@ NpScene::~NpScene()
 		nxFoundationSDKAllocator->free(*static_cast<void**>(mWriteLock));
 		nxFoundationSDKAllocator->free(mWriteLock);
 		}
+#else
+	// Original D970: condition ends first, write then read, events18 then14.
+	nxSceneLockDestroy(mWriteLock);
+	nxSceneLockDestroy(mReadLock);
+	if(*reinterpret_cast<HANDLE*>(mLockB))
+		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockB));
+	if(*reinterpret_cast<HANDLE*>(mLockA))
+		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockA));
+#endif
 	}
 
 // phys_fn_000293 (0x0000c490): the forwarding shape every slot in this class has.
@@ -191,6 +221,7 @@ void NpScene::release()
 // Lock and condition implementations.
 // ---------------------------------------------------------------------------
 
+#if NX_PHYSICS_USE_X87
 static void* nxLockConstruct(void* memory)
 	{
 	// phys_fn_0005b6a0 zeroes the writer flag at +0x18 and initializes
@@ -199,6 +230,7 @@ static void* nxLockConstruct(void* memory)
 	::InitializeCriticalSection(static_cast<CRITICAL_SECTION*>(memory));
 	return memory;
 	}
+#endif
 
 static bool nxLockTryLock(void* lock)
 	{
