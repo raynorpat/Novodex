@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "fixture": "scene-visited-buffers-x87.nxpf",
+  "fixture_sha256": "c887fc7292ac07264234ee06eaf80e62d5494e5ad67247b50be4ab7f10567612",
+  "manifest_sha256": "4aea7f41f445435027e46637fac411fb25299f0795f0928f5cc561a7cda976d2",
+  "snapshot_index_sha256": "532740909ecce9dc420cd815b6abe3cbdd40a12e0baf47d198f2ee077eb8264e",
+  "current_source_sha256": {
+    "Physics/src/Scene.cpp": "1e99830b8a3d3e601d1f6f0bfc1019257d4b7537ea30a7397baef16dae3bd9d5",
+    "Physics/src/opcode/IcePruner.cpp": "98a9ae9aff8212817ace63b853fc6b8ef76751e3dc5a68a7b92f56a4a5dd073d",
+    "Physics/src/opcode/IcePruningEngine.cpp": "7d1f089944b176cfd5bfe740ce43228e5fb37242d9c04743579c10e6b676ec8a",
+    "Physics/src/include/NxSceneVisitedBuffers.h": "9ca18437bc3f6e5d1885cb7d1f58896688969bbb80be785e1a127e2959aa63e4",
+    "Physics/src/include/NxScenePrunerCollection.h": "31e96282839fc1245774e2fd079cb5c96395ba032e3c2a9848f09c007b2f5fc2",
+    "Physics/src/include/NxIceContainerExternalBuffer.h": "525717806bdb88d75aae4df7b0ba5289e8e75bee2919c3ef55dc62a61fe00bbf",
+    "tests/portable/SceneVisitedBufferTests.cpp": "c198aea9a338accc50964673fd2cc9d2d612178d5773ae9822d855a0bfca220a",
+    "tests/portable/ExportShippedSceneVisitedBuffers.cpp": "095ca215115b9c148e064035e949791f67fa67247015839acb9fac92d9b40b45",
+    "tests/portable/SceneVisitedBufferTargets.cmake": "88dbcf26a8b795ae31bfdb083804abee464d1106f4b83a1d790f97ffc7ed1f9d",
+    "tests/portable/SceneVisitedBufferPlacementTests.py": "ce845ea17ad2c7fc333f1985e8745f4fa69daf2f196f90d3b17443d1d257ecfb",
+    "docs/reconstruction/novodex-physics/tools/capture_scene_visited_buffers.py": "85fceb311c172a6d19fed8518da3a8ff7f3b8fbd381f74aca09708c83da9cc36"
+  },
+  "reference": "direct pinned shipped SDK-created Scene; row000503/RVA100a0/thiscallret4",
+  "acceptance_domain": {
+    "groups": 33,
+    "words": 246,
+    "requests": [
+      0,
+      1,
+      255,
+      256,
+      257,
+      512,
+      513,
+      1024,
+      1023
+    ],
+    "capacities": [
+      0,
+      256,
+      256,
+      256,
+      512,
+      512,
+      768,
+      1280,
+      1280
+    ],
+    "prefix_words": 18,
+    "state_words": 81,
+    "borrowed_header_words": 144,
+    "teardown_words": 3,
+    "borrowed_factor_bf800000_count": 36
+  },
+  "budgets": {
+    "all_words": "exact raw equality",
+    "metadata": "exact",
+    "floating_arithmetic": "none; no tolerance applies",
+    "approval": "controller before final acceptance; no widening"
+  },
+  "quantity_units": "structural integer counts/stamps/boolean buffer identities and initialized header words; borrowedfactor bits exact identity",
+  "measurements": {
+    "Release": {
+      "differing_words": 0,
+      "allocations": 37,
+      "releases": 37,
+      "failures": 0
+    },
+    "Debug": {
+      "differing_words": 0,
+      "failures": 0
+    },
+    "Clang": {
+      "differing_words": 0,
+      "failures": 0
+    },
+    "shipped": {
+      "allocations": 113,
+      "releases": 113,
+      "failures": 0
+    }
+  },
+  "chronology": "integer/type helpers written after source/compile RED; independent shipped capture and139preintegration snapshots then Scene/static/engine integration; fixture null observation encoding corrected after first comparison. Never a pretranslation claim.",
+  "unsupported": "original allocation failure/unsigned-overflow and malformed physical owners not exercised; no undersized-state success recovery; full reconstructed public Scene/SDK, shapes/AABB/slot5/CCD and Tasks6-9 remain"
+}

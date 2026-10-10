@@ -61,6 +61,10 @@ AABBTreeBuilder::GetSplittingValue, 002150, rounded its result to float).
 */
 
 #include "IcePruner.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "NxIceContainerExternalBuffer.h"
+#endif
 #include "OPC_AABBCollider.h"
 #include "OPC_SphereCollider.h"
 
@@ -387,7 +391,11 @@ bool StaticPruner::UpdateObject(Prunable* /*object*/)
 // The touched container borrows the buffer (0x000b4f90, phys_fn_004847).
 void StaticPruner::SetExternalBuffer(udword max_nb, udword* entries)
 {
+#if NX_PHYSICS_USE_X87
 	nxSdkContainerSetExternalBuffer(&mTouched, max_nb, entries);
+#else
+	nxIceContainerSetExternalBuffer(mTouched, max_nb, entries);
+#endif
 }
 
 // phys_fn_005216 (0x000e5110, 250 B)

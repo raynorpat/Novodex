@@ -30,6 +30,7 @@
 #include "NxPhysicsBackend.h"
 #if !NX_PHYSICS_USE_X87
 #include "NxSceneContactMembers.h"
+#include "NxSceneVisitedBuffers.h"
 #endif
 #include "NxSceneDesc.h"
 #include "NxSceneStats.h"
@@ -450,10 +451,14 @@ void nxSceneMember4CA30(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
 	nxDword(p, 0x00) = 0;
+#if NX_PHYSICS_USE_X87
 	nxDword(p, 0x1c) = 0;
 	nxDword(p, 0x20) = 0;
 	nxDword(p, 0x24) = 0;
 	nxDword(p, 0x28) = 0;
+#else
+	nxScenePrunerCollectionConstruct(nxAt(p, 0x1c));
+#endif
 	nxDword(p, 0x04) = 0x7f7fffffu;
 	nxDword(p, 0x08) = 0x7f7fffffu;
 	nxDword(p, 0x0c) = 0x7f7fffffu;
@@ -622,11 +627,17 @@ NxSceneInternal::NxSceneInternal()
 	const unsigned base = reinterpret_cast<unsigned>(this);
 
 	// 0x12c18: the vtable the oracle installs.
+#if NX_PHYSICS_USE_X87
 	nxDword(p, 0x000) = reinterpret_cast<unsigned>(vtable());
 
 	// 0x12c21: +0x04..+0x28 zeroed.
 	for(unsigned offset = 0x04; offset <= 0x28; offset += 4)
 		nxDword(p, offset) = 0;
+#else
+	nxSceneScratchConstruct(nxAt(p, 0x000), reinterpret_cast<NxU32>(vtable()));
+	for(unsigned offset = 0x18; offset <= 0x28; offset += 4)
+		nxDword(p, offset) = 0;
+#endif
 
 	nxSceneArrayHeaderInit(nxAt(p, 0x02c));					// phys_fn_004147
 	new (nxAt(p, 0x050)) SdkContainer();					// phys_fn_004836
@@ -3215,6 +3226,7 @@ static void nxSceneDelete(void* self, int flags)
 		nxSceneReleaseDisabledFluidManager(fluids);
 		scene->at<void*>(0x61c) = 0;
 		}
+#if NX_PHYSICS_USE_X87
 	for(unsigned offset = 8; offset <= 0xc; offset += 4)
 		{
 		void*& entries = *reinterpret_cast<void**>(
@@ -3225,6 +3237,9 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
+#else
+	nxSceneScratchReleaseBuffers(*reinterpret_cast<NxPolygonScratch*>(scene->bytes()));
+#endif
 	if(p[0x12])
 		{
 		unsigned char* aux = reinterpret_cast<unsigned char*>(p[0x12]);
@@ -3275,6 +3290,8 @@ static void nxSceneDelete(void* self, int flags)
 #if !NX_PHYSICS_USE_X87
 	nxSceneContactMembersDestroy(
 		reinterpret_cast<NxSceneContactMembers*>(scene->bytes() + 0x450));
+	reinterpret_cast<NxScenePrunerCollection*>(scene->bytes() + 0x640)->~NxScenePrunerCollection();
+	nxSceneScratchDestroy(reinterpret_cast<NxPolygonScratch*>(scene->bytes()));
 #endif
 	if(flags & 1)
 		nxFoundationSDKAllocator->free(self);
@@ -3316,6 +3333,7 @@ void* nxSceneActorInitialise(NxActor* actor, const void* desc)
 // candidate's pruners (the model above) have no table.
 void nxSceneUpdateActorCount(void* scene, unsigned count)
 	{
+#if NX_PHYSICS_USE_X87
 	unsigned char* bytes = static_cast<unsigned char*>(scene);
 	unsigned& capacity = *reinterpret_cast<unsigned*>(bytes + 4);
 	if(capacity >= count) return;
@@ -3345,6 +3363,14 @@ void nxSceneUpdateActorCount(void* scene, unsigned count)
 	reinterpret_cast<SdkContainer*>(bytes + 0x500)->setExternalBuffer(capacity, buffer);
 	reinterpret_cast<SdkContainer*>(bytes + 0x510)->setExternalBuffer(capacity, buffer);
 	nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, buffer);
+#else
+	unsigned char* bytes = static_cast<unsigned char*>(scene);
+	nxSceneVisitedBuffersUpdate(*reinterpret_cast<NxPolygonScratch*>(bytes),
+		*reinterpret_cast<SdkContainer*>(bytes + 0x50),
+		*reinterpret_cast<SdkContainer*>(bytes + 0x500),
+		*reinterpret_cast<SdkContainer*>(bytes + 0x510),
+		*reinterpret_cast<NxScenePrunerCollection*>(bytes + 0x640), count);
+#endif
 	}
 
 void nxSceneNotifyActorCreated(void* hook, NxActor* actor)

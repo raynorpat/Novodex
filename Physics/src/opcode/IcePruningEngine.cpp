@@ -21,6 +21,10 @@ Runs at API time under 0x027f like IcePruner.cpp; default architecture.
 */
 
 #include "IcePruner.h"
+#include "NxPhysicsBackend.h"
+#if !NX_PHYSICS_USE_X87
+#include "NxScenePrunerCollection.h"
+#endif
 #include "Opcode.h"
 
 #include <string.h>
@@ -194,5 +198,10 @@ void nxFourSlotLoop4861(void* self, unsigned a, unsigned b, NxSlotMfp2 slot);
 
 void nxSceneEngineSetExternalBuffer(void* engine, unsigned capacity, void* entries)
 {
+#if NX_PHYSICS_USE_X87
 	nxFourSlotLoop4861(engine, capacity, unsigned(entries), nxPrunerSetExternalBufferSlot());
+#else
+	reinterpret_cast<NxScenePrunerCollection*>(static_cast<ubyte*>(engine)+0x1c)
+		->setExternalBuffer(capacity,static_cast<udword*>(entries));
+#endif
 }
