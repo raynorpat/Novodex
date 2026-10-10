@@ -199,6 +199,38 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<unsigned>(recycledBodyBytes), recycledBodyFreed ? 1u : 0u);
 	if(!recycledShapeFreed || !recycledActorFreed || !recycledBodyFreed)
 		return nxFail("scene teardown did not free its recycled-ID arrays");
+
+
+	// The solver lazily grows the JointSupportBody array at Scene+0x5ac for an
+	// active jointed island. Its allocation has a count word immediately before
+	// the stored pointer, so the deleting destructor must free pointer-4.
+	NxScene* supportScene = sdk->createScene(sceneDesc);
+	if(!supportScene) return nxFail("joint-support teardown scene creation failed");
+	NxActor* supportActor = supportScene->createActor(dynamicDesc);
+	if(!supportActor) return nxFail("joint-support teardown dynamic actor failed");
+	NxFixedJointDesc supportJointDesc;
+	supportJointDesc.setToDefault();
+	supportJointDesc.actor[0] = supportActor;
+	if(!supportScene->createJoint(supportJointDesc))
+		return nxFail("joint-support teardown fixed joint failed");
+	supportScene->simulate(0.125f);
+	if(!supportScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("joint-support teardown simulation did not fetch");
+	unsigned char* supportInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(supportScene) + 0x24);
+	void* supportArray = *reinterpret_cast<void**>(supportInternal + 0x5ac);
+	void* supportAllocation = supportArray
+		? static_cast<unsigned char*>(supportArray) - sizeof(unsigned) : 0;
+	const size_t supportBytes = allocator.allocationSize(supportAllocation);
+	if(!supportArray || !supportBytes)
+		return nxFail("joint simulation did not retain its support-body array");
+	sdk->releaseScene(*supportScene);
+	const bool supportFreed = allocator.allocationSize(supportAllocation) == 0;
+	printf("teardown joint_support_body_buffer bytes=%u freed=%u\n",
+		static_cast<unsigned>(supportBytes), supportFreed ? 1u : 0u);
+	if(!supportFreed)
+		return nxFail("Scene teardown did not free its joint-support body array");
+
 	if(!scene->createActor(staticDesc) || !scene->createActor(dynamicDesc))
 		return nxFail("static-first populated actor fixture failed");
 
@@ -206,8 +238,7 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*scene);
 	const unsigned afterScene = allocator.outstanding();
 	const int releaseDelta = static_cast<int>(afterScene) - static_cast<int>(beforeScene);
-	printf("teardown static_first outstanding_before=%u outstanding_after=%u delta=%d\n",
-		beforeScene, afterScene, releaseDelta);
+	printf("teardown static_first release_delta=%d\n", releaseDelta);
 
 	if(releaseDelta != -39)
 		return nxFail("scene teardown did not release the oracle's 39 scene-owned blocks");
@@ -461,6 +492,7 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned jointBlocksAfter = allocator.outstanding();
 	printf("teardown joint_owner joint_created=1 release_delta=%d\n",
 		static_cast<int>(jointBlocksAfter) - static_cast<int>(jointBlocksBefore));
+
 
 	// Preserve the body record while the public actor follows its normal teardown
 	// path. Clearing the pose's record link makes nxActorDestroy remove the actor
