@@ -133,6 +133,8 @@ extern "C" __declspec(naked) unsigned __cdecl nxJointAbiInvokeSretProbe(
 	}
 }
 
+static NxU32 nxU(NxReal value);
+
 static void nxProbeJointSret(const char* family, unsigned index, const NxJoint* joint)
 	{
 	const NxVec3 expectedAnchor = joint->getGlobalAnchorVal();
@@ -150,6 +152,9 @@ static void nxProbeJointSret(const char* family, unsigned index, const NxJoint* 
 		memcmp(&expectedAxis, &rawAxis, sizeof(NxVec3)) != 0;
 	printf("case=%s index=%u abi_sret cases=2 flags=%x mismatches=%u\n",
 		family, index, flags, mismatches);
+	printf("case=%s index=%u abi_sret_values anchor=%08x.%08x.%08x axis=%08x.%08x.%08x\n",
+		family, index, nxU(expectedAnchor.x), nxU(expectedAnchor.y), nxU(expectedAnchor.z),
+		nxU(expectedAxis.x), nxU(expectedAxis.y), nxU(expectedAxis.z));
 	}
 
 // NxJointDesc::setGlobalAnchor and setGlobalAxis are inline and call these two

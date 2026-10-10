@@ -77027,13 +77027,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1559",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13722",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "Value-return vector bits are now serialized by the registered joint staged-pair family matrix. A +1.0f X mutation in Joint::getGlobalAnchorVal was caught (both exits 0, stdout_delta=244, exact stderr); restored clean differential exact. Mutant SHA-256 374c62242612e073851ba541507a83a3ac5cce95d9368906595c6857a284d7a9; restored SHA-256 82a9a50859c4f8b59778ccda965692835901e5b9f8240f16a14682d6a56513aa. Evidence: evidence/phase6-joint-global-anchor-value-004137.md.",
+      "notes": "value-return vector is directly serialized in staged-pair joint family matrix; mutation-falsified",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {
@@ -77064,13 +77064,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1560",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13723",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "Value-return vector bits are now serialized by the registered joint staged-pair family matrix. A +1.0f X mutation in Joint::getGlobalAxisVal was caught (both exits 0, stdout_delta=244, exact stderr); restored clean differential exact. Mutant SHA-256 74b466dde168e268a53f6ef99195c60ac4db329e184466da7852182275954251; restored SHA-256 9db5d159746e828b20a333fe0261cb9e7599877184aaca292cc324eb9a1e20ce. Evidence: evidence/phase6-joint-global-axis-value-004139.md.",
+      "notes": "value-return vector is directly serialized in staged-pair joint family matrix; mutation-falsified",
       "implementation": "Physics/src/core/Joint.cpp"
     },
     {

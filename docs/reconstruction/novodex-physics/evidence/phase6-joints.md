@@ -10061,3 +10061,14 @@ For phys_fn_004141, the staged-pair fixed-family type mutation was caught with s
 
 For `phys_fn_004145`, the registered core-dump iterator fixture caught an inverted in-front result (`stdout_delta=2`, both exits 0, exact stderr); restored control is exact. See [phase6-joint-limit-plane-iteration-004145.md](phase6-joint-limit-plane-iteration-004145.md).
 For phys_fn_004145, the core-dump limit-plane iterator mutation was caught with stdout_delta=2; restored control was exact.
+
+
+## Phase 6 closure measurement — joint value-return vectors (`phys_fn_004137`, `phys_fn_004139`)
+
+`PhysicsJointTests.cpp` now prints the value-return anchor/axis bit patterns, and the Phase 6 gate requires the ten family rows. This makes the oracle differential observe corruption that the prior compare-to-the-same-method probe could not detect.
+
+For `phys_fn_004137`, the staged-pair anchor-value mutation was caught with stdout_delta=244; restored clean control exact. See [phase6-joint-global-anchor-value-004137.md](phase6-joint-global-anchor-value-004137.md).
+
+For `phys_fn_004139`, the staged-pair axis-value mutation was caught with stdout_delta=244; restored clean control exact. See [phase6-joint-global-axis-value-004139.md](phase6-joint-global-axis-value-004139.md).
+
+The full Phase 6 gate after adding these ten value-return assertions passed with all ten staged-pair differentials exact and 1,564 assertions run (minimum required: 1,267). Phase 6 remains pending with 104 closed and 329 deferred functions.

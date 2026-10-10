@@ -1,3 +1,7 @@
+### Continuation — joint value-return observability and closure (2026-10-10)
+
+Added bit-exact anchor/axis values to the staged-pair joint family transcript and registered all ten family assertions. This makes the value-return wrappers independently observable; a `+1.0f` X mutation to either helper now changes the transcript by 244 bytes. Rows `phys_fn_004137` and `phys_fn_004139` are closed with clean restored controls. Phase 6 has 104 closed and 329 open function rows. The complete Phase 6 gate passes: all ten staged-pair targets exact and 1,564 coverage assertions run (minimum required: 1,267). The oracle-only joint matrix baseline was regenerated from the pinned DLL for the added transcript fields.
+
 ### Continuation — limit-plane iterator result row closure (2026-10-10)
 
 Closed Phase 6 row `phys_fn_004145` (`Joint::getNextLimitPlane`) with the core-dump iterator fixture. Inverting the returned in-front value changed the transcript (`stdout_delta=2`, both exits 0, exact stderr); the clean restored control matched exactly. Phase 6 has 102 closed and 331 open function rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-limit-plane-iteration-004145.md`.

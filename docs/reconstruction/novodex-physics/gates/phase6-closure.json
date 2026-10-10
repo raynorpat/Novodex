@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 102 rows are closed (2 oracle differentials, 100 mutation-falsified); 331 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 104 rows are closed (2 oracle differentials, 102 mutation-falsified); 329 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 100,
+    "differential_falsified": 102,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 308,
+    "deferred_reconstructed_not_falsified": 306,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1091,6 +1091,26 @@
         "mutation": "Row-specific falsification (source revision 1817f23f): inverted `Joint::getNextLimitPlane` in-front return. The registered NxPhysicsCoreDumpTests limit-plane iterator transcript detected the wrong result: oracle/candidate exit 0, stdout_delta=2, stderr_exact=True. Restored clean build: stdout_delta=0, exact stderr. Mutant SHA-256 cf313cea979d8b2ba81d4c247587c6f3d8bcc0499ed1e39699bcb8d399ad16df; restored candidate 980a1189a65ddd20067490f9e515016eb9010a4659bfeecd2753dabe216fae6a. Evidence: evidence/phase6-joint-limit-plane-iteration-004145.md.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_004137",
+      "rva": "0x00099e00",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision f6d4d383): added 1.0f to X returned by `Joint::getGlobalAnchorVal`. `PhysicsJointTests.cpp` serializes the value-return vector bits in the family matrix. Registered NxPhysicsJointStagedPairTests caught the mutation: both exits 0, stdout_delta=244, exact stderr. Restored clean differential: stdout_delta=0, exact stderr. Mutant SHA-256 374c62242612e073851ba541507a83a3ac5cce95d9368906595c6857a284d7a9; restored candidate SHA-256 82a9a50859c4f8b59778ccda965692835901e5b9f8240f16a14682d6a56513aa. Evidence: evidence/phase6-joint-global-anchor-value-004137.md.",
+        "detected": "stdout_delta=244"
+      }
+    },
+    {
+      "id": "phys_fn_004139",
+      "rva": "0x00099e30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision f6d4d383): added 1.0f to X returned by `Joint::getGlobalAxisVal`. `PhysicsJointTests.cpp` serializes the value-return vector bits in the family matrix. Registered NxPhysicsJointStagedPairTests caught the mutation: both exits 0, stdout_delta=244, exact stderr. Restored clean differential: stdout_delta=0, exact stderr. Mutant SHA-256 74b466dde168e268a53f6ef99195c60ac4db329e184466da7852182275954251; restored candidate SHA-256 9db5d159746e828b20a333fe0261cb9e7599877184aaca292cc324eb9a1e20ce. Evidence: evidence/phase6-joint-global-axis-value-004139.md.",
+        "detected": "stdout_delta=244"
+      }
     }
   ],
   "deferred": [
@@ -1421,24 +1441,6 @@
       "id": "phys_fn_004135",
       "rva": "0x00099b40",
       "size": 701,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004137",
-      "rva": "0x00099e00",
-      "size": 41,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004139",
-      "rva": "0x00099e30",
-      "size": 41,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
