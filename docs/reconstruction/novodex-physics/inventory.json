@@ -36220,12 +36220,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/763",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5906",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under NxPhysicsPopulatedSceneTeardownTests (Phase 7 staged-pair differential): the contact-pair scene retains one broadphase pair before release and returns to 15 outstanding allocator blocks afterward on both oracle and candidate (restored stdout_delta=0, stderr_exact=True). Disabling cpmRetireStaleScenePairs in Scene::nxSceneDelete is caught (candidate outstanding_after=17; candidate_exit=1; stdout_delta=2). See evidence/phase7-pruning-stale-pair-release-001953.md.",
       "notes": ""
     },
     {

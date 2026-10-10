@@ -239,6 +239,13 @@ struct NxPairList
 // and generates narrow-phase contacts for live pairs.
 void nxSceneRefreshPairs(NxSceneInternal* scene);
 
+// phys_fn_001953: after the Scene advances its frame stamp during teardown,
+// retire the broadphase pair nodes that still carry the previous stamp.
+void cpmRetireStaleScenePairs(NxSceneInternal* scene);
+// phys_fn_001982: release the pruning engine's root container and pair-hash
+// storage after its stale nodes have been removed.
+void cpmDestroyScenePairStorage(NxSceneInternal* scene);
+
 // The body the joint-list test runs on (`this` = a body record, +0x1d8 its
 // joint list).
 struct CpmJointedBody

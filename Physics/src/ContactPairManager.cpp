@@ -939,6 +939,61 @@ static __declspec(noinline) void cpmOpen004157(CpmPairHash* hash, NxU32 key0, Nx
 	NxRemoveCollisionPairRecord(hash, static_cast<NxU16>(key0), static_cast<NxU16>(key1));
 	}
 
+// phys_fn_001953 (0x0004bd80): retire broadphase pair nodes whose +0x104
+// stamp differs from Scene+0x540. The engine owns the hash at +0x34; the
+// pair node owns its intrusive-list membership, and 004157 compacts the hash
+// after the deleting destructor unlinks/frees the node.
+static void cpmRetireStalePairNodes(CpmPairHash* hash, NxU32 frame)
+	{
+	NxU32 index = 0;
+	while(index < hash->count)
+		{
+		CpmPairHashEntry* const entry = hash->entries + index;
+		NxPairNode* const node = static_cast<NxPairNode*>(cpmPointer(entry->value));
+		if(node && node->at<NxU32>(0x104) == frame)
+			{
+			++index;
+			continue;
+			}
+		if(node)
+			cpmDeletePairNode0915(node);
+		cpmOpen004157(hash, entry->key0, entry->key1);
+		}
+	}
+
+void cpmRetireStaleScenePairs(NxSceneInternal* scene)
+	{
+	NxU8* const engine = scene->bytes() + 0x624;
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(engine + 0x34);
+	cpmRetireStalePairNodes(hash, scene->at<NxU32>(0x540));
+	}
+
+void cpmDestroyScenePairStorage(NxSceneInternal* scene)
+	{
+	NxU8* const engine = scene->bytes() + 0x624;
+	reinterpret_cast<SdkContainer*>(engine + 0x78)->empty();
+	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(engine + 0x34);
+	NxU8* const bytes = reinterpret_cast<NxU8*>(hash);
+	void*& links = *reinterpret_cast<void**>(bytes + 0x0c);
+	void*& entries = *reinterpret_cast<void**>(bytes + 0x14);
+	void*& buckets = *reinterpret_cast<void**>(bytes + 0x08);
+	if(links)
+		{
+		nxFoundationSDKAllocator->free(links);
+		links = 0;
+		}
+	if(entries)
+		{
+		nxFoundationSDKAllocator->free(entries);
+		entries = 0;
+		}
+	if(buckets)
+		{
+		nxFoundationSDKAllocator->free(buckets);
+		buckets = 0;
+		}
+	}
+
 static bool cpmActorFirstShapeIds(const void* actor, NxU32& shapeId)
 	{
 	if(!actor) return false;
@@ -2593,22 +2648,8 @@ void nxSceneRefreshPairs(NxSceneInternal* scene)
 				cpmRefreshPairCandidate(frame, objects, poolI, indexI, poolJ, indexJ, hash, list);
 				}
 			}
-	// 0004bd80 releases nodes whose pair key was not stamped this frame. Erase
-	// compacts the hash, so retain the index after a removal.
-	NxU32 index = 0;
-	while(index < hash->count)
-		{
-			CpmPairHashEntry* entry = hash->entries + index;
-			NxPairNode* node = static_cast<NxPairNode*>(cpmPointer(entry->value));
-			if(node && node->at<NxU32>(0x104) == frame)
-				{ ++index; continue; }
-			if(node)
-				{
-					cpmPairNodeUnlink0903(node);
-					nxFoundationSDKAllocator->free(node);
-				}
-			cpmOpen004157(hash, entry->key0, entry->key1);
-		}
+	// 0004bd80 releases nodes whose pair key was not stamped this frame.
+	cpmRetireStalePairNodes(hash, frame);
 	list->row000909(scene);
 	}
 

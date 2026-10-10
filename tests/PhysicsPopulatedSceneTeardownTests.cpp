@@ -10,6 +10,8 @@
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxPlaneShapeDesc.h"
+#include "NxSphereShapeDesc.h"
 #include "NxUserAllocator.h"
 
 typedef NxFoundationSDK* (NX_CALL_CONV *CreateFoundationSDKFn)(NxU32,
@@ -107,9 +109,49 @@ int wmain(int argc, wchar_t** argv)
 	printf("teardown static_first outstanding_before=%u outstanding_after=%u delta=%d\n",
 		beforeScene, afterScene, releaseDelta);
 
-	sdk->release();
-	foundationSDK->release();
 	if(releaseDelta != -39)
 		return nxFail("scene teardown did not release the oracle's 39 scene-owned blocks");
+
+	// Leave a live broadphase pair in the pruning engine, then release the
+	// scene before another simulation step can retire it. phys_fn_001953 must
+	// advance the scene stamp and delete this stale pair node during teardown.
+	NxScene* contactScene = sdk->createScene(sceneDesc);
+	if(!contactScene) return nxFail("contact-pair teardown scene creation failed");
+	NxPlaneShapeDesc contactPlane;
+	NxActorDesc contactStaticDesc;
+	contactStaticDesc.shapes.pushBack(&contactPlane);
+	NxSphereShapeDesc contactSphere;
+	contactSphere.radius = 0.5f;
+	NxActorDesc contactDynamicDesc;
+	contactDynamicDesc.body = &body;
+	contactDynamicDesc.density = 1.0f;
+	contactDynamicDesc.globalPose.t = NxVec3(0.0f, 0.5f, 0.0f);
+	contactDynamicDesc.shapes.pushBack(&contactSphere);
+	NxActor* contactStatic = contactScene->createActor(contactStaticDesc);
+	NxActor* contactDynamic = contactScene->createActor(contactDynamicDesc);
+	if(!contactStatic || !contactDynamic)
+		return nxFail("contact-pair teardown actors failed to create");
+	contactScene->simulate(0.125f);
+	if(!contactScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+		return nxFail("contact-pair teardown simulation did not fetch");
+	unsigned char* contactWrapper = reinterpret_cast<unsigned char*>(contactScene);
+	unsigned char* contactInternal = *reinterpret_cast<unsigned char**>(contactWrapper + 0x24);
+	unsigned char* pairNode = *reinterpret_cast<unsigned char**>(contactInternal + 0x674);
+	unsigned contactPairs = 0;
+	while(pairNode)
+		{
+		++contactPairs;
+		pairNode = *reinterpret_cast<unsigned char**>(pairNode + 8);
+		}
+	if(!contactPairs) return nxFail("contact-pair teardown fixture did not retain a broadphase pair");
+	sdk->releaseScene(*contactScene);
+	const unsigned afterContactScene = allocator.outstanding();
+	printf("teardown contact_pair pairs_before=%u outstanding_after=%u\n",
+		contactPairs, afterContactScene);
+
+	sdk->release();
+	foundationSDK->release();
+	if(afterContactScene != 15)
+		return nxFail("contact-pair teardown did not return to the oracle's 15 outstanding blocks");
 	return nxReportPairIdentity(pairDirectory);
 	}

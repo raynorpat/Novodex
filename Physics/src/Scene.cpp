@@ -3174,6 +3174,11 @@ static void nxSceneDelete(void* self, int flags)
 	if(p[0x1b3])
 		delete reinterpret_cast<NpScene*>(p[0x1b3]);
 	NxSceneInternal* scene = static_cast<NxSceneInternal*>(self);
+	// phys_fn_000663 advances the Scene stamp then calls 001953 on the
+	// pruning engine before it tears down actors. Every pair from the last
+	// simulation step is stale now; unlink and free it before destroying roots.
+	++scene->at<NxU32>(0x540);
+	cpmRetireStaleScenePairs(scene);
 	// phys_fn_000596 walks the actor range as it existed at entry. This is not
 	// the public releaseActor path: it does not swap-remove actor pointers or
 	// notify the optional fluid manager. Each body destructor removes its own
@@ -3320,6 +3325,7 @@ static void nxSceneDelete(void* self, int flags)
 #endif
 	// The pruning engine's pruners: each one's tree (static), its world boxes
 	// and objects, then its storage (opcode/IcePruner.cpp).
+	cpmDestroyScenePairStorage(scene);
 	nxSceneEngineDestroyPruners(static_cast<unsigned char*>(self) + 0x624);
 	const unsigned objectArrayOffsets[] = {0x56c, 0x55c};
 	for(unsigned offset : objectArrayOffsets)
