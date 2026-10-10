@@ -103,29 +103,19 @@ static bool nxLoadFluidModelCallbackFixture(HMODULE* module, FARPROC* reset,
 	return *reset && *count && *getRecord;
 	}
 
-static bool nxLoadCandidateFluidEmitterSetter(HMODULE* module, void** setter)
+static bool nxResolveCandidateFluidEmitterSymbol(HMODULE module, const char* expected,
+	void** address)
 	{
-	wchar_t exePath[MAX_PATH];
-	if(!GetModuleFileNameW(0, exePath, MAX_PATH))
-		return false;
-	wchar_t* slash = wcsrchr(exePath, L'\\');
-	if(!slash || static_cast<size_t>(slash - exePath) + 1 + 23 >= MAX_PATH)
-		return false;
-	wcscpy_s(slash + 1, MAX_PATH - (slash + 1 - exePath), L"NxPhysicsCandidate.dll");
-	*module = LoadLibraryExW(exePath, 0, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
-	if(!*module)
-		{ fprintf(stderr, "candidate NxPhysics load error=%lu\n", GetLastError()); return false; }
 	wchar_t mapPath[MAX_PATH];
 	if(!GetModuleFileNameW(0, mapPath, MAX_PATH))
 		return false;
-	slash = wcsrchr(mapPath, L'\\');
+	wchar_t* slash = wcsrchr(mapPath, L'\\');
 	if(!slash || static_cast<size_t>(slash - mapPath) + 1 + 14 >= MAX_PATH)
 		return false;
 	wcscpy_s(slash + 1, MAX_PATH - (slash + 1 - mapPath), L"NxPhysics.map");
 	std::ifstream map(mapPath);
 	if(!map)
 		{ fprintf(stderr, "candidate NxPhysics map open failed\n"); return false; }
-	static const char expected[] = "?setFlag@NpFluidEmitter@@UAEXW4NxFluidEmitterFlag@@_N@Z";
 	unsigned preferredAddress = 0;
 	unsigned preferredImageBase = 0;
 	std::string line;
@@ -141,27 +131,59 @@ static bool nxLoadCandidateFluidEmitterSetter(HMODULE* module, void** setter)
 		std::string::size_type symbolPosition = line.find(expected);
 		if(symbolPosition == std::string::npos)
 			continue;
-		std::istringstream addressField(line.substr(symbolPosition + sizeof(expected) - 1));
-		std::string address;
-		addressField >> address;
-		std::istringstream addressValue(address);
+		std::istringstream addressField(line.substr(symbolPosition + strlen(expected)));
+		std::string addressText;
+		addressField >> addressText;
+		std::istringstream addressValue(addressText);
 		addressValue >> std::hex >> preferredAddress;
 		if(!addressField || !addressValue)
 			{ fprintf(stderr, "candidate NxPhysics map address parse failed: %s\n", line.c_str()); return false; }
-		IMAGE_DOS_HEADER* dos = reinterpret_cast<IMAGE_DOS_HEADER*>(*module);
+		IMAGE_DOS_HEADER* dos = reinterpret_cast<IMAGE_DOS_HEADER*>(module);
 		if(dos->e_magic != IMAGE_DOS_SIGNATURE)
 			{ fprintf(stderr, "candidate NxPhysics DOS signature mismatch\n"); return false; }
 		IMAGE_NT_HEADERS32* nt = reinterpret_cast<IMAGE_NT_HEADERS32*>(
-			reinterpret_cast<unsigned char*>(*module) + dos->e_lfanew);
+			reinterpret_cast<unsigned char*>(module) + dos->e_lfanew);
 		if(nt->Signature != IMAGE_NT_SIGNATURE || !preferredImageBase
 			|| preferredAddress < preferredImageBase)
 			{ fprintf(stderr, "candidate NxPhysics PE/map base mismatch: map=%08x preferred=%08x sig=%08x\n", preferredAddress, preferredImageBase, nt->Signature); return false; }
-		*setter = reinterpret_cast<unsigned char*>(*module)
+		*address = reinterpret_cast<unsigned char*>(module)
 			+ (preferredAddress - preferredImageBase);
 		return true;
 		}
-	fprintf(stderr, "candidate NxPhysics map has no setter symbol\n");
+	fprintf(stderr, "candidate NxPhysics map has no symbol: %s\n", expected);
 	return false;
+	}
+
+static bool nxLoadCandidateFluidEmitterSetter(HMODULE* module, void** setter)
+	{
+	wchar_t exePath[MAX_PATH];
+	if(!GetModuleFileNameW(0, exePath, MAX_PATH))
+		return false;
+	wchar_t* slash = wcsrchr(exePath, L'\\');
+	if(!slash || static_cast<size_t>(slash - exePath) + 1 + 23 >= MAX_PATH)
+		return false;
+	wcscpy_s(slash + 1, MAX_PATH - (slash + 1 - exePath), L"NxPhysicsCandidate.dll");
+	*module = LoadLibraryExW(exePath, 0, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!*module)
+		{ fprintf(stderr, "candidate NxPhysics load error=%lu\n", GetLastError()); return false; }
+	static const char expected[] = "?setFlag@NpFluidEmitter@@UAEXW4NxFluidEmitterFlag@@_N@Z";
+	return nxResolveCandidateFluidEmitterSymbol(*module, expected, setter);
+	}
+
+static bool nxCandidateAddressBelongsToModule(HMODULE module, const void* address)
+	{
+	if(!module)
+		return false;
+	IMAGE_DOS_HEADER* dos = reinterpret_cast<IMAGE_DOS_HEADER*>(module);
+	if(dos->e_magic != IMAGE_DOS_SIGNATURE)
+		return false;
+	IMAGE_NT_HEADERS32* nt = reinterpret_cast<IMAGE_NT_HEADERS32*>(
+		reinterpret_cast<unsigned char*>(module) + dos->e_lfanew);
+	if(nt->Signature != IMAGE_NT_SIGNATURE)
+		return false;
+	const size_t base = reinterpret_cast<size_t>(module);
+	const size_t value = reinterpret_cast<size_t>(address);
+	return value >= base && value < base + nt->OptionalHeader.SizeOfImage;
 	}
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta;
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta = 0xffffffffu;
@@ -402,10 +424,47 @@ int wmain(int argc, wchar_t** argv)
 	CRITICAL_SECTION* candidateSectionPointer = &candidateLock.section;
 	void* candidateSectionLink = &candidateSectionPointer;
 	FluidEmitterProbe candidate(internal);
+	HMODULE candidatePhysics = 0;
+	void* candidateSetterAddress = 0;
+	if(!nxLoadCandidateFluidEmitterSetter(&candidatePhysics, &candidateSetterAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll setFlag row could not be resolved from its map\n");
+		return 1;
+		}
+	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
+	void* candidateCtorAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
+		&candidateCtorAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter constructor could not be resolved from its map\n");
+		return 1;
+		}
+	typedef void* (__thiscall* CandidateCtor)(void*, void*);
+	CandidateCtor candidateCtor = reinterpret_cast<CandidateCtor>(candidateCtorAddress);
 	typedef void* (__thiscall* FluidEmitterCtor)(void*, void*);
 	FluidEmitterCtor oracleCtor = reinterpret_cast<FluidEmitterCtor>(image + 0x8c2d0);
 	if(oracleCtor(oracleBytes, internal) != oracleBytes)
 		++gFailures;
+	unsigned char candidateDllBytes[0x18];
+	memset(candidateDllBytes, 0, sizeof(candidateDllBytes));
+	if(candidateCtor(candidateDllBytes, internal) != candidateDllBytes)
+		++gFailures;
+	NxFluidEmitter* candidateDllInterface = reinterpret_cast<NxFluidEmitter*>(candidateDllBytes);
+	if(!nxCandidateAddressBelongsToModule(candidatePhysics,
+		*reinterpret_cast<void**>(candidateDllBytes)))
+		{
+		fprintf(stderr, "FAIL candidate fluid-emitter primary vptr is outside candidate NxPhysics.dll\n");
+		++gFailures;
+		}
+	unsigned dllCtorMismatches = 0;
+	for(unsigned offset = 4; offset < sizeof(candidateDllBytes); offset += 4)
+		if(offset != 8 && memcmp(oracleBytes + offset, candidateDllBytes + offset, 4) != 0)
+			++dllCtorMismatches;
+	if(!*reinterpret_cast<void**>(candidateDllBytes + 8))
+		++dllCtorMismatches;
+	gFailures += dllCtorMismatches;
+	printf("fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=%u\n",
+		dllCtorMismatches);
 	unsigned char oracleLockData[0x20];
 	unsigned char oracleLockObject[4];
 	memset(oracleLockData, 0, sizeof(oracleLockData));
@@ -424,6 +483,7 @@ int wmain(int argc, wchar_t** argv)
 	gFailures += ctorMismatches;
 	printf("fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=%u\n", ctorMismatches);
 	memcpy(oracleBytes + 0x10, &oracleLockLink, sizeof(oracleLockLink));
+	memcpy(candidateDllBytes + 0x10, &candidateSectionLink, sizeof(candidateSectionLink));
 	memcpy(reinterpret_cast<unsigned char*>(&candidate) + 0x10,
 		&candidateSectionLink, sizeof(candidateSectionLink));
 	NxFluidEmitter* candidateInterface = &candidate;
@@ -437,6 +497,10 @@ int wmain(int argc, wchar_t** argv)
 	unsigned rawCases = 0;
 	unsigned rawRetptr = 0;
 	unsigned rawStackBalanced = 0;
+	unsigned dllRawMismatches = 0;
+	unsigned dllRawCases = 0;
+	unsigned dllRawRetptr = 0;
+	unsigned dllRawStackBalanced = 0;
 	for(unsigned i = 0; i < sizeof(aggregateSlots) / sizeof(aggregateSlots[0]); ++i)
 		{
 		unsigned char oracleOut[0x30];
@@ -473,35 +537,73 @@ int wmain(int argc, wchar_t** argv)
 				candidateResult == candidateOut ? 1u : 0u, oracleStackDelta, candidateStackDelta);
 			++rawMismatches;
 			}
+		unsigned char candidateDllOut[0x30];
+		memset(candidateDllOut, 0, sizeof(candidateDllOut));
+		void* candidateDllResult = 0;
+		unsigned candidateDllStackDelta = 0xffffffffu;
+		if(!nxTryFluidEmitterCall(candidateDllInterface, aggregateSlots[i].slot,
+			candidateDllOut, &candidateDllResult, &candidateDllStackDelta))
+			++dllRawMismatches;
+		else
+			{
+			++dllRawCases;
+			if(candidateDllResult == candidateDllOut)
+				++dllRawRetptr;
+			if(candidateDllStackDelta == 0)
+				++dllRawStackBalanced;
+			if(candidateDllResult != candidateDllOut || candidateDllStackDelta != 0
+				|| memcmp(oracleOut, candidateDllOut, aggregateSlots[i].bytes) != 0)
+				{
+				fprintf(stderr, "candidate DLL fluid emitter raw ABI mismatch: %s retptr=%u stack=%u\n",
+					aggregateSlots[i].name, candidateDllResult == candidateDllOut ? 1u : 0u,
+					candidateDllStackDelta);
+				++dllRawMismatches;
+				}
+			}
 		}
 	gFailures += rawMismatches;
 	printf("fluid emitter raw_abi cases=%u retptr=%u stack_balanced=%u mismatches=%u\n",
 		rawCases, rawRetptr, rawStackBalanced, rawMismatches);
+	gFailures += dllRawMismatches;
+	printf("fluid emitter candidate_dll raw_abi cases=%u retptr=%u stack_balanced=%u mismatches=%u\n",
+		dllRawCases, dllRawRetptr, dllRawStackBalanced, dllRawMismatches);
 
 	NxMat34 oracleGlobalPose;
 	oracleGlobalPose = oracle->getGlobalPoseVal();
 	NxMat34 candidateGlobalPose = candidateInterface->getGlobalPoseVal();
 	nxCheckEqual("global_pose", &oracleGlobalPose, &candidateGlobalPose, sizeof(oracleGlobalPose));
+	NxMat34 candidateDllGlobalPose = candidateDllInterface->getGlobalPoseVal();
+	nxCheckEqual("candidate_dll_global_pose", &oracleGlobalPose, &candidateDllGlobalPose, sizeof(oracleGlobalPose));
 	NxVec3 oracleGlobalPosition;
 	oracleGlobalPosition = oracle->getGlobalPositionVal();
 	NxVec3 candidateGlobalPosition = candidateInterface->getGlobalPositionVal();
 	nxCheckEqual("global_position", &oracleGlobalPosition, &candidateGlobalPosition, sizeof(oracleGlobalPosition));
+	NxVec3 candidateDllGlobalPosition = candidateDllInterface->getGlobalPositionVal();
+	nxCheckEqual("candidate_dll_global_position", &oracleGlobalPosition, &candidateDllGlobalPosition, sizeof(oracleGlobalPosition));
 	NxMat33 oracleGlobalOrientation;
 	oracleGlobalOrientation = oracle->getGlobalOrientationVal();
 	NxMat33 candidateGlobalOrientation = candidateInterface->getGlobalOrientationVal();
 	nxCheckEqual("global_orientation", &oracleGlobalOrientation, &candidateGlobalOrientation, sizeof(oracleGlobalOrientation));
+	NxMat33 candidateDllGlobalOrientation = candidateDllInterface->getGlobalOrientationVal();
+	nxCheckEqual("candidate_dll_global_orientation", &oracleGlobalOrientation, &candidateDllGlobalOrientation, sizeof(oracleGlobalOrientation));
 	NxMat34 oracleLocalPose;
 	oracleLocalPose = oracle->getLocalPoseVal();
 	NxMat34 candidateLocalPose = candidateInterface->getLocalPoseVal();
 	nxCheckEqual("local_pose", &oracleLocalPose, &candidateLocalPose, sizeof(oracleLocalPose));
+	NxMat34 candidateDllLocalPose = candidateDllInterface->getLocalPoseVal();
+	nxCheckEqual("candidate_dll_local_pose", &oracleLocalPose, &candidateDllLocalPose, sizeof(oracleLocalPose));
 	NxVec3 oracleLocalPosition;
 	oracleLocalPosition = oracle->getLocalPositionVal();
 	NxVec3 candidateLocalPosition = candidateInterface->getLocalPositionVal();
 	nxCheckEqual("local_position", &oracleLocalPosition, &candidateLocalPosition, sizeof(oracleLocalPosition));
+	NxVec3 candidateDllLocalPosition = candidateDllInterface->getLocalPositionVal();
+	nxCheckEqual("candidate_dll_local_position", &oracleLocalPosition, &candidateDllLocalPosition, sizeof(oracleLocalPosition));
 	NxMat33 oracleLocalOrientation;
 	oracleLocalOrientation = oracle->getLocalOrientationVal();
 	NxMat33 candidateLocalOrientation = candidateInterface->getLocalOrientationVal();
 	nxCheckEqual("local_orientation", &oracleLocalOrientation, &candidateLocalOrientation, sizeof(oracleLocalOrientation));
+	NxMat33 candidateDllLocalOrientation = candidateDllInterface->getLocalOrientationVal();
+	nxCheckEqual("candidate_dll_local_orientation", &oracleLocalOrientation, &candidateDllLocalOrientation, sizeof(oracleLocalOrientation));
 
 	unsigned char oracleFlagInternal[sizeof(internal)];
 	unsigned char candidateFlagInternal[sizeof(internal)];
@@ -522,13 +624,6 @@ int wmain(int argc, wchar_t** argv)
 		&candidateSectionLink, sizeof(candidateSectionLink));
 	NxFluidEmitter* oracleFlag = reinterpret_cast<NxFluidEmitter*>(oracleFlagBytes);
 	NxFluidEmitter* candidateFlagInterface = &candidateFlag;
-	HMODULE candidatePhysics = 0;
-	void* candidateSetterAddress = 0;
-	if(!nxLoadCandidateFluidEmitterSetter(&candidatePhysics, &candidateSetterAddress))
-		{
-		fprintf(stderr, "FAIL candidate NxPhysics.dll setFlag row could not be resolved from its map\n");
-		return 1;
-		}
 	typedef void (__thiscall *CandidateSetFlagFn)(void*, NxFluidEmitterFlag, bool);
 	CandidateSetFlagFn candidateSetFlag = reinterpret_cast<CandidateSetFlagFn>(candidateSetterAddress);
 	unsigned flagMismatches = 0;

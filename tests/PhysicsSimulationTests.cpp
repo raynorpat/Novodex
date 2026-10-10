@@ -494,6 +494,7 @@ struct NxSimulationContactStreamReport : NxUserContactReport
 
 int wmain(int argc, wchar_t** argv)
 	{
+	setvbuf(stdout, 0, _IONBF, 0);
 	if(argc != 2)
 		return nxFail("usage: NxPhysicsSimulationTests <pair directory>");
 
