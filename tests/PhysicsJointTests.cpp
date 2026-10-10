@@ -439,6 +439,9 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 				nxU(gotSpring.damper), nxU(gotSpring.targetValue));
 			printf("case=revolute index=0 updated flags=%08x\n",
 				static_cast<unsigned>(revolute->getFlags()));
+			revolute->setProjectionMode(NX_JPM_POINT_MINDIST);
+			printf("case=revolute index=0 projection_mode=%u\n",
+				static_cast<unsigned>(revolute->getProjectionMode()));
 			}
 		NxRevoluteJointDesc saved;
 		revolute->saveToDesc(saved);

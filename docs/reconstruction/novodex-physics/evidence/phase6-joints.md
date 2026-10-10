@@ -10097,3 +10097,10 @@ The index-0 fixture now calls the public limit, motor, and spring setters with d
 For `phys_fn_004340`, the limit setter mutation produced `stdout_delta=2`; for `phys_fn_004344`, the motor setter mutation produced `stdout_delta=2`; for `phys_fn_004348`, the spring setter mutation produced `stdout_delta=2`.
 
 The pinned oracle matrix proof now records fixture source SHA-256 `5a848a7b06211a37fc68cecb0fe15a73d0bf2f8ad4bbe61bf78a6747c7694ed9`, 3,178 output lines, and digest `e8154157ac713741993b48ae4ca623a85778442f467ad5479c1462492d646c62`. The full Phase 6 gate passed with 1,572 assertions run (minimum required: 1,267). Phase 6 now has 111 closed rows (109 mutation-falsified plus 2 oracle differentials) and 322 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — revolute projection-mode setter (`phys_fn_004338`)
+
+The index-0 staged-pair case calls `setProjectionMode(NX_JPM_POINT_MINDIST)` and serializes the `getProjectionMode()` result. For `phys_fn_004338`, omitting the projection-mode store changed the result to zero and the differential reported `stdout_delta=2`; the restored result matched with `stdout_delta=0`. See [phase6-joint-revolute-projection-mode-004338.md](phase6-joint-revolute-projection-mode-004338.md).
+
+The pinned oracle matrix proof now records fixture source SHA-256 `9ed9958488e3c580110ea08a82406ce512bc3116d0262017b3533fbeb19d7120`, 3,179 output lines, and digest `0f6bb75c89e6d90f63b51b7c8c3cad302bcb91600feb008c9bcb38e4957f8ad8`. The full Phase 6 gate passed with 1,573 assertions run (minimum required: 1,267). Phase 6 now has 112 closed rows (110 mutation-falsified plus 2 oracle differentials) and 321 deferred rows; 23 in-phase rows remain unreconstructed.
