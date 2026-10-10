@@ -201,13 +201,12 @@ struct Row000740Target
 // Callees outside this sub-area. 000722 is core/JointSupport.h's
 // Row000722Fixture::row000722 (core/JointSupport.cpp; 000764 tail-jumps to
 // it) and 000897 is ContactPairManager.h's NxActorPair::row000897 (000728
-// calls it on pair node + 0x14). 004172 has no candidate anywhere: Island.cpp
-// defines an open stand-in (NX_ASSERT(0), no stable-ID line), below.
+// calls it on pair node + 0x14). 004172 belongs to core/Articulation.cpp.
 
 // Row 004172 (0x0009b0d0, 69 B): cdecl on an island root; clears
 // +0x1e4 bit 1 and rebuilds the root's island object at +0x1e0 through
 // 0x9adb0. Owner gap Joint.cpp..D6Joint.cpp (000720 and 000764 call it).
-// OPEN: not reconstructed; the stand-in does nothing in Release.
-void __cdecl nxBodyIslandRebuild004172Open(void* root);
+void __cdecl nxBodyIslandRebuild004172(void* root);
+void __cdecl nxBodyIslandProject004165(void* island);
 
 #endif

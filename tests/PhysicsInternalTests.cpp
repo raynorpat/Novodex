@@ -28,6 +28,7 @@
 #include "PhysicsInternal.h"
 #include "Containers.h"
 #include "Scene.h"
+#include "BodyStep.h"
 #include "core/JointSupport.h"
 #include "TriangleMesh.h"
 #include "NxFoundationSDK.h"
@@ -597,6 +598,78 @@ static int testSceneBodyRecordTeardownReset()
 	return 0;
 	}
 
+static int testBodyIslandRebuild()
+	{
+	alignas(16) unsigned char root[0x260] = {};
+	*reinterpret_cast<void**>(root + 0x1bc) = root;
+	*reinterpret_cast<NxU32*>(root + 0x1e4) = 2;
+	const unsigned mallocsBefore = gFoundationCounter.mallocs;
+	const unsigned freesBefore = gFoundationCounter.frees;
+
+	nxBodyIslandRebuild004172(root);
+	void* const island = *reinterpret_cast<void**>(root + 0x1e0);
+	const NxU32 flags = *reinterpret_cast<NxU32*>(root + 0x1e4);
+	const bool rebuilt = island != 0 && (flags & 2) == 0 && (flags & 8) != 0;
+	if(island)
+		{
+		reinterpret_cast<Row004167Fixture*>(island)->row004167();
+		gFoundationCounter.free(island);
+		*reinterpret_cast<void**>(root + 0x1e0) = 0;
+		}
+	const unsigned mallocs = gFoundationCounter.mallocs - mallocsBefore;
+	const unsigned frees = gFoundationCounter.frees - freesBefore;
+	printf("body_island rebuild_empty dirty_cleared=%u traversed=%u island=%u allocations=%u frees=%u\n",
+		(flags & 2) == 0, (flags & 8) != 0, island != 0, mallocs, frees);
+	if(!check(rebuilt, "004172 clears the dirty flag and installs a rebuilt island for an isolated root"))
+		return fail("body island rebuild did not produce an isolated-root island");
+	if(!check(mallocs == frees, "004172 isolated-root island teardown returns every Foundation allocation"))
+		return fail("body island rebuild fixture leaked Foundation allocations");
+	return 0;
+	}
+
+static int testBodyIslandRebuildConnected()
+	{
+	alignas(16) unsigned char bodies[2][0x260] = {};
+	alignas(16) unsigned char joint[0x180] = {};
+	*reinterpret_cast<void**>(bodies[0] + 0x1bc) = bodies[0];
+	*reinterpret_cast<void**>(bodies[1] + 0x1bc) = bodies[1];
+	*reinterpret_cast<void**>(bodies[0] + 0x1d0) = bodies[1];
+	*reinterpret_cast<void**>(bodies[0] + 0x1d8) = joint;
+	*reinterpret_cast<void**>(bodies[1] + 0x1dc) = joint;
+	*reinterpret_cast<void**>(joint + 8) = bodies[0];
+	*reinterpret_cast<void**>(joint + 0xc) = bodies[1];
+	*reinterpret_cast<void**>(bodies[0] + 0x1bc) = bodies[0];
+	*reinterpret_cast<void**>(bodies[1] + 0x1bc) = bodies[1];
+	*reinterpret_cast<NxU32*>(bodies[0] + 0x1e4) = 2;
+	const unsigned mallocsBefore = gFoundationCounter.mallocs;
+	const unsigned freesBefore = gFoundationCounter.frees;
+
+	nxBodyIslandRebuild004172(bodies[0]);
+	void* const island = *reinterpret_cast<void**>(bodies[0] + 0x1e0);
+	const bool linked = island != 0
+		&& (*reinterpret_cast<NxU32*>(bodies[0] + 0x1e4) & 2u) == 0
+		&& (*reinterpret_cast<NxU32*>(bodies[0] + 0x1e4) & 8u) != 0
+		&& (*reinterpret_cast<NxU32*>(bodies[1] + 0x1e4) & 8u) != 0;
+	if(island)
+		{
+		reinterpret_cast<Row004167Fixture*>(island)->row004167();
+		gFoundationCounter.free(island);
+		*reinterpret_cast<void**>(bodies[0] + 0x1e0) = 0;
+		}
+	const unsigned mallocs = gFoundationCounter.mallocs - mallocsBefore;
+	const unsigned frees = gFoundationCounter.frees - freesBefore;
+	printf("body_island rebuild_connected dirty_cleared=%u root_marked=%u child_marked=%u island=%u allocations=%u frees=%u\n",
+		(*reinterpret_cast<NxU32*>(bodies[0] + 0x1e4) & 2u) == 0,
+		(*reinterpret_cast<NxU32*>(bodies[0] + 0x1e4) & 8u) != 0,
+		(*reinterpret_cast<NxU32*>(bodies[1] + 0x1e4) & 8u) != 0,
+		island != 0, mallocs, frees);
+	if(!check(linked, "004172 recursively marks the connected dynamic body and installs its group"))
+		return fail("body island rebuild did not traverse a connected dynamic body");
+	if(!check(mallocs == frees, "004172 connected-group teardown returns every Foundation allocation"))
+		return fail("connected body island fixture leaked Foundation allocations");
+	return 0;
+	}
+
 // The TriangleMesh destructor's cleanup helper at 0x00054a80 owns more than
 // the embedded mesh arrays: two Foundation arrays, three polymorphic deleting
 // slots, the EdgeList and Adjacencies caches, and the allocation at +0x3c.
@@ -690,6 +763,10 @@ int main()
 		status = testInternalTriangleMeshModel();
 	if(!status)
 		status = testSceneBodyRecordTeardownReset();
+	if(!status)
+		status = testBodyIslandRebuild();
+	if(!status)
+		status = testBodyIslandRebuildConnected();
 	if(!status)
 		status = testTriangleMeshDestructorOwnership();
 

@@ -267,7 +267,7 @@ void Row000720Fixture::row000720()
 	{
 	void* root = islandCompress(this);
 	if(*(islandBytes(root) + 0x1e4) & 2)
-		nxBodyIslandRebuild004172Open(root);
+		nxBodyIslandRebuild004172(root);
 	}
 
 // phys_fn_000724 (0x000161b0, 175 B)
@@ -396,19 +396,7 @@ void Row000764Fixture::row000764()
 	if(*(islandBytes(root) + 0x1e4) & 2)
 		{
 		islandReleaseObject(root);
-		nxBodyIslandRebuild004172Open(root);
+		nxBodyIslandRebuild004172(root);
 		}
 	reinterpret_cast<Row000722Fixture*>(this)->row000722();
-	}
-
-// ---------------------------------------------------------------------------
-// OPEN callee stand-in, no stable-ID line: this is not the row. 004172
-// (0x0009b0d0, 69 B, owner gap Joint.cpp..D6Joint.cpp) has no candidate
-// anywhere; NX_ASSERT(0) is a silent no-op in Release, like the deferred
-// Row004167Fixture::row004167. Nothing in the candidate calls 000720 or
-// 000764 yet, so it never runs. Replace it with the owner's function when
-// that lands.
-__declspec(noinline) void __cdecl nxBodyIslandRebuild004172Open(void* /*root*/)
-	{
-	NX_ASSERT(0);
 	}

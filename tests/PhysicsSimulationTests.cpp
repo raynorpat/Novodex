@@ -25,6 +25,7 @@
 #include "NxDistanceJointDesc.h"
 #include "NxPrismaticJointDesc.h"
 #include "NxRevoluteJointDesc.h"
+#include "NxRevoluteJoint.h"
 #include "NxSphericalJointDesc.h"
 #include "NxD6JointDesc.h"
 #include "NxSpringAndDamperEffector.h"
@@ -1979,6 +1980,78 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("simulation solver-interaction fixed-distance steps=12 ready=1 fetched=1\n");
 	sdk->releaseScene(*mixedJointScene);
+
+	// A motorized two-joint chain exercises articulation-group construction:
+	// both constraints connect dynamic bodies, and each motor drives motion
+	// through the connected island.
+	NxSceneDesc articulatedSceneDesc;
+	articulatedSceneDesc.setToDefault();
+	articulatedSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	NxScene* articulatedScene = sdk->createScene(articulatedSceneDesc);
+	if(!articulatedScene) return nxFail("articulated-chain scene creation failed");
+	articulatedScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
+	NxSphereShapeDesc articulatedSphere;
+	articulatedSphere.radius = 0.25f;
+	NxActor* articulatedActors[3] = {};
+	for(unsigned actorIndex = 0; actorIndex != 3; ++actorIndex)
+		{
+		NxBodyDesc articulatedBody;
+		NxActorDesc articulatedActorDesc;
+		articulatedActorDesc.body = &articulatedBody;
+		articulatedActorDesc.density = 1.0f;
+		articulatedActorDesc.globalPose.t = NxVec3(24.0f + actorIndex * 2.0f, 8.0f, 0.0f);
+		articulatedActorDesc.shapes.pushBack(&articulatedSphere);
+		articulatedActors[actorIndex] = articulatedScene->createActor(articulatedActorDesc);
+		if(!articulatedActors[actorIndex])
+			return nxFail("articulated-chain actor creation failed");
+		}
+	NxRevoluteJoint* articulatedJoints[2] = {};
+	for(unsigned jointIndex = 0; jointIndex != 2; ++jointIndex)
+		{
+		NxRevoluteJointDesc articulatedJointDesc;
+		articulatedJointDesc.setToDefault();
+		articulatedJointDesc.actor[0] = articulatedActors[jointIndex];
+		articulatedJointDesc.actor[1] = articulatedActors[jointIndex + 1];
+		// Put each hinge halfway between the connected body centers so the
+		// chain starts as a valid constraint configuration.
+		setGlobalAnchor(articulatedJointDesc, NxVec3(25.0f + jointIndex * 2.0f, 8.0f, 0.0f));
+		setGlobalAxis(articulatedJointDesc, NxVec3(0.0f, 0.0f, 1.0f));
+		articulatedJointDesc.motor.velTarget = jointIndex == 0 ? 2.0f : -1.5f;
+		articulatedJointDesc.motor.maxForce = 6.0f;
+		articulatedJointDesc.motor.freeSpin = false;
+		articulatedJointDesc.flags = NX_RJF_MOTOR_ENABLED;
+		articulatedJointDesc.projectionMode = NX_JPM_POINT_MINDIST;
+		articulatedJointDesc.projectionDistance = 0.001f;
+		articulatedJointDesc.projectionAngle = 0.05f;
+		articulatedJoints[jointIndex] = static_cast<NxRevoluteJoint*>(
+			articulatedScene->createJoint(articulatedJointDesc));
+		if(!articulatedJoints[jointIndex])
+			return nxFail("articulated-chain revolute joint creation failed");
+		}
+	for(unsigned step = 0; step != 16; ++step)
+		{
+		articulatedScene->simulate(0.02f);
+		const bool ready = articulatedScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = articulatedScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("articulated-chain simulation result was not ready and fetched");
+		for(unsigned actorIndex = 0; actorIndex != 3; ++actorIndex)
+			{
+			char stage[32];
+			sprintf_s(stage, "artchain%u_actor%u", step, actorIndex);
+			nxPrintActorState(stage, *articulatedActors[actorIndex]);
+			const NxQuat orientation = articulatedActors[actorIndex]->getGlobalOrientationQuatVal();
+			printf("simulation %s orientation=%08x.%08x.%08x.%08x\n", stage,
+				nxFloatBits(orientation.x), nxFloatBits(orientation.y),
+				nxFloatBits(orientation.z), nxFloatBits(orientation.w));
+			}
+		for(unsigned jointIndex = 0; jointIndex != 2; ++jointIndex)
+			printf("simulation artchain%u_joint%u angle=%08x velocity=%08x\n", step,
+				jointIndex, nxFloatBits(articulatedJoints[jointIndex]->getAngle()),
+				nxFloatBits(articulatedJoints[jointIndex]->getVelocity()));
+		}
+	printf("simulation articulation-chain actors=3 revolute_motors=2 steps=16 ready=1 fetched=1\n");
+	sdk->releaseScene(*articulatedScene);
 
 	NxPlaneShapeDesc groundPlane;
 	groundPlane.normal = NxVec3(0.0f, 1.0f, 0.0f);

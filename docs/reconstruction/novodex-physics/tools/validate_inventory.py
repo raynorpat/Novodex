@@ -1934,7 +1934,6 @@ def plan_path(evidence_root, plan):
 # the row. Adding one is a regression that has to be argued.
 UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/Actor.cpp',                         # 3 rows
-    'Physics/src/core/Articulation.cpp',             # 1 row (phys_fn_004172)
     # 'Physics/src/ContactConvexHeightfield.cpp' (2 rows: 001847, 001849) was here,
     # and was REMOVED when convex-mesh gap Task 2h created the file (001822..001842);
     # the check said so itself.

@@ -211,7 +211,7 @@ class NxSceneInternal
 	// the active-root range after every body has been processed.
 	__declspec(noinline) void row000636();
 	// phys_fn_000615 (0x000113c0): update each body's pose, notify its actor,
-	// then dispatch the optional island object's vector callbacks.
+	// then project the optional articulation island.
 	__declspec(noinline) void row000615();
 	// phys_fn_000619: fetch-side body gravity refresh and pose snapshot.
 	void finishSimulation();
