@@ -10125,3 +10125,12 @@ The pinned oracle matrix proof now records fixture source SHA-256 `db37c54d47a1f
 The index-0 public fixture now loads a second revolute descriptor containing distinct fields and checks the saved readback. For `phys_fn_004332`, omitting the limit copy produced `stdout_delta=2`; for `phys_fn_004370`, omitting the family-field loader call produced `stdout_delta=4`. Restoring both rows returned exact output. See [phase6-joint-revolute-load-from-desc-004332-004370.md](phase6-joint-revolute-load-from-desc-004332-004370.md).
 
 The pinned oracle matrix proof now records fixture source SHA-256 `b539c9fddc267f1a84638de7a7e900c96d8b9fde51e371ab3231ae477a41f396`, 3,210 output lines, and digest `8c64933e66074eedb0a9a73c35a60df0abbd0ad9a97c8ed0428ec60c58a4c281`. The full Phase 6 gate passed with 1,578 assertions run (minimum required: 1,267). Phase 6 now has 117 closed rows (115 mutation-falsified plus 2 oracle differentials) and 316 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — revolute public descriptor wrappers (`phys_fn_004709`–`004719`)
+
+The existing revolute fixture independently falsifies all six `NpRevoluteJoint` limit, motor, and spring wrapper rows. The setter mutations were caught with `stdout_delta=6`; the getter mutations were caught with `stdout_delta=2`; each had equal zero exits and exact stderr, and all restored controls were exact. See [phase6-joint-revolute-descriptor-wrappers-004709-004719.md](phase6-joint-revolute-descriptor-wrappers-004709-004719.md).
+
+For `phys_fn_004709`, the limit setter wrapper mutation produced `stdout_delta=6`; `phys_fn_004711`, limit getter wrapper: `stdout_delta=2`; `phys_fn_004713`, motor setter wrapper: `stdout_delta=6`; `phys_fn_004715`, motor getter wrapper: `stdout_delta=2`; `phys_fn_004717`, spring setter wrapper: `stdout_delta=6`; `phys_fn_004719`, spring getter wrapper: `stdout_delta=2`.
+
+The full Phase 6 gate passed with 1,578 assertions run (minimum required: 1,267). Phase 6 now has 123 closed rows (121 mutation-falsified plus 2 oracle differentials) and 310 deferred rows; 23 in-phase rows remain unreconstructed.
