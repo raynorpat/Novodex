@@ -40,6 +40,10 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	//! phys_fn_003820 (0x0008c8d0), helper 003567 copies internal+0x18.
 	virtual NxMat33 getLocalOrientationVal() const;
 
+	//! phys_fn_003850/003852: the bitfield is stored at internal emitter +0x10.
+	virtual void setFlag(NxFluidEmitterFlag flag, bool enabled);
+	virtual NX_BOOL getFlag(NxFluidEmitterFlag flag) const;
+
 	protected:
 	void copyInternal(void* output, unsigned offset, unsigned bytes) const;
 	void* mInternal;

@@ -189,8 +189,6 @@ class FluidEmitterProbe : public NpFluidEmitter
 	virtual NxReal getRate() const { return 0; }
 	virtual void setParticleLifetime(NxReal) {}
 	virtual NxReal getParticleLifetime() const { return 0; }
-	virtual void setFlag(NxFluidEmitterFlag, bool) {}
-	virtual NX_BOOL getFlag(NxFluidEmitterFlag) const { return 0; }
 	virtual NX_BOOL getShape(NxEmitterShape) const { return 0; }
 	virtual NX_BOOL getType(NxEmitterType) const { return 0; }
 	virtual void setName(const char*) {}
@@ -349,6 +347,43 @@ int wmain(int argc, wchar_t** argv)
 	oracleLocalOrientation = oracle->getLocalOrientationVal();
 	NxMat33 candidateLocalOrientation = candidateInterface->getLocalOrientationVal();
 	nxCheckEqual("local_orientation", &oracleLocalOrientation, &candidateLocalOrientation, sizeof(oracleLocalOrientation));
+
+	unsigned char oracleFlagInternal[sizeof(internal)];
+	unsigned char candidateFlagInternal[sizeof(internal)];
+	memcpy(oracleFlagInternal, internal, sizeof(internal));
+	memcpy(candidateFlagInternal, internal, sizeof(internal));
+	*reinterpret_cast<unsigned*>(oracleFlagInternal + 0x10) = 0x80000100u;
+	*reinterpret_cast<unsigned*>(candidateFlagInternal + 0x10) = 0x80000100u;
+	unsigned char oracleFlagBytes[0x18];
+	memset(oracleFlagBytes, 0, sizeof(oracleFlagBytes));
+	FluidEmitterProbe candidateFlag(candidateFlagInternal);
+	if(oracleCtor(oracleFlagBytes, oracleFlagInternal) != oracleFlagBytes)
+		++gFailures;
+	memcpy(oracleFlagBytes + 0x0c, &oracleLockLink, sizeof(oracleLockLink));
+	memcpy(oracleFlagBytes + 0x10, &oracleLockLink, sizeof(oracleLockLink));
+	memcpy(reinterpret_cast<unsigned char*>(&candidateFlag) + 0x0c,
+		&candidateSectionLink, sizeof(candidateSectionLink));
+	memcpy(reinterpret_cast<unsigned char*>(&candidateFlag) + 0x10,
+		&candidateSectionLink, sizeof(candidateSectionLink));
+	NxFluidEmitter* oracleFlag = reinterpret_cast<NxFluidEmitter*>(oracleFlagBytes);
+	NxFluidEmitter* candidateFlagInterface = &candidateFlag;
+	unsigned flagMismatches = 0;
+	oracleFlag->setFlag(NX_FEF_VISUALIZATION, true);
+	candidateFlagInterface->setFlag(NX_FEF_VISUALIZATION, true);
+	if(*reinterpret_cast<unsigned*>(oracleFlagInternal + 0x10) != 0x80000101u
+		|| *reinterpret_cast<unsigned*>(candidateFlagInternal + 0x10) != 0x80000101u
+		|| oracleFlag->getFlag(NX_FEF_VISUALIZATION) != NX_FEF_VISUALIZATION
+		|| candidateFlagInterface->getFlag(NX_FEF_VISUALIZATION) != NX_FEF_VISUALIZATION)
+		++flagMismatches;
+	oracleFlag->setFlag(NX_FEF_VISUALIZATION, false);
+	candidateFlagInterface->setFlag(NX_FEF_VISUALIZATION, false);
+	if(*reinterpret_cast<unsigned*>(oracleFlagInternal + 0x10) != 0x80000100u
+		|| *reinterpret_cast<unsigned*>(candidateFlagInternal + 0x10) != 0x80000100u
+		|| oracleFlag->getFlag(NX_FEF_VISUALIZATION) != 0
+		|| candidateFlagInterface->getFlag(NX_FEF_VISUALIZATION) != 0)
+		++flagMismatches;
+	gFailures += flagMismatches;
+	printf("fluid emitter flags cases=2 mismatches=%u\n", flagMismatches);
 
 	DeleteCriticalSection(&candidateLock.section);
 	nxUnbindOracleLocks(image, lockSlots);

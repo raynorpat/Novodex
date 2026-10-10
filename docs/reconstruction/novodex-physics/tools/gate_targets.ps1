@@ -89,6 +89,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsFluidEmitterAbiTests' = @(
         'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
+        'fluid emitter flags cases=2 mismatches=0'
         'fluid emitter aggregate cases=6 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
