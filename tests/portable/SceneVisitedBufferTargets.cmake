@@ -3,6 +3,7 @@ if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4 OR NOT
     message(FATAL_ERROR "Scene visited buffers require the measured Win32 layout; native layout remains Task9")
 endif()
 set(SCENE_VISITED_SOURCES SceneVisitedBufferTests.cpp FixtureSupport.cpp SdkAllocatorKernel.cpp
+    ../../Physics/src/PrunerRegistration.cpp
     ../../Physics/src/Containers.cpp ../../Physics/src/ThirdPartyHost.cpp
     ../../Physics/src/opcode/IcePrunable.cpp ../../Physics/src/opcode/IcePruner.cpp
     ../../Foundation/src/FoundationSDK.cpp ../../Foundation/src/Observable.cpp

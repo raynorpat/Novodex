@@ -11,6 +11,9 @@
 #include "NxSceneVisitedBuffers.h"
 #include "IcePruner.h"
 #include "Scene.h"
+#if !NX_PHYSICS_USE_X87
+#include "NxPrunerRegistration.h"
+#endif
 #if NX_PHYSICS_USE_X87
 #include <float.h>
 #endif
@@ -46,12 +49,14 @@ struct GuardedPrefix {
 static void visitedDomain(GuardAllocator& allocator)
 {
     for(unsigned pass=0;pass<3;++pass) {
-        const size_t baseline=allocator.blocks.size();
         GuardedPrefix storage; storage.poison();
         NxPolygonScratch* prefix=nxSceneScratchConstruct(storage.prefix,0x13579bdf);
         SdkContainer first, second, third;
         StaticPruner staticPruner;
         DynamicPruner dynamicPruner;
+        // The real process owner remains live across all Pruner lifetimes until
+        // SDK shutdown. Preserve the original prefix-only observation baseline.
+        const size_t baseline=allocator.blocks.size();
         struct CollectionStorage {
             unsigned before[4];
             alignas(NxScenePrunerCollection) unsigned char bytes[0x10];
@@ -153,8 +158,17 @@ int main(int argc,char** argv)
     NxFoundationSDK* foundation=NxCreateFoundationSDK(NX_FOUNDATION_SDK_VERSION,nullptr,&allocator);
     check(foundation && nxFoundationSDKAllocator==&allocator,"genuine Foundation allocator producer");
     nxSetSdkAllocatorBridge(&host); visitedDomain(allocator);
+#if NX_PHYSICS_USE_X87
     check(allocator.blocks.size()==1,"only real Foundation owner remains");
-    foundation->release(); nxSetSdkAllocatorBridge(nullptr);
+#else
+    check(nxPrunerProcessPool() && nxPrunerProcessPool()->mCount==0 && allocator.blocks.size()==6,
+        "only real Foundation and retained five-block process owner remain");
+#endif
+    foundation->release();
+#if !NX_PHYSICS_USE_X87
+    nxOpcodeReleasePool();
+#endif
+    nxSetSdkAllocatorBridge(nullptr);
     check(allocator.blocks.empty(),"complete Foundation cleanup");
 #if NX_PHYSICS_USE_X87
     if(failures) return 1;

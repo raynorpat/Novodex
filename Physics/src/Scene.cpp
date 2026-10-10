@@ -1420,6 +1420,7 @@ void nxSceneAuxUnregisterRecord(void* auxPointer, void* recordPointer)
 // dynamic. Its process-wide header owns four initial buffers. Unlike the Scene
 // rows, the pool (0x000b4cc0) and its buffers (0x000ef270) allocate through
 // phys_fn_004803, so this helper keeps nxGetSdkAllocator.
+#if NX_PHYSICS_USE_X87
 static unsigned char* gNxOpcodePool = 0;
 
 bool nxOpcodeEnsurePool()
@@ -1460,6 +1461,7 @@ void nxOpcodeReleasePool()
 	gNxOpcodePool = 0;
 	}
 
+#endif
 // The pending-shape array at Scene+0x69c..0x6a4 is +0x624's +0x78 header, which
 // 0x0004bb9c grows through phys_fn_004840 -- a phys_fn_004803 container -- so it
 // stays on nxGetSdkAllocator, as do the 0x3c/0x90 pruners built by 0x000b5090 and

@@ -28,6 +28,9 @@ named beside it.
 #define NX_PHYSICS_ICEPRUNABLE_H
 
 #include "Opcode.h"
+#if !NX_PHYSICS_USE_X87
+#include "NxPrunerRegistration.h"
+#endif
 
 using namespace IceCore;
 using namespace IceMaths;
@@ -138,8 +141,12 @@ class Pruner
 
 			PruningPool			mPool;				//!< +0x04
 			AABB				mBounds;			//!< +0x1c, 0x00053810 at 0x000f156c
+#if NX_PHYSICS_USE_X87
 			udword				mPruner34;			//!< +0x34, 0x000b4cc0's handle
 			udword				mTimestamp;			//!< +0x38
+#else
+            NxPrunerRegistration mRegistration;
+#endif
 };
 
 ///////////////////////////////////////////////////////////////////////////////

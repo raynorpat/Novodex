@@ -107,6 +107,9 @@ source_group("Header Files" FILES ${PHYSICS_HEADERS})
 # this directory has a counterpart in either pinned OPCODE 1.3 tree. Vendored
 # OPCODE is External/opcode/ and nowhere else.
 file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/core/*.cpp Physics/src/opcode/*.cpp)
+if(NX_PHYSICS_USE_X87)
+    list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/PrunerRegistration.cpp")
+endif()
 # The joint families on their own, for the test targets that link Scene.cpp: its
 # createJoint constructs every family, so they need the whole directory at link time.
 file(GLOB PHYSICS_CORE_SOURCES Physics/src/core/*.cpp)
