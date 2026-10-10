@@ -1,0 +1,11 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@ -752,7 +752,7 @@
+ 		return;
+ 		}
+ 	void* link = mWriteLock;
+-	if(mScene) mScene->at<void*>(0x6b4) = callback;
++	if(mScene) mScene->at<void*>(0x6b4) = 0;
+ 	nxNpSceneGuardLeave(link);
+ 	}
+ 

@@ -1644,10 +1644,16 @@ int wmain(int argc, wchar_t** argv)
 		NxSceneDesc notifySceneDesc;
 		notifySceneDesc.setToDefault();
 		notifySceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
-		notifySceneDesc.userNotify = &notify;
+		// Register through the public setter so the dedicated scene wrapper
+		// setter/getter rows are exercised, rather than only copying the desc.
+		notifySceneDesc.userNotify = 0;
 		NxScene* notifyScene = sdk->createScene(notifySceneDesc);
 		if(!notifyScene)
 			return nxFail("joint-break notify scene creation failed");
+		notifyScene->setUserNotify(&notify);
+		const bool notifyGetter = notifyScene->getUserNotify() == &notify;
+		if(!notifyGetter)
+			return nxFail("joint-break notify setter/getter did not retain the callback");
 		notifyScene->setTiming(0.02f, 1, NX_TIMESTEP_FIXED);
 		NxBodyDesc notifyBody;
 		NxActorDesc notifyActorDesc;

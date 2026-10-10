@@ -1,0 +1,11 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@ -761,7 +761,7 @@
+ 	{
+ 	void* link = mReadLock;
+ 	nxNpSceneGuardEnter(link);
+-	NxUserContactReport* report = mScene ? mScene->at<NxUserContactReport*>(0x6b4) : 0;
++	NxUserContactReport* report = 0;
+ 	nxNpSceneGuardLeave(link);
+ 	return report;
+ 	}

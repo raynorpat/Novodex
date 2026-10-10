@@ -1,0 +1,11 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@ -740,7 +740,7 @@
+ // phys_fn_000356: read the callback stored at Scene+0x6b0.
+ NxUserTriggerReport* NpScene::getUserTriggerReport() const
+ 	{
+-	return mScene ? mScene->at<NxUserTriggerReport*>(0x6b0) : 0;
++	return 0;
+ 	}
+ 
+ // phys_fn_000358 (0x0000cde0): Scene+0x6b4 stores the callback pointer.

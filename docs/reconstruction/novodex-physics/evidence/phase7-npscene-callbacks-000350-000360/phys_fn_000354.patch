@@ -1,0 +1,11 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@ -734,7 +734,7 @@
+ void NpScene::setUserTriggerReport(NxUserTriggerReport* callback)
+ 	{
+ 	if(mScene)
+-		mScene->at<NxUserTriggerReport*>(0x6b0) = callback;
++		mScene->at<NxUserTriggerReport*>(0x6b0) = 0;
+ 	}
+ 
+ // phys_fn_000356: read the callback stored at Scene+0x6b0.

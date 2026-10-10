@@ -10290,3 +10290,20 @@ The registered `NxPhysicsSimulationTests` scene-limits fixture exercises active 
 ## Phase 7 `NpScene` query wrappers `phys_fn_000346` and `phys_fn_000348`
 
 The registered `NxPhysicsSimulationTests` fixture exercises both public wrappers for empty and populated scenes under selectors 0, 1, and 2. `phys_fn_000346` (`NpScene::getSceneStats`) is caught with `stdout_delta=12` when its return is changed to null. `phys_fn_000348` (`NpScene::getLimits`) is caught with `stdout_delta=6` when its forwarding call is suppressed. Both mutant runs exit zero with exact stderr, and each restored control matches exactly. See [phase7-npscene-query-wrappers-000346-000348/README.md](phase7-npscene-query-wrappers-000346-000348/README.md).
+
+## Phase 7 `NpScene` callback rows `phys_fn_000350`–`phys_fn_000360`
+
+The registered `NxPhysicsSimulationTests` differential now directly sets and reads the Scene user notifier, while its existing trigger/contact simulation exercises the other four callback rows. Isolated one-line mutations are independently caught with `stdout_delta=799` (000350), `799` (000352), `3958` (000354), `2` (000356), `1053` (000358), and `2` (000360). Each source restore and rebuild returns `stdout_delta=0` with exact stderr. See [phase7-npscene-callbacks-000350-000360/README.md](phase7-npscene-callbacks-000350-000360/README.md).
+
+
+`phys_fn_000350` mutant `stdout_delta=799`; restored control `stdout_delta=0`.
+
+`phys_fn_000352` mutant `stdout_delta=799`; restored control `stdout_delta=0`.
+
+`phys_fn_000354` mutant `stdout_delta=3958`; restored control `stdout_delta=0`.
+
+`phys_fn_000356` mutant `stdout_delta=2`; restored control `stdout_delta=0`.
+
+`phys_fn_000358` mutant `stdout_delta=1053`; restored control `stdout_delta=0`.
+
+`phys_fn_000360` mutant `stdout_delta=2`; restored control `stdout_delta=0`.
