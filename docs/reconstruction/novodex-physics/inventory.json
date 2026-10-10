@@ -81817,13 +81817,15 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1649",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15067",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x000af790 (835 bytes) identifies a thiscall receiver in ECX, impulse at [ESP+4], opaque second stack word at [ESP+8], and ret 8. The second argument is unused. Record bit 10 selects angular-only updates; otherwise it also updates linear velocity. For each non-null body with nonzero inverse mass, sign is positive for body 0 and negative for body 1; the row applies the record direction to linear velocity and the per-body Jacobian through the row-major 3x3 inverse inertia to angular velocity. The candidate preserves the oracle x87 accumulation order.",
+      "dynamic_proof": "NxPhysicsJointSupportTests direct oracle differential: nine scratch-record cases call oracle RVA 0x000af790 and JointSupportApplyFixture::applyImpulse004395 independently; linear/angular paths, body masks 0/1/2/3, zero/nonzero inverse masses, both x87 control words 0x027f/0x0f7f, signed impulses, and opaque stack values are covered. Restored output digest 1e9bf6cbf7c6576a equals the oracle, input digest cf0a288f38c68f7c, mismatches=0. A mutation that skips every body application is rejected: candidate digest f2647d06b2b61d05, mismatches=39, process exit 1; restored control returns to exact equality.",
+      "notes": "The direct fixture isolates the shared impulse row from solver dispatch; no public header changed.",
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "JointSupportApplyFixture::applyImpulse004395"
     },
     {
       "id": "phys_fn_004396",

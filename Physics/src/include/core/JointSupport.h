@@ -106,6 +106,15 @@ struct JointSupportRecord
 	void				row004393(NxReal arg0, NxReal arg1);
 	};
 
+// phys_fn_004395 (0x000af790, 835 B). Thiscall on the support record, two
+// stack arguments, `ret 8`; the second (step) argument is accepted but not
+// read. The fixture receiver preserves the oracle ABI while keeping the
+// incomplete row private to the reconstruction.
+struct JointSupportApplyFixture
+	{
+	void applyImpulse004395(NxReal impulse, NxReal step);
+	};
+
 class NxSceneInternal;
 
 // The 000611/004176 per-island support pass. This is separate from record

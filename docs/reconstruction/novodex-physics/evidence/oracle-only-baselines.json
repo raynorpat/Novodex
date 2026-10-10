@@ -13,7 +13,7 @@
     "NxPhysicsJointSupportTests": {
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsJointSupportTests.cpp",
-      "fixture_source_sha256": "f516233e7a79e7900d50988811db3a5576554fef9866ea718b16e5bd9d623ba2",
+      "fixture_source_sha256": "4d74e2ec4bbf8d48c465c9e6912f2587c072959ef9083026c5f54b7208c0756b",
       "cases": 2,
       "input_digest_fnv64": "6a95ba1bc2ba4ed5",
       "oracle_output_digest_fnv64": "b496eeea186d3dc9"

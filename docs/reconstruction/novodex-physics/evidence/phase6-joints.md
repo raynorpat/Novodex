@@ -10340,3 +10340,10 @@ The registered `NxPhysicsSimulationTests` broken-joint fixture reaches the event
 ## Phase 6 per-island support wrapper `phys_fn_004176` — `mismatches=2`
 
 The direct `NxPhysicsJointSupportTests` oracle differential calls the wrapper at RVA `0x0009b240` with nonzero iteration and step-counter globals. Separate mutations omitting either reset are each caught with `mismatches=2`; the restored control is exact at oracle/candidate digest `b496eeea186d3dc9`. Details: [phase6-joint-support-island-wrapper-004176.md](phase6-joint-support-island-wrapper-004176.md).
+
+
+## Phase 6 shared joint impulse application `phys_fn_004395` — `mismatches=39`
+
+The direct `NxPhysicsJointSupportTests` oracle differential calls the row at RVA `0x000af790` on nine independently initialized scratch records. It covers linear and angular-only updates, null and populated body slots, zero and nonzero inverse mass, signed impulses, both x87 control words, and opaque second-argument values. The restored oracle and candidate output digests are both `1e9bf6cbf7c6576a`; the input digest is `cf0a288f38c68f7c`, with `mismatches=0`.
+
+A mutation that skips every body's update produces candidate digest `f2647d06b2b61d05`, `mismatches=39`, and exit 1. Rebuilding the restored helper returns to exact equality. The Phase 6 closure now records 154 closed rows and 279 deferred rows. See [phase6-joint-support-apply-impulse-004395.md](phase6-joint-support-apply-impulse-004395.md) for the ABI trace and focused verification.

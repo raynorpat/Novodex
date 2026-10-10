@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 153 rows are closed (3 oracle differentials, 150 mutation-falsified); 280 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 154 rows are closed (4 oracle differentials, 150 mutation-falsified); 279 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -65,9 +65,9 @@
   },
   "counts": {
     "differential_falsified": 150,
-    "oracle_differential_falsified": 3,
+    "oracle_differential_falsified": 4,
     "deferred_reconstructed_not_falsified": 260,
-    "deferred_not_reconstructed_in_phase": 20
+    "deferred_not_reconstructed_in_phase": 19
   },
   "closed": [
     {
@@ -1603,6 +1603,17 @@
         "detected": "mismatches=2"
       },
       "note": "Direct 004176 wrapper differential with two independent reset mutations; see evidence/phase6-joint-support-island-wrapper-004176.md."
+    },
+    {
+      "id": "phys_fn_004395",
+      "rva": "0x000af790",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsJointSupportTests",
+      "falsification": {
+        "mutation": "Changed the direct applyImpulse004395 helper to skip applying to every body, rebuilt NxPhysicsJointSupportTests, and ran it against the pinned NxPhysics.dll. The nine direct cases reported oracle digest 1e9bf6cbf7c6576a versus candidate f2647d06b2b61d05 with mismatches=39; the executable exited 1. The restored helper matched the oracle with mismatches=0.",
+        "detected": "mismatches=39"
+      },
+      "note": "Direct 004395 impulse-row differential and body-application mutation; see evidence/phase6-joint-support-apply-impulse-004395.md."
     }
   ],
   "deferred": [
@@ -2821,14 +2832,6 @@
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004395",
-      "rva": "0x000af790",
-      "size": 835,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_004399",

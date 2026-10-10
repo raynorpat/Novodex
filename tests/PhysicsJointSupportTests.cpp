@@ -199,6 +199,104 @@ static unsigned nxRunCase(unsigned char* oracleBase, NxReal maxForce,
 	return nxCompareFixture(oracle, candidate, oracleDigest, candidateDigest);
 	}
 
+struct JointSupportImpulseFixture
+	{
+	JointSupportBody body[2];
+	JointSupportRecord record;
+	};
+
+static void nxInitImpulseFixture(JointSupportImpulseFixture& fixture,
+	unsigned flags, unsigned bodyMask, NxReal inverseMass0, NxReal inverseMass1)
+	{
+	memset(&fixture, 0, sizeof(fixture));
+	fixture.body[0].mUnknown000 = NxVec3(0.75f, -0.375f, 0.625f);
+	fixture.body[1].mUnknown000 = NxVec3(-0.25f, 0.875f, -0.5f);
+	fixture.body[0].mUnknown00c = inverseMass0;
+	fixture.body[1].mUnknown00c = inverseMass1;
+	fixture.body[0].mUnknown010 = NxVec3(-0.625f, 0.1875f, 0.4375f);
+	fixture.body[1].mUnknown010 = NxVec3(0.3125f, -0.75f, 0.125f);
+	const NxReal inertia0[9] = {
+		0.5f, 0.125f, -0.0625f, 0.25f, 0.625f, 0.125f,
+		-0.03125f, 0.0625f, 0.875f};
+	const NxReal inertia1[9] = {
+		0.375f, -0.125f, 0.0625f, 0.1875f, 0.75f, -0.25f,
+		0.03125f, 0.125f, 0.5625f};
+	memcpy(fixture.body[0].mUnknown020, inertia0, sizeof(inertia0));
+	memcpy(fixture.body[1].mUnknown020, inertia1, sizeof(inertia1));
+	fixture.record.mFlags = flags;
+	fixture.record.mBody[0] = (bodyMask & 1) ? &fixture.body[0] : 0;
+	fixture.record.mBody[1] = (bodyMask & 2) ? &fixture.body[1] : 0;
+	fixture.record.mUnknown000 = NxVec3(0.375f, -0.625f, 0.875f);
+	fixture.record.mUnknown018 = NxVec3(0.5f, 0.25f, -0.125f);
+	fixture.record.mUnknown024 = NxVec3(-0.3125f, 0.1875f, 0.4375f);
+	}
+
+static unsigned nxRunImpulseCase(unsigned char* oracleBase, unsigned flags,
+	unsigned bodyMask, NxReal inverseMass0, NxReal inverseMass1, NxReal impulse,
+	unsigned short controlWord, int opaqueArgument, unsigned long long& oracleDigest,
+	unsigned long long& candidateDigest, unsigned long long& inputDigest)
+	{
+	JointSupportImpulseFixture oracle, candidate;
+	nxInitImpulseFixture(oracle, flags, bodyMask, inverseMass0, inverseMass1);
+	nxInitImpulseFixture(candidate, flags, bodyMask, inverseMass0, inverseMass1);
+	const unsigned inputWords[] = {
+		flags, bodyMask, nxFloatBits(inverseMass0), nxFloatBits(inverseMass1),
+		nxFloatBits(impulse), controlWord, static_cast<unsigned>(opaqueArgument),
+		nxFloatBits(oracle.record.mUnknown000.x), nxFloatBits(oracle.record.mUnknown000.y),
+		nxFloatBits(oracle.record.mUnknown000.z),
+		nxFloatBits(oracle.record.mUnknown018.x), nxFloatBits(oracle.record.mUnknown018.y),
+		nxFloatBits(oracle.record.mUnknown018.z),
+		nxFloatBits(oracle.record.mUnknown024.x), nxFloatBits(oracle.record.mUnknown024.y),
+		nxFloatBits(oracle.record.mUnknown024.z),
+		nxFloatBits(oracle.body[0].mUnknown000.x), nxFloatBits(oracle.body[0].mUnknown000.y),
+		nxFloatBits(oracle.body[0].mUnknown000.z), nxFloatBits(oracle.body[0].mUnknown00c),
+		nxFloatBits(oracle.body[0].mUnknown010.x), nxFloatBits(oracle.body[0].mUnknown010.y),
+		nxFloatBits(oracle.body[0].mUnknown010.z),
+		nxFloatBits(oracle.body[1].mUnknown000.x), nxFloatBits(oracle.body[1].mUnknown000.y),
+		nxFloatBits(oracle.body[1].mUnknown000.z), nxFloatBits(oracle.body[1].mUnknown00c),
+		nxFloatBits(oracle.body[1].mUnknown010.x), nxFloatBits(oracle.body[1].mUnknown010.y),
+		nxFloatBits(oracle.body[1].mUnknown010.z)
+		};
+	for(unsigned i = 0; i != sizeof(inputWords) / sizeof(inputWords[0]); ++i)
+		inputDigest = nxFold(inputDigest, inputWords[i]);
+	for(unsigned body = 0; body != 2; ++body)
+		for(unsigned i = 0; i != 9; ++i)
+			inputDigest = nxFold(inputDigest,
+				nxFloatBits(oracle.body[body].mUnknown020[i]));
+
+	typedef void (__thiscall *OracleApplyImpulseFn)(void*, NxReal, int);
+	nxSetControl(controlWord);
+	NxReal stepBits;
+	memcpy(&stepBits, &opaqueArgument, sizeof(stepBits));
+	reinterpret_cast<OracleApplyImpulseFn>(oracleBase + 0x000af790)(
+		&oracle.record, impulse, opaqueArgument);
+	nxSetControl(controlWord);
+	reinterpret_cast<JointSupportApplyFixture*>(&candidate.record)->applyImpulse004395(
+		impulse, stepBits);
+
+	unsigned mismatches = 0;
+	for(unsigned body = 0; body != 2; ++body)
+		{
+		const NxReal* oracleWords[] = {
+			&oracle.body[body].mUnknown000.x, &oracle.body[body].mUnknown000.y,
+			&oracle.body[body].mUnknown000.z, &oracle.body[body].mUnknown010.x,
+			&oracle.body[body].mUnknown010.y, &oracle.body[body].mUnknown010.z};
+		const NxReal* candidateWords[] = {
+			&candidate.body[body].mUnknown000.x, &candidate.body[body].mUnknown000.y,
+			&candidate.body[body].mUnknown000.z, &candidate.body[body].mUnknown010.x,
+			&candidate.body[body].mUnknown010.y, &candidate.body[body].mUnknown010.z};
+		for(unsigned i = 0; i != 6; ++i)
+			{
+			const unsigned oracleBits = nxFloatBits(*oracleWords[i]);
+			const unsigned candidateBits = nxFloatBits(*candidateWords[i]);
+			mismatches += oracleBits != candidateBits;
+			oracleDigest = nxFold(oracleDigest, oracleBits);
+			candidateDigest = nxFold(candidateDigest, candidateBits);
+			}
+		}
+	return mismatches;
+	}
+
 class JointSupportAllocator : public NxUserAllocator
 	{
 	public:
@@ -366,10 +464,46 @@ int wmain(int argc, wchar_t** argv)
 		oracleDigest, candidateDigest, mismatches);
 	printf("joint_support inputs=2 digest=%016llx\n", inputDigest);
 	printf("joint_support coverage name=kind5_solver cases=2 passes=1,final callback=slot3\n");
+	struct ImpulseCase
+		{
+		unsigned flags;
+		unsigned bodyMask;
+		NxReal inverseMass0;
+		NxReal inverseMass1;
+		NxReal impulse;
+		unsigned short controlWord;
+		int opaqueArgument;
+		};
+	const ImpulseCase impulseCases[] = {
+		{0, 3, 0.75f, 1.25f, 0.625f, 0x027f, 0},
+		{0x400, 3, 0.75f, 1.25f, -0.4375f, 0x0f7f, 0x12345678},
+		{0, 1, 0.5f, 0.0f, 0.375f, 0x027f, static_cast<int>(0xdeadbeef)},
+		{0, 2, 0.0f, 1.75f, -0.5625f, 0x0f7f, 0x01020304},
+		{0x400, 1, 0.875f, 0.0f, 0.3125f, 0x027f, 0},
+		{0x400, 2, 0.0f, 0.625f, 0.6875f, 0x0f7f, 0x7fffffff},
+		{0, 3, 0.0f, 0.0f, -0.25f, 0x027f, static_cast<int>(0x80000000u)},
+		{0x400, 3, 0.875f, 0.0f, -0.1875f, 0x0f7f, static_cast<int>(0xffffffffu)},
+		{0, 0, 0.5f, 1.25f, 0.25f, 0x027f, 0x55667788}
+		};
+	unsigned long long impulseOracleDigest = 14695981039346656037ull;
+	unsigned long long impulseCandidateDigest = 14695981039346656037ull;
+	unsigned long long impulseInputDigest = 14695981039346656037ull;
+	unsigned impulseMismatches = 0;
+	for(unsigned i = 0; i != sizeof(impulseCases) / sizeof(impulseCases[0]); ++i)
+		{
+		const ImpulseCase& test = impulseCases[i];
+		impulseMismatches += nxRunImpulseCase(base, test.flags, test.bodyMask,
+			test.inverseMass0, test.inverseMass1, test.impulse, test.controlWord,
+			test.opaqueArgument, impulseOracleDigest, impulseCandidateDigest,
+			impulseInputDigest);
+		}
+	printf("joint_support applyImpulse cases=9 oracle=%016llx candidate=%016llx mismatches=%u\n",
+		impulseOracleDigest, impulseCandidateDigest, impulseMismatches);
+	printf("joint_support applyImpulse inputs=9 digest=%016llx\n", impulseInputDigest);
 	int islandStatus = nxRunIslandObjectTeardown(base);
 	if(islandStatus)
 		return islandStatus;
 	if(nxReportPairIdentity(pairDirectory))
 		return 1;
-	return mismatches ? 1 : 0;
+	return (mismatches || impulseMismatches) ? 1 : 0;
 	}

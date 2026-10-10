@@ -247,15 +247,6 @@ static void supportSolveFriction004401(NxReal step, NxU32 pass, JointSupportReco
 // otherwise both the linear direction and each body's angular Jacobian are
 // applied through its prepared inverse-mass/inertia record.
 
-// The oracle calls 004395 as a thiscall on the support record and passes both
-// the applied impulse and timestep on the stack (`ret 8`). Keep this as a
-// member on a pointer-bit fixture so MSVC emits that ABI even though the
-// helper is implemented outside JointSupportRecord's public internal layout.
-struct JointSupportApplyFixture
-	{
-	void applyImpulse004395(NxReal impulse, NxReal step);
-	};
-
 #if defined(_MSC_VER)
 __declspec(noinline)
 #endif

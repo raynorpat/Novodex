@@ -3999,13 +3999,13 @@
     "phys_fn_004433"
    ],
    "rows": {
-    "discovered": 4,
-    "dynamically_gated": 2,
+    "discovered": 3,
+    "dynamically_gated": 3,
     "reconstructed": 18
    },
    "bytes": {
-    "discovered": 2083,
-    "dynamically_gated": 1058,
+    "discovered": 1248,
+    "dynamically_gated": 1893,
     "reconstructed": 1610
    },
    "phases": {
