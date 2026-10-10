@@ -10223,3 +10223,9 @@ The registered `NxPhysicsPopulatedSceneTeardownTests` control is exact (`stdout_
 
 After adding `phys_fn_004172`, Phase 6 records 151 closed rows (149 mutation-falsified and two oracle differentials) and 282 deferred rows: 260 reconstructed rows remain without an individual mutation, and 22 in-phase rows remain unreconstructed. A fresh Phase 6 gate evaluated 1,596 coverage assertions against the 1,267 floor and passed.
 phys_fn_000663 whole-row no-op mutation: retained blocks 51 (expected release 39), candidate exit 1, oracle exit 0, stdout_delta=18; restored control stdout_delta=0.
+
+## Phase 7 Scene joint-count getter closure — `phys_fn_000559`
+
+The `NxPhysicsJointStagedPairTests` oracle and restored candidate match exactly. Reading Scene+0x6c4 instead of +0x6c8 is caught while the fixture reports `count=0` and `enumerated=1` (`stdout_delta=296`, both exits zero, exact stderr); restoring the +0x6c8 joint-count read returns `stdout_delta=0`. See [phase7-scene-joint-count-000559.md](phase7-scene-joint-count-000559.md).
+
+phys_fn_000559 wrong-offset mutation (+0x6c8 -> +0x6c4) stdout_delta=296; restored stdout_delta=0.

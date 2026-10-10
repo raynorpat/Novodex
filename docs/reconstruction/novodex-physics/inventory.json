@@ -10623,14 +10623,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/211",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1458",
-      "static_proof": "mov eax,[ecx+0x6c8]; ret; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::getNbJoints in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: field getter [this+0x6c8] (0x10860).",
-      "implementation": "Physics/src/Scene.cpp"
+      "static_proof": "phys_fn_000559 (0x00010860, 7 bytes): `mov eax,[ecx+0x6c8]; ret`. The return is the Scene joint count. Candidate implementation: `NxSceneInternal::getNbJoints` in Physics/src/Scene.cpp.",
+      "dynamic_proof": "The registered Phase 7 NxPhysicsJointStagedPairTests differential observes scene joint counts before and after release across the joint-family matrix. Mutating NxSceneInternal::getNbJoints to read Scene+0x6c4 (effector count) leaves `enumerated=1` while reporting `count=0` and is rejected (oracle_exit=0, candidate_exit=0, stderr_exact=True, stdout_delta=296). Restored control is exact (both exits=0, stdout_delta=0, stderr_exact=True). Mutant candidate SHA-256 a38c09b26742a7903edec37be4ffe3ab8e097f2773a3348129d938fffceb0d71; restored candidate SHA-256 e0c4b09eb6ac5e4a246779a3f8112f104cc1b7d63db5985c4a4a3ac74bf6fd82. See evidence/phase7-scene-joint-count-000559.md.",
+      "notes": "Returns the word at Scene+0x6c8; the registered joint lifecycle differential catches a wrong-offset mutation to the adjacent effector count at +0x6c4.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::getNbJoints"
     },
     {
       "id": "phys_fn_000560",
@@ -11424,7 +11425,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1525",
       "static_proof": null,
       "dynamic_proof": "The registered Phase 7 NxPhysicsPopulatedSceneTeardownTests fixture keeps a 608-byte dynamic body record in Scene+[0x56c,0x570) after the actor pose link is cleared and normal actor/root teardown runs. Oracle and restored candidate report freed=1 (stdout_delta=0, stderr_exact=True, both exits 0). A no-op mutation of nxSceneDestroyBodyRecords reports freed=0 and is caught (candidate exit 1, stdout_delta=2). Evidence: evidence/phase7-scene-body-record-destroy-000602.md.",
-      "notes": "nxSceneDestroyBodyRecords reproduces IDA's loop at 0x10011060: each non-null record receives DynamicBody::destruct, then Foundation allocator free. nxSceneDelete calls it after the joint-list loop at 0x13fa5. This closes phys_fn_000602 only; the enclosing Scene destructor phys_fn_000663 remains open."
+      "notes": "nxSceneDestroyBodyRecords reproduces IDA's loop at 0x10011060: each non-null record receives DynamicBody::destruct, then Foundation allocator free. nxSceneDelete calls it after the joint-list loop at 0x13fa5. This closes phys_fn_000602 only; the enclosing Scene destructor phys_fn_000663 is mutation-falsified; see evidence/phase7-scene-destructor-000663.md."
     },
     {
       "id": "phys_fn_000603",
