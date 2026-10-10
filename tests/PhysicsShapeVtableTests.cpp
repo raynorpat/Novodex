@@ -2765,6 +2765,7 @@ int wmain(int argc, wchar_t** argv)
     // translated boxes, with directions that lie inside the +-2^-23 parallel
     // band on some axes, exactly on it, negative, and non-finite.
     unsigned sweepCases = 0, sweepFailures = 0, sweepDigest = 2166136261u;
+    unsigned sweepInputDigest = 2166136261u;
     {
     typedef void (__thiscall* SweepBoxCtor)(void*, void*, unsigned);
     typedef bool (__thiscall* SweepFn)(void*, void*, const void*);
@@ -2797,6 +2798,15 @@ int wmain(int argc, wchar_t** argv)
         memcpy(oracleBox + 0xe4, sweepDims[m], 12);
         memcpy(candidateBox + 0xe4, sweepDims[m], 12);
         float oracleOut = 0.5f, candidateOut = 0.5f;
+        const unsigned sweepInputWords[4] = {r, t, m, dd};
+        sweepInputDigest = foldOracle(sweepInputDigest, sweepInputWords,
+            sizeof(sweepInputWords));
+        sweepInputDigest = foldOracle(sweepInputDigest, sweepRotations[r], 36);
+        sweepInputDigest = foldOracle(sweepInputDigest, sweepTranslations[t], 12);
+        sweepInputDigest = foldOracle(sweepInputDigest, sweepDims[m], 12);
+        sweepInputDigest = foldOracle(sweepInputDigest, sweepDirs[dd], 12);
+        sweepInputDigest = foldOracle(sweepInputDigest, &oracleOut,
+            sizeof(oracleOut));
         const bool ro = oracleSweep(oracleBox, &oracleOut, sweepDirs[dd]);
         const bool rc = candidateShape.nxBoxSweep(&candidateOut, sweepDirs[dd]);
         const unsigned oracleWords[2] = { ro ? 1u : 0u, 0u };
@@ -2823,6 +2833,8 @@ int wmain(int argc, wchar_t** argv)
         massDigest, massCases, massFailures);
     printf("shape vtable massframe centre oracle_digest=%08x cases=%u failures=%u\n",
         centreDigest, centreCases, centreFailures);
+    printf("shape vtable boxsweep inputs=%u digest=%08x\n",
+        sweepCases, sweepInputDigest);
     printf("shape vtable boxsweep oracle_digest=%08x cases=%u failures=%u\n",
         sweepDigest, sweepCases, sweepFailures);
     printf("box hull oracle_digest=%08x cases=%u failures=%u\n",

@@ -30,6 +30,23 @@ typedef void (__thiscall *MarkIslandDirtyFn)(void*);
 
 static unsigned word(const unsigned char* bytes, unsigned offset);
 
+static bool isOraclePairDirectory(const wchar_t* pairDirectory)
+{
+	const wchar_t* pairName = wcsrchr(pairDirectory, L'\\');
+	return pairName && _wcsicmp(pairName + 1, L"oracle") == 0;
+}
+
+static bool testPairDirectorySelection()
+{
+	const bool candidatePathIsOracle = isOraclePairDirectory(
+		L"D:\\build\\oracle-proof\\pairs\\candidate");
+	const bool oraclePathIsOracle = isOraclePairDirectory(
+		L"D:\\build\\oracle-proof\\pairs\\oracle");
+	printf("bodycreate pair_path candidate_is_oracle=%u oracle_is_oracle=%u\n",
+		candidatePathIsOracle ? 1u : 0u, oraclePathIsOracle ? 1u : 0u);
+	return !candidatePathIsOracle && oraclePathIsOracle;
+}
+
 static void writeWord(unsigned char* bytes, unsigned offset, unsigned value)
 {
 	memcpy(bytes + offset, &value, sizeof(value));
@@ -37,7 +54,7 @@ static void writeWord(unsigned char* bytes, unsigned offset, unsigned value)
 
 static unsigned markIslandDirtyRva(const wchar_t* pairDirectory)
 {
-	if(wcsstr(pairDirectory, L"oracle")) return 0x16f80;
+	if(isOraclePairDirectory(pairDirectory)) return 0x16f80;
 	char path[MAX_PATH] = {};
 	if(!GetModuleFileNameA(0, path, MAX_PATH)) return 0;
 	char* slash = strrchr(path, '\\');
@@ -290,6 +307,8 @@ int wmain(int argc, wchar_t** argv)
 	int status = nxOpenPair(argc, argv, "NxPhysicsBodyCreationTests",
 		pairDirectory, &physics);
 	if(status) return status;
+	if(!testPairDirectorySelection())
+		return nxFail("oracle pair selection used a parent path component");
 	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK) return nxFail("NxCreatePhysicsSDK is missing");

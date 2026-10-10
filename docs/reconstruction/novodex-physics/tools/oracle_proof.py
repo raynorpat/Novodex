@@ -19,6 +19,10 @@ JOINT_MATRIX_INPUT_CASE = re.compile(
     r"^case=([a-z0-9_]+) index=(\d+) .*?\bin_anchor=")
 JOINT_MATRIX_SUPPLEMENTAL_INPUT = re.compile(r"^case=(?:pulley index=\d+ in_pulley0=|d6 index=\d+ in )")
 JOINT_MATRIX_MACHINE_PREFIXES = ("pair_directory=", "modules pair=", "loaded module=")
+SHAPE_BOXSWEEP_INPUT = re.compile(
+    r"^shape vtable boxsweep inputs=(\d+) digest=([0-9a-f]{8})$")
+SHAPE_BOXSWEEP_OUTPUT = re.compile(
+    r"^shape vtable boxsweep oracle_digest=([0-9a-f]{8}) cases=(\d+) failures=\d+$")
 
 
 def sha256(data):
@@ -167,6 +171,53 @@ def _verify_joint_matrix(expected, lines):
     }
 
 
+def _verify_shape_boxsweep(expected, lines):
+    failures = []
+    input_lines = [line for line in lines
+                   if line.startswith("shape vtable boxsweep inputs=")]
+    output_lines = [line for line in lines
+                    if line.startswith("shape vtable boxsweep oracle_digest=")]
+    if len(input_lines) != 1:
+        failures.append("expected exactly one BOX sweep input proof line; found %d"
+                        % len(input_lines))
+    if len(output_lines) != 1:
+        failures.append("expected exactly one BOX sweep oracle output proof line; found %d"
+                        % len(output_lines))
+
+    input_match = SHAPE_BOXSWEEP_INPUT.fullmatch(input_lines[0]) if len(input_lines) == 1 else None
+    output_match = SHAPE_BOXSWEEP_OUTPUT.fullmatch(output_lines[0]) if len(output_lines) == 1 else None
+    if len(input_lines) == 1 and input_match is None:
+        failures.append("BOX sweep input proof line is malformed")
+    if len(output_lines) == 1 and output_match is None:
+        failures.append("BOX sweep oracle output proof line is malformed")
+
+    cases = input_cases = None
+    input_digest = oracle_output_digest = None
+    if input_match:
+        input_cases = int(input_match.group(1))
+        input_digest = input_match.group(2)
+        if input_cases != expected.get("cases"):
+            failures.append("input case count differs from the pinned baseline")
+        if input_digest != expected.get("input_digest_fnv32"):
+            failures.append("input digest differs from the pinned baseline")
+    if output_match:
+        cases = int(output_match.group(2))
+        oracle_output_digest = output_match.group(1)
+        if cases != expected.get("cases") or cases != input_cases:
+            failures.append("oracle case count differs from the pinned baseline")
+        if oracle_output_digest != expected.get("oracle_output_digest_fnv32"):
+            failures.append("oracle output digest differs from the pinned baseline")
+
+    if not input_match or not output_match:
+        return failures, None
+    return failures, {
+        "cases": cases,
+        "input_digest_fnv32": input_digest,
+        "oracle_output_digest_fnv32": oracle_output_digest,
+        "selected_lines": [input_lines[0], output_lines[0]],
+    }
+
+
 def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
                              repo_root):
     """Return (failures, proof); candidate-only values are intentionally ignored."""
@@ -202,6 +253,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
         failures_for_format, measurements = _verify_joint_descriptor(expected, lines)
     elif proof_format == "joint_matrix":
         failures_for_format, measurements = _verify_joint_matrix(expected, lines)
+    elif proof_format == "shape_boxsweep":
+        failures_for_format, measurements = _verify_shape_boxsweep(expected, lines)
     else:
         failures_for_format, measurements = ["unsupported oracle proof format: %s"
                                                % proof_format], None
@@ -257,7 +310,8 @@ def main(argv=None):
     output.write_text(json.dumps(proof, indent=2) + "\n", encoding="utf-8")
     input_digest = proof.get("input_digest_fnv64", proof.get("input_digest_sha256"))
     output_digest = proof.get("oracle_output_digest_fnv64",
-                              proof.get("oracle_output_digest_sha256"))
+                              proof.get("oracle_output_digest_fnv32",
+                                        proof.get("oracle_output_digest_sha256")))
     sys.stdout.write("oracle proof pass target=%s cases=%d input_digest=%s "
                      "oracle_output_digest=%s proof_sha256=%s evidence=%s\n" %
                      (proof["target"], proof["cases"], input_digest,

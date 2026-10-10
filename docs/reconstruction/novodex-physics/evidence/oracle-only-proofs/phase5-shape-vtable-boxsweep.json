@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "target": "NxPhysicsShapeVtableTests",
+  "format": "shape_boxsweep",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "fixture_source": "tests/PhysicsShapeVtableTests.cpp",
+  "fixture_source_sha256": "80f545d5a6983038e21ca2961a8b03eb8711388b3eb2128a86be07a6fb5d6ade",
+  "proof_lines_sha256": "d2d219afbd5d01794228691639c4150dcad928fbea5438618009a9012b27a0e5",
+  "baseline_sha256": "b3c6ac9b6529bc93ec071651762caec2086997b3731f9e6e8647fa92ea4d40aa",
+  "cases": 84,
+  "input_digest_fnv32": "46df40a9",
+  "oracle_output_digest_fnv32": "2c5d5c09",
+  "proof_sha256": "8ed71081cc767c7a6775021d5a579754d79f8334a92185c985bde789dae132a2"
+}

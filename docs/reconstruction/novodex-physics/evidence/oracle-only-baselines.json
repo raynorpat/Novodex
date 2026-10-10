@@ -1,6 +1,15 @@
 {
   "schema_version": 1,
   "targets": {
+    "NxPhysicsShapeVtableTests": {
+      "format": "shape_boxsweep",
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_source": "tests/PhysicsShapeVtableTests.cpp",
+      "fixture_source_sha256": "80f545d5a6983038e21ca2961a8b03eb8711388b3eb2128a86be07a6fb5d6ade",
+      "cases": 84,
+      "input_digest_fnv32": "46df40a9",
+      "oracle_output_digest_fnv32": "2c5d5c09"
+    },
     "NxPhysicsJointSupportTests": {
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsJointSupportTests.cpp",

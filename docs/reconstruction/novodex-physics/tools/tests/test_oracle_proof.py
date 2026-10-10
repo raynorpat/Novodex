@@ -110,6 +110,78 @@ class OracleProofTests(unittest.TestCase):
                 failures, _ = self.verify(lines=lines)
                 self.assertTrue(any("exactly one" in failure for failure in failures), failures)
 
+    def test_shape_boxsweep_proof_hashes_the_oracle_input_and_output_digests(self):
+        source_bytes = b"fixed box sweep inputs"
+        source = self.root / "tests/PhysicsShapeVtableTests.cpp"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        input_digest = "3e93b9a2"
+        output_digest = "dd7822d1"
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsShapeVtableTests": {
+                    "format": "shape_boxsweep",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": "tests/PhysicsShapeVtableTests.cpp",
+                    "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                    "cases": 84,
+                    "input_digest_fnv32": input_digest,
+                    "oracle_output_digest_fnv32": output_digest,
+                }
+            },
+        }
+        lines = [
+            "shape vtable boxsweep inputs=84 digest=%s" % input_digest,
+            "shape vtable boxsweep oracle_digest=%s cases=84 failures=0" % output_digest,
+        ]
+
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsShapeVtableTests", lines, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["cases"], 84)
+        self.assertEqual(proof["input_digest_fnv32"], input_digest)
+        self.assertEqual(proof["oracle_output_digest_fnv32"], output_digest)
+
+    def test_shape_boxsweep_proof_rejects_changed_oracle_data_or_case_count(self):
+        source_bytes = b"fixed box sweep inputs"
+        source = self.root / "tests/PhysicsShapeVtableTests.cpp"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsShapeVtableTests": {
+                    "format": "shape_boxsweep",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": "tests/PhysicsShapeVtableTests.cpp",
+                    "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                    "cases": 84,
+                    "input_digest_fnv32": "3e93b9a2",
+                    "oracle_output_digest_fnv32": "dd7822d1",
+                }
+            },
+        }
+        lines = [
+            "shape vtable boxsweep inputs=84 digest=3e93b9a2",
+            "shape vtable boxsweep oracle_digest=dd7822d1 cases=84 failures=0",
+        ]
+        for index, replacement in ((0, "00000000"), (1, "00000000")):
+            changed = list(lines)
+            if index == 0:
+                changed[index] = changed[index].replace("3e93b9a2", replacement)
+            else:
+                changed[index] = changed[index].replace("dd7822d1", replacement)
+            failures, _ = oracle_proof.verify_oracle_transcript(
+                manifest, "NxPhysicsShapeVtableTests", changed, ORACLE_SHA, self.root)
+            self.assertTrue(any("digest" in failure for failure in failures), failures)
+
+        changed = list(lines)
+        changed[1] = changed[1].replace("cases=84", "cases=83")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsShapeVtableTests", changed, ORACLE_SHA, self.root)
+        self.assertTrue(any("case count" in failure for failure in failures), failures)
+
     def joint_descriptor_baseline(self):
         source_bytes = b"fixed joint descriptor cases"
         source = self.root / "tests/PhysicsJointDescTests.cpp"
@@ -270,6 +342,13 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(len(expected["input_digest_sha256"]), 64)
                 self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsJointDescTests.cpp")
+            elif expected["format"] == "shape_boxsweep":
+                self.assertEqual(expected["cases"], 84)
+                self.assertEqual(expected["fixture_source"], "tests/PhysicsShapeVtableTests.cpp")
+                self.assertEqual(len(expected["input_digest_fnv32"]), 8)
+                self.assertEqual(len(expected["oracle_output_digest_fnv32"]), 8)
+                self.assertEqual(sum(line.startswith("shape vtable boxsweep inputs=84 digest=")
+                                      for line in lines), 1)
             else:
                 self.assertEqual(expected["format"], "joint_matrix")
                 self.assertEqual(expected["cases"], 122)
@@ -313,6 +392,11 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                     self.assertEqual(proof["input_digest_sha256"], expected["input_digest_sha256"])
                     self.assertEqual(proof["oracle_output_digest_sha256"],
                                      expected["oracle_output_digest_sha256"])
+                elif proof["format"] == "shape_boxsweep":
+                    self.assertEqual(proof["input_digest_fnv32"],
+                                     expected["input_digest_fnv32"])
+                    self.assertEqual(proof["oracle_output_digest_fnv32"],
+                                     expected["oracle_output_digest_fnv32"])
                 else:
                     self.assertEqual(proof["input_lines"], expected["input_lines"])
                     self.assertEqual(proof["case_family_counts"], expected["case_family_counts"])

@@ -466,6 +466,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # phys_fn_000841 (MassFrame::nxMassFrameTranslateToCentre), called
         # directly against its pinned internal oracle entry.
         'shape vtable massframe centre oracle_digest=65953565 cases=4 failures=0',
+        'shape vtable boxsweep inputs=84 digest=46df40a9'
         'shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0'
         # Scene-raycast Task 4, box hull: 000973 and BOX slot 12 (000981), facade
         # slots 1, 4, 6-10 (000953, 000963, 000967/969/971, 000957, 000959)
@@ -2086,6 +2087,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # descriptors (not the density bodies' tensor, which is 000008's), the record
     # ids and the release traffic (000799 frees the kinematic block).
     'NxPhysicsBodyCreationTests' = @(
+        'bodycreate pair_path candidate_is_oracle=0 oracle_is_oracle=1',
         'bodycreate mark_island_dirty=3.5',
         'bodycreate default_created=1',
         'bodycreate default_mass=41700000',
@@ -5693,13 +5695,14 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 543  # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
+    '3' = 544  # includes body-create oracle-versus-candidate path selection
+               # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
     '4' = 268  # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2619  # plus candidate-DLL constructor and raw aggregate-return coverage
+    '5' = 2621  # includes body-create pair path selection and the pinned BOX-sweep input digest
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
