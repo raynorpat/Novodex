@@ -10155,3 +10155,10 @@ The oracle-only joint matrix proof now pins fixture source SHA-256 `2899daa73224
 The staged family matrix observes `NxJoint::is` and `getState`. Returning null from `phys_fn_004479` changed the transcript with `stdout_delta=5961`; reporting `NX_JS_BROKEN` from `phys_fn_004483` changed it with `stdout_delta=244`. Both mutations were caught with equal zero exits and exact stderr, and both restored controls were exact (`stdout_delta=0`). See [phase6-joint-shared-is-get-state-004479-004483.md](phase6-joint-shared-is-get-state-004479-004483.md).
 
 The full Phase 6 gate passed with 1,579 coverage assertions run (minimum required: 1,267). Phase 6 now has 131 closed rows (129 mutation-falsified plus 2 oracle differentials) and 302 deferred rows; 23 in-phase rows remain unreconstructed.
+
+
+## Phase 6 closure measurement — shared breakability and limit-point getters (`phys_fn_004573`, `004577`)
+
+Omitting the shared `getBreakable` readback in `phys_fn_004573` changed the D6 staged transcript with `stdout_delta=2`; inverting `getLimitPoint` presence in `phys_fn_004577` also changed it with `stdout_delta=2`. Both mutations were caught with equal zero exits and exact stderr. Both restored controls returned `stdout_delta=0` with exact stderr. See [phase6-joint-shared-breakable-limitpoint-004573-004577.md](phase6-joint-shared-breakable-limitpoint-004573-004577.md).
+
+The full Phase 6 gate passed with 1,579 coverage assertions run (minimum required: 1,267). Phase 6 now has 133 closed rows (131 mutation-falsified plus 2 oracle differentials) and 300 deferred rows; 23 in-phase rows remain unreconstructed.

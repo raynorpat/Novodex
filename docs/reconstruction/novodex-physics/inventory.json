@@ -85099,13 +85099,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1719",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15310",
       "static_proof": "locks [self+0x14], calls helper 004076 on [self+0x18] which writes [field+0x3c] through the first out pointer and [field+0x40] through the second, then unlocks; ret 8; transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPointInPlaneJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
-      "dynamic_proof": "confirmed via lockacc5 differential (3z145): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests mutation differential: omitted only the internal `getBreakable` readback. Oracle/candidate exits 0, stdout_delta=2, exact stderr. Restored clean control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 2926b74877a4821f4b39f4b8539958392a4a4853be8d294e938df0e9ecff3b2d; restored candidate SHA-256 21a1cf67f26bca8ea3e4077572f6e3647032e20d6c844c45e621523d073e3a5d. Evidence: evidence/phase6-joint-shared-breakable-limitpoint-004573-004577.md.",
+      "notes": "Phase 6 closure: evidence/phase6-joint-shared-breakable-limitpoint-004573-004577.md",
       "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
@@ -85173,13 +85173,13 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1721",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15314",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPointInPlaneJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests mutation differential: inverted the returned `getLimitPoint` presence flag. Oracle/candidate exits 0, stdout_delta=2, exact stderr. Restored clean control: stdout_delta=0, exact stderr. Mutant candidate SHA-256 8fbb6b20e07defbc291033bd902d12c6b97be10f87325a6b6b933190aab50d7d; restored candidate SHA-256 82e69e457661b60568814b96d96cb18c44de8e00afd4787526301bf3b3c01d75. Evidence: evidence/phase6-joint-shared-breakable-limitpoint-004573-004577.md.",
+      "notes": "Phase 6 closure: evidence/phase6-joint-shared-breakable-limitpoint-004573-004577.md",
       "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {

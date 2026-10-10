@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 131 rows are closed (2 oracle differentials, 129 mutation-falsified); 302 rows remain open. Full DLL reconstruction remains pending.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 133 rows are closed (2 oracle differentials, 131 mutation-falsified); 300 rows remain open. Full DLL reconstruction remains pending.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the remaining Phase 6 falsification work: 279 rows.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the remaining Phase 6 falsification work: 277 rows.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 129,
+    "differential_falsified": 131,
     "oracle_differential_falsified": 2,
-    "deferred_reconstructed_not_falsified": 279,
+    "deferred_reconstructed_not_falsified": 277,
     "deferred_not_reconstructed_in_phase": 23
   },
   "closed": [
@@ -1380,6 +1380,26 @@
       "falsification": {
         "mutation": "Row-specific falsification (source revision in this worktree): changed only `NpJointShared::getState` to report `NX_JS_BROKEN`. The registered staged-pair differential reported stdout_delta=244; both exits were zero and stderr was exact. Restored clean control returned stdout_delta=0 with exact stderr. Mutant candidate SHA-256 e4d006ff4d9a1e2e995a00e9b7740fa15c24ddc76592bb3eeacf65363a8199e0; restored candidate SHA-256 57f1c67e54d79a695454fcc7196782831d689b24015e9d62104fa907bba400c2. Evidence: evidence/phase6-joint-shared-is-get-state-004479-004483.md.",
         "detected": "stdout_delta=244"
+      }
+    },
+    {
+      "id": "phys_fn_004573",
+      "rva": "0x000b1bd0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): omitted only the internal `getBreakable` readback. Registered staged-pair oracle/candidate runs both exited 0, stdout_delta=2, exact stderr. Restored clean control returned stdout_delta=0 with exact stderr. Mutant candidate SHA-256 2926b74877a4821f4b39f4b8539958392a4a4853be8d294e938df0e9ecff3b2d; restored candidate SHA-256 21a1cf67f26bca8ea3e4077572f6e3647032e20d6c844c45e621523d073e3a5d. Evidence: evidence/phase6-joint-shared-breakable-limitpoint-004573-004577.md.",
+        "detected": "stdout_delta=2"
+      }
+    },
+    {
+      "id": "phys_fn_004577",
+      "rva": "0x000b1c60",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Row-specific falsification (source revision in this worktree): inverted the returned `getLimitPoint` presence flag. Registered staged-pair oracle/candidate runs both exited 0, stdout_delta=2, exact stderr. Restored clean control returned stdout_delta=0 with exact stderr. Mutant candidate SHA-256 8fbb6b20e07defbc291033bd902d12c6b97be10f87325a6b6b933190aab50d7d; restored candidate SHA-256 82e69e457661b60568814b96d96cb18c44de8e00afd4787526301bf3b3c01d75. Evidence: evidence/phase6-joint-shared-breakable-limitpoint-004573-004577.md.",
+        "detected": "stdout_delta=2"
       }
     }
   ],
@@ -3249,27 +3269,9 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004573",
-      "rva": "0x000b1bd0",
-      "size": 44,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_004575",
       "rva": "0x000b1c00",
       "size": 89,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004577",
-      "rva": "0x000b1c60",
-      "size": 45,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
