@@ -124,6 +124,17 @@ class TeardownContactReport : public NxUserContactReport
 	unsigned events;
 	};
 
+class TeardownTriggerReport : public NxUserTriggerReport
+	{
+	public:
+	TeardownTriggerReport() : calls(0) {}
+	virtual void onTrigger(NxShape&, NxShape&, NxTriggerFlag)
+		{
+		++calls;
+		}
+	unsigned calls;
+	};
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -215,13 +226,19 @@ int wmain(int argc, wchar_t** argv)
 	printf("teardown contact_pair hash_storage buckets=%u links=%u entries=%u\n",
 		static_cast<unsigned>(bucketBytes), static_cast<unsigned>(linkBytes),
 		static_cast<unsigned>(entryBytes));
+	void* contactRootBuffer = *reinterpret_cast<void**>(contactInternal + 0x57c);
+	const size_t contactRootBytes = allocator.allocationSize(contactRootBuffer);
+	const unsigned beforeContactRelease = allocator.outstanding();
 	sdk->releaseScene(*contactScene);
 	const unsigned afterContactScene = allocator.outstanding();
-	printf("teardown contact_pair pairs_before=%u outstanding_after=%u\n",
-		contactPairs, afterContactScene);
+	const int contactReleaseDelta = static_cast<int>(afterContactScene) -
+		static_cast<int>(beforeContactRelease);
+	printf("teardown contact_pair pairs_before=%u release_delta=%d root_bytes=%u root_freed=%u\n",
+		contactPairs, contactReleaseDelta, static_cast<unsigned>(contactRootBytes),
+		allocator.allocationSize(contactRootBuffer) == 0);
 
-	if(afterContactScene != 15)
-		return nxFail("contact-pair teardown did not return to the oracle's 15 outstanding blocks");
+	if(contactReleaseDelta != -54)
+		return nxFail("contact-pair teardown did not release the oracle's 54 scene-owned blocks");
 
 	// Seed one static and one selected-dynamic pruner section with synthetic
 	// owner objects after releasing real actors. Their deleting-destructor
@@ -265,16 +282,19 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned selectedPruner = *reinterpret_cast<unsigned*>(ownerEngine + 0x70);
 	if(selectedPruner != 2)
 		return nxFail("pruner-owner fixture selected dynamic pruner type changed");
+	const unsigned beforeOwnerRelease = allocator.outstanding();
 	sdk->releaseScene(*ownerScene);
 	const unsigned afterOwnerScene = allocator.outstanding();
-	printf("teardown pruner_owner static_calls=%u dynamic_calls=%u flags=%u/%u selected=%u outstanding_after=%u\n",
+	const int ownerReleaseDelta = static_cast<int>(afterOwnerScene) -
+		static_cast<int>(beforeOwnerRelease);
+	printf("teardown pruner_owner static_calls=%u dynamic_calls=%u flags=%u/%u selected=%u release_delta=%d\n",
 		gPrunerOwnerCalls[0], gPrunerOwnerCalls[1],
-		gPrunerOwnerFlags[0], gPrunerOwnerFlags[1], selectedPruner, afterOwnerScene);
+		gPrunerOwnerFlags[0], gPrunerOwnerFlags[1], selectedPruner, ownerReleaseDelta);
 	if(gPrunerOwnerCalls[0] != 1 || gPrunerOwnerCalls[1] != 1 ||
 		gPrunerOwnerFlags[0] != 1 || gPrunerOwnerFlags[1] != 1)
 		return nxFail("pruner-owner teardown did not dispatch both deleting destructors");
-	if(afterOwnerScene != afterContactScene)
-		return nxFail("pruner-owner teardown did not release scene allocations");
+	if(ownerReleaseDelta != -33)
+		return nxFail("pruner-owner teardown did not release 33 scene-owned allocations");
 
 	// Destroy a Scene while its controller and generated kinematic actor are
 	// still attached. This exercises the public controller-list teardown path
@@ -294,11 +314,14 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned controllerBlocksBefore = allocator.outstanding();
 	sdk->releaseScene(*controllerScene);
 	const unsigned controllerBlocksAfter = allocator.outstanding();
-	printf("teardown controller_owner actors_before=%u outstanding_before=%u outstanding_after=%u delta=%d\n",
-		controllerActorsBefore, controllerBlocksBefore, controllerBlocksAfter,
-		static_cast<int>(controllerBlocksAfter) - static_cast<int>(controllerBlocksBefore));
+	const int controllerReleaseDelta = static_cast<int>(controllerBlocksAfter) -
+		static_cast<int>(controllerBlocksBefore);
+	printf("teardown controller_owner actors_before=%u release_delta=%d\n",
+		controllerActorsBefore, controllerReleaseDelta);
 	if(controllerActorsBefore != 1)
 		return nxFail("controller-owner teardown did not retain its generated actor");
+	if(controllerReleaseDelta != -34)
+		return nxFail("controller-owner teardown did not release 34 scene-owned allocations");
 
 	// Keep a user callback installed while a touching pair is destroyed with
 	// the Scene. The oracle fires its outstanding report records from the
@@ -319,11 +342,77 @@ int wmain(int argc, wchar_t** argv)
 	if(!reportScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
 		return nxFail("contact-report teardown simulation did not fetch");
 	const unsigned reportCallbacksBeforeRelease = teardownReport.calls;
+	unsigned char* reportInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(reportScene) + 0x24);
+	void* bufferedReportStorage = reportInternal
+		? *reinterpret_cast<void**>(reportInternal + 0x60c) : 0;
+	const size_t bufferedReportBytes = allocator.allocationSize(bufferedReportStorage);
+	if(!bufferedReportStorage || !bufferedReportBytes)
+		return nxFail("contact-report teardown did not retain the buffered report allocation");
 	sdk->releaseScene(*reportScene);
+	const bool bufferedReportFreed =
+		allocator.allocationSize(bufferedReportStorage) == 0;
 	printf("teardown contact_report before_release=%u after_release=%u events=%08x\n",
 		reportCallbacksBeforeRelease, teardownReport.calls, teardownReport.events);
+	printf("teardown contact_report_buffer bytes=%u freed=%u\n",
+		static_cast<unsigned>(bufferedReportBytes), bufferedReportFreed ? 1u : 0u);
 	if(teardownReport.calls == reportCallbacksBeforeRelease)
 		return nxFail("scene teardown did not deliver its pending contact report");
+	if(!bufferedReportFreed)
+		return nxFail("scene teardown did not free its buffered contact-report allocation");
+
+	// Generate a queued trigger event and an active simulation root, then release
+	// the Scene while both backing vectors remain allocated at +0x5fc and +0x57c.
+	TeardownTriggerReport teardownTriggerReport;
+	NxSceneDesc triggerSceneDesc;
+	triggerSceneDesc.setToDefault();
+	triggerSceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	triggerSceneDesc.userTriggerReport = &teardownTriggerReport;
+	NxScene* triggerScene = sdk->createScene(triggerSceneDesc);
+	if(!triggerScene) return nxFail("trigger teardown scene creation failed");
+	NxBoxShapeDesc triggerBox;
+	triggerBox.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	triggerBox.shapeFlags = NX_TRIGGER_ON_ENTER | NX_TRIGGER_ON_STAY | NX_TRIGGER_ON_LEAVE;
+	NxActorDesc triggerActorDesc;
+	triggerActorDesc.shapes.pushBack(&triggerBox);
+	if(!triggerScene->createActor(triggerActorDesc))
+		return nxFail("trigger teardown actor creation failed");
+	NxSphereShapeDesc triggerOtherShape;
+	triggerOtherShape.radius = 0.25f;
+	NxActorDesc triggerOtherDesc;
+	triggerOtherDesc.body = &body;
+	triggerOtherDesc.density = 1.0f;
+	triggerOtherDesc.globalPose.t = NxVec3(-2.0f, 0.0f, 0.0f);
+	triggerOtherDesc.shapes.pushBack(&triggerOtherShape);
+	NxActor* triggerOther = triggerScene->createActor(triggerOtherDesc);
+	if(!triggerOther) return nxFail("trigger teardown dynamic actor creation failed");
+	triggerOther->setLinearVelocity(NxVec3(8.0f, 0.0f, 0.0f));
+	for(unsigned step = 0; step != 10; ++step)
+		{
+		triggerScene->simulate(0.05f);
+		if(!triggerScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+			return nxFail("trigger teardown simulation did not fetch");
+		}
+	unsigned char* triggerInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(triggerScene) + 0x24);
+	void* triggerBuffer = triggerInternal ? *reinterpret_cast<void**>(triggerInternal + 0x5fc) : 0;
+	void* activeRootBuffer = triggerInternal ? *reinterpret_cast<void**>(triggerInternal + 0x57c) : 0;
+	const size_t triggerBufferBytes = allocator.allocationSize(triggerBuffer);
+	const size_t activeRootBufferBytes = allocator.allocationSize(activeRootBuffer);
+	if(!triggerBuffer || !triggerBufferBytes || !activeRootBuffer || !activeRootBufferBytes)
+		return nxFail("trigger teardown did not retain both Scene buffers");
+	sdk->releaseScene(*triggerScene);
+	const bool triggerBufferFreed = allocator.allocationSize(triggerBuffer) == 0;
+	const bool activeRootBufferFreed = allocator.allocationSize(activeRootBuffer) == 0;
+	printf("teardown trigger_buffer bytes=%u freed=%u callbacks=%u\n",
+		static_cast<unsigned>(triggerBufferBytes), triggerBufferFreed ? 1u : 0u,
+		teardownTriggerReport.calls);
+	printf("teardown active_root_buffer bytes=%u freed=%u\n",
+		static_cast<unsigned>(activeRootBufferBytes), activeRootBufferFreed ? 1u : 0u);
+	if(!teardownTriggerReport.calls)
+		return nxFail("trigger teardown fixture did not deliver a trigger callback");
+	if(!triggerBufferFreed || !activeRootBufferFreed)
+		return nxFail("scene teardown did not free its trigger and active-root buffers");
 
 	// Keep a registered joint alive until Scene destruction. phys_fn_000606
 	// walks both joint lists and deletes any joints still registered after the

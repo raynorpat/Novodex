@@ -389,3 +389,28 @@ deferred with zero unexplained rows, and all 80 public Physics headers match
 their manifest. This closes `phys_fn_000606` only; `phys_fn_000663` remains
 open for its other Scene destructor ownership paths. Evidence:
 `docs/reconstruction/novodex-physics/evidence/phase7-scene-joint-list-teardown-000606.md`.
+
+Continuation — Scene retained buffer cleanup (phys_fn_000663, 2026-10-10).
+
+The populated-scene teardown fixture now checks the retained contact-report
+buffer (+0x60c, 264 bytes), trigger-event buffer (+0x5fc, 72 bytes), and active
+root array (+0x57c, 8 bytes). Each new assertion first failed on the candidate
+while the pinned oracle freed its allocation. `nxSceneDelete` now releases
+those buffers through the Foundation allocator and clears each three-word
+vector. The contact-pair fixture compares the per-scene release delta to avoid
+folding in the oracle's separate lazy 24-byte process-global allocation during
+the blocking simulation wait. The focused staged-pair differential passes with
+both exits zero, stdout_delta=0, and exact stderr. The full Phase 7 gate passes
+at 1644/1641 coverage assertions. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-scene-event-buffer-teardown-000663.md`.
+These three ownership paths are closed; `phys_fn_000663` remains open for its
+other branches, and full DLL reconstruction remains active. Public Physics
+headers remain unchanged.
+
+Validation follow-up: the full Phase 3 gate passes at 555/555 after updating
+its floor because the teardown target is also registered in Phase 3. The
+Phase 7 gate exercised 1,644 assertions; its floor and the Phase 3 floor now
+match their registered totals, as confirmed by the gate-target unit tests. The
+full tooling suite passes (810 tests), inventory validation reports zero
+unexplained rows (82 closed / 479 deferred in Phase 7), all 80 public Physics
+headers match their manifest, and `git diff --check` passes.

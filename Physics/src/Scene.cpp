@@ -3340,8 +3340,23 @@ static void nxSceneDelete(void* self, int flags)
 	// The pruning engine's pruners: each one's tree (static), its world boxes
 	// and objects, then its storage (opcode/IcePruner.cpp).
 	cpmDestroyScenePairStorage(scene);
+	// phys_fn_000663 releases the buffered contact-report allocation at +0x60c
+	// after stale-pair/contact teardown. Its three-word begin/end/capacity
+	// vector is retained by a populated Scene until this point.
+	if(scene->at<void*>(0x60c))
+		nxFoundationSDKAllocator->free(scene->at<void*>(0x60c));
+	scene->at<void*>(0x60c) = 0;
+	scene->at<void*>(0x610) = 0;
+	scene->at<void*>(0x614) = 0;
+	// The neighboring trigger-event vector at +0x5fc has the same three-word
+	// shape and is retained after callbacks reset its end pointer to its begin.
+	if(scene->at<void*>(0x5fc))
+		nxFoundationSDKAllocator->free(scene->at<void*>(0x5fc));
+	scene->at<void*>(0x5fc) = 0;
+	scene->at<void*>(0x600) = 0;
+	scene->at<void*>(0x604) = 0;
 	nxSceneEngineDestroyPruners(static_cast<unsigned char*>(self) + 0x624);
-	const unsigned objectArrayOffsets[] = {0x56c, 0x55c};
+	const unsigned objectArrayOffsets[] = {0x57c, 0x56c, 0x55c};
 	for(unsigned offset : objectArrayOffsets)
 		{
 		void*& entries = *reinterpret_cast<void**>(
@@ -3352,6 +3367,8 @@ static void nxSceneDelete(void* self, int flags)
 			entries = 0;
 			}
 		}
+	scene->at<void*>(0x580) = 0;
+	scene->at<void*>(0x584) = 0;
 	// Scalar owns actual member lifetimes in the original +450..+500 window.
 #if !NX_PHYSICS_USE_X87
 	nxSceneContactMembersDestroy(
