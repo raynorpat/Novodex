@@ -24,6 +24,7 @@
 //     not model.
 
 #include "Scene.h"
+#include "NxApiReentry.h"
 #include "SceneAuxiliary.h"
 #include "ContactPairManager.h"
 
@@ -1949,6 +1950,16 @@ void nxActorDestroy(unsigned char* body);
 // and Actor.cpp's createShape and
 // releaseShape (000036/000024) test, set and clear it.
 static bool gNxApiReentry = false;
+
+extern "C" bool nxApiReentryIsActive(void)
+	{
+	return gNxApiReentry;
+	}
+
+extern "C" void nxSetApiReentryActive(bool active)
+	{
+	gNxApiReentry = active;
+	}
 
 void NxSceneInternal::releaseActor(void* bodyPointer)
 	{

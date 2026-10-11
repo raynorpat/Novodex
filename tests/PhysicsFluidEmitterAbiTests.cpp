@@ -64,10 +64,13 @@ static bool nxSameImplicitMeshError(const ImplicitMeshErrorRecord& a,
 	}
 
 static unsigned nxRunImplicitMeshSetDataDifferential(void* oracleAddress,
-	void* candidateAddress, NxFoundationSDK* foundation,
+	void* candidateAddress, void* candidateWrapperAddress,
+	void* candidateApiReentryGetter, void* candidateApiReentrySetter,
+	NxFoundationSDK* foundation,
 	ImplicitMeshOutputStream& output)
 	{
-	if(!oracleAddress || !candidateAddress || !foundation)
+	if(!oracleAddress || !candidateAddress || !candidateWrapperAddress
+		|| !candidateApiReentryGetter || !candidateApiReentrySetter || !foundation)
 		return 1;
 	static_assert(sizeof(NxMeshData) == 0x30,
 		"the pinned setMeshData row copies twelve words");
@@ -195,6 +198,168 @@ static unsigned nxRunImplicitMeshSetDataDifferential(void* oracleAddress,
 		stackChecks += oracleEspBefore == oracleEspAfter
 			&& candidateEspBefore == candidateEspAfter;
 		}
+
+	// phys_fn_003663 is the internal data-record validator/copy routine. The
+	// public NxImplicitMesh::setMeshData vtable entry is the lock-taking wrapper
+	// at RVA 0x8d230, which passes its +0x14 record pointer to that helper.
+	// Probe both layers so a helper cannot accidentally stand in for the API.
+	struct WrapperLock
+		{
+		CRITICAL_SECTION section;
+		volatile long held;
+		unsigned owner;
+		};
+	static_assert(offsetof(WrapperLock, held) == 0x18,
+		"the pinned Scene lock state follows its 24-byte critical section");
+	WrapperLock oracleLock, candidateLock;
+	memset(&oracleLock, 0, sizeof(oracleLock));
+	memset(&candidateLock, 0, sizeof(candidateLock));
+	InitializeCriticalSection(&oracleLock.section);
+	InitializeCriticalSection(&candidateLock.section);
+	CRITICAL_SECTION* oracleSection = &oracleLock.section;
+	CRITICAL_SECTION* candidateSection = &candidateLock.section;
+	void* oracleLink = &oracleSection;
+	void* candidateLink = &candidateSection;
+	// Keep 0x20 bytes of guard beyond the 0x18-byte wrapper. The pre-fix
+	// candidate incorrectly treats +0x08 as an embedded NxMeshData and writes
+	// through +0x38; the red probe must catch that without corrupting its frame.
+	unsigned char oracleWrapper[0x40], candidateWrapper[0x40];
+	unsigned char oracleRecord[0x38], candidateRecord[0x38];
+	void* oracleRecordPointer = oracleRecord;
+	void* candidateRecordPointer = candidateRecord;
+	memset(oracleWrapper, 0x5a, sizeof(oracleWrapper));
+	memset(candidateWrapper, 0x5a, sizeof(candidateWrapper));
+	memset(oracleRecord, 0xcd, sizeof(oracleRecord));
+	memset(candidateRecord, 0xcd, sizeof(candidateRecord));
+	memcpy(oracleWrapper + 0x0c, &oracleLink, sizeof(oracleLink));
+	memcpy(candidateWrapper + 0x0c, &candidateLink, sizeof(candidateLink));
+	memcpy(oracleWrapper + 0x10, &oracleLink, sizeof(oracleLink));
+	memcpy(candidateWrapper + 0x10, &candidateLink, sizeof(candidateLink));
+	memcpy(oracleWrapper + 0x14, &oracleRecordPointer, sizeof(oracleRecordPointer));
+	memcpy(candidateWrapper + 0x14, &candidateRecordPointer, sizeof(candidateRecordPointer));
+	unsigned wrapperMismatches = 0;
+	unsigned wrapperValid = 0;
+	unsigned wrapperInvalid = 0;
+	unsigned wrapperLockRejected = 0;
+	unsigned wrapperReentryRejected = 0;
+	unsigned wrapperStackChecks = 0;
+	const void* const oracleWrapperEntry = reinterpret_cast<const unsigned char*>(
+		oracleAddress) + (0x8d230 - 0x8ac50);
+	const bool* const oracleApiReentry = reinterpret_cast<const bool*>(
+		reinterpret_cast<const unsigned char*>(oracleAddress) - 0x8ac50 + 0x123c10);
+	const bool oracleApiReentryBefore = *oracleApiReentry;
+	const bool candidateApiReentryBefore =
+		reinterpret_cast<bool (__cdecl*)(void)>(candidateApiReentryGetter)();
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		const bool lockRejected = i == 2;
+		const bool reentryRejected = i == 3;
+		const NxMeshData& input = i == 1 ? invalid[1] : valid[1];
+		const unsigned long otherThread = GetCurrentThreadId() ^ 0x80000000u;
+		oracleLock.held = candidateLock.held = lockRejected ? 1 : 0;
+		oracleLock.owner = candidateLock.owner = lockRejected ? otherThread : 0;
+		*const_cast<bool*>(oracleApiReentry) = reentryRejected;
+		if(candidateApiReentrySetter)
+			reinterpret_cast<void (__cdecl*)(bool)>(candidateApiReentrySetter)(reentryRejected);
+		unsigned char oracleBefore[0x40], candidateBefore[0x40];
+		unsigned char oracleRecordBefore[0x38], candidateRecordBefore[0x38];
+		memcpy(oracleBefore, oracleWrapper, sizeof(oracleWrapper));
+		memcpy(candidateBefore, candidateWrapper, sizeof(candidateWrapper));
+		memcpy(oracleRecordBefore, oracleRecord, sizeof(oracleRecord));
+		memcpy(candidateRecordBefore, candidateRecord, sizeof(candidateRecord));
+		unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+		unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+		output.clear();
+		nxCallImplicitMeshSetData(const_cast<void*>(oracleWrapperEntry),
+			oracleWrapper, const_cast<NxMeshData*>(&input),
+			&oracleEspBefore, &oracleEspAfter);
+		const ImplicitMeshErrorRecord oracleError = output.record;
+		output.clear();
+		nxCallImplicitMeshSetData(candidateWrapperAddress, candidateWrapper,
+			const_cast<NxMeshData*>(&input), &candidateEspBefore,
+			&candidateEspAfter);
+		const ImplicitMeshErrorRecord candidateError = output.record;
+		const bool validCase = i == 0;
+		const bool rejected = lockRejected || reentryRejected;
+		const bool wrappersEqual = memcmp(oracleWrapper, candidateWrapper, 0x0c) == 0
+			&& memcmp(oracleWrapper + 0x18, candidateWrapper + 0x18, 0x28) == 0;
+		const bool lockStateMatches = oracleLock.held == candidateLock.held
+			&& oracleLock.owner == candidateLock.owner
+			&& oracleLock.held == (lockRejected ? 1 : 0);
+		const bool locksReleased = lockRejected
+			? (oracleLock.held == 1 && candidateLock.held == 1)
+			: (oracleLock.held == 0 && candidateLock.held == 0);
+		const char* const expectedMessage = lockRejected
+			? "PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!"
+			: reentryRejected
+				? "Reentry check: You may not call this API method from a callback!"
+				: 0;
+		const char* const expectedFile = rejected
+			? "\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpImplicitMesh.cpp"
+			: 0;
+		const int expectedLine = lockRejected ? 25 : (reentryRejected ? 26 : 0);
+		const unsigned expectedErrors = (rejected || i == 1) ? 1u : 0u;
+		const bool errorMatches = oracleError.count == expectedErrors
+			&& candidateError.count == expectedErrors
+			&& (!rejected || (oracleError.code == NXE_INVALID_OPERATION
+				&& candidateError.code == NXE_INVALID_OPERATION
+				&& oracleError.code == candidateError.code
+				&& oracleError.line == candidateError.line
+				&& oracleError.line == expectedLine
+				&& strcmp(oracleError.file, expectedFile) == 0
+				&& strcmp(candidateError.file, expectedFile) == 0
+				&& strcmp(oracleError.message, expectedMessage) == 0
+				&& strcmp(candidateError.message, expectedMessage) == 0));
+		const bool matched = wrappersEqual && locksReleased && lockStateMatches
+			&& errorMatches
+			&& memcmp(oracleRecord, candidateRecord, sizeof(oracleRecord)) == 0
+			&& oracleEspBefore == oracleEspAfter
+			&& candidateEspBefore == candidateEspAfter
+			&& nxSameImplicitMeshError(oracleError, candidateError);
+		if(!matched)
+			++wrapperMismatches;
+		else if(validCase)
+			++wrapperValid;
+		else if(i == 1)
+			++wrapperInvalid;
+		else if(lockRejected)
+			++wrapperLockRejected;
+		else
+			++wrapperReentryRejected;
+		wrapperStackChecks += oracleEspBefore == oracleEspAfter
+			&& candidateEspBefore == candidateEspAfter;
+		// A valid record is copied into the internal +0x08 member. Invalid
+		// input must preserve both wrapper and internal bytes.
+		if(validCase)
+			{
+			NxMeshData copied;
+			memcpy(&copied, oracleRecord + 8, sizeof(copied));
+			if(memcmp(&copied, &input, sizeof(input)) != 0
+				|| memcmp(oracleWrapper, oracleBefore, 0x0c) != 0
+				|| memcmp(oracleWrapper + 0x18, oracleBefore + 0x18, 0x28) != 0
+				|| memcmp(candidateWrapper, candidateBefore, 0x0c) != 0
+				|| memcmp(candidateWrapper + 0x18, candidateBefore + 0x18, 0x28) != 0)
+				++wrapperMismatches;
+			}
+		else if(memcmp(oracleWrapper, oracleBefore, 0x0c) != 0
+			|| memcmp(oracleWrapper + 0x18, oracleBefore + 0x18, 0x28) != 0
+			|| memcmp(candidateWrapper, candidateBefore, 0x0c) != 0
+			|| memcmp(candidateWrapper + 0x18, candidateBefore + 0x18, 0x28) != 0
+			|| memcmp(oracleRecord, oracleRecordBefore, sizeof(oracleRecord)) != 0
+			|| memcmp(candidateRecord, candidateRecordBefore, sizeof(candidateRecord)) != 0)
+			++wrapperMismatches;
+		oracleLock.held = candidateLock.held = 0;
+		oracleLock.owner = candidateLock.owner = 0;
+		}
+	*const_cast<bool*>(oracleApiReentry) = oracleApiReentryBefore;
+	reinterpret_cast<void (__cdecl*)(bool)>(candidateApiReentrySetter)(candidateApiReentryBefore);
+	DeleteCriticalSection(&oracleLock.section);
+	DeleteCriticalSection(&candidateLock.section);
+	printf("implicit mesh setMeshData public wrapper valid=%u invalid=%u "
+		"lock_rejected=%u reentry_rejected=%u stack_checks=%u mismatches=%u\n",
+		wrapperValid, wrapperInvalid, wrapperLockRejected, wrapperReentryRejected,
+		wrapperStackChecks, wrapperMismatches);
+	mismatches += wrapperMismatches;
 	foundation->release();
 	printf("implicit mesh setMeshData valid_cases=%u invalid_cases=%u "
 		"errors=%u stack_checks=%u mismatches=%u\n", validCases, invalidCases,
@@ -733,13 +898,30 @@ int wmain(int argc, wchar_t** argv)
 		}
 	void* candidateSetMeshDataAddress = 0;
 	static const char candidateSetMeshDataName[] =
-		"?setMeshData@NpImplicitMesh@@UAEXAAVNxMeshData@@@Z";
+		"?setMeshData@NpImplicitMeshDataRecord@@QAEHAAVNxMeshData@@@Z";
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		candidateSetMeshDataName, &candidateSetMeshDataAddress))
 		{
-		fprintf(stderr, "FAIL candidate NxPhysics.dll implicit-mesh setMeshData row could not be resolved from its map\n");
+		fprintf(stderr, "FAIL candidate NxPhysics.dll implicit-mesh data helper could not be resolved from its map\n");
 		++gFailures;
 		}
+	void* candidateSetMeshDataWrapperAddress = 0;
+	static const char candidateSetMeshDataWrapperName[] =
+		"?setMeshData@NpImplicitMesh@@UAEXAAVNxMeshData@@@Z";
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		candidateSetMeshDataWrapperName, &candidateSetMeshDataWrapperAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll public implicit-mesh wrapper could not be resolved from its map\n");
+		++gFailures;
+		}
+	void* candidateApiReentryGetter = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxApiReentryIsActive", &candidateApiReentryGetter))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll shared API reentry getter could not be resolved\n");
+	void* candidateApiReentrySetter = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxSetApiReentryActive", &candidateApiReentrySetter))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll shared API reentry state could not be resolved\n");
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
 	void* candidateCtorAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
@@ -1693,6 +1875,10 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	{
+	// This public wrapper acquires the oracle's real x86 read/write lock. The
+	// surrounding fluid-emitter probe replaces lock imports with deterministic
+	// stubs, which would make this wrapper report a false write-lock collision.
+	nxUnbindOracleLocks(image, lockSlots);
 	ImplicitMeshOutputStream output;
 	NxFoundationSDK* foundation = NxCreateFoundationSDK(
 		NX_FOUNDATION_SDK_VERSION, &output, 0);
@@ -1701,9 +1887,10 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL Foundation SDK creation failed for implicit-mesh validation cases\n");
 		++gFailures;
 		}
-	else if(candidateSetMeshDataAddress)
+	else if(candidateSetMeshDataAddress && candidateSetMeshDataWrapperAddress)
 		gFailures += nxRunImplicitMeshSetDataDifferential(image + 0x8ac50,
-			candidateSetMeshDataAddress, foundation, output);
+			candidateSetMeshDataAddress, candidateSetMeshDataWrapperAddress,
+			candidateApiReentryGetter, candidateApiReentrySetter, foundation, output);
 	else
 		{
 		foundation->release();
