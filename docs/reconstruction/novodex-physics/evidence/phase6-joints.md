@@ -10403,3 +10403,6 @@ The direct pinned-oracle differential covers no actor and an attached body with 
 ### Fluid implicit surface-mesh dispatch row phys_fn_003419 (mismatches=1)
 
 The registered `NxPhysicsFluidEmitterAbiTests` direct differential covers the live mesh callback tuple, triangle count, return value, x86 stack, and empty-mesh no-callback path. Dividing the mesh vertex count by six instead of three is rejected (`mismatches=1`); the restored control is exact. See [phase7-fluid-surface-mesh-003419.md](phase7-fluid-surface-mesh-003419.md).
+
+
+Phase 7 implicit-mesh data setter continuation: `phys_fn_003663` at RVA `0x0008ac50` is closed by the registered `NxPhysicsFluidEmitterAbiTests` oracle differential. Its `this+0x0c` destination mutation is detected with `mismatches=3`; restored `this+0x08` control reports zero mismatches. Full details: `evidence/phase7-implicit-mesh-set-mesh-data-003663.md`.

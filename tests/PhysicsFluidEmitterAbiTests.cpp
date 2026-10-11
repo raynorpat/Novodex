@@ -7,10 +7,200 @@
 #include <string.h>
 #include <string>
 
+#include "NxFoundationSDK.h"
+#include "NxUserOutputStream.h"
 #include "fluids/NxFluidEmitter.h"
 #include "fluids/NpFluidEmitter.h"
+#include "fluids/NxMeshData.h"
 
 static unsigned gFailures;
+
+struct ImplicitMeshErrorRecord
+	{
+	NxErrorCode code;
+	char message[512];
+	char file[512];
+	int line;
+	unsigned count;
+	};
+
+class ImplicitMeshOutputStream : public NxUserOutputStream
+	{
+	public:
+	ImplicitMeshErrorRecord record;
+	ImplicitMeshOutputStream() { clear(); }
+	void clear() { memset(&record, 0, sizeof(record)); }
+	void reportError(NxErrorCode code, const char* message, const char* file, int line)
+		{
+		record.code = code;
+		strncpy_s(record.message, message ? message : "", _TRUNCATE);
+		strncpy_s(record.file, file ? file : "", _TRUNCATE);
+		record.line = line;
+		++record.count;
+		}
+	NxAssertResponse reportAssertViolation(const char*, const char*, int)
+		{ return NX_AR_CONTINUE; }
+	void print(const char*) {}
+	};
+
+static void nxCallImplicitMeshSetData(void* target, void* object,
+	NxMeshData* data, unsigned* espBefore, unsigned* espAfter)
+	{
+	typedef void (__thiscall* SetMeshData)(void*, NxMeshData*);
+	SetMeshData setMeshData = reinterpret_cast<SetMeshData>(target);
+	unsigned before = 0, after = 0;
+	__asm mov before, esp
+	setMeshData(object, data);
+	__asm mov after, esp
+	*espBefore = before;
+	*espAfter = after;
+	}
+
+static bool nxSameImplicitMeshError(const ImplicitMeshErrorRecord& a,
+	const ImplicitMeshErrorRecord& b)
+	{
+	return a.code == b.code && a.line == b.line && a.count == b.count
+		&& strcmp(a.message, b.message) == 0 && strcmp(a.file, b.file) == 0;
+	}
+
+static unsigned nxRunImplicitMeshSetDataDifferential(void* oracleAddress,
+	void* candidateAddress, NxFoundationSDK* foundation,
+	ImplicitMeshOutputStream& output)
+	{
+	if(!oracleAddress || !candidateAddress || !foundation)
+		return 1;
+	static_assert(sizeof(NxMeshData) == 0x30,
+		"the pinned setMeshData row copies twelve words");
+	unsigned mismatches = 0;
+	unsigned validCases = 0;
+	unsigned invalidCases = 0;
+	unsigned stackChecks = 0;
+	unsigned char positions[96] = {};
+	unsigned char normals[96] = {};
+	unsigned char indices[32] = {};
+	NxU32 vertexCount = 11;
+	NxU32 triangleCount = 3;
+
+	auto initIndexed = [&](NxMeshData& data)
+		{
+		data.verticesPosBegin = positions;
+		data.verticesNormalBegin = normals;
+		data.verticesPosByteStride = 12;
+		data.verticesNormalByteStride = 12;
+		data.maxVertices = 8;
+		data.numVerticesPtr = &vertexCount;
+		data.indicesBegin = indices;
+		data.indicesByteStride = 2;
+		data.maxIndices = 24;
+		data.numTrianglesPtr = &triangleCount;
+		data.flags = NX_MDF_INDEXED_MESH | NX_MDF_16_BIT_INDICES;
+		data.name = "mesh-data-indexed";
+		};
+
+	NxMeshData valid[3];
+	initIndexed(valid[1]);
+	valid[2].verticesPosBegin = positions;
+	valid[2].verticesNormalBegin = normals;
+	valid[2].verticesPosByteStride = 12;
+	valid[2].verticesNormalByteStride = 12;
+	valid[2].maxVertices = 8;
+	valid[2].numVerticesPtr = &vertexCount;
+	valid[2].flags = 0;
+	valid[2].name = "mesh-data-triplets";
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		unsigned char oracleObject[0x40], candidateObject[0x40];
+		unsigned char oracleExpected[0x40], candidateExpected[0x40];
+		memset(oracleObject, 0xcd, sizeof(oracleObject));
+		memset(candidateObject, 0xcd, sizeof(candidateObject));
+		memcpy(oracleExpected, oracleObject, sizeof(oracleObject));
+		memcpy(candidateExpected, candidateObject, sizeof(candidateObject));
+		memcpy(oracleExpected + 8, &valid[i], sizeof(valid[i]));
+		memcpy(candidateExpected + 8, &valid[i], sizeof(valid[i]));
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		nxCallImplicitMeshSetData(oracleAddress, oracleObject, &valid[i],
+			&oracleBefore, &oracleAfter);
+		nxCallImplicitMeshSetData(candidateAddress, candidateObject, &valid[i],
+			&candidateBefore, &candidateAfter);
+		if(memcmp(oracleObject, oracleExpected, sizeof(oracleObject)) != 0
+			|| memcmp(candidateObject, candidateExpected, sizeof(candidateObject)) != 0
+			|| memcmp(oracleObject, candidateObject, sizeof(oracleObject)) != 0
+			|| oracleBefore != oracleAfter || candidateBefore != candidateAfter)
+			++mismatches;
+		else
+			++validCases;
+		stackChecks += oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+		}
+
+	NxMeshData invalid[8];
+	invalid[0].verticesPosBegin = positions;
+	invalid[0].verticesPosByteStride = 12;
+	invalid[0].numVerticesPtr = &vertexCount;
+	initIndexed(invalid[1]); invalid[1].verticesPosByteStride = 0;
+	invalid[2].numTrianglesPtr = &triangleCount;
+	initIndexed(invalid[3]); invalid[3].numTrianglesPtr = 0;
+	initIndexed(invalid[4]); invalid[4].indicesBegin = 0;
+	initIndexed(invalid[5]); invalid[5].numTrianglesPtr = 0;
+	initIndexed(invalid[6]); invalid[6].indicesByteStride = 0;
+	valid[2].numTrianglesPtr = &triangleCount;
+	memcpy(&invalid[7], &valid[2], sizeof(NxMeshData));
+
+	static const char expectedFile[] =
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\ImplicitMesh.cpp";
+	static const char expectedMessage[] =
+		"Supplied NxMeshData is not valid. setMeshData has no effect.";
+	for(unsigned i = 0; i < 8; ++i)
+		{
+		unsigned char oracleObject[0x40], candidateObject[0x40];
+		unsigned char oracleBeforeBytes[0x40], candidateBeforeBytes[0x40];
+		memset(oracleObject, 0x5a, sizeof(oracleObject));
+		memset(candidateObject, 0x5a, sizeof(candidateObject));
+		memcpy(oracleBeforeBytes, oracleObject, sizeof(oracleObject));
+		memcpy(candidateBeforeBytes, candidateObject, sizeof(candidateObject));
+		unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+		unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+		output.clear();
+		nxCallImplicitMeshSetData(oracleAddress, oracleObject, &invalid[i],
+			&oracleEspBefore, &oracleEspAfter);
+		const ImplicitMeshErrorRecord oracleError = output.record;
+		const NxErrorCode oracleLastError = foundation->getLastError();
+		output.clear();
+		nxCallImplicitMeshSetData(candidateAddress, candidateObject, &invalid[i],
+			&candidateEspBefore, &candidateEspAfter);
+		const ImplicitMeshErrorRecord candidateError = output.record;
+		const NxErrorCode candidateLastError = foundation->getLastError();
+		const bool oracleReported = oracleError.count == 1
+			&& oracleError.code == NXE_INVALID_PARAMETER
+			&& strcmp(oracleError.file, expectedFile) == 0
+			&& oracleError.line == 106
+			&& strcmp(oracleError.message, expectedMessage) == 0;
+		const bool candidateReported = candidateError.count == 1
+			&& candidateError.code == NXE_INVALID_PARAMETER
+			&& strcmp(candidateError.file, expectedFile) == 0
+			&& candidateError.line == 106
+			&& strcmp(candidateError.message, expectedMessage) == 0;
+		if(!oracleReported || !candidateReported
+			|| !nxSameImplicitMeshError(oracleError, candidateError)
+			|| oracleLastError != NXE_INVALID_PARAMETER
+			|| candidateLastError != NXE_INVALID_PARAMETER
+			|| memcmp(oracleObject, oracleBeforeBytes, sizeof(oracleObject)) != 0
+			|| memcmp(candidateObject, candidateBeforeBytes, sizeof(candidateObject)) != 0
+			|| memcmp(oracleObject, candidateObject, sizeof(oracleObject)) != 0
+			|| oracleEspBefore != oracleEspAfter
+			|| candidateEspBefore != candidateEspAfter)
+			++mismatches;
+		else
+			++invalidCases;
+		stackChecks += oracleEspBefore == oracleEspAfter
+			&& candidateEspBefore == candidateEspAfter;
+		}
+	foundation->release();
+	printf("implicit mesh setMeshData valid_cases=%u invalid_cases=%u "
+		"errors=%u stack_checks=%u mismatches=%u\n", validCases, invalidCases,
+		invalidCases, stackChecks, mismatches);
+	return mismatches;
+	}
 
 struct NxFluidEmitterFlagCallbackRecord
 	{
@@ -539,6 +729,15 @@ int wmain(int argc, wchar_t** argv)
 		"nxNpFluidEmitterGenerateSurfaceMesh", &candidateGenerateSurfaceMeshAddress))
 		{
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid surface-mesh dispatch row could not be resolved from its map\n");
+		++gFailures;
+		}
+	void* candidateSetMeshDataAddress = 0;
+	static const char candidateSetMeshDataName[] =
+		"?setMeshData@NpImplicitMesh@@UAEXAAVNxMeshData@@@Z";
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		candidateSetMeshDataName, &candidateSetMeshDataAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll implicit-mesh setMeshData row could not be resolved from its map\n");
 		++gFailures;
 		}
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
@@ -1492,6 +1691,27 @@ int wmain(int argc, wchar_t** argv)
 			oracleEspBefore == oracleEspAfter,
 			candidateEspBefore == candidateEspAfter, emptyMeshMismatches);
 		}
+
+	{
+	ImplicitMeshOutputStream output;
+	NxFoundationSDK* foundation = NxCreateFoundationSDK(
+		NX_FOUNDATION_SDK_VERSION, &output, 0);
+	if(!foundation)
+		{
+		fprintf(stderr, "FAIL Foundation SDK creation failed for implicit-mesh validation cases\n");
+		++gFailures;
+		}
+	else if(candidateSetMeshDataAddress)
+		gFailures += nxRunImplicitMeshSetDataDifferential(image + 0x8ac50,
+			candidateSetMeshDataAddress, foundation, output);
+	else
+		{
+		foundation->release();
+		printf("implicit mesh setMeshData valid_cases=0 invalid_cases=0 errors=0 "
+			"stack_checks=0 mismatches=1\n");
+		++gFailures;
+		}
+	}
 
 	nxUnbindOracleEmitterFlagCallbacks(image, oldCallbackValues, callbackPageProtection);
 	FreeLibrary(fluidModel);

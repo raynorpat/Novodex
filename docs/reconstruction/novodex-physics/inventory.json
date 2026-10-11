@@ -68375,13 +68375,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1384",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12697",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Reconstructed from pinned oracle RVA 0x0008ac50: validate NxMeshData::isValid(); copy exactly 0x30 bytes to this+0x08 when valid; otherwise call FoundationSDK::error with NXE_INVALID_PARAMETER, ImplicitMesh.cpp:106, zero user data, and the exact oracle message. Public SDK headers unchanged.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares 3 valid records and 8 invalid records against the pinned oracle at RVA 0x0008ac50; checks object bytes, exact Foundation error records and x86 stack balance. Candidate method resolves from NxPhysics.map. A +0x0c destination mutation was rejected (valid_cases=0, mismatches=3); restored implementation reports mismatches=0.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "?setMeshData@NpImplicitMesh@@UAEXAAVNxMeshData@@@Z"
     },
     {
       "id": "phys_fn_003664",

@@ -3101,10 +3101,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 1
+    "dynamically_gated": 1
    },
    "bytes": {
-    "discovered": 211
+    "dynamically_gated": 211
    },
    "phases": {
     "7": 1
