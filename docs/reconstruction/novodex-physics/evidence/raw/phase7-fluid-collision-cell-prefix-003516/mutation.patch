@@ -1,0 +1,6 @@
+diff --git a/Physics/src/FluidCollision.cpp b/Physics/src/FluidCollision.cpp
+--- a/Physics/src/FluidCollision.cpp
++++ b/Physics/src/FluidCollision.cpp
+@@
+-            *reinterpret_cast<unsigned*>(cell + 12) = *totalIndices;
++            *reinterpret_cast<unsigned*>(cell + 12) = *totalIndices + 1;

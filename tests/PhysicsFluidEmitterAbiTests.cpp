@@ -883,6 +883,132 @@ static unsigned nxRunFluidCollisionBucketPrefixDifferential(void* oracleAddress,
 		emptyMatches ? 0u : 1u);
 	return mismatches;
 	}
+
+struct NxFluidCollisionCellBucket
+	{
+	unsigned cellCount;
+	unsigned firstCell;
+	unsigned unknown08;
+	};
+
+struct NxFluidCollisionCellAttribute
+	{
+	unsigned words[4];
+	};
+
+struct NxFluidCollisionCellPrefixDescriptor
+	{
+	NxFluidCollisionCellBucket* buckets;
+	unsigned unknown04;
+	unsigned bucketCount;
+	NxFluidCollisionCellAttribute* cells;
+	unsigned unknown10;
+	unsigned unknown14;
+	unsigned unknown18;
+	unsigned totalIndices;
+	};
+
+static unsigned nxRunFluidCollisionCellPrefixDifferential(void* oracleAddress,
+	void* candidateAddress)
+	{
+	if(!oracleAddress || !candidateAddress)
+		return 1;
+	static_assert(sizeof(NxFluidCollisionCellBucket) == 12,
+		"phys_fn_003516 advances bucket rows by twelve bytes");
+	static_assert(sizeof(NxFluidCollisionCellAttribute) == 16,
+		"phys_fn_003516 advances cell attributes by sixteen bytes");
+	static_assert(sizeof(NxFluidCollisionCellPrefixDescriptor) == 0x20,
+		"phys_fn_003516 reads descriptor fields through +0x1c");
+	typedef unsigned (__cdecl* CellPrefix)(NxFluidCollisionCellPrefixDescriptor*);
+	CellPrefix oracle = reinterpret_cast<CellPrefix>(oracleAddress);
+	CellPrefix candidate = reinterpret_cast<CellPrefix>(candidateAddress);
+	NxFluidCollisionCellBucket oracleBuckets[3] = {
+		{ 2, 0, 0xaaaa0001 }, { 0, 2, 0xaaaa0002 }, { 1, 2, 0xaaaa0003 } };
+	NxFluidCollisionCellBucket candidateBuckets[3];
+	memcpy(candidateBuckets, oracleBuckets, sizeof(oracleBuckets));
+	NxFluidCollisionCellAttribute oracleCells[3] = {
+		{ { 0x10, 0x20, 3, 0xcccc0001 } },
+		{ { 0x11, 0x21, 1, 0xcccc0002 } },
+		{ { 0x12, 0x22, 2, 0xcccc0003 } } };
+	NxFluidCollisionCellAttribute candidateCells[3];
+	memcpy(candidateCells, oracleCells, sizeof(oracleCells));
+	NxFluidCollisionCellPrefixDescriptor oracleDescriptor = {
+		oracleBuckets, 0xdddd0001, 3, oracleCells, 0xdddd0002, 0xdddd0003,
+		0xdddd0004, 0 };
+	NxFluidCollisionCellPrefixDescriptor candidateDescriptor = oracleDescriptor;
+	candidateDescriptor.buckets = candidateBuckets;
+	candidateDescriptor.cells = candidateCells;
+	unsigned oracleBefore = 0, oracleAfter = 0, candidateBefore = 0, candidateAfter = 0;
+	__asm mov oracleBefore, esp
+	const unsigned oracleReturn = oracle(&oracleDescriptor);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	const unsigned candidateReturn = candidate(&candidateDescriptor);
+	__asm mov candidateAfter, esp
+	static const unsigned expectedPrefixes[3] = { 0, 3, 4 };
+	bool prefixesMatch = true;
+	bool countsCleared = true;
+	for(unsigned i = 0; i != 3; ++i)
+		{
+		countsCleared = countsCleared && oracleCells[i].words[2] == 0
+			&& candidateCells[i].words[2] == 0;
+		prefixesMatch = prefixesMatch
+			&& oracleCells[i].words[3] == expectedPrefixes[i]
+			&& candidateCells[i].words[3] == expectedPrefixes[i]
+			&& oracleCells[i].words[0] == candidateCells[i].words[0]
+			&& oracleCells[i].words[1] == candidateCells[i].words[1];
+		}
+	const bool cellsMatch = prefixesMatch && countsCleared;
+	const bool bucketsMatch = memcmp(oracleBuckets, candidateBuckets,
+		sizeof(oracleBuckets)) == 0;
+	const unsigned oracleTotal = oracleDescriptor.totalIndices;
+	const unsigned candidateTotal = candidateDescriptor.totalIndices;
+	const bool nonemptyMatches = cellsMatch && bucketsMatch
+		&& oracleTotal == 6 && candidateTotal == 6
+		&& oracleReturn == 3 && candidateReturn == 3
+		&& oracleBefore == oracleAfter && candidateBefore == candidateAfter
+		&& oracleDescriptor.unknown04 == candidateDescriptor.unknown04
+		&& oracleDescriptor.unknown10 == candidateDescriptor.unknown10
+		&& oracleDescriptor.unknown14 == candidateDescriptor.unknown14
+		&& oracleDescriptor.unknown18 == candidateDescriptor.unknown18;
+
+	NxFluidCollisionCellBucket emptyOracleBucket = { 1, 0, 0xaaaa0010 };
+	NxFluidCollisionCellBucket emptyCandidateBucket = emptyOracleBucket;
+	NxFluidCollisionCellAttribute emptyOracleCell = { { 0x30, 0x40, 5, 0x12345678 } };
+	NxFluidCollisionCellAttribute emptyCandidateCell = emptyOracleCell;
+	NxFluidCollisionCellPrefixDescriptor emptyOracle = {
+		&emptyOracleBucket, 0xdddd0010, 0, &emptyOracleCell, 0xdddd0011,
+		0xdddd0012, 0xdddd0013, 0x87654321 };
+	NxFluidCollisionCellPrefixDescriptor emptyCandidate = emptyOracle;
+	emptyCandidate.buckets = &emptyCandidateBucket;
+	emptyCandidate.cells = &emptyCandidateCell;
+	__asm mov oracleBefore, esp
+	const unsigned emptyOracleReturn = oracle(&emptyOracle);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	const unsigned emptyCandidateReturn = candidate(&emptyCandidate);
+	__asm mov candidateAfter, esp
+	const bool emptyPreserved = memcmp(&emptyOracleBucket, &emptyCandidateBucket,
+		sizeof(emptyOracleBucket)) == 0
+		&& memcmp(&emptyOracleCell, &emptyCandidateCell, sizeof(emptyOracleCell)) == 0;
+	const bool emptyMatches = emptyPreserved && emptyOracleReturn == 0
+		&& emptyCandidateReturn == 0
+		&& emptyOracle.totalIndices == 0x87654321
+		&& emptyCandidate.totalIndices == 0x87654321
+		&& oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+	printf("fluid collision cell-prefix buckets=3 cells=3 oracle_total=%u candidate_total=%u "
+		"prefixes=%u counts_cleared=%u return=%u stack=%u/%u mismatches=%u\n",
+		oracleTotal, candidateTotal, prefixesMatch, countsCleared,
+		oracleReturn == candidateReturn, oracleBefore == oracleAfter,
+		candidateBefore == candidateAfter, nonemptyMatches ? 0u : 1u);
+	printf("fluid collision cell-prefix empty preserved=%u return=%u total_preserved=%u "
+		"stack=%u/%u mismatches=%u\n", emptyPreserved,
+		emptyOracleReturn == emptyCandidateReturn,
+		emptyOracle.totalIndices == emptyCandidate.totalIndices,
+		oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+		emptyMatches ? 0u : 1u);
+	return !nonemptyMatches + !emptyMatches;
+	}
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta;
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta = 0xffffffffu;
 extern "C" volatile unsigned nxFluidEmitterRawStackBefore;
@@ -1167,6 +1293,13 @@ int wmain(int argc, wchar_t** argv)
 	else
 		gFailures += nxRunFluidCollisionBucketPrefixDifferential(
 			image + 0x864e0, candidateBucketPrefixAddress);
+	void* candidateCellPrefixAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionCellPrefix", &candidateCellPrefixAddress))
+		++gFailures;
+	else
+		gFailures += nxRunFluidCollisionCellPrefixDifferential(
+			image + 0x86520, candidateCellPrefixAddress);
 	void* candidateNotifyActorReleasedAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxNpFluidManagerNotifyReleasedActor", &candidateNotifyActorReleasedAddress))

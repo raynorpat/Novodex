@@ -65730,13 +65730,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1312",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12378",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA listing at RVA 0x86520 confirms a cdecl helper taking the bucket descriptor. It iterates descriptor bucket rows at +0x00 by 12 bytes, reads signed row cell count and first-cell offset, then iterates 16-byte cell records at descriptor +0x0c. Each visited cell receives descriptor +0x1c as its first index, its pending count is added to the descriptor total and cleared; the function returns the bucket-row count.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x86520 and map-resolved candidate nxFluidCollisionCellPrefix. Three bucket rows with cell counts 3,1,2 produce cell prefixes 0,3,4, clear each cell count, total 6, return 3, and balanced stacks; the empty bucket range preserves cell records and descriptor total. An output-prefix +1 mutant is rejected (prefixes=0, mismatches=1); restored control is exact.",
+      "notes": "This helper is implemented and gated as a dependency of static-collision builder phys_fn_003505; the builder remains open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionCellPrefix"
     },
     {
       "id": "phys_fn_003517",

@@ -10414,3 +10414,5 @@ Phase 7 fluid manager traversal (2026-10-11): phys_fn_003632 and phys_fn_003634 
 
 Phase 7 fluid post-step traversal: phys_fn_000619's skipped manager dispatch mutation is caught with mismatches=72; phys_fn_003475's whole-row immediate-return mutation is caught with mismatches=72, and a mesh-copy-only mutation is caught with mismatches=4. The differential also seeds a fluid with no mesh record and verifies the optional callback is skipped. Restored controls report zero mismatches. See evidence/phase7-fluid-post-step-000619-003475.md.
 Phase 7 closure evidence: phys_fn_003514 at RVA 0x864e0 is mutation-falsified by NxPhysicsFluidEmitterAbiTests; the per-record +1 accumulator mutation produces mismatches=1 (candidate total 13 versus oracle total 9), and the restored control is exact. See evidence/phase7-fluid-collision-bucket-prefix-003514.md.
+
+Phase 7 closure evidence: phys_fn_003516 at RVA 0x86520 is mutation-falsified by NxPhysicsFluidEmitterAbiTests; a per-cell output-prefix +1 mutation produces prefixes=0 and mismatches=1, and the restored populated and empty-range controls are exact. See evidence/phase7-fluid-collision-cell-prefix-003516.md.
