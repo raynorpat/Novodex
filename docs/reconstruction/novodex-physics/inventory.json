@@ -65918,13 +65918,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1315",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12419",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x86ad0 hashes signed 16-bit XYZ records as x + 101*y + 7919*z, casts the sum to unsigned, selects one of N 12-byte bucket rows, and increments that row's third dword. It returns the input record count and leaves an empty range untouched.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x86ad0 and the map-resolved candidate nxFluidCollisionCountBuckets. Seven coordinate triples include negative values; bucket counts match the oracle, the other row words remain intact, the function returns 7, and both x86 stacks balance. The empty-range case returns 0 and preserves rows. A mutation that increments each selected count by 2 is detected (counts=0, mismatches=1); restored control reports zero mismatches.",
+      "notes": "Leaf dependency of the static-collision cell builder phys_fn_003528 and dirty rebuild phys_fn_003505.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionCountBuckets"
     },
     {
       "id": "phys_fn_003527",

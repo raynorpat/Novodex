@@ -9,6 +9,46 @@
 #include "NxSdkAllocator.h"
 #include <string.h>
 
+struct NxFluidCollisionBucketHashDescriptor
+	{
+	unsigned* buckets;
+	unsigned bucketCount;
+	};
+
+struct NxFluidCollisionInt16Vector3Array
+	{
+	short* data;
+	int count;
+	unsigned capacity;
+	};
+
+static_assert(sizeof(short) == 2,
+	"phys_fn_003526 hashes packed signed 16-bit cell coordinates");
+
+// phys_fn_003526 (RVA 0x00086ad0) adds each occupied cell to the bucket
+// selected by the signed XYZ hash. The array rows are twelve bytes and the
+// pending count is the third dword in each row.
+extern "C" int __cdecl nxFluidCollisionCountBuckets(
+	NxFluidCollisionBucketHashDescriptor* descriptor,
+	const NxFluidCollisionInt16Vector3Array* cells)
+	{
+	const int count = cells->count;
+	if(count > 0)
+		{
+		for(int i = 0; i < count; ++i)
+			{
+			const short* const cell = cells->data + i * 3;
+			const int hash = static_cast<int>(cell[0])
+				+ 101 * static_cast<int>(cell[1])
+				+ 7919 * static_cast<int>(cell[2]);
+			const unsigned bucket = static_cast<unsigned>(hash)
+				% descriptor->bucketCount;
+			descriptor->buckets[bucket * 3 + 2]++;
+			}
+		}
+	return count;
+	}
+
 struct NxFluidCollisionBucket
 	{
 	int cellCount;

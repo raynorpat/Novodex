@@ -1010,6 +1010,98 @@ static unsigned nxRunFluidCollisionCellPrefixDifferential(void* oracleAddress,
 	return !nonemptyMatches + !emptyMatches;
 	}
 
+struct NxFluidCollisionBucketHashDescriptor
+	{
+	void* buckets;
+	unsigned bucketCount;
+	};
+
+struct NxFluidCollisionInt16Vector3Array
+	{
+	short* data;
+	int count;
+	unsigned capacity;
+	};
+
+static unsigned nxRunFluidCollisionBucketHashDifferential(const unsigned char* oracleBase,
+	void* candidateAddress)
+	{
+	if(!oracleBase || !candidateAddress)
+		return 1;
+	typedef int (__cdecl* CountBuckets)(NxFluidCollisionBucketHashDescriptor*,
+		const NxFluidCollisionInt16Vector3Array*);
+	CountBuckets oracle = reinterpret_cast<CountBuckets>(
+		const_cast<unsigned char*>(oracleBase) + 0x86ad0);
+	CountBuckets candidate = reinterpret_cast<CountBuckets>(candidateAddress);
+	unsigned oracleBuckets[5][3] = {
+		{ 0xaaaa0000, 0xbbbb0000, 11 }, { 0xaaaa0001, 0xbbbb0001, 12 },
+		{ 0xaaaa0002, 0xbbbb0002, 13 }, { 0xaaaa0003, 0xbbbb0003, 14 },
+		{ 0xaaaa0004, 0xbbbb0004, 15 } };
+	unsigned candidateBuckets[5][3];
+	memcpy(candidateBuckets, oracleBuckets, sizeof(oracleBuckets));
+	short cells[7][3] = {
+		{ 0, 0, 0 }, { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 },
+		{ -1, 0, 0 }, { 0, -1, 0 }, { 0, 0, -1 } };
+	const NxFluidCollisionInt16Vector3Array oracleCells = { &cells[0][0], 7, 7 };
+	const NxFluidCollisionInt16Vector3Array candidateCells = oracleCells;
+	NxFluidCollisionBucketHashDescriptor oracleDescriptor = { oracleBuckets, 5 };
+	NxFluidCollisionBucketHashDescriptor candidateDescriptor = { candidateBuckets, 5 };
+	unsigned oracleBefore = 0, oracleAfter = 0, candidateBefore = 0, candidateAfter = 0;
+	__asm mov oracleBefore, esp
+	const int oracleReturn = oracle(&oracleDescriptor, &oracleCells);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	const int candidateReturn = candidate(&candidateDescriptor, &candidateCells);
+	__asm mov candidateAfter, esp
+	const unsigned expectedCounts[5] = { 3, 2, 1, 0, 1 };
+	bool countsMatch = true;
+	bool otherWordsPreserved = true;
+	for(unsigned bucket = 0; bucket != 5; ++bucket)
+		{
+		countsMatch = countsMatch
+			&& oracleBuckets[bucket][2] == 11 + bucket + expectedCounts[bucket]
+			&& candidateBuckets[bucket][2] == 11 + bucket + expectedCounts[bucket];
+		otherWordsPreserved = otherWordsPreserved
+			&& oracleBuckets[bucket][0] == candidateBuckets[bucket][0]
+			&& oracleBuckets[bucket][1] == candidateBuckets[bucket][1]
+			&& oracleBuckets[bucket][0] == 0xaaaa0000 + bucket
+			&& oracleBuckets[bucket][1] == 0xbbbb0000 + bucket;
+		}
+	const bool matched = countsMatch && otherWordsPreserved
+		&& oracleReturn == 7 && candidateReturn == 7
+		&& oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+	printf("fluid collision hash-count buckets=5 cells=7 counts=%u words_preserved=%u "
+		"return=%u stack=%u/%u mismatches=%u\n", countsMatch,
+		otherWordsPreserved, oracleReturn == candidateReturn,
+		oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+		matched ? 0u : 1u);
+	unsigned emptyOracleBuckets[2][3] = {
+		{ 0x11111111, 0x22222222, 17 }, { 0x33333333, 0x44444444, 19 } };
+	unsigned emptyCandidateBuckets[2][3];
+	memcpy(emptyCandidateBuckets, emptyOracleBuckets, sizeof(emptyOracleBuckets));
+	const NxFluidCollisionInt16Vector3Array emptyCells = { 0, 0, 0 };
+	NxFluidCollisionBucketHashDescriptor emptyOracle = { emptyOracleBuckets, 2 };
+	NxFluidCollisionBucketHashDescriptor emptyCandidate = { emptyCandidateBuckets, 2 };
+	__asm mov oracleBefore, esp
+	const int emptyOracleReturn = oracle(&emptyOracle, &emptyCells);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	const int emptyCandidateReturn = candidate(&emptyCandidate, &emptyCells);
+	__asm mov candidateAfter, esp
+	const bool emptyPreserved = memcmp(emptyOracleBuckets, emptyCandidateBuckets,
+		sizeof(emptyOracleBuckets)) == 0
+		&& emptyOracleBuckets[0][2] == 17 && emptyOracleBuckets[1][2] == 19;
+	const bool emptyMatched = emptyPreserved && emptyOracleReturn == 0
+		&& emptyCandidateReturn == 0 && oracleBefore == oracleAfter
+		&& candidateBefore == candidateAfter;
+	printf("fluid collision hash-count empty preserved=%u return=%u stack=%u/%u "
+		"mismatches=%u\n", emptyPreserved,
+		emptyOracleReturn == emptyCandidateReturn,
+		oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+		emptyMatched ? 0u : 1u);
+	return !matched + !emptyMatched;
+	}
+
 struct NxFluidCollisionCopyDescriptor
 	{
 	void* buckets;
@@ -1438,6 +1530,16 @@ int wmain(int argc, wchar_t** argv)
 	else
 		gFailures += nxRunFluidCollisionCellPrefixDifferential(
 			image + 0x86520, candidateCellPrefixAddress);
+	void* candidateBucketHashAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionCountBuckets", &candidateBucketHashAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll collision bucket hash row could not be resolved from its map\n");
+		++gFailures;
+		}
+	else
+		gFailures += nxRunFluidCollisionBucketHashDifferential(image,
+			candidateBucketHashAddress);
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))

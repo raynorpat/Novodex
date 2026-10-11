@@ -1,0 +1,21 @@
+Starting commit: 1e694811 (main)
+Oracle: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+Oracle SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+
+RED:
+  cmake --build build --config Release --target NxPhysicsFluidEmitterAbiTests
+  .\build\Release\NxPhysicsFluidEmitterAbiTests.exe D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+  Result: candidate map missing nxFluidCollisionCountBuckets; direct probe failed as expected.
+
+Restored control:
+  cmake --build build --config Release --target NxPhysicsFluidEmitterAbiTests
+  .\build\Release\NxPhysicsFluidEmitterAbiTests.exe D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+
+Mutation:
+  Apply mutation.patch; rebuild NxPhysicsFluidEmitterAbiTests; run the same direct probe.
+  Expected detector: fluid collision hash-count ... counts=0 ... mismatches=1; process exit 1.
+
+Final restored gates:
+  .\docs\reconstruction\novodex-physics\tools\run_phase_gate.ps1 -Phase 5 -RepoRoot D:\github\Novodex -BuildRoot D:\github\Novodex\build
+  .\docs\reconstruction\novodex-physics\tools\run_phase_gate.ps1 -Phase 7 -RepoRoot D:\github\Novodex -BuildRoot D:\github\Novodex\build
+  pytest docs/reconstruction/novodex-physics/tools/tests
