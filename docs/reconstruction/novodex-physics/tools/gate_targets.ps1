@@ -92,6 +92,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'
 		'fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
         'fluid emitter flags cases=2 mismatches=0'
+		'fluid emitter body repulsion bodyless actor=1 callbacks=3/3 order=1 vectors=1 mass=1 stack=1/1 mismatches=0'
 		'fluid post-step traversal fluids=2 oracle_callbacks=7 candidate_callbacks=7 particle_counts=3/3 particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=0'
 		'fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0'
 		'fluid manager actor-release fluids=1 emitters=3 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0'
@@ -5805,7 +5806,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2635  # all registered actor, object-layout, shape-vtable, and fluid-emitter assertions
+    '5' = 2636  # includes the bodyless fluid-emitter repulsion callback differential
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
@@ -5851,7 +5852,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1662  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
+	'7' = 1663  # includes the bodyless fluid-emitter repulsion callback differential
                # plus current scene/emitter assertions
                # plus retained contact, trigger, and active-root buffer teardown
                # plus recycled shape, actor, and body ID buffer teardown

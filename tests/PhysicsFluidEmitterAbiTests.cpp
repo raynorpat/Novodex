@@ -399,6 +399,25 @@ struct NxFluidRunCallbackRecord
 	unsigned option;
 	};
 
+struct NxFluidRepulsionCallbackRecord
+	{
+	unsigned kind;
+	unsigned system;
+	unsigned fluid;
+	unsigned emitter;
+	unsigned vectors[6];
+	unsigned mass;
+	};
+
+static NxFluidRepulsionCallbackRecord gOracleFluidRepulsionRecords[16];
+static unsigned gOracleFluidRepulsionRecordCount;
+
+extern "C" int __cdecl nxOracleEmitterGetEnabledFlag(
+	unsigned, unsigned, unsigned);
+extern "C" int __cdecl nxOracleEmitterGetBodyRepulsion(
+	unsigned, unsigned, unsigned, float*, float*);
+extern "C" float __cdecl nxOracleFluidGetParticleMass(unsigned, unsigned);
+
 struct NxFluidPostStepParticleStream
 	{
 	unsigned* data;
@@ -575,13 +594,60 @@ extern "C" int __cdecl nxOracleImplicitFluidMeshRun(unsigned a0, unsigned a1,
 	return static_cast<int>(2048u ^ a0 ^ a1 ^ a2 ^ a3);
 	}
 
+static NxFluidRepulsionCallbackRecord& nxRecordOracleFluidRepulsion(
+	unsigned kind, unsigned system, unsigned fluid, unsigned emitter)
+	{
+	static NxFluidRepulsionCallbackRecord overflow = {};
+	NxFluidRepulsionCallbackRecord& record = gOracleFluidRepulsionRecordCount
+		< sizeof(gOracleFluidRepulsionRecords) / sizeof(gOracleFluidRepulsionRecords[0])
+		? gOracleFluidRepulsionRecords[gOracleFluidRepulsionRecordCount++] : overflow;
+	memset(&record, 0, sizeof(record));
+	record.kind = kind;
+	record.system = system;
+	record.fluid = fluid;
+	record.emitter = emitter;
+	return record;
+	}
+
+extern "C" int __cdecl nxOracleEmitterGetEnabledFlag(
+	unsigned system, unsigned fluid, unsigned emitter)
+	{
+	nxRecordOracleFluidRepulsion(1, system, fluid, emitter);
+	return 1;
+	}
+
+extern "C" int __cdecl nxOracleEmitterGetBodyRepulsion(
+	unsigned system, unsigned fluid, unsigned emitter, float* force, float* torque)
+	{
+	NxFluidRepulsionCallbackRecord& record = nxRecordOracleFluidRepulsion(
+		2, system, fluid, emitter);
+	static const unsigned values[6] = {
+		0x3e800001u, 0xbf000002u, 0x3f400003u,
+		0x40000004u, 0xc0400005u, 0x40800006u };
+	memcpy(record.vectors, values, sizeof(values));
+	memcpy(force, values, 3 * sizeof(float));
+	memcpy(torque, values + 3, 3 * sizeof(float));
+	return 0;
+	}
+
+extern "C" float __cdecl nxOracleFluidGetParticleMass(unsigned system,
+	unsigned fluid)
+	{
+	NxFluidRepulsionCallbackRecord& record = nxRecordOracleFluidRepulsion(
+		3, system, fluid, 0);
+	const unsigned mass = 0x3f2aaaab;
+	record.mass = mass;
+	return *reinterpret_cast<const float*>(&mass);
+	}
+
 static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldValues,
 	DWORD* oldProtection)
 	{
 	static const unsigned slotRvas[] = {
 		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
-		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0 };
+		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0,
+		0x126408, 0x1263e0, 0x126518 };
 	static void* const replacements[] = {
 		0,
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
@@ -597,12 +663,15 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		reinterpret_cast<void*>(&nxOracleFluidGetParticles),
 		reinterpret_cast<void*>(&nxOracleFluidGetBounds),
 		reinterpret_cast<void*>(&nxOracleImplicitFluidMeshGetMesh),
+		reinterpret_cast<void*>(&nxOracleEmitterGetEnabledFlag),
+		reinterpret_cast<void*>(&nxOracleEmitterGetBodyRepulsion),
+		reinterpret_cast<void*>(&nxOracleFluidGetParticleMass),
 		};
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 14; ++i)
+	for(unsigned i = 0; i < 17; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -617,12 +686,13 @@ static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldV
 	static const unsigned slotRvas[] = {
 		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
-		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0 };
+		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0,
+		0x126408, 0x1263e0, 0x126518 };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 14; ++i)
+	for(unsigned i = 0; i < 17; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -879,6 +949,37 @@ static void nxUnbindOracleLocks(unsigned char* image, const NxLockSlots& slots)
 	*reinterpret_cast<void**>(image + 0x104044) = slots.values[2];
 	*reinterpret_cast<void**>(image + 0x104014) = slots.values[3];
 	VirtualProtect(slots.page, 0x2000, slots.protection, &ignored);
+	}
+
+static int nxCallOracleFluidRepulsion(void* target, void* emitter,
+	unsigned* stackBefore, unsigned* stackAfter)
+	{
+	typedef int (__thiscall *Repulsion)(void*);
+	float incoming = 0.375f;
+	unsigned before = 0, after = 0;
+	__asm fld incoming
+	__asm mov before, esp
+	const int result = reinterpret_cast<Repulsion>(target)(emitter);
+	__asm mov after, esp
+	// The oracle helper consumes its callback mass and returns with the caller's
+	// FluidRun result still on the x87 stack.
+	__asm fstp st(0)
+	*stackBefore = before;
+	*stackAfter = after;
+	return result;
+	}
+
+static int nxCallCandidateFluidRepulsion(void* target, void* emitter,
+	unsigned* stackBefore, unsigned* stackAfter)
+	{
+	typedef int (__cdecl *Repulsion)(void*);
+	unsigned before = 0, after = 0;
+	__asm mov before, esp
+	const int result = reinterpret_cast<Repulsion>(target)(emitter);
+	__asm mov after, esp
+	*stackBefore = before;
+	*stackAfter = after;
+	return result;
 	}
 
 // Only the six aggregate-return methods are production methods in this probe.
@@ -1289,7 +1390,7 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL FluidModel callback fixture lacks post-step probes\n");
 		return 1;
 		}
-	void* oldCallbackValues[14] = {};
+	void* oldCallbackValues[17] = {};
 	DWORD callbackPageProtection = 0;
 	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues, &callbackPageProtection))
 		{
@@ -1312,6 +1413,108 @@ int wmain(int argc, wchar_t** argv)
 	ResetFluidRunFn resetRun = reinterpret_cast<ResetFluidRunFn>(resetFluidRun);
 	FluidRunCountFn fluidRunCount = reinterpret_cast<FluidRunCountFn>(getFluidRunCount);
 	GetFluidRunRecordFn getFluidRun = reinterpret_cast<GetFluidRunRecordFn>(getFluidRunRecord);
+	FARPROC resetFluidRepulsion = GetProcAddress(fluidModel,
+		"NxResetFluidRepulsionCallbacks");
+	FARPROC getFluidRepulsionCount = GetProcAddress(fluidModel,
+		"NxGetFluidRepulsionCallbackCount");
+	FARPROC getFluidRepulsionRecord = GetProcAddress(fluidModel,
+		"NxGetFluidRepulsionCallbackRecord");
+	if(!resetFluidRepulsion || !getFluidRepulsionCount || !getFluidRepulsionRecord)
+		{
+		fprintf(stderr, "FAIL FluidModel fixture lacks body-repulsion callback probes\n");
+		return 1;
+		}
+	typedef void (__cdecl *ResetRepulsionFn)();
+	typedef unsigned (__cdecl *RepulsionCountFn)();
+	typedef int (__cdecl *GetRepulsionRecordFn)(unsigned, NxFluidRepulsionCallbackRecord*);
+	ResetRepulsionFn resetRepulsion = reinterpret_cast<ResetRepulsionFn>(resetFluidRepulsion);
+	RepulsionCountFn repulsionCount = reinterpret_cast<RepulsionCountFn>(getFluidRepulsionCount);
+	GetRepulsionRecordFn getRepulsionRecord = reinterpret_cast<GetRepulsionRecordFn>(
+		getFluidRepulsionRecord);
+	{
+		void* candidateRepulsionAddress = 0;
+		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"?nxNpFluidEmitterApplyBodyRepulsion@@YAHPAX@Z",
+			&candidateRepulsionAddress))
+			{
+			fprintf(stderr, "FAIL candidate body-repulsion row could not be resolved from its map\n");
+			++gFailures;
+			}
+		else
+			{
+			unsigned char oracleFluid[0x84] = {}, candidateFluid[0x84] = {};
+			unsigned char oracleBackend[0x34] = {}, candidateBackend[0x34] = {};
+			unsigned char oracleEmitter[0x18] = {}, candidateEmitter[0x18] = {};
+			unsigned char oracleActor[0x0c] = {}, candidateActor[0x0c] = {};
+			*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+			*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+			*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x55667788u;
+			*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x55667788u;
+			*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0x10203040u;
+			*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0x10203040u;
+			*reinterpret_cast<void**>(oracleEmitter + 4) = oracleFluid;
+			*reinterpret_cast<void**>(candidateEmitter + 4) = candidateFluid;
+			*reinterpret_cast<unsigned*>(oracleEmitter + 8) = 0x11223344u;
+			*reinterpret_cast<unsigned*>(candidateEmitter + 8) = 0x11223344u;
+			*reinterpret_cast<unsigned*>(oracleEmitter + 0x10) = 4;
+			*reinterpret_cast<unsigned*>(candidateEmitter + 0x10) = 4;
+			*reinterpret_cast<void**>(oracleEmitter + 0x14) = oracleActor;
+			*reinterpret_cast<void**>(candidateEmitter + 0x14) = candidateActor;
+			resetRepulsion();
+			gOracleFluidRepulsionRecordCount = 0;
+			unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+			const int oracleResult = nxCallOracleFluidRepulsion(image + 0x881c0,
+				oracleEmitter, &oracleEspBefore, &oracleEspAfter);
+			NxFluidRepulsionCallbackRecord oracleRecords[3] = {};
+			bool oracleRecordsOk = gOracleFluidRepulsionRecordCount == 3;
+			if(oracleRecordsOk)
+				memcpy(oracleRecords, gOracleFluidRepulsionRecords, sizeof(oracleRecords));
+			resetRepulsion();
+			unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+			const int candidateResult = nxCallCandidateFluidRepulsion(
+				candidateRepulsionAddress, candidateEmitter,
+				&candidateEspBefore, &candidateEspAfter);
+			NxFluidRepulsionCallbackRecord candidateRecords[3] = {};
+			bool candidateRecordsOk = repulsionCount() == 3;
+			for(unsigned i = 0; i != 3 && candidateRecordsOk; ++i)
+				candidateRecordsOk = getRepulsionRecord(i, &candidateRecords[i]);
+			const unsigned expectedVectors[6] = {
+				0x3e800001u, 0xbf000002u, 0x3f400003u,
+				0x40000004u, 0xc0400005u, 0x40800006u };
+			const unsigned expectedKinds[3] = { 1, 2, 3 };
+			unsigned callbackMismatches = !oracleRecordsOk || !candidateRecordsOk;
+			for(unsigned i = 0; i != 3 && oracleRecordsOk && candidateRecordsOk; ++i)
+				{
+				const NxFluidRepulsionCallbackRecord& expected = oracleRecords[i];
+				const NxFluidRepulsionCallbackRecord& actual = candidateRecords[i];
+				if(expected.kind != expectedKinds[i] || actual.kind != expected.kind
+					|| expected.system != 0x10203040u || actual.system != expected.system
+					|| expected.fluid != (i == 2 ? 0x55667788u : 0x55667788u)
+					|| actual.fluid != expected.fluid
+					|| expected.emitter != (i == 2 ? 0u : 0x11223344u)
+					|| actual.emitter != expected.emitter
+					|| (i == 1 && memcmp(expected.vectors, expectedVectors,
+						sizeof(expectedVectors)) != 0)
+					|| (i == 1 && memcmp(actual.vectors, expected.vectors,
+						sizeof(actual.vectors)) != 0)
+					|| (i == 2 && (expected.mass != 0x3f2aaaabu
+						|| actual.mass != expected.mass)))
+					++callbackMismatches;
+				}
+			const unsigned mismatches = callbackMismatches
+				+ (oracleResult != candidateResult)
+				+ (oracleEspBefore != oracleEspAfter)
+				+ (candidateEspBefore != candidateEspAfter);
+			gFailures += mismatches;
+			printf("fluid emitter body repulsion bodyless actor=1 callbacks=%u/%u order=%u "
+				"vectors=%u mass=%u stack=%u/%u mismatches=%u\n",
+				gOracleFluidRepulsionRecordCount, repulsionCount(),
+				callbackMismatches == 0, callbackMismatches == 0,
+				callbackMismatches == 0,
+				oracleEspBefore == oracleEspAfter,
+				candidateEspBefore == candidateEspAfter, mismatches);
+			}
+	}
 	{
 		void* candidateStepAddress = 0;
 		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,

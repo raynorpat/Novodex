@@ -38,6 +38,16 @@ struct NxFluidRunCallbackRecord
 	unsigned option;
 	};
 
+struct NxFluidRepulsionCallbackRecord
+	{
+	unsigned kind;
+	unsigned system;
+	unsigned fluid;
+	unsigned emitter;
+	unsigned vectors[6];
+	unsigned mass;
+	};
+
 struct NxImplicitFluidMeshFixture
 	{
 	unsigned* leadingVectors;
@@ -53,6 +63,8 @@ static NxFluidPostStepCallbackRecord gPostStepRecords[16];
 static unsigned gPostStepRecordCount;
 static NxFluidRunCallbackRecord gFluidRunRecords[16];
 static unsigned gFluidRunRecordCount;
+static NxFluidRepulsionCallbackRecord gFluidRepulsionRecords[16];
+static unsigned gFluidRepulsionRecordCount;
 static unsigned gPostStepParticles[2][2][23];
 static NxFluidPostStepParticleStream gPostStepStreams[2];
 static unsigned gPostStepLeadingVectors[2][3] = {
@@ -110,6 +122,71 @@ extern "C" __declspec(dllexport) float __cdecl FluidRun(unsigned system,
 		record.option = option;
 		}
 	return 0.375f;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxResetFluidRepulsionCallbacks()
+	{
+	gFluidRepulsionRecordCount = 0;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidRepulsionCallbackCount()
+	{
+	return gFluidRepulsionRecordCount;
+	}
+
+extern "C" __declspec(dllexport) int __cdecl NxGetFluidRepulsionCallbackRecord(
+	unsigned index, NxFluidRepulsionCallbackRecord* record)
+	{
+	if(index >= gFluidRepulsionRecordCount || !record)
+		return 0;
+	*record = gFluidRepulsionRecords[index];
+	return 1;
+	}
+
+static NxFluidRepulsionCallbackRecord& nxNextFluidRepulsionRecord(unsigned kind,
+	unsigned system, unsigned fluid, unsigned emitter)
+	{
+	static NxFluidRepulsionCallbackRecord overflow = {};
+	NxFluidRepulsionCallbackRecord& record = gFluidRepulsionRecordCount
+		< sizeof(gFluidRepulsionRecords) / sizeof(gFluidRepulsionRecords[0])
+		? gFluidRepulsionRecords[gFluidRepulsionRecordCount++] : overflow;
+	ZeroMemory(&record, sizeof(record));
+	record.kind = kind;
+	record.system = system;
+	record.fluid = fluid;
+	record.emitter = emitter;
+	return record;
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterGetEnabledFlag(
+	unsigned system, unsigned fluid, unsigned emitter)
+	{
+	nxNextFluidRepulsionRecord(1, system, fluid, emitter);
+	return 1;
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterGetBodyRepulsion(
+	unsigned system, unsigned fluid, unsigned emitter, float* force, float* torque)
+	{
+	NxFluidRepulsionCallbackRecord& record = nxNextFluidRepulsionRecord(
+		2, system, fluid, emitter);
+	static const unsigned values[6] = {
+		0x3e800001u, 0xbf000002u, 0x3f400003u,
+		0x40000004u, 0xc0400005u, 0x40800006u };
+	memcpy(record.vectors, values, sizeof(values));
+	memcpy(force, values, 3 * sizeof(float));
+	memcpy(torque, values + 3, 3 * sizeof(float));
+	return 0;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetParticleMass(
+	unsigned system, unsigned fluid)
+	{
+	NxFluidRepulsionCallbackRecord& record = nxNextFluidRepulsionRecord(
+		3, system, fluid, 0);
+	const unsigned mass = 0x3f2aaaab;
+	record.mass = mass;
+	return *reinterpret_cast<const float*>(&mass);
 	}
 
 extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidPostStepCallbackCount()
