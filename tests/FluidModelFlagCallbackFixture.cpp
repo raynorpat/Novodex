@@ -124,3 +124,19 @@ extern "C" __declspec(dllexport) int __cdecl EmitterSetBodyAngularVelocity(
 	{
 	return nxRecordBodyVector(1024, argument0, argument1, argument2, velocity);
 	}
+
+extern "C" __declspec(dllexport) int __cdecl ImplicitFluidMeshRun(
+	unsigned argument0, unsigned argument1, unsigned argument2, unsigned argument3)
+	{
+	if(gRecordCount < sizeof(gRecords) / sizeof(gRecords[0]))
+		{
+		NxFluidEmitterFlagCallbackRecord& record = gRecords[gRecordCount++];
+		ZeroMemory(&record, sizeof(record));
+		record.kind = 2048;
+		record.argument0 = argument0;
+		record.argument1 = argument1;
+		record.argument2 = argument2;
+		record.enabled = argument3;
+		}
+	return static_cast<int>(2048u ^ argument0 ^ argument1 ^ argument2 ^ argument3);
+	}

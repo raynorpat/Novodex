@@ -10398,3 +10398,8 @@ The direct pinned-oracle differential compares the unattached path, a matrix-bac
 ### Fluid emitter post-step body-state caller phys_fn_003624 (mismatches=1)
 
 The direct pinned-oracle differential covers no actor and an attached body with asymmetric non-binary position, linear velocity, and angular velocity. It compares callback order, full callback records and vector words, return value, and x86 stack balance. Reading position from `body+0x154` instead of `+0x158` is rejected (`mismatches=1`); restored control reports zero mismatches. See [phase7-fluid-emitter-body-state-003624.md](phase7-fluid-emitter-body-state-003624.md).
+
+
+### Fluid implicit surface-mesh dispatch row phys_fn_003419 (mismatches=1)
+
+The registered `NxPhysicsFluidEmitterAbiTests` direct differential covers the live mesh callback tuple, triangle count, return value, x86 stack, and empty-mesh no-callback path. Dividing the mesh vertex count by six instead of three is rejected (`mismatches=1`); the restored control is exact. See [phase7-fluid-surface-mesh-003419.md](phase7-fluid-surface-mesh-003419.md).
