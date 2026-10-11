@@ -414,3 +414,18 @@ match their registered totals, as confirmed by the gate-target unit tests. The
 full tooling suite passes (810 tests), inventory validation reports zero
 unexplained rows (82 closed / 479 deferred in Phase 7), all 80 public Physics
 headers match their manifest, and `git diff --check` passes.
+
+Continuation — `phys_fn_000619` post-step pose snapshot sensitivity
+(2026-10-11).
+
+A fresh Win32 Release CMake build and registered staged-pair
+`NxPhysicsSimulationTests` differential pass exactly at mainline
+`d332580a702fe7346b9a47c398753ed71ad44ecc`. A temporary mutation disabling the
+post-step body pose snapshot copy in `NxSceneInternal::finishSimulation` is
+caught by the same differential (`oracle_exit=0`, `candidate_exit=0`,
+`stdout_delta=7248`, exact stderr). The byte-restored build returns to
+`stdout_delta=0`, exact stderr. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-finish-simulation-snapshot-000619.md`.
+This proves sensitivity for the body snapshot portion only; the oracle's
+post-step fluid-manager list traversal and per-fluid updates remain missing, so
+`phys_fn_000619` remains open and is not promoted in the inventory.
