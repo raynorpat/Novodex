@@ -10406,3 +10406,5 @@ The registered `NxPhysicsFluidEmitterAbiTests` direct differential covers the li
 
 
 Phase 7 implicit-mesh data setter continuation: `phys_fn_003663` at RVA `0x0008ac50` is closed by the registered `NxPhysicsFluidEmitterAbiTests` oracle differential. Its `this+0x0c` destination mutation is detected with `mismatches=3`; restored `this+0x08` control reports zero mismatches. Full details: `evidence/phase7-implicit-mesh-set-mesh-data-003663.md`.
+
+Phase 7 public implicit-mesh wrapper continuation: `phys_fn_003874` at RVA `0x0008d230` acquires the write lock, checks callback reentry, and dispatches through the record at `this+0x14`. A no-op-helper mutation is rejected with public-wrapper `mismatches=2`; restored valid/invalid cases report zero mismatches and balanced x86 stacks. Full details: `evidence/phase7-implicit-mesh-set-mesh-data-003663.md`.

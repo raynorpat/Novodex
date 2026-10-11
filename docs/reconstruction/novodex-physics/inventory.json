@@ -68379,11 +68379,11 @@
       "source": "Physics/src/fluids/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1384",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12697",
-      "static_proof": "Reconstructed from pinned oracle RVA 0x0008ac50: validate NxMeshData::isValid(); copy exactly 0x30 bytes to this+0x08 when valid; otherwise call FoundationSDK::error with NXE_INVALID_PARAMETER, ImplicitMesh.cpp:106, zero user data, and the exact oracle message. Public SDK headers unchanged.",
-      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares 3 valid records and 8 invalid records against the pinned oracle at RVA 0x0008ac50; checks object bytes, exact Foundation error records and x86 stack balance. Candidate method resolves from NxPhysics.map. A +0x0c destination mutation was rejected (valid_cases=0, mismatches=3); restored implementation reports mismatches=0.",
+      "static_proof": "Reconstructed from pinned oracle RVA 0x0008ac50: validate NxMeshData::isValid(); copy exactly 0x30 bytes to the private record member at this+0x08 when valid; otherwise call FoundationSDK::error with NXE_INVALID_PARAMETER, ImplicitMesh.cpp:106, zero user data, and the exact oracle message. This is the internal data-record helper called by public wrapper phys_fn_003874. Public SDK headers unchanged.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares 3 valid records and 8 invalid records against the pinned oracle at RVA 0x0008ac50; checks record bytes, exact Foundation error records and x86 stack balance. Candidate helper resolves from NxPhysics.map. A +0x0c destination mutation was rejected (valid_cases=0, mismatches=3); restored helper reports mismatches=0.",
       "notes": "",
       "implementation": "Physics/src/ImplicitMesh.cpp",
-      "implementation_symbol": "?setMeshData@NpImplicitMesh@@UAEXAAVNxMeshData@@@Z"
+      "implementation_symbol": "?setMeshData@NpImplicitMeshDataRecord@@QAEHAAVNxMeshData@@@Z"
     },
     {
       "id": "phys_fn_003664",
@@ -72196,12 +72196,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1449",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12976",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "RVA 0x0008d230 is the public NxImplicitMesh::setMeshData wrapper. It acquires the write lock at this+0x0c, checks callback reentry, calls the internal descriptor helper through this+0x14, and releases the lock. Candidate private layout is 0x18 bytes; public SDK headers unchanged.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the pinned oracle wrapper and the candidate DLL method with valid and invalid descriptors; checks wrapper and record state, lock release, exact error output, and x86 stack balance. The no-op-helper mutation was rejected with public-wrapper mismatches=2; restored wrapper reports valid=1 invalid=1 stack_checks=2 mismatches=0.",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "?setMeshData@NpImplicitMesh@@UAEXAAVNxMeshData@@@Z",
       "notes": ""
     },
     {
