@@ -7630,12 +7630,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "conditional lock-API dispatch (0xd710, ret 8)",
+      "state": "dynamically_gated",
+      "source": "NxScene::checkResults status-mask and event-wait dispatch (0xd710, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/195",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1143",
-      "static_proof": "static review of the recorded shape: conditional lock-API dispatch (0xd710, ret 8); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the newunlock differential (3z187): failures=0 for both rows across every field combination, the two flag arms, the two argument arms and both slot return values, with the lock-API global bound",
+      "static_proof": "IDA 12.1.2 decompilation at VA 0x1000d710 (RVA 0x0000d710) shows that status bit 0 clear returns true immediately; when set, the method waits on the scene completion event with timeout 0 for nonblocking calls and INFINITE for blocking calls.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair proof for the unrequested-status branch: a candidate-only mutation changing the clear-bit return from true to false is rejected by the public NxScene::checkResults assertion (oracle exit 0, candidate exit 1); after restoring and rebuilding the candidate, the full target is exact (stdout_delta=0, stderr_exact=true). See evidence/phase7-checkresults-status-mask-000396.md.",
       "notes": ""
     },
     {

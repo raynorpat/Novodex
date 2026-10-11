@@ -1172,6 +1172,8 @@ int wmain(int argc, wchar_t** argv)
 		}
 	const unsigned simulateErrorsBefore = simulationOutput.errors;
 	simulationOutput.resetLast();
+	if(!emptyScene->checkResults(static_cast<NxSimulationStatus>(0), false))
+		return nxFail("checkResults returned pending for an unrequested status");
 	emptyScene->simulate(-0.125f);
 	printf("simulation negative-dt error=%u code=%u line=%d file=%s message=%s\n",
 		simulationOutput.errors - simulateErrorsBefore,

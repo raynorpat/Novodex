@@ -10355,3 +10355,7 @@ A mutation that skips every body's update produces candidate digest `f2647d06b2b
 ### Active-body integration row `phys_fn_000726`
 
 The registered `NxPhysicsSimulationTests` staged-pair differential reaches `phys_fn_000726` via the public scene `simulate` path. A rebuilt zero-timestep mutant is caught (`stdout_delta=6845`, oracle exit 0, candidate exit 1); the exact source was restored and the clean control returned `stdout_delta=0`, both exits 0, exact stderr. Full run details: [phase7-body-integration-000726.md](phase7-body-integration-000726.md).
+
+### Scene checkResults status-mask row phys_fn_000396 (stdout_delta=3846)
+
+The registered NxPhysicsSimulationTests staged-pair differential now asserts through public NxScene that checkResults(static_cast<NxSimulationStatus>(0), false) returns true. Changing the status-mask early return from true to false is rejected (stdout_delta=3846, oracle exit 0, candidate exit 1); restoring and rebuilding returns the complete target to exact output. See [phase7-checkresults-status-mask-000396.md](phase7-checkresults-status-mask-000396.md).
