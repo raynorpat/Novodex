@@ -1041,27 +1041,10 @@ NxU32 __fastcall NxShapeGetType(const NxCollisionShape* shape, void* edxUnused)
 	return shape->type;
 	}
 
-// phys_fn_002266 at 0x00056650.
-//
-// `mov ecx,[0x10123c04]` loads the SDK singleton and phys_fn_000429 -- the
-// reconstruction's PhysicsSDK::getParameter -- never touches it: 0x0000dc00
-// reads its argument off the stack and indexes a file-scope array. The null
-// guard below therefore changes no state the oracle can be in, because the only
-// thing that fills that array is the SDK constructor, and it writes
-// NX_CONTINUOUS_CD's default of 0.0f -- the same value the array holds
-// statically before any SDK exists.
-//
-// The comparison is `fucompp` against the 0.0f at 0x101041f0 with
-// `test ah,0x44; jp` at 0x00056667, which is MSVC's `==`: a NaN parameter is NOT
-// equal and takes the sweep.
-bool __cdecl NxContinuousCdPair(const NxCollisionShape* moving,
-	const NxCollisionShape* fixed, NxContactSink* sink)
+// phys_fn_002264 (0x00055eb0) performs the enabled continuous-collision sweep.
+static __declspec(noinline) bool __cdecl NxContinuousCdSweep(
+	const NxCollisionShape* moving, const NxCollisionShape* fixed, NxContactSink* sink)
 	{
-	const PhysicsSDK* const sdk = PhysicsSDK::instance;
-	const NxReal continuous = sdk ? sdk->getParameter(NX_CONTINUOUS_CD) : 0.0f;
-	if(continuous == 0.0f)
-		return true;
-
 	// phys_fn_002264 at 0x00055eb0 keeps the moving shape's prior pose in the
 	// sink, expressed relative to the fixed shape. Its two pose pairs are the
 	// shape's previous (+0x3c) and current (+0x0c) transforms. 001653 supplies
@@ -1197,6 +1180,29 @@ bool __cdecl NxContinuousCdPair(const NxCollisionShape* moving,
 	NxEmitContactThiscall(sink, 0, moving->collisionObject, fixed->collisionObject,
 		nxBits(-penetration), &contactPoint, &normal, 0xffff, 0xffff);
 	return true;
+	}
+
+// phys_fn_002266 at 0x00056650.
+//
+// `mov ecx,[0x10123c04]` loads the SDK singleton and phys_fn_000429 -- the
+// reconstruction's PhysicsSDK::getParameter -- never touches it: 0x0000dc00
+// reads its argument off the stack and indexes a file-scope array. The null
+// guard below therefore changes no state the oracle can be in, because the only
+// thing that fills that array is the SDK constructor, and it writes
+// NX_CONTINUOUS_CD's default of 0.0f -- the same value the array holds
+// statically before any SDK exists.
+//
+// The comparison is `fucompp` against the 0.0f at 0x101041f0 with
+// `test ah,0x44; jp` at 0x00056667, which is MSVC's `==`: a NaN parameter is NOT
+// equal and takes the sweep.
+bool __cdecl NxContinuousCdPair(const NxCollisionShape* moving,
+	const NxCollisionShape* fixed, NxContactSink* sink)
+	{
+	const PhysicsSDK* const sdk = PhysicsSDK::instance;
+	const NxReal continuous = sdk ? sdk->getParameter(NX_CONTINUOUS_CD) : 0.0f;
+	if(continuous == 0.0f)
+		return true;
+	return NxContinuousCdSweep(moving, fixed, sink);
 	}
 
 // phys_fn_001933 at 0x0004b860, matrix A slot [SPHERE][SPHERE]. 341 bytes.

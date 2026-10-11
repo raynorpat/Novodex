@@ -41930,13 +41930,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/846",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7088",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "phys_fn_002264 (1,943 bytes) is the enabled NX_CONTINUOUS_CD sweep: it transforms the moving shape's previous/current poses into the fixed shape's frame, computes sweep direction and travel, calls moving slot 7 and fixed slot 5, advances time of impact through phys_fn_000754, and emits a contact. Kept as NxContinuousCdSweep, separate from the 57-byte phys_fn_002266 parameter guard.",
+      "dynamic_proof": "NxPhysicsCcdSimulationTests enabled-CCD staged-pair differential: oracle and candidate both report step 0 x=40e00000/vx=100.000 and step 1 x=be9eb858/vx=0.400; stdout_delta=0, stderr_exact=true. Replacing only NxContinuousCdSweep with return true is detected (oracle exit 0, candidate exit 1, stdout_delta=3). Restored candidate SHA-256 d8dbdb7be37ee904820cc4bcd7d01f61a0bd49822c9285d91488a194e849d6d2; mutant SHA-256 c21116404455736228c975ec8e840d10d5d458f71bec403407f5c06922a7e2ad. Evidence: evidence/phase3-ccd-sweep-002264.md.",
+      "notes": "The enabled path uses a noinline helper so the reconstructed source preserves the oracle's separate 0x55eb0 sweep and 0x56650 guard boundaries. Candidate map places NxContinuousCdSweep at RVA 0x0000ebc0 and NxContinuousCdPair at RVA 0x0000eb70. The owning Phase 3 ledger remains deferred until its later-phase dependencies and discharging gate are complete.",
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": "NxContinuousCdSweep",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxContinuousCdSweep@@YA_NPBUNxCollisionShape@@0PAUNxContactSink@@@Z",
+        "address": "0x1000fbc0",
+        "object": "ContactGeneration.obj"
+      }
     },
     {
       "id": "phys_fn_002265",
@@ -41967,12 +41975,20 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/ContactGeneration.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/847",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7098",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "57-byte parameter guard at phys_fn_002266 reads NX_CONTINUOUS_CD (index 11), returns true at exactly 0.0f, and calls the separately reconstructed sweep otherwise. The fucompp/test-ah sequence treats NaN as unequal and enters the sweep.",
+      "dynamic_proof": "NxPhysicsCollisionTests probes the oracle guard with NX_CONTINUOUS_CD zero and each other parameter independently varied: checks=16000, continuous_cd=00000000, returned_true=8000, sink_untouched=8000, index_probes=58, index_wrong=0. The enabled branch is additionally covered through NxPhysicsCcdSimulationTests and the phys_fn_002264 no-op mutation. See evidence/phase3-ccd-sweep-002264.md.",
+      "notes": "Candidate map places NxContinuousCdPair at RVA 0x0000eb70 in ContactGeneration.obj.",
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": "NxContinuousCdPair",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxContinuousCdPair@@YA_NPBUNxCollisionShape@@0PAUNxContactSink@@@Z",
+        "address": "0x1000fb70",
+        "object": "ContactGeneration.obj"
+      }
     },
     {
       "id": "phys_fn_002267",

@@ -4584,13 +4584,12 @@ $NxRequiredCoverageLines = [ordered] @{
         # differential -- which is why they are driven at their own addresses.
         #
         # `continuous_cd` is that parameter read back out of the oracle's own
-        # array through the oracle's own getParameter. It is the reachability
-        # claim for phys_fn_002264, the 1,943-byte continuous-collision sweep
-        # this program has NOT reconstructed, and pinning it here means the claim
-        # fails if it ever stops holding. `index_probes` sets each of the other
-        # 58 parameters non-zero in turn and checks the guard's answer does not
-        # move, which measures that it reads index 11 instead of restating the
-        # `push 0xb` at 0x00056656.
+        # array through the oracle's own getParameter. The enabled-path sweep is
+        # exercised through NxPhysicsCcdSimulationTests; its row-specific
+        # no-op mutation is recorded in evidence/phase3-ccd-sweep-002264.md.
+        # `index_probes` sets each of the other 58 parameters non-zero in turn
+        # and checks the guard's answer does not move, which measures that it
+        # reads index 11 instead of restating the `push 0xb` at 0x00056656.
         'collision name=shape_owner index=- rva=0x000257a0 owner=phys_fn_001281 checks=8000 oracle=87f31ac4e078fb65',
         'collision coverage name=shape_owner probes=8000 static_first=1980',
         'collision name=ccd_guard index=- rva=0x00056650 owner=phys_fn_002266 checks=16000 oracle=62da6260b65713a5',

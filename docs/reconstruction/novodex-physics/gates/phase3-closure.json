@@ -3539,7 +3539,7 @@
       ],
       "blocked_on_type": "Shape",
       "vtable_slot": 7,
-      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+      "note": "The earlier claim that the sweep could not be driven is superseded by NxPhysicsCcdSimulationTests, which enables NX_CONTINUOUS_CD and exercises the box path; replacing NxContinuousCdSweep with return true is caught (candidate exit 1, stdout_delta=3). See evidence/phase3-ccd-sweep-002264.md. The original historical blockers remain recorded pending review of their transitive proofs: the Phase 7 body-step row phys_fn_000754, the Phase 4 row phys_fn_005191, the shape slot-7 sweep path, previous pose at Shape+0x3c..+0x68, and the contact sink past +0x44. The Phase 3 row stays deferred until its remaining dependencies and a passing discharging phase are recorded."
     },
     {
       "id": "phys_fn_002344",
