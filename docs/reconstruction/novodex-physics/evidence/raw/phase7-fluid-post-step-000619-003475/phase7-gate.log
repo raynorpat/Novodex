@@ -105,8 +105,8 @@ gate=build_configure command="cmake.exe" -S C:\Users\raynorpat\.codex\worktrees\
 -- Looking for pthread_create in pthread - not found
 -- Found Threads: TRUE
 -- Including Win32 support
--- Configuring done (15.2s)
--- Generating done (3.7s)
+-- Configuring done (26.3s)
+-- Generating done (4.6s)
 -- Build files have been written to: C:/Users/raynorpat/.codex/worktrees/nxphysics-recon-resume/Novodex/build
 gate=build_configure exit=0
 configured_generator=Visual Studio 18 2026 configured_platform=Win32
@@ -187,20 +187,6 @@ MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
   NxFoundation.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\Release\NxFoundation.dll
   NxOpcode.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\External\Release\NxOpcode.lib
   NxQhull.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\External\Release\NxQhull.lib
-  Scene.cpp
-  Compiling OPCODE
-  Compiling on Windows...
-  Compiling with VC++...
-C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\NxPhysicsInternalTests.vcxproj]
-  (compiling source file '../Physics/src/Scene.cpp')
-      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
-      see previous definition of 'ARRAYSIZE'
-
-C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\Physics\src\Scene.cpp(778,55): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\NxPhysicsInternalTests.vcxproj]
-      C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\Foundation\include\NxAllocateable.h(32,33):
-      see declaration of 'NxAllocateable::operator new'
-
-     Creating library C:/Users/raynorpat/.codex/worktrees/nxphysics-recon-resume/Novodex/build/Release/NxPhysicsInternalTests.lib and object C:/Users/raynorpat/.codex/worktrees/nxphysics-recon-resume/Novodex/build/Release/NxPhysicsInternalTests.exp
   NxPhysicsInternalTests.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\Release\NxPhysicsInternalTests.exe
 MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
 
@@ -328,14 +314,14 @@ mesh ctor=phys_fn_001379 size=232 digest=422a1f78 sentinel_d0=4 arg_d4=5a5a5a5a 
 basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd
 boxrow slot10=phys_fn_000937 out=3fa00000.c0200000.3f400000.40c38275
 boxray oracle slots4-5=00020850,00020880
-boxraycap case=0 ret=1 rec=00b83b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
-boxraycap case=1 ret=1 rec=00b83b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=0 ret=1 rec=00663b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=1 ret=1 rec=00663b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
 boxraycap case=2 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=3 ret=1 rec=00b83b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=3 ret=1 rec=00663b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
 boxraycap case=4 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=5 ret=1 rec=00b83b78 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
+boxraycap case=5 ret=1 rec=00663b78 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
 boxraycap case=6 ret=0 rec=cdcdcdcd 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd 3f800000 cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=7 ret=1 rec=00b83b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=7 ret=1 rec=00663b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
 boxray contract cases=8 failures=0 mode=oracle-only
 boxray candidate8 mode=provisional
 boxray sweep cases=72 failures=0 mode=provisional
@@ -359,8 +345,8 @@ slot3 order case agree calls=7 seq28>20/38 both
 boxrow2 slot11=phys_fn_000939 out=00000000.00000000.00000000.3fddb3d7 slot13=phys_fn_000927 saved=1 digest=853c971d dims_at_4c=3f800000
 boxrow3 slot8=phys_fn_000941 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000 slot9=phys_fn_000935 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000
 boxrow4 slots14-16=phys_fn_001391 stable=1
+DBG colobj=00663c50 vtbl=10106dc8 slot0=100235d0 rva=000235d0
 boxdtor row=phys_fn_000979 digest=a29800b7
-DBG colobj=00b83c50 vtbl=10106dc8 slot0=100235d0 rva=000235d0
 planesave row=phys_fn_001251 saved=1 digest=7629841d normal_y=3f800000 neg_d=80000000
 sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000
 capsave row=phys_fn_000991 saved=1 digest=bf079f3c rad4c=00000000 hgt50=00000000
@@ -438,6 +424,8 @@ condsetb candidate failures=0 provisional=1
 v6 same=1 big=0
 vec6cmp candidate failures=0 provisional=1
 ctorwrap candidate failures=0 provisional=1
+cw read=0x027f/0x027f
+ix2 r=51
 zerowrap candidate failures=0 provisional=1
 vzwrap candidate failures=0 provisional=1
 wrap240 candidate failures=0 provisional=1
@@ -445,9 +433,7 @@ smallflag candidate failures=0 provisional=1
 smallflag2 candidate failures=0 provisional=1
 repcopy candidate failures=0 provisional=1
 indfield candidate failures=0 provisional=1
-cw read=0x027f/0x027f
 cwread candidate failures=0 provisional=1
-ix2 r=51
 ixsum2 candidate failures=0 provisional=1
 elemcount candidate failures=0 provisional=1
 transpt1403 candidate failures=0 provisional=1
@@ -483,6 +469,9 @@ capmass row=phys_fn_000853 e=4287663e.4287663e.41f56fdb.421d1463 f=41756fdb.4207
 paxis row=phys_fn_000831 s0=41660000 q0=c0ae0000 digest=1d701701
 errstream row=phys_fn_001357 invalid_fires=1 valid_fires=0 digest=c2ab04f6
 grouperr row=phys_fn_001329 invalid_fires=1 d8=00000005 c8=00000020 digest=b6f879ec
+orderprobe slot2 before=00000000
+orderprobe slot2 ok=1 after=005f3170
+orderprobe slot2 restored=00000000
 applydesc row=phys_fn_001347 result=1 digest=11e5e856 flags=1234 group=5 material=5678
 loaderr row=sphere+capsule fires=1/1 rad=bf800000.bf800000 hh=00000000 digest=8f125103
 ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67
@@ -516,7 +505,7 @@ capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.0
 layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1
 layout oracle digest=774d629d
 sceneaux row=phys_fn_000649 arrays=10 oracle_frees=10 candidate_frees=10 mismatches=0
-colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=00b805ec
+colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=006605ec
 owner candidate ok=1 returned=13579bdf
 hull candidate ok=1 face2_offset=0xb8 vertices_offset=0x10
 hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5
@@ -524,7 +513,7 @@ hull sharedhook candidate ok=1 stable=1
 shapebase candidate ok=1 digest=de5f5000 owner_self=1
 shapeleaf candidate ok=1 digest=cb0e48f9
 boxshape candidate ok=1 digest=ac5ed12f sentinel_d0=2
-boxvptr candidate word=00c909d8
+boxvptr candidate word=007709d8
 boxvptr candidate dispatch=unverified
 boxsweep-diff candidate run=48 failures=0 provisional=1
 sphere candidate ok=1 digest=37ea7205 sentinel_d0=1
@@ -629,9 +618,6 @@ mutexlistfree candidate failures=0 provisional=1
 tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509
 newreach candidate failures=0 provisional=1
 bindprobe done
-orderprobe slot2 before=00000000
-orderprobe slot2 ok=1 after=00b13170
-orderprobe slot2 restored=00000000
 orderprobe done
 n3min candidate failures=0 provisional=1
 n3rest candidate failures=0 provisional=1
@@ -33236,7 +33222,7 @@ pass: NxPhysicsObjectLayoutTests reported its recorded oracle-side coverage (1 o
 pass: NxPhysicsObjectLayoutTests reported its recorded oracle-side coverage (1 occurrences): addthunk candidate failures=0 mismatches=0 digest=f9aac08b
 pass: NxPhysicsObjectLayoutTests reported its recorded oracle-side coverage (1 occurrences): shapeleaf candidate ok=1 digest=cb0e48f9
 pass: NxPhysicsObjectLayoutTests reported its recorded oracle-side coverage (1 occurrences): vecloop4165 candidate failures=0 provisional=1
-coverage_assertions_evaluated=1660 floor=1659
-pass: at least the recorded number of coverage assertions ran (1660 of 1659); a target list that has been emptied evaluates none of them
+coverage_assertions_evaluated=1660 floor=1660
+pass: at least the recorded number of coverage assertions ran (1660 of 1660); a target list that has been emptied evaluates none of them
 
 phase_gate=7 status=pass

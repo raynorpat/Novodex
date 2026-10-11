@@ -110,8 +110,8 @@ gate=build_configure command="cmake.exe" -S C:\Users\raynorpat\.codex\worktrees\
 -- Looking for pthread_create in pthread - not found
 -- Found Threads: TRUE
 -- Including Win32 support
--- Configuring done (17.3s)
--- Generating done (3.9s)
+-- Configuring done (18.5s)
+-- Generating done (4.7s)
 -- Build files have been written to: C:/Users/raynorpat/.codex/worktrees/nxphysics-recon-resume/Novodex/build
 gate=build_configure exit=0
 configured_generator=Visual Studio 18 2026 configured_platform=Win32
@@ -323,14 +323,14 @@ mesh ctor=phys_fn_001379 size=232 digest=422a1f78 sentinel_d0=4 arg_d4=5a5a5a5a 
 basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd
 boxrow slot10=phys_fn_000937 out=3fa00000.c0200000.3f400000.40c38275
 boxray oracle slots4-5=00020850,00020880
-boxraycap case=0 ret=1 rec=000c3b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
-boxraycap case=1 ret=1 rec=000c3b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=0 ret=1 rec=00663b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=1 ret=1 rec=00663b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
 boxraycap case=2 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=3 ret=1 rec=000c3b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=3 ret=1 rec=00663b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
 boxraycap case=4 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=5 ret=1 rec=000c3b78 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
+boxraycap case=5 ret=1 rec=00663b78 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
 boxraycap case=6 ret=0 rec=cdcdcdcd 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd 3f800000 cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=7 ret=1 rec=000c3b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=7 ret=1 rec=00663b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
 boxray contract cases=8 failures=0 mode=oracle-only
 boxray candidate8 mode=provisional
 boxray sweep cases=72 failures=0 mode=provisional
@@ -340,7 +340,6 @@ rendercap candidate mask=0 agree n20=0 n38=0
 rendercap contract mask=1 n20=3 n38=0 payloads=match
 rendercap candidate mask=1 agree n20=3 n38=0
 rendercap contract mask=2 n20=0 n38=3 payloads=match
-DBG colobj=000c3c50 vtbl=10106dc8 slot0=100235d0 rva=000235d0
 rendercap candidate mask=2 agree n20=0 n38=3
 rendercap contract mask=3 n20=3 n38=3 payloads=match
 rendercap candidate mask=3 agree n20=3 n38=3
@@ -357,6 +356,7 @@ boxrow3 slot8=phys_fn_000941 minmax=bf800000.bf800000.bf800000.3f800000.3f800000
 boxrow4 slots14-16=phys_fn_001391 stable=1
 boxdtor row=phys_fn_000979 digest=a29800b7
 planesave row=phys_fn_001251 saved=1 digest=7629841d normal_y=3f800000 neg_d=80000000
+DBG colobj=00663c50 vtbl=10106dc8 slot0=100235d0 rva=000235d0
 sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000
 capsave row=phys_fn_000991 saved=1 digest=bf079f3c rad4c=00000000 hgt50=00000000
 meshword row=phys_fn_001381 mark_hit=1
@@ -431,6 +431,8 @@ biginit candidate failures=0 provisional=1
 smallclean candidate failures=0 provisional=1
 condsetb candidate failures=0 provisional=1
 v6 same=1 big=0
+cw read=0x027f/0x027f
+ix2 r=51
 vec6cmp candidate failures=0 provisional=1
 ctorwrap candidate failures=0 provisional=1
 zerowrap candidate failures=0 provisional=1
@@ -440,9 +442,7 @@ smallflag candidate failures=0 provisional=1
 smallflag2 candidate failures=0 provisional=1
 repcopy candidate failures=0 provisional=1
 indfield candidate failures=0 provisional=1
-cw read=0x027f/0x027f
 cwread candidate failures=0 provisional=1
-ix2 r=51
 ixsum2 candidate failures=0 provisional=1
 elemcount candidate failures=0 provisional=1
 transpt1403 candidate failures=0 provisional=1
@@ -496,6 +496,9 @@ actorsm6 row=oracle digest=6f47ea3d
 actorsm7 row=oracle digest=0b4b17e4
 miscsm row=oracle digest=9460eb64
 miscsm2 row=oracle digest=c4bc7155
+orderprobe slot2 before=00000000
+orderprobe slot2 ok=1 after=005f3170
+orderprobe slot2 restored=00000000
 slate11 row=oracle digest=7a409e75
 mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019
 material row=template flags=00000000 digest=527814f5
@@ -511,7 +514,7 @@ capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.0
 layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1
 layout oracle digest=774d629d
 sceneaux row=phys_fn_000649 arrays=10 oracle_frees=10 candidate_frees=10 mismatches=0
-colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=000c05ec
+colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=006605ec
 owner candidate ok=1 returned=13579bdf
 hull candidate ok=1 face2_offset=0xb8 vertices_offset=0x10
 hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5
@@ -519,7 +522,7 @@ hull sharedhook candidate ok=1 stable=1
 shapebase candidate ok=1 digest=de5f5000 owner_self=1
 shapeleaf candidate ok=1 digest=cb0e48f9
 boxshape candidate ok=1 digest=ac5ed12f sentinel_d0=2
-boxvptr candidate word=001d09d8
+boxvptr candidate word=007709d8
 boxvptr candidate dispatch=unverified
 boxsweep-diff candidate run=48 failures=0 provisional=1
 sphere candidate ok=1 digest=37ea7205 sentinel_d0=1
@@ -624,9 +627,6 @@ mutexlistfree candidate failures=0 provisional=1
 tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509
 newreach candidate failures=0 provisional=1
 bindprobe done
-orderprobe slot2 before=00000000
-orderprobe slot2 ok=1 after=00053170
-orderprobe slot2 restored=00000000
 orderprobe done
 n3min candidate failures=0 provisional=1
 n3rest candidate failures=0 provisional=1
@@ -22478,7 +22478,7 @@ pass: NxPhysicsShapeVtableTests reported its recorded oracle-side coverage (1 oc
 pass: NxPhysicsShapeVtableTests reported its recorded oracle-side coverage (1 occurrences): shape vtable boxsweep inputs=84 digest=46df40a9
 pass: NxPhysicsShapeVtableTests reported its recorded oracle-side coverage (1 occurrences): shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0
 pass: NxPhysicsShapeVtableTests reported its recorded oracle-side coverage (1 occurrences): box hull oracle_digest=e0477220 cases=324 failures=0
-coverage_assertions_evaluated=2633 floor=2631
-pass: at least the recorded number of coverage assertions ran (2633 of 2631); a target list that has been emptied evaluates none of them
+coverage_assertions_evaluated=2633 floor=2633
+pass: at least the recorded number of coverage assertions ran (2633 of 2633); a target list that has been emptied evaluates none of them
 
 phase_gate=5 status=pass
