@@ -87,6 +87,8 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsFluidEmitterAbiTests' = @(
+        'fluid collision bucket-prefix records=4 oracle_total=9 candidate_total=9 prefixes=1 return=1 stack=1/1 mismatches=0'
+        'fluid collision bucket-prefix empty total=0 return=1 preserved=1 stack=1/1 mismatches=0'
         'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'
@@ -5810,7 +5812,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2638  # includes the nonempty per-fluid emitter substep differential
+    '5' = 2640  # includes the bucket-prefix leaf and nonempty per-fluid substep differentials
                # plus bodyless and live-body fluid-emitter repulsion differentials
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
@@ -5857,7 +5859,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1665  # includes the nonempty per-fluid emitter substep differential
+	'7' = 1667  # includes the bucket-prefix leaf and nonempty per-fluid substep differentials
 			   # plus bodyless and live-body fluid-emitter repulsion differentials
                # plus current scene/emitter assertions
                # plus retained contact, trigger, and active-root buffer teardown

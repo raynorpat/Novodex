@@ -22,8 +22,8 @@
   "counts": {
     "differential_falsified": 75,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 23,
-    "deferred_not_reconstructed_in_phase": 200,
+    "oracle_differential_falsified": 24,
+    "deferred_not_reconstructed_in_phase": 199,
     "deferred_reconstructed_not_falsified": 262
   },
   "closed": [
@@ -1064,6 +1064,17 @@
         "detected": "mismatches=72"
       },
       "note": "Two-fluid per-fluid differential includes null optional-mesh coverage; see evidence/phase7-fluid-post-step-000619-003475.md."
+    },
+    {
+      "id": "phys_fn_003514",
+      "rva": "0x000864e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Changed nxFluidCollisionBucketPrefix to add one to each row contribution, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. For four rows the oracle total was 9 while the mutant total was 13 and all nontrivial prefixes diverged; the probe reported mismatches=1. Restoring the accumulator returned the direct differential to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct prefix accumulator differential, including an empty range; see evidence/phase7-fluid-collision-bucket-prefix-003514.md."
     }
   ],
   "deferred": [
@@ -2693,14 +2704,6 @@
       "id": "phys_fn_003511",
       "rva": "0x00086400",
       "size": 181,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003514",
-      "rva": "0x000864e0",
-      "size": 61,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []

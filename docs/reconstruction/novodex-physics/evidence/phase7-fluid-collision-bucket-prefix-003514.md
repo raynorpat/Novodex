@@ -1,0 +1,11 @@
+# Fluid collision bucket-prefix accumulator — `phys_fn_003514`
+
+`phys_fn_003514` at RVA `0x864e0` is a 61-byte cdecl leaf used by the static-collision builder `phys_fn_003505`. IDA shows a descriptor pointer in the first argument, its row count at descriptor `+8`, a total-output pointer in the second argument, and 12-byte records. For each row, the function stores the current total at record `+4`, adds the row count at `+8`, and returns the descriptor row count. It resets the output total to zero before traversing, including for an empty range.
+
+`Physics/src/FluidCollision.cpp` implements this contract as `nxFluidCollisionBucketPrefix`. `NxPhysicsFluidEmitterAbiTests` calls the pinned oracle at RVA `0x864e0` and resolves the candidate function from the current DLL map. Four records with counts `3, 0, 2, 4` produce prefixes `0, 3, 3, 5`, total `9`, return `4`, and balanced stacks on both sides. The empty-range case resets the total while preserving the record bytes and returns zero.
+
+The mutation test adds one to each row contribution. The oracle total remains `9`, the candidate total becomes `13`, the prefixes diverge, and the harness reports `mismatches=1`. Restoring the source returns both cases to zero mismatches. Raw mutant and restored build/probe transcripts are in [mutant.log](raw/phase7-fluid-collision-bucket-prefix-003514/mutant.log) and [restored.log](raw/phase7-fluid-collision-bucket-prefix-003514/restored.log).
+
+Fresh Phase 5 and Phase 7 gates pass at 2,640/2,640 and 1,667/1,667 coverage assertions, respectively. The gate runs validate inventory and immutable public headers as well. Raw gate transcripts are [phase5-gate.log](raw/phase7-fluid-collision-bucket-prefix-003514/phase5-gate.log) and [phase7-gate.log](raw/phase7-fluid-collision-bucket-prefix-003514/phase7-gate.log). The rebuilt candidate DLL SHA-256 is `a794af9c11567222f7baf9a1a544463990eb481cc092273eeca1294183437e0c`; the pinned oracle remains `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
+
+The row is closed by this direct differential. It supplies a proven leaf dependency toward the dirty-collision builder, but does not close `phys_fn_003505` or `phys_fn_003630`; replacement and destruction behavior on the dirty manager path remain unimplemented.

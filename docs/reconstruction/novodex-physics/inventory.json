@@ -65692,13 +65692,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1311",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12375",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA listing confirms cdecl; descriptor pointer at +0, row count at +8, 12-byte rows with output prefix at +4 and count at +8. The row resets total to zero, stores the exclusive prefix before adding each row count, and returns the descriptor row count.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x864e0 and map-resolved candidate nxFluidCollisionBucketPrefix. Four rows with counts 3,0,2,4 produce prefixes 0,3,3,5, total 9, return 4, and balanced stacks; a zero-row descriptor resets total and preserves row storage. Adding one to each contribution is rejected (candidate total 13, prefixes mismatch, mismatches=1); restored control is exact.",
+      "notes": "This leaf is implemented and gated; the larger static-collision builder phys_fn_003505 remains open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionBucketPrefix"
     },
     {
       "id": "phys_fn_003515",

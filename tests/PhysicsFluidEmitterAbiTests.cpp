@@ -798,6 +798,91 @@ static bool nxCandidateAddressBelongsToModule(HMODULE module, const void* addres
 	const size_t value = reinterpret_cast<size_t>(address);
 	return value >= base && value < base + nt->OptionalHeader.SizeOfImage;
 	}
+
+struct NxFluidCollisionBucketRecord
+	{
+	unsigned kind;
+	unsigned prefix;
+	unsigned count;
+	};
+
+struct NxFluidCollisionBucketDescriptor
+	{
+	NxFluidCollisionBucketRecord* records;
+	unsigned unknown04;
+	unsigned count;
+	};
+
+static unsigned nxRunFluidCollisionBucketPrefixDifferential(void* oracleAddress,
+	void* candidateAddress)
+	{
+	if(!oracleAddress || !candidateAddress)
+		return 1;
+	static_assert(sizeof(NxFluidCollisionBucketRecord) == 12,
+		"phys_fn_003514 advances collision records by twelve bytes");
+	static_assert(sizeof(NxFluidCollisionBucketDescriptor) == 12,
+		"phys_fn_003514 reads its record count at descriptor +8");
+	typedef unsigned (__cdecl* BucketPrefix)(NxFluidCollisionBucketDescriptor*, unsigned*);
+	BucketPrefix oracle = reinterpret_cast<BucketPrefix>(oracleAddress);
+	BucketPrefix candidate = reinterpret_cast<BucketPrefix>(candidateAddress);
+	NxFluidCollisionBucketRecord oracleRecords[4] = {
+		{ 0x10, 0xcccccccc, 3 }, { 0x20, 0xcccccccc, 0 },
+		{ 0x30, 0xcccccccc, 2 }, { 0x40, 0xcccccccc, 4 } };
+	NxFluidCollisionBucketRecord candidateRecords[4];
+	memcpy(candidateRecords, oracleRecords, sizeof(oracleRecords));
+	NxFluidCollisionBucketDescriptor oracleDescriptor = { oracleRecords, 0xa5a5a5a5, 4 };
+	NxFluidCollisionBucketDescriptor candidateDescriptor = { candidateRecords, 0xa5a5a5a5, 4 };
+	unsigned oracleTotal = 0xdddddddd, candidateTotal = 0xdddddddd;
+	unsigned oracleBefore = 0, oracleAfter = 0, candidateBefore = 0, candidateAfter = 0;
+	__asm mov oracleBefore, esp
+	const unsigned oracleReturn = oracle(&oracleDescriptor, &oracleTotal);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	const unsigned candidateReturn = candidate(&candidateDescriptor, &candidateTotal);
+	__asm mov candidateAfter, esp
+	static const unsigned expectedPrefixes[4] = { 0, 3, 3, 5 };
+	bool prefixesMatch = true;
+	for(unsigned i = 0; i != 4; ++i)
+		prefixesMatch = prefixesMatch && oracleRecords[i].prefix == expectedPrefixes[i]
+			&& candidateRecords[i].prefix == expectedPrefixes[i]
+			&& oracleRecords[i].kind == candidateRecords[i].kind
+			&& oracleRecords[i].count == candidateRecords[i].count;
+	const unsigned oracleNonemptyTotal = oracleTotal;
+	const unsigned candidateNonemptyTotal = candidateTotal;
+	const bool nonemptyMatches = prefixesMatch && oracleReturn == 4 && candidateReturn == 4
+		&& oracleTotal == 9 && candidateTotal == 9
+		&& oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+
+	NxFluidCollisionBucketRecord emptyOracleRecord = { 0x50, 0x12345678, 7 };
+	NxFluidCollisionBucketRecord emptyCandidateRecord = emptyOracleRecord;
+	NxFluidCollisionBucketDescriptor emptyOracle = { &emptyOracleRecord, 0x87654321, 0 };
+	NxFluidCollisionBucketDescriptor emptyCandidate = { &emptyCandidateRecord, 0x87654321, 0 };
+	oracleTotal = candidateTotal = 0xdddddddd;
+	__asm mov oracleBefore, esp
+	const unsigned emptyOracleReturn = oracle(&emptyOracle, &oracleTotal);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	const unsigned emptyCandidateReturn = candidate(&emptyCandidate, &candidateTotal);
+	__asm mov candidateAfter, esp
+	const bool emptyMatches = emptyOracleReturn == 0 && emptyCandidateReturn == 0
+		&& oracleTotal == 0 && candidateTotal == 0
+		&& memcmp(&emptyOracleRecord, &emptyCandidateRecord, sizeof(emptyOracleRecord)) == 0
+		&& emptyOracleRecord.prefix == 0x12345678
+		&& oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+	const unsigned mismatches = !nonemptyMatches + !emptyMatches;
+	printf("fluid collision bucket-prefix records=4 oracle_total=%u candidate_total=%u "
+		"prefixes=%u return=%u stack=%u/%u mismatches=%u\n",
+		oracleNonemptyTotal, candidateNonemptyTotal, prefixesMatch,
+		oracleReturn == candidateReturn, oracleBefore == oracleAfter,
+		candidateBefore == candidateAfter, nonemptyMatches ? 0u : 1u);
+	printf("fluid collision bucket-prefix empty total=%u return=%u preserved=%u "
+		"stack=%u/%u mismatches=%u\n", candidateTotal,
+		emptyOracleReturn == emptyCandidateReturn,
+		memcmp(&emptyOracleRecord, &emptyCandidateRecord, sizeof(emptyOracleRecord)) == 0,
+		oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+		emptyMatches ? 0u : 1u);
+	return mismatches;
+	}
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta;
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta = 0xffffffffu;
 extern "C" volatile unsigned nxFluidEmitterRawStackBefore;
@@ -1075,6 +1160,13 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll setFlag row could not be resolved from its map\n");
 		return 1;
 		}
+	void* candidateBucketPrefixAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionBucketPrefix", &candidateBucketPrefixAddress))
+		++gFailures;
+	else
+		gFailures += nxRunFluidCollisionBucketPrefixDifferential(
+			image + 0x864e0, candidateBucketPrefixAddress);
 	void* candidateNotifyActorReleasedAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxNpFluidManagerNotifyReleasedActor", &candidateNotifyActorReleasedAddress))
