@@ -63979,13 +63979,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1267",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12219",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle phys_fn_003419 at RVA 0x84a50 and the map-resolved candidate nxNpFluidEmitterGenerateSurfaceMesh. The live mesh case compares the extension callback tuple (context, fluid handle, mesh handle, vertex-count/3), callback count, return value, and x86 stack balance. A vertex-count/6 mutant is rejected (args=0, return=0, mismatches=1); restored control matches exactly. The empty-mesh branch emits no callback; its oracle EAX is unspecified and is not claimed. See evidence/phase7-fluid-surface-mesh-003419.md.",
+      "notes": "Dispatches the optional implicit-fluid mesh to FluidModel.DLL ImplicitFluidMeshRun; empty-mesh EAX is unspecified by the caller and remains outside the return-value contract."
     },
     {
       "id": "phys_fn_003420",

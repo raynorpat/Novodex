@@ -97,12 +97,28 @@ extern "C" int __cdecl nxOracleEmitterSetBodyAngularVelocity(unsigned a0, unsign
 	unsigned a2, const float* velocity)
 	{ return nxRecordOracleFluidEmitterBodyVector(1024, a0, a1, a2, velocity); }
 
+extern "C" int __cdecl nxOracleImplicitFluidMeshRun(unsigned a0, unsigned a1,
+	unsigned a2, unsigned a3)
+	{
+	if(gOracleFlagCallbackCount < sizeof(gOracleFlagCallbacks) / sizeof(gOracleFlagCallbacks[0]))
+		{
+		NxFluidEmitterFlagCallbackRecord& record = gOracleFlagCallbacks[gOracleFlagCallbackCount++];
+		memset(&record, 0, sizeof(record));
+		record.kind = 2048;
+		record.argument0 = a0;
+		record.argument1 = a1;
+		record.argument2 = a2;
+		record.enabled = a3;
+		}
+	return static_cast<int>(2048u ^ a0 ^ a1 ^ a2 ^ a3);
+	}
+
 static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldValues,
 	DWORD* oldProtection)
 	{
 	static const unsigned slotRvas[] = {
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
-		0x1263f0, 0x12664c, 0x1263e8 };
+		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8 };
 	static void* const replacements[] = {
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterSetAddBodyVelocityFlag),
@@ -113,12 +129,13 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyPosition),
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyLinearVelocity),
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyAngularVelocity),
+		reinterpret_cast<void*>(&nxOracleImplicitFluidMeshRun),
 		};
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 9; ++i)
+	for(unsigned i = 0; i < 10; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -132,12 +149,12 @@ static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldV
 	{
 	static const unsigned slotRvas[] = {
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
-		0x1263f0, 0x12664c, 0x1263e8 };
+		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8 };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 9; ++i)
+	for(unsigned i = 0; i < 10; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -517,6 +534,13 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter body-state update row could not be resolved from its map\n");
 		++gFailures;
 		}
+	void* candidateGenerateSurfaceMeshAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterGenerateSurfaceMesh", &candidateGenerateSurfaceMeshAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid surface-mesh dispatch row could not be resolved from its map\n");
+		++gFailures;
+		}
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
 	void* candidateCtorAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
@@ -746,7 +770,7 @@ int wmain(int argc, wchar_t** argv)
 	ResetCallbacksFn resetCallbacks = reinterpret_cast<ResetCallbacksFn>(resetFluidCallbacks);
 	CallbackCountFn callbackCount = reinterpret_cast<CallbackCountFn>(getFluidCallbackCount);
 	GetCallbackRecordFn getCallbackRecord = reinterpret_cast<GetCallbackRecordFn>(getFluidCallbackRecord);
-	void* oldCallbackValues[9] = {};
+	void* oldCallbackValues[10] = {};
 	DWORD callbackPageProtection = 0;
 	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues, &callbackPageProtection))
 		{
@@ -1359,6 +1383,114 @@ int wmain(int argc, wchar_t** argv)
 		printf("fluid emitter body-state update cases=2 oracle_callbacks=%u "
 			"candidate_callbacks=%u mismatches=%u\n", totalOracleCallbacks,
 			totalCandidateCallbacks, bodyStateMismatches);
+		}
+
+	// phys_fn_003419 dispatches one implicit surface-mesh run using the mesh
+	// record's fluid context, fluid handle, mesh handle, and triangle count.
+		{
+		typedef int (__thiscall *OracleGenerateSurfaceMesh)(void*);
+		typedef int (__cdecl *CandidateGenerateSurfaceMesh)(void*);
+		OracleGenerateSurfaceMesh oracleGenerateSurfaceMesh =
+			reinterpret_cast<OracleGenerateSurfaceMesh>(image + 0x84a50);
+		CandidateGenerateSurfaceMesh candidateGenerateSurfaceMesh =
+			reinterpret_cast<CandidateGenerateSurfaceMesh>(candidateGenerateSurfaceMeshAddress);
+		unsigned char oracleEmitter[0x28], candidateEmitter[0x28];
+		unsigned char oracleMesh[0x2c], candidateMesh[0x2c];
+		unsigned char oracleFluid[0x84], candidateFluid[0x84];
+		unsigned char oracleBackend[0x34], candidateBackend[0x34];
+		memset(oracleEmitter, 0, sizeof(oracleEmitter));
+		memset(candidateEmitter, 0, sizeof(candidateEmitter));
+		memset(oracleMesh, 0, sizeof(oracleMesh));
+		memset(candidateMesh, 0, sizeof(candidateMesh));
+		memset(oracleFluid, 0, sizeof(oracleFluid));
+		memset(candidateFluid, 0, sizeof(candidateFluid));
+		memset(oracleBackend, 0, sizeof(oracleBackend));
+		memset(candidateBackend, 0, sizeof(candidateBackend));
+		*reinterpret_cast<void**>(oracleEmitter + 0x24) = oracleMesh;
+		*reinterpret_cast<void**>(candidateEmitter + 0x24) = candidateMesh;
+		*reinterpret_cast<void**>(oracleMesh + 4) = oracleFluid;
+		*reinterpret_cast<void**>(candidateMesh + 4) = candidateFluid;
+		*reinterpret_cast<unsigned*>(oracleMesh + 0x18) = 0x44556677u;
+		*reinterpret_cast<unsigned*>(candidateMesh + 0x18) = 0x44556677u;
+		*reinterpret_cast<unsigned*>(oracleMesh + 0x28) = 21;
+		*reinterpret_cast<unsigned*>(candidateMesh + 0x28) = 21;
+		*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+		*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+		*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x12345678u;
+		*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x12345678u;
+		*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0x87654321u;
+		*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0x87654321u;
+		gOracleFlagCallbackCount = 0;
+		resetCallbacks();
+		unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+		unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+		__asm mov oracleEspBefore, esp
+		const int oracleResult = oracleGenerateSurfaceMesh(oracleEmitter);
+		__asm mov oracleEspAfter, esp
+		const unsigned oracleCount = gOracleFlagCallbackCount;
+		NxFluidEmitterFlagCallbackRecord oracleRecord = {};
+		if(oracleCount == 1)
+			oracleRecord = gOracleFlagCallbacks[0];
+		int candidateResult = 0;
+		if(candidateGenerateSurfaceMesh)
+			{
+			__asm mov candidateEspBefore, esp
+			candidateResult = candidateGenerateSurfaceMesh(candidateEmitter);
+			__asm mov candidateEspAfter, esp
+			}
+		else
+			candidateEspBefore = candidateEspAfter = 1;
+		NxFluidEmitterFlagCallbackRecord candidateRecord = {};
+		const unsigned candidateCount = callbackCount();
+		const bool gotCandidateRecord = candidateCount == 1
+			&& getCallbackRecord(0, &candidateRecord) != 0;
+		const unsigned expectedArguments[4] = {
+			0x87654321u, 0x12345678u, 0x44556677u, 7u };
+		const bool oracleArgumentsMatch = oracleCount == 1
+			&& oracleRecord.kind == 2048
+			&& oracleRecord.argument0 == expectedArguments[0]
+			&& oracleRecord.argument1 == expectedArguments[1]
+			&& oracleRecord.argument2 == expectedArguments[2]
+			&& oracleRecord.enabled == expectedArguments[3];
+		const bool candidateArgumentsMatch = gotCandidateRecord
+			&& candidateRecord.kind == oracleRecord.kind
+			&& candidateRecord.argument0 == oracleRecord.argument0
+			&& candidateRecord.argument1 == oracleRecord.argument1
+			&& candidateRecord.argument2 == oracleRecord.argument2
+			&& candidateRecord.enabled == oracleRecord.enabled;
+		const unsigned meshMismatches = !oracleArgumentsMatch || !candidateArgumentsMatch
+			|| oracleResult != candidateResult || oracleEspBefore != oracleEspAfter
+			|| candidateEspBefore != candidateEspAfter;
+		gFailures += meshMismatches;
+		printf("fluid surface-mesh dispatch cases=1 oracle_callbacks=%u "
+			"candidate_callbacks=%u args=%u return=%u stack=%u/%u mismatches=%u\n",
+			oracleCount, candidateCount, oracleArgumentsMatch && candidateArgumentsMatch,
+			oracleResult == candidateResult, oracleEspBefore == oracleEspAfter,
+			candidateEspBefore == candidateEspAfter, meshMismatches);
+		*reinterpret_cast<void**>(oracleEmitter + 0x24) = 0;
+		*reinterpret_cast<void**>(candidateEmitter + 0x24) = 0;
+		gOracleFlagCallbackCount = 0;
+		resetCallbacks();
+		__asm mov oracleEspBefore, esp
+		oracleGenerateSurfaceMesh(oracleEmitter);
+		__asm mov oracleEspAfter, esp
+		if(candidateGenerateSurfaceMesh)
+			{
+			__asm mov candidateEspBefore, esp
+			candidateGenerateSurfaceMesh(candidateEmitter);
+			__asm mov candidateEspAfter, esp
+			}
+		else
+			candidateEspBefore = candidateEspAfter = 1;
+		const unsigned emptyMeshMismatches = gOracleFlagCallbackCount != 0
+			|| callbackCount() != 0 || oracleEspBefore != oracleEspAfter
+			|| candidateEspBefore != candidateEspAfter;
+		gFailures += emptyMeshMismatches;
+		printf("fluid surface-mesh empty cases=1 oracle_callbacks=%u "
+			"candidate_callbacks=%u stack=%u/%u mismatches=%u\n",
+			gOracleFlagCallbackCount, callbackCount(),
+			oracleEspBefore == oracleEspAfter,
+			candidateEspBefore == candidateEspAfter, emptyMeshMismatches);
 		}
 
 	nxUnbindOracleEmitterFlagCallbacks(image, oldCallbackValues, callbackPageProtection);
