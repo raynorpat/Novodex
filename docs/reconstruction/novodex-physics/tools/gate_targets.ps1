@@ -100,6 +100,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter body-state update cases=2 oracle_callbacks=5 candidate_callbacks=5 mismatches=0'
 		'fluid surface-mesh dispatch cases=1 oracle_callbacks=1 candidate_callbacks=1 args=1 return=1 stack=1/1 mismatches=0'
 		'fluid surface-mesh empty cases=1 oracle_callbacks=0 candidate_callbacks=0 stack=1/1 mismatches=0'
+		'fluid manager surface-mesh traversal fluids=2 oracle_callbacks=2 candidate_callbacks=2 mismatches=0'
 		'implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0'
 		'implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0'
         'fluid emitter aggregate cases=6 mismatches=0'
@@ -5847,7 +5848,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1658  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
+	'7' = 1659  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
                # plus current scene/emitter assertions
                # plus retained contact, trigger, and active-root buffer teardown
                # plus recycled shape, actor, and body ID buffer teardown

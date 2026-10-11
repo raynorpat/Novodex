@@ -896,6 +896,14 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid surface-mesh dispatch row could not be resolved from its map\n");
 		++gFailures;
 		}
+	void* candidateFluidManagerGenerateSurfaceMeshesAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"?nxFluidManagerGenerateSurfaceMeshesDisabled@@YAXPAX@Z",
+		&candidateFluidManagerGenerateSurfaceMeshesAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll FluidManager surface-mesh traversal row could not be resolved from its map\n");
+		++gFailures;
+		}
 	void* candidateSetMeshDataAddress = 0;
 	static const char candidateSetMeshDataName[] =
 		"?setMeshData@NpImplicitMeshDataRecord@@QAEHAAVNxMeshData@@@Z";
@@ -1872,6 +1880,82 @@ int wmain(int argc, wchar_t** argv)
 			gOracleFlagCallbackCount, callbackCount(),
 			oracleEspBefore == oracleEspAfter,
 			candidateEspBefore == candidateEspAfter, emptyMeshMismatches);
+		}
+
+	// phys_fn_003632 and continuation 003634 walk every manager fluid and
+	// dispatch its implicit surface-mesh update. A populated manager plus the
+	// callback fixture makes that loop observable despite the absent engine
+	// FluidModel module.
+	{
+		typedef void (__thiscall *OracleGenerateFluidMeshes)(void*);
+		typedef void (__cdecl *CandidateGenerateFluidMeshes)(void*);
+		OracleGenerateFluidMeshes oracleGenerateFluidMeshes =
+			reinterpret_cast<OracleGenerateFluidMeshes>(image + 0x89c80);
+		CandidateGenerateFluidMeshes candidateGenerateFluidMeshes =
+			reinterpret_cast<CandidateGenerateFluidMeshes>(
+				candidateFluidManagerGenerateSurfaceMeshesAddress);
+		unsigned char oracleManager[0x34] = {};
+		unsigned char candidateManager[0x34] = {};
+		unsigned oracleFluids[2], candidateFluids[2];
+		unsigned char oracleFluidInternals[2][0x28] = {};
+		unsigned char candidateFluidInternals[2][0x28] = {};
+		unsigned char oracleMeshes[2][0x2c] = {};
+		unsigned char candidateMeshes[2][0x2c] = {};
+		unsigned char oracleCallbackFluids[2][0x84] = {};
+		unsigned char candidateCallbackFluids[2][0x84] = {};
+		unsigned char oracleBackends[2][0x34] = {};
+		unsigned char candidateBackends[2][0x34] = {};
+		for(unsigned i = 0; i != 2; ++i)
+			{
+			oracleFluids[i] = reinterpret_cast<unsigned>(oracleFluidInternals[i]);
+			candidateFluids[i] = reinterpret_cast<unsigned>(candidateFluidInternals[i]);
+			*reinterpret_cast<void**>(oracleFluidInternals[i] + 0x24) = oracleMeshes[i];
+			*reinterpret_cast<void**>(candidateFluidInternals[i] + 0x24) = candidateMeshes[i];
+			*reinterpret_cast<void**>(oracleMeshes[i] + 4) = oracleCallbackFluids[i];
+			*reinterpret_cast<void**>(candidateMeshes[i] + 4) = candidateCallbackFluids[i];
+			*reinterpret_cast<unsigned*>(oracleMeshes[i] + 0x18) = 0x44556670u + i;
+			*reinterpret_cast<unsigned*>(candidateMeshes[i] + 0x18) = 0x44556670u + i;
+			*reinterpret_cast<unsigned*>(oracleMeshes[i] + 0x28) = 21;
+			*reinterpret_cast<unsigned*>(candidateMeshes[i] + 0x28) = 21;
+			*reinterpret_cast<void**>(oracleCallbackFluids[i] + 0x7c) = oracleBackends[i];
+			*reinterpret_cast<void**>(candidateCallbackFluids[i] + 0x7c) = candidateBackends[i];
+			*reinterpret_cast<unsigned*>(oracleCallbackFluids[i] + 0x80) = 0x12345670u + i;
+			*reinterpret_cast<unsigned*>(candidateCallbackFluids[i] + 0x80) = 0x12345670u + i;
+			*reinterpret_cast<unsigned*>(oracleBackends[i] + 0x30) = 0x87654320u + i;
+			*reinterpret_cast<unsigned*>(candidateBackends[i] + 0x30) = 0x87654320u + i;
+			}
+		*reinterpret_cast<unsigned*>(oracleManager + 4) = reinterpret_cast<unsigned>(oracleFluids);
+		*reinterpret_cast<unsigned*>(oracleManager + 8) = reinterpret_cast<unsigned>(oracleFluids + 2);
+		*reinterpret_cast<unsigned*>(candidateManager + 4) = reinterpret_cast<unsigned>(candidateFluids);
+		*reinterpret_cast<unsigned*>(candidateManager + 8) = reinterpret_cast<unsigned>(candidateFluids + 2);
+		oracleManager[0x2b] = candidateManager[0x2b] = 1;
+		gOracleFlagCallbackCount = 0;
+		resetCallbacks();
+		oracleGenerateFluidMeshes(&oracleManager);
+		const unsigned oracleCallbacks = gOracleFlagCallbackCount;
+		NxFluidEmitterFlagCallbackRecord oracleRecords[2] = {};
+		for(unsigned i = 0; i < oracleCallbacks && i < 2; ++i)
+			oracleRecords[i] = gOracleFlagCallbacks[i];
+		if(candidateGenerateFluidMeshes)
+			candidateGenerateFluidMeshes(&candidateManager);
+		const unsigned candidateCallbacks = callbackCount();
+		unsigned callbackMismatches = oracleCallbacks != 2 || candidateCallbacks != 2;
+		for(unsigned i = 0; i < 2; ++i)
+			{
+			NxFluidEmitterFlagCallbackRecord candidateRecord = {};
+			if(i >= oracleCallbacks || !getCallbackRecord(i, &candidateRecord))
+				{ ++callbackMismatches; continue; }
+			const NxFluidEmitterFlagCallbackRecord& oracleRecord = oracleRecords[i];
+			if(oracleRecord.kind != 2048 || candidateRecord.kind != oracleRecord.kind
+				|| candidateRecord.argument0 != oracleRecord.argument0
+				|| candidateRecord.argument1 != oracleRecord.argument1
+				|| candidateRecord.argument2 != oracleRecord.argument2
+				|| candidateRecord.enabled != oracleRecord.enabled)
+				++callbackMismatches;
+			}
+		gFailures += callbackMismatches;
+		printf("fluid manager surface-mesh traversal fluids=2 oracle_callbacks=%u candidate_callbacks=%u mismatches=%u\n",
+			oracleCallbacks, candidateCallbacks, callbackMismatches);
 		}
 
 	{
