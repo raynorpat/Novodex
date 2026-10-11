@@ -6,6 +6,96 @@
 |
 \*----------------------------------------------------------------------------*/
 
+#include "NxSdkAllocator.h"
+#include <string.h>
+
+struct NxFluidCollisionBucket
+	{
+	int cellCount;
+	unsigned firstCell;
+	unsigned opaque;
+	};
+
+struct NxFluidCollisionCell
+	{
+	unsigned words[4];
+	};
+
+struct NxFluidCollisionCopyDescriptor
+	{
+	NxFluidCollisionBucket* buckets;
+	unsigned bucketCapacity;
+	unsigned bucketCount;
+	NxFluidCollisionCell* cells;
+	unsigned cellCount;
+	unsigned cellCapacity;
+	unsigned* indices;
+	unsigned indexCount;
+	unsigned indexCapacity;
+	};
+
+static_assert(sizeof(NxFluidCollisionBucket) == 12,
+	"phys_fn_003518 advances collision buckets by twelve bytes");
+static_assert(sizeof(NxFluidCollisionCell) == 16,
+	"phys_fn_003518 copies sixteen-byte cell records");
+static_assert(sizeof(NxFluidCollisionCopyDescriptor) == 36,
+	"phys_fn_003518 reads the descriptor through the index count");
+
+// phys_fn_003518 (RVA 0x00086590) flattens the bucket-referenced cell ranges,
+// then copies the complete 8-byte index records. The oracle writes an
+// uninitialized stack word into each bucket's third dword; retain the copied
+// source word here, since that byte has no defined oracle value.
+extern "C" unsigned __cdecl nxFluidCollisionStaticCopy(
+	NxFluidCollisionCopyDescriptor* destination,
+	const NxFluidCollisionCopyDescriptor* source)
+	{
+	SdkAllocator* const allocator = nxGetSdkAllocator();
+	destination->buckets = static_cast<NxFluidCollisionBucket*>(
+		allocator->malloc(source->bucketCount * sizeof(NxFluidCollisionBucket),
+			NX_MEMORY_PERSISTENT));
+	destination->bucketCapacity = source->bucketCapacity;
+	destination->bucketCount = source->bucketCount;
+	if(source->bucketCount)
+		memcpy(destination->buckets, source->buckets,
+			source->bucketCount * sizeof(NxFluidCollisionBucket));
+
+	int totalCells = 0;
+	for(unsigned i = 0; i < source->bucketCount; ++i)
+		totalCells += static_cast<int>(source->buckets[i].cellCount);
+	destination->cells = static_cast<NxFluidCollisionCell*>(
+		allocator->malloc(static_cast<size_t>(totalCells)
+			* sizeof(NxFluidCollisionCell), NX_MEMORY_PERSISTENT));
+	destination->cellCount = 0;
+	destination->cellCapacity = static_cast<unsigned>(totalCells);
+	for(unsigned bucket = 0; bucket < source->bucketCount; ++bucket)
+		{
+		const NxFluidCollisionBucket& input = source->buckets[bucket];
+		const unsigned firstOutputCell = destination->cellCount;
+		for(int cell = 0; cell < input.cellCount; ++cell)
+			{
+			const NxFluidCollisionCell& inputCell =
+				source->cells[input.firstCell + cell];
+			destination->cells[destination->cellCount++] = inputCell;
+			}
+		NxFluidCollisionBucket& output = destination->buckets[bucket];
+		output.cellCount = destination->cellCount - firstOutputCell;
+		output.firstCell = firstOutputCell;
+		}
+
+	destination->indices = static_cast<unsigned*>(allocator->malloc(
+		source->indexCount * 2 * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+	destination->indexCount = 0;
+	destination->indexCapacity = source->indexCount;
+	while(destination->indexCount < source->indexCount)
+		{
+		const unsigned offset = destination->indexCount * 2;
+		destination->indices[offset] = source->indices[offset];
+		destination->indices[offset + 1] = source->indices[offset + 1];
+		++destination->indexCount;
+		}
+	return source->indexCount;
+	}
+
 // phys_fn_003514 (RVA 0x000864e0) computes the exclusive prefix of the
 // per-mesh collision-bucket counts. The input descriptor stores the record
 // pointer at +0 and row count at +8; each 12-byte row stores its output prefix

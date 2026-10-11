@@ -65768,13 +65768,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1313",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12383",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA listing at RVA 0x86590 confirms a cdecl copy routine. It copies bucket rows, sums their signed cell counts, creates a flattened cell array, copies each row's 16-byte cell range using its first-cell offset, and writes output cell counts and prefixes. It then creates and copies the 8-byte index array and returns the index count. The third bucket dword is loaded from an uninitialized stack slot and has no defined oracle value.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x86590 and the map-resolved candidate nxFluidCollisionStaticCopy. The oracle's three array callback slots are temporarily rebound to test allocation adapters. Three bucket rows flatten to counts/offsets (2,0),(1,2),(0,3); cell records are copied in bucket order, four 8-byte index records are copied, source records are preserved, the return is 4, and both stacks balance. The undefined third bucket dword is excluded. Incrementing the second word of every copied index record is rejected (indices_match=0, mismatches=1); restored control reports zero mismatches.",
+      "notes": "This row plus discontiguous continuation rows phys_fn_003520 and phys_fn_003522 are covered by one direct call; the static-collision builder phys_fn_003505 remains open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionStaticCopy"
     },
     {
       "id": "phys_fn_003519",
@@ -65804,13 +65806,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1313",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12387",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00086590"
+      "static_proof": "This discontiguous code continuation belongs to the IDA function beginning at RVA 0x86590. Its instructions participate in the same bucket and cell flattening loops as phys_fn_003518.",
+      "dynamic_proof": "The direct call from NxPhysicsFluidEmitterAbiTests enters phys_fn_003518 at RVA 0x86590 and executes this continuation while copying all bucket-referenced cells and indices. Oracle and candidate state agree; the index-word mutation is rejected with mismatches=1. See evidence/phase7-fluid-collision-static-copy-003518.md.",
+      "notes": "Discontiguous continuation of phys_fn_003518; covered by the same direct differential.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionStaticCopy"
     },
     {
       "id": "phys_fn_003521",
@@ -65840,13 +65844,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1313",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12390",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00086590"
+      "static_proof": "This discontiguous code tail belongs to the IDA function beginning at RVA 0x86590. The complete function returns the number of copied 8-byte index records after processing this tail.",
+      "dynamic_proof": "The direct call from NxPhysicsFluidEmitterAbiTests enters phys_fn_003518 at RVA 0x86590 and executes this tail while copying the index array. Oracle and candidate return 4 with identical defined index records and balanced stacks; incrementing a copied index word is rejected with mismatches=1. See evidence/phase7-fluid-collision-static-copy-003518.md.",
+      "notes": "Discontiguous tail of phys_fn_003518; covered by the same direct differential.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionStaticCopy"
     },
     {
       "id": "phys_fn_003523",

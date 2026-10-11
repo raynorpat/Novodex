@@ -1009,6 +1009,144 @@ static unsigned nxRunFluidCollisionCellPrefixDifferential(void* oracleAddress,
 		emptyMatches ? 0u : 1u);
 	return !nonemptyMatches + !emptyMatches;
 	}
+
+struct NxFluidCollisionCopyDescriptor
+	{
+	void* buckets;
+	unsigned bucketCapacity;
+	unsigned bucketCount;
+	void* cells;
+	unsigned cellCount;
+	unsigned cellCapacity;
+	void* indices;
+	unsigned indexCount;
+	unsigned indexCapacity;
+	};
+
+static void __cdecl nxOracleBucketAttributesArrayCopy(void* destination,
+	const NxFluidCollisionCopyDescriptor* source)
+	{
+	NxFluidCollisionCopyDescriptor* output =
+		static_cast<NxFluidCollisionCopyDescriptor*>(destination);
+	output->buckets = malloc(source->bucketCount * 12);
+	output->bucketCapacity = source->bucketCapacity;
+	output->bucketCount = source->bucketCount;
+	if(source->bucketCount)
+		memcpy(output->buckets, source->buckets, source->bucketCount * 12);
+	}
+
+static void __cdecl nxOracleCellAttributesArrayCreate(void* destination,
+	unsigned count)
+	{
+	unsigned* words = static_cast<unsigned*>(destination);
+	words[0] = reinterpret_cast<unsigned>(malloc(count * 16));
+	words[1] = 0;
+	words[2] = count;
+	}
+
+static void __cdecl nxOracleIndexArrayCreate(void* destination, unsigned count)
+	{
+	unsigned* words = static_cast<unsigned*>(destination);
+	words[0] = reinterpret_cast<unsigned>(malloc(count * 8));
+	words[1] = 0;
+	words[2] = count;
+	}
+
+static unsigned nxRunFluidCollisionStaticCopyDifferential(const unsigned char* oracleBase,
+	void* candidateAddress)
+	{
+	if(!oracleBase || !candidateAddress)
+		return 1;
+	static_assert(sizeof(NxFluidCollisionCopyDescriptor) == 36,
+		"phys_fn_003518 copies the three pointer/count array headers");
+	static_assert(sizeof(NxFluidCollisionCellBucket) == 12,
+		"phys_fn_003518 advances bucket rows by twelve bytes");
+	static_assert(sizeof(NxFluidCollisionCellAttribute) == 16,
+		"phys_fn_003518 copies sixteen-byte cell attributes");
+	unsigned char* const image = const_cast<unsigned char*>(oracleBase);
+	void* savedBucketCopy = 0;
+	void* savedCellCreate = 0;
+	void* savedIndexCreate = 0;
+	void* oracleBucketCopy = reinterpret_cast<void*>(&nxOracleBucketAttributesArrayCopy);
+	void* oracleCellCreate = reinterpret_cast<void*>(&nxOracleCellAttributesArrayCreate);
+	void* oracleIndexCreate = reinterpret_cast<void*>(&nxOracleIndexArrayCreate);
+	memcpy(&savedBucketCopy, image + 0x126510, 4);
+	memcpy(&savedCellCreate, image + 0x126434, 4);
+	memcpy(&savedIndexCreate, image + 0x12645c, 4);
+	memcpy(image + 0x126510, &oracleBucketCopy, 4);
+	memcpy(image + 0x126434, &oracleCellCreate, 4);
+	memcpy(image + 0x12645c, &oracleIndexCreate, 4);
+	typedef unsigned (__cdecl* StaticCopy)(NxFluidCollisionCopyDescriptor*,
+		const NxFluidCollisionCopyDescriptor*);
+	StaticCopy oracle = reinterpret_cast<StaticCopy>(image + 0x86590);
+	StaticCopy candidate = reinterpret_cast<StaticCopy>(candidateAddress);
+	NxFluidCollisionCellBucket sourceBuckets[3] = {
+		{ 2, 1, 0xaaaa0001 }, { 1, 0, 0xaaaa0002 }, { 0, 2, 0xaaaa0003 } };
+	NxFluidCollisionCellAttribute sourceCells[3] = {
+		{ { 0x10, 0x20, 0x30, 0xcccc0001 } },
+		{ { 0x11, 0x21, 0x31, 0xcccc0002 } },
+		{ { 0x12, 0x22, 0x32, 0xcccc0003 } } };
+	unsigned sourceIndices[8] = {
+		0x10000001, 0x20000001, 0x10000002, 0x20000002,
+		0x10000003, 0x20000003, 0x10000004, 0x20000004 };
+	NxFluidCollisionCopyDescriptor source = {
+		sourceBuckets, 3, 3, sourceCells, 3, 3, sourceIndices, 4, 4 };
+	NxFluidCollisionCopyDescriptor oracleOutput;
+	NxFluidCollisionCopyDescriptor candidateOutput;
+	memset(&oracleOutput, 0xcd, sizeof(oracleOutput));
+	memset(&candidateOutput, 0xcd, sizeof(candidateOutput));
+	unsigned oracleBefore = 0, oracleAfter = 0, candidateBefore = 0, candidateAfter = 0;
+	__asm mov oracleBefore, esp
+	const unsigned oracleReturn = oracle(&oracleOutput, &source);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	const unsigned candidateReturn = candidate(&candidateOutput, &source);
+	__asm mov candidateAfter, esp
+	bool rowsMatch = oracleOutput.bucketCount == 3 && candidateOutput.bucketCount == 3;
+	const unsigned expectedBucketWords[3][2] = { { 2, 0 }, { 1, 2 }, { 0, 3 } };
+	for(unsigned i = 0; i != 3; ++i)
+		{
+		const unsigned* oracleRow = reinterpret_cast<const unsigned*>(oracleOutput.buckets) + i * 3;
+		const unsigned* candidateRow = reinterpret_cast<const unsigned*>(candidateOutput.buckets) + i * 3;
+		rowsMatch = rowsMatch && oracleRow[0] == expectedBucketWords[i][0]
+			&& candidateRow[0] == expectedBucketWords[i][0]
+			&& oracleRow[1] == expectedBucketWords[i][1]
+			&& candidateRow[1] == expectedBucketWords[i][1];
+		}
+	const bool cellsMatch = oracleOutput.cellCount == 3 && candidateOutput.cellCount == 3
+			&& memcmp(oracleOutput.cells, candidateOutput.cells, 3 * 16) == 0
+			&& memcmp(oracleOutput.cells, sourceCells + 1, 2 * 16) == 0
+			&& memcmp(static_cast<unsigned char*>(oracleOutput.cells) + 32,
+				sourceCells, 16) == 0;
+	const bool indicesMatch = oracleOutput.indexCount == 4 && candidateOutput.indexCount == 4
+		&& memcmp(oracleOutput.indices, candidateOutput.indices, sizeof(sourceIndices)) == 0
+		&& memcmp(oracleOutput.indices, sourceIndices, sizeof(sourceIndices)) == 0;
+	const bool headersMatch = oracleOutput.bucketCapacity == candidateOutput.bucketCapacity
+		&& oracleOutput.cellCapacity == candidateOutput.cellCapacity
+		&& oracleOutput.indexCapacity == candidateOutput.indexCapacity;
+	const bool sourcePreserved = memcmp(sourceBuckets, source.buckets,
+		sizeof(sourceBuckets)) == 0
+		&& memcmp(sourceCells, source.cells, sizeof(sourceCells)) == 0
+		&& memcmp(sourceIndices, source.indices, sizeof(sourceIndices)) == 0;
+	const bool stackMatch = oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+	const bool matched = rowsMatch && cellsMatch && indicesMatch && headersMatch
+		&& sourcePreserved
+		&& oracleReturn == 4 && candidateReturn == 4 && stackMatch;
+	printf("fluid collision static-copy buckets=3 cells=3 indices=4 oracle_return=%u "
+		"candidate_return=%u rows=%u cells_match=%u indices_match=%u headers=%u "
+		"source_preserved=%u stack=%u/%u mismatches=%u undefined_bucket_word=ignored\n",
+		oracleReturn, candidateReturn, rowsMatch, cellsMatch, indicesMatch,
+		headersMatch, sourcePreserved, oracleBefore == oracleAfter,
+		candidateBefore == candidateAfter,
+		matched ? 0u : 1u);
+	free(oracleOutput.buckets);
+	free(oracleOutput.cells);
+	free(oracleOutput.indices);
+	memcpy(image + 0x126510, &savedBucketCopy, 4);
+	memcpy(image + 0x126434, &savedCellCreate, 4);
+	memcpy(image + 0x12645c, &savedIndexCreate, 4);
+	return matched ? 0 : 1;
+	}
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta;
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta = 0xffffffffu;
 extern "C" volatile unsigned nxFluidEmitterRawStackBefore;
@@ -1300,6 +1438,16 @@ int wmain(int argc, wchar_t** argv)
 	else
 		gFailures += nxRunFluidCollisionCellPrefixDifferential(
 			image + 0x86520, candidateCellPrefixAddress);
+	void* candidateStaticCopyAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll static collision copy row could not be resolved from its map\n");
+		++gFailures;
+		}
+	else
+		gFailures += nxRunFluidCollisionStaticCopyDifferential(image,
+			candidateStaticCopyAddress);
 	void* candidateNotifyActorReleasedAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxNpFluidManagerNotifyReleasedActor", &candidateNotifyActorReleasedAddress))
