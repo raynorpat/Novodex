@@ -10368,3 +10368,18 @@ The public NxPhysicsSimulationTests staged-pair fixture records the initial isWr
 ### Scene releaseFluid row phys_fn_000622 (stdout_delta=4)
 
 The registered NxPhysicsSimulationTests staged-pair differential rejects an immediate-return mutation in NxSceneInternal::releaseFluid. The disabled-backend public release no longer clears the manager or emits its warning, and the seeded array fixture no longer performs swap-removal or deleting dispatch. Both processes exit zero with exact stderr; stdout_delta=4. Restoring and rebuilding returns an exact target. See [phase7-scene-release-fluid-000622.md](phase7-scene-release-fluid-000622.md).
+
+
+### FluidManager actor-release row phys_fn_003635 (mismatches=33)
+
+The oracle differential seeds one fluid with three emitters and rejects a candidate mutation that skips the manager's fluid loop (`mismatches=33`). The restored actor-release chain matches both emitter detach callbacks and preserves the nonmatching emitter. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
+
+
+### NpFluid actor-release row phys_fn_003485 (mismatches=49)
+
+The same oracle differential rejects a reversed frame-actor comparison (`mismatches=49`); the zero-detach arm also rejects a wrong attached-flag callback (`mismatches=4`). The nonzero attach arm of `phys_fn_003622` remains open. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
+
+
+### Scene releaseActor fluid-manager call site phys_fn_000628 (stdout_delta=2)
+
+The registered `NxPhysicsSimulationTests` public actor-release fixture rejects suppressing the conditional manager notification call (`stdout_delta=2`). The restored control is exact; the seeded manager/emitter oracle differential above exercises the nonempty chain. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).

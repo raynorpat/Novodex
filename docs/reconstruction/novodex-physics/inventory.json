@@ -11896,13 +11896,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/244",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1638",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "demoted by the NpActor.cpp completion final review (I2): the candidate (Physics/src/Scene.cpp NxSceneInternal::releaseActor) reproduces the reentry test, the search, the double-deletion report, the swap-remove, 000030 and the free, but not the fluid-manager arm at 0x1248c-0x12497 (`if([scene+0x61c]) 003635([scene+0x61c], body)`). That arm cannot be written faithfully yet: 003635 (0x89ce0, 100 B, discovered) reports code 0xce line 0xfa when the manager's byte +0x2b is clear and then calls 003485 (0x857b0, discovered) for every fluid, which calls 003593 (0x88090) and 003622 (0x898d0) on each emitter whose frame actor is the body; none of these is written, and +0x61c is set only by 000645 from NxScene::createFluid (000400), which the candidate stubs. The row returns to reconstructed when the fluid manager chain is written"
+      "static_proof": "The actor-release implementation tests reentry, finds the body, detects double release, swap-removes the actor, conditionally dispatches the fluid-manager notification at scene+0x61c, destroys the actor, and releases body storage.",
+      "dynamic_proof": "NxPhysicsSimulationTests compares the public releaseActor path against the pinned oracle with a disabled FluidManager. Suppressing the conditional manager-notification call is caught with stdout_delta=2; restored pair control is exact. NxPhysicsFluidEmitterAbiTests separately drives the nonempty manager/fluid/emitter chain against oracle phys_fn_003635. See evidence/phase7-fluid-actor-release.md.",
+      "notes": "Public createFluid cannot produce backend fluids in this build; the enclosing releaseActor call site is gated with the public empty-manager path, while live manager contents are covered by a direct oracle differential."
     },
     {
       "id": "phys_fn_000629",
@@ -65167,13 +65167,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1299",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12293",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA disassembly and call graph show the NpFluid emitter array at +0x04/+0x08, compare each internal emitter frame actor at +0x14 with the released body, set bit 2, and dispatch the zero-detach row phys_fn_003622.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle phys_fn_003635 and the candidate manager helper on one fluid with three seeded emitters. Reversing the frame-actor comparison is caught with mismatches=49; the restored control checks two detachments, one untouched nonmatch, pose and callbacks with zero mismatches. See evidence/phase7-fluid-actor-release.md.",
+      "notes": "The zero-detach actor-release path is reconstructed and mutation-falsified; other NpFluidEmitter behavior is tracked on its own rows."
     },
     {
       "id": "phys_fn_003486",
@@ -67636,12 +67636,12 @@
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "discovered",
-      "source": null,
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1365",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12562",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The zero-detach arm is exercised through the oracle manager actor-release path and candidate helper. Changing the final EmitterSetAttachedFlag argument from 0 to 1 is caught with mismatches=4; restored control checks the global-pose read, local-pose write, global-pose callback, and attached=false callback. The nonzero attach/update arm is not reconstructed. See evidence/phase7-fluid-actor-release.md.",
+      "notes": "Only the argument-zero detach arm used by actor release is implemented; the nonzero attach/update branch remains open."
     },
     {
       "id": "phys_fn_003623",
@@ -67869,13 +67869,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/FluidManager.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1371",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12592",
       "static_proof": "phys_fn_003635 (0x00089ce0) reports NXE_DB_WARNING when manager +0x2b is zero, then walks the primary fluid array and forwards the released actor body to each fluid's notify-release entry (phys_fn_003485).",
-      "dynamic_proof": "NxPhysicsSimulationTests creates and releases a public sphere actor after creating the disabled FluidManager. Oracle and candidate report the exact disabled create/release notification tuples at lines 263 and 250 respectively (simulation fluid manager actor-created/actor-released; stdout_delta=0, stderr_exact=True; build/FluidGate/fluid-actor-notify-green.log). The manager arrays are empty in this pinned backend.",
-      "notes": "The disabled-manager, empty-array contract is gated. Iteration into live NpFluid notifications through phys_fn_003485 remains open for extension-backed fluid state."
+      "dynamic_proof": "NxPhysicsSimulationTests checks the public disabled-manager warning on actor release. NxPhysicsFluidEmitterAbiTests calls oracle phys_fn_003635 and the candidate manager helper with one seeded fluid and three emitters; skipping the manager fluid loop is caught with mismatches=33. Restored live-array control reports six callbacks and zero state/callback mismatches. See evidence/phase7-fluid-actor-release.md.",
+      "notes": "The manager warning and primary fluid-array dispatch are gated. The caller phys_fn_000628 remains open because public createFluid cannot produce the live manager path in this build."
     },
     {
       "id": "phys_fn_003636",

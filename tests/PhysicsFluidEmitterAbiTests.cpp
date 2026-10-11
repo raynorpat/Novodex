@@ -19,10 +19,12 @@ struct NxFluidEmitterFlagCallbackRecord
 	unsigned argument1;
 	unsigned argument2;
 	unsigned enabled;
+	unsigned pose[12];
 	};
 
 static NxFluidEmitterFlagCallbackRecord gOracleFlagCallbacks[16];
 static unsigned gOracleFlagCallbackCount;
+static float gOracleEmitterGlobalPose[12];
 
 static int nxRecordOracleFluidEmitterFlag(unsigned kind, unsigned argument0,
 	unsigned argument1, unsigned argument2, unsigned char enabled)
@@ -30,6 +32,7 @@ static int nxRecordOracleFluidEmitterFlag(unsigned kind, unsigned argument0,
 	if(gOracleFlagCallbackCount < sizeof(gOracleFlagCallbacks) / sizeof(gOracleFlagCallbacks[0]))
 		{
 		NxFluidEmitterFlagCallbackRecord& record = gOracleFlagCallbacks[gOracleFlagCallbackCount++];
+		memset(&record, 0, sizeof(record));
 		record.kind = kind;
 		record.argument0 = argument0;
 		record.argument1 = argument1;
@@ -49,20 +52,49 @@ extern "C" int __cdecl nxOracleEmitterSetEnabledFlag(
 	unsigned a0, unsigned a1, unsigned a2, unsigned char enabled)
 	{ return nxRecordOracleFluidEmitterFlag(16, a0, a1, a2, enabled); }
 
+extern "C" const float* __cdecl nxOracleEmitterGetGlobalPose(
+	unsigned a0, unsigned a1, unsigned a2)
+	{
+	nxRecordOracleFluidEmitterFlag(32, a0, a1, a2, 0);
+	return gOracleEmitterGlobalPose;
+	}
+
+extern "C" int __cdecl nxOracleEmitterSetGlobalPose(unsigned a0, unsigned a1,
+	unsigned a2, const float* pose)
+	{
+	nxRecordOracleFluidEmitterFlag(64, a0, a1, a2, 0);
+	if(gOracleFlagCallbackCount && pose)
+		memcpy(gOracleFlagCallbacks[gOracleFlagCallbackCount - 1].pose,
+			pose, sizeof(gOracleFlagCallbacks[0].pose));
+	if(pose)
+		memcpy(gOracleEmitterGlobalPose, pose, sizeof(gOracleEmitterGlobalPose));
+	return 0;
+	}
+
+extern "C" int __cdecl nxOracleEmitterSetAttachedFlag(unsigned a0, unsigned a1,
+	unsigned a2, unsigned char attached)
+	{
+	return nxRecordOracleFluidEmitterFlag(128, a0, a1, a2, attached);
+	}
+
 static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldValues,
 	DWORD* oldProtection)
 	{
-	static const unsigned slotRvas[] = { 0x126628, 0x126404, 0x12657c };
+	static const unsigned slotRvas[] = {
+		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc };
 	static void* const replacements[] = {
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterSetAddBodyVelocityFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterSetEnabledFlag),
+		reinterpret_cast<void*>(&nxOracleEmitterGetGlobalPose),
+		reinterpret_cast<void*>(&nxOracleEmitterSetGlobalPose),
+		reinterpret_cast<void*>(&nxOracleEmitterSetAttachedFlag),
 		};
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 3; ++i)
+	for(unsigned i = 0; i < 6; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -74,12 +106,13 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldValues,
 	DWORD oldProtection)
 	{
-	static const unsigned slotRvas[] = { 0x126628, 0x126404, 0x12657c };
+	static const unsigned slotRvas[] = {
+		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 3; ++i)
+	for(unsigned i = 0; i < 6; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -431,6 +464,13 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll setFlag row could not be resolved from its map\n");
 		return 1;
 		}
+	void* candidateNotifyActorReleasedAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidManagerNotifyReleasedActor", &candidateNotifyActorReleasedAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-manager actor-release row could not be resolved from its map\n");
+		return 1;
+		}
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
 	void* candidateCtorAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
@@ -660,7 +700,7 @@ int wmain(int argc, wchar_t** argv)
 	ResetCallbacksFn resetCallbacks = reinterpret_cast<ResetCallbacksFn>(resetFluidCallbacks);
 	CallbackCountFn callbackCount = reinterpret_cast<CallbackCountFn>(getFluidCallbackCount);
 	GetCallbackRecordFn getCallbackRecord = reinterpret_cast<GetCallbackRecordFn>(getFluidCallbackRecord);
-	void* oldCallbackValues[3] = {};
+	void* oldCallbackValues[6] = {};
 	DWORD callbackPageProtection = 0;
 	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues, &callbackPageProtection))
 		{
@@ -750,6 +790,167 @@ int wmain(int argc, wchar_t** argv)
 	gFailures += backendCallbackMismatches + backendStateMismatches;
 	printf("fluid emitter backend flags cases=%u callback_mismatches=%u state_mismatches=%u\n",
 		backendCases, backendCallbackMismatches, backendStateMismatches);
+
+	// phys_fn_003635 walks manager fluids, whose phys_fn_003485 notification
+	// marks only emitters attached to the released actor and detaches each one.
+	// Seed two matches around a non-matching emitter so iteration, per-emitter
+	// state, pose preservation, and callback order all have an oracle reference.
+	typedef void (__thiscall *OracleManagerActorRelease)(void*, void*);
+	typedef void (__cdecl *CandidateManagerActorRelease)(void*, void*);
+	typedef void (__cdecl *SetFixturePoseFn)(const float*);
+	OracleManagerActorRelease oracleManagerActorRelease =
+		reinterpret_cast<OracleManagerActorRelease>(image + 0x89ce0);
+	CandidateManagerActorRelease candidateManagerActorRelease =
+		reinterpret_cast<CandidateManagerActorRelease>(candidateNotifyActorReleasedAddress);
+	SetFixturePoseFn setFixturePose = reinterpret_cast<SetFixturePoseFn>(
+		GetProcAddress(fluidModel, "NxSetEmitterGlobalPose"));
+	if(!setFixturePose)
+		{
+		fprintf(stderr, "FAIL FluidModel transform callback fixture lacks pose setter\n");
+		++gFailures;
+		}
+	else
+		{
+		unsigned char oracleManager[0x30], candidateManager[0x30];
+		unsigned char oracleFluid[0x84], candidateFluid[0x84];
+		unsigned char oracleBackend[0x34], candidateBackend[0x34];
+		unsigned char oracleEmitters[3][0x48], candidateEmitters[3][0x48];
+		unsigned char actorBody[4], otherBody[4];
+		void* oracleFluidList[] = { oracleFluid };
+		void* candidateFluidList[] = { candidateFluid };
+		void* oracleEmitterList[] = {
+			oracleEmitters[0], oracleEmitters[1], oracleEmitters[2] };
+		void* candidateEmitterList[] = {
+			candidateEmitters[0], candidateEmitters[1], candidateEmitters[2] };
+		memset(oracleManager, 0, sizeof(oracleManager));
+		memset(candidateManager, 0, sizeof(candidateManager));
+		memset(oracleFluid, 0, sizeof(oracleFluid));
+		memset(candidateFluid, 0, sizeof(candidateFluid));
+		memset(oracleBackend, 0, sizeof(oracleBackend));
+		memset(candidateBackend, 0, sizeof(candidateBackend));
+		memset(oracleEmitters, 0, sizeof(oracleEmitters));
+		memset(candidateEmitters, 0, sizeof(candidateEmitters));
+		memset(actorBody, 0, sizeof(actorBody));
+		memset(otherBody, 0, sizeof(otherBody));
+		*reinterpret_cast<void***>(oracleManager + 4) = oracleFluidList;
+		*reinterpret_cast<void***>(oracleManager + 8) = oracleFluidList + 1;
+		*reinterpret_cast<void***>(candidateManager + 4) = candidateFluidList;
+		*reinterpret_cast<void***>(candidateManager + 8) = candidateFluidList + 1;
+		// +0x2b set means the manager's warning-only unavailable branch is not
+		// taken; this isolates the live notification chain in both binaries.
+		oracleManager[0x2b] = candidateManager[0x2b] = 1;
+		*reinterpret_cast<void***>(oracleFluid + 4) = oracleEmitterList;
+		*reinterpret_cast<void***>(oracleFluid + 8) = oracleEmitterList + 3;
+		*reinterpret_cast<void***>(candidateFluid + 4) = candidateEmitterList;
+		*reinterpret_cast<void***>(candidateFluid + 8) = candidateEmitterList + 3;
+		*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+		*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+		*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x55667788u;
+		*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x55667788u;
+		*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0xa1b2c3d4u;
+		*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0xa1b2c3d4u;
+		const unsigned emitterHandles[] = { 0x11223344u, 0x22334455u, 0x33445566u };
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			*reinterpret_cast<void**>(oracleEmitters[i] + 4) = oracleFluid;
+			*reinterpret_cast<void**>(candidateEmitters[i] + 4) = candidateFluid;
+			*reinterpret_cast<unsigned*>(oracleEmitters[i] + 8) = emitterHandles[i];
+			*reinterpret_cast<unsigned*>(candidateEmitters[i] + 8) = emitterHandles[i];
+			*reinterpret_cast<unsigned*>(oracleEmitters[i] + 0x10) = 0x80000100u;
+			*reinterpret_cast<unsigned*>(candidateEmitters[i] + 0x10) = 0x80000100u;
+			void* attachedBody = (i == 1) ? static_cast<void*>(otherBody)
+				: static_cast<void*>(actorBody);
+			*reinterpret_cast<void**>(oracleEmitters[i] + 0x14) = attachedBody;
+			*reinterpret_cast<void**>(candidateEmitters[i] + 0x14) = attachedBody;
+			for(unsigned word = 0; word < 12; ++word)
+				{
+				*reinterpret_cast<unsigned*>(oracleEmitters[i] + 0x18 + word * 4) =
+					0x3e000000u + i * 0x100u + word;
+				*reinterpret_cast<unsigned*>(candidateEmitters[i] + 0x18 + word * 4) =
+					0x3e000000u + i * 0x100u + word;
+				}
+			}
+		static const unsigned globalPoseBits[12] = {
+			0x3f800000u, 0x00000000u, 0x00000000u,
+			0x00000000u, 0x3f800000u, 0x00000000u,
+			0x00000000u, 0x00000000u, 0x3f800000u,
+			0x41200000u, 0xc1200000u, 0x40400000u };
+		memcpy(gOracleEmitterGlobalPose, globalPoseBits, sizeof(globalPoseBits));
+		setFixturePose(reinterpret_cast<const float*>(globalPoseBits));
+		gOracleFlagCallbackCount = 0;
+		oracleManagerActorRelease(oracleManager, actorBody);
+		NxFluidEmitterFlagCallbackRecord oracleRecords[6] = {};
+		const unsigned oraclePoseCallbackCount = gOracleFlagCallbackCount;
+		if(oraclePoseCallbackCount == 6)
+			memcpy(oracleRecords, gOracleFlagCallbacks, sizeof(oracleRecords));
+		unsigned oracleStateMismatches = oraclePoseCallbackCount == 6 ? 0 : 1;
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			const bool matched = i != 1;
+			const unsigned expectedFlags = matched ? 0x80000102u : 0x80000100u;
+			if(*reinterpret_cast<unsigned*>(oracleEmitters[i] + 0x10) != expectedFlags
+				|| *reinterpret_cast<void**>(oracleEmitters[i] + 0x14) !=
+					(matched ? 0 : static_cast<void*>(otherBody)))
+				++oracleStateMismatches;
+			for(unsigned word = 0; word < 12; ++word)
+				{
+				const unsigned expectedPose = matched ? globalPoseBits[word]
+					: 0x3e000000u + i * 0x100u + word;
+				if(*reinterpret_cast<unsigned*>(oracleEmitters[i] + 0x18 + word * 4)
+					!= expectedPose)
+					++oracleStateMismatches;
+				}
+			}
+		resetCallbacks();
+		setFixturePose(reinterpret_cast<const float*>(globalPoseBits));
+		candidateManagerActorRelease(candidateManager, actorBody);
+		const unsigned candidatePoseCallbackCount = callbackCount();
+		unsigned candidateStateMismatches = candidatePoseCallbackCount == 6 ? 0 : 1;
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			const bool matched = i != 1;
+			const unsigned expectedFlags = matched ? 0x80000102u : 0x80000100u;
+			if(*reinterpret_cast<unsigned*>(candidateEmitters[i] + 0x10) != expectedFlags
+				|| *reinterpret_cast<void**>(candidateEmitters[i] + 0x14) !=
+					(matched ? 0 : static_cast<void*>(otherBody)))
+				++candidateStateMismatches;
+			for(unsigned word = 0; word < 12; ++word)
+				{
+				const unsigned expectedPose = matched ? globalPoseBits[word]
+					: 0x3e000000u + i * 0x100u + word;
+				if(*reinterpret_cast<unsigned*>(candidateEmitters[i] + 0x18 + word * 4)
+					!= expectedPose)
+					++candidateStateMismatches;
+				}
+			}
+		unsigned callbackMismatches = 0;
+		static const unsigned expectedKinds[] = { 32, 64, 128, 32, 64, 128 };
+		static const unsigned expectedEmitterIndices[] = { 0, 0, 0, 2, 2, 2 };
+		for(unsigned i = 0; i < 6; ++i)
+			{
+			NxFluidEmitterFlagCallbackRecord candidateRecord = {};
+			if(!getCallbackRecord(i, &candidateRecord))
+				{ ++callbackMismatches; continue; }
+			const unsigned expectedEmitter = emitterHandles[expectedEmitterIndices[i]];
+			if(candidateRecord.kind != expectedKinds[i]
+				|| candidateRecord.argument0 != 0xa1b2c3d4u
+				|| candidateRecord.argument1 != 0x55667788u
+				|| candidateRecord.argument2 != expectedEmitter
+				|| candidateRecord.enabled != 0)
+				++callbackMismatches;
+			if(candidateRecord.kind == 64
+				&& memcmp(candidateRecord.pose, globalPoseBits, sizeof(globalPoseBits)) != 0)
+				++callbackMismatches;
+			if(memcmp(&candidateRecord, &oracleRecords[i], sizeof(candidateRecord)) != 0)
+				++callbackMismatches;
+			}
+		gFailures += oracleStateMismatches + candidateStateMismatches + callbackMismatches;
+		printf("fluid manager actor-release fluids=1 emitters=3 matched=2 "
+			"oracle_callbacks=%u candidate_callbacks=%u state_mismatches=%u "
+			"callback_mismatches=%u\n", oraclePoseCallbackCount,
+			candidatePoseCallbackCount,
+			oracleStateMismatches + candidateStateMismatches, callbackMismatches);
+		}
 	nxUnbindOracleEmitterFlagCallbacks(image, oldCallbackValues, callbackPageProtection);
 	FreeLibrary(fluidModel);
 	FreeLibrary(candidatePhysics);

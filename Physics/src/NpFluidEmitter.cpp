@@ -52,6 +52,54 @@ static void nxFluidEmitterSetInternalFlag(void* internal, NxFluidEmitterFlag fla
 	callback(argument0, argument1, argument2, enabled ? 1 : 0);
 	}
 
+// phys_fn_003485 (0x000857b0): a fluid owns an array of internal emitter
+// records. On actor release, only records whose frame-actor pointer at +0x14
+// matches the body are marked broken and detached. The zero-actor detach path
+// preserves the backend's global pose in the emitter's local pose and sends
+// the corresponding FluidModel callbacks.
+extern "C" void __cdecl nxNpFluidNotifyActorReleased(void* fluid, void* body)
+	{
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void** emitter = *reinterpret_cast<void***>(fluidBytes + 4);
+	void** end = *reinterpret_cast<void***>(fluidBytes + 8);
+	while(emitter < end)
+		{
+		unsigned char* internal = static_cast<unsigned char*>(*emitter++);
+		if(*reinterpret_cast<void**>(internal + 0x14) != body)
+			continue;
+		nxFluidEmitterSetInternalFlag(internal, NX_FEF_BROKEN_ACTOR_REF, true);
+		float pose[12];
+		void* emitterFluid = *reinterpret_cast<void**>(internal + 4);
+		unsigned char* emitterFluidBytes = static_cast<unsigned char*>(emitterFluid);
+		void* backend = *reinterpret_cast<void**>(emitterFluidBytes + 0x7c);
+		unsigned char* backendBytes = static_cast<unsigned char*>(backend);
+		const unsigned context = *reinterpret_cast<unsigned*>(backendBytes + 0x30);
+		const unsigned fluidHandle = *reinterpret_cast<unsigned*>(emitterFluidBytes + 0x80);
+		const unsigned emitterHandle = *reinterpret_cast<unsigned*>(internal + 8);
+		typedef const float* (__cdecl *GetGlobalPose)(unsigned, unsigned, unsigned);
+		typedef int (__cdecl *SetGlobalPose)(unsigned, unsigned, unsigned, const float*);
+		typedef int (__cdecl *SetAttachedFlag)(unsigned, unsigned, unsigned, unsigned char);
+		HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+		GetGlobalPose getGlobalPose = reinterpret_cast<GetGlobalPose>(
+			GetProcAddress(fluidModel, "EmitterGetGlobalPose"));
+		SetGlobalPose setGlobalPose = reinterpret_cast<SetGlobalPose>(
+			GetProcAddress(fluidModel, "EmitterSetGlobalPose"));
+		SetAttachedFlag setAttachedFlag = reinterpret_cast<SetAttachedFlag>(
+			GetProcAddress(fluidModel, "EmitterSetAttachedFlag"));
+		if(!getGlobalPose || !setGlobalPose || !setAttachedFlag)
+			continue;
+		const float* globalPose = getGlobalPose(context, fluidHandle, emitterHandle);
+		if(!globalPose)
+			continue;
+		memcpy(pose, globalPose, sizeof(pose));
+		*reinterpret_cast<void**>(internal + 0x14) = 0;
+		memcpy(internal + 0x18, pose, sizeof(pose));
+		setGlobalPose(context, fluidHandle, emitterHandle,
+			reinterpret_cast<const float*>(internal + 0x18));
+		setAttachedFlag(context, fluidHandle, emitterHandle, 0);
+		}
+	}
+
 // phys_fn_003792 (0x0008c2d0). The oracle first installs the interface and
 // read-lock-base construction vptrs, clears NxFluidEmitter::userData and the
 // two read-lock-base words, then stores the internal emitter at +0x14 and

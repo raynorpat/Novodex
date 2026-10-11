@@ -929,14 +929,25 @@ static void nxFluidManagerNotifyActorCreatedDisabled(void* manager, NxActor* act
 			0x107, 0, "NxScene::fluidsNotifyCreateActor(): Feature not available!");
 	}
 
-static void nxFluidManagerNotifyActorReleasedDisabled(void* manager, void* body)
+	// Private cross-unit row used by the FluidManager actor-release path.
+	// NpFluid's own function walks its emitter array and detaches matches.
+	extern "C" void __cdecl nxNpFluidNotifyActorReleased(void* fluid, void* body);
+	extern "C" void __cdecl nxNpFluidManagerNotifyReleasedActor(void* manager, void* body)
 	{
-	(void)body;
 	unsigned char* bytes = static_cast<unsigned char*>(manager);
 	if(bytes[0x2b] == 0)
 		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
 			0xfa, 0, "NxScene::fluidsNotifyReleaseActor(): Feature not available!");
+	void** fluid = *reinterpret_cast<void***>(bytes + 4);
+	void** end = *reinterpret_cast<void***>(bytes + 8);
+	while(fluid < end)
+		nxNpFluidNotifyActorReleased(*fluid++, body);
+	}
+
+static void nxFluidManagerNotifyActorReleasedDisabled(void* manager, void* body)
+	{
+	nxNpFluidManagerNotifyReleasedActor(manager, body);
 	}
 
 // phys_fn_003630 (0x00089bd0) is called once after each completed scene

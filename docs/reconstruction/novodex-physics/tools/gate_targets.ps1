@@ -93,6 +93,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
         'fluid emitter flags cases=2 mismatches=0'
 		'fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0'
+		'fluid manager actor-release fluids=1 emitters=3 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0'
         'fluid emitter aggregate cases=6 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
