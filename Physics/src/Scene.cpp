@@ -787,6 +787,8 @@ static void* gNxFluidManagerVtable[] = {
 	reinterpret_cast<void*>(nxFluidManagerDeletingDestructor)
 	};
 
+extern "C" int __cdecl nxNpFluidEmitterGenerateSurfaceMesh(void* internal);
+
 // phys_fn_003645 (0x00089f50) lays out FluidManager's arrays, backend flags,
 // Scene link, and virtual dispatch pointer. The pinned build has no fluid
 // extension, so its extension flags are zero; the constructor leaves the
@@ -974,6 +976,13 @@ static void nxFluidManagerGenerateSurfaceMeshesDisabled(void* manager)
 		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
 			0xea, 0, "NxScene::generateSurfaceMeshes(): Feature not available!");
+	// The oracle still dispatches each live fluid after reporting that its
+	// optional backend is unavailable. A fluid without an implicit mesh returns
+	// immediately; a live mesh is forwarded through FluidModel.DLL.
+	void** fluid = *reinterpret_cast<void***>(bytes + 4);
+	void** fluidsEnd = *reinterpret_cast<void***>(bytes + 8);
+	while(fluid && fluidsEnd && fluid < fluidsEnd)
+		nxNpFluidEmitterGenerateSurfaceMesh(*fluid++);
 	}
 
 // phys_fn_000622 (0x00011620): guard reentry, release the requested fluid,

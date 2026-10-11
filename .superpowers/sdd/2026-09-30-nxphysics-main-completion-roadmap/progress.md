@@ -429,3 +429,8 @@ caught by the same differential (`oracle_exit=0`, `candidate_exit=0`,
 This proves sensitivity for the body snapshot portion only; the oracle's
 post-step fluid-manager list traversal and per-fluid updates remain missing, so
 `phys_fn_000619` remains open and is not promoted in the inventory.
+
+
+Continuation — FluidManager surface-mesh traversal (`phys_fn_003632` / `003634`, 2026-10-11).
+
+The scene path now preserves the feature-unavailable warning and walks every manager fluid through the reconstructed implicit surface-mesh callback helper. A two-fluid pinned-oracle direct differential compares both `ImplicitFluidMeshRun` callback tuples. The new test was RED before the source change (oracle 2 callbacks, candidate 0); an increment-only mutation was caught after reconstruction (`mismatches=3`), and the restored differential reports two matching callbacks with zero mismatches. The fresh full Phase 7 gate passes with 1,659/1,659 coverage assertions; inventory validation passes with 6,338 functions, 5,138 data rows, and zero unexplained bytes. Public Physics headers remain unchanged. Only rows 003632/003634 are closed; the post-step update row 000619 and optional FluidModel simulation/static-collision paths remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-manager-surface-mesh-003632-003634.md`.
