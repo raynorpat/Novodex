@@ -312,6 +312,41 @@ extern "C" int __cdecl nxNpFluidEmitterUpdateGlobalPose(void* internal)
 		worldPose);
 	}
 
+// phys_fn_003624 (0x00089930) refreshes world pose, then mirrors the attached
+// body's position and velocities into the fluid emitter backend.
+extern "C" int __cdecl nxNpFluidEmitterUpdateBodyState(void* internal)
+	{
+	nxNpFluidEmitterUpdateGlobalPose(internal);
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	void* actor = *reinterpret_cast<void**>(bytes + 0x14);
+	if(!actor)
+		return 0;
+	void* body = *reinterpret_cast<void**>(static_cast<unsigned char*>(actor) + 8);
+	const float* bodyBytes = static_cast<const float*>(body);
+	float position[3], linearVelocity[3], angularVelocity[3];
+	memcpy(position, bodyBytes + 0x158 / sizeof(float), sizeof(position));
+	memcpy(linearVelocity, bodyBytes + 0x34 / sizeof(float), sizeof(linearVelocity));
+	memcpy(angularVelocity, bodyBytes + 0x40 / sizeof(float), sizeof(angularVelocity));
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluidBytes + 0x80);
+	const unsigned emitterHandle = *reinterpret_cast<unsigned*>(bytes + 8);
+	typedef int (__cdecl *SetBodyVector)(unsigned, unsigned, unsigned, const float*);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	SetBodyVector setPosition = reinterpret_cast<SetBodyVector>(
+		GetProcAddress(fluidModel, "EmitterSetBodyPosition"));
+	SetBodyVector setLinearVelocity = reinterpret_cast<SetBodyVector>(
+		GetProcAddress(fluidModel, "EmitterSetBodyLinearVelocity"));
+	SetBodyVector setAngularVelocity = reinterpret_cast<SetBodyVector>(
+		GetProcAddress(fluidModel, "EmitterSetBodyAngularVelocity"));
+	setPosition(context, fluidHandle, emitterHandle, position);
+	setLinearVelocity(context, fluidHandle, emitterHandle, linearVelocity);
+	return setAngularVelocity(context, fluidHandle, emitterHandle, angularVelocity);
+	}
+
 void NpFluidEmitter::setFrameActor(NxActor* actor)
 	{
 	void* link = mUnknown0c;

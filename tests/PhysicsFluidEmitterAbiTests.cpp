@@ -77,11 +77,32 @@ extern "C" int __cdecl nxOracleEmitterSetAttachedFlag(unsigned a0, unsigned a1,
 	return nxRecordOracleFluidEmitterFlag(128, a0, a1, a2, attached);
 	}
 
+static int nxRecordOracleFluidEmitterBodyVector(unsigned kind, unsigned a0,
+	unsigned a1, unsigned a2, const float* vector)
+	{
+	const int result = nxRecordOracleFluidEmitterFlag(kind, a0, a1, a2, 0);
+	if(gOracleFlagCallbackCount && vector)
+		memcpy(gOracleFlagCallbacks[gOracleFlagCallbackCount - 1].pose,
+			vector, 3 * sizeof(float));
+	return result;
+	}
+
+extern "C" int __cdecl nxOracleEmitterSetBodyPosition(unsigned a0, unsigned a1,
+	unsigned a2, const float* position)
+	{ return nxRecordOracleFluidEmitterBodyVector(256, a0, a1, a2, position); }
+extern "C" int __cdecl nxOracleEmitterSetBodyLinearVelocity(unsigned a0, unsigned a1,
+	unsigned a2, const float* velocity)
+	{ return nxRecordOracleFluidEmitterBodyVector(512, a0, a1, a2, velocity); }
+extern "C" int __cdecl nxOracleEmitterSetBodyAngularVelocity(unsigned a0, unsigned a1,
+	unsigned a2, const float* velocity)
+	{ return nxRecordOracleFluidEmitterBodyVector(1024, a0, a1, a2, velocity); }
+
 static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldValues,
 	DWORD* oldProtection)
 	{
 	static const unsigned slotRvas[] = {
-		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc };
+		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
+		0x1263f0, 0x12664c, 0x1263e8 };
 	static void* const replacements[] = {
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterSetAddBodyVelocityFlag),
@@ -89,12 +110,15 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		reinterpret_cast<void*>(&nxOracleEmitterGetGlobalPose),
 		reinterpret_cast<void*>(&nxOracleEmitterSetGlobalPose),
 		reinterpret_cast<void*>(&nxOracleEmitterSetAttachedFlag),
+		reinterpret_cast<void*>(&nxOracleEmitterSetBodyPosition),
+		reinterpret_cast<void*>(&nxOracleEmitterSetBodyLinearVelocity),
+		reinterpret_cast<void*>(&nxOracleEmitterSetBodyAngularVelocity),
 		};
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 6; ++i)
+	for(unsigned i = 0; i < 9; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -107,12 +131,13 @@ static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldV
 	DWORD oldProtection)
 	{
 	static const unsigned slotRvas[] = {
-		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc };
+		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
+		0x1263f0, 0x12664c, 0x1263e8 };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 6; ++i)
+	for(unsigned i = 0; i < 9; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -485,6 +510,13 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter world-pose row could not be resolved from its map\n");
 		++gFailures;
 		}
+	void* candidateUpdateBodyStateAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterUpdateBodyState", &candidateUpdateBodyStateAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter body-state update row could not be resolved from its map\n");
+		++gFailures;
+		}
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
 	void* candidateCtorAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
@@ -714,7 +746,7 @@ int wmain(int argc, wchar_t** argv)
 	ResetCallbacksFn resetCallbacks = reinterpret_cast<ResetCallbacksFn>(resetFluidCallbacks);
 	CallbackCountFn callbackCount = reinterpret_cast<CallbackCountFn>(getFluidCallbackCount);
 	GetCallbackRecordFn getCallbackRecord = reinterpret_cast<GetCallbackRecordFn>(getFluidCallbackRecord);
-	void* oldCallbackValues[6] = {};
+	void* oldCallbackValues[9] = {};
 	DWORD callbackPageProtection = 0;
 	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues, &callbackPageProtection))
 		{
@@ -1221,6 +1253,112 @@ int wmain(int argc, wchar_t** argv)
 		gFailures += worldPoseMismatches;
 		printf("fluid emitter world-pose cases=3 mismatches=%u\n",
 			worldPoseMismatches);
+		}
+
+	// phys_fn_003624 publishes body position and velocities after refreshing
+	// the emitter world pose. The no-actor arm emits only the pose callback;
+	// the attached-body arm emits the three body vectors in oracle order.
+	if(candidateUpdateBodyStateAddress)
+		{
+		typedef int (__thiscall *OracleUpdateBodyState)(void*);
+		typedef int (__cdecl *CandidateUpdateBodyState)(void*);
+		OracleUpdateBodyState oracleUpdateBodyState =
+			reinterpret_cast<OracleUpdateBodyState>(image + 0x89930);
+		CandidateUpdateBodyState candidateUpdateBodyState =
+			reinterpret_cast<CandidateUpdateBodyState>(candidateUpdateBodyStateAddress);
+		static const float localPose[12] = {
+			0.91f, -0.13f, 0.27f, 0.19f, 0.87f, -0.31f,
+			-0.23f, 0.17f, 0.93f, 1.137f, -2.319f, 0.427f };
+		static const unsigned expectedKinds[4] = { 64, 256, 512, 1024 };
+		unsigned bodyStateMismatches = 0;
+		unsigned totalOracleCallbacks = 0, totalCandidateCallbacks = 0;
+		for(unsigned updateCase = 0; updateCase < 2; ++updateCase)
+			{
+			unsigned char oracleInternal[0x90], candidateInternal[0x90];
+			unsigned char oracleFluid[0x84], candidateFluid[0x84];
+			unsigned char oracleBackend[0x34], candidateBackend[0x34];
+			unsigned char oracleActor[0x10], candidateActor[0x10];
+			unsigned char oracleBody[0x180], candidateBody[0x180];
+			memset(oracleInternal, 0, sizeof(oracleInternal));
+			memset(candidateInternal, 0, sizeof(candidateInternal));
+			memset(oracleFluid, 0, sizeof(oracleFluid));
+			memset(candidateFluid, 0, sizeof(candidateFluid));
+			memset(oracleBackend, 0, sizeof(oracleBackend));
+			memset(candidateBackend, 0, sizeof(candidateBackend));
+			memset(oracleActor, 0, sizeof(oracleActor));
+			memset(candidateActor, 0, sizeof(candidateActor));
+			memset(oracleBody, 0, sizeof(oracleBody));
+			memset(candidateBody, 0, sizeof(candidateBody));
+			*reinterpret_cast<void**>(oracleInternal + 4) = oracleFluid;
+			*reinterpret_cast<void**>(candidateInternal + 4) = candidateFluid;
+			*reinterpret_cast<unsigned*>(oracleInternal + 8) = 0x13572468u;
+			*reinterpret_cast<unsigned*>(candidateInternal + 8) = 0x13572468u;
+			*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+			*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+			*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x24681357u;
+			*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x24681357u;
+			*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0x31415926u;
+			*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0x31415926u;
+			memcpy(oracleInternal + 0x18, localPose, sizeof(localPose));
+			memcpy(candidateInternal + 0x18, localPose, sizeof(localPose));
+			unsigned expectedCount = 1;
+			if(updateCase == 1)
+				{
+				*reinterpret_cast<void**>(oracleInternal + 0x14) = oracleActor;
+				*reinterpret_cast<void**>(candidateInternal + 0x14) = candidateActor;
+				*reinterpret_cast<void**>(oracleActor + 8) = oracleBody;
+				*reinterpret_cast<void**>(candidateActor + 8) = candidateBody;
+				static const float bodyVectors[3][3] = {
+					{ 12.137f, -4.319f, 0.527f },
+					{ -1.713f, 3.091f, 7.227f },
+					{ 0.319f, -8.173f, 2.619f } };
+				memcpy(oracleBody + 0x158, bodyVectors[0], sizeof(bodyVectors[0]));
+				memcpy(candidateBody + 0x158, bodyVectors[0], sizeof(bodyVectors[0]));
+				memcpy(oracleBody + 0x34, bodyVectors[1], sizeof(bodyVectors[1]));
+				memcpy(candidateBody + 0x34, bodyVectors[1], sizeof(bodyVectors[1]));
+				memcpy(oracleBody + 0x40, bodyVectors[2], sizeof(bodyVectors[2]));
+				memcpy(candidateBody + 0x40, bodyVectors[2], sizeof(bodyVectors[2]));
+				expectedCount = 4;
+				}
+			gOracleFlagCallbackCount = 0;
+			resetCallbacks();
+			unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+			unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+			__asm mov oracleEspBefore, esp
+			const int oracleResult = oracleUpdateBodyState(oracleInternal);
+			__asm mov oracleEspAfter, esp
+			const unsigned oracleCount = gOracleFlagCallbackCount;
+			__asm mov candidateEspBefore, esp
+			const int candidateResult = candidateUpdateBodyState(candidateInternal);
+			__asm mov candidateEspAfter, esp
+			const unsigned candidateCount = callbackCount();
+			totalOracleCallbacks += oracleCount;
+			totalCandidateCallbacks += candidateCount;
+			if(oracleResult != candidateResult || oracleCount != expectedCount
+				|| candidateCount != expectedCount
+				|| oracleEspBefore != oracleEspAfter
+				|| candidateEspBefore != candidateEspAfter)
+				++bodyStateMismatches;
+			for(unsigned callbackIndex = 0; callbackIndex < expectedCount; ++callbackIndex)
+				{
+				NxFluidEmitterFlagCallbackRecord oracleRecord = {};
+				NxFluidEmitterFlagCallbackRecord candidateRecord = {};
+				if(callbackIndex >= oracleCount || callbackIndex >= candidateCount
+					|| !getCallbackRecord(callbackIndex, &candidateRecord))
+					{
+					++bodyStateMismatches;
+					continue;
+				}
+				oracleRecord = gOracleFlagCallbacks[callbackIndex];
+				if(oracleRecord.kind != expectedKinds[callbackIndex]
+					|| memcmp(&oracleRecord, &candidateRecord, sizeof(oracleRecord)) != 0)
+					++bodyStateMismatches;
+				}
+			}
+		gFailures += bodyStateMismatches;
+		printf("fluid emitter body-state update cases=2 oracle_callbacks=%u "
+			"candidate_callbacks=%u mismatches=%u\n", totalOracleCallbacks,
+			totalCandidateCallbacks, bodyStateMismatches);
 		}
 
 	nxUnbindOracleEmitterFlagCallbacks(image, oldCallbackValues, callbackPageProtection);

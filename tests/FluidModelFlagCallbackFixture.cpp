@@ -97,3 +97,30 @@ extern "C" __declspec(dllexport) int __cdecl EmitterSetAttachedFlag(
 	{
 	return nxRecord(128, argument0, argument1, argument2, attached);
 	}
+
+static int nxRecordBodyVector(unsigned kind, unsigned argument0, unsigned argument1,
+	unsigned argument2, const float* vector)
+	{
+	const int result = nxRecord(kind, argument0, argument1, argument2, 0);
+	if(gRecordCount && vector)
+		CopyMemory(gRecords[gRecordCount - 1].pose, vector, 3 * sizeof(float));
+	return result;
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetBodyPosition(
+	unsigned argument0, unsigned argument1, unsigned argument2, const float* position)
+	{
+	return nxRecordBodyVector(256, argument0, argument1, argument2, position);
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetBodyLinearVelocity(
+	unsigned argument0, unsigned argument1, unsigned argument2, const float* velocity)
+	{
+	return nxRecordBodyVector(512, argument0, argument1, argument2, velocity);
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetBodyAngularVelocity(
+	unsigned argument0, unsigned argument1, unsigned argument2, const float* velocity)
+	{
+	return nxRecordBodyVector(1024, argument0, argument1, argument2, velocity);
+	}

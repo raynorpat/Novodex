@@ -10393,3 +10393,8 @@ The pinned oracle direct call and map-resolved candidate implementation match fo
 ### Fluid emitter world-pose helper phys_fn_003605 (mismatches=2)
 
 The direct pinned-oracle differential compares the unattached path, a matrix-backed actor frame, and a dynamic-body quaternion frame. Adding `1.0f` to actor-backed world-pose X translation is rejected in both actor cases (`mismatches=2`); the restored control compares the full callback pose, callback tuple, return value, and x86 stack balance exactly. See [phase7-fluid-emitter-world-pose-003605.md](phase7-fluid-emitter-world-pose-003605.md).
+
+
+### Fluid emitter post-step body-state caller phys_fn_003624 (mismatches=1)
+
+The direct pinned-oracle differential covers no actor and an attached body with asymmetric non-binary position, linear velocity, and angular velocity. It compares callback order, full callback records and vector words, return value, and x86 stack balance. Reading position from `body+0x154` instead of `+0x158` is rejected (`mismatches=1`); restored control reports zero mismatches. See [phase7-fluid-emitter-body-state-003624.md](phase7-fluid-emitter-body-state-003624.md).

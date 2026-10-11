@@ -67671,13 +67671,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1366",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12563",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle phys_fn_003624 at RVA 0x89930 and the candidate map-resolved nxNpFluidEmitterUpdateBodyState. The two cases cover no actor and an attached body with asymmetric non-binary position, linear velocity, and angular velocity. The probe compares callback order, full callback records and vector words, return value, and x86 stack balance. A position-source mutation from body+0x158 to +0x154 is rejected (mismatches=1); the restored control matches exactly. See evidence/phase7-fluid-emitter-body-state-003624.md.",
+      "notes": "Calls the world-pose helper, then publishes the frame actor body position, linear velocity, and angular velocity through ordered FluidModel callbacks. The direct callback fixture tests no-actor and attached-body paths; extension-backed simulation lifecycle remains open."
     },
     {
       "id": "phys_fn_003625",
