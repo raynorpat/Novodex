@@ -1587,6 +1587,153 @@ int wmain(int argc, wchar_t** argv)
 			}
 	}
 	{
+		// A nonempty emitter range exercises the ordered 003624 -> FluidRun ->
+		// 003601 path without inventing an actor layout. With no frame actor, the
+		// emitter update still publishes its world pose and the repulsion helper
+		// takes its observed early return.
+		void* candidateStepAddress = 0;
+		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"@nxNpFluidStep@12", &candidateStepAddress))
+			{
+			fprintf(stderr, "FAIL candidate Fluid step row missing for nonempty-emitter probe\n");
+			++gFailures;
+			}
+		else
+			{
+			typedef int (__thiscall *FluidStep)(void*, float);
+			FluidStep oracleStep = reinterpret_cast<FluidStep>(image + 0x85a40);
+			FluidStep candidateStep = reinterpret_cast<FluidStep>(candidateStepAddress);
+			unsigned char oracleFluid[0x84] = {}, candidateFluid[0x84] = {};
+			unsigned char oracleBackend[0x534] = {}, candidateBackend[0x534] = {};
+			unsigned char oracleState[8] = {}, candidateState[8] = {};
+			unsigned char oracleCore[0x530] = {}, candidateCore[0x530] = {};
+			unsigned char oracleEmitter[0x48] = {}, candidateEmitter[0x48] = {};
+			void* oracleEmitterList[1] = { oracleEmitter };
+			void* candidateEmitterList[1] = { candidateEmitter };
+			static const unsigned identityPose[12] = {
+				0x3f800000u, 0, 0, 0, 0x3f800000u, 0,
+				0, 0, 0x3f800000u, 0x3e800000u, 0xbf000000u, 0x3f400000u };
+			static const unsigned systemVector[3] = {
+				0x3e800001u, 0xbf000002u, 0x3f400003u };
+			memcpy(oracleCore + 0x520, systemVector, sizeof(systemVector));
+			memcpy(candidateCore + 0x520, systemVector, sizeof(systemVector));
+			*reinterpret_cast<void**>(oracleBackend + 0x24) = oracleCore;
+			*reinterpret_cast<void**>(candidateBackend + 0x24) = candidateCore;
+			*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0x10203040u;
+			*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0x10203040u;
+			*reinterpret_cast<void***>(oracleFluid + 4) = oracleEmitterList;
+			*reinterpret_cast<void***>(oracleFluid + 8) = oracleEmitterList + 1;
+			*reinterpret_cast<void***>(candidateFluid + 4) = candidateEmitterList;
+			*reinterpret_cast<void***>(candidateFluid + 8) = candidateEmitterList + 1;
+			*reinterpret_cast<void**>(oracleFluid + 0x78) = oracleState;
+			*reinterpret_cast<void**>(candidateFluid + 0x78) = candidateState;
+			*reinterpret_cast<unsigned*>(oracleState + 4) = 0xaaaaaaaa;
+			*reinterpret_cast<unsigned*>(candidateState + 4) = 0xaaaaaaaa;
+			*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+			*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+			*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x55667788u;
+			*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x55667788u;
+			for(unsigned i = 0; i != 2; ++i)
+				{
+				unsigned char* emitter = i == 0 ? oracleEmitter : candidateEmitter;
+				void* fluid = i == 0 ? static_cast<void*>(oracleFluid)
+					: static_cast<void*>(candidateFluid);
+				*reinterpret_cast<void**>(emitter + 4) = fluid;
+				*reinterpret_cast<unsigned*>(emitter + 8) = 0x11223344u;
+				memcpy(emitter + 0x18, identityPose, sizeof(identityPose));
+				}
+			const unsigned timestepWord = 0x3eaaaaabu;
+			const float timestep = *reinterpret_cast<const float*>(&timestepWord);
+			typedef void (__cdecl *SetEmitterGlobalPose)(const float*);
+			SetEmitterGlobalPose setGlobalPose = reinterpret_cast<SetEmitterGlobalPose>(
+				GetProcAddress(fluidModel, "NxSetEmitterGlobalPose"));
+			if(!setGlobalPose)
+				{
+				fprintf(stderr, "FAIL FluidModel fixture lacks emitter pose initializer\n");
+				++gFailures;
+				}
+			else
+				{
+				setGlobalPose(reinterpret_cast<const float*>(identityPose));
+				resetCallbacks();
+				gOracleFlagCallbackCount = 0;
+				resetRun();
+				resetRepulsion();
+				gOracleFluidRepulsionRecordCount = 0;
+				unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+				__asm mov oracleEspBefore, esp
+				const int oracleResult = oracleStep(oracleFluid, timestep);
+				__asm mov oracleEspAfter, esp
+				__asm fstp st(0)
+				NxFluidRunCallbackRecord oracleRun = {};
+				const bool oracleRunOk = fluidRunCount() == 1 && getFluidRun(0, &oracleRun);
+				NxFluidEmitterFlagCallbackRecord oracleEmitterCallback = {};
+				const bool oracleEmitterCallbackOk = gOracleFlagCallbackCount == 1;
+				if(oracleEmitterCallbackOk)
+					oracleEmitterCallback = gOracleFlagCallbacks[0];
+
+				setGlobalPose(reinterpret_cast<const float*>(identityPose));
+				resetCallbacks();
+				resetRun();
+				resetRepulsion();
+				unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+				__asm mov candidateEspBefore, esp
+				const int candidateResult = candidateStep(candidateFluid, timestep);
+				__asm mov candidateEspAfter, esp
+				__asm fstp st(0)
+				NxFluidRunCallbackRecord candidateRun = {};
+				const bool candidateRunOk = fluidRunCount() == 1 && getFluidRun(0, &candidateRun);
+				NxFluidEmitterFlagCallbackRecord candidateEmitterCallback = {};
+				const bool candidateEmitterCallbackOk = callbackCount() == 1
+					&& getCallbackRecord(0, &candidateEmitterCallback);
+				bool callbackMatch = oracleRunOk && candidateRunOk
+					&& oracleEmitterCallbackOk && candidateEmitterCallbackOk
+					&& oracleEmitterCallback.kind == 64
+					&& candidateEmitterCallback.kind == oracleEmitterCallback.kind
+					&& oracleEmitterCallback.argument0 == 0x10203040u
+					&& candidateEmitterCallback.argument0 == oracleEmitterCallback.argument0
+					&& oracleEmitterCallback.argument1 == 0x55667788u
+					&& candidateEmitterCallback.argument1 == oracleEmitterCallback.argument1
+					&& oracleEmitterCallback.argument2 == 0x11223344u
+					&& candidateEmitterCallback.argument2 == oracleEmitterCallback.argument2
+					&& !memcmp(oracleEmitterCallback.pose, identityPose, sizeof(identityPose))
+					&& !memcmp(candidateEmitterCallback.pose, oracleEmitterCallback.pose,
+						sizeof(oracleEmitterCallback.pose))
+					&& oracleRun.system == 0x10203040u
+					&& candidateRun.system == oracleRun.system
+					&& oracleRun.fluid == 0x55667788u
+					&& candidateRun.fluid == oracleRun.fluid
+					&& oracleRun.state == reinterpret_cast<unsigned>(oracleState)
+					&& candidateRun.state == reinterpret_cast<unsigned>(candidateState)
+					&& !memcmp(oracleRun.vector, systemVector, sizeof(systemVector))
+					&& !memcmp(candidateRun.vector, oracleRun.vector, sizeof(oracleRun.vector))
+					&& oracleRun.timestep == timestepWord
+					&& candidateRun.timestep == oracleRun.timestep
+					&& oracleRun.option == 1 && candidateRun.option == oracleRun.option;
+				const unsigned timestepAndState =
+					*reinterpret_cast<unsigned*>(oracleFluid + 0x74) == timestepWord
+					&& *reinterpret_cast<unsigned*>(candidateFluid + 0x74) == timestepWord
+					&& *reinterpret_cast<unsigned*>(oracleState + 4) == 0
+					&& *reinterpret_cast<unsigned*>(candidateState + 4) == 0;
+				const unsigned mismatches = !callbackMatch || !timestepAndState
+					|| oracleResult != candidateResult
+					|| oracleEspBefore != oracleEspAfter
+					|| candidateEspBefore != candidateEspAfter
+					|| gOracleFluidRepulsionRecordCount != 0 || repulsionCount() != 0;
+				gFailures += mismatches;
+				printf("fluid substep nonempty-emitter cases=1 pose_callback=%u fluid_run=%u "
+					"payloads_match=%u timestep=%u state-clear=%u repulsion-skipped=%u "
+					"stack=%u/%u mismatches=%u\n",
+					oracleEmitterCallbackOk && candidateEmitterCallbackOk,
+					oracleRunOk && candidateRunOk, callbackMatch,
+					timestepAndState, timestepAndState,
+					gOracleFluidRepulsionRecordCount == 0 && repulsionCount() == 0,
+					oracleEspBefore == oracleEspAfter,
+					candidateEspBefore == candidateEspAfter, mismatches);
+				}
+			}
+	}
+	{
 		void* candidateManagerStepAddress = 0;
 		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 			"@nxFluidManagerStep@12", &candidateManagerStepAddress))

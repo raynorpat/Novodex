@@ -104,6 +104,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid surface-mesh empty cases=1 oracle_callbacks=0 candidate_callbacks=0 stack=1/1 mismatches=0'
 		'fluid manager surface-mesh traversal fluids=2 oracle_callbacks=2 candidate_callbacks=2 mismatches=0'
 		'fluid substep empty-emitter cases=1 callback=1 timestep=1 state-clear=1 mismatches=0'
+		'fluid substep nonempty-emitter cases=1 pose_callback=1 fluid_run=1 payloads_match=1 timestep=1 state-clear=1 repulsion-skipped=1 stack=1/1 mismatches=0'
 		'fluid manager step live-fluids=2 oracle_callbacks=2 candidate_callbacks=2 order=1 timestep=1 state=1 stack=1/1 mismatches=0'
 		'implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0'
 		'implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0'
@@ -5809,7 +5810,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2637  # includes bodyless and live-body fluid-emitter repulsion differentials
+    '5' = 2638  # includes the nonempty per-fluid emitter substep differential
+               # plus bodyless and live-body fluid-emitter repulsion differentials
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
@@ -5855,7 +5857,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1664  # includes bodyless and live-body fluid-emitter repulsion differentials
+	'7' = 1665  # includes the nonempty per-fluid emitter substep differential
+			   # plus bodyless and live-body fluid-emitter repulsion differentials
                # plus current scene/emitter assertions
                # plus retained contact, trigger, and active-root buffer teardown
                # plus recycled shape, actor, and body ID buffer teardown

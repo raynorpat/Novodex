@@ -65353,9 +65353,9 @@
       "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1303",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12319",
-      "static_proof": "Partial: RVA 0x85a40 stores the stack timestep at fluid+0x74, copies the three-word system vector through [backend+0x24]+0x520, dispatches FluidRun with system/fluid/state/vector/timestep/1, then clears state+4. The empty-emitter path is transcribed; the nonempty emitter pre/post passes remain unproven.",
-      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle RVA 0x85a40 and the map-resolved candidate entry with an empty emitter range. It compares the FluidRun callback tuple/vector/timestep bits, return, timestep store, and state clear. The same fixture drives two live fluids through 003630; see evidence/phase7-fluid-substep-003495-manager-clean-003630.md.",
-      "notes": "Private x86 thiscall/ret-4 substep entry. Depends on the already-gated 003624 emitter body-state update and the still-open 003601 body-repulsion helper for nonempty emitters. Row remains open until those branches are directly tested.",
+      "static_proof": "Partial: RVA 0x85a40 stores the stack timestep at fluid+0x74, calls 003624 for each emitter before FluidRun, calls 003601 for each emitter afterward, then clears state+4. Empty and one-element bodyless-emitter paths are transcribed; attached-body execution through the complete caller remains separately covered by direct helper probes.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle RVA 0x85a40 and the map-resolved candidate with both empty and one-element bodyless-emitter ranges. The nonempty case compares the 003624 pose callback tuple/12 words, FluidRun arguments/vector/timestep, state stores/clear, return, skipped bodyless repulsion, and stack. A mutation removing the pre-pass update call is rejected (pose_callback=0, mismatches=1); restored output is exact. The same fixture drives two live fluids through 003630. See evidence/phase7-fluid-nonempty-emitter-substep-003495.md and evidence/phase7-fluid-substep-003495-manager-clean-003630.md.",
+      "notes": "Private x86 thiscall/ret-4 substep entry. Empty and nonempty bodyless-emitter cases are gated; attached-body behavior is proven at the 003624/003601 helper boundaries. Keep the row open until the full attached-emitter call chain and remaining 003601 guards are exercised.",
       "implementation": "Physics/src/NpFluidEmitter.cpp"
     },
     {
@@ -67265,8 +67265,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1354",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12520",
       "static_proof": "Partial: IDA shows actor/flag guards, EmitterGetEnabledFlag and EmitterGetBodyRepulsion callbacks, FluidGetParticleMass scaling, then an NX_IMPULSE/wake call to reconstructed phys_fn_000782. Callback ABI and FPU preservation are not yet independently verified.",
-      "dynamic_proof": null,
-      "notes": "Called by 003495 after FluidRun for each live emitter. Keep open until callbacks, non-binary scaling, actor-record effects, return behavior, and x87 stack are compared directly against the pinned DLL.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x881c0 and the map-resolved candidate for the enabled bodyless-actor callback case; it compares callback order/arguments, vector/mass words, return, and stack. NxPhysicsFluidEmitterBodyRepulsionTests calls the same row with SDK-created live actors in isolated oracle/candidate pairs and compares all callback payloads, force/torque application, body-state words, and stack. A no-mass-scaling mutation is rejected with stdout_delta=2. See evidence/phase7-fluid-emitter-body-repulsion-003601.md and evidence/phase7-fluid-emitter-live-body-repulsion-003601.md.",
+      "notes": "Called by 003495 after FluidRun for each live emitter. Enabled bodyless and live-body application paths are directly gated; actor-null/flag-disabled/enabled-callback false guards remain open.",
       "implementation": "Physics/src/NpFluidEmitter.cpp"
     },
     {
