@@ -67635,13 +67635,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1365",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12562",
       "static_proof": null,
-      "dynamic_proof": "The zero-detach arm is exercised through the oracle manager actor-release path and candidate helper. Changing the final EmitterSetAttachedFlag argument from 0 to 1 is caught with mismatches=4; restored control checks the global-pose read, local-pose write, global-pose callback, and attached=false callback. The nonzero attach/update arm is not reconstructed. See evidence/phase7-fluid-actor-release.md.",
-      "notes": "Only the argument-zero detach arm used by actor release is implemented; the nonzero attach/update branch remains open."
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle phys_fn_003622 and the candidate map-resolved nxNpFluidEmitterSetActor. Exact direct differentials cover the zero-detach callback and both nonzero actor pose sources: matrix-backed actor transform and dynamic-body quaternion transform. Each preserves all 12 local pose words, backend world-pose callback payload, attached flag, callback order, and return value. Forcing the nonzero EmitterSetAttachedFlag argument to zero is detected (two targeted case mismatches); restored control is exact. See evidence/phase7-fluid-actor-release.md.",
+      "notes": "The detach and attach/update branches are reconstructed and dynamically gated for matrix-backed and dynamic-body actor transforms."
     },
     {
       "id": "phys_fn_003623",

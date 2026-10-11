@@ -39,6 +39,8 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	virtual NxVec3 getLocalPositionVal() const;
 	//! phys_fn_003820 (0x0008c8d0), helper 003567 copies internal+0x18.
 	virtual NxMat33 getLocalOrientationVal() const;
+	//! phys_fn_003622 sets or clears the emitter's actor-relative frame.
+	virtual void setFrameActor(NxActor* actor);
 
 	//! phys_fn_003850/003852: the bitfield is stored at internal emitter +0x10.
 	virtual void setFlag(NxFluidEmitterFlag flag, bool enabled);

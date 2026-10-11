@@ -1,6 +1,7 @@
 #include "fluids/NpFluidEmitter.h"
 #include "NpSceneGuard.h"
 #include "FoundationSDK.h"
+#include "NxMat34.h"
 
 #include <windows.h>
 #include <string.h>
@@ -98,6 +99,91 @@ extern "C" void __cdecl nxNpFluidNotifyActorReleased(void* fluid, void* body)
 			reinterpret_cast<const float*>(internal + 0x18));
 		setAttachedFlag(context, fluidHandle, emitterHandle, 0);
 		}
+	}
+
+// phys_fn_003622 (0x000898d0) binds an emitter to an actor while preserving its
+// world-space pose. The stored local pose is derived through the actor's rigid
+// transform, then recomposed for the backend before the attached bit changes.
+extern "C" int __cdecl nxNpFluidEmitterSetActor(
+	void* internal, void* actor)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluidBytes + 0x80);
+	unsigned emitterHandle = *reinterpret_cast<unsigned*>(bytes + 8);
+	typedef const float* (__cdecl *GetGlobalPose)(unsigned, unsigned, unsigned);
+	typedef int (__cdecl *SetGlobalPose)(unsigned, unsigned, unsigned, const float*);
+	typedef int (__cdecl *SetAttachedFlag)(unsigned, unsigned, unsigned, unsigned char);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	GetGlobalPose getGlobalPose = reinterpret_cast<GetGlobalPose>(
+		GetProcAddress(fluidModel, "EmitterGetGlobalPose"));
+	SetGlobalPose setGlobalPose = reinterpret_cast<SetGlobalPose>(
+		GetProcAddress(fluidModel, "EmitterSetGlobalPose"));
+	SetAttachedFlag setAttachedFlag = reinterpret_cast<SetAttachedFlag>(
+		GetProcAddress(fluidModel, "EmitterSetAttachedFlag"));
+	const float* globalWords = getGlobalPose(context, fluidHandle, emitterHandle);
+	NxMat34 globalPose;
+	memcpy(&globalPose, globalWords, sizeof(globalPose));
+	*reinterpret_cast<void**>(bytes + 0x14) = actor;
+	NxMat34 localPose = globalPose;
+	NxMat34 recomposedPose = globalPose;
+	if(actor)
+		{
+		NxMat34 actorPose;
+		unsigned char* actorBytes = static_cast<unsigned char*>(actor);
+		void* body = *reinterpret_cast<void**>(actorBytes + 8);
+		if(body)
+			{
+			const float* state = reinterpret_cast<const float*>(body);
+			const float x = state[9], y = state[10], z = state[11], w = state[12];
+			// The oracle builds this matrix with x87 products and explicitly
+			// rounds the doubled square terms before the diagonal subtraction.
+			volatile float twiceYY = y * y + y * y;
+			const double twiceZZ = static_cast<double>(z) * z
+				+ static_cast<double>(z) * z;
+			const double twiceXX = static_cast<double>(x) * x
+				+ static_cast<double>(x) * x;
+			float rotation[9];
+			rotation[0] = static_cast<float>(1.0 - twiceYY - twiceZZ);
+			rotation[1] = (x * y + x * y) - (z * w + z * w);
+			rotation[2] = (x * w + x * w) + (y * z + y * z);
+			rotation[3] = (z * w + z * w) + (x * y + x * y);
+			const double oneMinusTwiceXX = 1.0 - twiceXX;
+			rotation[4] = static_cast<float>(oneMinusTwiceXX - twiceZZ);
+			rotation[5] = (z * y + z * y) - (w * x + w * x);
+			rotation[6] = (z * x + z * x) - (y * w + y * w);
+			rotation[7] = (w * x + w * x) + (z * y + z * y);
+			rotation[8] = static_cast<float>(static_cast<float>(oneMinusTwiceXX) - twiceYY);
+			NxMat33 matrix;
+			matrix.setRowMajor(rotation);
+			NxVec3 translation(state[6], state[7], state[8]);
+			actorPose = NxMat34(matrix, translation);
+			}
+		else
+			memcpy(&actorPose, actorBytes + 0x20, sizeof(actorPose));
+		localPose.multiplyInverseRTLeft(actorPose, globalPose);
+		recomposedPose.multiply(actorPose, localPose);
+		}
+	memcpy(bytes + 0x18, &localPose, sizeof(localPose));
+	setGlobalPose(context, fluidHandle, emitterHandle,
+		reinterpret_cast<const float*>(&recomposedPose));
+	return setAttachedFlag(context, fluidHandle, emitterHandle, actor ? 1 : 0);
+	}
+
+void NpFluidEmitter::setFrameActor(NxActor* actor)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(0xdd);
+		return;
+		}
+	nxNpFluidEmitterSetActor(mInternal, actor);
+	nxNpSceneGuardLeave(link);
 	}
 
 // phys_fn_003792 (0x0008c2d0). The oracle first installs the interface and

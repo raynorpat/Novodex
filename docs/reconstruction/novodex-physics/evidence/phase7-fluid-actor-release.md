@@ -33,5 +33,14 @@ live fluid/emitter contents independently because the public
 `NxScene::createFluid` backend path remains unavailable. Together these checks
 cover the `phys_fn_000628` call site and the reachable release chain.
 
-`phys_fn_003622`'s nonzero attach/update branch remains open; this close covers
-only the zero-detach arm used by actor release.
+`phys_fn_003622` (`NpFluidEmitter::setFrameActor`) now reconstructs both its
+detach and attach/update arms. The direct oracle/candidate differential checks
+the zero-detach behavior plus nonzero actor attachment through both supported
+pose sources: a rotated matrix-backed frame actor and a dynamic-body
+quaternion frame with all four components nonzero.
+The tests compare the internal 12-word local pose, backend world-pose callback
+payload, attached flag, callback order, and return value. Restored control:
+both attach cases report `mismatches=0`. Forcing the nonzero attached-flag
+argument to zero is caught with `mismatches=2` across the two cases.
+The fresh full Phase 7 gate passes at 1,652/1,649 registered coverage
+assertions.

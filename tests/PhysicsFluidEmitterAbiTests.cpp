@@ -471,6 +471,13 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-manager actor-release row could not be resolved from its map\n");
 		return 1;
 		}
+	void* candidateSetActorAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterSetActor", &candidateSetActorAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter actor binding row could not be resolved from its map\n");
+		return 1;
+		}
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
 	void* candidateCtorAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
@@ -951,6 +958,146 @@ int wmain(int argc, wchar_t** argv)
 			candidatePoseCallbackCount,
 			oracleStateMismatches + candidateStateMismatches, callbackMismatches);
 		}
+
+	// phys_fn_003622's nonzero branch attaches an emitter to an actor while
+	// preserving its backend world pose and deriving the corresponding local
+	// pose. A quarter-turn actor frame exercises rotation cross terms.
+	typedef int (__thiscall *OracleEmitterSetActor)(void*, void*);
+	typedef int (__cdecl *CandidateEmitterSetActor)(void*, void*);
+	OracleEmitterSetActor oracleSetActor = reinterpret_cast<OracleEmitterSetActor>(
+		image + 0x898d0);
+	CandidateEmitterSetActor candidateSetActor =
+		reinterpret_cast<CandidateEmitterSetActor>(candidateSetActorAddress);
+	unsigned char oracleAttachInternal[0x90], candidateAttachInternal[0x90];
+	unsigned char oracleAttachFluid[0x84], candidateAttachFluid[0x84];
+	unsigned char oracleAttachBackend[0x34], candidateAttachBackend[0x34];
+	unsigned char actorFrame[0x50];
+	memset(oracleAttachInternal, 0, sizeof(oracleAttachInternal));
+	memset(candidateAttachInternal, 0, sizeof(candidateAttachInternal));
+	memset(oracleAttachFluid, 0, sizeof(oracleAttachFluid));
+	memset(candidateAttachFluid, 0, sizeof(candidateAttachFluid));
+	memset(oracleAttachBackend, 0, sizeof(oracleAttachBackend));
+	memset(candidateAttachBackend, 0, sizeof(candidateAttachBackend));
+	memset(actorFrame, 0, sizeof(actorFrame));
+	*reinterpret_cast<void**>(oracleAttachInternal + 4) = oracleAttachFluid;
+	*reinterpret_cast<void**>(candidateAttachInternal + 4) = candidateAttachFluid;
+	*reinterpret_cast<unsigned*>(oracleAttachInternal + 8) = 0x33445566u;
+	*reinterpret_cast<unsigned*>(candidateAttachInternal + 8) = 0x33445566u;
+	*reinterpret_cast<void**>(oracleAttachFluid + 0x7c) = oracleAttachBackend;
+	*reinterpret_cast<void**>(candidateAttachFluid + 0x7c) = candidateAttachBackend;
+	*reinterpret_cast<unsigned*>(oracleAttachFluid + 0x80) = 0x55667788u;
+	*reinterpret_cast<unsigned*>(candidateAttachFluid + 0x80) = 0x55667788u;
+	*reinterpret_cast<unsigned*>(oracleAttachBackend + 0x30) = 0xa1b2c3d4u;
+	*reinterpret_cast<unsigned*>(candidateAttachBackend + 0x30) = 0xa1b2c3d4u;
+	float actorPose[12] = {
+		0, -1, 0, 1, 0, 0, 0, 0, 1, 2, -3, 1.5f };
+	memcpy(actorFrame + 0x20, actorPose, sizeof(actorPose));
+	static const unsigned attachGlobalPoseBits[12] = {
+		0x3f800000u, 0, 0, 0, 0x3f800000u, 0,
+		0, 0, 0x3f800000u, 0x41200000u, 0x41a00000u, 0x41f00000u };
+	memcpy(gOracleEmitterGlobalPose, attachGlobalPoseBits, sizeof(attachGlobalPoseBits));
+	setFixturePose(reinterpret_cast<const float*>(attachGlobalPoseBits));
+	gOracleFlagCallbackCount = 0;
+	const int oracleAttachResult = oracleSetActor(oracleAttachInternal, actorFrame);
+	NxFluidEmitterFlagCallbackRecord oracleAttachCallbacks[3] = {};
+	const unsigned oracleAttachCallbackCount = gOracleFlagCallbackCount;
+	if(oracleAttachCallbackCount == 3)
+		memcpy(oracleAttachCallbacks, gOracleFlagCallbacks, sizeof(oracleAttachCallbacks));
+	resetCallbacks();
+	setFixturePose(reinterpret_cast<const float*>(attachGlobalPoseBits));
+	const int candidateAttachResult = candidateSetActor(candidateAttachInternal, actorFrame);
+	NxFluidEmitterFlagCallbackRecord candidateAttachCallbacks[3] = {};
+	const unsigned candidateAttachCallbackCount = callbackCount();
+	for(unsigned i = 0; i < candidateAttachCallbackCount && i < 3; ++i)
+		getCallbackRecord(i, &candidateAttachCallbacks[i]);
+	unsigned attachMismatches = oracleAttachCallbackCount == 3
+		&& candidateAttachCallbackCount == 3 ? 0 : 1;
+	if(oracleAttachResult != candidateAttachResult
+		|| *reinterpret_cast<void**>(oracleAttachInternal + 0x14) != actorFrame
+		|| *reinterpret_cast<void**>(candidateAttachInternal + 0x14) != actorFrame
+		|| memcmp(oracleAttachInternal + 0x18, candidateAttachInternal + 0x18, 0x30) != 0
+		|| memcmp(oracleAttachInternal + 0x3c, candidateAttachInternal + 0x3c, 0x0c) != 0
+		|| memcmp(oracleAttachCallbacks, candidateAttachCallbacks,
+			sizeof(oracleAttachCallbacks)) != 0)
+		++attachMismatches;
+	if(oracleAttachResult != candidateAttachResult)
+		printf("fluid emitter attach result oracle=%d candidate=%d\n",
+			oracleAttachResult, candidateAttachResult);
+	if(memcmp(oracleAttachInternal + 0x18, candidateAttachInternal + 0x18, 0x30) != 0)
+		{
+		printf("fluid emitter attach local pose differs");
+		for(unsigned i = 0; i < 12; ++i)
+			printf(" %08x/%08x", *reinterpret_cast<unsigned*>(oracleAttachInternal + 0x18 + i * 4),
+				*reinterpret_cast<unsigned*>(candidateAttachInternal + 0x18 + i * 4));
+		printf("\n");
+		}
+	if(memcmp(oracleAttachInternal + 0x3c, candidateAttachInternal + 0x3c, 0x0c) != 0)
+		printf("fluid emitter attach local position differs\n");
+	for(unsigned i = 0; i < 3; ++i)
+		if(memcmp(&oracleAttachCallbacks[i], &candidateAttachCallbacks[i],
+			sizeof(oracleAttachCallbacks[i])) != 0)
+			printf("fluid emitter attach callback %u differs kind=%u/%u\n", i,
+				oracleAttachCallbacks[i].kind, candidateAttachCallbacks[i].kind);
+	gFailures += attachMismatches;
+	printf("fluid emitter attach matrix-frame cases=1 oracle_callbacks=%u "
+		"candidate_callbacks=%u mismatches=%u\n", oracleAttachCallbackCount,
+		candidateAttachCallbackCount, attachMismatches);
+
+	// Exercise the second actor-pose source: a dynamic body record with its
+	// quaternion and translation stored in the body layout.
+	unsigned char bodyRecord[0x40];
+	memset(bodyRecord, 0, sizeof(bodyRecord));
+	*reinterpret_cast<void**>(actorFrame + 8) = bodyRecord;
+	float* bodyState = reinterpret_cast<float*>(bodyRecord);
+	bodyState[6] = 2.0f; bodyState[7] = -3.0f; bodyState[8] = 1.5f;
+	bodyState[9] = 0.5f; bodyState[10] = 0.5f;
+	bodyState[11] = 0.5f; bodyState[12] = 0.5f;
+	memset(oracleAttachInternal, 0, sizeof(oracleAttachInternal));
+	memset(candidateAttachInternal, 0, sizeof(candidateAttachInternal));
+	*reinterpret_cast<void**>(oracleAttachInternal + 4) = oracleAttachFluid;
+	*reinterpret_cast<void**>(candidateAttachInternal + 4) = candidateAttachFluid;
+	*reinterpret_cast<unsigned*>(oracleAttachInternal + 8) = 0x33445566u;
+	*reinterpret_cast<unsigned*>(candidateAttachInternal + 8) = 0x33445566u;
+	memcpy(gOracleEmitterGlobalPose, attachGlobalPoseBits, sizeof(attachGlobalPoseBits));
+	setFixturePose(reinterpret_cast<const float*>(attachGlobalPoseBits));
+	gOracleFlagCallbackCount = 0;
+	const int oracleBodyAttachResult = oracleSetActor(oracleAttachInternal, actorFrame);
+	NxFluidEmitterFlagCallbackRecord oracleBodyAttachCallbacks[3] = {};
+	const unsigned oracleBodyAttachCallbackCount = gOracleFlagCallbackCount;
+	if(oracleBodyAttachCallbackCount == 3)
+		memcpy(oracleBodyAttachCallbacks, gOracleFlagCallbacks,
+			sizeof(oracleBodyAttachCallbacks));
+	resetCallbacks();
+	setFixturePose(reinterpret_cast<const float*>(attachGlobalPoseBits));
+	const int candidateBodyAttachResult = candidateSetActor(candidateAttachInternal, actorFrame);
+	NxFluidEmitterFlagCallbackRecord candidateBodyAttachCallbacks[3] = {};
+	const unsigned candidateBodyAttachCallbackCount = callbackCount();
+	for(unsigned i = 0; i < candidateBodyAttachCallbackCount && i < 3; ++i)
+		getCallbackRecord(i, &candidateBodyAttachCallbacks[i]);
+	unsigned bodyAttachMismatches = oracleBodyAttachCallbackCount == 3
+		&& candidateBodyAttachCallbackCount == 3 ? 0 : 1;
+	if(oracleBodyAttachResult != candidateBodyAttachResult
+		|| memcmp(oracleAttachInternal + 0x18, candidateAttachInternal + 0x18, 0x30) != 0
+		|| memcmp(oracleBodyAttachCallbacks, candidateBodyAttachCallbacks,
+			sizeof(oracleBodyAttachCallbacks)) != 0)
+		++bodyAttachMismatches;
+	if(memcmp(oracleAttachInternal + 0x18, candidateAttachInternal + 0x18, 0x30) != 0)
+		{
+		printf("fluid emitter body local pose differs");
+		for(unsigned i = 0; i < 12; ++i)
+			printf(" %08x/%08x", *reinterpret_cast<unsigned*>(oracleAttachInternal + 0x18 + i * 4),
+				*reinterpret_cast<unsigned*>(candidateAttachInternal + 0x18 + i * 4));
+		printf("\n");
+		}
+	for(unsigned i = 0; i < 3; ++i)
+		if(memcmp(&oracleBodyAttachCallbacks[i], &candidateBodyAttachCallbacks[i],
+			sizeof(oracleBodyAttachCallbacks[i])) != 0)
+			printf("fluid emitter body callback %u differs\n", i);
+	gFailures += bodyAttachMismatches;
+	printf("fluid emitter attach quaternion-frame cases=1 oracle_callbacks=%u "
+		"candidate_callbacks=%u mismatches=%u\n", oracleBodyAttachCallbackCount,
+		candidateBodyAttachCallbackCount, bodyAttachMismatches);
+
 	nxUnbindOracleEmitterFlagCallbacks(image, oldCallbackValues, callbackPageProtection);
 	FreeLibrary(fluidModel);
 	FreeLibrary(candidatePhysics);

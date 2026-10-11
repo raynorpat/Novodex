@@ -10377,9 +10377,14 @@ The oracle differential seeds one fluid with three emitters and rejects a candid
 
 ### NpFluid actor-release row phys_fn_003485 (mismatches=49)
 
-The same oracle differential rejects a reversed frame-actor comparison (`mismatches=49`); the zero-detach arm also rejects a wrong attached-flag callback (`mismatches=4`). The nonzero attach arm of `phys_fn_003622` remains open. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
+The same oracle differential rejects a reversed frame-actor comparison (`mismatches=49`); the zero-detach arm also rejects a wrong attached-flag callback (`mismatches=4`). The nonzero attach arm of `phys_fn_003622` is now mutation-falsified separately; see [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
 
 
 ### Scene releaseActor fluid-manager call site phys_fn_000628 (stdout_delta=2)
 
 The registered `NxPhysicsSimulationTests` public actor-release fixture rejects suppressing the conditional manager notification call (`stdout_delta=2`). The restored control is exact; the seeded manager/emitter oracle differential above exercises the nonempty chain. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
+
+
+### Fluid emitter frame-actor binding row phys_fn_003622 (mismatches=2)
+
+The pinned oracle direct call and map-resolved candidate implementation match for the nonzero actor-attach path with both matrix-backed and dynamic-body quaternion frames. Forcing the backend attached flag to zero is caught by both cases (`mismatches=2`); the restored control compares all local-pose words and backend callback payloads exactly. The zero-detach arm is also covered by the actor-release fixture. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
