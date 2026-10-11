@@ -3573,14 +3573,14 @@
     "phys_fn_004171"
    ],
    "rows": {
-    "discovered": 5,
-    "dynamically_gated": 2,
-    "reconstructed": 6
+    "discovered": 4,
+    "dynamically_gated": 4,
+    "reconstructed": 5
    },
    "bytes": {
-    "discovered": 1195,
-    "dynamically_gated": 203,
-    "reconstructed": 1578
+    "discovered": 1190,
+    "dynamically_gated": 297,
+    "reconstructed": 1489
    },
    "phases": {
     "6": 13

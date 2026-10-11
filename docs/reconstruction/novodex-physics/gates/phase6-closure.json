@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 154 rows are closed (4 oracle differentials, 150 mutation-falsified); 279 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 156 rows are closed (4 oracle differentials, 152 mutation-falsified); 277 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. The allocator release rows 004149/004151 are directly map-resolved and mutation-falsified by NxPhysicsAllocatorReleaseTests.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the remaining Phase 6 falsification work: 270 rows.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at this row. This is the remaining Phase 6 falsification work: 258 rows.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -64,10 +64,10 @@
     ]
   },
   "counts": {
-    "differential_falsified": 150,
+    "differential_falsified": 152,
     "oracle_differential_falsified": 4,
-    "deferred_reconstructed_not_falsified": 260,
-    "deferred_not_reconstructed_in_phase": 19
+    "deferred_reconstructed_not_falsified": 259,
+    "deferred_not_reconstructed_in_phase": 18
   },
   "closed": [
     {
@@ -1614,6 +1614,26 @@
         "detected": "mismatches=39"
       },
       "note": "Direct 004395 impulse-row differential and body-application mutation; see evidence/phase6-joint-support-apply-impulse-004395.md."
+    },
+    {
+      "id": "phys_fn_004149",
+      "rva": "0x0009a500",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsAllocatorReleaseTests",
+      "falsification": {
+        "mutation": "Temporarily suppressed the candidate release for field +0x14 in the shared production helper, rebuilt NxPhysics.dll, and ran the registered NxPhysicsAllocatorReleaseTests staged-pair differential. The oracle exited 0 with both rows at failures=0; the candidate exited 1 with four failing occupancy masks for each row (stdout_delta=4), while stderr remained exact. Restoring the release and rebuilding returned both candidate rows to failures=0 and the full transcript to an exact match (both exits 0, stdout_delta=0, exact stderr).",
+        "detected": "stdout_delta=4"
+      }
+    },
+    {
+      "id": "phys_fn_004151",
+      "rva": "0x0009a560",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsAllocatorReleaseTests",
+      "falsification": {
+        "mutation": "Temporarily suppressed the candidate release for field +0x14 in the shared production helper, rebuilt NxPhysics.dll, and ran the registered NxPhysicsAllocatorReleaseTests staged-pair differential. The oracle exited 0 with both rows at failures=0; the candidate exited 1 with four failing occupancy masks for each row (stdout_delta=4), while stderr remained exact. Restoring the release and rebuilding returned both candidate rows to failures=0 and the full transcript to an exact match (both exits 0, stdout_delta=0, exact stderr).",
+        "detected": "stdout_delta=4"
+      }
     }
   ],
   "deferred": [
@@ -1957,23 +1977,6 @@
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004149",
-      "rva": "0x0009a500",
-      "size": 89,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004151",
-      "rva": "0x0009a560",
-      "size": 5,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_004153",

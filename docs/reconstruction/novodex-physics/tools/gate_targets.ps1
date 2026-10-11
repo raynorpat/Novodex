@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests', 'NxPhysicsSDKTests', 'NxPhysicsPopulatedSceneTeardownTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests')
-    '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests')
+    '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsAllocatorReleaseTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsPopulatedSceneTeardownTests')
     '8' = @()
 }
@@ -3495,6 +3495,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'ccd step=0 x=40e00000 vx=100.000 ready=1 fetched=1'
         'ccd step=1 x=be9eb858 vx=0.400 ready=1 fetched=1'
     )
+    'NxPhysicsAllocatorReleaseTests' = @(
+        'allocrelease row=004149 cases=8 failures=0'
+        'allocrelease row=004151 cases=8 failures=0'
+    )
     'NxPhysicsSceneBoundsPlanesTests' = @(
         # The descriptor creates six static AABB faces and the default ground plane.
         'scene bounds_planes verified=6 faces=xmax,xmin,ymax,ymin,zmax,zmin'
@@ -5814,7 +5818,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1599  # all registered Phase 6 staged-pair and oracle-differential assertions
+    '6' = 1601  # all registered Phase 6 staged-pair and oracle-differential assertions
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
@@ -5919,6 +5923,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSceneVisualizeTests',
     'NxPhysicsSimulationTests',
     'NxPhysicsCcdSimulationTests',
+    'NxPhysicsAllocatorReleaseTests',
     'NxPhysicsPairFlagTests',
     'NxPhysicsMeshSimulationTests',
     'NxPhysicsTriggerSimulationTests',

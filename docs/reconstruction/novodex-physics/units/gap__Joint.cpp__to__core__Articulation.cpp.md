@@ -42,11 +42,11 @@ void __fastcall FUN_1009a4e0(undefined4 *param_1)
 
 ```
 
-## phys_fn_004149 (0x0009a500, 89 B, reconstructed)
+## phys_fn_004149 (0x0009a500, 89 B, reconstructed and mutation-falsified)
 
 - ambiguous: yes
-- source: three-field allocator-singleton release (0x9a500)
-- implementation: None
+- source: Physics/src/ObjectModel.cpp, three-field allocator-singleton release (0x9a500)
+- implementation: `nxReleaseAllocatorFields004149`, candidate map symbol `@nxReleaseAllocatorFields004149@4`
 - prototype: undefined __fastcall FUN_1009a500(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000492 (0x0000fb70), phys_fn_004151 (0x0009a560)
@@ -79,11 +79,11 @@ void __fastcall FUN_1009a500(int param_1)
 
 ```
 
-## phys_fn_004151 (0x0009a560, 5 B, discovered)
+## phys_fn_004151 (0x0009a560, 5 B, reconstructed and mutation-falsified)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/ObjectModel.cpp, five-byte forwarding row to phys_fn_004149
+- implementation: `nxReleaseAllocatorFields004151`, candidate map symbol `@nxReleaseAllocatorFields004151@4`
 - prototype: undefined __fastcall thunk_FUN_1009a500(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000663 (0x00013f30), phys_fn_001982 (0x0004ca90), phys_fn_006312 (0x00103000)

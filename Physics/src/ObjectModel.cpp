@@ -37,6 +37,37 @@ extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner)
 #define NOMINMAX
 #include <windows.h>
 
+// phys_fn_004149 (0x9a500) releases the three owned allocations in the
+// allocator-backed object record. phys_fn_004151 (0x9a560) is its five-byte
+// forwarding row. Keep map-resolved entrypoints for the staged-pair probe so
+// the production DLL, rather than a test-side transcription, is exercised.
+static void nxReleaseAllocatorFields(void* self)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(self);
+	const unsigned offsets[] = { 0x0c, 0x14, 0x08 };
+	for(unsigned i = 0; i < sizeof(offsets) / sizeof(offsets[0]); ++i)
+		{
+		void** field = reinterpret_cast<void**>(bytes + offsets[i]);
+		if(*field)
+			{
+			nxFoundationSDKAllocator->free(*field);
+			*field = 0;
+			}
+		}
+	}
+
+extern "C" __declspec(noinline) void __fastcall nxReleaseAllocatorFields004149(
+	void* self)
+	{
+	nxReleaseAllocatorFields(self);
+	}
+
+extern "C" __declspec(noinline) void __fastcall nxReleaseAllocatorFields004151(
+	void* self)
+	{
+	nxReleaseAllocatorFields004149(self);
+	}
+
 // The original grows the scene's three per-slot dword vectors in 256-entry
 // blocks. Keep this helper in ObjectModel.cpp because the object-layout gate
 // links this translation unit without Scene.cpp.

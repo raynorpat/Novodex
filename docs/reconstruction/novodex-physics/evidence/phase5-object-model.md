@@ -9067,3 +9067,8 @@ match the oracle with zero mismatches; the heap-backed flag-1 secondary calls
 and primary deleting-destructor calls also match for all five families. The
 member-only negative control still reports five mismatches. Candidate
 `NxPhysics.dll` SHA-256: `1b421182452ce1bd6478e4da322c345341ae6a13a7faf17bc8a0ec75596277c9`.
+
+Fresh 2026-10-11 Release gate rerun: Phase 5 passes at 2,622/2,622 assertions.
+All five family-specific secondary-vtable destructor probes and all five
+primary deleting-destructor probes still match; the member-only model negative
+control still fails for all five shapes.

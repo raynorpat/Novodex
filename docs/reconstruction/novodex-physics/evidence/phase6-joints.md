@@ -3,6 +3,9 @@
 This file records Phase 6 evidence. It begins with the harness and an audit of
 the export contract, because the second turned out to bound the first.
 
+The `NxPhysicsAllocatorReleaseTests` omission of the `+0x14` free catches `phys_fn_004149` and `phys_fn_004151` with `stdout_delta=4`. Full details and the restored exact differential are in
+[`phase6-allocator-release-004149-004151.md`](phase6-allocator-release-004149-004151.md).
+
 ## 6a. State on entry
 
 `program.json` records phases 4 through 8 as `pending`. The oracle census is

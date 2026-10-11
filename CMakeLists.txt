@@ -931,6 +931,14 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	if(MSVC)
 		target_compile_options(NxPhysicsFluidEmitterAbiTests PRIVATE /arch:IA32)
 	endif()
+	add_executable(NxPhysicsAllocatorReleaseTests tests/PhysicsAllocatorReleaseTests.cpp)
+	target_include_directories(NxPhysicsAllocatorReleaseTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	target_link_libraries(NxPhysicsAllocatorReleaseTests bcrypt)
+	add_dependencies(NxPhysicsAllocatorReleaseTests NxPhysics)
+	if(MSVC)
+		target_compile_options(NxPhysicsAllocatorReleaseTests PRIVATE /arch:IA32)
+	endif()
 
 	# Phase 5 object-layout and shape-vtable differentials. They pin the
 	# reconstructed object families, constructor bytes, owner accessors, and
