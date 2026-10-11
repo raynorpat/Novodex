@@ -10359,3 +10359,7 @@ The registered `NxPhysicsSimulationTests` staged-pair differential reaches `phys
 ### Scene checkResults status-mask row phys_fn_000396 (stdout_delta=3846)
 
 The registered NxPhysicsSimulationTests staged-pair differential now asserts through public NxScene that checkResults(static_cast<NxSimulationStatus>(0), false) returns true. Changing the status-mask early return from true to false is rejected (stdout_delta=3846, oracle exit 0, candidate exit 1); restoring and rebuilding returns the complete target to exact output. See [phase7-checkresults-status-mask-000396.md](phase7-checkresults-status-mask-000396.md).
+
+### Scene isWritable row phys_fn_000392 (stdout_delta=2)
+
+The public NxPhysicsSimulationTests staged-pair fixture records the initial isWritable result. Changing the successful return after acquiring and releasing the scene write lock is rejected with stdout_delta=2, both exits zero, and exact stderr; the restored control is exact. See [phase7-iswritable-000392.md](phase7-iswritable-000392.md).
