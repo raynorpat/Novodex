@@ -4,6 +4,8 @@
 #include <fstream>
 #include <stdio.h>
 #include <sstream>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <string>
 
@@ -641,13 +643,13 @@ extern "C" float __cdecl nxOracleFluidGetParticleMass(unsigned system,
 	}
 
 static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldValues,
-	DWORD* oldProtection)
+	DWORD* oldProtection, void* triangleBoxOverlap, void* triangleCellGrow)
 	{
 	static const unsigned slotRvas[] = {
 		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
 		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0,
-		0x126408, 0x1263e0, 0x126518 };
+		0x126408, 0x1263e0, 0x126518, 0x126524, 0x126454 };
 	static void* const replacements[] = {
 		0,
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
@@ -666,12 +668,14 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		reinterpret_cast<void*>(&nxOracleEmitterGetEnabledFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterGetBodyRepulsion),
 		reinterpret_cast<void*>(&nxOracleFluidGetParticleMass),
+		triangleBoxOverlap,
+		triangleCellGrow,
 		};
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 17; ++i)
+	for(unsigned i = 0; i < 19; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -687,12 +691,12 @@ static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldV
 		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
 		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0,
-		0x126408, 0x1263e0, 0x126518 };
+		0x126408, 0x1263e0, 0x126518, 0x126524, 0x126454 };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 17; ++i)
+	for(unsigned i = 0; i < 19; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -1100,6 +1104,181 @@ static unsigned nxRunFluidCollisionBucketHashDifferential(const unsigned char* o
 		oracleBefore == oracleAfter, candidateBefore == candidateAfter,
 		emptyMatched ? 0u : 1u);
 	return !matched + !emptyMatched;
+	}
+
+static unsigned gFluidCollisionTriangleException = 0;
+static void* gFluidCollisionTriangleExceptionAddress = 0;
+static void* gFluidCollisionTriangleFaultAddress = 0;
+static unsigned gFluidCollisionTriangleExceptionParameters = 0;
+
+static short nxCallOracleFluidCollisionTriangleCells(void* target, void* array,
+	const float* first, unsigned __int64 secondAndThird,
+	float margin, float cellSize)
+	{
+	typedef short (__cdecl* TriangleCells)(
+		void*, const float*, unsigned __int64, float, float);
+	__try
+		{
+		return reinterpret_cast<TriangleCells>(target)(array, first,
+			secondAndThird, margin, cellSize);
+		}
+	__except((gFluidCollisionTriangleException = GetExceptionCode(),
+		gFluidCollisionTriangleExceptionAddress =
+			GetExceptionInformation()->ExceptionRecord->ExceptionAddress,
+		gFluidCollisionTriangleExceptionParameters =
+			GetExceptionInformation()->ExceptionRecord->NumberParameters,
+		gFluidCollisionTriangleFaultAddress =
+			GetExceptionInformation()->ExceptionRecord->NumberParameters > 1
+			? reinterpret_cast<void*>(GetExceptionInformation()->ExceptionRecord->ExceptionInformation[1])
+			: 0,
+		EXCEPTION_EXECUTE_HANDLER))
+		{
+		return static_cast<short>(-32767);
+		}
+	}
+
+static unsigned nxRunFluidCollisionTriangleCellsDifferential(
+	const unsigned char* oracleBase, void* candidateAddress)
+	{
+	if(!oracleBase)
+		return 1;
+	typedef short (__cdecl* TriangleCells)(
+		NxFluidCollisionInt16Vector3Array*, const float*,
+		unsigned __int64, float, float);
+	TriangleCells oracle = reinterpret_cast<TriangleCells>(
+		const_cast<unsigned char*>(oracleBase) + 0x866d0);
+	TriangleCells candidate = reinterpret_cast<TriangleCells>(candidateAddress);
+	const float triangles[3][9] = {
+		{ 0.25f, 0.25f, 0.25f, 1.25f, 0.25f, 0.25f,
+		  0.25f, 1.25f, 0.25f },
+		{ -1.2f, -0.3f, 0.4f, 0.7f, -0.2f, 0.4f,
+		  -0.1f, 1.1f, 0.4f },
+		{ 2.2f, 2.2f, 2.2f, 2.2f, 2.2f, 2.2f,
+		  2.2f, 2.2f, 2.2f }
+	};
+	static const unsigned expectedCounts[] = { 3, 10, 1 };
+	static const unsigned initialCapacities[] = { 512, 512, 0 };
+	unsigned mismatches = 0;
+	unsigned oracleDigest = 2166136261u;
+	unsigned candidateDigest = 2166136261u;
+	unsigned totalCells = 0;
+	for(unsigned test = 0; test != 3; ++test)
+		{
+		const unsigned initialCapacity = initialCapacities[test];
+		short* oracleStorage = initialCapacity
+			? static_cast<short*>(malloc(initialCapacity * 3 * sizeof(short))) : 0;
+		short* candidateStorage = initialCapacity
+			? static_cast<short*>(malloc(initialCapacity * 3 * sizeof(short))) : 0;
+		if(initialCapacity && (!oracleStorage || !candidateStorage))
+			{
+			free(oracleStorage);
+			free(candidateStorage);
+			++mismatches;
+			continue;
+			}
+		if(initialCapacity)
+			{
+			memset(oracleStorage, 0x5a, initialCapacity * 3 * sizeof(short));
+			memcpy(candidateStorage, oracleStorage,
+				initialCapacity * 3 * sizeof(short));
+			}
+		NxFluidCollisionInt16Vector3Array oracleArray = {
+			oracleStorage, 0, initialCapacity };
+		NxFluidCollisionInt16Vector3Array candidateArray = {
+			candidateStorage, 0, initialCapacity };
+		const float* const tri = triangles[test];
+		const unsigned __int64 secondAndThird =
+			(static_cast<unsigned __int64>(reinterpret_cast<uintptr_t>(tri + 6)) << 32)
+			| reinterpret_cast<uintptr_t>(tri + 3);
+		const float margins[] = { 0.0f, 0.125f, 0.0f };
+		const float cellSizes[] = { 1.0f, 0.75f, 1.0f };
+		const float margin = margins[test];
+		const float cellSize = cellSizes[test];
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		gFluidCollisionTriangleException = 0;
+		gFluidCollisionTriangleExceptionAddress = 0;
+		gFluidCollisionTriangleFaultAddress = 0;
+		gFluidCollisionTriangleExceptionParameters = 0;
+		const short oracleReturn = nxCallOracleFluidCollisionTriangleCells(
+			reinterpret_cast<void*>(oracle), &oracleArray, tri,
+			secondAndThird, margin, cellSize);
+		__asm mov oracleAfter, esp
+		if(gFluidCollisionTriangleException)
+			printf("fluid collision triangle-cells oracle-exception case=%u code=%08x at=%p params=%u fault=%p\n",
+				test, gFluidCollisionTriangleException,
+				gFluidCollisionTriangleExceptionAddress,
+				gFluidCollisionTriangleExceptionParameters,
+				gFluidCollisionTriangleFaultAddress);
+		if(gFluidCollisionTriangleException || oracleArray.count < 0
+			|| static_cast<unsigned>(oracleArray.count) > oracleArray.capacity)
+			{
+			free(oracleArray.data);
+			free(candidateArray.data);
+			++mismatches;
+			continue;
+			}
+		__asm mov candidateBefore, esp
+		const short candidateReturn = candidate
+			? candidate(&candidateArray, tri, secondAndThird, margin, cellSize)
+			: static_cast<short>(-32768);
+		__asm mov candidateAfter, esp
+		if(candidate && (candidateArray.count < 0
+			|| static_cast<unsigned>(candidateArray.count) > candidateArray.capacity))
+			{
+			free(oracleArray.data);
+			free(candidateArray.data);
+			++mismatches;
+			continue;
+			}
+		const unsigned commonCells = oracleArray.count < candidateArray.count
+			? oracleArray.count : candidateArray.count;
+		const unsigned oracleCount = static_cast<unsigned>(oracleArray.count);
+		const unsigned candidateCount = static_cast<unsigned>(candidateArray.count);
+		for(unsigned i = 0; i < oracleCount * 3; ++i)
+			oracleDigest = (oracleDigest ^ static_cast<unsigned short>(oracleArray.data[i]))
+				* 16777619u;
+		for(unsigned i = 0; i < candidateCount * 3; ++i)
+			candidateDigest = (candidateDigest ^ static_cast<unsigned short>(candidateArray.data[i]))
+				* 16777619u;
+		const bool cellsMatch = candidate && oracleArray.count == candidateArray.count
+			&& memcmp(oracleArray.data, candidateArray.data,
+				commonCells * 3 * sizeof(short)) == 0;
+		const bool capacityMatched = oracleArray.capacity == candidateArray.capacity;
+		bool tailsPreserved = test == 2 || (oracleCount <= initialCapacity
+			&& (!candidate || candidateCount <= initialCapacity));
+		if(tailsPreserved)
+			{
+			for(unsigned i = oracleCount * 3; i < initialCapacity * 3; ++i)
+				tailsPreserved = tailsPreserved && oracleArray.data[i] == 0x5a5a;
+			if(candidate)
+				for(unsigned i = candidateCount * 3; i < initialCapacity * 3; ++i)
+					tailsPreserved = tailsPreserved && candidateArray.data[i] == 0x5a5a;
+			}
+		const bool stackBalanced = oracleBefore == oracleAfter
+			&& (!candidate || candidateBefore == candidateAfter);
+		const bool matched = oracleArray.count >= 0 && oracleCount == expectedCounts[test]
+			&& (!candidate || (candidateArray.count >= 0 && candidateCount == expectedCounts[test]))
+			&& capacityMatched && cellsMatch && tailsPreserved && stackBalanced
+			&& candidate && oracleReturn == candidateReturn;
+		printf("fluid collision triangle-cells case=%u cells=%u/%u capacity=%u/%u "
+			"return=%d/%d cells_match=%u tails=%u stack=%u/%u mismatches=%u\n", test,
+			oracleCount, candidateCount, oracleArray.capacity, candidateArray.capacity,
+			oracleReturn, candidateReturn,
+			cellsMatch, tailsPreserved, oracleBefore == oracleAfter,
+			!candidate || candidateBefore == candidateAfter,
+			matched ? 0u : 1u);
+		if(!matched)
+			++mismatches;
+		totalCells += oracleCount;
+		free(oracleArray.data);
+		free(candidateArray.data);
+		}
+	printf("fluid collision triangle-cells cases=3 oracle_digest=%08x "
+		"candidate_digest=%08x oracle_cells=%u candidate_present=%u mismatches=%u\n",
+		oracleDigest, candidateDigest, totalCells, candidate != 0, mismatches);
+	return mismatches;
 	}
 
 struct NxFluidCollisionCopyDescriptor
@@ -1540,6 +1719,10 @@ int wmain(int argc, wchar_t** argv)
 	else
 		gFailures += nxRunFluidCollisionBucketHashDifferential(image,
 			candidateBucketHashAddress);
+	void* candidateTriangleCellsAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionTriangleCells", &candidateTriangleCellsAddress))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll triangle-cell row could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
@@ -1865,13 +2048,24 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL FluidModel callback fixture lacks post-step probes\n");
 		return 1;
 		}
-	void* oldCallbackValues[17] = {};
+	FARPROC triangleBoxOverlap = GetProcAddress(fluidModel, "triBoxOverlap");
+	FARPROC triangleCellGrow = GetProcAddress(fluidModel, "Int16Vector3ArrayGrow");
+	if(!triangleBoxOverlap || !triangleCellGrow)
+		{
+		fprintf(stderr, "FAIL FluidModel fixture lacks triangle-cell reference exports\n");
+		return 1;
+		}
+	void* oldCallbackValues[19] = {};
 	DWORD callbackPageProtection = 0;
-	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues, &callbackPageProtection))
+	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues,
+		&callbackPageProtection, reinterpret_cast<void*>(triangleBoxOverlap),
+		reinterpret_cast<void*>(triangleCellGrow)))
 		{
 		fprintf(stderr, "FAIL oracle FluidModel callback slots could not be bound\n");
 		return 1;
 		}
+	gFailures += nxRunFluidCollisionTriangleCellsDifferential(image,
+		candidateTriangleCellsAddress);
 	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
 	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
 	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");

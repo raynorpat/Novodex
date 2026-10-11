@@ -65882,13 +65882,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1314",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12392",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x866d0 computes the triangle AABB, expands it by margin, quantizes the bounds to signed 16-bit cell coordinates, reserves the full candidate-cell range, tests cells in z/y/x order with triBoxOverlap, appends packed XYZ triples, and returns the final Z-layer count. The two extension callbacks are triBoxOverlap and Int16Vector3ArrayGrow.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls pinned oracle RVA 0x866d0 and map-resolved nxFluidCollisionTriangleCells. The pinned binary has no FluidModel.dll, so the fixture temporarily binds an independent SAT triangle-box reference and an array-growth reference into the oracle extension slots. Three cases cover positive coordinates, negative coordinates with margin, and zero-capacity growth; counts 3/10/1, packed cells, capacities, returns, canaries, and x86 stack balance match (oracle digest 86d21a58). Suppressing candidate cell writes is rejected in all three cases; restored control is exact. Phase 5 and Phase 7 pass at 2646/2646 and 1673/1673 assertions; the reconstruction tooling suite passes 810 tests.",
+      "notes": "Direct dependency of phys_fn_003528; the full static-collision builder and manager remain open. The pinned UE3 binary directory does not contain FluidModel.dll; the test therefore binds an independent SAT callback reference into the oracle fixture, so production callback integration and Unreal-level static-collision validation remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionTriangleCells"
     },
     {
       "id": "phys_fn_003525",

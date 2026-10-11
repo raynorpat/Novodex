@@ -7,6 +7,8 @@
 \*----------------------------------------------------------------------------*/
 
 #include "NxSdkAllocator.h"
+#include <math.h>
+#include <stdint.h>
 #include <string.h>
 
 struct NxFluidCollisionBucketHashDescriptor
@@ -47,6 +49,143 @@ extern "C" int __cdecl nxFluidCollisionCountBuckets(
 			}
 		}
 	return count;
+	}
+
+static bool nxFluidCollisionTriangleSeparates(const float vertices[3][3],
+	const float halfSize[3], const float axis[3])
+	{
+	float minimum = vertices[0][0] * axis[0] + vertices[0][1] * axis[1]
+		+ vertices[0][2] * axis[2];
+	float maximum = minimum;
+	for(unsigned vertex = 1; vertex != 3; ++vertex)
+		{
+		const float projection = vertices[vertex][0] * axis[0]
+			+ vertices[vertex][1] * axis[1] + vertices[vertex][2] * axis[2];
+		if(projection < minimum) minimum = projection;
+		if(projection > maximum) maximum = projection;
+		}
+	const float radius = halfSize[0] * fabsf(axis[0])
+		+ halfSize[1] * fabsf(axis[1])
+		+ halfSize[2] * fabsf(axis[2]);
+	return minimum > radius || maximum < -radius;
+	}
+
+static bool nxFluidCollisionTriangleOverlapsBox(const float center[3],
+	const float halfSize[3], const float first[3], const float second[3],
+	const float third[3])
+	{
+	float vertices[3][3] = {
+		{ first[0] - center[0], first[1] - center[1], first[2] - center[2] },
+		{ second[0] - center[0], second[1] - center[1], second[2] - center[2] },
+		{ third[0] - center[0], third[1] - center[1], third[2] - center[2] }
+		};
+	static const float basis[3][3] = {
+		{ 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f }
+		};
+	for(unsigned axis = 0; axis != 3; ++axis)
+		if(nxFluidCollisionTriangleSeparates(vertices, halfSize, basis[axis]))
+			return false;
+	float edges[3][3];
+	for(unsigned edge = 0; edge != 3; ++edge)
+		for(unsigned component = 0; component != 3; ++component)
+			edges[edge][component] = vertices[(edge + 1) % 3][component]
+				- vertices[edge][component];
+	for(unsigned edge = 0; edge != 3; ++edge)
+		for(unsigned axis = 0; axis != 3; ++axis)
+			{
+			const unsigned other = (axis + 1) % 3;
+			const unsigned last = (axis + 2) % 3;
+			float mutableAxis[3] = { 0.0f, 0.0f, 0.0f };
+			mutableAxis[other] = edges[edge][last];
+			mutableAxis[last] = -edges[edge][other];
+			if(nxFluidCollisionTriangleSeparates(vertices, halfSize, mutableAxis))
+				return false;
+			}
+	const float normal[3] = {
+		edges[0][1] * edges[1][2] - edges[0][2] * edges[1][1],
+		edges[0][2] * edges[1][0] - edges[0][0] * edges[1][2],
+		edges[0][0] * edges[1][1] - edges[0][1] * edges[1][0]
+		};
+	return !nxFluidCollisionTriangleSeparates(vertices, halfSize, normal);
+	}
+
+// phys_fn_003524 (RVA 0x000866d0) enumerates overlapped signed-16-bit grid
+// cells for one triangle. The extension's triBoxOverlap export is not part of
+// NxPhysics.dll, so the reconstructed DLL carries the equivalent SAT test.
+extern "C" short __cdecl nxFluidCollisionTriangleCells(
+	NxFluidCollisionInt16Vector3Array* cells, const float* first,
+	unsigned __int64 secondAndThird, float margin, float cellSize)
+	{
+	const float* const second = reinterpret_cast<const float*>(
+		static_cast<uintptr_t>(secondAndThird));
+	const float* const third = reinterpret_cast<const float*>(
+		static_cast<uintptr_t>(secondAndThird >> 32));
+	float minimum[3] = { first[0], first[1], first[2] };
+	float maximum[3] = { first[0], first[1], first[2] };
+	for(unsigned axis = 0; axis != 3; ++axis)
+		{
+		if(second[axis] < minimum[axis]) minimum[axis] = second[axis];
+		if(third[axis] < minimum[axis]) minimum[axis] = third[axis];
+		if(second[axis] > maximum[axis]) maximum[axis] = second[axis];
+		if(third[axis] > maximum[axis]) maximum[axis] = third[axis];
+		}
+	const double inverseCellSize = 1.0 / static_cast<double>(cellSize);
+	short minimumCell[3];
+	short dimensions[3];
+	for(unsigned axis = 0; axis != 3; ++axis)
+		{
+		const float expandedMinimum = minimum[axis] - margin;
+		const float expandedMaximum = maximum[axis] + margin;
+		const float scaledMinimum = static_cast<float>(
+			static_cast<double>(expandedMinimum) * inverseCellSize);
+		const float scaledMaximum = static_cast<float>(
+			static_cast<double>(expandedMaximum) * inverseCellSize);
+		minimumCell[axis] = static_cast<short>(floor(static_cast<double>(scaledMinimum)));
+		const short maximumCell = static_cast<short>(floor(static_cast<double>(scaledMaximum)));
+		dimensions[axis] = static_cast<short>(maximumCell - minimumCell[axis] + 1);
+		}
+	const int possibleCells = static_cast<int>(dimensions[0])
+		* static_cast<int>(dimensions[1]) * static_cast<int>(dimensions[2]);
+	if(static_cast<int>(cells->capacity) < possibleCells)
+		{
+		const unsigned newCapacity = static_cast<unsigned>(possibleCells + 1);
+		void* const resized = nxGetSdkAllocator()->realloc(cells->data,
+			static_cast<size_t>(newCapacity) * 3 * sizeof(short));
+		if(resized)
+			{
+			cells->data = static_cast<short*>(resized);
+			cells->capacity = newCapacity;
+			}
+		else
+			return 0;
+		}
+	const float half = cellSize * 0.5f + margin;
+	const float halfSize[3] = { half, half, half };
+	short completedLayers = static_cast<short>(possibleCells);
+	for(short z = 0; z != dimensions[2]; ++z)
+		{
+		for(short y = 0; y != dimensions[1]; ++y)
+			for(short x = 0; x != dimensions[0]; ++x)
+				{
+				const float center[3] = {
+					static_cast<float>((static_cast<double>(static_cast<short>(minimumCell[0] + x)) + 0.5) * cellSize),
+					static_cast<float>((static_cast<double>(static_cast<short>(minimumCell[1] + y)) + 0.5) * cellSize),
+					static_cast<float>((static_cast<double>(static_cast<short>(minimumCell[2] + z)) + 0.5) * cellSize)
+					};
+				if(nxFluidCollisionTriangleOverlapsBox(center, halfSize,
+					first, second, third))
+					{
+					short* const output = cells->data + cells->count * 3;
+					output[0] = static_cast<short>(minimumCell[0] + x);
+					output[1] = static_cast<short>(minimumCell[1] + y);
+					output[2] = static_cast<short>(minimumCell[2] + z);
+					++cells->count;
+					}
+				}
+		completedLayers = static_cast<short>(z + 1);
+		}
+	return completedLayers;
 	}
 
 struct NxFluidCollisionBucket

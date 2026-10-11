@@ -1,4 +1,6 @@
 #include <windows.h>
+#include <math.h>
+#include <stdlib.h>
 
 struct NxFluidEmitterFlagCallbackRecord
 	{
@@ -80,6 +82,97 @@ static unsigned gPostStepSurfaceNormals[2][3] = {
 	{ 0x40000001u, 0x40000002u, 0x40000003u }
 	};
 static NxImplicitFluidMeshFixture gPostStepMeshes[2];
+
+// The pinned NxPhysics.dll late-binds this extension export and does not ship
+// FluidModel.dll alongside the oracle binary. The ABI test binds this
+// independent SAT reference through the oracle's triBoxOverlap slot so its
+// triangle-cell row can be exercised without silently skipping the predicate.
+extern "C" __declspec(dllexport) int __cdecl triBoxOverlap(
+	const float* center, const float* halfSize, const float* first,
+	const float* second, const float* third)
+	{
+	float vertices[3][3] = {
+		{ first[0] - center[0], first[1] - center[1], first[2] - center[2] },
+		{ second[0] - center[0], second[1] - center[1], second[2] - center[2] },
+		{ third[0] - center[0], third[1] - center[1], third[2] - center[2] }
+		};
+	static const float basis[3][3] = {
+		{ 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f }
+		};
+	float edges[3][3];
+	for(unsigned edge = 0; edge != 3; ++edge)
+		for(unsigned axis = 0; axis != 3; ++axis)
+			edges[edge][axis] = vertices[(edge + 1) % 3][axis]
+				- vertices[edge][axis];
+	float axes[13][3];
+	for(unsigned axis = 0; axis != 3; ++axis)
+		for(unsigned component = 0; component != 3; ++component)
+			axes[axis][component] = basis[axis][component];
+	unsigned next = 3;
+	for(unsigned edge = 0; edge != 3; ++edge)
+		for(unsigned axis = 0; axis != 3; ++axis)
+			{
+			const unsigned other = (axis + 1) % 3;
+			const unsigned last = (axis + 2) % 3;
+			axes[next][axis] = 0.0f;
+			axes[next][other] = edges[edge][last];
+			axes[next][last] = -edges[edge][other];
+			++next;
+			}
+	const float* const edge0 = edges[0];
+	const float* const edge1 = edges[1];
+	axes[12][0] = edge0[1] * edge1[2] - edge0[2] * edge1[1];
+	axes[12][1] = edge0[2] * edge1[0] - edge0[0] * edge1[2];
+	axes[12][2] = edge0[0] * edge1[1] - edge0[1] * edge1[0];
+	for(unsigned axis = 0; axis != 13; ++axis)
+		{
+		float projection[3];
+		for(unsigned vertex = 0; vertex != 3; ++vertex)
+			projection[vertex] = vertices[vertex][0] * axes[axis][0]
+				+ vertices[vertex][1] * axes[axis][1]
+				+ vertices[vertex][2] * axes[axis][2];
+		float minimum = projection[0];
+		float maximum = projection[0];
+		for(unsigned vertex = 1; vertex != 3; ++vertex)
+			{
+			if(projection[vertex] < minimum) minimum = projection[vertex];
+			if(projection[vertex] > maximum) maximum = projection[vertex];
+			}
+		const float radius = halfSize[0] * fabsf(axes[axis][0])
+			+ halfSize[1] * fabsf(axes[axis][1])
+			+ halfSize[2] * fabsf(axes[axis][2]);
+		if(minimum > radius || maximum < -radius)
+			return 0;
+		}
+	return 1;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl Int16Vector3ArrayGrow(
+	void* array, unsigned requestedCapacity, unsigned fillValue)
+	{
+	struct Int16Vector3Array
+		{
+		short* data;
+		int count;
+		unsigned capacity;
+		};
+	Int16Vector3Array* const values = static_cast<Int16Vector3Array*>(array);
+	if(requestedCapacity <= values->capacity)
+		return values->capacity;
+	short* const resized = static_cast<short*>(realloc(values->data,
+		static_cast<size_t>(requestedCapacity) * 3 * sizeof(short)));
+	if(!resized)
+		return 0;
+	const unsigned oldCapacity = values->capacity;
+	values->data = resized;
+	values->capacity = requestedCapacity;
+	const short fill = static_cast<short>(fillValue);
+	for(size_t i = static_cast<size_t>(oldCapacity) * 3;
+		i < static_cast<size_t>(requestedCapacity) * 3; ++i)
+		resized[i] = fill;
+	return requestedCapacity;
+	}
 
 extern "C" __declspec(dllexport) void __cdecl NxResetFluidPostStepCallbacks()
 	{
