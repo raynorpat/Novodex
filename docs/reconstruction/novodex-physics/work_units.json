@@ -2934,12 +2934,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 9,
+    "decompiled": 1,
+    "discovered": 8,
     "dynamically_gated": 1,
     "reconstructed": 1
    },
    "bytes": {
-    "discovered": 2612,
+    "decompiled": 180,
+    "discovered": 2432,
     "dynamically_gated": 29,
     "reconstructed": 42
    },
@@ -3019,12 +3021,14 @@
     "phys_fn_003628"
    ],
    "rows": {
-    "discovered": 41,
+    "decompiled": 1,
+    "discovered": 40,
     "dynamically_gated": 4,
     "reconstructed": 20
    },
    "bytes": {
-    "discovered": 12374,
+    "decompiled": 233,
+    "discovered": 12141,
     "dynamically_gated": 1374,
     "reconstructed": 926
    },

@@ -7,7 +7,7 @@
     "code_bytes": 938498,
     "open_code_rows": 2787,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1745,
+    "mapped_code_rows": 1747,
     "source_correspondence_only_rows": 489,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3551,
@@ -178,10 +178,11 @@
         "rows": 561,
         "bytes": 114007,
         "open_rows": 561,
-        "rows_without_implementation_mapping": 390,
+        "rows_without_implementation_mapping": 388,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
-          "discovered": 193,
+          "decompiled": 2,
+          "discovered": 191,
           "dynamically_gated": 98,
           "reconstructed": 269,
           "statically_reviewed": 1
@@ -149076,15 +149077,15 @@
       "size": 180,
       "phase": 7,
       "kind": "code",
-      "state": "discovered",
+      "state": "decompiled",
       "label": "phys_fn_003495",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
+        "path": "Physics/src/NpFluidEmitter.cpp",
+        "role": "reconstruction",
         "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
+        "file_exists": true,
+        "oracle_source": "Physics/src/NpFluidEmitter.cpp",
+        "source_correspondence_recorded": true,
         "candidate_map_reference_recorded": false,
         "candidate_map_reference_basis": null
       },
@@ -149114,7 +149115,7 @@
           {
             "id": "phys_fn_003601",
             "kind": "code",
-            "state": "discovered"
+            "state": "decompiled"
           },
           {
             "id": "phys_fn_003624",
@@ -149142,10 +149143,10 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "decompiled",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
         "ledger_disposition": "deferred",
         "ledger_reason": "not_reconstructed_in_phase",
@@ -149156,7 +149157,7 @@
         "owner_phase": 7,
         "row_id": "phys_fn_003495",
         "rva": "0x00085a40",
-        "action": "recover_contract_and_reconstruct",
+        "action": "transcribe_and_drive_actual_dll",
         "ledger_reason": "not_reconstructed_in_phase",
         "driving_phases": [],
         "requires_dependency_review": true
@@ -153141,15 +153142,15 @@
       "size": 233,
       "phase": 7,
       "kind": "code",
-      "state": "discovered",
+      "state": "decompiled",
       "label": "phys_fn_003601",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
+        "path": "Physics/src/NpFluidEmitter.cpp",
+        "role": "reconstruction",
         "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
+        "file_exists": true,
+        "oracle_source": "Physics/src/NpFluidEmitter.cpp",
+        "source_correspondence_recorded": true,
         "candidate_map_reference_recorded": false,
         "candidate_map_reference_basis": null
       },
@@ -153197,9 +153198,9 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "decompiled",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 7,
         "ledger_disposition": "deferred",
@@ -153211,7 +153212,7 @@
         "owner_phase": 7,
         "row_id": "phys_fn_003601",
         "rva": "0x000881c0",
-        "action": "recover_contract_and_reconstruct",
+        "action": "transcribe_and_drive_actual_dll",
         "ledger_reason": "not_reconstructed_in_phase",
         "driving_phases": [],
         "requires_dependency_review": true
@@ -154371,7 +154372,7 @@
           {
             "id": "phys_fn_003495",
             "kind": "code",
-            "state": "discovered"
+            "state": "decompiled"
           },
           {
             "id": "phys_fn_003505",
@@ -230983,7 +230984,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "66ebf6e1ea85d19667ddeea1f767c6c96fad72d0b3603eccc0e95ce374f81d48",
+    "inventory_sha256": "0ced97b0dc96dd12009d22a4ad3a3521bb0b4eaf8726805ed0870bb1fb7a2afb",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",

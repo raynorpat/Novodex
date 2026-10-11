@@ -389,6 +389,16 @@ struct NxFluidPostStepCallbackRecord
 	unsigned values[6];
 	};
 
+struct NxFluidRunCallbackRecord
+	{
+	unsigned system;
+	unsigned fluid;
+	unsigned state;
+	unsigned vector[3];
+	unsigned timestep;
+	unsigned option;
+	};
+
 struct NxFluidPostStepParticleStream
 	{
 	unsigned* data;
@@ -569,9 +579,11 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 	DWORD* oldProtection)
 	{
 	static const unsigned slotRvas[] = {
+		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
 		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0 };
 	static void* const replacements[] = {
+		0,
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterSetAddBodyVelocityFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterSetEnabledFlag),
@@ -590,7 +602,7 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 13; ++i)
+	for(unsigned i = 0; i < 14; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -603,13 +615,14 @@ static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldV
 	DWORD oldProtection)
 	{
 	static const unsigned slotRvas[] = {
+		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
 		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0 };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 13; ++i)
+	for(unsigned i = 0; i < 14; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -1276,13 +1289,207 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL FluidModel callback fixture lacks post-step probes\n");
 		return 1;
 		}
-	void* oldCallbackValues[13] = {};
+	void* oldCallbackValues[14] = {};
 	DWORD callbackPageProtection = 0;
 	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues, &callbackPageProtection))
 		{
 		fprintf(stderr, "FAIL oracle FluidModel callback slots could not be bound\n");
 		return 1;
 		}
+	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
+	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
+	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");
+	FARPROC fluidRunCallback = GetProcAddress(fluidModel, "FluidRun");
+	if(!resetFluidRun || !getFluidRunCount || !getFluidRunRecord || !fluidRunCallback)
+		{
+		fprintf(stderr, "FAIL FluidModel fixture lacks FluidRun callback probes\n");
+		return 1;
+		}
+	*reinterpret_cast<void**>(image + 0x1263c0) = reinterpret_cast<void*>(fluidRunCallback);
+	typedef void (__cdecl *ResetFluidRunFn)();
+	typedef unsigned (__cdecl *FluidRunCountFn)();
+	typedef int (__cdecl *GetFluidRunRecordFn)(unsigned, NxFluidRunCallbackRecord*);
+	ResetFluidRunFn resetRun = reinterpret_cast<ResetFluidRunFn>(resetFluidRun);
+	FluidRunCountFn fluidRunCount = reinterpret_cast<FluidRunCountFn>(getFluidRunCount);
+	GetFluidRunRecordFn getFluidRun = reinterpret_cast<GetFluidRunRecordFn>(getFluidRunRecord);
+	{
+		void* candidateStepAddress = 0;
+		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"@nxNpFluidStep@12", &candidateStepAddress))
+			{
+			fprintf(stderr, "FAIL candidate Fluid step row could not be resolved from its map\n");
+			++gFailures;
+		}
+		else
+			{
+			typedef int (__thiscall *FluidStep)(void*, float);
+			FluidStep oracleStep = reinterpret_cast<FluidStep>(image + 0x85a40);
+			FluidStep candidateStep = reinterpret_cast<FluidStep>(candidateStepAddress);
+			unsigned char oracleFluid[0x84] = {}, candidateFluid[0x84] = {};
+			unsigned char oracleBackend[0x534] = {}, candidateBackend[0x534] = {};
+			unsigned char oracleState[8] = {}, candidateState[8] = {};
+			unsigned char oracleCore[0x530] = {}, candidateCore[0x530] = {};
+			const unsigned expectedVector[3] = { 0x3e800001u, 0xbf000002u, 0x3f400003u };
+			memcpy(oracleCore + 0x520, expectedVector, sizeof(expectedVector));
+			memcpy(candidateCore + 0x520, expectedVector, sizeof(expectedVector));
+			*reinterpret_cast<void**>(oracleBackend + 0x24) = oracleCore;
+			*reinterpret_cast<void**>(candidateBackend + 0x24) = candidateCore;
+			*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0x10203040u;
+			*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0x10203040u;
+			*reinterpret_cast<void**>(oracleFluid + 4) = 0;
+			*reinterpret_cast<void**>(candidateFluid + 4) = 0;
+			*reinterpret_cast<void**>(oracleFluid + 8) = 0;
+			*reinterpret_cast<void**>(candidateFluid + 8) = 0;
+			*reinterpret_cast<void**>(oracleFluid + 0x78) = oracleState;
+			*reinterpret_cast<void**>(candidateFluid + 0x78) = candidateState;
+			*reinterpret_cast<unsigned*>(oracleState + 4) = 0xaaaaaaaa;
+			*reinterpret_cast<unsigned*>(candidateState + 4) = 0xaaaaaaaa;
+			*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+			*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+			*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x55667788u;
+			*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x55667788u;
+			const unsigned timestepWord = 0x3eaaaaabu;
+			const float timestep = *reinterpret_cast<const float*>(&timestepWord);
+			resetRun();
+			const int oracleResult = oracleStep(oracleFluid, timestep);
+			// The oracle leaves FluidRun's float in ST(0) when its emitter range
+			// is empty; this direct-entry fixture owns and clears that result.
+			__asm fstp st(0)
+			NxFluidRunCallbackRecord oracleRecord = {};
+			const bool oracleRecordOk = fluidRunCount() == 1 && getFluidRun(0, &oracleRecord);
+			resetRun();
+			const int candidateResult = candidateStep(candidateFluid, timestep);
+			NxFluidRunCallbackRecord candidateRecord = {};
+			const bool candidateRecordOk = fluidRunCount() == 1 && getFluidRun(0, &candidateRecord);
+			const unsigned timestepBits = *reinterpret_cast<const unsigned*>(&timestep);
+			const bool callbackMatch = oracleRecordOk && candidateRecordOk
+				&& oracleRecord.system == 0x10203040u && candidateRecord.system == oracleRecord.system
+				&& oracleRecord.fluid == 0x55667788u && candidateRecord.fluid == oracleRecord.fluid
+				&& oracleRecord.state == reinterpret_cast<unsigned>(oracleState)
+				&& candidateRecord.state == reinterpret_cast<unsigned>(candidateState)
+				&& !memcmp(oracleRecord.vector, expectedVector, sizeof(expectedVector))
+				&& !memcmp(candidateRecord.vector, oracleRecord.vector, sizeof(oracleRecord.vector))
+				&& oracleRecord.timestep == timestepBits && candidateRecord.timestep == oracleRecord.timestep
+				&& oracleRecord.option == 1 && candidateRecord.option == oracleRecord.option;
+			const unsigned mismatches = !callbackMatch || oracleResult != candidateResult
+				|| *reinterpret_cast<unsigned*>(oracleFluid + 0x74) != timestepBits
+				|| *reinterpret_cast<unsigned*>(candidateFluid + 0x74) != timestepBits
+				|| *reinterpret_cast<unsigned*>(oracleState + 4) != 0
+				|| *reinterpret_cast<unsigned*>(candidateState + 4) != 0;
+			gFailures += mismatches;
+			printf("fluid substep empty-emitter cases=1 callback=%u timestep=%u state-clear=%u mismatches=%u\n",
+				callbackMatch, oracleRecord.timestep == timestepBits && candidateRecord.timestep == timestepBits,
+				*reinterpret_cast<unsigned*>(oracleState + 4) == 0
+					&& *reinterpret_cast<unsigned*>(candidateState + 4) == 0, mismatches);
+			}
+	}
+	{
+		void* candidateManagerStepAddress = 0;
+		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"@nxFluidManagerStep@12", &candidateManagerStepAddress))
+			{
+			fprintf(stderr, "FAIL candidate FluidManager step row could not be resolved from its map\n");
+			++gFailures;
+			}
+		else
+			{
+			typedef int (__thiscall *ManagerStep)(void*, float);
+			ManagerStep oracleStep = reinterpret_cast<ManagerStep>(image + 0x89bd0);
+			ManagerStep candidateStep = reinterpret_cast<ManagerStep>(candidateManagerStepAddress);
+			unsigned char oracleManager[0x34] = {}, candidateManager[0x34] = {};
+			unsigned oracleFluidWords[2] = {}, candidateFluidWords[2] = {};
+			unsigned char oracleFluids[2][0x84] = {}, candidateFluids[2][0x84] = {};
+			unsigned char oracleBackends[2][0x534] = {}, candidateBackends[2][0x534] = {};
+			unsigned char oracleStates[2][8] = {}, candidateStates[2][8] = {};
+			unsigned char oracleCores[2][0x530] = {}, candidateCores[2][0x530] = {};
+			const unsigned expectedVectors[2][3] = {
+				{ 0x3e800001u, 0xbf000002u, 0x3f400003u },
+				{ 0x40000001u, 0xc0400002u, 0x40800003u } };
+			for(unsigned i = 0; i != 2; ++i)
+				{
+				oracleFluidWords[i] = reinterpret_cast<unsigned>(oracleFluids[i]);
+				candidateFluidWords[i] = reinterpret_cast<unsigned>(candidateFluids[i]);
+				memcpy(oracleCores[i] + 0x520, expectedVectors[i], sizeof(expectedVectors[i]));
+				memcpy(candidateCores[i] + 0x520, expectedVectors[i], sizeof(expectedVectors[i]));
+				*reinterpret_cast<void**>(oracleBackends[i] + 0x24) = oracleCores[i];
+				*reinterpret_cast<void**>(candidateBackends[i] + 0x24) = candidateCores[i];
+				*reinterpret_cast<unsigned*>(oracleBackends[i] + 0x30) = 0x10203040u + i;
+				*reinterpret_cast<unsigned*>(candidateBackends[i] + 0x30) = 0x10203040u + i;
+				*reinterpret_cast<void**>(oracleFluids[i] + 0x78) = oracleStates[i];
+				*reinterpret_cast<void**>(candidateFluids[i] + 0x78) = candidateStates[i];
+				*reinterpret_cast<unsigned*>(oracleStates[i] + 4) = 0xaaaaaaaa;
+				*reinterpret_cast<unsigned*>(candidateStates[i] + 4) = 0xaaaaaaaa;
+				*reinterpret_cast<void**>(oracleFluids[i] + 0x7c) = oracleBackends[i];
+				*reinterpret_cast<void**>(candidateFluids[i] + 0x7c) = candidateBackends[i];
+				*reinterpret_cast<unsigned*>(oracleFluids[i] + 0x80) = 0x55667780u + i;
+				*reinterpret_cast<unsigned*>(candidateFluids[i] + 0x80) = 0x55667780u + i;
+				}
+			*reinterpret_cast<void***>(oracleManager + 4) =
+				reinterpret_cast<void**>(oracleFluidWords);
+			*reinterpret_cast<void***>(oracleManager + 8) =
+				reinterpret_cast<void**>(oracleFluidWords + 2);
+			*reinterpret_cast<void***>(candidateManager + 4) =
+				reinterpret_cast<void**>(candidateFluidWords);
+			*reinterpret_cast<void***>(candidateManager + 8) =
+				reinterpret_cast<void**>(candidateFluidWords + 2);
+			oracleManager[0x2b] = candidateManager[0x2b] = 1;
+			const unsigned timestepWord = 0x3eaaaaabu;
+			const float timestep = *reinterpret_cast<const float*>(&timestepWord);
+			unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+			unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+			resetRun();
+			__asm mov oracleEspBefore, esp
+			const int oracleResult = oracleStep(oracleManager, timestep);
+			__asm mov oracleEspAfter, esp
+			__asm fstp st(0)
+			NxFluidRunCallbackRecord oracleRecords[2] = {};
+			const bool oracleRecordsOk = fluidRunCount() == 2
+				&& getFluidRun(0, &oracleRecords[0]) && getFluidRun(1, &oracleRecords[1]);
+			resetRun();
+			__asm mov candidateEspBefore, esp
+			const int candidateResult = candidateStep(candidateManager, timestep);
+			__asm mov candidateEspAfter, esp
+			// The callback's float return remains in ST(0) after the final empty-
+			// emitter substep in the oracle; the direct-entry fixture owns it.
+			__asm fstp st(0)
+			NxFluidRunCallbackRecord candidateRecords[2] = {};
+			const bool candidateRecordsOk = fluidRunCount() == 2
+				&& getFluidRun(0, &candidateRecords[0]) && getFluidRun(1, &candidateRecords[1]);
+			unsigned callbackMismatches = !oracleRecordsOk || !candidateRecordsOk;
+			for(unsigned i = 0; i != 2; ++i)
+				{
+				if(!oracleRecordsOk || !candidateRecordsOk)
+					break;
+				const NxFluidRunCallbackRecord& expected = oracleRecords[i];
+				const NxFluidRunCallbackRecord& actual = candidateRecords[i];
+				if(expected.system != 0x10203040u + i || actual.system != expected.system
+					|| expected.fluid != 0x55667780u + i || actual.fluid != expected.fluid
+					|| expected.state != reinterpret_cast<unsigned>(oracleStates[i])
+					|| actual.state != reinterpret_cast<unsigned>(candidateStates[i])
+					|| memcmp(expected.vector, expectedVectors[i], sizeof(expected.vector))
+					|| memcmp(actual.vector, expected.vector, sizeof(actual.vector))
+					|| expected.timestep != timestepWord || actual.timestep != expected.timestep
+					|| expected.option != 1 || actual.option != expected.option)
+					++callbackMismatches;
+				}
+			unsigned stateMismatches = 0;
+			for(unsigned i = 0; i != 2; ++i)
+				if(*reinterpret_cast<unsigned*>(oracleFluids[i] + 0x74) != timestepWord
+					|| *reinterpret_cast<unsigned*>(candidateFluids[i] + 0x74) != timestepWord
+					|| *reinterpret_cast<unsigned*>(oracleStates[i] + 4) != 0
+					|| *reinterpret_cast<unsigned*>(candidateStates[i] + 4) != 0)
+					++stateMismatches;
+			const unsigned mismatches = callbackMismatches + stateMismatches
+				+ (oracleResult != candidateResult)
+				+ (oracleEspBefore != oracleEspAfter)
+				+ (candidateEspBefore != candidateEspAfter);
+			gFailures += mismatches;
+			printf("fluid manager step live-fluids=2 oracle_callbacks=%u candidate_callbacks=%u order=%u timestep=%u state=%u stack=%u/%u mismatches=%u\n",
+				oracleRecordsOk ? 2u : fluidRunCount(), candidateRecordsOk ? 2u : fluidRunCount(),
+				callbackMismatches == 0, callbackMismatches == 0, stateMismatches == 0,
+				oracleEspBefore == oracleEspAfter, candidateEspBefore == candidateEspAfter, mismatches);
+			}
+	}
 
 	// The fetch-side 000619 row must update every fluid in Scene+0x61c. A
 	// missing traversal leaves the candidate's bounds and particle outputs at

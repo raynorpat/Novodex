@@ -955,17 +955,37 @@ static void nxFluidManagerNotifyActorReleasedDisabled(void* manager, void* body)
 	nxNpFluidManagerNotifyReleasedActor(manager, body);
 	}
 
-// phys_fn_003630 (0x00089bd0) is called once after each completed scene
-// substep. The available=false branch reports the pinned backend warning;
-// extension-backed collision updates and live-fluid iteration remain open.
-static void nxFluidManagerStepDisabled(void* manager, NxReal timestep)
+// phys_fn_003630 (0x00089bd0) refreshes dirty static collision before it
+// visits the manager's live-fluid range. The collision refresh remains open;
+// the clean-collision branch and the per-fluid substep are reconstructed.
+extern "C" int __fastcall nxNpFluidStep(void*, void*, float);
+static int nxFluidManagerStepImpl(void* manager, float timestep)
 	{
-	(void)timestep;
 	unsigned char* bytes = static_cast<unsigned char*>(manager);
 	if(bytes[0x2b] == 0)
 		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
 			0xcf, 0, "NxScene::stepFluids(): Feature not available!");
+	void** fluid = *reinterpret_cast<void***>(bytes + 4);
+	void** fluidsEnd = *reinterpret_cast<void***>(bytes + 8);
+	int result = 0;
+	while(fluid && fluidsEnd && fluid < fluidsEnd)
+		result = nxNpFluidStep(*fluid++, 0, timestep);
+	return result;
+	}
+
+// The oracle's thiscall entry consumes one stack float with ret 4.
+extern "C" __declspec(naked) int __fastcall nxFluidManagerStep(void*, void*, float)
+	{
+	__asm
+		{
+		mov eax, [esp+4]
+		push eax
+		push ecx
+		call nxFluidManagerStepImpl
+		add esp, 8
+		ret 4
+		}
 	}
 
 // phys_fn_003632 (0x00089c80) runs once after the scene's substep loop.
@@ -5924,7 +5944,7 @@ void NxSceneInternal::simulateFrame()
 			cpmBufferContactReports0917(this, reportHash);
 			}
 		if(void* fluidManager = at<void*>(0x61c))
-			nxFluidManagerStepDisabled(fluidManager, timestep);
+			nxFluidManagerStep(fluidManager, 0, timestep);
 		++at<NxU32>(0x558);
 		at<NxReal>(0x538) -= timestep;
 		}

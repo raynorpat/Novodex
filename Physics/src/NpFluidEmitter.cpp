@@ -347,6 +347,118 @@ extern "C" int __cdecl nxNpFluidEmitterUpdateBodyState(void* internal)
 	return setAngularVelocity(context, fluidHandle, emitterHandle, angularVelocity);
 	}
 
+// phys_fn_003601 (0x000881c0) applies the FluidModel body-repulsion result
+// to an attached actor after a fluid substep. FluidGetParticleMass supplies
+// the scale; the actor update is the already-reconstructed NX_IMPULSE path.
+#ifndef NX_FLUID_EMITTER_ABI_TEST
+extern void nxNpActorApplyForce(unsigned char*, const NxVec3*, const NxVec3*,
+	unsigned, bool);
+
+static int nxNpFluidEmitterApplyBodyRepulsion(void* internal)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	void* actor = *reinterpret_cast<void**>(bytes + 0x14);
+	if(!actor || (*reinterpret_cast<unsigned*>(bytes + 0x10) & 4u) == 0)
+		return 0;
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	const unsigned system = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluidBytes + 0x80);
+	const unsigned emitterHandle = *reinterpret_cast<unsigned*>(bytes + 8);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	typedef int (__cdecl *GetEnabled)(unsigned, unsigned, unsigned);
+	typedef int (__cdecl *GetBodyRepulsion)(unsigned, unsigned, unsigned,
+		float*, float*);
+	typedef float (__cdecl *GetParticleMass)(unsigned, unsigned);
+	GetEnabled getEnabled = reinterpret_cast<GetEnabled>(
+		GetProcAddress(fluidModel, "EmitterGetEnabledFlag"));
+	if(getEnabled(system, fluidHandle, emitterHandle) <= 0)
+		return 0;
+	float forceWords[3], torqueWords[3];
+	GetBodyRepulsion getBodyRepulsion = reinterpret_cast<GetBodyRepulsion>(
+		GetProcAddress(fluidModel, "EmitterGetBodyRepulsion"));
+	getBodyRepulsion(system, fluidHandle, emitterHandle, forceWords, torqueWords);
+	GetParticleMass getParticleMass = reinterpret_cast<GetParticleMass>(
+		GetProcAddress(fluidModel, "FluidGetParticleMass"));
+	const float mass = getParticleMass(system, fluidHandle);
+	unsigned char* body = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(static_cast<unsigned char*>(actor) + 8));
+	if(!body)
+		return 0;
+	float scaledForce[3], scaledTorque[3];
+	for(unsigned axis = 0; axis != 3; ++axis)
+		{
+		__asm
+			{
+			fld mass
+			fmul dword ptr forceWords[axis * 4]
+			fstp dword ptr scaledForce[axis * 4]
+			fld mass
+			fmul dword ptr torqueWords[axis * 4]
+			fstp dword ptr scaledTorque[axis * 4]
+			}
+		}
+	const NxVec3 force(scaledForce[0], scaledForce[1], scaledForce[2]);
+	const NxVec3 torque(scaledTorque[0], scaledTorque[1], scaledTorque[2]);
+	// NxForceMode::NX_IMPULSE is the pinned mode value 1.
+	nxNpActorApplyForce(body, &force, &torque, 1, true);
+	return 0;
+	}
+
+// phys_fn_003495 (0x00085a40) is the per-fluid substep. The small naked
+// entry preserves the original thiscall/ret-4 ABI; the implementation keeps
+// the optional extension dispatch and emitter iteration in one place.
+static int nxNpFluidStepImpl(void* internal, float timestep)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	*reinterpret_cast<float*>(bytes + 0x74) = timestep;
+	void** emitter = *reinterpret_cast<void***>(bytes + 4);
+	void** emittersEnd = *reinterpret_cast<void***>(bytes + 8);
+	for(void** current = emitter; current && emittersEnd && current < emittersEnd; ++current)
+		nxNpFluidEmitterUpdateBodyState(*current);
+	void* backend = *reinterpret_cast<void**>(bytes + 0x7c);
+	void* core = *reinterpret_cast<void**>(static_cast<unsigned char*>(backend) + 0x24);
+	float systemVector[3];
+	memcpy(systemVector, static_cast<unsigned char*>(core) + 0x520,
+		sizeof(systemVector));
+	typedef float (__cdecl *FluidRun)(unsigned, unsigned, unsigned,
+		const float*, float, unsigned);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	FluidRun run = reinterpret_cast<FluidRun>(GetProcAddress(fluidModel, "FluidRun"));
+	const float particleMass = run(
+		*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(backend) + 0x30),
+		*reinterpret_cast<unsigned*>(bytes + 0x80),
+		*reinterpret_cast<unsigned*>(bytes + 0x78), systemVector, timestep, 1);
+	int result = static_cast<int>((reinterpret_cast<unsigned char*>(emittersEnd)
+		- reinterpret_cast<unsigned char*>(emitter)) / sizeof(void*));
+	for(void** current = emitter; current && emittersEnd && current < emittersEnd; ++current)
+		{
+		(void)particleMass;
+		result = nxNpFluidEmitterApplyBodyRepulsion(*current);
+		}
+	void* state = *reinterpret_cast<void**>(bytes + 0x78);
+	if(state)
+		*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(state) + 4) = 0;
+	return result;
+	}
+
+
+extern "C" __declspec(naked) int __fastcall nxNpFluidStep(void*, void*, float)
+	{
+	__asm
+		{
+		mov eax, [esp+4]
+		push eax
+		push ecx
+		call nxNpFluidStepImpl
+		add esp, 8
+		ret 4
+		}
+	}
+#endif
+
 // phys_fn_003419 (0x00084a50) forwards a fluid's implicit mesh to the
 // FluidModel extension. The mesh record stores its fluid at +0x04, mesh handle
 // at +0x18, and a vertex count at +0x28; the extension consumes triangles.

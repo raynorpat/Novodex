@@ -922,6 +922,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NpFluidEmitter.cpp)
 	target_include_directories(NxPhysicsFluidEmitterAbiTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	target_compile_definitions(NxPhysicsFluidEmitterAbiTests PRIVATE NX_FLUID_EMITTER_ABI_TEST)
 	target_link_libraries(NxPhysicsFluidEmitterAbiTests NxFoundation bcrypt)
 	add_dependencies(NxPhysicsFluidEmitterAbiTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	add_custom_command(TARGET NxPhysicsFluidEmitterAbiTests POST_BUILD

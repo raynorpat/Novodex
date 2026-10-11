@@ -28,6 +28,16 @@ struct NxFluidPostStepParticleStream
 	unsigned count;
 	};
 
+struct NxFluidRunCallbackRecord
+	{
+	unsigned system;
+	unsigned fluid;
+	unsigned state;
+	unsigned vector[3];
+	unsigned timestep;
+	unsigned option;
+	};
+
 struct NxImplicitFluidMeshFixture
 	{
 	unsigned* leadingVectors;
@@ -41,6 +51,8 @@ struct NxImplicitFluidMeshFixture
 
 static NxFluidPostStepCallbackRecord gPostStepRecords[16];
 static unsigned gPostStepRecordCount;
+static NxFluidRunCallbackRecord gFluidRunRecords[16];
+static unsigned gFluidRunRecordCount;
 static unsigned gPostStepParticles[2][2][23];
 static NxFluidPostStepParticleStream gPostStepStreams[2];
 static unsigned gPostStepLeadingVectors[2][3] = {
@@ -60,6 +72,44 @@ static NxImplicitFluidMeshFixture gPostStepMeshes[2];
 extern "C" __declspec(dllexport) void __cdecl NxResetFluidPostStepCallbacks()
 	{
 	gPostStepRecordCount = 0;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxResetFluidRunCallbacks()
+	{
+	gFluidRunRecordCount = 0;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidRunCallbackCount()
+	{
+	return gFluidRunRecordCount;
+	}
+
+extern "C" __declspec(dllexport) int __cdecl NxGetFluidRunCallbackRecord(
+	unsigned index, NxFluidRunCallbackRecord* record)
+	{
+	if(index >= gFluidRunRecordCount || !record)
+		return 0;
+	*record = gFluidRunRecords[index];
+	return 1;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidRun(unsigned system,
+	unsigned fluid, unsigned state, const float* vector, float timestep,
+	unsigned option)
+	{
+	if(gFluidRunRecordCount < sizeof(gFluidRunRecords) / sizeof(gFluidRunRecords[0]))
+		{
+		NxFluidRunCallbackRecord& record = gFluidRunRecords[gFluidRunRecordCount++];
+		ZeroMemory(&record, sizeof(record));
+		record.system = system;
+		record.fluid = fluid;
+		record.state = state;
+		if(vector)
+			CopyMemory(record.vector, vector, sizeof(record.vector));
+		record.timestep = *reinterpret_cast<unsigned*>(&timestep);
+		record.option = option;
+		}
+	return 0.375f;
 	}
 
 extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidPostStepCallbackCount()

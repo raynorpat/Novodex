@@ -65349,13 +65349,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "decompiled",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1303",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12319",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: RVA 0x85a40 stores the stack timestep at fluid+0x74, copies the three-word system vector through [backend+0x24]+0x520, dispatches FluidRun with system/fluid/state/vector/timestep/1, then clears state+4. The empty-emitter path is transcribed; the nonempty emitter pre/post passes remain unproven.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle RVA 0x85a40 and the map-resolved candidate entry with an empty emitter range. It compares the FluidRun callback tuple/vector/timestep bits, return, timestep store, and state clear. The same fixture drives two live fluids through 003630; see evidence/phase7-fluid-substep-003495-manager-clean-003630.md.",
+      "notes": "Private x86 thiscall/ret-4 substep entry. Depends on the already-gated 003624 emitter body-state update and the still-open 003601 body-repulsion helper for nonempty emitters. Row remains open until those branches are directly tested.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp"
     },
     {
       "id": "phys_fn_003496",
@@ -67259,13 +67260,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "decompiled",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1354",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12520",
-      "static_proof": null,
+      "static_proof": "Partial: IDA shows actor/flag guards, EmitterGetEnabledFlag and EmitterGetBodyRepulsion callbacks, FluidGetParticleMass scaling, then an NX_IMPULSE/wake call to reconstructed phys_fn_000782. Callback ABI and FPU preservation are not yet independently verified.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Called by 003495 after FluidRun for each live emitter. Keep open until callbacks, non-binary scaling, actor-record effects, return behavior, and x87 stack are compared directly against the pinned DLL.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp"
     },
     {
       "id": "phys_fn_003602",
@@ -67785,9 +67787,9 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1369",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12581",
-      "static_proof": "Partial: the disabled-backend branch at +0x2b == 0 emits the stepFluids warning (line 0xcf). The remaining dirty-static-collision branch dispatches extension functions, then iterates live fluids through phys_fn_003495; these branches are not implemented.",
-      "dynamic_proof": "NxPhysicsSimulationTests pins the extension-dirty byte to zero, steps a disabled empty manager over two fixed frames, and observes two exact stepFluids warnings as part of the oracle-matching three-warning transcript (build/FluidGate/fluid-step-green.log; Phase 7 1,327/1,327).",
-      "notes": "Only the disabled empty-array warning path is reconstructed. Static-collision refresh and enabled/live-fluid dispatch remain open."
+      "static_proof": "Partial: the +0x2b == 0 branch reports the exact stepFluids warning; with a clean static-collision flag, the row traverses [manager+4,manager+8) in order and calls 003495 for each fluid. The +0x28 dirty-static-collision destroy/rebuild path through 003505 remains unimplemented.",
+      "dynamic_proof": "NxPhysicsSimulationTests preserves the disabled empty-manager warning transcript. NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x89bd0 and the map-resolved candidate with two distinct live fluids and clean collision state; callback order, handles, vectors, timestep bits, state clearing, return, and x86 stack balance match. See evidence/phase7-fluid-substep-003495-manager-clean-003630.md.",
+      "notes": "Private x86 thiscall/ret-4 scene-substep row. Clean-collision live-fluid iteration is implemented and gated. Dirty static-collision refresh and its 003505 dependency keep the whole row open."
     },
     {
       "id": "phys_fn_003631",
