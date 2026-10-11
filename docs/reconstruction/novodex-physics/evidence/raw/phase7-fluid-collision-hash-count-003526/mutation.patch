@@ -1,10 +1,6 @@
 diff --git a/Physics/src/FluidCollision.cpp b/Physics/src/FluidCollision.cpp
 --- a/Physics/src/FluidCollision.cpp
 +++ b/Physics/src/FluidCollision.cpp
-@@ -42,5 +42,5 @@
- 				+ 101 * static_cast<int>(cell[1])
- 				+ 7919 * static_cast<int>(cell[2]);
- 			const unsigned bucket = static_cast<unsigned>(hash)
- 				% descriptor->bucketCount;
+@@ -46 +46 @@
 -			descriptor->buckets[bucket * 3 + 2]++;
 +			descriptor->buckets[bucket * 3 + 2] += 2;
