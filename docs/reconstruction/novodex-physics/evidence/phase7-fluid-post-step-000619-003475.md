@@ -44,3 +44,5 @@ Two row-specific mutations were detected by that probe:
 
 Both restored controls returned zero mismatches. Build and probe logs are in
 `evidence/raw/phase7-fluid-post-step-000619-003475/`.
+
+Fresh post-merge verification (2026-10-11): Phase 5 passes at 2,633/2,633 registered assertions and Phase 7 passes at 1,660/1,660. The full reconstruction-tool suite passes 810/810 tests; inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained bytes. The refreshed full gate outputs are retained as `phase5-gate.log` and `phase7-gate.log` in the adjacent raw-evidence directory.
