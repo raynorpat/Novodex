@@ -105,8 +105,8 @@ gate=build_configure command="cmake.exe" -S C:\Users\raynorpat\.codex\worktrees\
 -- Looking for pthread_create in pthread - not found
 -- Found Threads: TRUE
 -- Including Win32 support
--- Configuring done (17.1s)
--- Generating done (3.6s)
+-- Configuring done (71.1s)
+-- Generating done (9.9s)
 -- Build files have been written to: C:/Users/raynorpat/.codex/worktrees/nxphysics-fluid-stage2/Novodex/build
 gate=build_configure exit=0
 configured_generator=Visual Studio 18 2026 configured_platform=Win32
@@ -256,7 +256,7 @@ fluid emitter world-pose cases=3 mismatches=0
 fluid emitter body-state update cases=2 oracle_callbacks=5 candidate_callbacks=5 mismatches=0
 fluid surface-mesh dispatch cases=1 oracle_callbacks=1 candidate_callbacks=1 args=1 return=1 stack=1/1 mismatches=0
 fluid surface-mesh empty cases=1 oracle_callbacks=0 candidate_callbacks=0 stack=1/1 mismatches=0
-implicit mesh setMeshData public wrapper valid=1 invalid=1 stack_checks=2 mismatches=0
+implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0
 implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0
 fluid emitter aggregate cases=6 mismatches=0
 gate=oracle_differential:NxPhysicsFluidEmitterAbiTests exit=0
@@ -312,14 +312,14 @@ mesh ctor=phys_fn_001379 size=232 digest=422a1f78 sentinel_d0=4 arg_d4=5a5a5a5a 
 basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd
 boxrow slot10=phys_fn_000937 out=3fa00000.c0200000.3f400000.40c38275
 boxray oracle slots4-5=00020850,00020880
-boxraycap case=0 ret=1 rec=00b33b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
-boxraycap case=1 ret=1 rec=00b33b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=0 ret=1 rec=00be3b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=1 ret=1 rec=00be3b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
 boxraycap case=2 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=3 ret=1 rec=00b33b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=3 ret=1 rec=00be3b78 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
 boxraycap case=4 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=5 ret=1 rec=00b33b78 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
+boxraycap case=5 ret=1 rec=00be3b78 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
 boxraycap case=6 ret=0 rec=cdcdcdcd 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd 3f800000 cdcdcdcd cdcdcdcd cdcdcdcd
-boxraycap case=7 ret=1 rec=00b33b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=7 ret=1 rec=00be3b78 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
 boxray contract cases=8 failures=0 mode=oracle-only
 boxray candidate8 mode=provisional
 boxray sweep cases=72 failures=0 mode=provisional
@@ -344,7 +344,7 @@ boxrow2 slot11=phys_fn_000939 out=00000000.00000000.00000000.3fddb3d7 slot13=phy
 boxrow3 slot8=phys_fn_000941 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000 slot9=phys_fn_000935 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000
 boxrow4 slots14-16=phys_fn_001391 stable=1
 boxdtor row=phys_fn_000979 digest=a29800b7
-DBG colobj=00b33c50 vtbl=10106dc8 slot0=100235d0 rva=000235d0
+DBG colobj=00be3c50 vtbl=10106dc8 slot0=100235d0 rva=000235d0
 planesave row=phys_fn_001251 saved=1 digest=7629841d normal_y=3f800000 neg_d=80000000
 sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000
 capsave row=phys_fn_000991 saved=1 digest=bf079f3c rad4c=00000000 hgt50=00000000
@@ -430,8 +430,8 @@ smallflag2 candidate failures=0 provisional=1
 repcopy candidate failures=0 provisional=1
 indfield candidate failures=0 provisional=1
 cw read=0x027f/0x027f
-ix2 r=51
 cwread candidate failures=0 provisional=1
+ix2 r=51
 ixsum2 candidate failures=0 provisional=1
 elemcount candidate failures=0 provisional=1
 transpt1403 candidate failures=0 provisional=1
@@ -500,7 +500,7 @@ capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.0
 layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1
 layout oracle digest=774d629d
 sceneaux row=phys_fn_000649 arrays=10 oracle_frees=10 candidate_frees=10 mismatches=0
-colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=00b305ec
+colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=00be05ec
 owner candidate ok=1 returned=13579bdf
 hull candidate ok=1 face2_offset=0xb8 vertices_offset=0x10
 hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5
@@ -508,7 +508,7 @@ hull sharedhook candidate ok=1 stable=1
 shapebase candidate ok=1 digest=de5f5000 owner_self=1
 shapeleaf candidate ok=1 digest=cb0e48f9
 boxshape candidate ok=1 digest=ac5ed12f sentinel_d0=2
-boxvptr candidate word=00c409d8
+boxvptr candidate word=00cf09d8
 boxvptr candidate dispatch=unverified
 boxsweep-diff candidate run=48 failures=0 provisional=1
 sphere candidate ok=1 digest=37ea7205 sentinel_d0=1
@@ -612,10 +612,10 @@ list4089 candidate failures=0 provisional=1
 mutexlistfree candidate failures=0 provisional=1
 tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509
 newreach candidate failures=0 provisional=1
-orderprobe slot2 before=00000000
-orderprobe slot2 ok=1 after=00ac3170
-orderprobe slot2 restored=00000000
 bindprobe done
+orderprobe slot2 before=00000000
+orderprobe slot2 ok=1 after=00b73170
+orderprobe slot2 restored=00000000
 orderprobe done
 n3min candidate failures=0 provisional=1
 n3rest candidate failures=0 provisional=1
@@ -671,28 +671,28 @@ pass: shipped NxPhysics.dll matches the pinned oracle size
 pass: shipped NxFoundation.dll matches the pinned oracle hash
 pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
 pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
-pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
-staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
 pass: staged oracle/NxPhysics.dll byte-matches its source
-staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: staged oracle/NxFoundation.dll byte-matches its source
 pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysics.dll
 pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxFoundation.dll
-pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
-staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysics.dll source_sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll staged_sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysics.dll source_sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll staged_sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
 pass: staged candidate/NxPhysics.dll byte-matches its source
-staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxFoundation.dll source_sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll staged_sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxFoundation.dll source_sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll staged_sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 pass: staged candidate/NxFoundation.dll byte-matches its source
 pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysics.map
-staged candidate map source=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.map
 pass: candidate NxPhysics.dll is not the shipped oracle file
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointStagedPairTests.exe
-child target=NxPhysicsJointStagedPairTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointStagedPairTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsJointStagedPairTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointStagedPairTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 export=NxCreatePhysicsSDK present=yes
 export=NxJointDesc_SetGlobalAnchor present=yes
 export=NxJointDesc_SetGlobalAxis present=yes
@@ -4211,21 +4211,21 @@ case=d6 index=23 scene_joints when=after_release count=0 enumerated=0 order=none
 posed_scene=near_xy released
 sdk=released
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsJointStagedPairTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsJointStagedPairTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsJointStagedPairTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsJointStagedPairTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointStagedPairTests.exe
-child target=NxPhysicsJointStagedPairTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointStagedPairTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsJointStagedPairTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointStagedPairTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 export=NxCreatePhysicsSDK present=yes
 export=NxJointDesc_SetGlobalAnchor present=yes
 export=NxJointDesc_SetGlobalAxis present=yes
@@ -7744,22 +7744,22 @@ case=d6 index=23 scene_joints when=after_release count=0 enumerated=0 order=none
 posed_scene=near_xy released
 sdk=released
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsJointStagedPairTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsJointStagedPairTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsJointStagedPairTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsJointStagedPairTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsJointStagedPairTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointAllocatorTests.exe
-child target=NxPhysicsJointAllocatorTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointAllocatorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsJointAllocatorTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointAllocatorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 export=NxCreatePhysicsSDK present=yes
 export=NxJointDesc_SetGlobalAnchor present=yes
 export=NxJointDesc_SetGlobalAxis present=yes
@@ -7790,21 +7790,21 @@ case=allocator family=prismatic window=release allocator=physics mallocs=0 frees
 scene=released
 sdk=released
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsJointAllocatorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsJointAllocatorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsJointAllocatorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsJointAllocatorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointAllocatorTests.exe
-child target=NxPhysicsJointAllocatorTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointAllocatorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsJointAllocatorTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointAllocatorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 export=NxCreatePhysicsSDK present=yes
 export=NxJointDesc_SetGlobalAnchor present=yes
 export=NxJointDesc_SetGlobalAxis present=yes
@@ -7835,22 +7835,22 @@ case=allocator family=prismatic window=release allocator=physics mallocs=0 frees
 scene=released
 sdk=released
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsJointAllocatorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsJointAllocatorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsJointAllocatorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsJointAllocatorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsJointAllocatorTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointSlotTests.exe
-child target=NxPhysicsJointSlotTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointSlotTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsJointSlotTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointSlotTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 joint-accum row=phys_fn_004087 value=40600000.40a00000.40d00000
 export=NxCreatePhysicsSDK present=yes
 control default=027f step=0f7f current=027f
@@ -9248,8 +9248,8 @@ scene=released
 sdk=released
 control after=027f
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pair unloaded=yes
 d6dump present=yes
 d6dump line=0 text=fps: 59.999996
@@ -9334,15 +9334,15 @@ d6dump lines=77
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsJointSlotTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsJointSlotTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsJointSlotTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsJointSlotTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointSlotTests.exe
-child target=NxPhysicsJointSlotTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointSlotTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsJointSlotTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsJointSlotTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 joint-accum row=phys_fn_004087 value=40600000.40a00000.40d00000
 export=NxCreatePhysicsSDK present=yes
 control default=027f step=0f7f current=027f
@@ -10740,8 +10740,8 @@ scene=released
 sdk=released
 control after=027f
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 pair unloaded=yes
 d6dump present=yes
 d6dump line=0 text=fps: 59.999996
@@ -10826,129 +10826,129 @@ d6dump lines=77
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsJointSlotTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsJointSlotTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsJointSlotTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsJointSlotTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsJointSlotTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneConstructorTests.exe
-child target=NxPhysicsSceneConstructorTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneConstructorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsSceneConstructorTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneConstructorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 scene constructor internal_link=1
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneConstructorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsSceneConstructorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsSceneConstructorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSceneConstructorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneConstructorTests.exe
-child target=NxPhysicsSceneConstructorTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneConstructorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsSceneConstructorTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneConstructorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 scene constructor internal_link=1
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneConstructorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsSceneConstructorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsSceneConstructorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsSceneConstructorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsSceneConstructorTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneBoundsPlanesTests.exe
-child target=NxPhysicsSceneBoundsPlanesTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneBoundsPlanesTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsSceneBoundsPlanesTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneBoundsPlanesTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 scene bounds_planes actors=6
 scene bounds_planes verified=6 faces=xmax,xmin,ymax,ymin,zmax,zmin
 scene ground_plane verified=1 y=0
 scene combined_planes verified=7 ground_then_bounds=1
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneBoundsPlanesTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsSceneBoundsPlanesTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsSceneBoundsPlanesTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSceneBoundsPlanesTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneBoundsPlanesTests.exe
-child target=NxPhysicsSceneBoundsPlanesTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneBoundsPlanesTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsSceneBoundsPlanesTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneBoundsPlanesTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 scene bounds_planes actors=6
 scene bounds_planes verified=6 faces=xmax,xmin,ymax,ymin,zmax,zmin
 scene ground_plane verified=1 y=0
 scene combined_planes verified=7 ground_then_bounds=1
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneBoundsPlanesTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsSceneBoundsPlanesTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsSceneBoundsPlanesTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsSceneBoundsPlanesTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsSceneBoundsPlanesTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsControllerSweepFaceTests.exe
-child target=NxPhysicsControllerSweepFaceTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsControllerSweepFaceTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsControllerSweepFaceTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsControllerSweepFaceTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 controller correction_face actors=2
 controller correction_face position=3f000000.3f8ccccd.3f000000 flags=00000000
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsControllerSweepFaceTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsControllerSweepFaceTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsControllerSweepFaceTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsControllerSweepFaceTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsControllerSweepFaceTests.exe
-child target=NxPhysicsControllerSweepFaceTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsControllerSweepFaceTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsControllerSweepFaceTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsControllerSweepFaceTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 controller correction_face actors=2
 controller correction_face position=3f000000.3f8ccccd.3f000000 flags=00000000
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsControllerSweepFaceTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsControllerSweepFaceTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsControllerSweepFaceTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsControllerSweepFaceTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsControllerSweepFaceTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneRaycastTests.exe
-child target=NxPhysicsSceneRaycastTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneRaycastTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsSceneRaycastTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneRaycastTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 raycast create s_box created=1 shapes=1
 raycast create s_sphere created=1 shapes=1
 raycast create s_capsule created=1 shapes=1
@@ -13746,21 +13746,21 @@ scene_overlap bounded_tree new_after_move count=2 order=bounded_00.bounded_11
 scene_overlap bounded_tree expanded_after_move count=12 order=bounded_05.bounded_02.bounded_04.bounded_03.bounded_01.bounded_09.bounded_08.bounded_06.bounded_07.bounded_10.bounded_00.bounded_11
 scene_overlap bounded_tree sphere count=12 order=bounded_00.bounded_11.bounded_05.bounded_02.bounded_04.bounded_03.bounded_01.bounded_09.bounded_08.bounded_06.bounded_07.bounded_10
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneRaycastTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsSceneRaycastTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsSceneRaycastTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSceneRaycastTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneRaycastTests.exe
-child target=NxPhysicsSceneRaycastTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneRaycastTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsSceneRaycastTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneRaycastTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 raycast create s_box created=1 shapes=1
 raycast create s_sphere created=1 shapes=1
 raycast create s_capsule created=1 shapes=1
@@ -16558,22 +16558,22 @@ scene_overlap bounded_tree new_after_move count=2 order=bounded_00.bounded_11
 scene_overlap bounded_tree expanded_after_move count=12 order=bounded_05.bounded_02.bounded_04.bounded_03.bounded_01.bounded_09.bounded_08.bounded_06.bounded_07.bounded_10.bounded_00.bounded_11
 scene_overlap bounded_tree sphere count=12 order=bounded_00.bounded_11.bounded_05.bounded_02.bounded_04.bounded_03.bounded_01.bounded_09.bounded_08.bounded_06.bounded_07.bounded_10
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneRaycastTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsSceneRaycastTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsSceneRaycastTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsSceneRaycastTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsSceneRaycastTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneVisualizeTests.exe
-child target=NxPhysicsSceneVisualizeTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsSceneVisualizeTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 visualize empty renderables=0
 visualize create s_box created=1
 visualize create s_rotated created=1
@@ -17575,21 +17575,21 @@ visualize moved stage=all line=209 p0=41a00000.00000000.40e00000 p1=419d999a.000
 visualize moved stage=all renderables=1
 visualize scene_released renderables=0
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneVisualizeTests.exe
-child target=NxPhysicsSceneVisualizeTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsSceneVisualizeTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 visualize empty renderables=0
 visualize create s_box created=1
 visualize create s_rotated created=1
@@ -18591,22 +18591,22 @@ visualize moved stage=all line=209 p0=41a00000.00000000.40e00000 p1=419d999a.000
 visualize moved stage=all renderables=1
 visualize scene_released renderables=0
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsSceneVisualizeTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSimulationTests.exe
-child target=NxPhysicsSimulationTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsSimulationTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 simulation trigger-lifecycle tick=1 calls=0
 simulation trigger-lifecycle event=1 trigger=1 other=1
 simulation trigger-lifecycle tick=2 calls=1
@@ -22562,21 +22562,21 @@ simulation lifecycle state sdk=1 scene=1 p=40a00000.3f79f904.00000000 v=00000000
 simulation lifecycle scene_released sdk=1 scene=1
 simulation lifecycle sdk_released cycle=1
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSimulationTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsSimulationTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsSimulationTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSimulationTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSimulationTests.exe
-child target=NxPhysicsSimulationTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsSimulationTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 simulation trigger-lifecycle tick=1 calls=0
 simulation trigger-lifecycle event=1 trigger=1 other=1
 simulation trigger-lifecycle tick=2 calls=1
@@ -26532,22 +26532,22 @@ simulation lifecycle state sdk=1 scene=1 p=40a00000.3f79f904.00000000 v=00000000
 simulation lifecycle scene_released sdk=1 scene=1
 simulation lifecycle sdk_released cycle=1
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSimulationTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsSimulationTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsSimulationTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsSimulationTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsSimulationTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPairFlagTests.exe
-child target=NxPhysicsPairFlagTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPairFlagTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsPairFlagTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPairFlagTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pairflag compound flags=00000001 count=1 array=1 actor_pair=1 objects=0.1 pair_flags=80000001
 pairflag report=1.388.\Epic\Novodex\SDKs\Physics\src\Scene.cpp.Scene::setShapePairFlags: The two shape references must not reference the same shape.
 pairflag same_shape flags=00000000 count=1 array=1 self_entries=0 errors=1
@@ -26562,21 +26562,21 @@ pairflag mutations_contended reports=3 create_actor=0 actors=2 release_actor=0 j
 pairflag compound_released count=0 array=0
 pairflag released_id_reused old_id=1 new_id=1 flags=00000000
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsPairFlagTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsPairFlagTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsPairFlagTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsPairFlagTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPairFlagTests.exe
-child target=NxPhysicsPairFlagTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPairFlagTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsPairFlagTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPairFlagTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 pairflag compound flags=00000001 count=1 array=1 actor_pair=1 objects=0.1 pair_flags=80000001
 pairflag report=1.388.\Epic\Novodex\SDKs\Physics\src\Scene.cpp.Scene::setShapePairFlags: The two shape references must not reference the same shape.
 pairflag same_shape flags=00000000 count=1 array=1 self_entries=0 errors=1
@@ -26591,22 +26591,22 @@ pairflag mutations_contended reports=3 create_actor=0 actors=2 release_actor=0 j
 pairflag compound_released count=0 array=0
 pairflag released_id_reused old_id=1 new_id=1 flags=00000000
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsPairFlagTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsPairFlagTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsPairFlagTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsPairFlagTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsPairFlagTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsMeshSimulationTests.exe
-child target=NxPhysicsMeshSimulationTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsMeshSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsMeshSimulationTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsMeshSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 simulation mesh-factory scene_meshes=1 buffer_capacity=256 mesh_counts=4.2
 simulation mesh-factory-large scene_meshes=2 buffer_capacity=1024 mesh_counts=900.300
 simulation mesh-contact calls=2 events=0000000a patches=2 firstPatchPoints=2 points=4 normal=80000000.bf7fffff.80000000 secondNormal=80000000.bf7fffff.80000000 separation=bcf62d26 y=3ee6cefd vy=be441bbb
@@ -26622,21 +26622,21 @@ simulation mesh-heightfield-smooth-transformed calls=1 unexpected=0 events=00000
 simulation mesh-heightfield-smooth-transformed-state position=3f8b7488.3fb7c1f1.bf107c1c velocity=b43b45b4.b5400000.b5400000
 simulation mesh-capsule-multinode initial_calls=10 second_calls=1 unexpected=0 events=0000000a patches=1 points=6 y=3f7de83e
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsMeshSimulationTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsMeshSimulationTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsMeshSimulationTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsMeshSimulationTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsMeshSimulationTests.exe
-child target=NxPhysicsMeshSimulationTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsMeshSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsMeshSimulationTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsMeshSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 simulation mesh-factory scene_meshes=1 buffer_capacity=256 mesh_counts=4.2
 simulation mesh-factory-large scene_meshes=2 buffer_capacity=1024 mesh_counts=900.300
 simulation mesh-contact calls=2 events=0000000a patches=2 firstPatchPoints=2 points=4 normal=80000000.bf7fffff.80000000 secondNormal=80000000.bf7fffff.80000000 separation=bcf62d26 y=3ee6cefd vy=be441bbb
@@ -26652,22 +26652,22 @@ simulation mesh-heightfield-smooth-transformed calls=1 unexpected=0 events=00000
 simulation mesh-heightfield-smooth-transformed-state position=3f8b7488.3fb7c1f1.bf107c1c velocity=b43b45b4.b5400000.b5400000
 simulation mesh-capsule-multinode initial_calls=10 second_calls=1 unexpected=0 events=0000000a patches=1 points=6 y=3f7de83e
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsMeshSimulationTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsMeshSimulationTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsMeshSimulationTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsMeshSimulationTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsMeshSimulationTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsTriggerSimulationTests.exe
-child target=NxPhysicsTriggerSimulationTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsTriggerSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsTriggerSimulationTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsTriggerSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 trigger step=0 pos=bfdddddc calls=0 last=0 ready=1 fetched=1
 trigger step=1 pos=bfaaaaa6 calls=0 last=0 ready=1 fetched=1
 trigger callback trigger=1 other=1 event=1
@@ -26699,21 +26699,21 @@ trigger callback trigger=1 other=1 event=2
 trigger step=8 pos=3fbbbbc4 calls=20 last=2 ready=1 fetched=1
 trigger step=9 pos=3feeeef7 calls=20 last=2 ready=1 fetched=1
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsTriggerSimulationTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsTriggerSimulationTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsTriggerSimulationTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsTriggerSimulationTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsTriggerSimulationTests.exe
-child target=NxPhysicsTriggerSimulationTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsTriggerSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsTriggerSimulationTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsTriggerSimulationTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 trigger step=0 pos=bfdddddc calls=0 last=0 ready=1 fetched=1
 trigger step=1 pos=bfaaaaa6 calls=0 last=0 ready=1 fetched=1
 trigger callback trigger=1 other=1 event=1
@@ -26745,22 +26745,22 @@ trigger callback trigger=1 other=1 event=2
 trigger step=8 pos=3fbbbbc4 calls=20 last=2 ready=1 fetched=1
 trigger step=9 pos=3feeeef7 calls=20 last=2 ready=1 fetched=1
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsTriggerSimulationTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsTriggerSimulationTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsTriggerSimulationTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsTriggerSimulationTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsTriggerSimulationTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsEffectorTests.exe
-child target=NxPhysicsEffectorTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsEffectorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsEffectorTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsEffectorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 export=NxCreatePhysicsSDK present=yes
 sdk=created
 scene=created
@@ -26849,21 +26849,21 @@ effector scene_release allocs=3 sizes=18,18,18 frees=55 sizes=14,18,20,4,20,4,28
 scene=released
 sdk=released
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsEffectorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsEffectorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsEffectorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsEffectorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsEffectorTests.exe
-child target=NxPhysicsEffectorTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsEffectorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsEffectorTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsEffectorTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 export=NxCreatePhysicsSDK present=yes
 sdk=created
 scene=created
@@ -26952,22 +26952,22 @@ effector scene_release allocs=3 sizes=18,18,18 frees=55 sizes=14,18,20,4,20,4,28
 scene=released
 sdk=released
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsEffectorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsEffectorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsEffectorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsEffectorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsEffectorTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsCoreDumpTests.exe
-child target=NxPhysicsCoreDumpTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsCoreDumpTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsCoreDumpTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsCoreDumpTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 export=NxCreatePhysicsSDK present=yes
 sdk=created
 sdk materials=3 added=1,2
@@ -29208,21 +29208,21 @@ dump scene_d_binary lines=148 normalised_bytes=8858
 scene d=released
 sdk=released
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsCoreDumpTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsCoreDumpTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsCoreDumpTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsCoreDumpTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsCoreDumpTests.exe
-child target=NxPhysicsCoreDumpTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsCoreDumpTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsCoreDumpTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsCoreDumpTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 export=NxCreatePhysicsSDK present=yes
 sdk=created
 sdk materials=3 added=1,2
@@ -31463,22 +31463,22 @@ dump scene_d_binary lines=148 normalised_bytes=8858
 scene d=released
 sdk=released
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsCoreDumpTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsCoreDumpTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsCoreDumpTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsCoreDumpTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsCoreDumpTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPopulatedSceneTeardownTests.exe
-child target=NxPhysicsPopulatedSceneTeardownTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPopulatedSceneTeardownTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle" exit=0
+child target=NxPhysicsPopulatedSceneTeardownTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPopulatedSceneTeardownTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 teardown recycled_id_buffers shape_bytes=8 shape_freed=1 actor_bytes=8 actor_freed=1 body_bytes=8 body_freed=1
 teardown joint_support_body_buffer bytes=100 freed=1
 teardown joint_metadata_buffers records_bytes=640 records_freed=1 joint_refs_bytes=8 refs_freed=1
@@ -31504,21 +31504,21 @@ teardown joint_owner joint_created=1 release_delta=-35
 teardown retained_body_record bytes=608 freed=1
 teardown coherent_cache bytes=44 freed=1
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsPopulatedSceneTeardownTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsPopulatedSceneTeardownTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsPopulatedSceneTeardownTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsPopulatedSceneTeardownTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPopulatedSceneTeardownTests.exe
-child target=NxPhysicsPopulatedSceneTeardownTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPopulatedSceneTeardownTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate" exit=0
+child target=NxPhysicsPopulatedSceneTeardownTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\Release\NxPhysicsPopulatedSceneTeardownTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 modules pair=2 trusted_system=7 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 teardown recycled_id_buffers shape_bytes=8 shape_freed=1 actor_bytes=8 actor_freed=1 body_bytes=8 body_freed=1
 teardown joint_support_body_buffer bytes=100 freed=1
 teardown joint_metadata_buffers records_bytes=640 records_freed=1 joint_refs_bytes=8 refs_freed=1
@@ -31544,17 +31544,17 @@ teardown joint_owner joint_created=1 release_delta=-35
 teardown retained_body_record bytes=608 freed=1
 teardown coherent_cache bytes=44 freed=1
 modules pair=2 trusted_system=8 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsPopulatedSceneTeardownTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxPhysics.dll sha256=9d740140ecc0a650060e4cb113be9e74554b1ce5aa704b2136cf2ac2b69ea9f7
-pass: NxPhysicsPopulatedSceneTeardownTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
+pass: NxPhysicsPopulatedSceneTeardownTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxPhysics.dll sha256=1df19761c8d48879b308c34716bb6bcf591e26c9edfcf3eb1045b532d0075673
+pass: NxPhysicsPopulatedSceneTeardownTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate\NxFoundation.dll sha256=ab7eb7f327793754340309de6f2e1c12c16841ce0de2006343c4826e54bb386a
 differential target=NxPhysicsPopulatedSceneTeardownTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 differential_targets=NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneConstructorTests,NxPhysicsSceneBoundsPlanesTests,NxPhysicsControllerSweepFaceTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsPairFlagTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsPopulatedSceneTeardownTests
-differential_pairs=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\oracle,C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\pairs\candidate
+differential_pairs=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\oracle,C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-stage2\Novodex\build\phase7-lock-reentry-pairs\candidate
 pass: every requested target produces identical oracle and candidate results
 differential=pass
 gate=run_differential exit=0
@@ -33075,7 +33075,7 @@ pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (
 pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (1 occurrences): fluid emitter body-state update cases=2 oracle_callbacks=5 candidate_callbacks=5 mismatches=0
 pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (1 occurrences): fluid surface-mesh dispatch cases=1 oracle_callbacks=1 candidate_callbacks=1 args=1 return=1 stack=1/1 mismatches=0
 pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (1 occurrences): fluid surface-mesh empty cases=1 oracle_callbacks=0 candidate_callbacks=0 stack=1/1 mismatches=0
-pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (1 occurrences): implicit mesh setMeshData public wrapper valid=1 invalid=1 stack_checks=2 mismatches=0
+pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (1 occurrences): implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0
 pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (1 occurrences): implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0
 pass: NxPhysicsFluidEmitterAbiTests reported its recorded oracle-side coverage (1 occurrences): fluid emitter aggregate cases=6 mismatches=0
 pass: NxPhysicsJointSupportTests reported its recorded oracle-side coverage (1 occurrences): joint_support kind5 cases=2 oracle=b496eeea186d3dc9 candidate=b496eeea186d3dc9 mismatches=0
@@ -33222,3 +33222,4 @@ coverage_assertions_evaluated=1658 floor=1658
 pass: at least the recorded number of coverage assertions ran (1658 of 1658); a target list that has been emptied evaluates none of them
 
 phase_gate=7 status=pass
+phase_gate_process_exit=0

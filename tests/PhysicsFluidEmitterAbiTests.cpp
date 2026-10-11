@@ -65,10 +65,12 @@ static bool nxSameImplicitMeshError(const ImplicitMeshErrorRecord& a,
 
 static unsigned nxRunImplicitMeshSetDataDifferential(void* oracleAddress,
 	void* candidateAddress, void* candidateWrapperAddress,
+	void* candidateApiReentryGetter, void* candidateApiReentrySetter,
 	NxFoundationSDK* foundation,
 	ImplicitMeshOutputStream& output)
 	{
-	if(!oracleAddress || !candidateAddress || !candidateWrapperAddress || !foundation)
+	if(!oracleAddress || !candidateAddress || !candidateWrapperAddress
+		|| !candidateApiReentryGetter || !candidateApiReentrySetter || !foundation)
 		return 1;
 	static_assert(sizeof(NxMeshData) == 0x30,
 		"the pinned setMeshData row copies twelve words");
@@ -238,12 +240,27 @@ static unsigned nxRunImplicitMeshSetDataDifferential(void* oracleAddress,
 	unsigned wrapperMismatches = 0;
 	unsigned wrapperValid = 0;
 	unsigned wrapperInvalid = 0;
+	unsigned wrapperLockRejected = 0;
+	unsigned wrapperReentryRejected = 0;
 	unsigned wrapperStackChecks = 0;
 	const void* const oracleWrapperEntry = reinterpret_cast<const unsigned char*>(
 		oracleAddress) + (0x8d230 - 0x8ac50);
-	for(unsigned i = 0; i < 2; ++i)
+	const bool* const oracleApiReentry = reinterpret_cast<const bool*>(
+		reinterpret_cast<const unsigned char*>(oracleAddress) - 0x8ac50 + 0x123c10);
+	const bool oracleApiReentryBefore = *oracleApiReentry;
+	const bool candidateApiReentryBefore =
+		reinterpret_cast<bool (__cdecl*)(void)>(candidateApiReentryGetter)();
+	for(unsigned i = 0; i < 4; ++i)
 		{
-		const NxMeshData& input = i == 0 ? valid[1] : invalid[1];
+		const bool lockRejected = i == 2;
+		const bool reentryRejected = i == 3;
+		const NxMeshData& input = i == 1 ? invalid[1] : valid[1];
+		const unsigned long otherThread = GetCurrentThreadId() ^ 0x80000000u;
+		oracleLock.held = candidateLock.held = lockRejected ? 1 : 0;
+		oracleLock.owner = candidateLock.owner = lockRejected ? otherThread : 0;
+		*const_cast<bool*>(oracleApiReentry) = reentryRejected;
+		if(candidateApiReentrySetter)
+			reinterpret_cast<void (__cdecl*)(bool)>(candidateApiReentrySetter)(reentryRejected);
 		unsigned char oracleBefore[0x40], candidateBefore[0x40];
 		unsigned char oracleRecordBefore[0x38], candidateRecordBefore[0x38];
 		memcpy(oracleBefore, oracleWrapper, sizeof(oracleWrapper));
@@ -263,22 +280,52 @@ static unsigned nxRunImplicitMeshSetDataDifferential(void* oracleAddress,
 			&candidateEspAfter);
 		const ImplicitMeshErrorRecord candidateError = output.record;
 		const bool validCase = i == 0;
+		const bool rejected = lockRejected || reentryRejected;
 		const bool wrappersEqual = memcmp(oracleWrapper, candidateWrapper, 0x0c) == 0
 			&& memcmp(oracleWrapper + 0x18, candidateWrapper + 0x18, 0x28) == 0;
-		const bool locksReleased = oracleLock.held == 0 && candidateLock.held == 0
-			&& oracleLock.owner == candidateLock.owner;
-		const bool matched = wrappersEqual && locksReleased
+		const bool lockStateMatches = oracleLock.held == candidateLock.held
+			&& oracleLock.owner == candidateLock.owner
+			&& oracleLock.held == (lockRejected ? 1 : 0);
+		const bool locksReleased = lockRejected
+			? (oracleLock.held == 1 && candidateLock.held == 1)
+			: (oracleLock.held == 0 && candidateLock.held == 0);
+		const char* const expectedMessage = lockRejected
+			? "PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!"
+			: reentryRejected
+				? "Reentry check: You may not call this API method from a callback!"
+				: 0;
+		const char* const expectedFile = rejected
+			? "\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpImplicitMesh.cpp"
+			: 0;
+		const int expectedLine = lockRejected ? 25 : (reentryRejected ? 26 : 0);
+		const unsigned expectedErrors = (rejected || i == 1) ? 1u : 0u;
+		const bool errorMatches = oracleError.count == expectedErrors
+			&& candidateError.count == expectedErrors
+			&& (!rejected || (oracleError.code == NXE_INVALID_OPERATION
+				&& candidateError.code == NXE_INVALID_OPERATION
+				&& oracleError.code == candidateError.code
+				&& oracleError.line == candidateError.line
+				&& oracleError.line == expectedLine
+				&& strcmp(oracleError.file, expectedFile) == 0
+				&& strcmp(candidateError.file, expectedFile) == 0
+				&& strcmp(oracleError.message, expectedMessage) == 0
+				&& strcmp(candidateError.message, expectedMessage) == 0));
+		const bool matched = wrappersEqual && locksReleased && lockStateMatches
+			&& errorMatches
 			&& memcmp(oracleRecord, candidateRecord, sizeof(oracleRecord)) == 0
 			&& oracleEspBefore == oracleEspAfter
 			&& candidateEspBefore == candidateEspAfter
-			&& nxSameImplicitMeshError(oracleError, candidateError)
-			&& oracleError.count == (validCase ? 0u : 1u);
+			&& nxSameImplicitMeshError(oracleError, candidateError);
 		if(!matched)
 			++wrapperMismatches;
 		else if(validCase)
 			++wrapperValid;
-		else
+		else if(i == 1)
 			++wrapperInvalid;
+		else if(lockRejected)
+			++wrapperLockRejected;
+		else
+			++wrapperReentryRejected;
 		wrapperStackChecks += oracleEspBefore == oracleEspAfter
 			&& candidateEspBefore == candidateEspAfter;
 		// A valid record is copied into the internal +0x08 member. Invalid
@@ -301,11 +348,16 @@ static unsigned nxRunImplicitMeshSetDataDifferential(void* oracleAddress,
 			|| memcmp(oracleRecord, oracleRecordBefore, sizeof(oracleRecord)) != 0
 			|| memcmp(candidateRecord, candidateRecordBefore, sizeof(candidateRecord)) != 0)
 			++wrapperMismatches;
+		oracleLock.held = candidateLock.held = 0;
+		oracleLock.owner = candidateLock.owner = 0;
 		}
+	*const_cast<bool*>(oracleApiReentry) = oracleApiReentryBefore;
+	reinterpret_cast<void (__cdecl*)(bool)>(candidateApiReentrySetter)(candidateApiReentryBefore);
 	DeleteCriticalSection(&oracleLock.section);
 	DeleteCriticalSection(&candidateLock.section);
 	printf("implicit mesh setMeshData public wrapper valid=%u invalid=%u "
-		"stack_checks=%u mismatches=%u\n", wrapperValid, wrapperInvalid,
+		"lock_rejected=%u reentry_rejected=%u stack_checks=%u mismatches=%u\n",
+		wrapperValid, wrapperInvalid, wrapperLockRejected, wrapperReentryRejected,
 		wrapperStackChecks, wrapperMismatches);
 	mismatches += wrapperMismatches;
 	foundation->release();
@@ -862,6 +914,14 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll public implicit-mesh wrapper could not be resolved from its map\n");
 		++gFailures;
 		}
+	void* candidateApiReentryGetter = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxApiReentryIsActive", &candidateApiReentryGetter))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll shared API reentry getter could not be resolved\n");
+	void* candidateApiReentrySetter = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxSetApiReentryActive", &candidateApiReentrySetter))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll shared API reentry state could not be resolved\n");
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
 	void* candidateCtorAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
@@ -1830,7 +1890,7 @@ int wmain(int argc, wchar_t** argv)
 	else if(candidateSetMeshDataAddress && candidateSetMeshDataWrapperAddress)
 		gFailures += nxRunImplicitMeshSetDataDifferential(image + 0x8ac50,
 			candidateSetMeshDataAddress, candidateSetMeshDataWrapperAddress,
-			foundation, output);
+			candidateApiReentryGetter, candidateApiReentrySetter, foundation, output);
 	else
 		{
 		foundation->release();

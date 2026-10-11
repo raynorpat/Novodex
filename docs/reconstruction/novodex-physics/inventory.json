@@ -72201,7 +72201,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1449",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12976",
       "static_proof": "RVA 0x0008d230 is the public NxImplicitMesh::setMeshData wrapper. It acquires the write lock at this+0x0c, checks callback reentry, calls the internal descriptor helper through this+0x14, and releases the lock. Candidate private layout is 0x18 bytes; public SDK headers unchanged.",
-      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the pinned oracle wrapper and the candidate DLL method with valid and invalid descriptors; checks wrapper and record state, lock release, exact error output, and x86 stack balance. The no-op-helper mutation was rejected with public-wrapper mismatches=2; restored wrapper reports valid=1 invalid=1 stack_checks=2 mismatches=0.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the pinned oracle wrapper and candidate DLL method with valid and invalid descriptors, a rejected write lock, and the shared API reentry flag active; checks wrapper and record state, lock state/release, exact error output, and x86 stack balance. The no-op-helper mutation was rejected with public-wrapper mismatches=2; restored wrapper reports valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0.",
       "implementation": "Physics/src/ImplicitMesh.cpp",
       "implementation_symbol": "?setMeshData@NpImplicitMesh@@UAEXAAVNxMeshData@@@Z",
       "notes": ""

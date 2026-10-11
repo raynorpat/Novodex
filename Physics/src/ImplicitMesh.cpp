@@ -1,4 +1,5 @@
 #include "NpImplicitMesh.h"
+#include "NxApiReentry.h"
 
 #include "FoundationSDK.h"
 #include "NpSceneGuard.h"
@@ -9,8 +10,6 @@
 	"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpImplicitMesh.cpp"
 #define NX_IMPLICITMESH_CPP \
 	"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\ImplicitMesh.cpp"
-
-static int nxNpImplicitMeshSetMeshDataActive;
 
 NpImplicitMesh::NpImplicitMesh(void* internalRecord)
 	: mInternalRecord(internalRecord)
@@ -48,7 +47,7 @@ void NpImplicitMesh::setMeshData(NxMeshData& data)
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	if(nxNpImplicitMeshSetMeshDataActive)
+	if(nxApiReentryIsActive())
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			NX_NPIMPLICITMESH_CPP, 26, 0,
@@ -56,8 +55,8 @@ void NpImplicitMesh::setMeshData(NxMeshData& data)
 		nxNpSceneGuardLeave(link);
 		return;
 		}
-	nxNpImplicitMeshSetMeshDataActive = 1;
+	nxSetApiReentryActive(true);
 	static_cast<NpImplicitMeshDataRecord*>(mInternalRecord)->setMeshData(data);
-	nxNpImplicitMeshSetMeshDataActive = 0;
+	nxSetApiReentryActive(false);
 	nxNpSceneGuardLeave(link);
 	}
