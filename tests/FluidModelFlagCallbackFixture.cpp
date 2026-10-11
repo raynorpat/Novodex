@@ -84,12 +84,12 @@ extern "C" __declspec(dllexport) const float* __cdecl EmitterGetGlobalPose(
 extern "C" __declspec(dllexport) int __cdecl EmitterSetGlobalPose(
 	unsigned argument0, unsigned argument1, unsigned argument2, const float* pose)
 	{
-	const int result = nxRecord(64, argument0, argument1, argument2, 0);
+	nxRecord(64, argument0, argument1, argument2, 0);
 	if(gRecordCount && pose)
 		CopyMemory(gRecords[gRecordCount - 1].pose, pose, sizeof(gRecords[0].pose));
 	if(pose)
 		CopyMemory(gEmitterGlobalPose, pose, sizeof(gEmitterGlobalPose));
-	return result;
+	return 0;
 	}
 
 extern "C" __declspec(dllexport) int __cdecl EmitterSetAttachedFlag(

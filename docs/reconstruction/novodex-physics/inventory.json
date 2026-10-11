@@ -67329,13 +67329,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1356",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12527",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle phys_fn_003605 at RVA 0x88310 and the candidate map-resolved nxNpFluidEmitterUpdateGlobalPose. The three cases cover an unattached emitter, a rotated matrix-backed actor, and a dynamic-body quaternion actor with all components nonzero. The probe compares the full 12-word callback pose, callback tuple, return value, and x86 stack balance. A +1.0 actor-translation mutation is rejected in both actor-backed cases (mismatches=2); the restored control matches exactly. See evidence/phase7-fluid-emitter-world-pose-003605.md.",
+      "notes": "Recomposes row-major local pose with the optional actor frame and publishes the resulting column-major 3x3 plus translation through EmitterSetGlobalPose. This closes the helper only; its caller phys_fn_003624 and extension-backed post-simulation path remain open."
     },
     {
       "id": "phys_fn_003606",

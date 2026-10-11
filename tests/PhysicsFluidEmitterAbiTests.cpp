@@ -478,6 +478,13 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter actor binding row could not be resolved from its map\n");
 		return 1;
 		}
+	void* candidateUpdatePoseAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterUpdateGlobalPose", &candidateUpdatePoseAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter world-pose row could not be resolved from its map\n");
+		++gFailures;
+		}
 	static const char candidateCtorName[] = "??0NpFluidEmitter@@QAE@PAX@Z";
 	void* candidateCtorAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, candidateCtorName,
@@ -1097,6 +1104,124 @@ int wmain(int argc, wchar_t** argv)
 	printf("fluid emitter attach quaternion-frame cases=1 oracle_callbacks=%u "
 		"candidate_callbacks=%u mismatches=%u\n", oracleBodyAttachCallbackCount,
 		candidateBodyAttachCallbackCount, bodyAttachMismatches);
+
+	// phys_fn_003605 republishes the emitter's local pose in world space using
+	// either its matrix-backed actor frame or its dynamic body's quaternion.
+	// The callback transcript is the observable full 12-word world transform.
+	if(candidateUpdatePoseAddress)
+		{
+		typedef int (__thiscall *OracleUpdatePose)(void*);
+		typedef int (__cdecl *CandidateUpdatePose)(void*);
+		OracleUpdatePose oracleUpdatePose = reinterpret_cast<OracleUpdatePose>(
+			image + 0x88310);
+		CandidateUpdatePose candidateUpdatePose = reinterpret_cast<CandidateUpdatePose>(
+			candidateUpdatePoseAddress);
+		static const float localPoses[3][12] = {
+			{ 1, 0.25f, -0.125f, -0.5f, 1, 0.375f, 0.2f, -0.3f, 1, 1.25f, -2.5f, 4 },
+			{ 0.812345f, -0.432109f, 0.123457f, 0.456789f, 0.901237f, -0.234567f,
+			  0.098765f, 0.345679f, 0.765431f, -0.75319f, 2.24681f, 3.51234f },
+			{ 0.513579f, 0.127531f, -0.251357f, 0.375319f, 0.751937f, 0.203579f,
+			  -0.407531f, 0.109753f, 0.987531f, 4.01234f, -1.54321f, 0.257913f }
+		};
+		static const float matrixActorPose[12] = {
+			0.812345f, -0.573219f, 0.105679f, 0.581357f, 0.798461f, -0.153791f,
+			0.024681f, 0.184357f, 0.982531f, 2.12345f, -3.54321f, 1.67891f };
+		unsigned worldPoseMismatches = candidateUpdatePoseAddress ? 0 : 1;
+		for(unsigned poseCase = 0; poseCase < 3; ++poseCase)
+			{
+			unsigned char oracleInternal[0x90], candidateInternal[0x90];
+			unsigned char oracleFluid[0x84], candidateFluid[0x84];
+			unsigned char oracleBackend[0x34], candidateBackend[0x34];
+			unsigned char oracleActor[0x50], candidateActor[0x50];
+			unsigned char oracleBody[0x40], candidateBody[0x40];
+			memset(oracleInternal, 0, sizeof(oracleInternal));
+			memset(candidateInternal, 0, sizeof(candidateInternal));
+			memset(oracleFluid, 0, sizeof(oracleFluid));
+			memset(candidateFluid, 0, sizeof(candidateFluid));
+			memset(oracleBackend, 0, sizeof(oracleBackend));
+			memset(candidateBackend, 0, sizeof(candidateBackend));
+			memset(oracleActor, 0, sizeof(oracleActor));
+			memset(candidateActor, 0, sizeof(candidateActor));
+			memset(oracleBody, 0, sizeof(oracleBody));
+			memset(candidateBody, 0, sizeof(candidateBody));
+			*reinterpret_cast<void**>(oracleInternal + 4) = oracleFluid;
+			*reinterpret_cast<void**>(candidateInternal + 4) = candidateFluid;
+			*reinterpret_cast<unsigned*>(oracleInternal + 8) = 0x33445566u;
+			*reinterpret_cast<unsigned*>(candidateInternal + 8) = 0x33445566u;
+			*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+			*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+			*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x55667788u;
+			*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x55667788u;
+			*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0xa1b2c3d4u;
+			*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0xa1b2c3d4u;
+			memcpy(oracleInternal + 0x18, localPoses[poseCase], 0x30);
+			memcpy(candidateInternal + 0x18, localPoses[poseCase], 0x30);
+			if(poseCase != 0)
+				{
+				*reinterpret_cast<void**>(oracleInternal + 0x14) = oracleActor;
+				*reinterpret_cast<void**>(candidateInternal + 0x14) = candidateActor;
+				if(poseCase == 1)
+					{
+					memcpy(oracleActor + 0x20, matrixActorPose, 0x30);
+					memcpy(candidateActor + 0x20, matrixActorPose, 0x30);
+					}
+				else
+					{
+					*reinterpret_cast<void**>(oracleActor + 8) = oracleBody;
+					*reinterpret_cast<void**>(candidateActor + 8) = candidateBody;
+					float* oracleState = reinterpret_cast<float*>(oracleBody);
+					float* candidateState = reinterpret_cast<float*>(candidateBody);
+					for(unsigned i = 0; i < 3; ++i)
+						oracleState[6 + i] = candidateState[6 + i] = matrixActorPose[9 + i];
+					oracleState[9] = candidateState[9] = 0.173219f;
+					oracleState[10] = candidateState[10] = -0.319753f;
+					oracleState[11] = candidateState[11] = 0.427531f;
+					oracleState[12] = candidateState[12] = 0.811357f;
+					}
+				}
+			unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+			unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+			gOracleFlagCallbackCount = 0;
+			__asm mov oracleEspBefore, esp
+			const int oraclePoseResult = oracleUpdatePose(oracleInternal);
+			__asm mov oracleEspAfter, esp
+			NxFluidEmitterFlagCallbackRecord oraclePoseCallback = {};
+			const unsigned oraclePoseCallbackCount = gOracleFlagCallbackCount;
+			if(oraclePoseCallbackCount == 1)
+				oraclePoseCallback = gOracleFlagCallbacks[0];
+			resetCallbacks();
+			__asm mov candidateEspBefore, esp
+			const int candidatePoseResult = candidateUpdatePose(candidateInternal);
+			__asm mov candidateEspAfter, esp
+			NxFluidEmitterFlagCallbackRecord candidatePoseCallback = {};
+			const unsigned candidatePoseCallbackCount = callbackCount();
+			if(candidatePoseCallbackCount == 1)
+				getCallbackRecord(0, &candidatePoseCallback);
+			const bool matched = oraclePoseCallbackCount == 1
+				&& candidatePoseCallbackCount == 1
+				&& oraclePoseResult == candidatePoseResult
+				&& oracleEspBefore == oracleEspAfter
+				&& candidateEspBefore == candidateEspAfter
+				&& memcmp(&oraclePoseCallback, &candidatePoseCallback,
+					sizeof(oraclePoseCallback)) == 0;
+			if(!matched)
+				{
+				++worldPoseMismatches;
+				printf("fluid emitter world-pose case=%u oracle_ret=%d candidate_ret=%d "
+					"oracle_callbacks=%u candidate_callbacks=%u stack=%u/%u\n",
+					poseCase, oraclePoseResult, candidatePoseResult,
+					oraclePoseCallbackCount, candidatePoseCallbackCount,
+					oracleEspBefore == oracleEspAfter,
+					candidateEspBefore == candidateEspAfter);
+				for(unsigned word = 0; word < 12; ++word)
+					printf("  pose[%u]=%08x/%08x\n", word,
+						oraclePoseCallback.pose[word], candidatePoseCallback.pose[word]);
+				}
+			}
+		gFailures += worldPoseMismatches;
+		printf("fluid emitter world-pose cases=3 mismatches=%u\n",
+			worldPoseMismatches);
+		}
 
 	nxUnbindOracleEmitterFlagCallbacks(image, oldCallbackValues, callbackPageProtection);
 	FreeLibrary(fluidModel);

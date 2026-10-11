@@ -96,6 +96,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid manager actor-release fluids=1 emitters=3 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0'
 		'fluid emitter attach matrix-frame cases=1 oracle_callbacks=3 candidate_callbacks=3 mismatches=0'
 		'fluid emitter attach quaternion-frame cases=1 oracle_callbacks=3 candidate_callbacks=3 mismatches=0'
+		'fluid emitter world-pose cases=3 mismatches=0'
         'fluid emitter aggregate cases=6 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
@@ -5795,7 +5796,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-    '5' = 2622  # all registered actor, object-layout, shape-vtable, and fluid-emitter assertions
+    '5' = 2626  # all registered actor, object-layout, shape-vtable, and fluid-emitter assertions
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
                # plus the shared simulation fluid-manager destructor line
@@ -5841,7 +5842,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-    '7' = 1649  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
+    '7' = 1653  # all registered Phase 7 staged-pair, static-proof, and oracle-differential assertions
                # plus current scene/emitter assertions
                # plus retained contact, trigger, and active-root buffer teardown
                # plus recycled shape, actor, and body ID buffer teardown

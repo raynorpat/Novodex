@@ -53,6 +53,48 @@ static void nxFluidEmitterSetInternalFlag(void* internal, NxFluidEmitterFlag fla
 	callback(argument0, argument1, argument2, enabled ? 1 : 0);
 	}
 
+// Keep the oracle's x87 extended-precision accumulation through the final
+// single-precision store.
+static float nxFluidEmitterX87MultiplyAdd3(float a, float x, float b, float y,
+	float c, float z)
+	{
+	float result;
+	__asm
+		{
+		fld a
+		fmul x
+		fld b
+		fmul y
+		faddp st(1), st
+		fld c
+		fmul z
+		faddp st(1), st
+		fstp result
+		}
+	return result;
+	}
+
+static float nxFluidEmitterX87Translate3(float a, float x, float b, float y,
+	float c, float z, float translation)
+	{
+	float result;
+	__asm
+		{
+		fld a
+		fmul x
+		fld b
+		fmul y
+		faddp st(1), st
+		fld c
+		fmul z
+		faddp st(1), st
+		fld translation
+		faddp st(1), st
+		fstp result
+		}
+	return result;
+	}
+
 // phys_fn_003485 (0x000857b0): a fluid owns an array of internal emitter
 // records. On actor release, only records whose frame-actor pointer at +0x14
 // matches the body are marked broken and detached. The zero-actor detach path
@@ -172,6 +214,102 @@ extern "C" int __cdecl nxNpFluidEmitterSetActor(
 	setGlobalPose(context, fluidHandle, emitterHandle,
 		reinterpret_cast<const float*>(&recomposedPose));
 	return setAttachedFlag(context, fluidHandle, emitterHandle, actor ? 1 : 0);
+	}
+
+// phys_fn_003605 (0x00088310) recomposes an emitter's world pose from its
+// local pose and optional frame actor, then publishes that pose to FluidModel.
+extern "C" int __cdecl nxNpFluidEmitterUpdateGlobalPose(void* internal)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	const float* localWords = reinterpret_cast<const float*>(bytes + 0x18);
+	float worldPose[12];
+	void* actor = *reinterpret_cast<void**>(bytes + 0x14);
+	if(actor)
+		{
+	float actorRotation[9];
+	float actorTranslation[3];
+		unsigned char* actorBytes = static_cast<unsigned char*>(actor);
+		void* body = *reinterpret_cast<void**>(actorBytes + 8);
+		if(body)
+			{
+			const float* state = reinterpret_cast<const float*>(body);
+			const float x = state[9], y = state[10], z = state[11], w = state[12];
+			// Match the oracle's x87 spill at its first doubled-square temporary.
+			volatile float twiceYY = y * y + y * y;
+			const double twiceZZ = static_cast<double>(z) * z
+				+ static_cast<double>(z) * z;
+			const double twiceXX = static_cast<double>(x) * x
+				+ static_cast<double>(x) * x;
+			float rotation[9];
+			rotation[0] = static_cast<float>(1.0 - twiceYY - twiceZZ);
+			rotation[1] = (x * y + x * y) - (z * w + z * w);
+			rotation[2] = (y * w + y * w) + (z * x + z * x);
+			rotation[3] = (z * w + z * w) + (x * y + x * y);
+			const double oneMinusTwiceXX = 1.0 - twiceXX;
+			rotation[4] = static_cast<float>(oneMinusTwiceXX - twiceZZ);
+			rotation[5] = (z * y + z * y) - (w * x + w * x);
+			rotation[6] = (z * x + z * x) - (y * w + y * w);
+			rotation[7] = (w * x + w * x) + (z * y + z * y);
+			rotation[8] = static_cast<float>(static_cast<float>(oneMinusTwiceXX) - twiceYY);
+			memcpy(actorRotation, rotation, sizeof(actorRotation));
+			memcpy(actorTranslation, state + 6, sizeof(actorTranslation));
+			}
+		else
+			{
+			memcpy(actorRotation, actorBytes + 0x20, sizeof(actorRotation));
+			memcpy(actorTranslation, actorBytes + 0x20 + 9 * sizeof(float),
+				sizeof(actorTranslation));
+			}
+		// The internal local frame is row-major. The callback ABI stores the
+		// composed 3x3 in column-major order followed by its translation.
+		worldPose[0] = nxFluidEmitterX87MultiplyAdd3(actorRotation[1], localWords[3],
+			actorRotation[2], localWords[6], actorRotation[0], localWords[0]);
+		worldPose[1] = nxFluidEmitterX87MultiplyAdd3(actorRotation[3], localWords[0],
+			actorRotation[4], localWords[3], actorRotation[5], localWords[6]);
+		worldPose[2] = nxFluidEmitterX87MultiplyAdd3(actorRotation[6], localWords[0],
+			actorRotation[7], localWords[3], actorRotation[8], localWords[6]);
+		worldPose[3] = nxFluidEmitterX87MultiplyAdd3(actorRotation[1], localWords[4],
+			actorRotation[2], localWords[7], actorRotation[0], localWords[1]);
+		worldPose[4] = nxFluidEmitterX87MultiplyAdd3(actorRotation[3], localWords[1],
+			actorRotation[4], localWords[4], actorRotation[5], localWords[7]);
+		worldPose[5] = nxFluidEmitterX87MultiplyAdd3(actorRotation[6], localWords[1],
+			actorRotation[7], localWords[4], actorRotation[8], localWords[7]);
+		worldPose[6] = nxFluidEmitterX87MultiplyAdd3(actorRotation[0], localWords[2],
+			actorRotation[1], localWords[5], actorRotation[2], localWords[8]);
+		worldPose[7] = nxFluidEmitterX87MultiplyAdd3(actorRotation[3], localWords[2],
+			actorRotation[4], localWords[5], actorRotation[5], localWords[8]);
+		worldPose[8] = nxFluidEmitterX87MultiplyAdd3(actorRotation[6], localWords[2],
+			actorRotation[7], localWords[5], actorRotation[8], localWords[8]);
+		worldPose[9] = nxFluidEmitterX87Translate3(actorRotation[0], localWords[9],
+			actorRotation[1], localWords[10], actorRotation[2], localWords[11],
+			actorTranslation[0]);
+		worldPose[10] = actorTranslation[1]
+			+ nxFluidEmitterX87MultiplyAdd3(actorRotation[3], localWords[9],
+				actorRotation[4], localWords[10], actorRotation[5], localWords[11]);
+		worldPose[11] = actorTranslation[2]
+			+ nxFluidEmitterX87MultiplyAdd3(actorRotation[6], localWords[9],
+				actorRotation[7], localWords[10], actorRotation[8], localWords[11]);
+		}
+	else
+		{
+		for(unsigned column = 0; column < 3; ++column)
+			for(unsigned row = 0; row < 3; ++row)
+				worldPose[column * 3 + row] = localWords[row * 3 + column];
+		memcpy(worldPose + 9, localWords + 9, 3 * sizeof(float));
+		}
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluidBytes + 0x80);
+	const unsigned emitterHandle = *reinterpret_cast<unsigned*>(bytes + 8);
+	typedef int (__cdecl *SetGlobalPose)(unsigned, unsigned, unsigned, const float*);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	SetGlobalPose setGlobalPose = reinterpret_cast<SetGlobalPose>(
+		GetProcAddress(fluidModel, "EmitterSetGlobalPose"));
+	return setGlobalPose(context, fluidHandle, emitterHandle,
+		worldPose);
 	}
 
 void NpFluidEmitter::setFrameActor(NxActor* actor)

@@ -579,14 +579,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 11,
-    "dynamically_gated": 41,
+    "discovered": 10,
+    "dynamically_gated": 42,
     "reconstructed": 30,
     "statically_reviewed": 1
    },
    "bytes": {
-    "discovered": 2182,
-    "dynamically_gated": 10794,
+    "discovered": 1941,
+    "dynamically_gated": 11035,
     "reconstructed": 3735,
     "statically_reviewed": 57
    },
@@ -2934,11 +2934,13 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 10,
+    "discovered": 9,
+    "dynamically_gated": 1,
     "reconstructed": 1
    },
    "bytes": {
-    "discovered": 2641,
+    "discovered": 2612,
+    "dynamically_gated": 29,
     "reconstructed": 42
    },
    "phases": {
@@ -3017,13 +3019,13 @@
     "phys_fn_003628"
    ],
    "rows": {
-    "discovered": 44,
-    "dynamically_gated": 1,
+    "discovered": 42,
+    "dynamically_gated": 3,
     "reconstructed": 20
    },
    "bytes": {
-    "discovered": 13589,
-    "dynamically_gated": 159,
+    "discovered": 12581,
+    "dynamically_gated": 1167,
     "reconstructed": 926
    },
    "phases": {
@@ -3051,13 +3053,13 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 8,
-    "dynamically_gated": 2,
+    "discovered": 7,
+    "dynamically_gated": 3,
     "reconstructed": 1
    },
    "bytes": {
-    "discovered": 3007,
-    "dynamically_gated": 286,
+    "discovered": 2907,
+    "dynamically_gated": 386,
     "reconstructed": 143
    },
    "phases": {

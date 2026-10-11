@@ -10388,3 +10388,8 @@ The registered `NxPhysicsSimulationTests` public actor-release fixture rejects s
 ### Fluid emitter frame-actor binding row phys_fn_003622 (mismatches=2)
 
 The pinned oracle direct call and map-resolved candidate implementation match for the nonzero actor-attach path with both matrix-backed and dynamic-body quaternion frames. Forcing the backend attached flag to zero is caught by both cases (`mismatches=2`); the restored control compares all local-pose words and backend callback payloads exactly. The zero-detach arm is also covered by the actor-release fixture. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
+
+
+### Fluid emitter world-pose helper phys_fn_003605 (mismatches=2)
+
+The direct pinned-oracle differential compares the unattached path, a matrix-backed actor frame, and a dynamic-body quaternion frame. Adding `1.0f` to actor-backed world-pose X translation is rejected in both actor cases (`mismatches=2`); the restored control compares the full callback pose, callback tuple, return value, and x86 stack balance exactly. See [phase7-fluid-emitter-world-pose-003605.md](phase7-fluid-emitter-world-pose-003605.md).
