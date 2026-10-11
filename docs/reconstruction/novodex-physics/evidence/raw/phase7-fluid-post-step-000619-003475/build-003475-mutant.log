@@ -1,0 +1,24 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\External\Release\NxQhull.lib
+  Scene.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\NxPhysics.vcxproj]
+  (compiling source file '../Physics/src/Scene.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
+      see previous definition of 'ARRAYSIZE'
+
+C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\Physics\src\Scene.cpp(778,55): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\NxPhysics.vcxproj]
+      C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+
+     Creating library C:/Users/raynorpat/.codex/worktrees/nxphysics-recon-resume/Novodex/build/Release/NxPhysics.lib and object C:/Users/raynorpat/.codex/worktrees/nxphysics-recon-resume/Novodex/build/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\Release\NxPhysics.dll
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\Release\FluidModel.dll
+  NxPhysicsFluidEmitterAbiTests.vcxproj -> C:\Users\raynorpat\.codex\worktrees\nxphysics-recon-resume\Novodex\build\Release\NxPhysicsFluidEmitterAbiTests.exe
+  Staging NxPhysics.dll under a distinct module name for direct DLL-row testing

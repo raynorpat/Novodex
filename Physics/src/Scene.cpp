@@ -30,6 +30,8 @@
 
 #include "Containers.h"
 #include "NxPhysicsBackend.h"
+#define NOMINMAX
+#include <windows.h>
 #if !NX_PHYSICS_USE_X87
 #include "NxSceneContactMembers.h"
 #include "NxSceneVisitedBuffers.h"
@@ -5935,6 +5937,147 @@ void NxSceneInternal::simulateFrame()
 
 // phys_fn_000619 (0x000114b0): refresh each body's gravity and preserve the
 // completed pose for the next fetch/simulation cycle.
+typedef void (__cdecl *NxFluidGetBoundsCallback)(unsigned, unsigned, NxVec3*, NxVec3*);
+typedef unsigned* (__cdecl *NxFluidGetParticlesCallback)(unsigned, unsigned);
+typedef const float* (__cdecl *NxEmitterGetGlobalPoseCallback)(unsigned, unsigned, unsigned);
+typedef unsigned* (__cdecl *NxImplicitFluidMeshGetMeshCallback)(unsigned, unsigned);
+
+static void nxFluidCopyImplicitMeshData(unsigned char* record, unsigned* mesh)
+	{
+	if(*reinterpret_cast<unsigned*>(record + 0x24) == 4)
+		{
+			unsigned* output = *reinterpret_cast<unsigned**>(record + 0x20);
+			const unsigned count = mesh[1];
+			unsigned* source = reinterpret_cast<unsigned*>(mesh[0]);
+			if(output)
+				for(unsigned index = 0; index < count; ++index)
+					{
+						output[0] = source[index * 3];
+						output[1] = source[index * 3 + 1];
+						output[2] = source[index * 3 + 2];
+						output += 3;
+					}
+			unsigned* countOutput = *reinterpret_cast<unsigned**>(record + 0x2c);
+			if(countOutput)
+				*countOutput = count;
+		}
+	const unsigned count = mesh[4];
+	unsigned* firstSource = reinterpret_cast<unsigned*>(mesh[3]);
+	unsigned* secondSource = reinterpret_cast<unsigned*>(mesh[6]);
+	unsigned* first = *reinterpret_cast<unsigned**>(record + 8);
+	unsigned* second = *reinterpret_cast<unsigned**>(record + 0x0c);
+	const unsigned firstStride = *reinterpret_cast<unsigned*>(record + 0x10) / 4;
+	const unsigned secondStride = *reinterpret_cast<unsigned*>(record + 0x14) / 4;
+	for(unsigned index = 0; index < count; ++index)
+		{
+			if(first)
+				{
+					first[0] = firstSource[index * 3];
+					first[1] = firstSource[index * 3 + 1];
+					first[2] = firstSource[index * 3 + 2];
+					first += firstStride;
+				}
+			if(second)
+				{
+					second[0] = secondSource[index * 3];
+					second[1] = secondSource[index * 3 + 1];
+					second[2] = secondSource[index * 3 + 2];
+					second += secondStride;
+				}
+		}
+	unsigned* countOutput = *reinterpret_cast<unsigned**>(record + 0x1c);
+	if(countOutput)
+		*countOutput = count;
+	}
+
+// phys_fn_003475 (0x000854d0): refresh one fluid's bounds, mesh, particles, and emitters.
+static void nxFluidPostStepUpdate(void* fluid)
+	{
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.dll");
+	if(!fluidModel)
+		return;
+	NxFluidGetBoundsCallback getBounds = reinterpret_cast<NxFluidGetBoundsCallback>(
+		GetProcAddress(fluidModel, "FluidGetBounds"));
+	NxFluidGetParticlesCallback getParticles = reinterpret_cast<NxFluidGetParticlesCallback>(
+		GetProcAddress(fluidModel, "FluidGetParticles"));
+	NxEmitterGetGlobalPoseCallback getEmitterGlobalPose = reinterpret_cast<NxEmitterGetGlobalPoseCallback>(
+		GetProcAddress(fluidModel, "EmitterGetGlobalPose"));
+	if(!getBounds || !getParticles || !getEmitterGlobalPose)
+		return;
+	auto bytes = static_cast<unsigned char*>(fluid);
+	auto backend = *reinterpret_cast<unsigned char**>(bytes + 0x7c);
+	if(!backend)
+		return;
+	const unsigned system = *reinterpret_cast<unsigned*>(backend + 0x30);
+	const unsigned handle = *reinterpret_cast<unsigned*>(bytes + 0x80);
+	getBounds(system, handle,
+		reinterpret_cast<NxVec3*>(bytes + 0x5c),
+		reinterpret_cast<NxVec3*>(bytes + 0x68));
+	if(void* meshRecord = *reinterpret_cast<void**>(bytes + 0x24))
+		{
+			NxImplicitFluidMeshGetMeshCallback getMesh =
+				reinterpret_cast<NxImplicitFluidMeshGetMeshCallback>(
+					GetProcAddress(fluidModel, "ImplicitFluidMeshGetMesh"));
+			if(getMesh)
+				{
+				auto recordBytes = static_cast<unsigned char*>(meshRecord);
+				auto ownerFluid = *reinterpret_cast<unsigned char**>(recordBytes + 4);
+				auto ownerBackend = *reinterpret_cast<unsigned char**>(ownerFluid + 0x7c);
+				const unsigned ownerSystem = *reinterpret_cast<unsigned*>(ownerBackend + 0x30);
+				const unsigned ownerHandle = *reinterpret_cast<unsigned*>(ownerFluid + 0x80);
+				if(unsigned* mesh = getMesh(ownerSystem, ownerHandle))
+					nxFluidCopyImplicitMeshData(recordBytes, mesh);
+			}
+		}
+	unsigned* particles = getParticles(system, handle);
+	if(particles)
+		{
+		const unsigned count = *reinterpret_cast<unsigned*>(bytes + 0x28);
+		const unsigned available = particles[1];
+		const unsigned copyCount = count < available ? count : available;
+		unsigned* source = reinterpret_cast<unsigned*>(particles[0]);
+		unsigned* countOutput = *reinterpret_cast<unsigned**>(bytes + 0x2c);
+		for(unsigned channel = 0; channel != 3; ++channel)
+			{
+			unsigned* output = *reinterpret_cast<unsigned**>(bytes + 0x30 + channel * 4);
+			if(!output)
+				continue;
+			const unsigned stride = *reinterpret_cast<unsigned*>(bytes + 0x40 + channel * 4) / 4;
+			const unsigned sourceOffset = channel == 0 ? 1 : channel == 1 ? 4 : 22;
+			for(unsigned index = 0; index < copyCount; ++index)
+				{
+				for(unsigned component = 0; component < (channel == 2 ? 1u : 3u); ++component)
+					output[component] = source[index * 23 + sourceOffset + component];
+				output += stride;
+				}
+			if(countOutput)
+				*countOutput = copyCount;
+			}
+		}
+	void** emitters = *reinterpret_cast<void***>(bytes + 4);
+	void** emittersEnd = *reinterpret_cast<void***>(bytes + 8);
+	for(void** emitter = emitters; emitter && emitter != emittersEnd; ++emitter)
+		{
+		auto emitterBytes = static_cast<unsigned char*>(*emitter);
+		auto emitterFluid = *reinterpret_cast<unsigned char**>(emitterBytes + 4);
+		auto emitterBackend = *reinterpret_cast<unsigned char**>(emitterFluid + 0x7c);
+		const unsigned emitterSystem = *reinterpret_cast<unsigned*>(emitterBackend + 0x30);
+		const unsigned emitterFluidHandle = *reinterpret_cast<unsigned*>(emitterFluid + 0x80);
+		const unsigned emitterHandle = *reinterpret_cast<unsigned*>(emitterBytes + 8);
+		const float* pose = getEmitterGlobalPose(
+			emitterSystem, emitterFluidHandle, emitterHandle);
+		if(pose)
+			{
+				unsigned* destination = reinterpret_cast<unsigned*>(emitterBytes + 0x48);
+				const unsigned* source = reinterpret_cast<const unsigned*>(pose);
+				destination[0] = source[0]; destination[1] = source[3]; destination[2] = source[6];
+				destination[3] = source[1]; destination[4] = source[4]; destination[5] = source[7];
+				destination[6] = source[2]; destination[7] = source[5]; destination[8] = source[8];
+				destination[9] = source[9]; destination[10] = source[10]; destination[11] = source[11];
+			}
+		}
+	}
+
 void NxSceneInternal::finishSimulation()
 	{
 	void** bodies = at<void**>(0x56c);
@@ -5948,6 +6091,14 @@ void NxSceneInternal::finishSimulation()
 				for(NxU32 offset = 0x18; offset <= 0x4c; offset += 4)
 					*reinterpret_cast<NxU32*>(body + 0x50 + offset - 0x18)
 						= *reinterpret_cast<NxU32*>(body + offset);
+		}
+	void* manager = at<void*>(0x61c);
+	if(manager)
+		{
+			void** fluids = *reinterpret_cast<void***>(static_cast<unsigned char*>(manager) + 4);
+			void** fluidsEnd = *reinterpret_cast<void***>(static_cast<unsigned char*>(manager) + 8);
+			for(void** fluid = fluids; fluid && fluid != fluidsEnd; ++fluid)
+				nxFluidPostStepUpdate(*fluid);
 		}
 	}
 

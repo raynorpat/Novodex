@@ -11731,13 +11731,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/239",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1567",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests direct pinned-oracle differential; Scene traversal no-op and per-fluid immediate-return mutations are each detected with mismatches=72; restored control reports zero mismatches. See evidence/phase7-fluid-post-step-000619-003475.md.",
+      "notes": "Reconstructed from pinned-oracle IDA pseudocode and directly compared over two populated fluids; see evidence/phase7-fluid-post-step-000619-003475.md.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000620",
@@ -64987,13 +64988,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1294",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12267",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests direct pinned-oracle differential; Scene traversal no-op and per-fluid immediate-return mutations are each detected with mismatches=72; restored control reports zero mismatches. See evidence/phase7-fluid-post-step-000619-003475.md. A mesh-copy-only mutation is also detected with mismatches=4; the test covers a null mesh-record path.",
+      "notes": "Reconstructed from pinned-oracle IDA pseudocode and directly compared over two populated fluids; see evidence/phase7-fluid-post-step-000619-003475.md.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_003476",

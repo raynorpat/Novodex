@@ -381,6 +381,101 @@ static NxFluidEmitterFlagCallbackRecord gOracleFlagCallbacks[16];
 static unsigned gOracleFlagCallbackCount;
 static float gOracleEmitterGlobalPose[12];
 
+struct NxFluidPostStepCallbackRecord
+	{
+	unsigned kind;
+	unsigned system;
+	unsigned handle;
+	unsigned values[6];
+	};
+
+struct NxFluidPostStepParticleStream
+	{
+	unsigned* data;
+	unsigned count;
+	};
+
+struct NxImplicitFluidMeshFixture
+	{
+	unsigned* leadingVectors;
+	unsigned leadingCount;
+	unsigned unused0;
+	unsigned* surfaceVertices;
+	unsigned surfaceCount;
+	unsigned unused1;
+	unsigned* surfaceNormals;
+	};
+
+static NxFluidPostStepCallbackRecord gOraclePostStepRecords[16];
+static unsigned gOraclePostStepRecordCount;
+static unsigned gOraclePostStepParticles[2][2][23];
+static NxFluidPostStepParticleStream gOraclePostStepStreams[2];
+static unsigned gOracleLeadingVectors[2][3] = {
+	{ 0x3e800001u, 0x3e800002u, 0x3e800003u },
+	{ 0x3f000001u, 0x3f000002u, 0x3f000003u }
+	};
+static unsigned gOracleSurfaceVertices[2][3] = {
+	{ 0x3f400001u, 0x3f400002u, 0x3f400003u },
+	{ 0x3f800001u, 0x3f800002u, 0x3f800003u }
+	};
+static unsigned gOracleSurfaceNormals[2][3] = {
+	{ 0x3fc00001u, 0x3fc00002u, 0x3fc00003u },
+	{ 0x40000001u, 0x40000002u, 0x40000003u }
+	};
+static NxImplicitFluidMeshFixture gOraclePostStepMeshes[2];
+
+static void nxRecordOraclePostStep(unsigned kind, unsigned system,
+	unsigned handle, const unsigned* values, unsigned count)
+	{
+	if(gOraclePostStepRecordCount >= sizeof(gOraclePostStepRecords) / sizeof(gOraclePostStepRecords[0]))
+		return;
+	NxFluidPostStepCallbackRecord& record = gOraclePostStepRecords[gOraclePostStepRecordCount++];
+	memset(&record, 0, sizeof(record));
+	record.kind = kind;
+	record.system = system;
+	record.handle = handle;
+	for(unsigned index = 0; values && index < count && index < 6; ++index)
+		record.values[index] = values[index];
+	}
+
+extern "C" void __cdecl nxOracleFluidGetBounds(unsigned system,
+	unsigned handle, float* minimum, float* maximum)
+	{
+	static const unsigned values[2][6] = {
+		{ 0x3f800000u, 0x40000000u, 0x40400000u, 0x40800000u, 0x40a00000u, 0x40c00000u },
+		{ 0x41300000u, 0x41400000u, 0x41500000u, 0x41600000u, 0x41700000u, 0x41800000u }
+		};
+	const unsigned index = system & 1u;
+	if(minimum)
+		memcpy(minimum, values[index], 3 * sizeof(unsigned));
+	if(maximum)
+		memcpy(maximum, values[index] + 3, 3 * sizeof(unsigned));
+	nxRecordOraclePostStep(4096, system, handle, values[index], 6);
+	}
+
+extern "C" NxFluidPostStepParticleStream* __cdecl nxOracleFluidGetParticles(
+	unsigned system, unsigned handle)
+	{
+	nxRecordOraclePostStep(8192, system, handle, 0, 0);
+	return &gOraclePostStepStreams[system & 1u];
+	}
+
+extern "C" NxImplicitFluidMeshFixture* __cdecl nxOracleImplicitFluidMeshGetMesh(
+	unsigned system, unsigned handle)
+	{
+	const unsigned index = system & 1u;
+	nxRecordOraclePostStep(16384, system, handle, 0, 0);
+	NxImplicitFluidMeshFixture& mesh = gOraclePostStepMeshes[index];
+	mesh.leadingVectors = gOracleLeadingVectors[index];
+	mesh.leadingCount = 1;
+	mesh.unused0 = 0;
+	mesh.surfaceVertices = gOracleSurfaceVertices[index];
+	mesh.surfaceCount = 1;
+	mesh.unused1 = 0;
+	mesh.surfaceNormals = gOracleSurfaceNormals[index];
+	return &mesh;
+	}
+
 static int nxRecordOracleFluidEmitterFlag(unsigned kind, unsigned argument0,
 	unsigned argument1, unsigned argument2, unsigned char enabled)
 	{
@@ -411,6 +506,8 @@ extern "C" const float* __cdecl nxOracleEmitterGetGlobalPose(
 	unsigned a0, unsigned a1, unsigned a2)
 	{
 	nxRecordOracleFluidEmitterFlag(32, a0, a1, a2, 0);
+	const unsigned emitterHandle = a2;
+	nxRecordOraclePostStep(32768, a0, a1, &emitterHandle, 1);
 	return gOracleEmitterGlobalPose;
 	}
 
@@ -473,7 +570,7 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 	{
 	static const unsigned slotRvas[] = {
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
-		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8 };
+		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0 };
 	static void* const replacements[] = {
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
 		reinterpret_cast<void*>(&nxOracleEmitterSetAddBodyVelocityFlag),
@@ -485,12 +582,15 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyLinearVelocity),
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyAngularVelocity),
 		reinterpret_cast<void*>(&nxOracleImplicitFluidMeshRun),
+		reinterpret_cast<void*>(&nxOracleFluidGetParticles),
+		reinterpret_cast<void*>(&nxOracleFluidGetBounds),
+		reinterpret_cast<void*>(&nxOracleImplicitFluidMeshGetMesh),
 		};
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 10; ++i)
+	for(unsigned i = 0; i < 13; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -504,12 +604,12 @@ static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldV
 	{
 	static const unsigned slotRvas[] = {
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
-		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8 };
+		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0 };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 10; ++i)
+	for(unsigned i = 0; i < 13; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -1159,13 +1259,262 @@ int wmain(int argc, wchar_t** argv)
 	ResetCallbacksFn resetCallbacks = reinterpret_cast<ResetCallbacksFn>(resetFluidCallbacks);
 	CallbackCountFn callbackCount = reinterpret_cast<CallbackCountFn>(getFluidCallbackCount);
 	GetCallbackRecordFn getCallbackRecord = reinterpret_cast<GetCallbackRecordFn>(getFluidCallbackRecord);
-	void* oldCallbackValues[10] = {};
+	typedef void (__cdecl *ResetPostStepFn)();
+	typedef unsigned (__cdecl *PostStepCountFn)();
+	typedef int (__cdecl *GetPostStepRecordFn)(unsigned, NxFluidPostStepCallbackRecord*);
+	typedef void (__cdecl *SetPostStepParticleFn)(unsigned, const unsigned*, unsigned);
+	ResetPostStepFn resetPostStep = reinterpret_cast<ResetPostStepFn>(
+		GetProcAddress(fluidModel, "NxResetFluidPostStepCallbacks"));
+	PostStepCountFn postStepCount = reinterpret_cast<PostStepCountFn>(
+		GetProcAddress(fluidModel, "NxGetFluidPostStepCallbackCount"));
+	GetPostStepRecordFn getPostStepRecord = reinterpret_cast<GetPostStepRecordFn>(
+		GetProcAddress(fluidModel, "NxGetFluidPostStepCallbackRecord"));
+	SetPostStepParticleFn setPostStepParticle = reinterpret_cast<SetPostStepParticleFn>(
+		GetProcAddress(fluidModel, "NxSetFluidPostStepParticle"));
+	if(!resetPostStep || !postStepCount || !getPostStepRecord || !setPostStepParticle)
+		{
+		fprintf(stderr, "FAIL FluidModel callback fixture lacks post-step probes\n");
+		return 1;
+		}
+	void* oldCallbackValues[13] = {};
 	DWORD callbackPageProtection = 0;
 	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues, &callbackPageProtection))
 		{
 		fprintf(stderr, "FAIL oracle FluidModel callback slots could not be bound\n");
 		return 1;
 		}
+
+	// The fetch-side 000619 row must update every fluid in Scene+0x61c. A
+	// missing traversal leaves the candidate's bounds and particle outputs at
+	// their poison values even though the oracle visits both seeded fluids.
+	{
+		typedef void (__thiscall *FinishSimulation)(void*);
+		void* candidateFinishAddress = 0;
+		static const char finishName[] = "?finishSimulation@NxSceneInternal@@QAEXXZ";
+		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics, finishName,
+			&candidateFinishAddress))
+			{
+			fprintf(stderr, "FAIL candidate fetch-side finishSimulation row could not be resolved\n");
+			return 1;
+			}
+		FinishSimulation oracleFinish = reinterpret_cast<FinishSimulation>(image + 0x114b0);
+		FinishSimulation candidateFinish = reinterpret_cast<FinishSimulation>(candidateFinishAddress);
+		unsigned char oracleScene[0x710] = {};
+		unsigned char candidateScene[0x710] = {};
+		unsigned char oracleManager[0x34] = {};
+		unsigned char candidateManager[0x34] = {};
+		unsigned oracleFluids[2] = {};
+		unsigned candidateFluids[2] = {};
+		unsigned char oracleFluid[2][0x84] = {};
+		unsigned char candidateFluid[2][0x84] = {};
+		unsigned char oracleBackend[2][0x34] = {};
+		unsigned char candidateBackend[2][0x34] = {};
+		unsigned oracleEmitterLists[2] = {};
+		unsigned candidateEmitterLists[2] = {};
+		unsigned char oracleEmitters[2][0x78] = {};
+		unsigned char candidateEmitters[2][0x78] = {};
+		unsigned char oracleMeshRecords[2][0x30] = {};
+		unsigned char candidateMeshRecords[2][0x30] = {};
+		unsigned oracleMeshCounts[2] = {};
+		unsigned candidateMeshCounts[2] = {};
+		unsigned oracleMeshLeadingCounts[2] = {};
+		unsigned candidateMeshLeadingCounts[2] = {};
+		unsigned oracleMeshVertices[2][3] = {};
+		unsigned candidateMeshVertices[2][3] = {};
+		unsigned oracleMeshSurfaceOutput[2][3] = {};
+		unsigned candidateMeshSurfaceOutput[2][3] = {};
+		unsigned oracleMeshLeading[2][3] = {};
+		unsigned candidateMeshLeading[2][3] = {};
+		unsigned oracleParticleCount[2] = {};
+		unsigned candidateParticleCount[2] = {};
+		unsigned oracleOutput[2][3][12] = {};
+		unsigned candidateOutput[2][3][12] = {};
+		static const unsigned particles[2][2][23] = {
+			{
+				{ 0, 0x3f800001u, 0x40000002u, 0x40400003u, 0x40800004u, 0x40a00005u,
+					0x40c00006u, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x40e00007u },
+				{ 0, 0x41000010u, 0x41100011u, 0x41200012u, 0x41300013u, 0x41400014u,
+					0x41500015u, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x41600016u }
+			},
+			{
+				{ 0, 0x42000020u, 0x42100021u, 0x42200022u, 0x42300023u, 0x42400024u,
+					0x42500025u, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x42600026u },
+				{ 0, 0x43000030u, 0x43100031u, 0x43200032u, 0x43300033u, 0x43400034u,
+					0x43500035u, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x43600036u }
+			}
+		};
+		static const unsigned outputStrideBytes[2][3] = {
+			{ 16, 20, 8 }, { 20, 16, 12 }
+		};
+		static const unsigned emitterPose[12] = {
+			0x3f800000u, 0x40000000u, 0x40400000u, 0x40800000u,
+			0x40a00000u, 0x40c00000u, 0x40e00000u, 0x41000000u,
+			0x41100000u, 0x41200000u, 0x41300000u, 0x41400000u };
+		static const unsigned expectedEmitterPose[12] = {
+			0x3f800000u, 0x40800000u, 0x40e00000u, 0x40000000u,
+			0x40a00000u, 0x41000000u, 0x40400000u, 0x40c00000u,
+			0x41100000u, 0x41200000u, 0x41300000u, 0x41400000u };
+		typedef void (__cdecl *SetEmitterPoseFn)(const float*);
+		SetEmitterPoseFn setEmitterPose = reinterpret_cast<SetEmitterPoseFn>(
+			GetProcAddress(fluidModel, "NxSetEmitterGlobalPose"));
+		if(!setEmitterPose)
+			{
+			fprintf(stderr, "FAIL FluidModel callback fixture lacks emitter pose setup\n");
+			return 1;
+			}
+		memcpy(gOracleEmitterGlobalPose, emitterPose, sizeof(emitterPose));
+		setEmitterPose(reinterpret_cast<const float*>(emitterPose));
+		memset(oracleOutput, 0xa5, sizeof(oracleOutput));
+		memset(candidateOutput, 0xa5, sizeof(candidateOutput));
+		for(unsigned i = 0; i != 2; ++i)
+			{
+				memcpy(gOraclePostStepParticles[i], particles[i], sizeof(particles[i]));
+				gOraclePostStepStreams[i].data = gOraclePostStepParticles[i][0];
+				gOraclePostStepStreams[i].count = 2;
+				setPostStepParticle(i, &particles[i][0][0], 2);
+				oracleFluids[i] = reinterpret_cast<unsigned>(oracleFluid[i]);
+				candidateFluids[i] = reinterpret_cast<unsigned>(candidateFluid[i]);
+				*reinterpret_cast<void**>(oracleFluid[i] + 0x7c) = oracleBackend[i];
+				*reinterpret_cast<void**>(candidateFluid[i] + 0x7c) = candidateBackend[i];
+				*reinterpret_cast<unsigned*>(oracleFluid[i] + 0x80) = 0x5100u + i;
+				*reinterpret_cast<unsigned*>(candidateFluid[i] + 0x80) = 0x5100u + i;
+				*reinterpret_cast<unsigned*>(oracleFluid[i] + 0x28) = i ? 1 : 3;
+				*reinterpret_cast<unsigned*>(candidateFluid[i] + 0x28) = i ? 1 : 3;
+				oracleEmitterLists[i] = reinterpret_cast<unsigned>(oracleEmitters[i]);
+				candidateEmitterLists[i] = reinterpret_cast<unsigned>(candidateEmitters[i]);
+				*reinterpret_cast<unsigned*>(oracleFluid[i] + 4) = reinterpret_cast<unsigned>(&oracleEmitterLists[i]);
+				*reinterpret_cast<unsigned*>(oracleFluid[i] + 8) = reinterpret_cast<unsigned>(&oracleEmitterLists[i] + 1);
+				*reinterpret_cast<unsigned*>(candidateFluid[i] + 4) = reinterpret_cast<unsigned>(&candidateEmitterLists[i]);
+				*reinterpret_cast<unsigned*>(candidateFluid[i] + 8) = reinterpret_cast<unsigned>(&candidateEmitterLists[i] + 1);
+				*reinterpret_cast<void**>(oracleFluid[i] + 0x24) = i ? 0 : oracleMeshRecords[i];
+				*reinterpret_cast<void**>(candidateFluid[i] + 0x24) = i ? 0 : candidateMeshRecords[i];
+				*reinterpret_cast<void**>(oracleMeshRecords[i] + 4) = oracleFluid[i];
+				*reinterpret_cast<void**>(candidateMeshRecords[i] + 4) = candidateFluid[i];
+				*reinterpret_cast<unsigned*>(oracleMeshRecords[i] + 8) = reinterpret_cast<unsigned>(oracleMeshVertices[i]);
+				*reinterpret_cast<unsigned*>(candidateMeshRecords[i] + 8) = reinterpret_cast<unsigned>(candidateMeshVertices[i]);
+				*reinterpret_cast<unsigned*>(oracleMeshRecords[i] + 0x0c) = reinterpret_cast<unsigned>(oracleMeshSurfaceOutput[i]);
+				*reinterpret_cast<unsigned*>(candidateMeshRecords[i] + 0x0c) = reinterpret_cast<unsigned>(candidateMeshSurfaceOutput[i]);
+				*reinterpret_cast<unsigned*>(oracleMeshRecords[i] + 0x10) = 12;
+				*reinterpret_cast<unsigned*>(candidateMeshRecords[i] + 0x10) = 12;
+				*reinterpret_cast<unsigned*>(oracleMeshRecords[i] + 0x14) = 12;
+				*reinterpret_cast<unsigned*>(candidateMeshRecords[i] + 0x14) = 12;
+				*reinterpret_cast<unsigned**>(oracleMeshRecords[i] + 0x1c) = &oracleMeshCounts[i];
+				*reinterpret_cast<unsigned**>(candidateMeshRecords[i] + 0x1c) = &candidateMeshCounts[i];
+				*reinterpret_cast<unsigned*>(oracleMeshRecords[i] + 0x20) = reinterpret_cast<unsigned>(oracleMeshLeading[i]);
+				*reinterpret_cast<unsigned*>(candidateMeshRecords[i] + 0x20) = reinterpret_cast<unsigned>(candidateMeshLeading[i]);
+				*reinterpret_cast<unsigned*>(oracleMeshRecords[i] + 0x24) = 4;
+				*reinterpret_cast<unsigned*>(candidateMeshRecords[i] + 0x24) = 4;
+				*reinterpret_cast<unsigned**>(oracleMeshRecords[i] + 0x2c) = &oracleMeshLeadingCounts[i];
+				*reinterpret_cast<unsigned**>(candidateMeshRecords[i] + 0x2c) = &candidateMeshLeadingCounts[i];
+				*reinterpret_cast<unsigned*>(oracleEmitters[i] + 4) = reinterpret_cast<unsigned>(oracleFluid[i]);
+				*reinterpret_cast<unsigned*>(candidateEmitters[i] + 4) = reinterpret_cast<unsigned>(candidateFluid[i]);
+				*reinterpret_cast<unsigned*>(oracleEmitters[i] + 8) = 0x6200u + i;
+				*reinterpret_cast<unsigned*>(candidateEmitters[i] + 8) = 0x6200u + i;
+				*reinterpret_cast<unsigned*>(oracleBackend[i] + 0x30) = i;
+				*reinterpret_cast<unsigned*>(candidateBackend[i] + 0x30) = i;
+				*reinterpret_cast<unsigned**>(oracleFluid[i] + 0x2c) = &oracleParticleCount[i];
+				*reinterpret_cast<unsigned**>(candidateFluid[i] + 0x2c) = &candidateParticleCount[i];
+				for(unsigned channel = 0; channel != 3; ++channel)
+					{
+						*reinterpret_cast<unsigned**>(oracleFluid[i] + 0x30 + channel * 4) = oracleOutput[i][channel];
+						*reinterpret_cast<unsigned**>(candidateFluid[i] + 0x30 + channel * 4) = candidateOutput[i][channel];
+						*reinterpret_cast<unsigned*>(oracleFluid[i] + 0x40 + channel * 4) = outputStrideBytes[i][channel];
+						*reinterpret_cast<unsigned*>(candidateFluid[i] + 0x40 + channel * 4) = outputStrideBytes[i][channel];
+					}
+			}
+		*reinterpret_cast<unsigned*>(oracleManager + 4) = reinterpret_cast<unsigned>(oracleFluids);
+		*reinterpret_cast<unsigned*>(oracleManager + 8) = reinterpret_cast<unsigned>(oracleFluids + 2);
+		*reinterpret_cast<unsigned*>(candidateManager + 4) = reinterpret_cast<unsigned>(candidateFluids);
+		*reinterpret_cast<unsigned*>(candidateManager + 8) = reinterpret_cast<unsigned>(candidateFluids + 2);
+		*reinterpret_cast<unsigned*>(oracleScene + 0x61c) = reinterpret_cast<unsigned>(oracleManager);
+		*reinterpret_cast<unsigned*>(candidateScene + 0x61c) = reinterpret_cast<unsigned>(candidateManager);
+		gOraclePostStepRecordCount = 0;
+		gOracleFlagCallbackCount = 0;
+		resetPostStep();
+		resetCallbacks();
+		oracleFinish(oracleScene);
+		const unsigned oracleCallbacks = gOraclePostStepRecordCount;
+		NxFluidPostStepCallbackRecord oracleRecords[8] = {};
+		memcpy(oracleRecords, gOraclePostStepRecords,
+			sizeof(oracleRecords[0]) * (oracleCallbacks < 8 ? oracleCallbacks : 8));
+		candidateFinish(candidateScene);
+		const unsigned candidateCallbacks = postStepCount();
+		unsigned mismatches = oracleCallbacks != 7 || candidateCallbacks != 7;
+		const unsigned oracleEmitterCallbacks = gOracleFlagCallbackCount;
+		const unsigned candidateEmitterCallbacks = callbackCount();
+		if(oracleEmitterCallbacks != 2 || candidateEmitterCallbacks != 2)
+			++mismatches;
+		for(unsigned i = 0; i != 7; ++i)
+			{
+				NxFluidPostStepCallbackRecord candidateRecord = {};
+				if(i >= oracleCallbacks || !getPostStepRecord(i, &candidateRecord))
+					{ ++mismatches; continue; }
+				if(candidateRecord.kind != oracleRecords[i].kind
+					|| candidateRecord.system != oracleRecords[i].system
+					|| candidateRecord.handle != oracleRecords[i].handle)
+					++mismatches;
+				for(unsigned value = 0; value != 6; ++value)
+					if(candidateRecord.values[value] != oracleRecords[i].values[value])
+						++mismatches;
+			}
+		for(unsigned i = 0; i != 2; ++i)
+			{
+				const unsigned expectedBounds[6] = {
+					i ? 0x41300000u : 0x3f800000u, i ? 0x41400000u : 0x40000000u,
+					i ? 0x41500000u : 0x40400000u, i ? 0x41600000u : 0x40800000u,
+					i ? 0x41700000u : 0x40a00000u, i ? 0x41800000u : 0x40c00000u };
+				const unsigned expectedParticleCount = i ? 1u : 2u;
+				if(oracleParticleCount[i] != expectedParticleCount
+					|| candidateParticleCount[i] != expectedParticleCount)
+					++mismatches;
+				for(unsigned word = 0; word != 6; ++word)
+					if(*reinterpret_cast<unsigned*>(oracleFluid[i] + 0x5c + word * 4) != expectedBounds[word]
+						|| *reinterpret_cast<unsigned*>(candidateFluid[i] + 0x5c + word * 4) != expectedBounds[word])
+						++mismatches;
+				for(unsigned particle = 0; particle != expectedParticleCount; ++particle)
+					for(unsigned channel = 0; channel != 3; ++channel)
+						{
+						const unsigned stride = outputStrideBytes[i][channel] / 4;
+						const unsigned sourceOffset = channel == 0 ? 1 : channel == 1 ? 4 : 22;
+						const unsigned componentCount = channel == 2 ? 1u : 3u;
+						for(unsigned component = 0; component != componentCount; ++component)
+							{
+							const unsigned expected = particles[i][particle][sourceOffset + component];
+							const unsigned outputIndex = particle * stride + component;
+							if(oracleOutput[i][channel][outputIndex] != expected
+								|| candidateOutput[i][channel][outputIndex] != expected)
+								++mismatches;
+							}
+						}
+				const unsigned expectedLeading[3] = {
+					0x3e800001u, 0x3e800002u, 0x3e800003u };
+				const unsigned expectedVertices[3] = {
+					0x3f400001u, 0x3f400002u, 0x3f400003u };
+				const unsigned expectedNormals[3] = {
+					0x3fc00001u, 0x3fc00002u, 0x3fc00003u };
+				const unsigned expectedMeshCount = i ? 0u : 1u;
+				if(oracleMeshCounts[i] != expectedMeshCount || candidateMeshCounts[i] != expectedMeshCount
+					|| oracleMeshLeadingCounts[i] != expectedMeshCount
+					|| candidateMeshLeadingCounts[i] != expectedMeshCount)
+					++mismatches;
+				for(unsigned axis = 0; axis != 3; ++axis)
+					if(oracleMeshVertices[i][axis] != (i ? 0u : expectedVertices[axis])
+						|| candidateMeshVertices[i][axis] != (i ? 0u : expectedVertices[axis])
+						|| oracleMeshSurfaceOutput[i][axis] != (i ? 0u : expectedNormals[axis])
+						|| candidateMeshSurfaceOutput[i][axis] != (i ? 0u : expectedNormals[axis])
+						|| oracleMeshLeading[i][axis] != (i ? 0u : expectedLeading[axis])
+						|| candidateMeshLeading[i][axis] != (i ? 0u : expectedLeading[axis]))
+						++mismatches;
+				for(unsigned word = 0; word != 12; ++word)
+					if(*reinterpret_cast<unsigned*>(oracleEmitters[i] + 0x48 + word * 4) != expectedEmitterPose[word]
+						|| *reinterpret_cast<unsigned*>(candidateEmitters[i] + 0x48 + word * 4) != expectedEmitterPose[word])
+						++mismatches;
+			}
+		gFailures += mismatches;
+		printf("fluid post-step traversal fluids=2 oracle_callbacks=%u candidate_callbacks=%u particle_counts=%u/%u particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=%u\n",
+			oracleCallbacks, candidateCallbacks, oracleParticleCount[0] + oracleParticleCount[1],
+			candidateParticleCount[0] + candidateParticleCount[1], mismatches);
+	}
 
 	unsigned char oracleBackendFluid[0x84];
 	unsigned char candidateBackendFluid[0x84];

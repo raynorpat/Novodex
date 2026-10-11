@@ -10411,3 +10411,5 @@ Phase 7 public implicit-mesh wrapper continuation: `phys_fn_003874` at RVA `0x00
 
 
 Phase 7 fluid manager traversal (2026-10-11): phys_fn_003632 and phys_fn_003634 are mutation-falsified by NxPhysicsFluidEmitterAbiTests; the increment-only candidate mutant omitted two callbacks and was caught with mismatches=3. Restored control reports two matching callbacks and zero mismatches. See evidence/phase7-fluid-manager-surface-mesh-003632-003634.md.
+
+Phase 7 fluid post-step traversal: phys_fn_000619's skipped manager dispatch mutation is caught with mismatches=72; phys_fn_003475's whole-row immediate-return mutation is caught with mismatches=72, and a mesh-copy-only mutation is caught with mismatches=4. The differential also seeds a fluid with no mesh record and verifies the optional callback is skipped. Restored controls report zero mismatches. See evidence/phase7-fluid-post-step-000619-003475.md.
