@@ -64,7 +64,7 @@ function Assert-True([bool] $Condition, [string] $Requirement) {
     Write-Host "pass: $Requirement"
 }
 
-function New-Pair([string] $Name, [string] $PhysicsSource, [string] $FoundationSource) {
+function New-Pair([string] $Name, [string] $PhysicsSource, [string] $FoundationSource, [switch] $StageFluidModel) {
     foreach ($source in @($PhysicsSource, $FoundationSource)) {
         Assert-True (Test-Path -LiteralPath $source -PathType Leaf) "source exists: $source"
     }
@@ -97,6 +97,14 @@ function New-Pair([string] $Name, [string] $PhysicsSource, [string] $FoundationS
         $mapTarget = Join-Path $directory 'NxPhysics.map'
         Copy-Item -LiteralPath $mapSource -Destination $mapTarget
         Write-Host "staged candidate map source=$mapSource staged=$mapTarget"
+    }
+
+    if ($StageFluidModel) {
+        $supportSource = Join-Path $releaseRoot 'FluidModel.dll'
+        Assert-True (Test-Path -LiteralPath $supportSource -PathType Leaf) "FluidModel callback fixture exists: $supportSource"
+        $supportTarget = Join-Path $directory 'FluidModel.dll'
+        Copy-Item -LiteralPath $supportSource -Destination $supportTarget
+        Assert-True ((Get-FileSha256 $supportTarget) -ceq (Get-FileSha256 $supportSource)) "staged $Name/FluidModel.dll byte-matches its source"
     }
 
     return [pscustomobject]@{
@@ -208,8 +216,9 @@ if (-not (Test-Path -LiteralPath $pairsRoot)) {
     New-Item -ItemType Directory -Path $pairsRoot -Force | Out-Null
 }
 
-$oraclePair = New-Pair 'oracle' $oraclePhysics $oracleFoundation
-$candidatePair = New-Pair 'candidate' (Join-Path $releaseRoot 'NxPhysics.dll') (Join-Path $releaseRoot 'NxFoundation.dll')
+$stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets
+$oraclePair = New-Pair 'oracle' $oraclePhysics $oracleFoundation -StageFluidModel:$stageFluidModel
+$candidatePair = New-Pair 'candidate' (Join-Path $releaseRoot 'NxPhysics.dll') (Join-Path $releaseRoot 'NxFoundation.dll') -StageFluidModel:$stageFluidModel
 Assert-True ($candidatePair.PhysicsSha256 -cne $oraclePair.PhysicsSha256) 'candidate NxPhysics.dll is not the shipped oracle file'
 
 $differences = 0

@@ -933,6 +933,17 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	if(MSVC)
 		target_compile_options(NxPhysicsFluidEmitterAbiTests PRIVATE /arch:IA32)
 	endif()
+	add_executable(NxPhysicsFluidEmitterBodyRepulsionTests tests/PhysicsFluidEmitterBodyRepulsionTests.cpp)
+	target_include_directories(NxPhysicsFluidEmitterBodyRepulsionTests PRIVATE
+		tests Foundation/include Foundation/src/include Physics/include)
+	target_compile_definitions(NxPhysicsFluidEmitterBodyRepulsionTests PRIVATE
+		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT)
+	target_link_libraries(NxPhysicsFluidEmitterBodyRepulsionTests bcrypt)
+	add_dependencies(NxPhysicsFluidEmitterBodyRepulsionTests NxPhysics NxPhysicsFluidModelCallbackFixture)
+	if(MSVC)
+		target_compile_options(NxPhysicsFluidEmitterBodyRepulsionTests PRIVATE /arch:IA32)
+	endif()
+
 	add_executable(NxPhysicsAllocatorReleaseTests tests/PhysicsAllocatorReleaseTests.cpp)
 	target_include_directories(NxPhysicsAllocatorReleaseTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)

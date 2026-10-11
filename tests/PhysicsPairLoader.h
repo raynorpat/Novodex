@@ -31,6 +31,7 @@ static const wchar_t* const nxTrustedSystemModules[] =
 	L"apphelp.dll",
 	L"ucrtbase.dll",
 	L"VCRUNTIME140.dll",
+	L"MSVCP140.dll",
 	L"bcrypt.dll",
 	// Loaded by BCryptHash on this workstation; it is a Windows system module and
 	// was measured as the one rejection the joint-descriptor oracle differential
@@ -124,7 +125,13 @@ static int nxAuditModules(const wchar_t* pairDirectory)
 			continue;
 		if(nxInDirectory(entry.szExePath, pairDirectory))
 			{
-			if(_wcsicmp(entry.szModule, L"NxPhysics.dll") == 0 || _wcsicmp(entry.szModule, L"NxFoundation.dll") == 0)
+			bool allowedPairModule = _wcsicmp(entry.szModule, L"NxPhysics.dll") == 0
+				|| _wcsicmp(entry.szModule, L"NxFoundation.dll") == 0;
+#ifdef NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT
+			allowedPairModule = allowedPairModule
+				|| _wcsicmp(entry.szModule, L"FluidModel.dll") == 0;
+#endif
+			if(allowedPairModule)
 				++pair;
 			else
 				{

@@ -390,15 +390,8 @@ static int nxNpFluidEmitterApplyBodyRepulsion(void* internal)
 	float scaledForce[3], scaledTorque[3];
 	for(unsigned axis = 0; axis != 3; ++axis)
 		{
-		__asm
-			{
-			fld mass
-			fmul dword ptr forceWords[axis * 4]
-			fstp dword ptr scaledForce[axis * 4]
-			fld mass
-			fmul dword ptr torqueWords[axis * 4]
-			fstp dword ptr scaledTorque[axis * 4]
-			}
+		scaledForce[axis] = mass * forceWords[axis];
+		scaledTorque[axis] = mass * torqueWords[axis];
 		}
 	const NxVec3 force(scaledForce[0], scaledForce[1], scaledForce[2]);
 	const NxVec3 torque(scaledTorque[0], scaledTorque[1], scaledTorque[2]);
