@@ -29,3 +29,8 @@ is claimed. The earlier two-root smoke remains documented in
 
 
 After the scene post-step reconstruction was merged to mainline at `c9080352`, rebuilt the Viewer targets in the fresh `build/phase-step-main` tree and reran the same all-scenes selection. All 48 registered Viewer tests completed with zero failures: 43 passed and the same five known pinned-oracle scenes were skipped. This includes all 39 scene entrypoints plus `ViewerPhysicsStep` and `ViewerPhysicsContact`. Full output: `build/phase-step-main/viewer-all-scenes-main.log`. The approved off-center spring/damper fixture remains covered by the passing Phase 7 `NxPhysicsSimulationTests` differential.
+
+
+## Post-M7.3 mainline rerun — 2026-10-11
+
+After merge commit `c5ead81c`, reran `ctest --test-dir build -C Release -R "^Viewer" --output-on-failure` from the merged candidate. All 48 selected tests completed with zero failures: 43 passed and the same five pinned-oracle asset cases skipped (`CowPile`, `PMapTest10`, `PMapTest12`, `PMapTest8`, and `TruckDemo`). This again covers all 39 available scene entrypoints, along with Viewer support, physics-step, and contact tests. Full output: `build/viewer-all-scenes-fluid-mesh-postmerge.log`.
