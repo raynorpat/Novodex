@@ -10363,3 +10363,8 @@ The registered NxPhysicsSimulationTests staged-pair differential now asserts thr
 ### Scene isWritable row phys_fn_000392 (stdout_delta=2)
 
 The public NxPhysicsSimulationTests staged-pair fixture records the initial isWritable result. Changing the successful return after acquiring and releasing the scene write lock is rejected with stdout_delta=2, both exits zero, and exact stderr; the restored control is exact. See [phase7-iswritable-000392.md](phase7-iswritable-000392.md).
+
+
+### Scene releaseFluid row phys_fn_000622 (stdout_delta=4)
+
+The registered NxPhysicsSimulationTests staged-pair differential rejects an immediate-return mutation in NxSceneInternal::releaseFluid. The disabled-backend public release no longer clears the manager or emits its warning, and the seeded array fixture no longer performs swap-removal or deleting dispatch. Both processes exit zero with exact stderr; stdout_delta=4. Restoring and rebuilding returns an exact target. See [phase7-scene-release-fluid-000622.md](phase7-scene-release-fluid-000622.md).

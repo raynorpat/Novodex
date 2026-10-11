@@ -11787,13 +11787,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/241",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1580",
       "static_proof": "phys_fn_000622 (0x00011620) prevents callback reentry, calls FluidManager::releaseFluid when Scene +0x61c is set, and invokes manager slot 0 plus clears +0x61c when its fluid array becomes empty.",
-      "dynamic_proof": "The staged release probe creates the disabled manager, invokes releaseFluid, observes the oracle warning, then confirms the candidate clears Scene +0x61c exactly as the oracle does (evidence/fluid-release-disabled.md).",
-      "notes": "Current implementation and differential cover the pinned disabled manager's empty-list release path; nonempty list and callback reentry remain open."
+      "dynamic_proof": "Registered NxPhysicsSimulationTests staged-pair mutation: inserting an immediate return at the start of NxSceneInternal::releaseFluid is rejected with stdout_delta=4 (both exits zero, exact stderr). The differential includes the public disabled-manager warning/clear case and a seeded populated-array swap-removal/deleting-dispatch case. Restoring and rebuilding returns stdout_delta=0 and exact stderr (evidence/phase7-scene-release-fluid-000622.md).",
+      "notes": "Mutation-gated for the tested disabled-backend manager release and seeded array removal/deleting dispatch. Callback reentry and extension-backed live-fluid notifications remain open."
     },
     {
       "id": "phys_fn_000623",
