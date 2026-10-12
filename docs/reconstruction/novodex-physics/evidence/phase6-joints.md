@@ -10480,3 +10480,6 @@ Mutation evidence for phys_fn_003540: the rotation-word mutation is detected in 
 Fresh Phase 5/7 Release gates after phys_fn_003540 closure: 2,661/2,661 and 1,688/1,688 coverage assertions pass. The direct shape-packer marker is required in both phases; inventory reports 6,338 functions / 5,138 data objects / zero unexplained entries. Candidate SHA-256: ae8edb289e7b8b408eb196b8f5d1a262906ece7d6d52aaca9b1e76be9ea96fa8.
 
 Static-collision builder phys_fn_003505 is now mutation-falsified: the registered empty and nonempty-mesh oracle cases both catch a 0.001-to-0.002 margin mutation (mismatches=2), and the restored control reports zero mismatches. Full details: [phase7-fluid-static-collision-rebuild-003505.md](phase7-fluid-static-collision-rebuild-003505.md).
+
+
+Phase 7 closure evidence: phys_fn_003559 and phys_fn_003561 copy the FluidModel global emitter pose, transposing the 3x3 rotation and preserving translation. The registered direct oracle probe checks callback arguments, all output words, return pointers, untouched tail, and stack balance. The wrong-transpose mutation is rejected by both rows (mismatches=2); restored output is exact. See evidence/phase7-fluid-emitter-global-pose-003559-003561.md.

@@ -813,6 +813,132 @@ static bool nxResolveCandidateFluidEmitterSymbol(HMODULE module, const char* exp
 	return false;
 	}
 
+static unsigned nxRunFluidEmitterGlobalPoseRows(void* oracleStoreAddress,
+	void* candidateStoreAddress, void* oracleCopyAddress, void* candidateCopyAddress,
+	void* fluidModel, void (__cdecl *resetCallbacks)(),
+	unsigned (__cdecl *callbackCount)(),
+	int (__cdecl *getCallbackRecord)(unsigned, NxFluidEmitterFlagCallbackRecord*))
+	{
+	if(!oracleStoreAddress || !candidateStoreAddress || !oracleCopyAddress
+		|| !candidateCopyAddress || !fluidModel || !resetCallbacks
+		|| !callbackCount || !getCallbackRecord)
+		return 1;
+	typedef void (__cdecl *SetEmitterPoseFn)(const float*);
+	SetEmitterPoseFn setEmitterPose = reinterpret_cast<SetEmitterPoseFn>(
+		GetProcAddress(static_cast<HMODULE>(fluidModel), "NxSetEmitterGlobalPose"));
+	if(!setEmitterPose)
+		return 1;
+	static const unsigned poseWords[12] = {
+		0x3f800001u, 0xbf000002u, 0x40000003u, 0xc0400004u,
+		0x40800005u, 0x41000006u, 0xc1200007u, 0x41800008u,
+		0x42000009u, 0x4220000au, 0xc230000bu, 0x4240000cu };
+	static const unsigned expectedPoseWords[12] = {
+		0x3f800001u, 0xc0400004u, 0xc1200007u, 0xbf000002u,
+		0x40800005u, 0x41800008u, 0x40000003u, 0x41000006u,
+		0x42000009u, 0x4220000au, 0xc230000bu, 0x4240000cu };
+	const unsigned context = 0x12345678u;
+	const unsigned fluidHandle = 0x23456789u;
+	const unsigned emitterHandle = 0x3456789au;
+	unsigned mismatches = 0;
+	unsigned stackChecks = 0;
+	unsigned callbackChecks = 0;
+	unsigned char oracleFluid[0x84] = {};
+	unsigned char candidateFluid[0x84] = {};
+	unsigned char oracleBackend[0x34] = {};
+	unsigned char candidateBackend[0x34] = {};
+	unsigned char oracleEmitter[0x78] = {};
+	unsigned char candidateEmitter[0x78] = {};
+	*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+	*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+	*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = fluidHandle;
+	*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = fluidHandle;
+	*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = context;
+	*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = context;
+	*reinterpret_cast<void**>(oracleEmitter + 4) = oracleFluid;
+	*reinterpret_cast<void**>(candidateEmitter + 4) = candidateFluid;
+	*reinterpret_cast<unsigned*>(oracleEmitter + 8) = emitterHandle;
+	*reinterpret_cast<unsigned*>(candidateEmitter + 8) = emitterHandle;
+	memcpy(gOracleEmitterGlobalPose, poseWords, sizeof(poseWords));
+	setEmitterPose(reinterpret_cast<const float*>(poseWords));
+	typedef void* (__thiscall *OracleStore)(void*);
+	typedef void* (__cdecl *CandidateStore)(void*);
+	unsigned oracleBefore = 0, oracleAfter = 0;
+	unsigned candidateBefore = 0, candidateAfter = 0;
+	gOracleFlagCallbackCount = 0;
+	__asm mov oracleBefore, esp
+	const void* oracleStoreResult = reinterpret_cast<OracleStore>(oracleStoreAddress)(oracleEmitter);
+	__asm mov oracleAfter, esp
+	resetCallbacks();
+	__asm mov candidateBefore, esp
+	const void* candidateStoreResult = reinterpret_cast<CandidateStore>(candidateStoreAddress)(candidateEmitter);
+	__asm mov candidateAfter, esp
+	NxFluidEmitterFlagCallbackRecord candidateRecord = {};
+	const bool oracleCallback = gOracleFlagCallbackCount == 1
+		&& gOracleFlagCallbacks[0].kind == 32
+		&& gOracleFlagCallbacks[0].argument0 == context
+		&& gOracleFlagCallbacks[0].argument1 == fluidHandle
+		&& gOracleFlagCallbacks[0].argument2 == emitterHandle;
+	const bool candidateCallback = callbackCount() == 1
+		&& getCallbackRecord(0, &candidateRecord)
+		&& candidateRecord.kind == 32
+		&& candidateRecord.argument0 == context
+		&& candidateRecord.argument1 == fluidHandle
+		&& candidateRecord.argument2 == emitterHandle;
+	callbackChecks += oracleCallback && candidateCallback;
+	if(!oracleCallback || !candidateCallback
+		|| oracleStoreResult != oracleEmitter + 0x48
+		|| candidateStoreResult != candidateEmitter + 0x48
+		|| memcmp(oracleEmitter + 0x48, expectedPoseWords, sizeof(expectedPoseWords)) != 0
+		|| memcmp(candidateEmitter + 0x48, expectedPoseWords, sizeof(expectedPoseWords)) != 0
+		|| memcmp(oracleEmitter + 0x48, candidateEmitter + 0x48, sizeof(poseWords)) != 0
+		|| oracleBefore != oracleAfter || candidateBefore != candidateAfter)
+		++mismatches;
+	stackChecks += oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+
+	unsigned char oracleOutput[0x38], candidateOutput[0x38];
+	memset(oracleOutput, 0xa5, sizeof(oracleOutput));
+	memset(candidateOutput, 0xa5, sizeof(candidateOutput));
+	memcpy(gOracleEmitterGlobalPose, poseWords, sizeof(poseWords));
+	setEmitterPose(reinterpret_cast<const float*>(poseWords));
+	resetCallbacks();
+	gOracleFlagCallbackCount = 0;
+	typedef void* (__thiscall *OracleCopy)(void*, void*);
+	typedef void* (__cdecl *CandidateCopy)(void*, void*);
+	__asm mov oracleBefore, esp
+	const void* oracleCopyResult = reinterpret_cast<OracleCopy>(oracleCopyAddress)(oracleEmitter, oracleOutput);
+	__asm mov oracleAfter, esp
+	resetCallbacks();
+	__asm mov candidateBefore, esp
+	const void* candidateCopyResult = reinterpret_cast<CandidateCopy>(candidateCopyAddress)(candidateEmitter, candidateOutput);
+	__asm mov candidateAfter, esp
+	memset(&candidateRecord, 0, sizeof(candidateRecord));
+	const bool oracleCopyCallback = gOracleFlagCallbackCount == 1
+		&& gOracleFlagCallbacks[0].kind == 32
+		&& gOracleFlagCallbacks[0].argument0 == context
+		&& gOracleFlagCallbacks[0].argument1 == fluidHandle
+		&& gOracleFlagCallbacks[0].argument2 == emitterHandle;
+	const bool candidateCopyCallback = callbackCount() == 1
+		&& getCallbackRecord(0, &candidateRecord)
+		&& candidateRecord.kind == 32
+		&& candidateRecord.argument0 == context
+		&& candidateRecord.argument1 == fluidHandle
+		&& candidateRecord.argument2 == emitterHandle;
+	callbackChecks += oracleCopyCallback && candidateCopyCallback;
+	if(!oracleCopyCallback || !candidateCopyCallback
+		|| oracleCopyResult != oracleOutput || candidateCopyResult != candidateOutput
+		|| memcmp(oracleOutput, expectedPoseWords, sizeof(expectedPoseWords)) != 0
+		|| memcmp(candidateOutput, expectedPoseWords, sizeof(expectedPoseWords)) != 0
+		|| memcmp(oracleOutput, candidateOutput, sizeof(expectedPoseWords)) != 0
+		|| oracleBefore != oracleAfter || candidateBefore != candidateAfter
+		|| memcmp(oracleOutput + 0x30, "\xa5\xa5\xa5\xa5\xa5\xa5\xa5\xa5", 8) != 0
+		|| memcmp(candidateOutput + 0x30, "\xa5\xa5\xa5\xa5\xa5\xa5\xa5\xa5", 8) != 0)
+		++mismatches;
+	stackChecks += oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+	printf("fluid emitter global-pose rows=2 callback_checks=%u stack_checks=%u mismatches=%u\n",
+		callbackChecks, stackChecks, mismatches);
+	return mismatches;
+	}
+
 static bool nxLoadCandidateFluidEmitterSetter(HMODULE* module, void** setter)
 	{
 	wchar_t exePath[MAX_PATH];
@@ -4470,6 +4596,18 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL oracle FluidModel callback slots could not be bound\n");
 		return 1;
 		}
+	void* candidateStoreGlobalPoseAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterStoreGlobalPose", &candidateStoreGlobalPoseAddress))
+		++gFailures;
+	void* candidateCopyGlobalPoseAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterCopyGlobalPose", &candidateCopyGlobalPoseAddress))
+		++gFailures;
+	gFailures += nxRunFluidEmitterGlobalPoseRows(image + 0x87ce0,
+		candidateStoreGlobalPoseAddress, image + 0x87d80,
+		candidateCopyGlobalPoseAddress, fluidModel, resetCallbacks,
+		callbackCount, getCallbackRecord);
 	gFailures += nxRunFluidCollisionTriangleCellsDifferential(image,
 		candidateTriangleCellsAddress);
 	gFailures += nxRunFluidCollisionTriangleBuilderDifferential(image,

@@ -66540,12 +66540,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1333",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12492",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA at RVA 0x87ce0 calls EmitterGetGlobalPose(context, fluid, emitter), transposes the 3x3 rotation words into internal+0x48, copies translation words unchanged, and returns internal+0x48.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares the oracle and candidate callback tuple, returned pointer, 12 output words, and x86 stack. The registered wrong-transpose mutation reports mismatches=2; restored output reports mismatches=0.",
       "notes": ""
     },
     {
@@ -66576,12 +66576,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1334",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12493",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA at RVA 0x87d80 calls EmitterGetGlobalPose(context, fluid, emitter), transposes the 3x3 rotation words into the caller output, copies translation words unchanged, and returns the caller output pointer.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares the oracle and candidate callback tuple, returned pointer, 12 output words, untouched output tail, and x86 stack. The shared registered wrong-transpose mutation reports mismatches=2; restored output reports mismatches=0.",
       "notes": ""
     },
     {

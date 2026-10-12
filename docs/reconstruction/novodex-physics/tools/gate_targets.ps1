@@ -118,6 +118,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'
 		'fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
         'fluid emitter flags cases=2 mismatches=0'
+		'fluid emitter global-pose rows=2 callback_checks=2 stack_checks=2 mismatches=0'
 		'fluid emitter body repulsion bodyless actor=1 callbacks=3/3 order=1 vectors=1 mass=1 stack=1/1 mismatches=0'
 		'fluid post-step traversal fluids=2 oracle_callbacks=7 candidate_callbacks=7 particle_counts=3/3 particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=0'
 		'fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0'

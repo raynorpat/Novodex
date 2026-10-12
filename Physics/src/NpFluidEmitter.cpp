@@ -63,6 +63,76 @@ static void nxFluidEmitterSetInternalFlag(void* internal, NxFluidEmitterFlag fla
 	callback(argument0, argument1, argument2, enabled ? 1 : 0);
 	}
 
+static void nxFluidEmitterCopyBackendPose(void* output, const float* pose)
+	{
+	const unsigned* source = reinterpret_cast<const unsigned*>(pose);
+	unsigned* destination = reinterpret_cast<unsigned*>(output);
+	destination[0] = source[0];
+	destination[1] = source[3];
+	destination[2] = source[6];
+	destination[3] = source[1];
+	destination[4] = source[4];
+	destination[5] = source[7];
+	destination[6] = source[2];
+	destination[7] = source[5];
+	destination[8] = source[8];
+	memcpy(destination + 9, source + 9, 3 * sizeof(unsigned));
+	}
+
+// phys_fn_003559 (0x00087ce0) refreshes the emitter's cached world pose from
+// FluidModel and returns the matrix at internal+0x48. The backend callback
+// receives (context, fluid handle, emitter handle), using the same internal
+// Fluid and backend fields as the neighboring emitter operations.
+extern "C" void* __cdecl nxNpFluidEmitterStoreGlobalPose(void* internal)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluidBytes + 0x80);
+	const unsigned emitterHandle = *reinterpret_cast<unsigned*>(bytes + 8);
+	typedef const float* (__cdecl *GetGlobalPose)(unsigned, unsigned, unsigned);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	GetGlobalPose getGlobalPose = reinterpret_cast<GetGlobalPose>(
+		GetProcAddress(fluidModel, "EmitterGetGlobalPose"));
+	if(!getGlobalPose)
+		return 0;
+	const float* globalPose = getGlobalPose(context, fluidHandle, emitterHandle);
+	if(!globalPose)
+		return 0;
+	nxFluidEmitterCopyBackendPose(bytes + 0x48, globalPose);
+	return bytes + 0x48;
+	}
+
+// phys_fn_003561 (0x00087d80) is the caller-owned-output form of the same
+// FluidModel global-pose read. It writes exactly twelve words and returns the
+// supplied NxMat34 buffer.
+extern "C" void* __cdecl nxNpFluidEmitterCopyGlobalPose(void* internal,
+	void* output)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluidBytes + 0x80);
+	const unsigned emitterHandle = *reinterpret_cast<unsigned*>(bytes + 8);
+	typedef const float* (__cdecl *GetGlobalPose)(unsigned, unsigned, unsigned);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	GetGlobalPose getGlobalPose = reinterpret_cast<GetGlobalPose>(
+		GetProcAddress(fluidModel, "EmitterGetGlobalPose"));
+	if(!getGlobalPose)
+		return 0;
+	const float* globalPose = getGlobalPose(context, fluidHandle, emitterHandle);
+	if(!globalPose)
+		return 0;
+	nxFluidEmitterCopyBackendPose(output, globalPose);
+	return output;
+	}
+
 // Keep the oracle's x87 extended-precision accumulation through the final
 // single-precision store.
 static float nxFluidEmitterX87MultiplyAdd3(float a, float x, float b, float y,

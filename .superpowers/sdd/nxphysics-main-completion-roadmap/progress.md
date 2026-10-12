@@ -100,3 +100,8 @@ Task M2-actor-ctor-tail-000044: changing the final vtable store to `0x10104534` 
 Task M2-actor-dtor-000118: changing the final wall-vtable store to `0x101043d4` breaks both direct and +8-adjustor destructor observations (`mismatches=1`); restoring `0x101043d0` returns digest `19f4915a` with zero mismatches. Phase 5 advances to 181 closed / 24 deferred; full gate passes at 2,565/2,565 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-dtor-000118.md`.
 
 Task M2-actor-dtor-adjustor-000116: suppressing flags forwarding prevents the adjusted flag-1 free (`adjFreed=0; mismatches=1`); restoring flags returns digest `19f4915a` with zero mismatches. Phase 5 advances to 182 closed / 23 deferred; full gate passes at 2,565/2,565 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-actor-dtor-thunk-000116.md`.
+
+
+Continuation — Fluid emitter global-pose rows (`phys_fn_003559` / `003561`, 2026-10-12).
+
+Both rows now call the `EmitterGetGlobalPose` backend callback with the oracle’s context, fluid, and emitter handles, transpose the 3x3 rotation words, and preserve translation. The direct pinned-oracle differential covers the cached-pose return and caller-output return, callback arguments, all 12 words, untouched output tail, and x86 stack balance. A rotation-index mutant is rejected in both cases (`mismatches=2`); restored control reports zero mismatches. Fresh full Phase 5 passes at 2,665/2,664 coverage assertions and Phase 7 passes at 1,692/1,691. Both full logs are under `docs/reconstruction/novodex-physics/evidence/raw/phase7-fluid-emitter-global-pose-003559-003561/`. Inventory validation reports 126 closed / 435 deferred Phase 7 functions and zero unexplained rows. Public headers remain unchanged.
