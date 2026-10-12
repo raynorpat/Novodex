@@ -1,0 +1,9 @@
+Post-merge mainline validation (commit 3824dcf2)
+
+Phase 5: phase_gate=5 status=pass; coverage_assertions_evaluated=2648 floor=2648.
+
+Phase 7: phase_gate=7 status=pass; coverage_assertions_evaluated=1675 floor=1675. Includes fluid collision cell-hash cases=3, inputs=7, unique=5, bucket_counts=2,1,2, mismatches=0.
+
+Reconstruction tooling: Ran 810 tests; OK.
+
+Inventory: pass; Phase 7 closure has 108 closed / 453 deferred; unexplained=0. Both phase runners completed their 80-header immutable-manifest checks. Full runner logs are retained in the ignored mainline build directory `build/fluid-triangle-cells-mainline/phase5-cell-hash.log` and `phase7-cell-hash.log`.
