@@ -2446,6 +2446,23 @@ static unsigned nxRunFluidCollisionBoxAppendDifferential(
 		const bool matched = oracleReturnValid && candidateReturnValid
 			&& countsMatch && recordMatches && tailsMatch
 			&& oracleStack && candidateStack;
+		if(!matched)
+			{
+			printf("fluid collision box-array append detail selected=%u "
+				"returns=%u/%u counts=%u/%u record=%u tails=%u "
+				"stack=%u/%u oracle_words=%08x.%08x.%08x "
+				"candidate_words=%08x.%08x.%08x\n", selected,
+				oracleReturnValid, candidateReturnValid,
+				oracleArray.count == expectedCount,
+				candidateArray.count == expectedCount, recordMatches, tailsMatch,
+				oracleStack, candidateStack,
+				*reinterpret_cast<unsigned*>(oracleOutput),
+				*reinterpret_cast<unsigned*>(oracleOutput + 4),
+				*reinterpret_cast<unsigned*>(oracleOutput + 8),
+				*reinterpret_cast<unsigned*>(candidateOutput),
+				*reinterpret_cast<unsigned*>(candidateOutput + 4),
+				*reinterpret_cast<unsigned*>(candidateOutput + 8));
+			}
 		oracleContract &= oracleReturnValid && countsMatch && recordMatches
 			&& oracleStack;
 		if(!matched)
