@@ -1,0 +1,13 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\phase5-five-family-main\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\phase5-five-family-main\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\build\phase5-five-family-main\External\Release\NxQhull.lib
+  NpFluidEmitter.cpp
+     Creating library D:/github/Novodex/build/phase5-five-family-main/Release/NxPhysics.lib and object D:/github/Novodex/build/phase5-five-family-main/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> D:\github\Novodex\build\phase5-five-family-main\Release\NxPhysics.dll
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> D:\github\Novodex\build\phase5-five-family-main\Release\FluidModel.dll
+  NpFluidEmitter.cpp
+  NxPhysicsFluidEmitterAbiTests.vcxproj -> D:\github\Novodex\build\phase5-five-family-main\Release\NxPhysicsFluidEmitterAbiTests.exe
+  Staging NxPhysics.dll under a distinct module name for direct DLL-row testing

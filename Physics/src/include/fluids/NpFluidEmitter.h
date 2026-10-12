@@ -25,6 +25,10 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	public:
 	//! phys_fn_003792 (0x0008c2d0), 0x18-byte wrapper.
 	explicit NpFluidEmitter(void* internal);
+	//! phys_fn_003796 (0x0008c350): returns the owning NxFluid reference.
+	virtual NxFluid& getFluid() const;
+	//! phys_fn_003824 (0x0008c9c0): returns the public actor stored by the frame body.
+	virtual NxActor* getFrameActor() const;
 
 	//! phys_fn_003804 (0x0008c590), struct-return ABI: hidden output pointer,
 	//! this in ecx, ret 4. Copies the global pose from internal+0x48.

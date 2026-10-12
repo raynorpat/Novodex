@@ -579,6 +579,33 @@ NpFluidEmitter::NpFluidEmitter(void* internal)
 	{
 	}
 
+// phys_fn_003796 (0x0008c350) loads the public fluid pointer from the emitter's
+// owning-fluid record at +0x54 while holding the wrapper's read lock.
+NxFluid& NpFluidEmitter::getFluid() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	unsigned char* internal = static_cast<unsigned char*>(mInternal);
+	void* fluidRecord = *reinterpret_cast<void**>(internal + 4);
+	NxFluid* fluid = *reinterpret_cast<NxFluid**>(
+		static_cast<unsigned char*>(fluidRecord) + 0x54);
+	nxNpSceneGuardLeave(link);
+	return *fluid;
+	}
+
+// phys_fn_003824 (0x0008c9c0) reads the public NxActor pointer from the body
+// stored in the emitter's frame-actor slot under the same read lock.
+NxActor* NpFluidEmitter::getFrameActor() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	unsigned char* internal = static_cast<unsigned char*>(mInternal);
+	void* body = *reinterpret_cast<void**>(internal + 0x14);
+	NxActor* actor = *reinterpret_cast<NxActor**>(body);
+	nxNpSceneGuardLeave(link);
+	return actor;
+	}
+
 // The aggregate rows lock [this+0x10], copy through the caller-provided hidden
 // result pointer, unlock, and return that pointer in eax. Keeping the copying
 // in this shared wrapper makes the x86 MSVC aggregate-return ABI come from the

@@ -9,6 +9,8 @@ oracle, in-process candidate, and candidate-DLL paths.
 `phys_fn_003563` mutation detection: `mismatches=1`.
 `phys_fn_003565` mutation detection: `mismatches=1`.
 `phys_fn_003567` mutation detection: `mismatches=1`.
+`phys_fn_003796` owner-fluid pointer mutation detection: `mismatches=2`.
+`phys_fn_003824` frame-actor dereference mutation detection: `mismatches=2`.
 
 This file records Phase 6 evidence. It begins with the harness and an audit of
 the export contract, because the second turned out to bound the first.

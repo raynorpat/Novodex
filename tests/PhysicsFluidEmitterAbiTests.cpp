@@ -4059,14 +4059,13 @@ static int nxCallCandidateFluidRepulsion(void* target, void* emitter,
 	return result;
 	}
 
-// Only the six aggregate-return methods are production methods in this probe.
-// Every other pure virtual is a test shim so the actual NpFluidEmitter methods
-// can be called through the immutable public interface.
+// The reconstructed pointer and aggregate getters are production methods in
+// this probe. Other pure virtuals remain test shims until their rows are closed.
 class FluidEmitterProbe : public NpFluidEmitter
 	{
 	public:
 	FluidEmitterProbe(void* internal) : NpFluidEmitter(internal) {}
-	virtual NxFluid& getFluid() const { return *reinterpret_cast<NxFluid*>(0x1000); }
+	virtual NxFluid& getFluid() const { return NpFluidEmitter::getFluid(); }
 	virtual void setGlobalPose(const NxMat34&) {}
 	virtual void setGlobalPosition(const NxVec3&) {}
 	virtual void setGlobalOrientation(const NxMat33&) {}
@@ -4074,7 +4073,7 @@ class FluidEmitterProbe : public NpFluidEmitter
 	virtual void setLocalPosition(const NxVec3&) {}
 	virtual void setLocalOrientation(const NxMat33&) {}
 	virtual void setFrameActor(NxActor*) {}
-	virtual NxActor* getFrameActor() const { return 0; }
+	virtual NxActor* getFrameActor() const { return NpFluidEmitter::getFrameActor(); }
 	virtual NxReal getDimensionX() const { return 0; }
 	virtual NxReal getDimensionY() const { return 0; }
 	virtual void setRandomPos(NxVec3) {}
@@ -4142,6 +4141,15 @@ int wmain(int argc, wchar_t** argv)
 	memset(internal, 0, sizeof(internal));
 	for(unsigned offset = 0; offset < sizeof(internal); offset += 4)
 		*reinterpret_cast<unsigned*>(internal + offset) = 0x68000000u + offset;
+	unsigned char ownerFluid[0x58] = {};
+	void* const expectedOwnerFluid = reinterpret_cast<void*>(0x12345670u);
+	*reinterpret_cast<void**>(ownerFluid + 0x54) = expectedOwnerFluid;
+	unsigned char frameActorLink[8] = {};
+	void* const expectedFrameActor = reinterpret_cast<void*>(0x12345674u);
+	*reinterpret_cast<void**>(frameActorLink) = expectedFrameActor;
+	*reinterpret_cast<void**>(frameActorLink + 4) = reinterpret_cast<void*>(0x12345678u);
+	*reinterpret_cast<void**>(internal + 4) = ownerFluid;
+	*reinterpret_cast<void**>(internal + 0x14) = frameActorLink;
 	unsigned char oracleBytes[0x18];
 	memset(oracleBytes, 0, sizeof(oracleBytes));
 	struct CandidateLockStorage
@@ -4387,6 +4395,29 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(reinterpret_cast<unsigned char*>(&candidate) + 0x10,
 		&candidateSectionLink, sizeof(candidateSectionLink));
 	NxFluidEmitter* candidateInterface = &candidate;
+	const NxFluid* oracleOwnerFluid = &oracle->getFluid();
+	const NxFluid* candidateOwnerFluid = &candidateInterface->getFluid();
+	const NxFluid* candidateDllOwnerFluid = &candidateDllInterface->getFluid();
+	NxActor* const oracleFrameActor = oracle->getFrameActor();
+	NxActor* const candidateFrameActor = candidateInterface->getFrameActor();
+	NxActor* const candidateDllFrameActor = candidateDllInterface->getFrameActor();
+	const unsigned ownerFrameMismatches =
+		(oracleOwnerFluid != expectedOwnerFluid)
+		+ (candidateOwnerFluid != oracleOwnerFluid)
+		+ (candidateDllOwnerFluid != oracleOwnerFluid)
+		+ (oracleFrameActor != expectedFrameActor)
+		+ (candidateFrameActor != oracleFrameActor)
+		+ (candidateDllFrameActor != oracleFrameActor);
+	gFailures += ownerFrameMismatches;
+	printf("fluid emitter owner/frame cases=2 oracle_owner=%u candidate_owner=%u dll_owner=%u "
+		"oracle_frame_actor=%u candidate_frame_actor=%u dll_frame_actor=%u mismatches=%u\n",
+		oracleOwnerFluid == expectedOwnerFluid,
+		candidateOwnerFluid == oracleOwnerFluid,
+		candidateDllOwnerFluid == oracleOwnerFluid,
+		oracleFrameActor == expectedFrameActor,
+		candidateFrameActor == oracleFrameActor,
+		candidateDllFrameActor == oracleFrameActor,
+		ownerFrameMismatches);
 	struct AggregateSlot { const char* name; unsigned slot; unsigned bytes; };
 	static const AggregateSlot aggregateSlots[] = {
 		{ "global_pose", 5, 0x30 }, { "global_position", 6, 0x0c },

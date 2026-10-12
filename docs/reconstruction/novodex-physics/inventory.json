@@ -70820,12 +70820,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1418",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12875",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "The locked getter reads the fluid record pointer from internal+0x04, then returns the NxFluid pointer at record+0x54.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares the oracle, in-process candidate, and candidate DLL owner pointers. Shifting record+0x54 to +0x50 is caught with mismatches=2; the restored control reports mismatches=0.",
       "notes": ""
     },
     {
@@ -71336,12 +71336,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked double-dereference accessor (0x8c9c0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1432",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12919",
-      "static_proof": "locks [self+0x10], calls the getter 003952 on [self+0x14] (value [field+0x14]), then dereferences that value and returns the word at it",
-      "dynamic_proof": "confirmed via lockedget2 differential (3z140): double dereference failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "static_proof": "The locked getter reads the body pointer from internal+0x14 and returns the public NxActor pointer stored at body+0x00.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares the oracle, in-process candidate, and candidate DLL frame-actor pointers. Shifting the body dereference to body+0x04 is caught with mismatches=2; the restored control reports mismatches=0.",
       "notes": ""
     },
     {
