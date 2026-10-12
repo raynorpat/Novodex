@@ -363,6 +363,59 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=revolute index=%u created=%s\n", index, joint ? "yes" : "no");
 	if(!joint)
 		return;
+	if(index == 0)
+		{
+		// Probe both the primary NxRevoluteJoint table and the secondary
+		// EmbeddedHookBase adjustor deleting thunk on scratch copies. The live
+		// joint remains intact and is released through the public scene below.
+		unsigned mismatches = 0;
+		unsigned primaryReturn = 0, secondaryReturn = 0;
+		unsigned vptrTransitions = 0, payloadPreserved = 0, stackBalanced = 0;
+		for(unsigned secondary = 0; secondary != 2; ++secondary)
+			{
+			unsigned char copy[0x1c];
+			unsigned char before[0x1c];
+			memcpy(copy, joint, sizeof(copy));
+			memcpy(before, copy, sizeof(before));
+			void** primaryTable = *reinterpret_cast<void***>(copy);
+			void** secondaryTable = *reinterpret_cast<void***>(copy + 0x0c);
+			void** entryTable = secondary ? secondaryTable : primaryTable;
+			typedef void* (__thiscall* ScalarDeletingDtor)(void*, unsigned);
+			unsigned espBefore = 0, espAfter = 0;
+			void* returned = 0;
+			__asm mov espBefore, esp
+			returned = reinterpret_cast<ScalarDeletingDtor>(entryTable[0])(
+				secondary ? copy + 0x0c : copy, 0);
+			__asm mov espAfter, esp
+			const bool rootReturn = returned == copy;
+			const bool transitioned =
+				*reinterpret_cast<void**>(copy) != *reinterpret_cast<void**>(before) &&
+				*reinterpret_cast<void**>(copy + 0x0c) !=
+					*reinterpret_cast<void**>(before + 0x0c);
+			const bool preserved = memcmp(copy + 4, before + 4, 8) == 0 &&
+				memcmp(copy + 0x10, before + 0x10, 0x0c) == 0;
+			const bool balanced = espBefore == espAfter;
+			if(!rootReturn || !transitioned || !preserved || !balanced)
+				++mismatches;
+			if(secondary)
+				{
+				secondaryReturn = rootReturn ? 1u : 0u;
+				vptrTransitions &= transitioned ? 1u : 0u;
+				payloadPreserved &= preserved ? 1u : 0u;
+				stackBalanced &= balanced ? 1u : 0u;
+				}
+			else
+				{
+				primaryReturn = rootReturn ? 1u : 0u;
+				vptrTransitions = transitioned ? 1u : 0u;
+				payloadPreserved = preserved ? 1u : 0u;
+				stackBalanced = balanced ? 1u : 0u;
+			}
+			}
+		printf("joint dtor probe primary=%u secondary=%u vptrs=%u payload=%u "
+			"stack=%u mismatches=%u\n", primaryReturn, secondaryReturn,
+			vptrTransitions, payloadPreserved, stackBalanced, mismatches);
+		}
 
 	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
 	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);

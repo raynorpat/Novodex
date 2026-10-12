@@ -10608,3 +10608,9 @@ Phase 7 NpScene fluid contact-report wrappers: phys_fn_000362 (setUserFluidConta
 Phase 7 NpScene setter row `phys_fn_000289` (`NpScene::setGravity`) is mutation-falsified through `NxPhysicsSimulationTests` (`stdout_delta=2`); both mutant processes exit zero with exact stderr, and the restored control is exact. See `evidence/phase7-npscene-setgravity-000289.md`.
 
 Mutation evidence for phys_fn_003601: changing the enabled callback guard from ==0 to <=0 rejects a negative nonzero result (oracle_exit=0, candidate_exit=1, stdout_delta=2, exact stderr); restored staged-pair output is exact. See [Phase 7 body-repulsion guard evidence](phase7-fluid-body-repulsion-guards-003601.md).
+## Phase 6 destructor closure (`phys_fn_004729`)
+
+The registered `NxPhysicsJointStagedPairTests` fixture calls the revolute joint scalar deleting destructor on scratch copies through both its primary `NxRevoluteJoint` vtable and secondary `EmbeddedHookBase` vtable. With flag 0, both calls return the complete root, move both vptrs to their base-destruction tables, preserve every non-vptr payload byte, and balance the x86 stack. The restored oracle/candidate differential is exact (`stdout_delta=0`, `stderr_exact=True`).
+
+The row-specific mutation cleared `appData` in `NpRevoluteJoint::~NpRevoluteJoint`. The oracle probe remained `payload=1, mismatches=0`; the candidate changed to `payload=0, mismatches=2`, and the staged transcript reported `stdout_delta=2`. The mutation was removed and the candidate rebuilt before restoring the passing differential.
+Mutation evidence for phys_fn_004729: the appData-clear mutant is caught with stdout_delta=2; the restored differential is exact.

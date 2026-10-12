@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 152,
+    "differential_falsified": 153,
     "oracle_differential_falsified": 4,
-    "deferred_reconstructed_not_falsified": 259,
+    "deferred_reconstructed_not_falsified": 258,
     "deferred_not_reconstructed_in_phase": 18
   },
   "closed": [
@@ -1633,6 +1633,16 @@
       "falsification": {
         "mutation": "Temporarily suppressed the candidate release for field +0x14 in the shared production helper, rebuilt NxPhysics.dll, and ran the registered NxPhysicsAllocatorReleaseTests staged-pair differential. The oracle exited 0 with both rows at failures=0; the candidate exited 1 with four failing occupancy masks for each row (stdout_delta=4), while stderr remained exact. Restoring the release and rebuilding returned both candidate rows to failures=0 and the full transcript to an exact match (both exits 0, stdout_delta=0, exact stderr).",
         "detected": "stdout_delta=4"
+      }
+    },
+    {
+      "id": "phys_fn_004729",
+      "rva": "0x000b33f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "In NpRevoluteJoint::~NpRevoluteJoint, temporarily cleared appData before the compiler-generated base-destruction chain. NxPhysicsJointStagedPairTests copied a live 0x1c revolute object, then invoked scalar deleting destructor slot 0 through both primary and secondary vtables with flag=0. The oracle preserved payload (payload=1, mismatches=0); the mutated candidate reported payload=0, mismatches=2, so the registered staged-pair differential caught the row-specific mutation (stdout_delta=2). Removed the mutation, rebuilt, and verified exact restored output.",
+        "detected": "stdout_delta=2"
       }
     }
   ],
@@ -3888,15 +3898,6 @@
       "id": "phys_fn_004727",
       "rva": "0x000b33e0",
       "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004729",
-      "rva": "0x000b33f0",
-      "size": 55,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
