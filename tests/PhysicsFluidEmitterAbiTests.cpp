@@ -6685,6 +6685,118 @@ int wmain(int argc, wchar_t** argv)
 		}
 	}
 
+	// Run this last because the oracle constructor installs process-global
+	// FluidModel callbacks. Keeping this probe after the other ABI rows prevents
+	// its setup from changing their independent callback baselines.
+	{
+		struct FluidManagerCallbackSummary
+			{
+			unsigned managerCreate, managerDestroy, fluidCreate, fluidDestroy;
+			unsigned staticCollisionCreate, staticCollisionGet, fluidGetCellSize;
+			unsigned staticCollisionDestroy;
+			unsigned fluidCreateArguments[15];
+			};
+		typedef void (__cdecl *ResetManagerCallbacksFn)();
+		typedef void (__cdecl *GetManagerCallbackSummaryFn)(
+			FluidManagerCallbackSummary*);
+		typedef void* (__cdecl *GetStaticCollisionFn)(void*);
+		ResetManagerCallbacksFn resetManagerCallbacks = reinterpret_cast<
+			ResetManagerCallbacksFn>(GetProcAddress(fluidModel,
+				"NxResetFluidManagerCallbacks"));
+		GetManagerCallbackSummaryFn getManagerCallbackSummary = reinterpret_cast<
+			GetManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
+				"NxGetFluidManagerCallbackSummary"));
+		GetStaticCollisionFn getStaticCollision = reinterpret_cast<
+			GetStaticCollisionFn>(GetProcAddress(fluidModel,
+				"FluidManagerGetStaticCollision"));
+		void* candidateManagerStepAddress = 0;
+		const bool probesReady = resetManagerCallbacks &&
+			getManagerCallbackSummary && getStaticCollision &&
+			nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+				"@nxFluidManagerStep@12", &candidateManagerStepAddress);
+		unsigned mismatches = probesReady ? 0u : 1u;
+		if(probesReady)
+			{
+			typedef int (__thiscall *ManagerStep)(void*, float);
+			typedef void* (__thiscall *ManagerConstructor)(void*, void*);
+			ManagerStep oracleStep = reinterpret_cast<ManagerStep>(image + 0x89bd0);
+			ManagerStep candidateStep = reinterpret_cast<ManagerStep>(candidateManagerStepAddress);
+			ManagerConstructor oracleConstructor = reinterpret_cast<ManagerConstructor>(
+				image + 0x89f50);
+			unsigned char oracleManager[0x34] = {};
+			unsigned char candidateManager[0x34] = {};
+			unsigned char oracleManagerInit[0x34] = {};
+			oracleConstructor(oracleManagerInit, 0);
+			void* const backendManager =
+				*reinterpret_cast<void**>(oracleManagerInit + 0x30);
+			unsigned char collisionScene[0x800] = {};
+			void* emptyFluidSlot = 0;
+			void** emptyFluidList = &emptyFluidSlot;
+			*reinterpret_cast<void***>(oracleManager + 4) = emptyFluidList;
+			*reinterpret_cast<void***>(oracleManager + 8) = emptyFluidList;
+			*reinterpret_cast<void***>(candidateManager + 4) = emptyFluidList;
+			*reinterpret_cast<void***>(candidateManager + 8) = emptyFluidList;
+			*reinterpret_cast<void**>(oracleManager + 0x24) = collisionScene;
+			*reinterpret_cast<void**>(candidateManager + 0x24) = collisionScene;
+			*reinterpret_cast<unsigned*>(oracleManager + 0x2c) = 0x3f000000u;
+			*reinterpret_cast<unsigned*>(candidateManager + 0x2c) = 0x3f000000u;
+			*reinterpret_cast<void**>(oracleManager + 0x30) = backendManager;
+			*reinterpret_cast<void**>(candidateManager + 0x30) = backendManager;
+			oracleManager[0x2b] = candidateManager[0x2b] = 1;
+			oracleManager[0x28] = candidateManager[0x28] = 1;
+			void* const staticCollision = getStaticCollision(backendManager);
+			resetManagerCallbacks();
+			const unsigned timestepWord = 0x3eaaaaabu;
+			const float dirtyTimestep = *reinterpret_cast<const float*>(&timestepWord);
+			unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+			unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+			__asm mov oracleEspBefore, esp
+			const int oracleResult = oracleStep(oracleManager, dirtyTimestep);
+			__asm mov oracleEspAfter, esp
+			__asm fstp st(0)
+			FluidManagerCallbackSummary oracleRefresh = {};
+			getManagerCallbackSummary(&oracleRefresh);
+			const unsigned oracleFlag = oracleManager[0x28];
+			const unsigned oracleScale = *reinterpret_cast<unsigned*>(
+				static_cast<unsigned char*>(staticCollision) + 0x64);
+			const unsigned oracleMargin = *reinterpret_cast<unsigned*>(
+				static_cast<unsigned char*>(staticCollision) + 0x68);
+			resetManagerCallbacks();
+			__asm mov candidateEspBefore, esp
+			const int candidateResult = candidateStep(candidateManager, dirtyTimestep);
+			__asm mov candidateEspAfter, esp
+			__asm fstp st(0)
+			FluidManagerCallbackSummary candidateRefresh = {};
+			getManagerCallbackSummary(&candidateRefresh);
+			const unsigned candidateFlag = candidateManager[0x28];
+			const unsigned candidateScale = *reinterpret_cast<unsigned*>(
+				static_cast<unsigned char*>(staticCollision) + 0x64);
+			const unsigned candidateMargin = *reinterpret_cast<unsigned*>(
+				static_cast<unsigned char*>(staticCollision) + 0x68);
+			const bool callbacksMatch = oracleRefresh.staticCollisionGet == 2 &&
+				candidateRefresh.staticCollisionGet == oracleRefresh.staticCollisionGet &&
+				oracleRefresh.staticCollisionDestroy == 1 &&
+				candidateRefresh.staticCollisionDestroy == oracleRefresh.staticCollisionDestroy &&
+				oracleRefresh.staticCollisionCreate == 1 &&
+				candidateRefresh.staticCollisionCreate == oracleRefresh.staticCollisionCreate;
+			const bool dataMatch = oracleScale == 0x40800000u &&
+				oracleMargin == 0x408ab2dcu && candidateScale == oracleScale &&
+				candidateMargin == oracleMargin;
+			mismatches += !callbacksMatch || !dataMatch || oracleFlag != 0 ||
+				candidateFlag != oracleFlag || oracleResult != candidateResult ||
+				oracleEspBefore != oracleEspAfter ||
+				candidateEspBefore != candidateEspAfter;
+		printf("fluid manager dirty-refresh get=%u destroy=%u create=%u data=%u flag=%u fluids=0 stack=%u/%u mismatches=%u\n",
+				oracleRefresh.staticCollisionGet == 2 && candidateRefresh.staticCollisionGet == 2,
+				oracleRefresh.staticCollisionDestroy == 1 && candidateRefresh.staticCollisionDestroy == 1,
+				oracleRefresh.staticCollisionCreate == 1 && candidateRefresh.staticCollisionCreate == 1,
+				dataMatch, oracleFlag == 0 && candidateFlag == oracleFlag,
+				oracleEspBefore == oracleEspAfter, candidateEspBefore == candidateEspAfter,
+			mismatches);
+		}
+	gFailures += mismatches;
+	}
+
 	nxUnbindOracleEmitterFlagCallbacks(image, oldCallbackValues, callbackPageProtection);
 	FreeLibrary(fluidModel);
 	FreeLibrary(candidatePhysics);

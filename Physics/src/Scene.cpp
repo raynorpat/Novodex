@@ -1088,8 +1088,7 @@ static void nxFluidManagerNotifyActorReleasedDisabled(void* manager, void* body)
 	}
 
 // phys_fn_003630 (0x00089bd0) refreshes dirty static collision before it
-// visits the manager's live-fluid range. The collision refresh remains open;
-// the clean-collision branch and the per-fluid substep are reconstructed.
+// visits the manager's live-fluid range.
 extern "C" int __fastcall nxNpFluidStep(void*, void*, float);
 static int nxFluidManagerStepImpl(void* manager, float timestep)
 	{
@@ -1098,6 +1097,30 @@ static int nxFluidManagerStepImpl(void* manager, float timestep)
 		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
 			0xcf, 0, "NxScene::stepFluids(): Feature not available!");
+	if(bytes[0x28])
+		{
+		// Scene-owned construction resolves these callbacks before the first
+		// step. Resolve lazily as well so direct ABI probes can seed this row
+		// without manufacturing a complete scene object.
+		if(!gNxFluidManagerGetStaticCollisionCallback ||
+			!gNxStaticCollisionDestroyCallback)
+			nxFluidManagerResolveModel();
+		if(bytes[0x30] && gNxFluidManagerGetStaticCollisionCallback &&
+			gNxStaticCollisionDestroyCallback)
+			{
+			void* const backendManager =
+				*reinterpret_cast<void**>(bytes + 0x30);
+			void* const priorCollision =
+				gNxFluidManagerGetStaticCollisionCallback(backendManager);
+			gNxStaticCollisionDestroyCallback(priorCollision);
+			void* const collision =
+				gNxFluidManagerGetStaticCollisionCallback(backendManager);
+			void* const scene = *reinterpret_cast<void**>(bytes + 0x24);
+			nxFluidCollisionBuildStaticCollision(collision, scene, timestep,
+				*reinterpret_cast<float*>(bytes + 0x2c));
+			}
+		bytes[0x28] = 0;
+		}
 	void** fluid = *reinterpret_cast<void***>(bytes + 4);
 	void** fluidsEnd = *reinterpret_cast<void***>(bytes + 8);
 	int result = 0;
