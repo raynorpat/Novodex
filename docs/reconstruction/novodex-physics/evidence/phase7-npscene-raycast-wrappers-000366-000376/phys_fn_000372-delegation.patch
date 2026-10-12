@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000372 (0x0000d110)
+-const NxU32 result = mScene->raycastAllShapes(worldRay, report, shapesType, groups, maxDist, hintFlags);
++const NxU32 result = 0;

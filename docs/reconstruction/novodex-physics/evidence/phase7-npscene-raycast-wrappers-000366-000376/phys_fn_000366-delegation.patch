@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000366 (0x0000ced0)
+-const bool result = mScene->raycastAnyBounds(worldRay, shapesType, groups, maxDist);
++const bool result = false;

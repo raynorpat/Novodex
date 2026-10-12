@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000374 (0x0000d1d0)
+-void* shape = mScene->raycastClosestBounds(worldRay, shapeType, hit, groups, NX_MAX_F32, 0xffffffff);
++void* shape = 0;
