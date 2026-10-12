@@ -3659,8 +3659,30 @@ static int nxCallFluidCollisionStaticRebuild(
 	__except(EXCEPTION_EXECUTE_HANDLER) { return static_cast<int>(0x80000000u); }
 	}
 
+typedef int (__thiscall* NxFluidManagerStepFn)(void*, float);
+
+static int nxFluidManagerExceptionFilter(EXCEPTION_POINTERS* exception,
+	unsigned* code, unsigned* address)
+	{
+	*code = exception->ExceptionRecord->ExceptionCode;
+	*address = reinterpret_cast<unsigned>(exception->ExceptionRecord->ExceptionAddress);
+	return EXCEPTION_EXECUTE_HANDLER;
+	}
+
+static int nxCallFluidManagerStep(NxFluidManagerStepFn function, void* manager,
+	float timestep, unsigned* exceptionCode, unsigned* exceptionAddress)
+	{
+	*exceptionCode = 0;
+	*exceptionAddress = 0;
+	__try { return function(manager, timestep); }
+	__except(nxFluidManagerExceptionFilter(GetExceptionInformation(),
+		exceptionCode, exceptionAddress))
+		{ return static_cast<int>(0x80000000u); }
+	}
+
 static unsigned nxRunFluidCollisionStaticRebuildDifferential(
-	const unsigned char* oracleBase, void* candidateAddress, HMODULE fluidModel)
+	const unsigned char* oracleBase, void* candidateAddress,
+	void* candidateManagerStepAddress, HMODULE fluidModel)
 	{
 	if(!oracleBase || !candidateAddress || !fluidModel)
 		return 1;
@@ -3882,6 +3904,175 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 		// Both sides own nested array allocations through different module
 		// allocators. This short-lived harness retains these small outputs until
 		// process exit rather than crossing module CRT heaps during cleanup.
+	}
+	FARPROC managerGetCallback = GetProcAddress(fluidModel,
+		"FluidManagerGetStaticCollision");
+	FARPROC managerDestroyCallback = GetProcAddress(fluidModel,
+		"StaticCollisionDestroy");
+	typedef void (__cdecl* ResetManagerCallbacks)();
+	typedef void (__cdecl* SetManagerCollision)(void*);
+	typedef unsigned (__cdecl* ManagerCallbackCount)();
+	typedef int (__cdecl* GetManagerCallbackRecord)(unsigned, void*);
+	ResetManagerCallbacks resetManagerCallbacks = reinterpret_cast<ResetManagerCallbacks>(
+		GetProcAddress(fluidModel, "NxResetFluidManagerCallbacks"));
+	SetManagerCollision setManagerCollision = reinterpret_cast<SetManagerCollision>(
+		GetProcAddress(fluidModel, "NxSetFluidManagerStaticCollision"));
+	ManagerCallbackCount managerCallbackCount = reinterpret_cast<ManagerCallbackCount>(
+		GetProcAddress(fluidModel, "NxGetFluidManagerCallbackCount"));
+	GetManagerCallbackRecord getManagerCallbackRecord =
+		reinterpret_cast<GetManagerCallbackRecord>(GetProcAddress(fluidModel,
+			"NxGetFluidManagerCallbackRecord"));
+	if(!managerGetCallback || !managerDestroyCallback || !resetManagerCallbacks
+		|| !setManagerCollision || !managerCallbackCount || !getManagerCallbackRecord
+		|| !candidateManagerStepAddress)
+		{
+		fprintf(stderr, "FAIL dirty fluid-manager fixture exports are incomplete\n");
+		++mismatches;
+		}
+	else
+		{
+	unsigned char* const mutableOracleBase =
+			const_cast<unsigned char*>(oracleBase);
+	void** const managerGetSlot = reinterpret_cast<void**>(
+		mutableOracleBase + 0x126424);
+	void** const managerDestroySlot = reinterpret_cast<void**>(
+		mutableOracleBase + 0x126494);
+	void* const savedManagerGet = *managerGetSlot;
+	void* const savedManagerDestroy = *managerDestroySlot;
+	*managerGetSlot = reinterpret_cast<void*>(managerGetCallback);
+	*managerDestroySlot = reinterpret_cast<void*>(managerDestroyCallback);
+	struct ManagerCallbackRecord
+		{
+		unsigned kind;
+		unsigned arguments[4];
+		};
+	unsigned char oracleScene[0x700] = {};
+	unsigned char candidateScene[0x700] = {};
+	unsigned char oracleContainer[32] = {};
+	unsigned char candidateContainer[32] = {};
+	void* oracleEntries[1] = {};
+	void* candidateEntries[1] = {};
+	*reinterpret_cast<void**>(oracleScene + 0x640) = oracleContainer;
+	*reinterpret_cast<void**>(candidateScene + 0x640) = candidateContainer;
+	*reinterpret_cast<void***>(oracleContainer + 24) = oracleEntries;
+	*reinterpret_cast<void***>(candidateContainer + 24) = candidateEntries;
+	unsigned emptyFluidRange[1] = {};
+	unsigned char oracleManager[0x34] = {};
+	unsigned char candidateManager[0x34] = {};
+	*reinterpret_cast<void***>(oracleManager + 4) =
+		reinterpret_cast<void**>(emptyFluidRange);
+	*reinterpret_cast<void***>(oracleManager + 8) =
+		reinterpret_cast<void**>(emptyFluidRange);
+	*reinterpret_cast<void***>(candidateManager + 4) =
+		reinterpret_cast<void**>(emptyFluidRange);
+	*reinterpret_cast<void***>(candidateManager + 8) =
+		reinterpret_cast<void**>(emptyFluidRange);
+	*reinterpret_cast<void**>(oracleManager + 0x24) = oracleScene;
+	*reinterpret_cast<void**>(candidateManager + 0x24) = candidateScene;
+	oracleManager[0x28] = candidateManager[0x28] = 1;
+	oracleManager[0x2b] = candidateManager[0x2b] = 1;
+	const unsigned kernelWord = 0x3e800000u;
+	*reinterpret_cast<unsigned*>(oracleManager + 0x2c) = kernelWord;
+	*reinterpret_cast<unsigned*>(candidateManager + 0x2c) = kernelWord;
+	const unsigned backendWord = 0x13572468u;
+	*reinterpret_cast<unsigned*>(oracleManager + 0x30) = backendWord;
+	*reinterpret_cast<unsigned*>(candidateManager + 0x30) = backendWord;
+	unsigned char oracleCollision[0xa0];
+	unsigned char candidateCollision[0xa0];
+	memset(oracleCollision, 0xcd, sizeof(oracleCollision));
+	memset(candidateCollision, 0xcd, sizeof(candidateCollision));
+	const unsigned stepWord = 0x3e000000u;
+	const float step = *reinterpret_cast<const float*>(&stepWord);
+	NxFluidManagerStepFn const oracleStep = reinterpret_cast<NxFluidManagerStepFn>(
+		mutableOracleBase + 0x89bd0);
+	NxFluidManagerStepFn const candidateStep = reinterpret_cast<NxFluidManagerStepFn>(
+		candidateManagerStepAddress);
+	resetManagerCallbacks();
+	setManagerCollision(oracleCollision);
+	unsigned oracleBefore = 0, oracleAfter = 0;
+	unsigned oracleException = 0;
+	unsigned oracleExceptionAddress = 0;
+	__asm mov oracleBefore, esp
+	const int oracleManagerResult = nxCallFluidManagerStep(oracleStep, oracleManager,
+		step, &oracleException, &oracleExceptionAddress);
+	__asm mov oracleAfter, esp
+	if(!oracleException) __asm fstp st(0)
+	ManagerCallbackRecord oracleRecords[3] = {};
+	const unsigned oracleRecordCount = managerCallbackCount();
+	for(unsigned i = 0; i != 3; ++i)
+		if(!getManagerCallbackRecord(i, &oracleRecords[i]))
+			++mismatches;
+	if(oracleException)
+		for(unsigned i = 0; i != oracleRecordCount && i != 3; ++i)
+			printf("fluid manager oracle callback[%u]=%u args=%08x.%08x.%08x.%08x\n",
+				i, oracleRecords[i].kind, oracleRecords[i].arguments[0],
+				oracleRecords[i].arguments[1], oracleRecords[i].arguments[2],
+				oracleRecords[i].arguments[3]);
+	resetManagerCallbacks();
+	setManagerCollision(candidateCollision);
+	unsigned candidateBefore = 0, candidateAfter = 0;
+	unsigned candidateException = 0;
+	unsigned candidateExceptionAddress = 0;
+	__asm mov candidateBefore, esp
+	const int candidateManagerResult = nxCallFluidManagerStep(candidateStep,
+		candidateManager, step, &candidateException, &candidateExceptionAddress);
+	__asm mov candidateAfter, esp
+	if(!candidateException) __asm fstp st(0)
+	ManagerCallbackRecord candidateRecords[3] = {};
+	const unsigned candidateRecordCount = managerCallbackCount();
+	for(unsigned i = 0; i != 3; ++i)
+		if(!getManagerCallbackRecord(i, &candidateRecords[i]))
+			++mismatches;
+	unsigned callbackMismatches = oracleRecordCount != 3
+		|| candidateRecordCount != 3;
+	for(unsigned i = 0; i != 3; ++i)
+		{
+		if(i == 0)
+			{
+			if(memcmp(&oracleRecords[i], &candidateRecords[i],
+				sizeof(oracleRecords[i])) != 0)
+				++callbackMismatches;
+			}
+		else if(i == 1 && (oracleRecords[i].kind != 2 || candidateRecords[i].kind != 2
+			|| oracleRecords[i].arguments[0] != reinterpret_cast<unsigned>(oracleCollision)
+			|| candidateRecords[i].arguments[0] != reinterpret_cast<unsigned>(candidateCollision)
+			|| memcmp(oracleRecords[i].arguments + 1, candidateRecords[i].arguments + 1,
+				sizeof(oracleRecords[i].arguments) - sizeof(oracleRecords[i].arguments[0])) != 0))
+			++callbackMismatches;
+		else if(i == 2 && (oracleRecords[i].kind != 1 || candidateRecords[i].kind != 1
+			|| memcmp(oracleRecords[i].arguments, candidateRecords[i].arguments,
+				sizeof(oracleRecords[i].arguments[0])) != 0
+			|| oracleRecords[i].arguments[1] != reinterpret_cast<unsigned>(oracleScene)
+			|| candidateRecords[i].arguments[1] != reinterpret_cast<unsigned>(candidateScene)
+			|| memcmp(oracleRecords[i].arguments + 2, candidateRecords[i].arguments + 2,
+				sizeof(oracleRecords[i].arguments) - 2 * sizeof(oracleRecords[i].arguments[0])) != 0))
+			++callbackMismatches;
+		}
+	const bool parametersMatch =
+		memcmp(oracleCollision + 0x64, candidateCollision + 0x64, 8) == 0
+		&& *reinterpret_cast<unsigned*>(oracleCollision + 0x64) == 0x40000000u
+		&& *reinterpret_cast<unsigned*>(oracleCollision + 0x68) ==
+			0x3fd020c5u;
+	const bool dirtyCleared = oracleManager[0x28] == 0
+		&& candidateManager[0x28] == 0;
+	const bool stackMatch = oracleBefore == oracleAfter
+		&& candidateBefore == candidateAfter;
+	const bool matched = callbackMismatches == 0 && parametersMatch
+		&& dirtyCleared && stackMatch
+		&& oracleException == 0 && candidateException == 0
+		&& oracleManagerResult == candidateManagerResult;
+	printf("fluid manager step dirty-refresh callbacks=%u/%u order=%u "
+		"parameters=%u dirty-clear=%u stack=%u/%u exceptions=%08x@%08x/%08x@%08x mismatches=%u\n",
+		oracleRecordCount, candidateRecordCount, callbackMismatches == 0,
+		parametersMatch, dirtyCleared,
+		oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+		oracleException, oracleExceptionAddress,
+		candidateException, candidateExceptionAddress,
+		matched ? 0u : 1u);
+	if(!matched)
+		++mismatches;
+	*managerGetSlot = savedManagerGet;
+	*managerDestroySlot = savedManagerDestroy;
 	}
 	DWORD ignored = 0;
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
@@ -5101,9 +5292,17 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL FluidModel flag callback fixture failed to load\n");
 		return 1;
 		}
+	void* candidateManagerStepAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"@nxFluidManagerStep@12", &candidateManagerStepAddress))
+		{
+		fprintf(stderr, "FAIL candidate FluidManager step row could not be resolved from its map\n");
+		++gFailures;
+		}
 	if(gCandidateFluidCollisionStaticRebuildAddress)
 		gFailures += nxRunFluidCollisionStaticRebuildDifferential(image,
-			gCandidateFluidCollisionStaticRebuildAddress, fluidModel);
+			gCandidateFluidCollisionStaticRebuildAddress,
+			candidateManagerStepAddress, fluidModel);
 	typedef void (__cdecl *ResetCallbacksFn)();
 	typedef unsigned (__cdecl *CallbackCountFn)();
 	typedef int (__cdecl *GetCallbackRecordFn)(unsigned, NxFluidEmitterFlagCallbackRecord*);
@@ -5525,9 +5724,7 @@ int wmain(int argc, wchar_t** argv)
 			}
 	}
 	{
-		void* candidateManagerStepAddress = 0;
-		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
-			"@nxFluidManagerStep@12", &candidateManagerStepAddress))
+		if(!candidateManagerStepAddress)
 			{
 			fprintf(stderr, "FAIL candidate FluidManager step row could not be resolved from its map\n");
 			++gFailures;

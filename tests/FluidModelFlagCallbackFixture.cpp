@@ -42,13 +42,38 @@ struct NxFluidManagerCallbackSummary
 	unsigned fluidCreateArguments[15];
 	};
 
+struct NxFluidManagerCallbackRecord
+	{
+	unsigned kind;
+	unsigned arguments[4];
+	};
+
 static NxFluidManagerCallbackSummary gFluidManagerCallbackSummary;
+static NxFluidManagerCallbackRecord gFluidManagerRecords[8];
+static unsigned gFluidManagerRecordCount;
+static unsigned gFluidManagerGetCallCount;
+static bool gFluidManagerCallbackProbe;
 static unsigned char gFluidStaticCollision[0x200];
 static void* gFluidManagerOldStaticCollision = gFluidStaticCollision;
 static void* gFluidManagerReplacementStaticCollision = gFluidStaticCollision;
 static unsigned gFluidManagerStaticCollisionGetIndex;
 static unsigned char gFluidManagerBackend;
 static unsigned char gFluidBackendHandles[16];
+
+static void nxRecordFluidManagerCallback(unsigned kind, unsigned argument0,
+	unsigned argument1, unsigned argument2, unsigned argument3)
+	{
+	if(gFluidManagerRecordCount < sizeof(gFluidManagerRecords) / sizeof(gFluidManagerRecords[0]))
+		{
+		NxFluidManagerCallbackRecord* const record =
+			&gFluidManagerRecords[gFluidManagerRecordCount++];
+		record->kind = kind;
+		record->arguments[0] = argument0;
+		record->arguments[1] = argument1;
+		record->arguments[2] = argument2;
+		record->arguments[3] = argument3;
+		}
+	}
 
 static unsigned nxFluidCollisionFixtureGrow(NxFluidCollisionArrayFixture* array,
 	unsigned requested, unsigned fill, unsigned stride)
@@ -81,6 +106,7 @@ extern "C" __declspec(dllexport) void __cdecl StaticCollisionCreate(void* state)
 
 extern "C" __declspec(dllexport) void __cdecl StaticCollisionDestroy(void* state)
 	{
+	nxRecordFluidManagerCallback(2, reinterpret_cast<unsigned>(state), 0, 0, 0);
 	if(state == gFluidManagerOldStaticCollision)
 		++gFluidManagerCallbackSummary.staticCollisionDestroy;
 	}
@@ -206,6 +232,10 @@ static float gEmitterGlobalPose[12];
 extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	{
 	ZeroMemory(&gFluidManagerCallbackSummary, sizeof(gFluidManagerCallbackSummary));
+	ZeroMemory(gFluidManagerRecords, sizeof(gFluidManagerRecords));
+	gFluidManagerRecordCount = 0;
+	gFluidManagerGetCallCount = 0;
+	gFluidManagerCallbackProbe = false;
 	ZeroMemory(gFluidStaticCollision, sizeof(gFluidStaticCollision));
 	gFluidManagerStaticCollisionGetIndex = 0;
 	}
@@ -216,6 +246,29 @@ extern "C" __declspec(dllexport) void __cdecl NxSetFluidManagerStaticCollisions(
 	gFluidManagerOldStaticCollision = oldCollision;
 	gFluidManagerReplacementStaticCollision = replacementCollision;
 	gFluidManagerStaticCollisionGetIndex = 0;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxSetFluidManagerStaticCollision(
+	void* collision)
+	{
+	gFluidManagerOldStaticCollision = collision;
+	gFluidManagerReplacementStaticCollision = collision;
+	gFluidManagerStaticCollisionGetIndex = 0;
+	gFluidManagerCallbackProbe = true;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidManagerCallbackCount()
+	{
+	return gFluidManagerRecordCount;
+	}
+
+extern "C" __declspec(dllexport) int __cdecl NxGetFluidManagerCallbackRecord(
+	unsigned index, NxFluidManagerCallbackRecord* output)
+	{
+	if(!output || index >= gFluidManagerRecordCount)
+		return 0;
+	*output = gFluidManagerRecords[index];
+	return 1;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxGetFluidManagerCallbackSummary(
@@ -237,14 +290,36 @@ extern "C" __declspec(dllexport) void __cdecl FluidManagerDestroy(void* manager)
 		++gFluidManagerCallbackSummary.managerDestroy;
 	}
 
-extern "C" __declspec(dllexport) void* __cdecl FluidManagerGetStaticCollision(
-	void* manager)
+static void* __cdecl nxFluidManagerGetStaticCollisionDispatch(void* manager,
+	unsigned argument1, unsigned argument2, unsigned argument3)
 	{
-	if(manager != &gFluidManagerBackend)
-		return 0;
+	const unsigned call = gFluidManagerGetCallCount++;
 	++gFluidManagerCallbackSummary.staticCollisionGet;
+	if(call == 0)
+		argument1 = argument2 = argument3 = 0;
+	nxRecordFluidManagerCallback(1, reinterpret_cast<unsigned>(manager),
+		argument1, argument2, argument3);
+	if(manager != &gFluidManagerBackend && !gFluidManagerCallbackProbe)
+		return 0;
 	return gFluidManagerStaticCollisionGetIndex++ == 0
 		? gFluidManagerOldStaticCollision : gFluidManagerReplacementStaticCollision;
+	}
+
+// This slot has a one-argument first call and a four-argument replacement
+// lookup on the dirty refresh path. Preserve the original caller-clean ABI.
+extern "C" __declspec(dllexport) __declspec(naked) void* __cdecl
+FluidManagerGetStaticCollision()
+	{
+	__asm
+		{
+		push dword ptr [esp+16]
+		push dword ptr [esp+16]
+		push dword ptr [esp+16]
+		push dword ptr [esp+16]
+		call nxFluidManagerGetStaticCollisionDispatch
+		add esp, 10h
+		ret
+		}
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetCellSize(

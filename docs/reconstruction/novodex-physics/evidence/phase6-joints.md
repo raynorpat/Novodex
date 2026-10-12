@@ -10604,3 +10604,4 @@ The registered `NxPhysicsJointStagedPairTests` fixture calls the revolute joint 
 
 The row-specific mutation cleared `appData` in `NpRevoluteJoint::~NpRevoluteJoint`. The oracle probe remained `payload=1, mismatches=0`; the candidate changed to `payload=0, mismatches=2`, and the staged transcript reported `stdout_delta=2`. The mutation was removed and the candidate rebuilt before restoring the passing differential.
 Mutation evidence for phys_fn_004729: the appData-clear mutant is caught with stdout_delta=2; the restored differential is exact.
+Mutation evidence for phys_fn_003630: suppressing the direct dirty-refresh callback sequence is caught by the callback-record differential with mismatches=1; the restored oracle/candidate sequence matches.

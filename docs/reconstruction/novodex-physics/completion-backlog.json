@@ -154347,7 +154347,7 @@
       },
       "applicable_contexts": {
         "four_digit_hex_literals": [],
-        "simulation_mentioned": true,
+        "simulation_mentioned": false,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
@@ -230976,7 +230976,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "ef20e15d0fa88535682d6cdaa954b98854fc01367fe196f0d5ac280812d90c3d",
+    "inventory_sha256": "b5306f9a23499593e07e7b369bd9aa6f1a378d978e92410eb9cda69c7bbc93e1",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",

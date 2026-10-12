@@ -5,6 +5,14 @@
 #include "ContactGeneration.h"
 #include "NarrowPhase.h"
 
+// NxPhysicsInternalTests compiles Scene.cpp without FluidCollision.cpp and
+// never submits fluid work. Keep this cross-unit dependency link-only here;
+// production and oracle-differential targets link the real builder.
+extern "C" int __cdecl nxFluidCollisionBuildStaticCollision(void*, void*, float, float)
+	{
+	return 0;
+	}
+
 void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*,
 	NxContactSink*, void*) {}
 

@@ -1090,6 +1090,36 @@ static void nxFluidManagerNotifyActorReleasedDisabled(void* manager, void* body)
 // phys_fn_003630 (0x00089bd0) refreshes dirty static collision before it
 // visits the manager's live-fluid range.
 extern "C" int __fastcall nxNpFluidStep(void*, void*, float);
+
+static void nxFluidManagerRefreshDirtyCollision(unsigned char* manager,
+	float timestep)
+	{
+	typedef void* (__cdecl *GetStaticCollision)(void*);
+	typedef void* (__cdecl *GetStaticCollisionForBuild)(void*, void*, float, float);
+	typedef int (__cdecl *DestroyStaticCollision)(void*);
+	HMODULE const fluidModel = GetModuleHandleA("FluidModel.dll");
+	if(!fluidModel)
+		return;
+	GetStaticCollision const getOld = reinterpret_cast<GetStaticCollision>(
+		GetProcAddress(fluidModel, "FluidManagerGetStaticCollision"));
+	GetStaticCollisionForBuild const getForBuild =
+		reinterpret_cast<GetStaticCollisionForBuild>(GetProcAddress(fluidModel,
+			"FluidManagerGetStaticCollision"));
+	DestroyStaticCollision const destroy = reinterpret_cast<DestroyStaticCollision>(
+		GetProcAddress(fluidModel, "StaticCollisionDestroy"));
+	if(!getOld || !getForBuild || !destroy)
+		return;
+	void* const backend = *reinterpret_cast<void**>(manager + 0x30);
+	void* const oldCollision = getOld(backend);
+	destroy(oldCollision);
+	void* const scene = *reinterpret_cast<void**>(manager + 0x24);
+	const float kernelRadiusMultiplier = *reinterpret_cast<float*>(manager + 0x2c);
+	void* const collision = getForBuild(backend, scene, timestep,
+		kernelRadiusMultiplier);
+	nxFluidCollisionBuildStaticCollision(collision, scene, timestep,
+		kernelRadiusMultiplier);
+	}
+
 static int nxFluidManagerStepImpl(void* manager, float timestep)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(manager);
@@ -1099,26 +1129,7 @@ static int nxFluidManagerStepImpl(void* manager, float timestep)
 			0xcf, 0, "NxScene::stepFluids(): Feature not available!");
 	if(bytes[0x28])
 		{
-		// Scene-owned construction resolves these callbacks before the first
-		// step. Resolve lazily as well so direct ABI probes can seed this row
-		// without manufacturing a complete scene object.
-		if(!gNxFluidManagerGetStaticCollisionCallback ||
-			!gNxStaticCollisionDestroyCallback)
-			nxFluidManagerResolveModel();
-		if(bytes[0x30] && gNxFluidManagerGetStaticCollisionCallback &&
-			gNxStaticCollisionDestroyCallback)
-			{
-			void* const backendManager =
-				*reinterpret_cast<void**>(bytes + 0x30);
-			void* const priorCollision =
-				gNxFluidManagerGetStaticCollisionCallback(backendManager);
-			gNxStaticCollisionDestroyCallback(priorCollision);
-			void* const collision =
-				gNxFluidManagerGetStaticCollisionCallback(backendManager);
-			void* const scene = *reinterpret_cast<void**>(bytes + 0x24);
-			nxFluidCollisionBuildStaticCollision(collision, scene, timestep,
-				*reinterpret_cast<float*>(bytes + 0x2c));
-			}
+		nxFluidManagerRefreshDirtyCollision(bytes, timestep);
 		bytes[0x28] = 0;
 		}
 	void** fluid = *reinterpret_cast<void***>(bytes + 4);

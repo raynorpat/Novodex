@@ -31,3 +31,5 @@ hash was updated. The clean two-fluid differential remains registered as an
 independent branch control. Raw Phase 5/7 logs and wrong-target mutation /
 restored-control logs are retained under
 `evidence/raw/phase7-fluid-manager-dirty-refresh-003630/`.
+
+The fixture also records the dirty callback's exact argument words: the first lookup receives the backend manager, destruction receives the old collision, and the replacement lookup receives backend, scene, timestep, and kernel multiplier. The required Phase 5/7 marker is `fluid manager step dirty-refresh callbacks=3/3 order=1 parameters=1 dirty-clear=1 stack=1/1 exceptions=00000000@00000000/00000000@00000000 mismatches=0`. The callback-argument differential is separately rejected when the candidate dirty refresh is suppressed.
