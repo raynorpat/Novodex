@@ -695,3 +695,24 @@ extern "C" int __cdecl nxFluidCollisionPackShapeData(unsigned* output,
 	output[18] = *reinterpret_cast<unsigned*>(bytes + 4);
 	return static_cast<int>(output[18]);
 	}
+
+// phys_fn_003543 (RVA 0x00087740) appends a sphere's compact geometry word
+// followed by its packed collision record to the caller-owned 84-byte array.
+extern "C" void* __cdecl nxFluidCollisionAppendSphere(void* descriptor,
+	void* shape)
+	{
+	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
+	if(*reinterpret_cast<unsigned*>(shapeBytes + 0xd0) != 1)
+		return shape;
+	unsigned record[21] = {};
+	record[0] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe0);
+	nxFluidCollisionPackShapeData(record + 1, shape);
+	unsigned char* const descriptorBytes =
+		static_cast<unsigned char*>(descriptor);
+	unsigned char* const storage =
+		*reinterpret_cast<unsigned char**>(descriptorBytes);
+	unsigned* const count = reinterpret_cast<unsigned*>(descriptorBytes + 4);
+	memcpy(storage + *count * sizeof(record), record, sizeof(record));
+	++*count;
+	return descriptor;
+	}
