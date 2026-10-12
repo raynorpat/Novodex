@@ -356,13 +356,13 @@
    "ambiguous_rows": [],
    "rows": {
     "discovered": 1,
-    "dynamically_gated": 45,
-    "reconstructed": 16
+    "dynamically_gated": 47,
+    "reconstructed": 14
    },
    "bytes": {
     "discovered": 50,
-    "dynamically_gated": 3714,
-    "reconstructed": 1203
+    "dynamically_gated": 3846,
+    "reconstructed": 1071
    },
    "phases": {
     "7": 62

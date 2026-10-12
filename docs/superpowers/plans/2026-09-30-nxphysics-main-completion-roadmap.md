@@ -1667,3 +1667,8 @@ Phase 7 rows `phys_fn_000366`, `000368`, `000370`, `000372`, `000374`, and `0003
 ### Continuation — public scene overlap-query wrapper mutation closures (2026-10-12)
 
 Phase 7 rows `phys_fn_000378`, `000380`, `000382`, `000384`, and `000386` now have independent mutation proofs through the registered `NxPhysicsSceneRaycastTests` staged-pair differential. Zero/false return mutants changed the transcript by 14–5,473 bytes while both processes exited zero and stderr remained exact; the restored control matched exactly. Phase 7 now has 178 closed and 383 deferred function rows (226 reconstructed but unfalsified and 157 unreconstructed). The full Phase 7 gate passes at 1,704/1,704 coverage assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-overlap-wrappers-000378-000386/README.md` and its archived transcripts.
+
+
+### Continuation — AABB triangle overlap and scene wait mutation closures (2026-10-12)
+
+Phase 7 rows `phys_fn_000388` (`NpScene::overlapAABBTriangles`) and `phys_fn_000390` (`NpScene::wait`) are now independently mutation-falsified through their existing registered fixtures. Replacing the triangle-query result with zero changes the raycast transcript by 6 bytes; replacing `wait` forwarding with false changes the simulation transcript by 2 bytes. Both oracle and candidate processes exit zero with exact stderr, and both restored controls match exactly. The full Phase 7 gate passes at 1,704/1,704 assertions. Phase 7 now has 180 closed and 381 deferred functions (224 reconstructed but unfalsified and 157 unreconstructed). Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-triangle-wait-000388-000390/README.md` and its archived transcripts.

@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000388 (0x0000d5c0)
+-const NxU32 result = mScene->overlapAABBTriangles(worldBounds, worldTriangles);
++const NxU32 result = 0;

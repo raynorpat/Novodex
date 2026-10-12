@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000390 (0x0000d600)
+-return checkResults(NX_RIGID_BODY_FINISHED, block);
++return false;
