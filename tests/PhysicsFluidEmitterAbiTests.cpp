@@ -15,6 +15,8 @@
 #include "fluids/NpFluidEmitter.h"
 #include "fluids/NxMeshData.h"
 
+static bool nxSha256(const wchar_t* path, char output[65]);
+
 static unsigned gFailures;
 static void* gCandidateTriangleIndexBuilderAddress;
 static void* gCandidateFluidCollisionShapePackerAddress;
@@ -32,6 +34,13 @@ static void* gCandidateFluidCollisionStaticRebuildAddress;
 extern "C" void __cdecl nxFluidEmitterAbiUnexpectedWriteLockFailure(unsigned line)
 	{
 	fprintf(stderr, "FAIL test-only NpFluidEmitter unexpectedly rejected write lock at line %u\n",
+		line);
+	++gFailures;
+	}
+
+extern "C" void __cdecl nxFluidEmitterAbiUnexpectedReentryFailure(unsigned line)
+	{
+	fprintf(stderr, "FAIL test-only NpFluidEmitter unexpectedly rejected callback reentry at line %u\n",
 		line);
 	++gFailures;
 	}
@@ -951,6 +960,16 @@ static bool nxLoadCandidateFluidEmitterSetter(HMODULE* module, void** setter)
 	*module = LoadLibraryExW(exePath, 0, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
 	if(!*module)
 		{ fprintf(stderr, "candidate NxPhysics load error=%lu\n", GetLastError()); return false; }
+	wchar_t loadedPath[MAX_PATH];
+	char actualHash[65];
+	if(!GetModuleFileNameW(*module, loadedPath, MAX_PATH)
+		|| !nxSha256(loadedPath, actualHash))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics identity could not be hashed\n");
+		return false;
+		}
+	printf("loaded module=NxPhysicsCandidate.dll path=%S sha256=%s\n",
+		loadedPath, actualHash);
 	static const char expected[] = "?setFlag@NpFluidEmitter@@UAEXW4NxFluidEmitterFlag@@_N@Z";
 	return nxResolveCandidateFluidEmitterSymbol(*module, expected, setter);
 	}
@@ -4074,30 +4093,456 @@ class FluidEmitterProbe : public NpFluidEmitter
 	virtual void setLocalOrientation(const NxMat33&) {}
 	virtual void setFrameActor(NxActor*) {}
 	virtual NxActor* getFrameActor() const { return NpFluidEmitter::getFrameActor(); }
-	virtual NxReal getDimensionX() const { return 0; }
-	virtual NxReal getDimensionY() const { return 0; }
-	virtual void setRandomPos(NxVec3) {}
-	virtual NxVec3 getRandomPos() const { return NxVec3(0, 0, 0); }
-	virtual void setRandomAngle(NxReal) {}
-	virtual NxReal getRandomAngle() const { return 0; }
-	virtual void setFluidVelocityMagnitude(NxReal) {}
-	virtual NxReal getFluidVelocityMagnitude() const { return 0; }
-	virtual void setRate(NxReal) {}
-	virtual NxReal getRate() const { return 0; }
-	virtual void setParticleLifetime(NxReal) {}
-	virtual NxReal getParticleLifetime() const { return 0; }
+	virtual NxReal getDimensionX() const { return NpFluidEmitter::getDimensionX(); }
+	virtual NxReal getDimensionY() const { return NpFluidEmitter::getDimensionY(); }
+	virtual void setRandomPos(NxVec3 value) { NpFluidEmitter::setRandomPos(value); }
+	virtual NxVec3 getRandomPos() const { return NpFluidEmitter::getRandomPos(); }
+	virtual void setRandomAngle(NxReal value) { NpFluidEmitter::setRandomAngle(value); }
+	virtual NxReal getRandomAngle() const { return NpFluidEmitter::getRandomAngle(); }
+	virtual void setFluidVelocityMagnitude(NxReal value)
+		{ NpFluidEmitter::setFluidVelocityMagnitude(value); }
+	virtual NxReal getFluidVelocityMagnitude() const
+		{ return NpFluidEmitter::getFluidVelocityMagnitude(); }
+	virtual void setRate(NxReal value) { NpFluidEmitter::setRate(value); }
+	virtual NxReal getRate() const { return NpFluidEmitter::getRate(); }
+	virtual void setParticleLifetime(NxReal value)
+		{ NpFluidEmitter::setParticleLifetime(value); }
+	virtual NxReal getParticleLifetime() const
+		{ return NpFluidEmitter::getParticleLifetime(); }
 	virtual NX_BOOL getShape(NxEmitterShape) const { return 0; }
 	virtual NX_BOOL getType(NxEmitterType) const { return 0; }
-	virtual void setName(const char*) {}
-	virtual const char* getName() const { return 0; }
+	virtual void setName(const char* name) { NpFluidEmitter::setName(name); }
+	virtual const char* getName() const { return NpFluidEmitter::getName(); }
 	};
+
+static unsigned nxRunFluidEmitterNameRows(unsigned char* image,
+	NxFluidEmitter* oracle, NxFluidEmitter* candidate,
+	NxFluidEmitter* candidateDll, void* internal)
+	{
+	unsigned mismatches = 0;
+	static const char firstName[] = "fluid-emitter-name-first";
+	static const char replacementName[] = "fluid-emitter-name-replacement";
+	static const char seededName[] = "fluid-emitter-name-seeded";
+	static const char retainedName[] = "fluid-emitter-name-retained";
+	unsigned records[4] = {
+		static_cast<unsigned>(reinterpret_cast<size_t>(internal)),
+		static_cast<unsigned>(reinterpret_cast<size_t>(seededName)),
+		0x11110000u,
+		static_cast<unsigned>(reinterpret_cast<size_t>(retainedName)) };
+	unsigned* tracker[] = { records, records + 4, records + 4 };
+	void** trackerGlobal = reinterpret_cast<void**>(image + 0x123c0c);
+	void* originalTracker = *trackerGlobal;
+	DWORD ignored = 0, protection = 0;
+	if(!VirtualProtect(trackerGlobal, sizeof(*trackerGlobal), PAGE_READWRITE,
+		&protection))
+		{
+		fprintf(stderr, "FAIL oracle fluid-emitter name tracker protection error=%lu\n",
+			GetLastError());
+		return 1;
+		}
+	*trackerGlobal = tracker;
+	oracle->setName(firstName);
+	candidate->setName(firstName);
+	candidateDll->setName(firstName);
+	if(oracle->getName() != firstName || candidate->getName() != firstName
+		|| candidateDll->getName() != firstName
+		|| strcmp(oracle->getName(), candidate->getName()) != 0
+		|| strcmp(oracle->getName(), candidateDll->getName()) != 0)
+		++mismatches;
+	oracle->setName(replacementName);
+	candidate->setName(replacementName);
+	candidateDll->setName(replacementName);
+	if(oracle->getName() != replacementName || candidate->getName() != replacementName
+		|| candidateDll->getName() != replacementName
+		|| strcmp(oracle->getName(), candidate->getName()) != 0)
+		++mismatches;
+	oracle->setName(0);
+	candidate->setName(0);
+	candidateDll->setName(0);
+	if(oracle->getName() != 0 || candidate->getName() != 0
+		|| candidateDll->getName() != 0)
+		++mismatches;
+	if(records[0] != 0x11110000u || records[1]
+		!= static_cast<unsigned>(reinterpret_cast<size_t>(retainedName)))
+		++mismatches;
+	*trackerGlobal = originalTracker;
+	VirtualProtect(trackerGlobal, sizeof(*trackerGlobal), protection, &ignored);
+	printf("fluid emitter name rows=2 replacements=1 clears=1 candidate_dll=1 mismatches=%u\n",
+		mismatches);
+	return mismatches;
+	}
+
+struct NxFluidEmitterAttributeCallbackRecord
+	{
+	unsigned kind;
+	unsigned context;
+	unsigned fluid;
+	unsigned emitter;
+	unsigned values[3];
+	};
+
+static NxFluidEmitterAttributeCallbackRecord gOracleAttributeRecord;
+static unsigned gOracleAttributeRecordCount;
+static const unsigned gOracleRandomPositionWords[3] = {
+	0x3f000001u, 0xc0000002u, 0x40400003u };
+
+static NxFluidEmitterAttributeCallbackRecord& nxRecordOracleAttribute(
+	unsigned kind, unsigned context, unsigned fluid, unsigned emitter)
+	{
+	memset(&gOracleAttributeRecord, 0, sizeof(gOracleAttributeRecord));
+	gOracleAttributeRecord.kind = kind;
+	gOracleAttributeRecord.context = context;
+	gOracleAttributeRecord.fluid = fluid;
+	gOracleAttributeRecord.emitter = emitter;
+	gOracleAttributeRecordCount = 1;
+	return gOracleAttributeRecord;
+	}
+
+extern "C" float __cdecl nxOracleEmitterGetDimensionX(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxRecordOracleAttribute(1, context, fluid, emitter);
+	const unsigned bits = 0x40500001u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+extern "C" float __cdecl nxOracleEmitterGetDimensionY(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxRecordOracleAttribute(2, context, fluid, emitter);
+	const unsigned bits = 0x3fc00002u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+extern "C" int __cdecl nxOracleEmitterSetRandomPos(unsigned context,
+	unsigned fluid, unsigned emitter, const float* value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxRecordOracleAttribute(
+		3, context, fluid, emitter);
+	if(value) memcpy(record.values, value, sizeof(record.values));
+	return 3;
+	}
+extern "C" const float* __cdecl nxOracleEmitterGetRandomPos(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxRecordOracleAttribute(
+		4, context, fluid, emitter);
+	memcpy(record.values, gOracleRandomPositionWords, sizeof(record.values));
+	return reinterpret_cast<const float*>(gOracleRandomPositionWords);
+	}
+extern "C" int __cdecl nxOracleEmitterSetRandomAngle(unsigned context,
+	unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxRecordOracleAttribute(
+		5, context, fluid, emitter);
+	memcpy(record.values, &value, sizeof(value));
+	return 5;
+	}
+extern "C" float __cdecl nxOracleEmitterGetRandomAngle(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxRecordOracleAttribute(6, context, fluid, emitter);
+	const unsigned bits = 0x3e000006u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+extern "C" int __cdecl nxOracleEmitterSetFluidVelocityMagnitude(
+	unsigned context, unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxRecordOracleAttribute(
+		7, context, fluid, emitter);
+	memcpy(record.values, &value, sizeof(value));
+	return 7;
+	}
+extern "C" float __cdecl nxOracleEmitterGetFluidVelocityMagnitude(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxRecordOracleAttribute(8, context, fluid, emitter);
+	const unsigned bits = 0x40e00008u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+extern "C" int __cdecl nxOracleEmitterSetRate(unsigned context,
+	unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxRecordOracleAttribute(
+		9, context, fluid, emitter);
+	memcpy(record.values, &value, sizeof(value));
+	return 9;
+	}
+extern "C" float __cdecl nxOracleEmitterGetRate(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxRecordOracleAttribute(10, context, fluid, emitter);
+	const unsigned bits = 0x42b4000au;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+extern "C" int __cdecl nxOracleEmitterSetParticleLifetime(
+	unsigned context, unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxRecordOracleAttribute(
+		11, context, fluid, emitter);
+	memcpy(record.values, &value, sizeof(value));
+	return 11;
+	}
+extern "C" float __cdecl nxOracleEmitterGetParticleLifetime(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxRecordOracleAttribute(12, context, fluid, emitter);
+	const unsigned bits = 0x4020000cu;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+
+static unsigned nxFluidEmitterFloatBits(float value)
+	{
+	unsigned bits;
+	memcpy(&bits, &value, sizeof(bits));
+	return bits;
+	}
+
+static unsigned nxRunFluidEmitterAttributeRows(unsigned char* image,
+	HMODULE fluidModel, HMODULE candidatePhysics)
+	{
+	static const unsigned slotRvas[12] = {
+		0x1265cc, 0x1265d4, 0x126564, 0x1264ec,
+		0x126598, 0x12662c, 0x126464, 0x1264f4,
+		0x1265c4, 0x1264c0, 0x1264c4, 0x126540 };
+	static void* const replacements[12] = {
+		reinterpret_cast<void*>(&nxOracleEmitterGetDimensionX),
+		reinterpret_cast<void*>(&nxOracleEmitterGetDimensionY),
+		reinterpret_cast<void*>(&nxOracleEmitterSetRandomPos),
+		reinterpret_cast<void*>(&nxOracleEmitterGetRandomPos),
+		reinterpret_cast<void*>(&nxOracleEmitterSetRandomAngle),
+		reinterpret_cast<void*>(&nxOracleEmitterGetRandomAngle),
+		reinterpret_cast<void*>(&nxOracleEmitterSetFluidVelocityMagnitude),
+		reinterpret_cast<void*>(&nxOracleEmitterGetFluidVelocityMagnitude),
+		reinterpret_cast<void*>(&nxOracleEmitterSetRate),
+		reinterpret_cast<void*>(&nxOracleEmitterGetRate),
+		reinterpret_cast<void*>(&nxOracleEmitterSetParticleLifetime),
+		reinterpret_cast<void*>(&nxOracleEmitterGetParticleLifetime) };
+	void* oldValues[12] = {};
+	DWORD oldProtection = 0;
+	void* const page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(image + 0x126000) & ~static_cast<size_t>(0xfff));
+	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, &oldProtection))
+		return 1;
+	for(unsigned i = 0; i != 12; ++i)
+		{
+		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
+		oldValues[i] = *slot;
+		*slot = replacements[i];
+		}
+	typedef void (__cdecl *ResetFn)();
+	typedef unsigned (__cdecl *CountFn)();
+	typedef int (__cdecl *GetFn)(unsigned, NxFluidEmitterAttributeCallbackRecord*);
+	ResetFn reset = reinterpret_cast<ResetFn>(GetProcAddress(fluidModel,
+		"NxResetFluidEmitterAttributeCallbacks"));
+	CountFn count = reinterpret_cast<CountFn>(GetProcAddress(fluidModel,
+		"NxGetFluidEmitterAttributeCallbackCount"));
+	GetFn get = reinterpret_cast<GetFn>(GetProcAddress(fluidModel,
+		"NxGetFluidEmitterAttributeCallbackRecord"));
+	unsigned mismatches = 0;
+	if(!reset || !count || !get)
+		{
+		++mismatches;
+		fprintf(stderr, "FAIL FluidModel attribute callback fixture exports missing\n");
+		goto cleanup;
+		}
+	{
+		unsigned char oracleFluid[0x84] = {};
+		unsigned char candidateFluid[0x84] = {};
+		unsigned char oracleBackend[0x34] = {};
+		unsigned char candidateBackend[0x34] = {};
+		unsigned char oracleInternal[0x78] = {};
+		unsigned char candidateInternal[0x78] = {};
+		unsigned char oracleLockData[0x20] = {};
+		void* oracleLockDataPointer = oracleLockData;
+		void* oracleLockObject[1] = { oracleLockDataPointer };
+		void* oracleLockLink = oracleLockObject;
+		struct CandidateAttributeLockStorage
+			{
+			CRITICAL_SECTION section;
+			unsigned writer;
+			unsigned thread;
+			};
+		CandidateAttributeLockStorage candidateLock = {};
+		InitializeCriticalSection(&candidateLock.section);
+		CRITICAL_SECTION* candidateSectionPointer = &candidateLock.section;
+		void* candidateSectionLink = &candidateSectionPointer;
+		static const unsigned context = 0x12345678u;
+		static const unsigned fluidHandle = 0x23456789u;
+		static const unsigned emitterHandle = 0x3456789au;
+		*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+		*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+		*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = fluidHandle;
+		*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = fluidHandle;
+		*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = context;
+		*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = context;
+		*reinterpret_cast<void**>(oracleInternal + 4) = oracleFluid;
+		*reinterpret_cast<void**>(candidateInternal + 4) = candidateFluid;
+		*reinterpret_cast<unsigned*>(oracleInternal + 8) = emitterHandle;
+		*reinterpret_cast<unsigned*>(candidateInternal + 8) = emitterHandle;
+		unsigned char oracleObject[0x18] = {};
+		typedef void* (__thiscall *WrapperCtor)(void*, void*);
+		reinterpret_cast<WrapperCtor>(image + 0x8c2d0)(oracleObject, oracleInternal);
+		memcpy(oracleObject + 0x0c, &oracleLockLink, sizeof(oracleLockLink));
+		memcpy(oracleObject + 0x10, &oracleLockLink, sizeof(oracleLockLink));
+		FluidEmitterProbe candidateObject(candidateInternal);
+		memcpy(reinterpret_cast<unsigned char*>(&candidateObject) + 0x0c,
+			&candidateSectionLink, sizeof(candidateSectionLink));
+		memcpy(reinterpret_cast<unsigned char*>(&candidateObject) + 0x10,
+			&candidateSectionLink, sizeof(candidateSectionLink));
+		unsigned char candidateDllObject[0x18] = {};
+		void* candidateCtorAddress = 0;
+		if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??0NpFluidEmitter@@QAE@PAX@Z", &candidateCtorAddress))
+			{
+			++mismatches;
+			fprintf(stderr, "FAIL candidate DLL fluid-emitter constructor unavailable for attribute rows\n");
+			DeleteCriticalSection(&candidateLock.section);
+			goto cleanup;
+			}
+		typedef void* (__thiscall *CandidateCtor)(void*, void*);
+		reinterpret_cast<CandidateCtor>(candidateCtorAddress)(candidateDllObject,
+			candidateInternal);
+		memcpy(candidateDllObject + 0x0c, &candidateSectionLink,
+			sizeof(candidateSectionLink));
+		memcpy(candidateDllObject + 0x10, &candidateSectionLink,
+			sizeof(candidateSectionLink));
+		NxFluidEmitter* const oracle = reinterpret_cast<NxFluidEmitter*>(oracleObject);
+		NxFluidEmitter* const candidate = &candidateObject;
+		NxFluidEmitter* const candidateDll = reinterpret_cast<NxFluidEmitter*>(candidateDllObject);
+		unsigned cases = 0;
+		unsigned callbacks = 0;
+		auto check = [&](unsigned kind, const unsigned* expectedResult,
+			const unsigned* candidateResult, const unsigned* candidateDllResult,
+			const NxFluidEmitterAttributeCallbackRecord& candidateRecord,
+			const NxFluidEmitterAttributeCallbackRecord& candidateDllRecord)
+			{
+				const bool oracleRecordOk = gOracleAttributeRecordCount == 1
+					&& gOracleAttributeRecord.kind == kind
+					&& gOracleAttributeRecord.context == context
+					&& gOracleAttributeRecord.fluid == fluidHandle
+					&& gOracleAttributeRecord.emitter == emitterHandle;
+				const bool candidateRecordOk = candidateRecord.kind == kind
+					&& candidateRecord.context == context
+					&& candidateRecord.fluid == fluidHandle
+					&& candidateRecord.emitter == emitterHandle
+					&& memcmp(candidateRecord.values, gOracleAttributeRecord.values,
+						sizeof(candidateRecord.values)) == 0;
+				const bool candidateDllRecordOk = candidateDllRecord.kind == kind
+					&& candidateDllRecord.context == context
+					&& candidateDllRecord.fluid == fluidHandle
+					&& candidateDllRecord.emitter == emitterHandle
+					&& memcmp(candidateDllRecord.values, gOracleAttributeRecord.values,
+						sizeof(candidateDllRecord.values)) == 0;
+				const bool resultOk = !expectedResult || !candidateResult
+					|| memcmp(expectedResult, candidateResult, 3 * sizeof(unsigned)) == 0;
+				const bool dllResultOk = !expectedResult || !candidateDllResult
+					|| memcmp(expectedResult, candidateDllResult,
+						3 * sizeof(unsigned)) == 0;
+				if(!oracleRecordOk || !candidateRecordOk || !candidateDllRecordOk
+					|| !resultOk || !dllResultOk)
+					++mismatches;
+				++cases;
+				callbacks += 2;
+			};
+		auto capture = [&]()
+			{
+				NxFluidEmitterAttributeCallbackRecord record = {};
+				if(count() != 1 || !get(0, &record))
+					++mismatches;
+				return record;
+			};
+		unsigned oracleBits[3] = {}, candidateBits[3] = {};
+		reset(); gOracleAttributeRecordCount = 0;
+		oracleBits[0] = nxFluidEmitterFloatBits(oracle->getDimensionX());
+		reset();
+		candidateBits[0] = nxFluidEmitterFloatBits(candidate->getDimensionX());
+		NxFluidEmitterAttributeCallbackRecord candidateRecord = capture();
+		reset();
+		unsigned candidateDllBits[3] = {};
+		candidateDllBits[0] = nxFluidEmitterFloatBits(candidateDll->getDimensionX());
+		NxFluidEmitterAttributeCallbackRecord candidateDllRecord = capture();
+		check(1, oracleBits, candidateBits, candidateDllBits, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracleBits[0] = nxFluidEmitterFloatBits(oracle->getDimensionY());
+		reset();
+		candidateBits[0] = nxFluidEmitterFloatBits(candidate->getDimensionY());
+		candidateRecord = capture(); reset();
+		candidateDllBits[0] = nxFluidEmitterFloatBits(candidateDll->getDimensionY());
+		candidateDllRecord = capture();
+		check(2, oracleBits, candidateBits, candidateDllBits, candidateRecord, candidateDllRecord);
+		static const unsigned randomPosInput[3] = { 0x3e800011u, 0xbf400022u, 0x40400033u };
+		reset(); gOracleAttributeRecordCount = 0;
+		oracle->setRandomPos(*reinterpret_cast<const NxVec3*>(randomPosInput));
+		reset(); candidate->setRandomPos(*reinterpret_cast<const NxVec3*>(randomPosInput));
+		candidateRecord = capture(); reset();
+		candidateDll->setRandomPos(*reinterpret_cast<const NxVec3*>(randomPosInput));
+		candidateDllRecord = capture();
+		check(3, 0, 0, 0, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		NxVec3 oraclePosition = oracle->getRandomPos();
+		memcpy(oracleBits, &oraclePosition, sizeof(oracleBits));
+		reset();
+		NxVec3 candidatePosition = candidate->getRandomPos();
+		memcpy(candidateBits, &candidatePosition, sizeof(candidateBits));
+		candidateRecord = capture(); reset();
+		NxVec3 candidateDllPosition = candidateDll->getRandomPos();
+		memcpy(candidateDllBits, &candidateDllPosition, sizeof(candidateDllBits));
+		candidateDllRecord = capture();
+		check(4, oracleBits, candidateBits, candidateDllBits, candidateRecord, candidateDllRecord);
+		const float setValues[5] = { -0.1875f, 13.25f, -3.75f, 91.5f, 2.625f };
+		reset(); gOracleAttributeRecordCount = 0;
+		oracle->setRandomAngle(setValues[0]); reset(); candidate->setRandomAngle(setValues[0]);
+		candidateRecord = capture(); reset(); candidateDll->setRandomAngle(setValues[0]);
+		candidateDllRecord = capture(); check(5, 0, 0, 0, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracleBits[0] = nxFluidEmitterFloatBits(oracle->getRandomAngle()); reset();
+		candidateBits[0] = nxFluidEmitterFloatBits(candidate->getRandomAngle()); candidateRecord = capture(); reset();
+		candidateDllBits[0] = nxFluidEmitterFloatBits(candidateDll->getRandomAngle()); candidateDllRecord = capture();
+		check(6, oracleBits, candidateBits, candidateDllBits, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracle->setFluidVelocityMagnitude(setValues[1]); reset(); candidate->setFluidVelocityMagnitude(setValues[1]);
+		candidateRecord = capture(); reset(); candidateDll->setFluidVelocityMagnitude(setValues[1]);
+		candidateDllRecord = capture(); check(7, 0, 0, 0, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracleBits[0] = nxFluidEmitterFloatBits(oracle->getFluidVelocityMagnitude()); reset();
+		candidateBits[0] = nxFluidEmitterFloatBits(candidate->getFluidVelocityMagnitude()); candidateRecord = capture(); reset();
+		candidateDllBits[0] = nxFluidEmitterFloatBits(candidateDll->getFluidVelocityMagnitude()); candidateDllRecord = capture();
+		check(8, oracleBits, candidateBits, candidateDllBits, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracle->setRate(setValues[2]); reset(); candidate->setRate(setValues[2]); candidateRecord = capture(); reset();
+		candidateDll->setRate(setValues[2]); candidateDllRecord = capture();
+		check(9, 0, 0, 0, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracleBits[0] = nxFluidEmitterFloatBits(oracle->getRate()); reset();
+		candidateBits[0] = nxFluidEmitterFloatBits(candidate->getRate()); candidateRecord = capture(); reset();
+		candidateDllBits[0] = nxFluidEmitterFloatBits(candidateDll->getRate()); candidateDllRecord = capture();
+		check(10, oracleBits, candidateBits, candidateDllBits, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracle->setParticleLifetime(setValues[4]); reset(); candidate->setParticleLifetime(setValues[4]); candidateRecord = capture(); reset();
+		candidateDll->setParticleLifetime(setValues[4]); candidateDllRecord = capture();
+		check(11, 0, 0, 0, candidateRecord, candidateDllRecord);
+		reset(); gOracleAttributeRecordCount = 0;
+		oracleBits[0] = nxFluidEmitterFloatBits(oracle->getParticleLifetime()); reset();
+		candidateBits[0] = nxFluidEmitterFloatBits(candidate->getParticleLifetime()); candidateRecord = capture(); reset();
+		candidateDllBits[0] = nxFluidEmitterFloatBits(candidateDll->getParticleLifetime()); candidateDllRecord = capture();
+		check(12, oracleBits, candidateBits, candidateDllBits, candidateRecord, candidateDllRecord);
+		printf("fluid emitter attribute rows=12 cases=%u candidate_dll_cases=%u callbacks=%u mismatches=%u\n",
+			cases, cases, callbacks, mismatches);
+		DeleteCriticalSection(&candidateLock.section);
+	}
+cleanup:
+	for(unsigned i = 0; i != 12; ++i)
+		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
+	DWORD ignored = 0;
+	VirtualProtect(page, 0x1000, oldProtection, &ignored);
+	return mismatches;
+	}
 
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
-	if(argc != 3)
+	if(argc != 5)
 		{
-		fprintf(stderr, "usage: NxPhysicsFluidEmitterAbiTests <oracle directory> <NxPhysics.dll sha256>\n");
+		fprintf(stderr, "usage: NxPhysicsFluidEmitterAbiTests <staged directory> <NxPhysics.dll sha256> <oracle image path> <candidate NxPhysics.dll sha256>\n");
 		return 2;
 		}
 	wchar_t physicsPath[MAX_PATH];
@@ -4132,7 +4577,13 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("loaded module=NxFoundation.dll path=%S sha256=%s\n",
 		foundationPath, foundationHash);
-	unsigned char* image = reinterpret_cast<unsigned char*>(module);
+	HMODULE oracleImage = LoadLibraryExW(argv[3], 0, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!oracleImage)
+		{
+		fprintf(stderr, "FAIL fluid emitter probe did not load the isolated oracle image\n");
+		return 1;
+		}
+	unsigned char* image = reinterpret_cast<unsigned char*>(oracleImage);
 	NxLockSlots lockSlots = nxBindOracleLocks(image);
 	if(!lockSlots.protection)
 		return 1;
@@ -4173,13 +4624,34 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll setFlag row could not be resolved from its map\n");
 		return 1;
 		}
+	char expectedCandidateHash[65];
+	expectedCandidateHash[0] = '\0';
+	if(wcstombs(expectedCandidateHash, argv[4], sizeof(expectedCandidateHash)) == (size_t)-1
+		|| strlen(expectedCandidateHash) != 64)
+		{
+		fprintf(stderr, "FAIL expected candidate NxPhysics.dll SHA-256 is invalid\n");
+		return 1;
+		}
+	wchar_t candidatePath[MAX_PATH];
+	char actualCandidateHash[65];
+	actualCandidateHash[0] = '\0';
+	if(!GetModuleFileNameW(candidatePhysics, candidatePath, MAX_PATH)
+		|| !nxSha256(candidatePath, actualCandidateHash)
+		|| _stricmp(actualCandidateHash, expectedCandidateHash) != 0)
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll hash mismatch expected=%s actual=%s\n",
+			expectedCandidateHash, actualCandidateHash);
+		return 1;
+		}
 	void* candidateBucketPrefixAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionBucketPrefix", &candidateBucketPrefixAddress))
 		++gFailures;
 	else
+		{
 		gFailures += nxRunFluidCollisionBucketPrefixDifferential(
 			image + 0x864e0, candidateBucketPrefixAddress);
+		}
 	void* candidateCellPrefixAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionCellPrefix", &candidateCellPrefixAddress))
@@ -4376,6 +4848,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned char oracleLockData[0x20];
 	unsigned char oracleLockObject[4];
 	memset(oracleLockData, 0, sizeof(oracleLockData));
+	*reinterpret_cast<unsigned*>(oracleLockData + 0x18) = 1;
+	*reinterpret_cast<unsigned*>(oracleLockData + 0x1c) = 0x2222;
 	void* oracleLockDataPointer = oracleLockData;
 	memcpy(oracleLockObject, &oracleLockDataPointer, sizeof(oracleLockDataPointer));
 	void* oracleLockLink = oracleLockObject;
@@ -4393,6 +4867,10 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(oracleBytes + 0x10, &oracleLockLink, sizeof(oracleLockLink));
 	memcpy(candidateDllBytes + 0x10, &candidateSectionLink, sizeof(candidateSectionLink));
 	memcpy(reinterpret_cast<unsigned char*>(&candidate) + 0x10,
+		&candidateSectionLink, sizeof(candidateSectionLink));
+	memcpy(oracleBytes + 0x0c, &oracleLockLink, sizeof(oracleLockLink));
+	memcpy(candidateDllBytes + 0x0c, &candidateSectionLink, sizeof(candidateSectionLink));
+	memcpy(reinterpret_cast<unsigned char*>(&candidate) + 0x0c,
 		&candidateSectionLink, sizeof(candidateSectionLink));
 	NxFluidEmitter* candidateInterface = &candidate;
 	const NxFluid* oracleOwnerFluid = &oracle->getFluid();
@@ -4418,6 +4896,8 @@ int wmain(int argc, wchar_t** argv)
 		candidateFrameActor == oracleFrameActor,
 		candidateDllFrameActor == oracleFrameActor,
 		ownerFrameMismatches);
+	gFailures += nxRunFluidEmitterNameRows(image, oracle, candidateInterface,
+		candidateDllInterface, internal);
 	struct AggregateSlot { const char* name; unsigned slot; unsigned bytes; };
 	static const AggregateSlot aggregateSlots[] = {
 		{ "global_pose", 5, 0x30 }, { "global_position", 6, 0x0c },
@@ -4432,8 +4912,16 @@ int wmain(int argc, wchar_t** argv)
 	unsigned dllRawCases = 0;
 	unsigned dllRawRetptr = 0;
 	unsigned dllRawStackBalanced = 0;
+	unsigned localCopyCases = 0;
+	unsigned localCopyRetptr = 0;
+	unsigned localCopyStackBalanced = 0;
+	unsigned localCopyDllCases = 0;
+	unsigned localCopyDllRetptr = 0;
+	unsigned localCopyDllStackBalanced = 0;
+	unsigned localCopyMismatches = 0;
 	for(unsigned i = 0; i < sizeof(aggregateSlots) / sizeof(aggregateSlots[0]); ++i)
 		{
+		const bool localCopyRow = i >= 3;
 		unsigned char oracleOut[0x30];
 		unsigned char candidateOut[0x30];
 		memset(oracleOut, 0, sizeof(oracleOut));
@@ -4459,10 +4947,20 @@ int wmain(int argc, wchar_t** argv)
 			++rawRetptr;
 		if(oracleStackDelta == 0 && candidateStackDelta == 0)
 			++rawStackBalanced;
+		if(localCopyRow)
+			{
+			++localCopyCases;
+			if(oracleResult == oracleOut && candidateResult == candidateOut)
+				++localCopyRetptr;
+			if(oracleStackDelta == 0 && candidateStackDelta == 0)
+				++localCopyStackBalanced;
+			}
 		if(oracleResult != oracleOut || candidateResult != candidateOut
 			|| oracleStackDelta != 0 || candidateStackDelta != 0
 			|| memcmp(oracleOut, candidateOut, aggregateSlots[i].bytes) != 0)
 			{
+			if(localCopyRow)
+				++localCopyMismatches;
 			fprintf(stderr, "fluid emitter raw ABI mismatch: %s oracle_ret=%u candidate_ret=%u stack=%u/%u\n",
 				aggregateSlots[i].name, oracleResult == oracleOut ? 1u : 0u,
 				candidateResult == candidateOut ? 1u : 0u, oracleStackDelta, candidateStackDelta);
@@ -4474,7 +4972,11 @@ int wmain(int argc, wchar_t** argv)
 		unsigned candidateDllStackDelta = 0xffffffffu;
 		if(!nxTryFluidEmitterCall(candidateDllInterface, aggregateSlots[i].slot,
 			candidateDllOut, &candidateDllResult, &candidateDllStackDelta))
+			{
 			++dllRawMismatches;
+			if(localCopyRow)
+				++localCopyMismatches;
+			}
 		else
 			{
 			++dllRawCases;
@@ -4482,9 +4984,19 @@ int wmain(int argc, wchar_t** argv)
 				++dllRawRetptr;
 			if(candidateDllStackDelta == 0)
 				++dllRawStackBalanced;
+			if(localCopyRow)
+				{
+				++localCopyDllCases;
+				if(candidateDllResult == candidateDllOut)
+					++localCopyDllRetptr;
+				if(candidateDllStackDelta == 0)
+					++localCopyDllStackBalanced;
+				}
 			if(candidateDllResult != candidateDllOut || candidateDllStackDelta != 0
 				|| memcmp(oracleOut, candidateDllOut, aggregateSlots[i].bytes) != 0)
 				{
+				if(localCopyRow)
+					++localCopyMismatches;
 				fprintf(stderr, "candidate DLL fluid emitter raw ABI mismatch: %s retptr=%u stack=%u\n",
 					aggregateSlots[i].name, candidateDllResult == candidateDllOut ? 1u : 0u,
 					candidateDllStackDelta);
@@ -4498,6 +5010,10 @@ int wmain(int argc, wchar_t** argv)
 	gFailures += dllRawMismatches;
 	printf("fluid emitter candidate_dll raw_abi cases=%u retptr=%u stack_balanced=%u mismatches=%u\n",
 		dllRawCases, dllRawRetptr, dllRawStackBalanced, dllRawMismatches);
+	printf("fluid emitter local pose-copy rows=3 candidate_cases=%u candidate_retptr=%u candidate_stack=%u dll_cases=%u dll_retptr=%u dll_stack=%u mismatches=%u\n",
+		localCopyCases, localCopyRetptr, localCopyStackBalanced,
+		localCopyDllCases, localCopyDllRetptr, localCopyDllStackBalanced,
+		localCopyMismatches);
 
 	NxMat34 oracleGlobalPose;
 	oracleGlobalPose = oracle->getGlobalPoseVal();
@@ -4627,6 +5143,7 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL oracle FluidModel callback slots could not be bound\n");
 		return 1;
 		}
+	gFailures += nxRunFluidEmitterAttributeRows(image, fluidModel, candidatePhysics);
 	void* candidateStoreGlobalPoseAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxNpFluidEmitterStoreGlobalPose", &candidateStoreGlobalPoseAddress))

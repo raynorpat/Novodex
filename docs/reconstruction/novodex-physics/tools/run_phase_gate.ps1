@@ -234,13 +234,28 @@ if ($oracleDifferentialTargets.Count -gt 0) {
     Assert-True (Test-Path -LiteralPath $oraclePhysics -PathType Leaf) "the pinned oracle is present: $oraclePhysics"
     $oracleHash = (Get-FileHash -LiteralPath $oraclePhysics -Algorithm SHA256).Hash.ToLowerInvariant()
     Assert-True ($oracleHash -ceq $program.oracle.sha256) 'shipped NxPhysics.dll matches the pinned oracle hash'
+    $oracleImageAlias = Join-Path $buildRoot 'NxPhysicsOracle.dll'
+    Copy-Item -LiteralPath $oraclePhysics -Destination $oracleImageAlias -Force
+    $oracleImageAlias = (Resolve-Path -LiteralPath $oracleImageAlias).Path
+    $oracleImageHash = (Get-FileHash -LiteralPath $oracleImageAlias -Algorithm SHA256).Hash.ToLowerInvariant()
+    Assert-True ($oracleImageHash -ceq $oracleHash) 'isolated oracle-address image byte-matches the pinned NxPhysics.dll'
 
     Write-Host ''
     Write-Host '=== oracle differential (one run, not one per pair) ==='
     foreach ($target in $oracleDifferentialTargets) {
         $targetOracleTranscript = [Collections.Generic.List[string]]::new()
         $exe = Join-Path $releaseRoot "$target.exe"
-        Write-Host "gate=oracle_differential:$target command=`"$exe`" `"$oracleDirectory`" $oracleHash"
+        $targetArguments = @($oracleDirectory, $oracleHash)
+        if ($target -ceq 'NxPhysicsFluidEmitterAbiTests') {
+            $targetArguments += $oracleImageAlias
+            $candidateDll = Join-Path $releaseRoot 'NxPhysicsCandidate.dll'
+            Assert-True (Test-Path -LiteralPath $candidateDll -PathType Leaf) "candidate DLL copy exists: $candidateDll"
+            $candidateDllHash = (Get-FileHash -LiteralPath $candidateDll -Algorithm SHA256).Hash.ToLowerInvariant()
+            $builtPhysicsHash = (Get-FileHash -LiteralPath (Join-Path $releaseRoot 'NxPhysics.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
+            Assert-True ($candidateDllHash -ceq $builtPhysicsHash) 'candidate DLL copy byte-matches the built NxPhysics.dll'
+            $targetArguments += $candidateDllHash
+        }
+        Write-Host "gate=oracle_differential:$target command=`"$exe`" $($targetArguments -join ' ')"
         $global:LASTEXITCODE = 0
         # `2>&1` makes each stderr line an ErrorRecord, and $ErrorActionPreference
         # is Stop, so a target that writes to stderr threw out of the pipeline
@@ -253,7 +268,7 @@ if ($oracleDifferentialTargets.Count -gt 0) {
         # the state Phase 4 is in on purpose for the next two tasks.
         $previousErrorAction = $ErrorActionPreference
         $ErrorActionPreference = 'Continue'
-        & $exe $oracleDirectory $oracleHash 2>&1 | ForEach-Object {
+        & $exe @targetArguments 2>&1 | ForEach-Object {
             $text = [string] $_
             [void] $oracleTranscript.Add($text)
             [void] $targetOracleTranscript.Add($text)

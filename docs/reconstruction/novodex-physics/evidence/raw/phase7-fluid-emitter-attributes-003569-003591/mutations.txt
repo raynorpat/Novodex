@@ -1,0 +1,13 @@
+row=phys_fn_003569 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003571 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003573 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003575 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003577 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003579 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003581 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003583 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003585 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003587 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003589 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+row=phys_fn_003591 mutant=emitter-handle-xor detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=1
+restored-control=exact exit=0 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0

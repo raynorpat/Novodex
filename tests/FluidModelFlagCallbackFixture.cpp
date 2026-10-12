@@ -648,3 +648,149 @@ extern "C" __declspec(dllexport) int __cdecl ImplicitFluidMeshRun(
 		}
 	return static_cast<int>(2048u ^ argument0 ^ argument1 ^ argument2 ^ argument3);
 	}
+
+struct NxFluidEmitterAttributeCallbackRecord
+	{
+	unsigned kind;
+	unsigned context;
+	unsigned fluid;
+	unsigned emitter;
+	unsigned values[3];
+	};
+
+static NxFluidEmitterAttributeCallbackRecord gAttributeRecords[16];
+static unsigned gAttributeRecordCount;
+static const unsigned gRandomPositionWords[3] = {
+	0x3f000001u, 0xc0000002u, 0x40400003u };
+
+static NxFluidEmitterAttributeCallbackRecord& nxNextAttributeRecord(
+	unsigned kind, unsigned context, unsigned fluid, unsigned emitter)
+	{
+	static NxFluidEmitterAttributeCallbackRecord overflow = {};
+	NxFluidEmitterAttributeCallbackRecord& record = gAttributeRecordCount
+		< sizeof(gAttributeRecords) / sizeof(gAttributeRecords[0])
+		? gAttributeRecords[gAttributeRecordCount++] : overflow;
+	ZeroMemory(&record, sizeof(record));
+	record.kind = kind;
+	record.context = context;
+	record.fluid = fluid;
+	record.emitter = emitter;
+	return record;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxResetFluidEmitterAttributeCallbacks()
+	{ gAttributeRecordCount = 0; }
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidEmitterAttributeCallbackCount()
+	{ return gAttributeRecordCount; }
+
+extern "C" __declspec(dllexport) int __cdecl NxGetFluidEmitterAttributeCallbackRecord(
+	unsigned index, NxFluidEmitterAttributeCallbackRecord* record)
+	{
+	if(index >= gAttributeRecordCount || !record)
+		return 0;
+	*record = gAttributeRecords[index];
+	return 1;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl EmitterGetDimensionX(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxNextAttributeRecord(1, context, fluid, emitter);
+	const unsigned bits = 0x40500001u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+
+extern "C" __declspec(dllexport) float __cdecl EmitterGetDimensionY(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxNextAttributeRecord(2, context, fluid, emitter);
+	const unsigned bits = 0x3fc00002u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetRandomPos(
+	unsigned context, unsigned fluid, unsigned emitter, const float* value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxNextAttributeRecord(
+		3, context, fluid, emitter);
+	if(value) CopyMemory(record.values, value, sizeof(record.values));
+	return 3;
+	}
+
+extern "C" __declspec(dllexport) const float* __cdecl EmitterGetRandomPos(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxNextAttributeRecord(
+		4, context, fluid, emitter);
+	CopyMemory(record.values, gRandomPositionWords, sizeof(record.values));
+	return reinterpret_cast<const float*>(gRandomPositionWords);
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetRandomAngle(
+	unsigned context, unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxNextAttributeRecord(
+		5, context, fluid, emitter);
+	record.values[0] = *reinterpret_cast<unsigned*>(&value);
+	return 5;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl EmitterGetRandomAngle(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxNextAttributeRecord(6, context, fluid, emitter);
+	const unsigned bits = 0x3e000006u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetFluidVelocityMagnitude(
+	unsigned context, unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxNextAttributeRecord(
+		7, context, fluid, emitter);
+	record.values[0] = *reinterpret_cast<unsigned*>(&value);
+	return 7;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl EmitterGetFluidVelocityMagnitude(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxNextAttributeRecord(8, context, fluid, emitter);
+	const unsigned bits = 0x40e00008u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetRate(
+	unsigned context, unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxNextAttributeRecord(
+		9, context, fluid, emitter);
+	record.values[0] = *reinterpret_cast<unsigned*>(&value);
+	return 9;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl EmitterGetRate(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxNextAttributeRecord(10, context, fluid, emitter);
+	const unsigned bits = 0x42b4000au;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+
+extern "C" __declspec(dllexport) int __cdecl EmitterSetParticleLifetime(
+	unsigned context, unsigned fluid, unsigned emitter, float value)
+	{
+	NxFluidEmitterAttributeCallbackRecord& record = nxNextAttributeRecord(
+		11, context, fluid, emitter);
+	record.values[0] = *reinterpret_cast<unsigned*>(&value);
+	return 11;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl EmitterGetParticleLifetime(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	nxNextAttributeRecord(12, context, fluid, emitter);
+	const unsigned bits = 0x4020000cu;
+	return *reinterpret_cast<const float*>(&bits);
+	}

@@ -3022,15 +3022,15 @@
    ],
    "rows": {
     "decompiled": 1,
-    "discovered": 13,
-    "dynamically_gated": 34,
-    "reconstructed": 17
+    "discovered": 12,
+    "dynamically_gated": 46,
+    "reconstructed": 6
    },
    "bytes": {
     "decompiled": 233,
-    "discovered": 5411,
-    "dynamically_gated": 8194,
-    "reconstructed": 836
+    "discovered": 5348,
+    "dynamically_gated": 8650,
+    "reconstructed": 443
    },
    "phases": {
     "7": 65
@@ -3279,13 +3279,13 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 14,
-    "dynamically_gated": 9,
+    "discovered": 7,
+    "dynamically_gated": 16,
     "reconstructed": 8
    },
    "bytes": {
-    "discovered": 2299,
-    "dynamically_gated": 477,
+    "discovered": 1215,
+    "dynamically_gated": 1561,
     "reconstructed": 338
    },
    "phases": {
@@ -3305,11 +3305,11 @@
    ],
    "rows": {
     "discovered": 4,
-    "reconstructed": 1
+    "dynamically_gated": 1
    },
    "bytes": {
     "discovered": 143,
-    "reconstructed": 36
+    "dynamically_gated": 36
    },
    "phases": {
     "7": 5

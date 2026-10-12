@@ -87,6 +87,12 @@ function New-Pair([string] $Name, [string] $PhysicsSource, [string] $FoundationS
         $staged[$entry.Name] = $stagedHash
     }
 
+    if ($Name -ceq 'oracle') {
+        $oracleAlias = Join-Path $directory 'NxPhysicsOracle.dll'
+        Copy-Item -LiteralPath (Join-Path $directory 'NxPhysics.dll') -Destination $oracleAlias
+        Assert-True ((Get-FileSha256 $oracleAlias) -ceq $staged['NxPhysics.dll']) 'oracle-address image byte-matches staged oracle NxPhysics.dll'
+    }
+
     # Some internal rows are not exported. Staged-pair probes resolve those
     # candidate methods by symbol from the map emitted beside the exact DLL.
     # Keep the oracle side pinned to its known shipped RVA; never copy a
@@ -115,7 +121,7 @@ function New-Pair([string] $Name, [string] $PhysicsSource, [string] $FoundationS
     }
 }
 
-function Invoke-Child([string] $Target, $Pair) {
+function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
     $exe = Join-Path $releaseRoot "$Target.exe"
     Assert-True (Test-Path -LiteralPath $exe -PathType Leaf) "test target is built: $exe"
 
@@ -126,6 +132,8 @@ function Invoke-Child([string] $Target, $Pair) {
     $arguments = @('"' + $Pair.Directory + '"')
     if ($Target -ceq 'NxPhysicsFluidEmitterAbiTests') {
         $arguments += '"' + $Pair.PhysicsSha256 + '"'
+        $arguments += '"' + (Join-Path $oraclePair.Directory 'NxPhysicsOracle.dll') + '"'
+        $arguments += '"' + $CandidateSha256 + '"'
     }
     $startInfo.Arguments = $arguments -join ' '
     $startInfo.WorkingDirectory = $pairsRoot
@@ -156,6 +164,11 @@ function Invoke-Child([string] $Target, $Pair) {
     foreach ($module in @(@{ Name = 'NxPhysics.dll'; Sha256 = $Pair.PhysicsSha256 }, @{ Name = 'NxFoundation.dll'; Sha256 = $Pair.FoundationSha256 })) {
         $expected = "loaded module=$($module.Name) path=$(Join-Path $Pair.Directory $module.Name) sha256=$($module.Sha256)"
         Assert-True ($lines -ccontains $expected) "$Target/$($Pair.Name) reported the staged identity: $expected"
+    }
+    if ($Target -ceq 'NxPhysicsFluidEmitterAbiTests') {
+        $candidateDll = (Resolve-Path -LiteralPath (Join-Path $releaseRoot 'NxPhysicsCandidate.dll')).Path
+        $expectedCandidate = "loaded module=NxPhysicsCandidate.dll path=$candidateDll sha256=$CandidateSha256"
+        Assert-True ($lines -ccontains $expectedCandidate) "$Target reported the loaded candidate DLL identity: $expectedCandidate"
     }
 
     # Dropped from the comparison:
@@ -228,7 +241,17 @@ Assert-True ($candidatePair.PhysicsSha256 -cne $oraclePair.PhysicsSha256) 'candi
 
 $differences = 0
 foreach ($target in $Targets) {
-    $oracleRun = Invoke-Child $target $oraclePair
+    $oracleRun = Invoke-Child $target $oraclePair $candidatePair.PhysicsSha256
+    if ($target -ceq 'NxPhysicsFluidEmitterAbiTests') {
+        # This probe itself loads and tests the built candidate DLL. Running it
+        # a second time with the candidate staged pair preloads candidate
+        # NxFoundation.dll before the pinned oracle image, allowing Windows to
+        # bind the oracle alias to the wrong Foundation dependency.
+        $exitExact = $oracleRun.ExitCode -eq 0
+        Write-Host "differential target=$target oracle_exit=$($oracleRun.ExitCode) candidate_dll_sha256=$($candidatePair.PhysicsSha256) candidate_rows_in_oracle_probe=True"
+        if (-not $exitExact) { $differences++ }
+        continue
+    }
     $candidateRun = Invoke-Child $target $candidatePair
     $delta = @(Compare-Object $oracleRun.Normalized $candidateRun.Normalized -CaseSensitive -SyncWindow 0)
     $stderrExact = $oracleRun.Stderr -ceq $candidateRun.Stderr
@@ -242,7 +265,7 @@ foreach ($target in $Targets) {
 
 Write-Host "differential_targets=$($Targets -join ',')"
 Write-Host "differential_pairs=$($oraclePair.Directory),$($candidatePair.Directory)"
-Assert-True ($differences -eq 0) 'every requested target produces identical oracle and candidate results'
+Assert-True ($differences -eq 0) 'every requested target passes its registered oracle/candidate differential contract'
 Write-Host 'differential=pass'
 # Explicit, so the caller's $LASTEXITCODE is this script's result and not
 # whatever the last native command in it happened to set.

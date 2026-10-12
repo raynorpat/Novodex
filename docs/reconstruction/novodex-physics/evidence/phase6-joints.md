@@ -9203,7 +9203,7 @@ groups, the box group's bit-level line included), NxFoundationSDKTests and NxFou
 both Foundations. cdb traces of both Foundations over the 24 staged targets hit addBasis, addArrow, addOBB and
 NxComputeBoxPoints equally (evidence/scene-raycast-trace-task4-vis.txt).
 
-## Closure binding: the six rows the Phase 6 and Phase 7 ledgers close
+## Closure binding: the rows the Phase 6 and Phase 7 ledgers close
 
 `gates/phase6-closure.json` and `gates/phase7-closure.json` name this file as their `evidence_file`,
 and `validate_inventory.py` requires each closed row's stable ID on a line that also carries the count
@@ -9222,6 +9222,24 @@ be moved onto one of those without the binding noticing: the coincidental-count 
     phys_fn_000665  Scene::createJoint                stdout_delta=30
     phys_fn_000651  the Scene descriptor initialiser  stdout_delta=28
     phys_fn_000013  the actor constructor             stdout_delta=30
+    phys_fn_003569  NxFluidEmitter::getDimensionX backend callback  mismatches=1
+    phys_fn_003571  NxFluidEmitter::getDimensionY backend callback  mismatches=1
+    phys_fn_003573  NxFluidEmitter::setRandomPos backend callback   mismatches=1
+    phys_fn_003575  NxFluidEmitter::getRandomPos backend callback   mismatches=1
+    phys_fn_003577  NxFluidEmitter::setRandomAngle backend callback mismatches=1
+    phys_fn_003579  NxFluidEmitter::getRandomAngle backend callback mismatches=1
+    phys_fn_003581  NxFluidEmitter::setVelocity backend callback    mismatches=1
+    phys_fn_003583  NxFluidEmitter::getVelocity backend callback    mismatches=1
+    phys_fn_003585  NxFluidEmitter::setRate backend callback        mismatches=1
+    phys_fn_003587  NxFluidEmitter::getRate backend callback        mismatches=1
+    phys_fn_003589  NxFluidEmitter::setLifetime backend callback    mismatches=1
+    phys_fn_003591  NxFluidEmitter::getLifetime backend callback    mismatches=1
+    phys_fn_003830  NxFluidEmitter::setRandomPos wrapper             mismatches=3
+    phys_fn_003832  NxFluidEmitter::getRandomPos wrapper             mismatches=7
+    phys_fn_003834  NxFluidEmitter::setRandomAngle wrapper           mismatches=3
+    phys_fn_003838  NxFluidEmitter::setVelocity wrapper              mismatches=3
+    phys_fn_003842  NxFluidEmitter::setRate wrapper                  mismatches=3
+    phys_fn_003846  NxFluidEmitter::setLifetime wrapper              mismatches=3
 
 ## Closure binding re-measured: the two joint-descriptor rows (joint-open-items Task 4)
 
@@ -10495,3 +10513,8 @@ Static-collision builder phys_fn_003505 is now mutation-falsified: the registere
 
 
 Phase 7 closure evidence: phys_fn_003559 and phys_fn_003561 copy the FluidModel global emitter pose, transposing the 3x3 rotation and preserving translation. The registered direct oracle probe checks callback arguments, all output words, return pointers, untouched tail, and stack balance. The wrong-transpose mutation is rejected by both rows (mismatches=2); restored output is exact. See evidence/phase7-fluid-emitter-global-pose-003559-003561.md.
+
+
+Fluid emitter local aggregate copy closure: rows phys_fn_003563, phys_fn_003565, and phys_fn_003567 are individually mutation-falsified through the local pose, position, and orientation calls. Shifting each source range by four bytes is detected with mismatches=1 for the matching aggregate on both candidate paths; restored runs report the required line `fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0`. Full setup and gate logs: evidence/phase7-fluid-emitter-local-copy-003563-003567.md.
+
+Phase 7 fluid-emitter name wrapper rows `phys_fn_003858` and `phys_fn_003860` were independently mutation-falsified through `NxPhysicsFluidEmitterAbiTests`: the setter update mutant and null-getter mutant each report `mismatches=2`, while restored candidate/oracle control reports zero. See `evidence/phase7-fluid-emitter-name-003858-003860.md`.
