@@ -1,0 +1,7 @@
+row=phys_fn_003830 wrapper_mutant=no-op detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=3
+row=phys_fn_003832 wrapper_mutant=no-op detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=7
+row=phys_fn_003834 wrapper_mutant=no-op detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=3
+row=phys_fn_003838 wrapper_mutant=no-op detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=3
+row=phys_fn_003842 wrapper_mutant=no-op detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=3
+row=phys_fn_003846 wrapper_mutant=no-op detected=1 exit=1 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=3
+restored-control=exact exit=0 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0

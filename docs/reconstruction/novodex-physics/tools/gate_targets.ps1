@@ -119,6 +119,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
 		'fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0'
         'fluid emitter flags cases=2 mismatches=0'
+		'fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0'
 		'fluid emitter global-pose rows=2 callback_checks=2 stack_checks=2 mismatches=0'
 		'fluid emitter body repulsion bodyless actor=1 callbacks=3/3 order=1 vectors=1 mass=1 stack=1/1 mismatches=0'
 		'fluid post-step traversal fluids=2 oracle_callbacks=7 candidate_callbacks=7 particle_counts=3/3 particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=0'
@@ -5838,7 +5839,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2665  # includes fluid local pose-copy rows plus shape-packer/static-collision differentials
+	'5' = 2667  # includes fluid emitter attribute callback and public-wrapper differentials
+				# plus fluid local pose-copy rows plus shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential
@@ -5895,7 +5897,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1692  # includes fluid local pose-copy rows plus shape-packer/static-collision differentials
+	'7' = 1694  # includes fluid emitter attribute callback and public-wrapper differentials
+				# plus fluid local pose-copy rows plus shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential

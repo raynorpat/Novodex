@@ -66720,13 +66720,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x87e90u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1338",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12497",
       "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87e90u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterGetDimensionX(void*)"
     },
     {
       "id": "phys_fn_003570",
@@ -66756,13 +66758,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x87eb0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1339",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12498",
       "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87eb0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterGetDimensionY(void*)"
     },
     {
       "id": "phys_fn_003572",
@@ -66792,13 +66796,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1340",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12499",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterSetRandomPos(void*)"
     },
     {
       "id": "phys_fn_003574",
@@ -66828,15 +66834,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "float-out three-argument global-call thunk (0x87f10, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1341",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12500",
       "static_proof": "static review of the recorded shape: float-out three-argument global-call thunk (0x87f10, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the floatout3575 differential (3z204): failures=0 over three consecutive runs, comparing the hit count, all three arguments and the three floats written through the out pointer, with the slot bound to a stub returning a float triple",
+      "dynamic_proof": "confirmed via the floatout3575 differential (3z204): failures=0 over three consecutive runs, comparing the hit count, all three arguments and the three floats written through the out pointer, with the slot bound to a stub returning a float triple; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "phys_fn_003575 (harness dispatch table)"
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterGetRandomPos(void*)"
     },
     {
       "id": "phys_fn_003576",
@@ -66866,13 +66872,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "four-argument global-call thunk (0x87f50u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12501",
       "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x87f50u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterSetRandomAngle(void*)"
     },
     {
       "id": "phys_fn_003578",
@@ -66902,13 +66910,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x87f80u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1343",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12502",
       "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87f80u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterGetRandomAngle(void*)"
     },
     {
       "id": "phys_fn_003580",
@@ -66938,13 +66948,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "four-argument global-call thunk (0x87fa0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1344",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12503",
       "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x87fa0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterSetFluidVelocityMagnitude(void*)"
     },
     {
       "id": "phys_fn_003582",
@@ -66974,13 +66986,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x87fd0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1345",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12504",
       "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87fd0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterGetFluidVelocityMagnitude(void*)"
     },
     {
       "id": "phys_fn_003584",
@@ -67010,13 +67024,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "four-argument global-call thunk (0x87ff0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1346",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12505",
       "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x87ff0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterSetRate(void*)"
     },
     {
       "id": "phys_fn_003586",
@@ -67046,13 +67062,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x88020u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1347",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12506",
       "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88020u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterGetRate(void*)"
     },
     {
       "id": "phys_fn_003588",
@@ -67082,13 +67100,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "four-argument global-call thunk (0x88040u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1348",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12507",
       "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x88040u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterSetParticleLifetime(void*)"
     },
     {
       "id": "phys_fn_003590",
@@ -67118,13 +67138,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x88070u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1349",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12508",
       "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88070u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt; NxPhysicsFluidEmitterAbiTests compared all 12 callback rows through both the test probe and the rebuilt candidate DLL against the pinned oracle (24 candidate callback observations). Each row-specific emitter-handle XOR mutation was caught with mismatches=1 and exit=1; the byte-restored control reports cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0 and exit=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxNpFluidEmitterGetParticleLifetime(void*)"
     },
     {
       "id": "phys_fn_003592",
@@ -71373,12 +71395,14 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8c9f0u)",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1849",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12920",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8c9f0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; The registered attribute fixture exercised this public getter through the rebuilt candidate DLL and test probe against the pinned oracle; callback arguments and the returned float bits matched. See evidence/phase7-fluid-emitter-attributes-003569-003591.md.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getDimensionX() const"
     },
     {
       "id": "phys_fn_003827",
@@ -71409,12 +71433,14 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8ca20u)",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1850",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12921",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ca20u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; The registered attribute fixture exercised this public getter through the rebuilt candidate DLL and test probe against the pinned oracle; callback arguments and the returned float bits matched. See evidence/phase7-fluid-emitter-attributes-003569-003591.md.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getDimensionY() const"
     },
     {
       "id": "phys_fn_003829",
@@ -71444,13 +71470,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1433",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12922",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests called the public wrapper through both the test probe and rebuilt candidate DLL against the pinned oracle. A wrapper no-op mutation was detected by the registered attribute cases (mismatches=3); restored control: cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/wrapper-mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::setRandomPos"
     },
     {
       "id": "phys_fn_003831",
@@ -71480,13 +71508,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1434",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12927",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests called the public wrapper through both the test probe and rebuilt candidate DLL against the pinned oracle. A wrapper no-op mutation was detected by the registered attribute cases (mismatches=7); restored control: cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/wrapper-mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getRandomPos"
     },
     {
       "id": "phys_fn_003833",
@@ -71516,13 +71546,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1435",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12928",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests called the public wrapper through both the test probe and rebuilt candidate DLL against the pinned oracle. A wrapper no-op mutation was detected by the registered attribute cases (mismatches=3); restored control: cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/wrapper-mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::setRandomAngle"
     },
     {
       "id": "phys_fn_003835",
@@ -71553,12 +71585,14 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8cbf0u)",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1854",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12933",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cbf0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; The registered attribute fixture exercised this public getter through the rebuilt candidate DLL and test probe against the pinned oracle; callback arguments and the returned float bits matched. See evidence/phase7-fluid-emitter-attributes-003569-003591.md.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getRandomAngle() const"
     },
     {
       "id": "phys_fn_003837",
@@ -71588,13 +71622,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1436",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12934",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests called the public wrapper through both the test probe and rebuilt candidate DLL against the pinned oracle. A wrapper no-op mutation was detected by the registered attribute cases (mismatches=3); restored control: cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/wrapper-mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::setFluidVelocityMagnitude"
     },
     {
       "id": "phys_fn_003839",
@@ -71625,12 +71661,14 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8ccd0u)",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1856",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12939",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ccd0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; The registered attribute fixture exercised this public getter through the rebuilt candidate DLL and test probe against the pinned oracle; callback arguments and the returned float bits matched. See evidence/phase7-fluid-emitter-attributes-003569-003591.md.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getFluidVelocityMagnitude() const"
     },
     {
       "id": "phys_fn_003841",
@@ -71660,13 +71698,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1437",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12940",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests called the public wrapper through both the test probe and rebuilt candidate DLL against the pinned oracle. A wrapper no-op mutation was detected by the registered attribute cases (mismatches=3); restored control: cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/wrapper-mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::setRate"
     },
     {
       "id": "phys_fn_003843",
@@ -71697,12 +71737,14 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8cdb0u)",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1858",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12945",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cdb0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; The registered attribute fixture exercised this public getter through the rebuilt candidate DLL and test probe against the pinned oracle; callback arguments and the returned float bits matched. See evidence/phase7-fluid-emitter-attributes-003569-003591.md.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getRate() const"
     },
     {
       "id": "phys_fn_003845",
@@ -71732,13 +71774,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1438",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12946",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests called the public wrapper through both the test probe and rebuilt candidate DLL against the pinned oracle. A wrapper no-op mutation was detected by the registered attribute cases (mismatches=3); restored control: cases=12, candidate_dll_cases=12, callbacks=24, mismatches=0. Raw logs: evidence/raw/phase7-fluid-emitter-attributes-003569-003591/wrapper-mutations.txt",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::setParticleLifetime"
     },
     {
       "id": "phys_fn_003847",
@@ -71769,12 +71813,14 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8ce90u)",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1860",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12951",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ce90u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; The registered attribute fixture exercised this public getter through the rebuilt candidate DLL and test probe against the pinned oracle; callback arguments and the returned float bits matched. See evidence/phase7-fluid-emitter-attributes-003569-003591.md.",
+      "notes": "",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::getParticleLifetime() const"
     },
     {
       "id": "phys_fn_003849",

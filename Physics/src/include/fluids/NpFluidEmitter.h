@@ -41,6 +41,24 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	virtual NxMat33 getLocalOrientationVal() const;
 	//! phys_fn_003622 sets or clears the emitter's actor-relative frame.
 	virtual void setFrameActor(NxActor* actor);
+	//! phys_fn_003569/003571 route dimension reads to the fluid backend.
+	virtual NxReal getDimensionX() const;
+	virtual NxReal getDimensionY() const;
+	//! phys_fn_003573/003575 route random-position writes and reads.
+	virtual void setRandomPos(NxVec3 value);
+	virtual NxVec3 getRandomPos() const;
+	//! phys_fn_003577/003579 route random-angle writes and reads.
+	virtual void setRandomAngle(NxReal value);
+	virtual NxReal getRandomAngle() const;
+	//! phys_fn_003581/003583 route emitted-particle speed writes and reads.
+	virtual void setFluidVelocityMagnitude(NxReal value);
+	virtual NxReal getFluidVelocityMagnitude() const;
+	//! phys_fn_003585/003587 route emission-rate writes and reads.
+	virtual void setRate(NxReal value);
+	virtual NxReal getRate() const;
+	//! phys_fn_003589/003591 route particle-lifetime writes and reads.
+	virtual void setParticleLifetime(NxReal value);
+	virtual NxReal getParticleLifetime() const;
 
 	//! phys_fn_003850/003852: the bitfield is stored at internal emitter +0x10.
 	virtual void setFlag(NxFluidEmitterFlag flag, bool enabled);

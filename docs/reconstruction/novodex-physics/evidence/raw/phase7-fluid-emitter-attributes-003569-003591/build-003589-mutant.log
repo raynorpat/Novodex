@@ -1,0 +1,13 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-emitter-constructor\Novodex\build\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-emitter-constructor\Novodex\build\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-emitter-constructor\Novodex\build\External\Release\NxQhull.lib
+  NpFluidEmitter.cpp
+     Creating library C:/Users/raynorpat/.codex/worktrees/fluid-emitter-constructor/Novodex/build/Release/NxPhysics.lib and object C:/Users/raynorpat/.codex/worktrees/fluid-emitter-constructor/Novodex/build/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-emitter-constructor\Novodex\build\Release\NxPhysics.dll
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-emitter-constructor\Novodex\build\Release\FluidModel.dll
+  NpFluidEmitter.cpp
+  NxPhysicsFluidEmitterAbiTests.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-emitter-constructor\Novodex\build\Release\NxPhysicsFluidEmitterAbiTests.exe
+  Staging NxPhysics.dll under a distinct module name for direct DLL-row testing

@@ -1,6 +1,9 @@
 #include "fluids/NpFluidEmitter.h"
 #include "NpSceneGuard.h"
 #ifndef NX_FLUID_EMITTER_ABI_TEST
+#include "NxApiReentry.h"
+#endif
+#ifndef NX_FLUID_EMITTER_ABI_TEST
 #include "FoundationSDK.h"
 #endif
 #include "NxMat34.h"
@@ -12,6 +15,7 @@
 
 #ifdef NX_FLUID_EMITTER_ABI_TEST
 extern "C" void __cdecl nxFluidEmitterAbiUnexpectedWriteLockFailure(unsigned);
+extern "C" void __cdecl nxFluidEmitterAbiUnexpectedReentryFailure(unsigned);
 #endif
 
 static void nxFluidEmitterReportWriteLocked(unsigned line)
@@ -23,6 +27,186 @@ static void nxFluidEmitterReportWriteLocked(unsigned line)
 		NX_NPFLUIDEMITTER_CPP, line, 0,
 		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 #endif
+	}
+
+static void nxFluidEmitterReportReentry(unsigned line)
+	{
+#ifdef NX_FLUID_EMITTER_ABI_TEST
+	nxFluidEmitterAbiUnexpectedReentryFailure(line);
+#else
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+		NX_NPFLUIDEMITTER_CPP, line, 0,
+		"Reentry check: You may not call this API method from a callback!");
+#endif
+	}
+
+static bool nxFluidEmitterReentryIsActive()
+	{
+#ifdef NX_FLUID_EMITTER_ABI_TEST
+	return false;
+#else
+	return nxApiReentryIsActive();
+#endif
+	}
+
+static void nxFluidEmitterSetReentryActive(bool active)
+	{
+#ifndef NX_FLUID_EMITTER_ABI_TEST
+	nxSetApiReentryActive(active);
+#else
+	(void)active;
+#endif
+	}
+
+struct NxFluidEmitterBackendArgs
+	{
+	unsigned context;
+	unsigned fluid;
+	unsigned emitter;
+	};
+
+static NxFluidEmitterBackendArgs nxFluidEmitterBackendArguments(void* internal)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	unsigned char* fluid = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(bytes + 4));
+	unsigned char* backend = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(fluid + 0x7c));
+	NxFluidEmitterBackendArgs args;
+	args.context = *reinterpret_cast<unsigned*>(backend + 0x30);
+	args.fluid = *reinterpret_cast<unsigned*>(fluid + 0x80);
+	args.emitter = *reinterpret_cast<unsigned*>(bytes + 8);
+	return args;
+	}
+
+// These helpers reproduce phys_fn_003569 through phys_fn_003591. They are
+// intentionally separate so each callback row can be mutation-tested alone.
+extern "C" float __cdecl nxNpFluidEmitterGetDimensionX(void* internal)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef float (__cdecl *Callback)(unsigned, unsigned, unsigned);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterGetDimensionX"));
+	return callback(args.context, args.fluid, args.emitter);
+	}
+
+extern "C" float __cdecl nxNpFluidEmitterGetDimensionY(void* internal)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef float (__cdecl *Callback)(unsigned, unsigned, unsigned);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterGetDimensionY"));
+	return callback(args.context, args.fluid, args.emitter);
+	}
+
+extern "C" int __cdecl nxNpFluidEmitterSetRandomPos(void* internal,
+	const NxVec3* value)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef int (__cdecl *Callback)(unsigned, unsigned, unsigned, const float*);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterSetRandomPos"));
+	return callback(args.context, args.fluid, args.emitter,
+		reinterpret_cast<const float*>(value));
+	}
+
+extern "C" void* __cdecl nxNpFluidEmitterGetRandomPos(void* internal,
+	void* output)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef const float* (__cdecl *Callback)(unsigned, unsigned, unsigned);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterGetRandomPos"));
+	const float* value = callback(args.context, args.fluid, args.emitter);
+	memcpy(output, value, 3 * sizeof(unsigned));
+	return output;
+	}
+
+extern "C" int __cdecl nxNpFluidEmitterSetRandomAngle(void* internal,
+	float value)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef int (__cdecl *Callback)(unsigned, unsigned, unsigned, float);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterSetRandomAngle"));
+	return callback(args.context, args.fluid, args.emitter, value);
+	}
+
+extern "C" float __cdecl nxNpFluidEmitterGetRandomAngle(void* internal)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef float (__cdecl *Callback)(unsigned, unsigned, unsigned);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterGetRandomAngle"));
+	return callback(args.context, args.fluid, args.emitter);
+	}
+
+extern "C" int __cdecl nxNpFluidEmitterSetFluidVelocityMagnitude(
+	void* internal, float value)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef int (__cdecl *Callback)(unsigned, unsigned, unsigned, float);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterSetFluidVelocityMagnitude"));
+	return callback(args.context, args.fluid, args.emitter, value);
+	}
+
+extern "C" float __cdecl nxNpFluidEmitterGetFluidVelocityMagnitude(void* internal)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef float (__cdecl *Callback)(unsigned, unsigned, unsigned);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterGetFluidVelocityMagnitude"));
+	return callback(args.context, args.fluid, args.emitter);
+	}
+
+extern "C" int __cdecl nxNpFluidEmitterSetRate(void* internal, float value)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef int (__cdecl *Callback)(unsigned, unsigned, unsigned, float);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterSetRate"));
+	return callback(args.context, args.fluid, args.emitter, value);
+	}
+
+extern "C" float __cdecl nxNpFluidEmitterGetRate(void* internal)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef float (__cdecl *Callback)(unsigned, unsigned, unsigned);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterGetRate"));
+	return callback(args.context, args.fluid, args.emitter);
+	}
+
+extern "C" int __cdecl nxNpFluidEmitterSetParticleLifetime(void* internal,
+	float value)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef int (__cdecl *Callback)(unsigned, unsigned, unsigned, float);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterSetParticleLifetime"));
+	return callback(args.context, args.fluid, args.emitter, value);
+	}
+
+extern "C" float __cdecl nxNpFluidEmitterGetParticleLifetime(void* internal)
+	{
+	NxFluidEmitterBackendArgs args = nxFluidEmitterBackendArguments(internal);
+	typedef float (__cdecl *Callback)(unsigned, unsigned, unsigned);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	Callback callback = reinterpret_cast<Callback>(GetProcAddress(module,
+		"EmitterGetParticleLifetime"));
+	return callback(args.context, args.fluid, args.emitter);
 	}
 
 // phys_fn_003593 (0x00088090) owns the internal bitfield transition. The
@@ -567,6 +751,170 @@ void NpFluidEmitter::setFrameActor(NxActor* actor)
 		}
 	nxNpFluidEmitterSetActor(mInternal, actor);
 	nxNpSceneGuardLeave(link);
+	}
+
+NxReal NpFluidEmitter::getDimensionX() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	const float value = nxNpFluidEmitterGetDimensionX(mInternal);
+	nxNpSceneGuardLeave(link);
+	return value;
+	}
+
+NxReal NpFluidEmitter::getDimensionY() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	const float value = nxNpFluidEmitterGetDimensionY(mInternal);
+	nxNpSceneGuardLeave(link);
+	return value;
+	}
+
+void NpFluidEmitter::setRandomPos(NxVec3 value)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(149);
+		return;
+		}
+	if(nxFluidEmitterReentryIsActive())
+		{
+		nxFluidEmitterReportReentry(150);
+		nxNpSceneGuardLeave(link);
+		return;
+		}
+	nxFluidEmitterSetReentryActive(true);
+	nxNpFluidEmitterSetRandomPos(mInternal, &value);
+	nxFluidEmitterSetReentryActive(false);
+	nxNpSceneGuardLeave(link);
+	}
+
+NxVec3 NpFluidEmitter::getRandomPos() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	NxVec3 value;
+	nxNpFluidEmitterGetRandomPos(mInternal, &value);
+	nxNpSceneGuardLeave(link);
+	return value;
+	}
+
+void NpFluidEmitter::setRandomAngle(NxReal value)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(163);
+		return;
+		}
+	if(nxFluidEmitterReentryIsActive())
+		{
+		nxFluidEmitterReportReentry(164);
+		nxNpSceneGuardLeave(link);
+		return;
+		}
+	nxFluidEmitterSetReentryActive(true);
+	nxNpFluidEmitterSetRandomAngle(mInternal, value);
+	nxFluidEmitterSetReentryActive(false);
+	nxNpSceneGuardLeave(link);
+	}
+
+NxReal NpFluidEmitter::getRandomAngle() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	const float value = nxNpFluidEmitterGetRandomAngle(mInternal);
+	nxNpSceneGuardLeave(link);
+	return value;
+	}
+
+void NpFluidEmitter::setFluidVelocityMagnitude(NxReal value)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(177);
+		return;
+		}
+	if(nxFluidEmitterReentryIsActive())
+		{
+		nxFluidEmitterReportReentry(178);
+		nxNpSceneGuardLeave(link);
+		return;
+		}
+	nxFluidEmitterSetReentryActive(true);
+	nxNpFluidEmitterSetFluidVelocityMagnitude(mInternal, value);
+	nxFluidEmitterSetReentryActive(false);
+	nxNpSceneGuardLeave(link);
+	}
+
+NxReal NpFluidEmitter::getFluidVelocityMagnitude() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	const float value = nxNpFluidEmitterGetFluidVelocityMagnitude(mInternal);
+	nxNpSceneGuardLeave(link);
+	return value;
+	}
+
+void NpFluidEmitter::setRate(NxReal value)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(191);
+		return;
+		}
+	if(nxFluidEmitterReentryIsActive())
+		{
+		nxFluidEmitterReportReentry(192);
+		nxNpSceneGuardLeave(link);
+		return;
+		}
+	nxFluidEmitterSetReentryActive(true);
+	nxNpFluidEmitterSetRate(mInternal, value);
+	nxFluidEmitterSetReentryActive(false);
+	nxNpSceneGuardLeave(link);
+	}
+
+NxReal NpFluidEmitter::getRate() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	const float value = nxNpFluidEmitterGetRate(mInternal);
+	nxNpSceneGuardLeave(link);
+	return value;
+	}
+
+void NpFluidEmitter::setParticleLifetime(NxReal value)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(204);
+		return;
+		}
+	if(nxFluidEmitterReentryIsActive())
+		{
+		nxFluidEmitterReportReentry(205);
+		nxNpSceneGuardLeave(link);
+		return;
+		}
+	nxFluidEmitterSetReentryActive(true);
+	nxNpFluidEmitterSetParticleLifetime(mInternal, value);
+	nxFluidEmitterSetReentryActive(false);
+	nxNpSceneGuardLeave(link);
+	}
+
+NxReal NpFluidEmitter::getParticleLifetime() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	const float value = nxNpFluidEmitterGetParticleLifetime(mInternal);
+	nxNpSceneGuardLeave(link);
+	return value;
 	}
 
 // phys_fn_003792 (0x0008c2d0). The oracle first installs the interface and
