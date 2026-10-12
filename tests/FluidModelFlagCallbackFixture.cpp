@@ -44,6 +44,9 @@ struct NxFluidManagerCallbackSummary
 
 static NxFluidManagerCallbackSummary gFluidManagerCallbackSummary;
 static unsigned char gFluidStaticCollision[0x200];
+static void* gFluidManagerOldStaticCollision = gFluidStaticCollision;
+static void* gFluidManagerReplacementStaticCollision = gFluidStaticCollision;
+static unsigned gFluidManagerStaticCollisionGetIndex;
 static unsigned char gFluidManagerBackend;
 static unsigned char gFluidBackendHandles[16];
 
@@ -78,7 +81,7 @@ extern "C" __declspec(dllexport) void __cdecl StaticCollisionCreate(void* state)
 
 extern "C" __declspec(dllexport) void __cdecl StaticCollisionDestroy(void* state)
 	{
-	if(state == gFluidStaticCollision)
+	if(state == gFluidManagerOldStaticCollision)
 		++gFluidManagerCallbackSummary.staticCollisionDestroy;
 	}
 
@@ -204,6 +207,15 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	{
 	ZeroMemory(&gFluidManagerCallbackSummary, sizeof(gFluidManagerCallbackSummary));
 	ZeroMemory(gFluidStaticCollision, sizeof(gFluidStaticCollision));
+	gFluidManagerStaticCollisionGetIndex = 0;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxSetFluidManagerStaticCollisions(
+	void* oldCollision, void* replacementCollision)
+	{
+	gFluidManagerOldStaticCollision = oldCollision;
+	gFluidManagerReplacementStaticCollision = replacementCollision;
+	gFluidManagerStaticCollisionGetIndex = 0;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxGetFluidManagerCallbackSummary(
@@ -231,7 +243,8 @@ extern "C" __declspec(dllexport) void* __cdecl FluidManagerGetStaticCollision(
 	if(manager != &gFluidManagerBackend)
 		return 0;
 	++gFluidManagerCallbackSummary.staticCollisionGet;
-	return gFluidStaticCollision;
+	return gFluidManagerStaticCollisionGetIndex++ == 0
+		? gFluidManagerOldStaticCollision : gFluidManagerReplacementStaticCollision;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetCellSize(

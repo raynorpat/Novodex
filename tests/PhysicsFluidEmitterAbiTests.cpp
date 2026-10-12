@@ -6703,6 +6703,10 @@ int wmain(int argc, wchar_t** argv)
 		ResetManagerCallbacksFn resetManagerCallbacks = reinterpret_cast<
 			ResetManagerCallbacksFn>(GetProcAddress(fluidModel,
 				"NxResetFluidManagerCallbacks"));
+		typedef void (__cdecl *SetManagerCollisionsFn)(void*, void*);
+		SetManagerCollisionsFn setManagerCollisions = reinterpret_cast<
+			SetManagerCollisionsFn>(GetProcAddress(fluidModel,
+				"NxSetFluidManagerStaticCollisions"));
 		GetManagerCallbackSummaryFn getManagerCallbackSummary = reinterpret_cast<
 			GetManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
 				"NxGetFluidManagerCallbackSummary"));
@@ -6710,7 +6714,7 @@ int wmain(int argc, wchar_t** argv)
 			GetStaticCollisionFn>(GetProcAddress(fluidModel,
 				"FluidManagerGetStaticCollision"));
 		void* candidateManagerStepAddress = 0;
-		const bool probesReady = resetManagerCallbacks &&
+		const bool probesReady = resetManagerCallbacks && setManagerCollisions &&
 			getManagerCallbackSummary && getStaticCollision &&
 			nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 				"@nxFluidManagerStep@12", &candidateManagerStepAddress);
@@ -6773,7 +6777,13 @@ int wmain(int argc, wchar_t** argv)
 			*reinterpret_cast<void**>(candidateManager + 0x30) = backendManager;
 			oracleManager[0x2b] = candidateManager[0x2b] = 1;
 			oracleManager[0x28] = candidateManager[0x28] = 1;
-			void* const staticCollision = getStaticCollision(backendManager);
+			unsigned char oracleOldCollision[0xa0], oracleReplacementCollision[0xa0];
+			unsigned char candidateOldCollision[0xa0], candidateReplacementCollision[0xa0];
+			memset(oracleOldCollision, 0xab, sizeof(oracleOldCollision));
+			memset(oracleReplacementCollision, 0xcd, sizeof(oracleReplacementCollision));
+			memset(candidateOldCollision, 0xab, sizeof(candidateOldCollision));
+			memset(candidateReplacementCollision, 0xcd, sizeof(candidateReplacementCollision));
+			setManagerCollisions(oracleOldCollision, oracleReplacementCollision);
 			resetManagerCallbacks();
 			const unsigned timestepWord = 0x3eaaaaabu;
 			const float dirtyTimestep = *reinterpret_cast<const float*>(&timestepWord);
@@ -6786,14 +6796,19 @@ int wmain(int argc, wchar_t** argv)
 			__asm fstp st(0)
 			FluidManagerCallbackSummary oracleRefresh = {};
 			getManagerCallbackSummary(&oracleRefresh);
+			const unsigned oracleScale = *reinterpret_cast<unsigned*>(
+				oracleReplacementCollision + 0x64);
+			const unsigned oracleMargin = *reinterpret_cast<unsigned*>(
+				oracleReplacementCollision + 0x68);
+			unsigned char untouchedOldCollision[sizeof(oracleOldCollision)];
+			memset(untouchedOldCollision, 0xab, sizeof(untouchedOldCollision));
+			const bool oracleOldPreserved = memcmp(oracleOldCollision,
+				untouchedOldCollision, sizeof(oracleOldCollision)) == 0;
 			NxFluidRunCallbackRecord oracleRuns[2] = {};
 			const bool oracleRunsOk = fluidRunCount() == 2 &&
 				getFluidRun(0, &oracleRuns[0]) && getFluidRun(1, &oracleRuns[1]);
 			const unsigned oracleFlag = oracleManager[0x28];
-			const unsigned oracleScale = *reinterpret_cast<unsigned*>(
-				static_cast<unsigned char*>(staticCollision) + 0x64);
-			const unsigned oracleMargin = *reinterpret_cast<unsigned*>(
-				static_cast<unsigned char*>(staticCollision) + 0x68);
+			setManagerCollisions(candidateOldCollision, candidateReplacementCollision);
 			resetManagerCallbacks();
 			resetRun();
 			__asm mov candidateEspBefore, esp
@@ -6802,23 +6817,27 @@ int wmain(int argc, wchar_t** argv)
 			__asm fstp st(0)
 			FluidManagerCallbackSummary candidateRefresh = {};
 			getManagerCallbackSummary(&candidateRefresh);
+			const unsigned candidateScale = *reinterpret_cast<unsigned*>(
+				candidateReplacementCollision + 0x64);
+			const unsigned candidateMargin = *reinterpret_cast<unsigned*>(
+				candidateReplacementCollision + 0x68);
+			const bool candidateOldPreserved = memcmp(candidateOldCollision,
+				untouchedOldCollision, sizeof(candidateOldCollision)) == 0;
+			const bool replacementBuilt = oracleScale == 0x40800000u &&
+				oracleMargin == 0x408ab2dcu && candidateScale == oracleScale &&
+				candidateMargin == oracleMargin;
 			NxFluidRunCallbackRecord candidateRuns[2] = {};
 			const bool candidateRunsOk = fluidRunCount() == 2 &&
 				getFluidRun(0, &candidateRuns[0]) && getFluidRun(1, &candidateRuns[1]);
 			const unsigned candidateFlag = candidateManager[0x28];
-			const unsigned candidateScale = *reinterpret_cast<unsigned*>(
-				static_cast<unsigned char*>(staticCollision) + 0x64);
-			const unsigned candidateMargin = *reinterpret_cast<unsigned*>(
-				static_cast<unsigned char*>(staticCollision) + 0x68);
 			const bool callbacksMatch = oracleRefresh.staticCollisionGet == 2 &&
 				candidateRefresh.staticCollisionGet == oracleRefresh.staticCollisionGet &&
 				oracleRefresh.staticCollisionDestroy == 1 &&
 				candidateRefresh.staticCollisionDestroy == oracleRefresh.staticCollisionDestroy &&
 				oracleRefresh.staticCollisionCreate == 1 &&
 				candidateRefresh.staticCollisionCreate == oracleRefresh.staticCollisionCreate;
-			const bool dataMatch = oracleScale == 0x40800000u &&
-				oracleMargin == 0x408ab2dcu && candidateScale == oracleScale &&
-				candidateMargin == oracleMargin;
+			const bool dataMatch = replacementBuilt && oracleOldPreserved &&
+				candidateOldPreserved;
 			unsigned fluidMismatches = !oracleRunsOk || !candidateRunsOk;
 			for(unsigned i = 0; i != 2 && oracleRunsOk && candidateRunsOk; ++i)
 				{
@@ -6843,6 +6862,8 @@ int wmain(int argc, wchar_t** argv)
 				fluidMismatches ||
 				oracleEspBefore != oracleEspAfter ||
 				candidateEspBefore != candidateEspAfter;
+			printf("fluid manager replacement-buffer built=%u old-preserved=%u\n",
+				replacementBuilt, oracleOldPreserved && candidateOldPreserved);
 		printf("fluid manager dirty-refresh get=%u destroy=%u create=%u data=%u flag=%u fluids=%u/%u callbacks=%u timestep=%u state=%u stack=%u/%u mismatches=%u\n",
 				oracleRefresh.staticCollisionGet == 2 && candidateRefresh.staticCollisionGet == 2,
 				oracleRefresh.staticCollisionDestroy == 1 && candidateRefresh.staticCollisionDestroy == 1,

@@ -12,14 +12,22 @@ cell size `0.5`, an empty scene shape collection, and two distinct live fluids.
 It checks two static collision lookups, one destroy, one builder
 initialization, the collision grid scale and margin, dirty-byte clearing,
 both ordered `FluidRun` payloads and state clears, return value, and x86 stack
-balance. The marker is:
+balance. The fixture returns distinct old and replacement buffers. The test
+checks the rebuilt scale and margin in the replacement and byte-compares the
+old buffer against its original poison. The new coverage marker is:
 
 ```text
 fluid manager dirty-refresh get=1 destroy=1 create=1 data=1 flag=1 fluids=2/2 callbacks=1 timestep=1 state=1 stack=1/1 mismatches=0
 ```
 
-A mutation that suppresses the candidate dirty branch is rejected by the same
-test (`get=0 destroy=0 create=0 data=0 flag=0`, one mismatch, exit 1). After
-restoration, the full Phase 7 gate passes with 1,698 evaluated assertions
-against a 1,697 floor. The direct probe reports zero mismatches, and the clean
-two-fluid differential remains registered as an independent branch control.
+A wrong-target mutation that rebuilds into the old buffer is rejected by the
+same test (`built=0 old-preserved=0`, `data=0`, one mismatch, exit 1). The
+restored candidate reports `built=1 old-preserved=1` and zero mismatches. The
+existing dirty-branch suppression mutation remains covered by the prior proof.
+Fresh Release gates pass: Phase 5 evaluates 2,672/2,672 coverage assertions
+and Phase 7 evaluates 1,702/1,702. The oracle-only transcript digest is
+unchanged; only the pinned `PhysicsFluidEmitterAbiTests.cpp` fixture-source
+hash was updated. The clean two-fluid differential remains registered as an
+independent branch control. Raw Phase 5/7 logs and wrong-target mutation /
+restored-control logs are retained under
+`evidence/raw/phase7-fluid-manager-dirty-refresh-003630/`.

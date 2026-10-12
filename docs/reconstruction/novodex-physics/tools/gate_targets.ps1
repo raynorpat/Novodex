@@ -138,6 +138,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid substep nonempty-emitter cases=1 pose_callback=1 fluid_run=1 payloads_match=1 timestep=1 state-clear=1 repulsion-skipped=1 stack=1/1 mismatches=0'
 		'fluid manager step live-fluids=2 oracle_callbacks=2 candidate_callbacks=2 order=1 timestep=1 state=1 stack=1/1 mismatches=0'
 		'fluid manager dirty-refresh get=1 destroy=1 create=1 data=1 flag=1 fluids=2/2 callbacks=1 timestep=1 state=1 stack=1/1 mismatches=0'
+		'fluid manager replacement-buffer built=1 old-preserved=1'
 		'implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0'
 		'implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0'
         'fluid emitter aggregate cases=6 mismatches=0'
@@ -5846,7 +5847,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2671  # includes enabled FluidModel create/list/release fixture differential
+	'5' = 2672  # includes distinct dirty-manager replacement-buffer coverage
+				# includes enabled FluidModel create/list/release fixture differential
 				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
@@ -5906,7 +5908,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1701  # includes the allocator release target's three required lines
+	'7' = 1702  # includes distinct dirty-manager replacement-buffer coverage
+				# includes the allocator release target's three required lines
 				# includes enabled FluidModel create/list/release fixture differential
 				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
