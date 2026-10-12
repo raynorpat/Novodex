@@ -10453,3 +10453,8 @@ Phase 7 closure evidence: phys_fn_003547 appends the box geometry words at +0xe4
 The direct pinned-oracle `NxPhysicsFluidEmitterAbiTests` fixture now covers the type-0 plane appender's vtable-slot-13 callback, defined four-word record prefix, 96-byte stride, ignored type, descriptor count/return, stack, and untouched tail. The restored candidate matches with `oracle_contract=1`, `stack=1/1`, and `mismatches=0`; shifting the copied scratch window by one word is rejected with `mismatches=1` (mutation proof). Full gate and tooling results are recorded in [the row evidence](phase7-fluid-collision-plane-append-003551.md).
 Mutation evidence for phys_fn_003551: shifting the copied scratch window is detected (mismatches=1).
 Fresh Phase 5 and Phase 7 gates passed at 2,657/2,657 and 1,684/1,684 assertions respectively; all 810 reconstruction-tooling tests passed; inventory remains 6,338 functions, 5,138 data objects, and zero unexplained entries.
+
+## Phase 7 fluid collision mesh-array appender (`phys_fn_003541`)
+
+The direct pinned-oracle `NxPhysicsFluidEmitterAbiTests` fixture covers the valid mesh record and the `-8` mesh-data sentinel. It verifies geometry order `+12,+20,+8,+16`, the defined 92-byte prefix, 96-byte stride, returns, count, stack, and untouched tail. The restored candidate matches (`oracle_contract=1`, `mismatches=0`); sourcing the first geometry word from `+8` is rejected (`mismatches=1`). See [the row evidence](phase7-fluid-collision-mesh-append-003541.md).
+Mutation evidence for phys_fn_003541: the wrong first geometry offset is detected (mismatches=1).

@@ -3022,14 +3022,14 @@
    ],
    "rows": {
     "decompiled": 1,
-    "discovered": 20,
-    "dynamically_gated": 24,
+    "discovered": 19,
+    "dynamically_gated": 25,
     "reconstructed": 20
    },
    "bytes": {
     "decompiled": 233,
-    "discovered": 7094,
-    "dynamically_gated": 6421,
+    "discovered": 6992,
+    "dynamically_gated": 6523,
     "reconstructed": 926
    },
    "phases": {
