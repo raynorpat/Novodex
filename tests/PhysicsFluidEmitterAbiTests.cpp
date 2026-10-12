@@ -2363,12 +2363,14 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 	typedef void* (__cdecl* AppendPlane)(void*, void*);
 	AppendPlane oracle = oracleBase ? reinterpret_cast<AppendPlane>(
 		const_cast<unsigned char*>(oracleBase) + 0x87940) : 0;
-	AppendPlane candidate = reinterpret_cast<AppendPlane>(candidateAddress);
-	if(!oracleBase || !candidateAddress)
+	const bool candidatePresent = candidateAddress != 0;
+	AppendPlane candidate = candidatePresent
+		? reinterpret_cast<AppendPlane>(candidateAddress) : oracle;
+	if(!oracleBase)
 		{
 		printf("fluid collision plane-array append cases=2 selected=1 ignored=1 "
 			"candidate_present=%u oracle_contract=0 stack=0/0 mismatches=1\n",
-			candidateAddress != 0);
+			candidatePresent);
 		return 1;
 		}
 	struct ShapeFixture
@@ -2382,7 +2384,7 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 		unsigned count;
 		unsigned capacity;
 		};
-	unsigned mismatches = 0, oracleContract = 1;
+	unsigned mismatches = candidatePresent ? 0u : 1u, oracleContract = 1;
 	unsigned oracleStackBalanced = 1, candidateStackBalanced = 1;
 	gFluidCollisionPlaneAppendVirtualCalls = 0;
 	for(unsigned test = 0; test != 2; ++test)
@@ -2431,6 +2433,7 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 				0x13579bdfu, 0x2468ace0u, 0x0badf00du, 0xcafebabeu };
 			recordMatches = memcmp(oracleOutput, candidateOutput, sizeof(expected)) == 0
 				&& memcmp(oracleOutput, expected, sizeof(expected)) == 0;
+			oracleContract &= memcmp(oracleOutput, expected, sizeof(expected)) == 0;
 			tailsMatch = memcmp(oracleOutput + 96, candidateOutput + 96,
 				sizeof(oracleOutput) - 96) == 0;
 			}
@@ -2452,8 +2455,9 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 			++mismatches;
 		}
 	printf("fluid collision plane-array append cases=2 selected=1 ignored=1 "
-		"candidate_present=1 oracle_contract=%u stack=%u/%u mismatches=%u\n",
-		oracleContract, oracleStackBalanced, candidateStackBalanced, mismatches);
+		"candidate_present=%u oracle_contract=%u stack=%u/%u mismatches=%u\n",
+		candidatePresent, oracleContract, oracleStackBalanced,
+		candidateStackBalanced, mismatches);
 	return mismatches;
 	}
 
