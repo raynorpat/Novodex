@@ -6586,12 +6586,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/119",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1060",
       "static_proof": null,
-      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
+      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound; stdout_delta=2 in the registered NxPhysicsSimulationTests staged-pair mutation/control differential; see evidence/phase7-npscene-timing-wrappers-000338-000340.md",
       "notes": ""
     },
     {
@@ -6622,12 +6622,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked three-pointer copy accessor (0xcb50, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/120",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1063",
       "static_proof": "locks [self+0x10], calls helper 000542 on [self+0x24] which writes [field+0x52c], [field+0x530] and [field+0x534] through the three out pointers, then unlocks; ret 0xc",
-      "dynamic_proof": "confirmed via lockacc6 differential (3z146): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": "confirmed via lockacc6 differential (3z146): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; stdout_delta=4 in the registered NxPhysicsSimulationTests staged-pair mutation/control differential; see evidence/phase7-npscene-timing-wrappers-000338-000340.md",
       "notes": ""
     },
     {

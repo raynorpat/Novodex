@@ -10596,3 +10596,5 @@ Phase 7 NpScene joint and effector lifecycle forwards (2026-10-12): `phys_fn_000
 Phase 7 NpScene getter row `phys_fn_000291` (`NpScene::getGravity`) is mutation-falsified through `NxPhysicsSimulationTests` (`stdout_delta=4`); restored control is exact. See `evidence/phase7-npscene-getgravity-000291.md`.
 
 Phase 7 pair-query wrappers `phys_fn_000317` (`NpScene::getNbPairs`) and `phys_fn_000319` (`NpScene::getPairFlagArray`) are mutation-falsified through `NxPhysicsPairFlagTests` (`stdout_delta=6` and `4` respectively); restored controls are exact. See `evidence/phase7-npscene-pair-query-wrappers-000317-000319.md`.
+
+Phase 7 NpScene timing wrappers `phys_fn_000338` (`setTiming`) and `phys_fn_000340` (`getTiming`) are mutation-falsified through the registered `NxPhysicsSimulationTests` differential (`stdout_delta=2` and `4`); both mutant processes exit zero with exact stderr, and restored control is exact. See `evidence/phase7-npscene-timing-wrappers-000338-000340.md`.

@@ -1686,3 +1686,8 @@ Phase 7 row `phys_fn_000291` (`NpScene::getGravity`) is mutation-falsified throu
 ### Continuation — NpScene pair-query wrappers (2026-10-12)
 
 Phase 7 rows `phys_fn_000317` (`NpScene::getNbPairs`) and `phys_fn_000319` (`NpScene::getPairFlagArray`) are now independently mutation-falsified through `NxPhysicsPairFlagTests`. Suppressing the pair count changes the staged transcript by 6 bytes; returning false instead of copying the pair array changes it by 4 bytes. Both mutants exit zero with exact stderr, and the restored controls are exact. Row 000319 is now mapped to its existing `NpScene::getPairFlagArray` implementation. Phase 7 advances to 186 closed / 375 deferred; the fresh full gate passes at 1,704/1,704 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-pair-query-wrappers-000317-000319.md` and its archived transcripts.
+
+
+### Continuation — NpScene timing wrappers (2026-10-12)
+
+Phase 7 rows `phys_fn_000338` (`setTiming`) and `phys_fn_000340` (`getTiming`) are mutation-falsified through the registered simulation differential. Focused mutations change only the timing fixture outputs (`stdout_delta=2` and `4`); both candidate processes exit zero with exact stderr. Restored control is exact (`stdout_delta=0`). The fresh full Phase 7 gate passes at 1,704/1,704 required assertions. Phase 7 advances to 188 closed / 373 deferred functions (217 reconstructed but unfalsified and 156 unreconstructed).
