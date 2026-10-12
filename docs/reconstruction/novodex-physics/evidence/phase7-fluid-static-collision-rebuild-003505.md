@@ -8,4 +8,16 @@ The scene shape collection is reached at `scene + 0x624`; the internal container
 
 The pinned UE3 directory has no `FluidModel.dll`. `003505` therefore cannot be tested by leaving its named extension callbacks unbound. The oracle fixture must explicitly bind the static-collision constructor, primitive and mesh array growth, bucket/cell/index array creation and copying, and corresponding temporary-array destruction operations. These fixtures provide the callback contracts while keeping the test focused on the reconstructed `NxPhysics.dll` row. SAT, cell growth, and cell lookup fixture operations already exist for the lower-level triangle and association probes.
 
-This is static analysis only. No candidate implementation, direct `003505` differential, mutation, gate closure, or full row reconstruction is claimed yet.
+The lower-level packer row `phys_fn_003540` now has a candidate in
+`Physics/src/FluidCollision.cpp` and a two-case oracle differential in
+`NxPhysicsFluidEmitterAbiTests`. The first run caught a pose-layout mismatch:
+the oracle stores the 3x3 rotation words in column-major order before the
+translation, while the candidate initially copied the source's 3x4 words
+unchanged. Commit `86dad44c` corrected that permutation; both packer cases now
+match, and the fresh Phase 5 gate passes at 2,651/2,651 assertions. See the
+local transcript at
+`build/phase5-approved-destructor-model/phase5-after-pose-order-fix.log`.
+
+This does not close the dirty static-collision rebuild row `003505`. Its
+collection path, array-growth operations, full builder, and row-specific
+mutation differential remain open.
