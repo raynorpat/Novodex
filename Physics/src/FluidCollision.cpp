@@ -554,6 +554,54 @@ extern "C" unsigned __cdecl nxFluidCollisionCellPrefix(void* descriptor)
 	return bucketCount;
 	}
 
+// phys_fn_003511 (RVA 0x00086400) classifies a shape for the static-collision
+// builder and increments its type-specific count. The oracle is thiscall on
+// the builder (`ret 4`); fastcall keeps the builder in ECX and consumes the
+// shape argument from the stack while reserving EDX as the unused fastcall slot.
+extern "C" int __fastcall nxFluidCollisionCountShapeType(void* builder,
+	void*, void* shape)
+	{
+	unsigned char* const builderBytes = static_cast<unsigned char*>(builder);
+	const unsigned short flags =
+		*reinterpret_cast<unsigned short*>(builderBytes + 0xde);
+	if((flags & 0x200u) != 0)
+		return flags & 0x200u;
+
+	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
+	unsigned char* const owner =
+		*reinterpret_cast<unsigned char**>(shapeBytes + 4);
+	if((owner[0x14] & 4u) != 0)
+		return reinterpret_cast<int>(owner);
+
+	const unsigned type = *reinterpret_cast<unsigned*>(shapeBytes + 0xd0);
+	unsigned offset = 0;
+	if((flags & 0x80u) != 0)
+		{
+		switch(type)
+			{
+			case 0: offset = 0x70; break;
+			case 1: offset = 0x7c; break;
+			case 2: offset = 0x94; break;
+			case 3: offset = 0x88; break;
+			default: return static_cast<int>(type);
+			}
+		}
+	else
+		{
+		switch(type)
+			{
+			case 0: offset = 0x34; break;
+			case 1: offset = 0x4c; break;
+			case 2: offset = 0x40; break;
+			case 3: offset = 0x58; break;
+			case 4: offset = 0x04; break;
+			default: return static_cast<int>(type);
+			}
+		}
+	++*reinterpret_cast<unsigned*>(builderBytes + offset);
+	return reinterpret_cast<int>(builder);
+	}
+
 // phys_fn_003540 (RVA 0x00087580) packs the shape pose, selected geometry
 // bounds, and shape handle into a collision-object record. The update bit is
 // the embedded Prunable state at shape +0xa4; its callback is the same owner
