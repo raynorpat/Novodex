@@ -10447,3 +10447,8 @@ Phase 7 closure evidence: phys_fn_003543 appends the sphere geometry word and pa
 Phase 7 closure evidence: phys_fn_003545 appends both capsule geometry words and the packed collision record with an 88-byte stride, returning null for ignored shapes. The direct differential checks distinct +0xe0/+0xe4 words, record prefix, count, return, untouched tail, and x86 stack; replacing the second word with +0xe0 is caught with mismatches=1. Restored control is exact. See evidence/phase7-fluid-collision-capsule-append-003545.md.
 
 Phase 7 closure evidence: phys_fn_003547 appends the box geometry words at +0xe4/+0xe8/+0xec and the packed collision record with a 92-byte stride; other shape types return unchanged. The direct differential checks three distinct geometry words, record prefix, count, return, untouched tail, and x86 stack. The +0xe8 mutation for the third word is caught with mismatches=1. Restored control is exact. See evidence/phase7-fluid-collision-box-append-003547.md.
+
+## Phase 7 fluid collision plane-array appender (`phys_fn_003551`)
+
+The direct pinned-oracle `NxPhysicsFluidEmitterAbiTests` fixture now covers the type-0 plane appender's vtable-slot-13 callback, defined four-word record prefix, 96-byte stride, ignored type, descriptor count/return, stack, and untouched tail. The restored candidate matches with `oracle_contract=1`, `stack=1/1`, and `mismatches=0`; shifting the copied scratch window by one word is rejected with `mismatches=1` (mutation proof). Full gate and tooling results are recorded in [the row evidence](phase7-fluid-collision-plane-append-003551.md).
+Mutation evidence for phys_fn_003551: shifting the copied scratch window is detected (mismatches=1).

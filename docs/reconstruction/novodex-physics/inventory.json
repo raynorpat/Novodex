@@ -66390,13 +66390,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1329",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12467",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/phase7-fluid-collision-plane-append-003551.md",
+      "notes": "Oracle differential and row-specific output-window mutation; see evidence/phase7-fluid-collision-plane-append-003551.md"
     },
     {
       "id": "phys_fn_003552",
