@@ -68154,13 +68154,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1376",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12621",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "The constructor allocates the 0x34-byte manager, initializes both SDK array headers and backend flags, stores its owning scene at +0x24, and conditionally creates an initialized FluidModel manager.",
+      "dynamic_proof": "NxPhysicsSimulationTests creates a fluid manager through the public scene path and checks owner linkage, empty arrays, and initialized/extension flags. Setting candidate owner +0x24 to null produces owner=0, candidate exit=-1073741819, stdout_delta=53, and exact stderr in the registered Phase 7 differential. Restoring the field returns exact output. See evidence/phase7-fluid-manager-constructor-003645.md.",
+      "notes": "Scene-owned FluidManager allocation and initialization are mutation-falsified through the public fluid lifecycle fixture.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?nxSceneCreateFluidManager@@YAPAXPAVNxSceneInternal@@@Z",
+      "candidate_map_reference": {
+        "path": "build/approved-five-family-current/Release/NxPhysics.map",
+        "symbol": "?nxSceneCreateFluidManager@@YAPAXPAVNxSceneInternal@@@Z",
+        "address": "0x100647e0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003646",

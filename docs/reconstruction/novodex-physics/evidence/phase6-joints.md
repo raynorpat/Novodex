@@ -10535,3 +10535,9 @@ Mutation evidence for phys_fn_003641: the registered populated-manager staged pa
 
 The restored map-resolved manager traversal matches six pinned-oracle callbacks; suppressing the candidate dispatch is caught by the direct oracle differential (mismatches=33). See [the row evidence](phase7-fluid-manager-actor-release-003639.md).
 Mutation evidence for phys_fn_003639: suppressing the candidate manager traversal is caught by the direct oracle differential (mismatches=33); restored control matches six callbacks.
+
+
+## Phase 7 fluid manager construction (`phys_fn_003645`)
+
+The public lifecycle fixture checks scene ownership and empty array initialization; clearing candidate owner +0x24 is caught by the registered staged pair (stdout_delta=53). See [the row evidence](phase7-fluid-manager-constructor-003645.md).
+Mutation evidence for phys_fn_003645: the owner-field mutant exits with an access violation and changes staged stdout (stdout_delta=53).
