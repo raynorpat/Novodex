@@ -10550,3 +10550,9 @@ Mutation evidence for phys_fn_003647: the delete-flag free mutant is detected by
 
 Phase 7 Scene row `phys_fn_003628` (fluid shape-change dirty refresh) is mutation-falsified through the public `NxPhysicsSimulationTests` fixture. Zeroing the dirty-byte store causes the enabled static actor add/remove contract to fail; restored staged-pair output is exact. See `evidence/phase7-fluid-shape-change-003628.md`.
 `phys_fn_003628` mutation detection: `stdout_delta=52`.
+
+Phase 7 row `phys_fn_000305` (`NpScene::createController`) is mutation-falsified by the registered `NxPhysicsSimulationTests` staged-pair differential. A null-return mutation suppresses both successful controller creations and is rejected; the restored control is exact. See `evidence/phase7-scene-create-controller-000305.md`.
+`phys_fn_000305` mutation detection: `stdout_delta=51`.
+
+Phase 7 row `phys_fn_000307` (`NpScene::releaseController`) is mutation-falsified by the registered `NxPhysicsSimulationTests` staged-pair differential. Suppressing the forward leaves a stale list link after releasing a non-head controller; the restored control is exact. See `evidence/phase7-scene-release-controller-000307.md`.
+`phys_fn_000307` mutation detection: `stdout_delta=2`.
