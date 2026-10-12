@@ -65534,9 +65534,9 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1308",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12355",
-      "static_proof": null,
+      "static_proof": "IDA decompilation at RVA 0x861b0 (473 bytes) confirms a cdecl static-collision rebuild taking collision state, scene/shape source, rest-particle distance and kernel-radius multiplier. It recreates collision state; writes cell size = multiplier * 8 and margin = rest distance * 13 + 0.001; gathers scene shapes into mesh and primitive arrays; counts mesh triangle cells into 2,048 hash buckets; prefixes cells, builds indexed grid records, prefixes associations, appends mesh/triangle pairs, copies the completed descriptor into collision state, then destroys temporary hash and signed-16-bit cell storage. The scene enumeration helper reads the collection rooted at scene +0x624. Its 003630 caller destroys prior collision state, obtains the static-collision object, calls this builder when the dirty byte is set, and clears that byte after return.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Not implemented or dynamically tested. Its FluidModel callback dependencies are absent from the pinned UE3 binary directory. Required coverage must bind explicit fixture callbacks for static-collision/shape-array lifecycle and exercise both an empty scene and nonempty mesh geometry; the neighboring scene collection and shape-packing rows 003511, 003540-003549 also remain open."
     },
     {
       "id": "phys_fn_003506",
