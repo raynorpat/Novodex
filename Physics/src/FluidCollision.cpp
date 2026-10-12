@@ -834,3 +834,53 @@ extern "C" void* __cdecl nxFluidCollisionAppendMesh(void* descriptor,
 	++*count;
 	return descriptor;
 	}
+
+// phys_fn_003553 (RVA 0x00087a40) routes a shape into the typed collision
+// array selected by its flags and geometry type. Disabled/excluded shapes and
+// owner-managed shapes return before touching any builder array.
+extern "C" void* __cdecl nxFluidCollisionShapeArrayRouter(void* builder,
+	void* shape)
+	{
+	unsigned char* const builderBytes = static_cast<unsigned char*>(builder);
+	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
+	const unsigned short flags =
+		*reinterpret_cast<unsigned short*>(shapeBytes + 0xde);
+	if((flags & 0x200u) != 0)
+		return reinterpret_cast<void*>(flags & 0x200u);
+	unsigned char* const owner =
+		*reinterpret_cast<unsigned char**>(shapeBytes + 4);
+	if((owner[0x14] & 4u) != 0)
+		return owner;
+	const unsigned type = *reinterpret_cast<unsigned*>(shapeBytes + 0xd0);
+	if((flags & 0x80u) != 0)
+		{
+		switch(type)
+			{
+			case 0:
+				return nxFluidCollisionAppendPlane(builderBytes + 0x6c, shape);
+			case 1:
+				return nxFluidCollisionAppendSphere(builderBytes + 0x78, shape);
+			case 2:
+				return nxFluidCollisionAppendBox(builderBytes + 0x90, shape);
+			case 3:
+				return nxFluidCollisionAppendCapsule(builderBytes + 0x84, shape);
+			default:
+				return reinterpret_cast<void*>(type);
+			}
+		}
+	switch(type)
+		{
+		case 0:
+			return nxFluidCollisionAppendPlane(builderBytes + 0x30, shape);
+		case 1:
+			return nxFluidCollisionAppendSphere(builderBytes + 0x48, shape);
+		case 2:
+			return nxFluidCollisionAppendBox(builderBytes + 0x3c, shape);
+		case 3:
+			return nxFluidCollisionAppendCapsule(builderBytes + 0x54, shape);
+		case 4:
+			return nxFluidCollisionAppendMesh(builder, shape);
+		default:
+			return reinterpret_cast<void*>(type);
+		}
+	}
