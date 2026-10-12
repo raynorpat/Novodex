@@ -7,8 +7,8 @@
     "code_bytes": 938498,
     "open_code_rows": 2787,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1783,
-    "source_correspondence_only_rows": 484,
+    "mapped_code_rows": 1787,
+    "source_correspondence_only_rows": 480,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3551,
     "artifact_bytes": 116182,
@@ -178,7 +178,7 @@
         "rows": 561,
         "bytes": 114007,
         "open_rows": 561,
-        "rows_without_implementation_mapping": 352,
+        "rows_without_implementation_mapping": 348,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "decompiled": 2,
@@ -154342,14 +154342,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_003630",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/Scene.cpp",
+        "role": "reconstruction",
+        "symbol": "@nxFluidManagerStep@12",
+        "file_exists": true,
         "oracle_source": "Physics/src/Scene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/approved-five-family-current/Release/NxPhysics.map",
+          "symbol": "@nxFluidManagerStep@12",
+          "address": "0x10067e90",
+          "object": "Scene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -154420,10 +154426,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_003630",
         "rva": "0x00089bd0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -154438,14 +154444,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_003632",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/Scene.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxFluidManagerGenerateSurfaceMeshesDisabled@@YAXPAX@Z",
+        "file_exists": true,
         "oracle_source": "Physics/src/Scene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/approved-five-family-current/Release/NxPhysics.map",
+          "symbol": "?nxFluidManagerGenerateSurfaceMeshesDisabled@@YAXPAX@Z",
+          "address": "0x10061e20",
+          "object": "Scene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -154488,10 +154500,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_003632",
         "rva": "0x00089c80",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -154506,14 +154518,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_003634",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpFluidEmitter.cpp",
+        "role": "reconstruction",
+        "symbol": "_nxNpFluidEmitterGenerateSurfaceMesh",
+        "file_exists": true,
         "oracle_source": "Physics/src/fluids/FluidManager.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/approved-five-family-current/Release/NxPhysics.map",
+          "symbol": "_nxNpFluidEmitterGenerateSurfaceMesh",
+          "address": "0x1003e6c0",
+          "object": "NpFluidEmitter.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -154547,14 +154565,14 @@
       },
       "applicable_contexts": {
         "four_digit_hex_literals": [],
-        "simulation_mentioned": false,
+        "simulation_mentioned": true,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
         "strength": "row_specific_gate_falsification",
         "inventory_state": "dynamically_gated",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
         "ledger_disposition": "closed",
         "ledger_reason": null,
@@ -154562,10 +154580,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_003634",
         "rva": "0x00089cd0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -154736,14 +154754,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_003639",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/Scene.cpp",
+        "role": "reconstruction",
+        "symbol": "_nxNpFluidManagerNotifyReleasedActor",
+        "file_exists": true,
         "oracle_source": "Physics/src/Scene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/approved-five-family-current/Release/NxPhysics.map",
+          "symbol": "_nxNpFluidManagerNotifyReleasedActor",
+          "address": "0x10067ef0",
+          "object": "Scene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -154792,10 +154816,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_003639",
         "rva": "0x00089dc0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -154812,12 +154836,18 @@
       "implementation": {
         "path": "Physics/src/Scene.cpp",
         "role": "reconstruction",
-        "symbol": null,
+        "symbol": "?nxFluidManagerDestroyArrays@@YAXPAX@Z",
         "file_exists": true,
         "oracle_source": "Physics/src/fluids/FluidManager.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/approved-five-family-current/Release/NxPhysics.map",
+          "symbol": "?nxFluidManagerDestroyArrays@@YAXPAX@Z",
+          "address": "0x10061d70",
+          "object": "Scene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -230998,7 +231028,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "04057ebbba0dcae6a1096d8c7ed25a9c9ae2abafc66c2e4599594c6071365bed",
+    "inventory_sha256": "d23dc83e8455e14d96e15dfb40ab7725ef4a9e14647aa65ab50b9895b41a1726",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",

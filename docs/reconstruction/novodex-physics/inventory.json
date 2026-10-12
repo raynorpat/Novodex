@@ -67849,7 +67849,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12581",
       "static_proof": "Partial: the +0x2b == 0 branch reports the exact stepFluids warning; with a clean static-collision flag, the row traverses [manager+4,manager+8) in order and calls 003495 for each fluid. The +0x28 branch obtains and destroys the old collision, reacquires it, rebuilds through 003505 with the step value and stored cell size, and clears the dirty byte.",
       "dynamic_proof": "NxPhysicsSimulationTests preserves the disabled empty-manager warning transcript. NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x89bd0 and the map-resolved candidate with two distinct live fluids and clean collision state; callback order, handles, vectors, timestep bits, state clearing, return, and x86 stack balance match. A combined dirty-branch oracle differential exercises old-collision destruction, replacement lookup/build, dirty-byte clear, and the same two-fluid callback/state loop. Suppressing the candidate refresh makes the combined case fail with one mismatch. See evidence/phase7-fluid-substep-003495-manager-clean-003630.md and evidence/phase7-fluid-manager-dirty-refresh-003630.md.",
-      "notes": "Private x86 thiscall/ret-4 scene-substep row. Clean-collision live-fluid iteration and dirty static-collision refresh are implemented and gated, including a combined dirty-refresh/nonempty-fluid case."
+      "notes": "Private x86 thiscall/ret-4 scene-substep row. Clean-collision live-fluid iteration and dirty static-collision refresh are implemented and gated, including a combined dirty-refresh/nonempty-fluid case.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "@nxFluidManagerStep@12",
+      "candidate_map_reference": {
+        "path": "build/approved-five-family-current/Release/NxPhysics.map",
+        "symbol": "@nxFluidManagerStep@12",
+        "address": "0x10067e90",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003631",
@@ -67883,9 +67891,17 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1370",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12587",
-      "static_proof": "Partial: the disabled-backend branch at +0x2b == 0 emits the generateSurfaceMeshes warning (line 0xea), then iterates the primary fluid array and calls phys_fn_003419 for each live fluid; candidate currently implements only the warning branch.",
-      "dynamic_proof": "NxPhysicsSimulationTests pins a disabled manager with empty arrays, steps two frames, and observes one exact generateSurfaceMeshes warning after stepping as part of the oracle-matching three-warning transcript (build/FluidGate/fluid-step-green.log; Phase 7 1,327/1,327).",
-      "notes": "Only the disabled empty-array warning path is reconstructed. Extension-backed/nonempty-array iteration and fluid callbacks remain open."
+      "static_proof": "The manager reports the exact generateSurfaceMeshes warning when +0x2b is clear, then falls through to the 16-byte continuation phys_fn_003634, which iterates the primary array and dispatches each fluid through phys_fn_003421.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares the oracle manager entry and map-resolved candidate with two live fluids and implicit meshes. The restored differential reports two ordered ImplicitFluidMeshRun callbacks on each side with exact arguments and mismatches=0. Replacing the candidate per-fluid dispatch with an increment-only loop yields oracle_callbacks=2, candidate_callbacks=0, mismatches=3, and exit 1. The disabled empty-array simulation case independently pins the warning path. See evidence/phase7-fluid-manager-surface-mesh-003632-003634.md.",
+      "notes": "Manager warning and continuation into the populated-array traversal are mutation-falsified; per-fluid mesh dispatch is covered by phys_fn_003634.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?nxFluidManagerGenerateSurfaceMeshesDisabled@@YAXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/approved-five-family-current/Release/NxPhysics.map",
+        "symbol": "?nxFluidManagerGenerateSurfaceMeshesDisabled@@YAXPAX@Z",
+        "address": "0x10061e20",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003633",
@@ -67919,9 +67935,17 @@
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1370",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12590",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00089c80"
+      "static_proof": "The per-fluid helper returns zero when internal+0x24 has no implicit-mesh record; otherwise it reads fluid/backend and mesh handles plus triangle count and forwards those values to FluidModel ImplicitFluidMeshRun.",
+      "dynamic_proof": "The registered two-fluid manager differential seeds one live implicit mesh per fluid and checks both ImplicitFluidMeshRun calls and all callback arguments. Replacing the candidate manager dispatch with an increment-only loop makes the oracle report two callbacks and the candidate zero (mismatches=3); restored candidate output is exact. See evidence/phase7-fluid-manager-surface-mesh-003632-003634.md.",
+      "notes": "Per-fluid implicit-mesh callback argument forwarding is covered through both direct helper and populated manager traversal cases; the disabled empty-array warning remains covered by the scene simulation fixture.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "_nxNpFluidEmitterGenerateSurfaceMesh",
+      "candidate_map_reference": {
+        "path": "build/approved-five-family-current/Release/NxPhysics.map",
+        "symbol": "_nxNpFluidEmitterGenerateSurfaceMesh",
+        "address": "0x1003e6c0",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003635",
@@ -68012,7 +68036,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12602",
       "static_proof": "IDA decompilation at RVA 0x89dc0 confirms that, when the manager extension is initialized, the function walks the primary fluid pointer range and invokes the per-fluid release notification for each entry. The disabled manager still warns before the traversal.",
       "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares oracle RVA 0x89dc0 with candidate symbol nxNpFluidManagerNotifyReleasedActor resolved from the candidate map. With one live fluid and three emitters, oracle and candidate each emit six ordered callbacks and produce matching emitter state. Replacing the candidate dispatch with an array increment yields oracle_callbacks=6, candidate_callbacks=0, state_mismatches=27, callback_mismatches=6, mismatches=33, and exit 1. Restored Phase 7 passes at 1,698/1,697 assertions. See evidence/phase7-fluid-manager-actor-release-003639.md.",
-      "notes": "Primary fluid-array actor-release traversal is mutation-falsified against the pinned oracle with live emitter callbacks. Extension backend state beyond the supplied callback fixture remains outside this row proof."
+      "notes": "Primary fluid-array actor-release traversal is mutation-falsified against the pinned oracle with live emitter callbacks. Extension backend state beyond the supplied callback fixture remains outside this row proof.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "_nxNpFluidManagerNotifyReleasedActor",
+      "candidate_map_reference": {
+        "path": "build/approved-five-family-current/Release/NxPhysics.map",
+        "symbol": "_nxNpFluidManagerNotifyReleasedActor",
+        "address": "0x10067ef0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003640",
@@ -68049,7 +68081,14 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12606",
       "static_proof": "IDA decompilation at RVA 0x89e00 shows the manager's vtable reset, iteration over the primary array with a null check and virtual slot-0 call using deleting flag 1, then frees and zeros the secondary and primary array headers. The backend callback is conditional on manager byte +0x2b, which is zero for the pinned disabled backend.",
       "dynamic_proof": "NxPhysicsSimulationTests seeds two fake fluid objects and allocator-owned primary and secondary arrays, then invokes the manager destructor with deleteObject=0. Oracle and candidate dispatch two scalar deleting destructors and clear all six array header words. Disabling the candidate per-fluid deleting dispatch makes the registered Phase 7 staged differential fail (candidate exit=1, stdout_delta=54); restored Phase 7 gate passes with 1,698 assertions against a 1,697 floor. See evidence/phase7-fluid-manager-populated-destructor-003641.md.",
-      "notes": "Pinned disabled-backend populated teardown is mutation-falsified, including primary-array deleting dispatch and array-header clearing. Extension callback dispatch, global extension table reset, and module unload state are not exercised by this build."
+      "notes": "Pinned disabled-backend populated teardown is mutation-falsified, including primary-array deleting dispatch and array-header clearing. Extension callback dispatch, global extension table reset, and module unload state are not exercised by this build.",
+      "implementation_symbol": "?nxFluidManagerDestroyArrays@@YAXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/approved-five-family-current/Release/NxPhysics.map",
+        "symbol": "?nxFluidManagerDestroyArrays@@YAXPAX@Z",
+        "address": "0x10061d70",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003642",
