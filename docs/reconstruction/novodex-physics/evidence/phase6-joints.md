@@ -10556,3 +10556,21 @@ Phase 7 row `phys_fn_000305` (`NpScene::createController`) is mutation-falsified
 
 Phase 7 row `phys_fn_000307` (`NpScene::releaseController`) is mutation-falsified by the registered `NxPhysicsSimulationTests` staged-pair differential. Suppressing the forward leaves a stale list link after releasing a non-head controller; the restored control is exact. See `evidence/phase7-scene-release-controller-000307.md`.
 `phys_fn_000307` mutation detection: `stdout_delta=2`.
+
+Phase 7 wrapper row `phys_fn_000321` (`NpScene::getNbJoints`) is mutation-falsified by the registered `NxPhysicsJointStagedPairTests` differential. See `evidence/phase7-scene-get-nb-joints-wrapper-000321.md`.
+`phys_fn_000321` mutation detection: `stdout_delta=296`.
+
+Phase 7 wrapper row `phys_fn_000323` (`NpScene::resetJointIterator`) is mutation-falsified by the registered `NxPhysicsJointStagedPairTests` differential. See `evidence/phase7-scene-reset-joint-iterator-wrapper-000323.md`.
+`phys_fn_000323` mutation detection: `stdout_delta=296`.
+
+Phase 7 wrapper row `phys_fn_000325` (`NpScene::getNextJoint`) is mutation-falsified by the registered `NxPhysicsJointStagedPairTests` differential. See `evidence/phase7-scene-get-next-joint-wrapper-000325.md`.
+`phys_fn_000325` mutation detection: `stdout_delta=296`.
+
+Phase 7 wrapper row `phys_fn_000327` (`NpScene::getNbEffectors`) is mutation-falsified by the registered `NxPhysicsEffectorTests` differential. See `evidence/phase7-scene-get-nb-effectors-wrapper-000327.md`.
+`phys_fn_000327` mutation detection: `stdout_delta=14`.
+
+Phase 7 wrapper row `phys_fn_000329` (`NpScene::resetEffectorIterator`) is mutation-falsified by the registered `NxPhysicsEffectorTests` differential. See `evidence/phase7-scene-reset-effector-iterator-wrapper-000329.md`.
+`phys_fn_000329` mutation detection: `stdout_delta=14`.
+
+Phase 7 wrapper row `phys_fn_000331` (`NpScene::getNextEffector`) is mutation-falsified by the registered `NxPhysicsEffectorTests` differential. See `evidence/phase7-scene-get-next-effector-wrapper-000331.md`.
+`phys_fn_000331` mutation detection: `stdout_delta=14`.

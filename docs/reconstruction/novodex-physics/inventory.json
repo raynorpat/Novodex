@@ -6246,14 +6246,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/113",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1045",
       "static_proof": "under the lock at [self+0x10], calls the plain field getter phys_fn_000559 (+0x6c8) on [self+0x24] and returns it; the whole row reduces to reading [field+0x6c8]; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "confirmed via lockedget differential (3z139): offset 0x6c8 failures=0, with the Foundation lock API bound to __stdcall no-op stubs; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NpScene::getNbJoints in Physics/src/NpScene.cpp (was an unimplemented body returning 0). The parameterised model stays. Previous source: locked field accessor over 000559 (0xc910).",
-      "implementation": "Physics/src/NpScene.cpp"
+      "dynamic_proof": "NxPhysicsJointStagedPairTests exercises NpScene::getNbJoints through the public scene API; restored oracle/candidate output matches exactly. In a throwaway git archive, the row-specific mutation (Return zero from NpScene::getNbJoints instead of forwarding the Scene count.) is detected by the registered Phase 7 staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=296, exact stderr).",
+      "notes": "The public joint lifecycle fixture checks the scene joint count before and after release. The zero-count mutant is rejected; restored output is exact. See evidence/phase7-scene-get-nb-joints-wrapper-000321.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "getNbJoints"
     },
     {
       "id": "phys_fn_000322",
@@ -6283,14 +6284,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/114",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1046",
       "static_proof": "static review of the recorded shape: tail-jmp mutex link advance; the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NpScene::resetJointIterator in Physics/src/NpScene.cpp (was an empty body). The parameterised model stays. Previous source: tail-jmp mutex link advance.",
-      "implementation": "Physics/src/NpScene.cpp"
+      "dynamic_proof": "NxPhysicsJointStagedPairTests exercises NpScene::resetJointIterator through the public scene API; restored oracle/candidate output matches exactly. In a throwaway git archive, the row-specific mutation (After NpScene::resetJointIterator resets the Scene iterator, advance once past the first joint.) is detected by the registered Phase 7 staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=296, exact stderr).",
+      "notes": "The public joint enumeration fixture checks ordered members and termination. Advancing past the first item is rejected; restored output is exact. See evidence/phase7-scene-reset-joint-iterator-wrapper-000323.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "resetJointIterator"
     },
     {
       "id": "phys_fn_000324",
@@ -6320,14 +6322,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/115",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1047",
       "static_proof": "static review of the recorded shape: locked list-advance accessor (0xc960); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 137 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NpScene::getNextJoint in Physics/src/NpScene.cpp (was an unimplemented body returning 0). The parameterised model stays. Previous source: locked list-advance accessor (0xc960).",
-      "implementation": "Physics/src/NpScene.cpp"
+      "dynamic_proof": "NxPhysicsJointStagedPairTests exercises NpScene::getNextJoint through the public scene API; restored oracle/candidate output matches exactly. In a throwaway git archive, the row-specific mutation (Return null from NpScene::getNextJoint instead of forwarding the Scene iterator result.) is detected by the registered Phase 7 staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=296, exact stderr).",
+      "notes": "The public joint enumeration fixture checks ordered members and termination. The null-return mutant is rejected; restored output is exact. See evidence/phase7-scene-get-next-joint-wrapper-000325.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "getNextJoint"
     },
     {
       "id": "phys_fn_000326",
@@ -6357,14 +6360,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/116",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1049",
       "static_proof": "under the lock at [self+0x10], calls the plain field getter phys_fn_000561 (+0x6c4) on [self+0x24] and returns it; the whole row reduces to reading [field+0x6c4]; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/effector-coredump-contract.md (## Effector) (effector-and-coredump Task 2)",
-      "dynamic_proof": "confirmed via lockedget differential (3z139): offset 0x6c4 failures=0, with the Foundation lock API bound to __stdcall no-op stubs; executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 9 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getNbEffectors@NpScene@@UBEIXZ hit 9 times (Eff 9); equal to the oracle row's count on every target.",
-      "notes": "Product row since effector-and-coredump Task 2 in Physics/src/NpScene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: locked field accessor over 000561 (0xc9a0).",
-      "implementation": "Physics/src/NpScene.cpp"
+      "dynamic_proof": "NxPhysicsEffectorTests exercises NpScene::getNbEffectors through the public scene API; restored oracle/candidate output matches exactly. In a throwaway git archive, the row-specific mutation (Return zero from NpScene::getNbEffectors instead of forwarding the Scene count.) is detected by the registered Phase 7 staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=14, exact stderr).",
+      "notes": "The public effector lifecycle fixture checks scene effectors counts. The zero-count mutant is rejected; restored output is exact. See evidence/phase7-scene-get-nb-effectors-wrapper-000327.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "getNbEffectors"
     },
     {
       "id": "phys_fn_000328",
@@ -6394,14 +6398,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/117",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1050",
       "static_proof": "static review of the recorded shape: tail-jmp mutex link advance; the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/effector-coredump-contract.md (## Effector) (effector-and-coredump Task 2)",
-      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound; executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 9 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?resetEffectorIterator@NpScene@@UAEXXZ hit 9 times (Eff 9); equal to the oracle row's count on every target.",
-      "notes": "Product row since effector-and-coredump Task 2 in Physics/src/NpScene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: tail-jmp mutex link advance.",
-      "implementation": "Physics/src/NpScene.cpp"
+      "dynamic_proof": "NxPhysicsEffectorTests exercises NpScene::resetEffectorIterator through the public scene API; restored oracle/candidate output matches exactly. In a throwaway git archive, the row-specific mutation (After NpScene::resetEffectorIterator resets the Scene iterator, advance once past the first effector.) is detected by the registered Phase 7 staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=14, exact stderr).",
+      "notes": "The public effector fixture checks ordered list contents through create, release, and actor-release transitions. Advancing past the first item is rejected; restored output is exact. See evidence/phase7-scene-reset-effector-iterator-wrapper-000329.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "resetEffectorIterator"
     },
     {
       "id": "phys_fn_000330",
@@ -6431,14 +6436,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/118",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1051",
       "static_proof": "static review of the recorded shape: locked list-advance accessor (0xc9f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/effector-coredump-contract.md (## Effector) (effector-and-coredump Task 2)",
-      "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 20 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?getNextEffector@NpScene@@UAEPAVNxEffector@@XZ hit 20 times (Eff 20); equal to the oracle row's count on every target.",
-      "notes": "Product row since effector-and-coredump Task 2 in Physics/src/NpScene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: locked list-advance accessor (0xc9f0).",
-      "implementation": "Physics/src/NpScene.cpp"
+      "dynamic_proof": "NxPhysicsEffectorTests exercises NpScene::getNextEffector through the public scene API; restored oracle/candidate output matches exactly. In a throwaway git archive, the row-specific mutation (Return null from NpScene::getNextEffector instead of forwarding the Scene iterator result.) is detected by the registered Phase 7 staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=14, exact stderr).",
+      "notes": "The public effector fixture checks ordered list contents through create, release, and actor-release transitions. The null-return mutant is rejected; restored output is exact. See evidence/phase7-scene-get-next-effector-wrapper-000331.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "getNextEffector"
     },
     {
       "id": "phys_fn_000332",

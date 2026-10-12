@@ -1,0 +1,241 @@
+phase=none resolved_targets=NxPhysicsEffectorTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsEffectorTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysics.dll source_sha256=9627524895d219bfb29aa09fa953620956d61e98c4ed05fbf7f5f4370d8a1ad6 staged=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxPhysics.dll staged_sha256=9627524895d219bfb29aa09fa953620956d61e98c4ed05fbf7f5f4370d8a1ad6
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxFoundation.dll source_sha256=620126f8b48ae10a345a85788703ce3103edfa753b89a1df20250f7e5a7715f2 staged=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxFoundation.dll staged_sha256=620126f8b48ae10a345a85788703ce3103edfa753b89a1df20250f7e5a7715f2
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysicsEffectorTests.exe
+child target=NxPhysicsEffectorTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysicsEffectorTests.exe" "C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+export=NxCreatePhysicsSDK present=yes
+sdk=created
+scene=created
+effector start count=0 iterator=none
+effector actors=created,created
+effector fixture rec_a vt=physics observers=0 capacity=0 list=none
+effector fixture rec_b vt=physics observers=0 capacity=0 list=none
+effector fixture rec_a owner=body_a
+effector create allocs=4 sizes=68,18,8,8 frees=0 sizes=none
+effector create created=yes
+effector create np words=physics.00000000.physics.wlink.rlink.eff
+effector create internal vt=physics observers=0 capacity=0 list=none
+effector create internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector hook_dtor primary_same=yes hook_changed=yes read_link_same=yes internal_same=yes
+effector actorpair dtor flag=0 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=0 mismatches=0
+effector actorpair dtor flag=1 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=1 mismatches=0
+effector create rec_a vt=physics observers=1 capacity=2 list=eff
+effector create rec_b vt=physics observers=1 capacity=2 list=eff
+effector create count=1 iterator=np
+effector create is=np slot6=np slot7=np userData_set=5eed0001
+effector create spring=3f000000.3fa00000.40400000.42200000.425c0000 damper=c0200000.3fe00000.40e00000.41180000
+effector set spring=3f400000.40000000.40900000.41480000.41f00000 damper=bfc00000.40500000.3f000000.40c00000
+effector set internal vt=physics observers=0 capacity=0 list=none
+effector set internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000
+effector swap allocs=0 sizes=none frees=0 sizes=none
+effector swap internal vt=physics observers=0 capacity=0 list=none
+effector swap internal words=00000000.scene.np.rec_b.rec_a.c0112dd1.4035dc6d.3ffec990.3f96710b.bf82f9c0.3f47617b.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000
+effector swap rec_a vt=physics observers=1 capacity=2 list=eff
+effector swap rec_b vt=physics observers=1 capacity=2 list=eff
+effector restore allocs=0 sizes=none frees=0 sizes=none
+effector restore internal vt=physics observers=0 capacity=0 list=none
+effector restore internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000
+effector slots rec0 root=rec_a
+effector slots rec0 island=rec_a.00000000.00000000.00000001.3ecccccc.00000000.rec_a.00000000.00000000.00000000.00000000.rec_a.00000000.00000000.00000001.3ecccccc.00000000.rec_a wake=3ecccccc
+effector slots rec1 root=rec_b
+effector slots rec1 island=rec_b.00000000.00000000.00000001.3ecccccc.00000000.rec_b.00000000.00000000.00000000.00000000.rec_b.00000000.00000000.00000001.3ecccccc.00000000.rec_b wake=3ecccccc
+effector slots allocs=0 sizes=none frees=0 sizes=none
+effector slots slots internal changed none
+effector slots slots rec0 changed none
+effector slots slots rec1 changed none
+effector release allocs=0 sizes=none frees=2 sizes=18,68
+effector release count=0 iterator=none
+effector release rec_a vt=physics observers=0 capacity=2 list=none
+effector release rec_b vt=physics observers=0 capacity=2 list=none
+effector cycle1 allocs=2 sizes=68,18 frees=0 sizes=none
+effector cycle1 created=yes
+effector cycle1 np words=physics.00000000.physics.wlink.rlink.eff
+effector cycle1 internal vt=physics observers=0 capacity=0 list=none
+effector cycle1 internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector cycle2 allocs=2 sizes=68,18 frees=0 sizes=none
+effector cycle2 created=yes
+effector cycle2 np words=physics.00000000.physics.wlink.rlink.eff
+effector cycle2 internal vt=physics observers=0 capacity=0 list=none
+effector cycle2 internal words=eff.scene.np.rec_b.rec_a.bfeed232.400bca1a.3f650d78.4033b2de.be8e4bce.3ecdcc20.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector cycle2 count=2 iterator=np2.np1
+effector cycle2 rec_a vt=physics observers=2 capacity=2 list=eff1.eff2
+effector cycle2 rec_b vt=physics observers=2 capacity=2 list=eff1.eff2
+effector cycle_release1 allocs=0 sizes=none frees=2 sizes=18,68
+effector cycle_release1 count=1 iterator=np2
+effector cycle3 allocs=2 sizes=68,18 frees=0 sizes=none
+effector cycle3 created=yes
+effector cycle3 np words=physics.00000000.physics.wlink.rlink.eff
+effector cycle3 internal vt=physics observers=0 capacity=0 list=none
+effector cycle3 internal words=eff2.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector cycle3 count=2 iterator=np3.np2
+effector cycle3 rec_a vt=physics observers=2 capacity=2 list=eff2.eff3
+effector cycle3 rec_b vt=physics observers=2 capacity=2 list=eff2.eff3
+effector actor_release allocs=3 sizes=8,8,8 frees=6 sizes=18,8,260,1c,228,50
+effector actor_release e2 internal vt=physics observers=0 capacity=0 list=none
+effector actor_release e2 internal words=00000000.scene.np2.rec_b.00000000.bfeed232.400bca1a.3f650d78.4033b2de.be8e4bce.3ecdcc20.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector actor_release e3 internal vt=physics observers=0 capacity=0 list=none
+effector actor_release e3 internal words=eff2.scene.np3.00000000.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector actor_release rec_b vt=physics observers=2 capacity=2 list=eff2.eff3
+effector actor_release count=2 iterator=np3.np2
+effector after_actor_release allocs=0 sizes=none frees=2 sizes=18,68
+effector after_actor_release count=1 iterator=np2
+effector after_actor_release rec_b vt=physics observers=1 capacity=2 list=eff2
+effector actors2=created,created
+effector live allocs=4 sizes=68,18,8,8 frees=0 sizes=none
+effector live created=yes
+effector live np words=physics.00000000.physics.wlink.rlink.eff
+effector live internal vt=physics observers=0 capacity=0 list=none
+effector live internal words=eff2.scene.np.rec_c.rec_d.3fdab1cb.bfa9b3b6.c009a579.3fcccccc.c0333333.c0366666.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector live count=2 iterator=np4.np2
+effector scene_release allocs=3 sizes=18,18,18 frees=55 sizes=14,18,20,4,20,4,28,18,8,260,1c,228,50,18,8,260,1c,228,50,18,8,8,260,8,1c,8,228,50,18,68,18,68,400,400,400,400,400,400,400,400,400,400,400,400,a8,18,18,18,10,60,10,3c,18,18,710
+scene=released
+sdk=released
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsEffectorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsEffectorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysicsEffectorTests.exe
+child target=NxPhysicsEffectorTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\Release\NxPhysicsEffectorTests.exe" "C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate" exit=0
+child_stdout_begin
+pair_directory=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate
+modules pair=2 trusted_system=8 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxPhysics.dll sha256=9627524895d219bfb29aa09fa953620956d61e98c4ed05fbf7f5f4370d8a1ad6
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxFoundation.dll sha256=620126f8b48ae10a345a85788703ce3103edfa753b89a1df20250f7e5a7715f2
+export=NxCreatePhysicsSDK present=yes
+sdk=created
+scene=created
+effector start count=0 iterator=none
+effector actors=created,created
+effector fixture rec_a vt=physics observers=0 capacity=0 list=none
+effector fixture rec_b vt=physics observers=0 capacity=0 list=none
+effector fixture rec_a owner=body_a
+effector create allocs=4 sizes=68,18,8,8 frees=0 sizes=none
+effector create created=yes
+effector create np words=physics.00000000.physics.wlink.rlink.eff
+effector create internal vt=physics observers=0 capacity=0 list=none
+effector create internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector hook_dtor primary_same=yes hook_changed=yes read_link_same=yes internal_same=yes
+effector actorpair dtor flag=0 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=0 mismatches=0
+effector actorpair dtor flag=1 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=1 mismatches=0
+effector create rec_a vt=physics observers=1 capacity=2 list=eff
+effector create rec_b vt=physics observers=1 capacity=2 list=eff
+effector create count=1 iterator=none
+effector create is=np slot6=np slot7=np userData_set=5eed0001
+effector create spring=3f000000.3fa00000.40400000.42200000.425c0000 damper=c0200000.3fe00000.40e00000.41180000
+effector set spring=3f400000.40000000.40900000.41480000.41f00000 damper=bfc00000.40500000.3f000000.40c00000
+effector set internal vt=physics observers=0 capacity=0 list=none
+effector set internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000
+effector swap allocs=0 sizes=none frees=0 sizes=none
+effector swap internal vt=physics observers=0 capacity=0 list=none
+effector swap internal words=00000000.scene.np.rec_b.rec_a.c0112dd1.4035dc6d.3ffec990.3f96710b.bf82f9c0.3f47617b.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000
+effector swap rec_a vt=physics observers=1 capacity=2 list=eff
+effector swap rec_b vt=physics observers=1 capacity=2 list=eff
+effector restore allocs=0 sizes=none frees=0 sizes=none
+effector restore internal vt=physics observers=0 capacity=0 list=none
+effector restore internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f400000.40000000.40900000.41480000.41f00000.bfc00000.40500000.3f000000.40c00000
+effector slots rec0 root=rec_a
+effector slots rec0 island=rec_a.00000000.00000000.00000001.3ecccccc.00000000.rec_a.00000000.00000000.00000000.00000000.rec_a.00000000.00000000.00000001.3ecccccc.00000000.rec_a wake=3ecccccc
+effector slots rec1 root=rec_b
+effector slots rec1 island=rec_b.00000000.00000000.00000001.3ecccccc.00000000.rec_b.00000000.00000000.00000000.00000000.rec_b.00000000.00000000.00000001.3ecccccc.00000000.rec_b wake=3ecccccc
+effector slots allocs=0 sizes=none frees=0 sizes=none
+effector slots slots internal changed none
+effector slots slots rec0 changed none
+effector slots slots rec1 changed none
+effector release allocs=0 sizes=none frees=2 sizes=18,68
+effector release count=0 iterator=none
+effector release rec_a vt=physics observers=0 capacity=2 list=none
+effector release rec_b vt=physics observers=0 capacity=2 list=none
+effector cycle1 allocs=2 sizes=68,18 frees=0 sizes=none
+effector cycle1 created=yes
+effector cycle1 np words=physics.00000000.physics.wlink.rlink.eff
+effector cycle1 internal vt=physics observers=0 capacity=0 list=none
+effector cycle1 internal words=00000000.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector cycle2 allocs=2 sizes=68,18 frees=0 sizes=none
+effector cycle2 created=yes
+effector cycle2 np words=physics.00000000.physics.wlink.rlink.eff
+effector cycle2 internal vt=physics observers=0 capacity=0 list=none
+effector cycle2 internal words=eff.scene.np.rec_b.rec_a.bfeed232.400bca1a.3f650d78.4033b2de.be8e4bce.3ecdcc20.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector cycle2 count=2 iterator=np1
+effector cycle2 rec_a vt=physics observers=2 capacity=2 list=eff1.eff2
+effector cycle2 rec_b vt=physics observers=2 capacity=2 list=eff1.eff2
+effector cycle_release1 allocs=0 sizes=none frees=2 sizes=18,68
+effector cycle_release1 count=1 iterator=none
+effector cycle3 allocs=2 sizes=68,18 frees=0 sizes=none
+effector cycle3 created=yes
+effector cycle3 np words=physics.00000000.physics.wlink.rlink.eff
+effector cycle3 internal vt=physics observers=0 capacity=0 list=none
+effector cycle3 internal words=eff2.scene.np.rec_a.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector cycle3 count=2 iterator=np2
+effector cycle3 rec_a vt=physics observers=2 capacity=2 list=eff2.eff3
+effector cycle3 rec_b vt=physics observers=2 capacity=2 list=eff2.eff3
+effector actor_release allocs=3 sizes=8,8,8 frees=6 sizes=18,8,260,1c,228,50
+effector actor_release e2 internal vt=physics observers=0 capacity=0 list=none
+effector actor_release e2 internal words=00000000.scene.np2.rec_b.00000000.bfeed232.400bca1a.3f650d78.4033b2de.be8e4bce.3ecdcc20.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector actor_release e3 internal vt=physics observers=0 capacity=0 list=none
+effector actor_release e3 internal words=eff2.scene.np3.00000000.rec_b.3e8aa393.3efc02a9.be96f0b6.bf0563b5.bcac7695.bcc20573.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector actor_release rec_b vt=physics observers=2 capacity=2 list=eff2.eff3
+effector actor_release count=2 iterator=np2
+effector after_actor_release allocs=0 sizes=none frees=2 sizes=18,68
+effector after_actor_release count=1 iterator=none
+effector after_actor_release rec_b vt=physics observers=1 capacity=2 list=eff2
+effector actors2=created,created
+effector live allocs=4 sizes=68,18,8,8 frees=0 sizes=none
+effector live created=yes
+effector live np words=physics.00000000.physics.wlink.rlink.eff
+effector live internal vt=physics observers=0 capacity=0 list=none
+effector live internal words=eff2.scene.np.rec_c.rec_d.3fdab1cb.bfa9b3b6.c009a579.3fcccccc.c0333333.c0366666.3f000000.3fa00000.40400000.42200000.425c0000.c0200000.3fe00000.40e00000.41180000
+effector live count=2 iterator=np2
+effector scene_release allocs=3 sizes=18,18,18 frees=55 sizes=14,18,20,4,20,4,28,18,8,260,1c,228,50,18,8,260,1c,228,50,18,8,8,260,8,1c,8,228,50,18,68,18,68,400,400,400,400,400,400,400,400,400,400,400,400,a8,18,18,18,10,60,10,3c,18,18,710
+scene=released
+sdk=released
+modules pair=2 trusted_system=9 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxPhysics.dll sha256=9627524895d219bfb29aa09fa953620956d61e98c4ed05fbf7f5f4370d8a1ad6
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxFoundation.dll sha256=620126f8b48ae10a345a85788703ce3103edfa753b89a1df20250f7e5a7715f2
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsEffectorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxPhysics.dll sha256=9627524895d219bfb29aa09fa953620956d61e98c4ed05fbf7f5f4370d8a1ad6
+pass: NxPhysicsEffectorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate\NxFoundation.dll sha256=620126f8b48ae10a345a85788703ce3103edfa753b89a1df20250f7e5a7715f2
+differential target=NxPhysicsEffectorTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=14 stderr_exact=True
+differential_targets=NxPhysicsEffectorTests
+differential_pairs=C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\oracle,C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\build\pairs\candidate
+GATE FAILED: requirement not met: every requested target passes its registered oracle/candidate differential contract
+At C:\Users\raynorpat\.codex\worktrees\embedded-hook-destructors\Novodex\build\000305-proof-tree\docs\reconstruction\no
+vodex-physics\tools\run_differential.ps1:62 char:9
++         throw "GATE FAILED: requirement not met: $Requirement"
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (GATE FAILED: re...ential contract:String) [], RuntimeException
+    + FullyQualifiedErrorId : GATE FAILED: requirement not met: every requested target passes its registered oracle/ca 
+   ndidate differential contract
+ 
