@@ -95,6 +95,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid collision hash-count empty preserved=1 return=1 stack=1/1 mismatches=0'
         'fluid collision triangle-cells cases=3 oracle_digest=86d21a58 candidate_digest=86d21a58 oracle_cells=14 candidate_present=1 mismatches=0'
         'fluid collision triangle-builder cases=3 oracle_digest=b2825642 candidate_present=1 oracle_cells=7 mismatches=0'
+        'fluid collision cell-hash cases=3 inputs=7 unique=5 bucket_counts=2,1,2 candidate_present=1 mismatches=0'
         'fluid collision static-copy buckets=3 cells=3 indices=4 oracle_return=4 candidate_return=4 rows=1 cells_match=1 indices_match=1 headers=1 source_preserved=1 stack=1/1 mismatches=0 undefined_bucket_word=ignored'
         'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
@@ -5819,7 +5820,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2647  # includes triangle transforms/cell building and the collision hash/static-copy/prefix helpers
+	'5' = 2648  # includes fluid triangle and cell hashing plus collision bucket helpers
                # plus bodyless and live-body fluid-emitter repulsion differentials
                # plus callback routing/state assertions for all three backend-backed emitter flags
                # includes the sphere slot-15 and BOX slot-4 oracle assertions
@@ -5866,7 +5867,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1674  # includes triangle transforms/cell building, collision hash/static-copy/prefix helpers and per-fluid substeps
+	'7' = 1675  # includes triangle transforms/cell hashing, collision static-copy/prefix helpers and per-fluid substeps
 			   # plus bodyless and live-body fluid-emitter repulsion differentials
                # plus current scene/emitter assertions
                # plus retained contact, trigger, and active-root buffer teardown

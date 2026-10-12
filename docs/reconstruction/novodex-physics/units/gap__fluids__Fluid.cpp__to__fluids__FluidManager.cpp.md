@@ -936,11 +936,11 @@ void __cdecl FUN_10086b40(int *param_1,uint *param_2,float param_3,float param_4
 
 ```
 
-## phys_fn_003530 (0x00086e00, 249 B, discovered)
+## phys_fn_003530 (0x00086e00, 249 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/FluidCollision.cpp
+- implementation: Physics/src/FluidCollision.cpp
 - prototype: undefined4 __cdecl FUN_10086e00(int * param_1, int * param_2, int * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003533 (0x00086f11)

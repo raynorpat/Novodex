@@ -257,6 +257,62 @@ struct NxFluidCollisionCell
 	unsigned words[4];
 	};
 
+// phys_fn_003530 (RVA 0x00086e00) folds grid-cell coordinates into each
+// collision bucket, merging duplicates through the bucket's contiguous range.
+extern "C" int __cdecl nxFluidCollisionAccumulateCellCounts(
+	int* cellStorage, NxFluidCollisionBucketHashDescriptor* hash,
+	const NxFluidCollisionInt16Vector3Array* input)
+	{
+	if(input->count > 0)
+		{
+		unsigned char* const records = reinterpret_cast<unsigned char*>(
+			static_cast<uintptr_t>(*cellStorage));
+		unsigned char* const buckets = reinterpret_cast<unsigned char*>(hash->buckets);
+		for(int inputIndex = 0; inputIndex < input->count; ++inputIndex)
+			{
+			const short* const coordinate = input->data + inputIndex * 3;
+			const unsigned xy = static_cast<unsigned short>(coordinate[0])
+				| (static_cast<unsigned>(static_cast<unsigned short>(coordinate[1])) << 16);
+			const short z = coordinate[2];
+			const int signedHash = static_cast<int>(coordinate[0])
+				+ 101 * static_cast<int>(coordinate[1])
+				+ 7919 * static_cast<int>(z);
+			const unsigned bucketIndex = static_cast<unsigned>(signedHash)
+				% hash->bucketCount;
+			unsigned char* const bucket = buckets + bucketIndex * 12;
+			const unsigned cellCount = *reinterpret_cast<unsigned*>(bucket);
+			const unsigned firstCell = *reinterpret_cast<unsigned*>(bucket + 4);
+			int found = -1;
+			for(unsigned i = 0; i < cellCount; ++i)
+				{
+				unsigned char* const cell = records + (firstCell + i) * 16;
+				if(*reinterpret_cast<unsigned*>(cell) == xy
+					&& *reinterpret_cast<short*>(cell + 4) == z)
+					{
+					found = static_cast<int>(firstCell + i);
+					break;
+					}
+				}
+			if(found == -1)
+				{
+				const unsigned cellIndex = firstCell + cellCount;
+				*reinterpret_cast<unsigned*>(bucket) = cellCount + 1;
+				unsigned char* const cell = records + cellIndex * 16;
+				*reinterpret_cast<unsigned*>(cell + 8) = 1;
+				*reinterpret_cast<unsigned*>(cell + 12) = 0xffffffffu;
+				*reinterpret_cast<unsigned*>(cell) = xy;
+				*reinterpret_cast<short*>(cell + 4) = z;
+				}
+			else
+				{
+			unsigned char* const cell = records + static_cast<unsigned>(found) * 16;
+				++*reinterpret_cast<unsigned*>(cell + 8);
+				}
+			}
+		}
+	return 1;
+	}
+
 struct NxFluidCollisionCopyDescriptor
 	{
 	NxFluidCollisionBucket* buckets;

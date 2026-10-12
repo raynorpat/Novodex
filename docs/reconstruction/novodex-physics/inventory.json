@@ -65996,13 +65996,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1317",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12426",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation and disassembly at RVA 0x86e00 show that the helper walks packed signed-16-bit XYZ cells, hashes them into 12-byte bucket rows, calls the indirect FindCDCell callback for duplicate lookup, increments an existing cell sample count, or appends a 16-byte record and increments the bucket occupancy.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls pinned oracle RVA 0x86e00 and map-resolved nxFluidCollisionAccumulateCellCounts. Seven signed-coordinate inputs include duplicate cells, cross-bucket entries, an existing seeded cell, and an empty range. All three cases match bucket ranges, full cell records, sample counts, return 1, and x86 stack balance. The no-op candidate mutation is caught in both nonempty cases (mismatches=2); restored control is exact. The absent FindCDCell callback slot is bound to an independent linear lookup over the selected bucket range.",
+      "notes": "Direct bucket consumer in the static collision grid path. The pinned UE3 binary directory does not contain FluidModel.dll; the differential binds the oracle FindCDCell callback slot to an independent reference matching the observed callback contract. Production FluidModel callback integration and Unreal-level static-collision validation remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionAccumulateCellCounts"
     },
     {
       "id": "phys_fn_003531",

@@ -1,0 +1,41 @@
+fluid collision bucket-prefix records=4 oracle_total=9 candidate_total=9 prefixes=1 return=1 stack=1/1 mismatches=0
+fluid collision bucket-prefix empty total=0 return=1 preserved=1 stack=1/1 mismatches=0
+fluid collision cell-prefix buckets=3 cells=3 oracle_total=6 candidate_total=6 prefixes=1 counts_cleared=1 return=1 stack=1/1 mismatches=0
+fluid collision cell-prefix empty preserved=1 return=1 total_preserved=1 stack=1/1 mismatches=0
+fluid collision hash-count buckets=5 cells=7 counts=1 words_preserved=1 return=1 stack=1/1 mismatches=0
+fluid collision hash-count empty preserved=1 return=1 stack=1/1 mismatches=0
+fluid collision static-copy buckets=3 cells=3 indices=4 oracle_return=4 candidate_return=4 rows=1 cells_match=1 indices_match=1 headers=1 source_preserved=1 stack=1/1 mismatches=0 undefined_bucket_word=ignored
+fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0
+fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0
+fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0
+fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0
+fluid emitter flags cases=2 mismatches=0
+fluid collision triangle-cells case=0 cells=3/3 capacity=512/512 return=1/1 cells_match=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-cells case=1 cells=10/10 capacity=512/512 return=1/1 cells_match=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-cells case=2 cells=1/1 capacity=2/2 return=1/1 cells_match=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-cells cases=3 oracle_digest=86d21a58 candidate_digest=86d21a58 oracle_cells=14 candidate_present=1 mismatches=0
+fluid collision triangle-builder case=0 cells=3/3 buckets=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-builder case=1 cells=4/4 buckets=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-builder case=2 cells=0/0 buckets=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-builder cases=3 oracle_digest=b2825642 candidate_present=1 oracle_cells=7 mismatches=0
+fluid collision cell-hash case=0 records=1 buckets=1 expected=1 stack=1/1 mismatches=0
+fluid collision cell-hash case=1 records=1 buckets=1 expected=1 stack=1/1 mismatches=0
+fluid collision cell-hash case=2 records=1 buckets=1 expected=1 stack=1/1 mismatches=0
+fluid collision cell-hash cases=3 inputs=7 unique=5 bucket_counts=2,1,2 candidate_present=1 mismatches=0
+fluid emitter body repulsion bodyless actor=1 callbacks=3/3 order=1 vectors=1 mass=1 stack=1/1 mismatches=0
+fluid substep empty-emitter cases=1 callback=1 timestep=1 state-clear=1 mismatches=0
+fluid substep nonempty-emitter cases=1 pose_callback=1 fluid_run=1 payloads_match=1 timestep=1 state-clear=1 repulsion-skipped=1 stack=1/1 mismatches=0
+fluid manager step live-fluids=2 oracle_callbacks=2 candidate_callbacks=2 order=1 timestep=1 state=1 stack=1/1 mismatches=0
+fluid post-step traversal fluids=2 oracle_callbacks=7 candidate_callbacks=7 particle_counts=3/3 particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=0
+fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0
+fluid manager actor-release fluids=1 emitters=3 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0
+fluid emitter attach matrix-frame cases=1 oracle_callbacks=3 candidate_callbacks=3 mismatches=0
+fluid emitter attach quaternion-frame cases=1 oracle_callbacks=3 candidate_callbacks=3 mismatches=0
+fluid emitter world-pose cases=3 mismatches=0
+fluid emitter body-state update cases=2 oracle_callbacks=5 candidate_callbacks=5 mismatches=0
+fluid surface-mesh dispatch cases=1 oracle_callbacks=1 candidate_callbacks=1 args=1 return=1 stack=1/1 mismatches=0
+fluid surface-mesh empty cases=1 oracle_callbacks=0 candidate_callbacks=0 stack=1/1 mismatches=0
+fluid manager surface-mesh traversal fluids=2 oracle_callbacks=2 candidate_callbacks=2 mismatches=0
+implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0
+implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0
+fluid emitter aggregate cases=6 mismatches=0
