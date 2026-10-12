@@ -10483,3 +10483,6 @@ Static-collision builder phys_fn_003505 is now mutation-falsified: the registere
 
 
 Phase 7 closure evidence: phys_fn_003559 and phys_fn_003561 copy the FluidModel global emitter pose, transposing the 3x3 rotation and preserving translation. The registered direct oracle probe checks callback arguments, all output words, return pointers, untouched tail, and stack balance. The wrong-transpose mutation is rejected by both rows (mismatches=2); restored output is exact. See evidence/phase7-fluid-emitter-global-pose-003559-003561.md.
+
+
+Fluid emitter local aggregate copy closure: rows phys_fn_003563, phys_fn_003565, and phys_fn_003567 are individually mutation-falsified through the local pose, position, and orientation calls. Shifting each source range by four bytes is detected with mismatches=1 for the matching aggregate on both candidate paths; restored runs report the required line `fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0`. Full setup and gate logs: evidence/phase7-fluid-emitter-local-copy-003563-003567.md.

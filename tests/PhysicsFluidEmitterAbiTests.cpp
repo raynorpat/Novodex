@@ -4401,8 +4401,16 @@ int wmain(int argc, wchar_t** argv)
 	unsigned dllRawCases = 0;
 	unsigned dllRawRetptr = 0;
 	unsigned dllRawStackBalanced = 0;
+	unsigned localCopyCases = 0;
+	unsigned localCopyRetptr = 0;
+	unsigned localCopyStackBalanced = 0;
+	unsigned localCopyDllCases = 0;
+	unsigned localCopyDllRetptr = 0;
+	unsigned localCopyDllStackBalanced = 0;
+	unsigned localCopyMismatches = 0;
 	for(unsigned i = 0; i < sizeof(aggregateSlots) / sizeof(aggregateSlots[0]); ++i)
 		{
+		const bool localCopyRow = i >= 3;
 		unsigned char oracleOut[0x30];
 		unsigned char candidateOut[0x30];
 		memset(oracleOut, 0, sizeof(oracleOut));
@@ -4428,10 +4436,20 @@ int wmain(int argc, wchar_t** argv)
 			++rawRetptr;
 		if(oracleStackDelta == 0 && candidateStackDelta == 0)
 			++rawStackBalanced;
+		if(localCopyRow)
+			{
+			++localCopyCases;
+			if(oracleResult == oracleOut && candidateResult == candidateOut)
+				++localCopyRetptr;
+			if(oracleStackDelta == 0 && candidateStackDelta == 0)
+				++localCopyStackBalanced;
+			}
 		if(oracleResult != oracleOut || candidateResult != candidateOut
 			|| oracleStackDelta != 0 || candidateStackDelta != 0
 			|| memcmp(oracleOut, candidateOut, aggregateSlots[i].bytes) != 0)
 			{
+			if(localCopyRow)
+				++localCopyMismatches;
 			fprintf(stderr, "fluid emitter raw ABI mismatch: %s oracle_ret=%u candidate_ret=%u stack=%u/%u\n",
 				aggregateSlots[i].name, oracleResult == oracleOut ? 1u : 0u,
 				candidateResult == candidateOut ? 1u : 0u, oracleStackDelta, candidateStackDelta);
@@ -4443,7 +4461,11 @@ int wmain(int argc, wchar_t** argv)
 		unsigned candidateDllStackDelta = 0xffffffffu;
 		if(!nxTryFluidEmitterCall(candidateDllInterface, aggregateSlots[i].slot,
 			candidateDllOut, &candidateDllResult, &candidateDllStackDelta))
+			{
 			++dllRawMismatches;
+			if(localCopyRow)
+				++localCopyMismatches;
+			}
 		else
 			{
 			++dllRawCases;
@@ -4451,9 +4473,19 @@ int wmain(int argc, wchar_t** argv)
 				++dllRawRetptr;
 			if(candidateDllStackDelta == 0)
 				++dllRawStackBalanced;
+			if(localCopyRow)
+				{
+				++localCopyDllCases;
+				if(candidateDllResult == candidateDllOut)
+					++localCopyDllRetptr;
+				if(candidateDllStackDelta == 0)
+					++localCopyDllStackBalanced;
+				}
 			if(candidateDllResult != candidateDllOut || candidateDllStackDelta != 0
 				|| memcmp(oracleOut, candidateDllOut, aggregateSlots[i].bytes) != 0)
 				{
+				if(localCopyRow)
+					++localCopyMismatches;
 				fprintf(stderr, "candidate DLL fluid emitter raw ABI mismatch: %s retptr=%u stack=%u\n",
 					aggregateSlots[i].name, candidateDllResult == candidateDllOut ? 1u : 0u,
 					candidateDllStackDelta);
@@ -4467,6 +4499,10 @@ int wmain(int argc, wchar_t** argv)
 	gFailures += dllRawMismatches;
 	printf("fluid emitter candidate_dll raw_abi cases=%u retptr=%u stack_balanced=%u mismatches=%u\n",
 		dllRawCases, dllRawRetptr, dllRawStackBalanced, dllRawMismatches);
+	printf("fluid emitter local pose-copy rows=3 candidate_cases=%u candidate_retptr=%u candidate_stack=%u dll_cases=%u dll_retptr=%u dll_stack=%u mismatches=%u\n",
+		localCopyCases, localCopyRetptr, localCopyStackBalanced,
+		localCopyDllCases, localCopyDllRetptr, localCopyDllStackBalanced,
+		localCopyMismatches);
 
 	NxMat34 oracleGlobalPose;
 	oracleGlobalPose = oracle->getGlobalPoseVal();
