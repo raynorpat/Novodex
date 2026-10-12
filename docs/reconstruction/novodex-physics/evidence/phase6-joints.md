@@ -1,5 +1,15 @@
 # Phase 6 joints and effectors — reconstruction evidence
 
+Phase 7 fluid-emitter local aggregate-copy rows `phys_fn_003563`,
+`phys_fn_003565`, and `phys_fn_003567` are mutation-falsified by the registered
+`NxPhysicsFluidEmitterAbiTests` oracle differential. Shifting each source range
+by one dword changes the corresponding local pose, position, or orientation
+result and is detected as `mismatches=1`; the restored control is exact for the
+oracle, in-process candidate, and candidate-DLL paths.
+`phys_fn_003563` mutation detection: `mismatches=1`.
+`phys_fn_003565` mutation detection: `mismatches=1`.
+`phys_fn_003567` mutation detection: `mismatches=1`.
+
 This file records Phase 6 evidence. It begins with the harness and an audit of
 the export contract, because the second turned out to bound the first.
 
