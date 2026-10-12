@@ -1823,7 +1823,7 @@ static unsigned nxRunFluidCollisionShapePackerDifferential(
 static unsigned nxRunFluidCollisionShapeCounterDifferential(
 	const unsigned char* oracleBase, void* candidateAddress)
 	{
-	typedef int (__thiscall* CountShape)(void*, void*);
+	typedef int (__cdecl* CountShape)(void*, void*);
 	CountShape oracle = oracleBase ? reinterpret_cast<CountShape>(
 		const_cast<unsigned char*>(oracleBase) + 0x86400) : 0;
 	CountShape candidate = reinterpret_cast<CountShape>(candidateAddress);
@@ -2497,7 +2497,7 @@ int wmain(int argc, wchar_t** argv)
 		"nxFluidCollisionPackShapeData", &gCandidateFluidCollisionShapePackerAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid shape-packing row could not be resolved from its map\n");
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
-		"@nxFluidCollisionCountShapeType@12",
+		"nxFluidCollisionCountShapeType",
 		&gCandidateFluidCollisionShapeCounterAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid shape-count router could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;

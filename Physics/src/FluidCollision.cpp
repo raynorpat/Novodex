@@ -555,11 +555,10 @@ extern "C" unsigned __cdecl nxFluidCollisionCellPrefix(void* descriptor)
 	}
 
 // phys_fn_003511 (RVA 0x00086400) classifies a shape for the static-collision
-// builder and increments its type-specific count. The oracle is thiscall on
-// the builder (`ret 4`); fastcall keeps the builder in ECX and consumes the
-// shape argument from the stack while reserving EDX as the unused fastcall slot.
-extern "C" int __fastcall nxFluidCollisionCountShapeType(void* builder,
-	void*, void* shape)
+// builder and increments its type-specific count. The oracle is cdecl with
+// both the builder and shape passed explicitly on the stack.
+extern "C" int __cdecl nxFluidCollisionCountShapeType(void* builder,
+	void* shape)
 	{
 	unsigned char* const builderBytes = static_cast<unsigned char*>(builder);
 	const unsigned short flags =
