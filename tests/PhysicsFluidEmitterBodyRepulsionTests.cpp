@@ -27,6 +27,7 @@ struct RepulsionCallbackRecord
 
 static RepulsionCallbackRecord gOracleRecords[16];
 static unsigned gOracleRecordCount;
+static int gOracleEnabledResult = 1;
 
 static RepulsionCallbackRecord& nxNextOracleRecord(unsigned kind,
 	unsigned system, unsigned fluid, unsigned emitter)
@@ -47,7 +48,7 @@ extern "C" int __cdecl nxOracleEmitterGetEnabledFlag(
 	unsigned system, unsigned fluid, unsigned emitter)
 	{
 	nxNextOracleRecord(1, system, fluid, emitter);
-	return 1;
+	return gOracleEnabledResult;
 	}
 
 extern "C" int __cdecl nxOracleEmitterGetBodyRepulsion(
@@ -156,6 +157,11 @@ struct LiveBodySnapshot
 	{
 	RepulsionCallbackRecord callbacks[3];
 	unsigned callbackCount;
+	unsigned result;
+	unsigned noFlagReturnsActor;
+	unsigned nullActorGuard;
+	unsigned disabledCallbackGuard;
+	unsigned negativeCallbackContinues;
 	unsigned words[15];
 	unsigned stackBalanced;
 	};
@@ -194,9 +200,11 @@ struct LiveSubstepSnapshot
 typedef void (__cdecl *ResetCallbacksFn)();
 typedef unsigned (__cdecl *CallbackCountFn)();
 typedef int (__cdecl *GetCallbackRecordFn)(unsigned, RepulsionCallbackRecord*);
+typedef void (__cdecl *SetEnabledResultFn)(int);
 
 static bool nxRunLiveBody(HMODULE physics, bool oracle, void* target,
 	ResetCallbacksFn reset, CallbackCountFn count, GetCallbackRecordFn get,
+	SetEnabledResultFn setEnabledResult,
 	LiveBodySnapshot* snapshot)
 	{
 	typedef NxPhysicsSDK* (__cdecl *CreateSDK)(NxU32, NxUserAllocator*, NxUserOutputStream*);
@@ -259,8 +267,8 @@ static bool nxRunLiveBody(HMODULE physics, bool oracle, void* target,
 		float incoming = 0.375f;
 		__asm fld incoming
 		__asm mov espBefore, esp
-		const int ignored = reinterpret_cast<Apply>(target)(emitter);
-		(void)ignored;
+		snapshot->result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
 		__asm mov espAfter, esp
 		__asm fstp st(0)
 		}
@@ -268,8 +276,8 @@ static bool nxRunLiveBody(HMODULE physics, bool oracle, void* target,
 		{
 		typedef int (__cdecl *Apply)(void*);
 		__asm mov espBefore, esp
-		const int ignored = reinterpret_cast<Apply>(target)(emitter);
-		(void)ignored;
+		snapshot->result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
 		__asm mov espAfter, esp
 		}
 	memset(snapshot, 0, sizeof(*snapshot));
@@ -288,6 +296,90 @@ static bool nxRunLiveBody(HMODULE physics, bool oracle, void* target,
 	for(unsigned i = 0; i != 15; ++i)
 		snapshot->words[i] = *reinterpret_cast<unsigned*>(record + offsets[i]);
 	snapshot->stackBalanced = espBefore == espAfter;
+	*reinterpret_cast<unsigned*>(emitter + 0x10) = 0;
+	if(oracle)
+		{
+		typedef int (__thiscall *Apply)(void*);
+		float incoming = 0.375f;
+		__asm fld incoming
+		const unsigned result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
+		snapshot->noFlagReturnsActor = result == reinterpret_cast<unsigned>(actorInternal);
+		__asm fstp st(0)
+		}
+	else
+		{
+		typedef int (__cdecl *Apply)(void*);
+		const unsigned result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
+		snapshot->noFlagReturnsActor = result == reinterpret_cast<unsigned>(actorInternal);
+		}
+	*reinterpret_cast<unsigned*>(emitter + 0x10) = 4;
+	*reinterpret_cast<void**>(emitter + 0x14) = 0;
+	if(oracle)
+		{
+		typedef int (__thiscall *Apply)(void*);
+		float incoming = 0.375f;
+		__asm fld incoming
+		const unsigned result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
+		__asm fstp st(0)
+		snapshot->nullActorGuard = result == 0;
+		}
+	else
+		{
+		typedef int (__cdecl *Apply)(void*);
+		const unsigned result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
+		snapshot->nullActorGuard = result == 0;
+		}
+	*reinterpret_cast<void**>(emitter + 0x14) = actorInternal;
+	reset();
+	gOracleRecordCount = 0;
+	if(oracle)
+		gOracleEnabledResult = 0;
+	else
+		setEnabledResult(0);
+	if(oracle)
+		{
+		typedef int (__thiscall *Apply)(void*);
+		float incoming = 0.375f;
+		__asm fld incoming
+		const unsigned result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
+		__asm fstp st(0)
+		snapshot->disabledCallbackGuard = result == 0 && gOracleRecordCount == 1;
+		}
+	else
+		{
+		typedef int (__cdecl *Apply)(void*);
+		const unsigned result = static_cast<unsigned>(
+			reinterpret_cast<Apply>(target)(emitter));
+		snapshot->disabledCallbackGuard = result == 0 && count() == 1;
+		}
+	reset();
+	gOracleRecordCount = 0;
+	if(oracle)
+		gOracleEnabledResult = -1;
+	else
+		setEnabledResult(-1);
+	if(oracle)
+		{
+		typedef int (__thiscall *Apply)(void*);
+		float incoming = 0.375f;
+		__asm fld incoming
+		(void)reinterpret_cast<Apply>(target)(emitter);
+		__asm fstp st(0)
+		snapshot->negativeCallbackContinues = gOracleRecordCount == 3;
+		}
+	else
+		{
+		typedef int (__cdecl *Apply)(void*);
+		(void)reinterpret_cast<Apply>(target)(emitter);
+		snapshot->negativeCallbackContinues = count() == 3;
+		}
+	gOracleEnabledResult = 1;
+	setEnabledResult(1);
 	scene->releaseActor(*actor);
 	sdk->releaseScene(*scene);
 	sdk->release();
@@ -542,7 +634,9 @@ int wmain(int argc, wchar_t** argv)
 		GetProcAddress(fluidModel, "NxGetFluidRepulsionCallbackCount"));
 	GetCallbackRecordFn get = reinterpret_cast<GetCallbackRecordFn>(
 		GetProcAddress(fluidModel, "NxGetFluidRepulsionCallbackRecord"));
-	if(!reset || !count || !get)
+	SetEnabledResultFn setEnabledResult = reinterpret_cast<SetEnabledResultFn>(
+		GetProcAddress(fluidModel, "NxSetFluidEmitterEnabledResult"));
+	if(!reset || !count || !get || !setEnabledResult)
 		return nxFail("FluidModel callback probes are missing");
 	void* oldValues[3] = {};
 	DWORD oldProtection = 0;
@@ -550,7 +644,8 @@ int wmain(int argc, wchar_t** argv)
 		nxBindOracleCallbacks(reinterpret_cast<unsigned char*>(physics),
 			oldValues, &oldProtection);
 	LiveBodySnapshot snapshot = {};
-	const bool ran = nxRunLiveBody(physics, oracle, target, reset, count, get, &snapshot);
+	const bool ran = nxRunLiveBody(physics, oracle, target, reset, count, get,
+		setEnabledResult, &snapshot);
 	unsigned callbackMismatches = snapshot.callbackCount != 3;
 	static const unsigned expectedVectors[6] = {
 		0x3e800001u, 0xbf000002u, 0x3f400003u,
@@ -573,9 +668,16 @@ int wmain(int argc, wchar_t** argv)
 	if(oracle)
 		nxUnbindOracleCallbacks(reinterpret_cast<unsigned char*>(physics),
 			oldValues, oldProtection);
+	mismatches = mismatches || !snapshot.noFlagReturnsActor
+		|| !snapshot.nullActorGuard || !snapshot.disabledCallbackGuard
+		|| !snapshot.negativeCallbackContinues;
 	printf("fluid emitter body repulsion live actor=1 callbacks=%u callback_mismatches=%u "
-		"applied=%u stack=%u mismatches=%u\n",
-		snapshot.callbackCount, callbackMismatches, applied, snapshot.stackBalanced, mismatches);
+		"applied=%u result=%08x no_flag_actor_return=%u null_actor_guard=%u "
+		"disabled_callback_guard=%u negative_callback_continues=%u stack=%u mismatches=%u\n",
+		snapshot.callbackCount, callbackMismatches, applied, snapshot.result,
+		snapshot.noFlagReturnsActor, snapshot.nullActorGuard,
+		snapshot.disabledCallbackGuard, snapshot.negativeCallbackContinues,
+		snapshot.stackBalanced, mismatches);
 	printf("fluid emitter body repulsion live state=");
 	for(unsigned i = 0; i != 15; ++i)
 		printf("%s%08x", i ? "." : "", snapshot.words[i]);

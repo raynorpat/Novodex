@@ -67358,13 +67358,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "decompiled",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1354",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12520",
-      "static_proof": "Partial: IDA shows actor/flag guards, EmitterGetEnabledFlag and EmitterGetBodyRepulsion callbacks, FluidGetParticleMass scaling, then an NX_IMPULSE/wake call to reconstructed phys_fn_000782. Callback ABI and FPU preservation are not yet independently verified.",
-      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x881c0 and the map-resolved candidate for the enabled bodyless-actor callback case; it compares callback order/arguments, vector/mass words, return, and stack. NxPhysicsFluidEmitterBodyRepulsionTests calls the same row with SDK-created live actors in isolated oracle/candidate pairs and compares all callback payloads, force/torque application, body-state words, and stack. A no-mass-scaling mutation is rejected with stdout_delta=2. See evidence/phase7-fluid-emitter-body-repulsion-003601.md and evidence/phase7-fluid-emitter-live-body-repulsion-003601.md.",
-      "notes": "Called by 003495 after FluidRun for each live emitter. Enabled bodyless and live-body application paths are directly gated; actor-null/flag-disabled/enabled-callback false guards remain open.",
+      "static_proof": "IDA confirms actor-null returns zero; a present actor with flag bit 4 clear returns the actor pointer; a set bit calls EmitterGetEnabledFlag and continues when its result is any nonzero value; then body repulsion vectors are scaled by the FluidGetParticleMass x87 result and passed to the NX_IMPULSE/wake call in phys_fn_000782. The direct ABI tests preserve x87 state and stack balance on each exercised path.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x881c0 and the map-resolved candidate for the enabled bodyless-actor callback case; it compares callback order/arguments, vector/mass words, return, and stack. NxPhysicsFluidEmitterBodyRepulsionTests calls the same row with SDK-created live actors in isolated oracle/candidate pairs and compares all callback payloads, force/torque application, body-state words, and stack. It also gates actor-null return, flag-disabled actor-pointer return, zero enabled-callback suppression, and a negative enabled-callback value continuing through all three callbacks. Both the no-mass-scaling mutation and the <=0 negative-result mutant are rejected; the latter yields oracle_exit=0, candidate_exit=1, stdout_delta=2, exact stderr. Restored control is exact. See evidence/phase7-fluid-body-repulsion-guards-003601.md, phase7-fluid-emitter-body-repulsion-003601.md, and phase7-fluid-emitter-live-body-repulsion-003601.md.",
+      "notes": "Called by 003495 after FluidRun for each live emitter. Identified guards and live application are gated; a row-targeted enabled-result mutation is rejected, closing the Phase 7 row.",
       "implementation": "Physics/src/NpFluidEmitter.cpp"
     },
     {

@@ -10606,3 +10606,5 @@ Phase 7 NpScene wrapper phys_fn_000344 (visualize) is mutation-falsified through
 Phase 7 NpScene fluid contact-report wrappers: phys_fn_000362 (setUserFluidContactReport) is mutation-falsified through NxPhysicsSimulationTests (`stdout_delta=2`); phys_fn_000364 (getUserFluidContactReport) is independently mutation-falsified through the same registered target (`stdout_delta=2`). Both mutant pairs exit zero with exact stderr, and both restored controls are exact. See evidence/phase7-npscene-fluid-contact-report-000362-000364.md.
 
 Phase 7 NpScene setter row `phys_fn_000289` (`NpScene::setGravity`) is mutation-falsified through `NxPhysicsSimulationTests` (`stdout_delta=2`); both mutant processes exit zero with exact stderr, and the restored control is exact. See `evidence/phase7-npscene-setgravity-000289.md`.
+
+Mutation evidence for phys_fn_003601: changing the enabled callback guard from ==0 to <=0 rejects a negative nonzero result (oracle_exit=0, candidate_exit=1, stdout_delta=2, exact stderr); restored staged-pair output is exact. See [Phase 7 body-repulsion guard evidence](phase7-fluid-body-repulsion-guards-003601.md).

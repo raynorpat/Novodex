@@ -659,8 +659,10 @@ static int nxNpFluidEmitterApplyBodyRepulsion(void* internal)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(internal);
 	void* actor = *reinterpret_cast<void**>(bytes + 0x14);
-	if(!actor || (*reinterpret_cast<unsigned*>(bytes + 0x10) & 4u) == 0)
+	if(!actor)
 		return 0;
+	if((*reinterpret_cast<unsigned*>(bytes + 0x10) & 4u) == 0)
+		return static_cast<int>(reinterpret_cast<size_t>(actor));
 	void* fluid = *reinterpret_cast<void**>(bytes + 4);
 	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
 	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
@@ -675,7 +677,7 @@ static int nxNpFluidEmitterApplyBodyRepulsion(void* internal)
 	typedef float (__cdecl *GetParticleMass)(unsigned, unsigned);
 	GetEnabled getEnabled = reinterpret_cast<GetEnabled>(
 		GetProcAddress(fluidModel, "EmitterGetEnabledFlag"));
-	if(getEnabled(system, fluidHandle, emitterHandle) <= 0)
+	if(getEnabled(system, fluidHandle, emitterHandle) == 0)
 		return 0;
 	float forceWords[3], torqueWords[3];
 	GetBodyRepulsion getBodyRepulsion = reinterpret_cast<GetBodyRepulsion>(

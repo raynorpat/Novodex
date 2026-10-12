@@ -1,3 +1,25 @@
+### Continuation — Fluid body-repulsion guard completion (`phys_fn_003601`, 2026-10-12)
+
+IDA identified three early-return distinctions that were missing from the
+candidate: null actor returns zero, a present actor with emitter flag bit 4
+clear returns that actor pointer, and `EmitterGetEnabledFlag` continues for
+every nonzero result. Added a live SDK actor differential covering those
+guards, the zero-result suppression branch, and a negative nonzero callback
+result. The negative regression was red (`oracle_exit=0`, `candidate_exit=1`,
+`stdout_delta=2`) because the candidate used signed `<= 0`; changing the
+comparison to `== 0` restores exact callback flow. The focused differential
+now passes (`stdout_delta=0`, exact stderr). The final result register is
+deliberately not compared after force application because the called
+`phys_fn_000782` is void and leaves EAX unspecified. Fresh Phase 5 passes
+2,677/2,677 and Phase 7 passes 1,708/1,708; the reconstruction tool suite
+passes 810 tests, inventory validation reports 6,338 functions / 5,138 data
+objects / zero unexplained, and both public-header roots verify all 80 files.
+Raw logs and row evidence are in
+`docs/reconstruction/novodex-physics/evidence/phase7-fluid-body-repulsion-guards-003601.md`.
+The `<= 0` mutant is rejected with `stdout_delta=2`, and restored control is
+exact; Phase 7 now records `phys_fn_003601` as mutation-falsified. Full DLL
+reconstruction remains active.
+
 ### Continuation — retained Phase 4 asset oracle proof (2026-10-12)
 
 Pinned the shipped-oracle asset self-check as `NxPhysicsAssetTests` in the

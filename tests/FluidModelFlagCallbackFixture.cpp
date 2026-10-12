@@ -490,6 +490,14 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidRepulsionCallbacks()
 	gFluidRepulsionRecordCount = 0;
 	}
 
+static int gFluidEmitterEnabledResult = 1;
+
+extern "C" __declspec(dllexport) void __cdecl NxSetFluidEmitterEnabledResult(
+	int result)
+	{
+	gFluidEmitterEnabledResult = result;
+	}
+
 extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidRepulsionCallbackCount()
 	{
 	return gFluidRepulsionRecordCount;
@@ -523,7 +531,7 @@ extern "C" __declspec(dllexport) int __cdecl EmitterGetEnabledFlag(
 	unsigned system, unsigned fluid, unsigned emitter)
 	{
 	nxNextFluidRepulsionRecord(1, system, fluid, emitter);
-	return 1;
+	return gFluidEmitterEnabledResult;
 	}
 
 extern "C" __declspec(dllexport) int __cdecl EmitterGetBodyRepulsion(

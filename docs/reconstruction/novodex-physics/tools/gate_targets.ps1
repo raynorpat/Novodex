@@ -144,7 +144,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid emitter aggregate cases=6 mismatches=0'
     )
     'NxPhysicsFluidEmitterBodyRepulsionTests' = @(
-        'fluid emitter body repulsion live actor=1 callbacks=3 callback_mismatches=0 applied=1 stack=1 mismatches=0'
+        'fluid emitter body repulsion live actor=1 callbacks=3 callback_mismatches=0 applied=1 result=00000000 no_flag_actor_return=1 null_actor_guard=1 disabled_callback_guard=1 negative_callback_continues=1 stack=1 mismatches=0'
         'fluid substep attached-live-body actor=1 emitter_callbacks=4 run_callbacks=1 repulsion_callbacks=3 state_clear=1 body_changed=1 stack=1 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
