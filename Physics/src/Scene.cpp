@@ -791,13 +791,21 @@ typedef void* (__cdecl *NxFluidCreateCallback)(void*, unsigned, unsigned, unsign
 	unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned,
 	unsigned, unsigned, unsigned);
 typedef void (__cdecl *NxFluidDestroyCallback)(void*, void*);
+typedef void* (__cdecl *NxFluidManagerGetStaticCollisionCallback)(void*);
+typedef float (__cdecl *NxFluidGetCellSizeCallback)(void*, void*);
+typedef void (__cdecl *NxStaticCollisionDestroyCallback)(void*);
 
 static NxFluidManagerCreateCallback gNxFluidManagerCreateCallback = 0;
 static NxFluidManagerDestroyCallback gNxFluidManagerDestroyCallback = 0;
 static NxFluidCreateCallback gNxFluidCreateCallback = 0;
 static NxFluidDestroyCallback gNxFluidDestroyCallback = 0;
+static NxFluidManagerGetStaticCollisionCallback gNxFluidManagerGetStaticCollisionCallback = 0;
+static NxFluidGetCellSizeCallback gNxFluidGetCellSizeCallback = 0;
+static NxStaticCollisionDestroyCallback gNxStaticCollisionDestroyCallback = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
+
+extern "C" int __cdecl nxFluidCollisionBuildStaticCollision(void*, void*, float, float);
 
 static bool nxFluidManagerResolveModel()
 	{
@@ -815,10 +823,17 @@ static bool nxFluidManagerResolveModel()
 		GetProcAddress(module, "FluidManagerCreate"));
 	gNxFluidManagerDestroyCallback = reinterpret_cast<NxFluidManagerDestroyCallback>(
 		GetProcAddress(module, "FluidManagerDestroy"));
+	gNxFluidManagerGetStaticCollisionCallback = reinterpret_cast<
+		NxFluidManagerGetStaticCollisionCallback>(GetProcAddress(module,
+			"FluidManagerGetStaticCollision"));
 	gNxFluidCreateCallback = reinterpret_cast<NxFluidCreateCallback>(
 		GetProcAddress(module, "FluidCreate"));
 	gNxFluidDestroyCallback = reinterpret_cast<NxFluidDestroyCallback>(
 		GetProcAddress(module, "FluidDestroy"));
+	gNxFluidGetCellSizeCallback = reinterpret_cast<NxFluidGetCellSizeCallback>(
+		GetProcAddress(module, "FluidGetCellSize"));
+	gNxStaticCollisionDestroyCallback = reinterpret_cast<NxStaticCollisionDestroyCallback>(
+		GetProcAddress(module, "StaticCollisionDestroy"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
@@ -881,9 +896,9 @@ static void* gNxFluidManagerVtable[] = {
 extern "C" int __cdecl nxNpFluidEmitterGenerateSurfaceMesh(void* internal);
 
 // phys_fn_003645 (0x00089f50) lays out FluidManager's arrays, backend flags,
-// Scene link, and virtual dispatch pointer. The pinned build has no fluid
-// extension, so its extension flags are zero; the constructor leaves the
-// conditional backend storage untouched while that feature is unavailable.
+// Scene link, and virtual dispatch pointer. When FluidModel is absent the
+// extension flags remain zero and conditional backend storage is untouched;
+// with the companion present, the recovered callback entries initialize it.
 static void* nxSceneCreateFluidManager(NxSceneInternal* scene)
 	{
 	void* memory = nxFoundationSDKAllocator->malloc(0x34, NX_MEMORY_PERSISTENT);
@@ -910,8 +925,8 @@ static void* nxSceneCreateFluidManager(NxSceneInternal* scene)
 
 // phys_fn_003641 (0x00089e00) switches to the base FluidManager vtable, runs
 // each primary entry's scalar deleting destructor, then frees and clears both
-// SDK array headers. The pinned backend is unavailable, so its conditional
-// callback and extension-library cleanup have no live state to observe.
+// SDK array headers. Backend and extension cleanup run only when a loaded
+// FluidModel initialized the corresponding manager state.
 static void nxFluidManagerDestroyArrays(void* manager)
 	{
 	if(manager)
@@ -1219,6 +1234,23 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		reinterpret_cast<unsigned>(fluid));
 	nxFluidManagerArrayPush(managerBytes + 0x14,
 		*reinterpret_cast<unsigned*>(fluid + 0x54));
+	if(managerBytes[0x29] && gNxFluidGetCellSizeCallback &&
+		gNxFluidManagerGetStaticCollisionCallback)
+		{
+		const float cellSize = gNxFluidGetCellSizeCallback(backendManager, backendFluid);
+		*reinterpret_cast<float*>(managerBytes + 0x2c) = cellSize;
+		void* const staticCollision =
+			gNxFluidManagerGetStaticCollisionCallback(backendManager);
+		void* const scene = *reinterpret_cast<void**>(managerBytes + 0x24);
+		// sub_10010720 reads Scene+0x52c as its first out value. The oracle
+		// forwards that value as the third argument to phys_fn_003505.
+		const float restParticleDistance =
+			*reinterpret_cast<float*>(static_cast<unsigned char*>(scene) + 0x52c);
+		nxFluidCollisionBuildStaticCollision(staticCollision, scene,
+			restParticleDistance, cellSize);
+		managerBytes[0x28] = 0;
+		managerBytes[0x29] = 0;
+		}
 	return reinterpret_cast<NxFluid*>(fluid);
 	}
 

@@ -68192,8 +68192,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1378",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12626",
       "static_proof": null,
-      "dynamic_proof": "NxPhysicsSimulationTests loads a staged FluidModel callback fixture and differentially exercises invalid-descriptor rejection, enabled manager creation, one valid FluidCreate call, public getNbFluids/getFluids visibility, release, and manager teardown. Oracle and candidate are exact (stdout_delta=0, stderr_exact=True); a mutation suppressing FluidCreate is caught (candidate_exit=1, stdout_delta=52). Evidence: evidence/phase7-fluid-enabled-create-003649.md.",
-      "notes": "Partial reconstruction only. Enabled create/list/release is fixture-backed. Static-collision dirty refresh, broader FluidModel callback table and descriptor validation/allocation failure branches remain open; keep this row discovered until the full row is covered."
+      "dynamic_proof": "NxPhysicsSimulationTests loads a staged FluidModel callback fixture and differentially exercises invalid-descriptor rejection, enabled manager creation, one valid FluidCreate call, public getNbFluids/getFluids visibility, the initial dirty static-collision build, release, and manager teardown. Oracle and candidate are exact (stdout_delta=0, stderr_exact=True); mutations suppressing FluidCreate or the collision builder are both caught (candidate_exit=1, stdout_delta=52). Evidence: evidence/phase7-fluid-enabled-create-003649.md.",
+      "notes": "Partial reconstruction only. Enabled create/list/release and the initial 0x29 dirty build are fixture-backed. The shape-change 0x28 refresh in phys_fn_003630, broader FluidModel callback table and descriptor validation/allocation failure branches remain open; keep this row discovered until the full row is covered."
     },
     {
       "id": "phys_fn_003650",

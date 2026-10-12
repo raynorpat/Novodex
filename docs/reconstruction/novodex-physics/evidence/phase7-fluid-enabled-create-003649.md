@@ -15,17 +15,18 @@ The manager is initialized from the extension's exported callbacks. The test use
 - An invalid descriptor returns null and reports `NXE_INVALID_PARAMETER` at `FluidManager.cpp:140`.
 - The enabled manager records its initialized flags and backend handle.
 - A valid descriptor returns a fluid, and the public scene list reports exactly one matching fluid.
-- Releasing that fluid clears the manager after scene teardown.
+- Releasing the sole fluid destroys and clears the now-empty manager.
 - The fixture observes one each of `FluidManagerCreate`, `FluidCreate`, `FluidDestroy`, and `FluidManagerDestroy`.
+- The manager's initial dirty flag drives the first static-collision build: `FluidGetCellSize` runs once, the static-collision object is fetched once and initialized once, and both refresh flags are cleared. The initial object is not destroyed before its first build.
 
 The staged oracle/candidate differential passes with `oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, and `stderr_exact=True`. The shared Phase 5, 6, and 7 coverage registry includes the exact output line:
 
 ```text
-simulation fluid enabled valid=1 invalid=1.1.140 manager-flags=1 listed=1 count=1 manager-cleared=1 callbacks=1.1.1.1 errors=0
+simulation fluid enabled valid=1 invalid=1.1.140 manager-flags=1 listed=1 count=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 dirty-cleared=1 cell-size=1 errors=0
 ```
 
-Mutation check: suppressing the candidate's `FluidCreate` dispatch produces callback counts `1.0.0.1`, exits with code 1, and yields `stdout_delta=52`; the assertion rejects it. The mutation was reverted and the candidate rebuilt before the passing differential.
+Mutation checks: suppressing the candidate's `FluidCreate` dispatch produces callback counts `1.0.0.1`, exits with code 1, and yields `stdout_delta=52`; the assertion rejects it. Suppressing the initial static-collision builder produces refresh callback counts `1.1.0.0` and is likewise rejected (`candidate_exit=1`, `stdout_delta=52`). Both mutations were reverted before the final passing differential.
 
 ## Remaining work for this inventory row
 
-This test defers the manager's dirty static-collision refresh by clearing the dirty byte. The refresh path (`FluidGetCellSize`, static collision acquisition/build), broader callback resolution and dispatch, allocation failures, descriptor validation cases, emitter interactions, and teardown combinations still need reconstruction and oracle coverage. `phys_fn_003649` therefore remains `discovered`.
+The initial manager dirty flag and first static-collision build are now exercised through public `createFluid`. The shape-change dirty refresh in `phys_fn_003630` (destroy/re-fetch/rebuild during stepping), broader callback resolution and dispatch, allocation failures, descriptor validation cases, emitter interactions, and teardown combinations still need reconstruction and oracle coverage. `phys_fn_003649` therefore remains `discovered`.

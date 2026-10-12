@@ -3149,6 +3149,10 @@ int wmain(int argc, wchar_t** argv)
 		unsigned managerDestroy;
 		unsigned fluidCreate;
 		unsigned fluidDestroy;
+		unsigned staticCollisionCreate;
+		unsigned staticCollisionGet;
+		unsigned fluidGetCellSize;
+		unsigned staticCollisionDestroy;
 		unsigned fluidCreateArguments[15];
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
@@ -3181,10 +3185,9 @@ int wmain(int argc, wchar_t** argv)
 	const bool enabledFluidManagerFlags = enabledFluidManager[0x2a] == 1 &&
 		enabledFluidManager[0x2b] == 1 &&
 		*reinterpret_cast<void**>(enabledFluidManager + 0x30) != 0;
-	// Keep this first enabled-fluid differential on construction, descriptor
-	// transfer, both manager arrays, release, and callback destruction. The
-	// static collision rebuild is a separate packet with its own callback corpus.
-	enabledFluidManager[0x29] = 0;
+	// The initial manager collision-dirty flag must drive the same callback and
+	// static-grid build sequence as the pinned FluidManager on first creation.
+	enabledFluidManager[0x28] = 0;
 	NxFluidDesc enabledFluidDesc;
 	enabledFluidDesc.setToDefault();
 	simulationOutput.resetLast();
@@ -3194,6 +3197,10 @@ int wmain(int argc, wchar_t** argv)
 	NxFluid** const enabledFluidList = enabledFluidScene->getFluids();
 	const bool enabledFluidListed = enabledFluidCount == 1 && enabledFluidList &&
 		enabledFluidList[0] == enabledFluid;
+	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
+		enabledFluidManager[0x29] == 0;
+	const bool enabledFluidCellSizeStored =
+		*reinterpret_cast<unsigned*>(enabledFluidManager + 0x2c) == 0x3f000000u;
 	if(enabledFluid)
 		enabledFluidScene->releaseFluid(*enabledFluid);
 	FluidManagerCallbackSummary fluidManagerCallbacks = {};
@@ -3205,17 +3212,30 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.managerDestroy == 1 &&
 		fluidManagerCallbacks.fluidCreate == 1 &&
 		fluidManagerCallbacks.fluidDestroy == 1;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u manager-cleared=%u callbacks=%u.%u.%u.%u errors=%u\n",
+	const bool enabledFluidRefreshCallbacks =
+		fluidManagerCallbacks.staticCollisionCreate == 1 &&
+		fluidManagerCallbacks.staticCollisionGet == 1 &&
+		fluidManagerCallbacks.fluidGetCellSize == 1 &&
+		fluidManagerCallbacks.staticCollisionDestroy == 0;
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
 		enabledFluidCount, enabledFluidManagerCleared ? 1u : 0u,
 		fluidManagerCallbacks.managerCreate, fluidManagerCallbacks.fluidCreate,
 		fluidManagerCallbacks.fluidDestroy, fluidManagerCallbacks.managerDestroy,
+		fluidManagerCallbacks.fluidGetCellSize,
+		fluidManagerCallbacks.staticCollisionGet,
+		fluidManagerCallbacks.staticCollisionDestroy,
+		fluidManagerCallbacks.staticCollisionCreate,
+		enabledFluidDirtyFlagsCleared ? 1u : 0u,
+		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
 	if(!enabledInvalidRejected || !enabledFluidManagerFlags || !enabledFluid ||
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
 		!enabledFluidListed || !enabledFluidManagerCleared || !enabledFluidCallbacks ||
+		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
+		!enabledFluidCellSizeStored ||
 		enabledFluidErrors != 0)
 		return nxFail("enabled fluid creation lifecycle did not match the fixture contract");
 	sdk->releaseScene(*enabledFluidScene);

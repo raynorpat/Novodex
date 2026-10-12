@@ -29,6 +29,24 @@ struct NxFluidCollisionInt16Fixture
 	unsigned capacity;
 	};
 
+struct NxFluidManagerCallbackSummary
+	{
+	unsigned managerCreate;
+	unsigned managerDestroy;
+	unsigned fluidCreate;
+	unsigned fluidDestroy;
+	unsigned staticCollisionCreate;
+	unsigned staticCollisionGet;
+	unsigned fluidGetCellSize;
+	unsigned staticCollisionDestroy;
+	unsigned fluidCreateArguments[15];
+	};
+
+static NxFluidManagerCallbackSummary gFluidManagerCallbackSummary;
+static unsigned char gFluidStaticCollision[0x200];
+static unsigned char gFluidManagerBackend;
+static unsigned char gFluidBackendHandles[16];
+
 static unsigned nxFluidCollisionFixtureGrow(NxFluidCollisionArrayFixture* array,
 	unsigned requested, unsigned fill, unsigned stride)
 	{
@@ -54,7 +72,14 @@ static unsigned nxFluidCollisionFixtureGrow(NxFluidCollisionArrayFixture* array,
 
 extern "C" __declspec(dllexport) void __cdecl StaticCollisionCreate(void* state)
 	{
+	++gFluidManagerCallbackSummary.staticCollisionCreate;
 	ZeroMemory(state, 0xa0);
+	}
+
+extern "C" __declspec(dllexport) void __cdecl StaticCollisionDestroy(void* state)
+	{
+	if(state == gFluidStaticCollision)
+		++gFluidManagerCallbackSummary.staticCollisionDestroy;
 	}
 
 extern "C" __declspec(dllexport) unsigned __cdecl CDMeshArrayGrow(
@@ -175,22 +200,10 @@ static NxFluidEmitterFlagCallbackRecord gRecords[16];
 static unsigned gRecordCount;
 static float gEmitterGlobalPose[12];
 
-struct NxFluidManagerCallbackSummary
-	{
-	unsigned managerCreate;
-	unsigned managerDestroy;
-	unsigned fluidCreate;
-	unsigned fluidDestroy;
-	unsigned fluidCreateArguments[15];
-	};
-
-static NxFluidManagerCallbackSummary gFluidManagerCallbackSummary;
-static unsigned char gFluidManagerBackend;
-static unsigned char gFluidBackendHandles[16];
-
 extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	{
 	ZeroMemory(&gFluidManagerCallbackSummary, sizeof(gFluidManagerCallbackSummary));
+	ZeroMemory(gFluidStaticCollision, sizeof(gFluidStaticCollision));
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxGetFluidManagerCallbackSummary(
@@ -210,6 +223,24 @@ extern "C" __declspec(dllexport) void __cdecl FluidManagerDestroy(void* manager)
 	{
 	if(manager == &gFluidManagerBackend)
 		++gFluidManagerCallbackSummary.managerDestroy;
+	}
+
+extern "C" __declspec(dllexport) void* __cdecl FluidManagerGetStaticCollision(
+	void* manager)
+	{
+	if(manager != &gFluidManagerBackend)
+		return 0;
+	++gFluidManagerCallbackSummary.staticCollisionGet;
+	return gFluidStaticCollision;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetCellSize(
+	void* manager, void* fluid)
+	{
+	if(manager != &gFluidManagerBackend || !fluid)
+		return 0.0f;
+	++gFluidManagerCallbackSummary.fluidGetCellSize;
+	return 0.5f;
 	}
 
 extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
