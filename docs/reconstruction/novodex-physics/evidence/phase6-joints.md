@@ -10547,3 +10547,6 @@ Mutation evidence for phys_fn_003645: the owner-field mutant exits with an acces
 
 The registered allocator-spy differential verifies deleteObject 0/1 free behavior; suppressing the flag-1 manager free is caught (stdout_delta=2). The populated teardown fixture separately catches a missing cleanup delegation (stdout_delta=54). See [the row evidence](phase7-fluid-manager-deleting-destructor-003647.md).
 Mutation evidence for phys_fn_003647: the delete-flag free mutant is detected by the allocator spy (stdout_delta=2); the cleanup-delegation mutant changes populated teardown output (stdout_delta=54).
+
+Phase 7 Scene row `phys_fn_003628` (fluid shape-change dirty refresh) is mutation-falsified through the public `NxPhysicsSimulationTests` fixture. Zeroing the dirty-byte store causes the enabled static actor add/remove contract to fail; restored staged-pair output is exact. See `evidence/phase7-fluid-shape-change-003628.md`.
+`phys_fn_003628` mutation detection: `stdout_delta=52`.

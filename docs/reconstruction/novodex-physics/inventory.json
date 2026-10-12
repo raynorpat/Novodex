@@ -67807,13 +67807,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "conditional byte store (0x89bb0, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1368",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12579",
       "static_proof": "if [this+0x2b] non-zero and [esp+8]==0 set byte [this+0x28]=1; ret 8",
-      "dynamic_proof": "confirmed via smallflag2 differential (3z106): failures=0",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests creates and releases static and dynamic actors while the enabled FluidManager is live: static add/remove set manager[0x28], dynamic add/remove leave it clear. The restored staged-pair differential is exact. In a throwaway git archive, mutating manager[0x28] = 1 to manager[0x28] = 0 is detected by the registered Phase 7 differential (candidate_exit=1, oracle_exit=0, stdout_delta=52).",
+      "notes": "The nxSceneAddActorObject static-pruner path now calls nxFluidManagerShapeChanged after registration; the helper itself was correct. See evidence/phase7-fluid-shape-change-003628.md.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidManagerShapeChanged"
     },
     {
       "id": "phys_fn_003629",

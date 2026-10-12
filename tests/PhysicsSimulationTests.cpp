@@ -3201,6 +3201,37 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
 		*reinterpret_cast<unsigned*>(enabledFluidManager + 0x2c) == 0x3f000000u;
+	// With the optional manager enabled, adding/removing a static shape sets
+	// the shape-change dirty byte; dynamic shapes leave it clear. These public
+	// actor operations enter phys_fn_003628 through Scene's shape lifecycle.
+	NxPlaneShapeDesc fluidDirtyStaticPlane;
+	NxActorDesc fluidDirtyStaticActorDesc;
+	fluidDirtyStaticActorDesc.shapes.pushBack(&fluidDirtyStaticPlane);
+	NxActor* const fluidDirtyStaticActor = enabledFluidScene->createActor(
+		fluidDirtyStaticActorDesc);
+	const bool fluidStaticAddDirty = fluidDirtyStaticActor &&
+		enabledFluidManager[0x28] == 1;
+	enabledFluidManager[0x28] = 0;
+	NxSphereShapeDesc fluidDirtyDynamicSphere;
+	fluidDirtyDynamicSphere.radius = 0.25f;
+	NxBodyDesc fluidDirtyDynamicBody;
+	NxActorDesc fluidDirtyDynamicActorDesc;
+	fluidDirtyDynamicActorDesc.body = &fluidDirtyDynamicBody;
+	fluidDirtyDynamicActorDesc.density = 1.0f;
+	fluidDirtyDynamicActorDesc.shapes.pushBack(&fluidDirtyDynamicSphere);
+	NxActor* const fluidDirtyDynamicActor = enabledFluidScene->createActor(
+		fluidDirtyDynamicActorDesc);
+	const bool fluidDynamicAddClean = fluidDirtyDynamicActor &&
+		enabledFluidManager[0x28] == 0;
+	if(fluidDirtyDynamicActor)
+		enabledFluidScene->releaseActor(*fluidDirtyDynamicActor);
+	const bool fluidDynamicRemoveClean = enabledFluidManager[0x28] == 0;
+	if(fluidDirtyStaticActor)
+		enabledFluidScene->releaseActor(*fluidDirtyStaticActor);
+	const bool fluidStaticRemoveDirty = enabledFluidManager[0x28] == 1;
+	printf("simulation fluid shape-change static-add-dirty=%u dynamic-add-clean=%u dynamic-remove-clean=%u static-remove-dirty=%u\n",
+		fluidStaticAddDirty ? 1u : 0u, fluidDynamicAddClean ? 1u : 0u,
+		fluidDynamicRemoveClean ? 1u : 0u, fluidStaticRemoveDirty ? 1u : 0u);
 	if(enabledFluid)
 		enabledFluidScene->releaseFluid(*enabledFluid);
 	FluidManagerCallbackSummary fluidManagerCallbacks = {};
@@ -3235,7 +3266,9 @@ int wmain(int argc, wchar_t** argv)
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
 		!enabledFluidListed || !enabledFluidManagerCleared || !enabledFluidCallbacks ||
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
-		!enabledFluidCellSizeStored ||
+		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
+		!fluidDynamicAddClean || !fluidDynamicRemoveClean ||
+		!fluidStaticRemoveDirty ||
 		enabledFluidErrors != 0)
 		return nxFail("enabled fluid creation lifecycle did not match the fixture contract");
 	sdk->releaseScene(*enabledFluidScene);

@@ -4053,6 +4053,8 @@ static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char*
 	}
 
 static void nxRuntimeShapeSlot6(unsigned char* shape, unsigned flags);
+static void nxFluidManagerShapeChanged(unsigned char* manager, void* shape,
+	bool hasRecord);
 
 void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 	{
@@ -4076,6 +4078,10 @@ void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 			nxRuntimeShapeSlot6(shape, 1);
 		nxSceneStaticPrunerRegister(static_cast<NxSceneInternal*>(scene),
 			static_cast<unsigned char*>(object));
+		NxSceneInternal* const sceneInternal = static_cast<NxSceneInternal*>(scene);
+		unsigned char* const fluidManager = sceneInternal->at<unsigned char*>(0x61c);
+		if(fluidManager)
+			nxFluidManagerShapeChanged(fluidManager, object, false);
 		return;
 		}
 	if(shape)

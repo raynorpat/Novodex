@@ -3490,6 +3490,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # The optional manager's enabled create path validates, builds and
         # lists one fluid, then dispatches fluid and manager backend teardown.
         'simulation fluid enabled valid=1 invalid=1.1.140 manager-flags=1 listed=1 count=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 dirty-cleared=1 cell-size=1 errors=0'
+		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
         'simulation fluid manager-populated-destructor calls=2 flags=1 target=1 arrays-cleared=1'
@@ -5847,7 +5848,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2672  # includes distinct dirty-manager replacement-buffer coverage
+	'5' = 2673  # includes static/dynamic fluid shape-change dirty-byte coverage
+				# includes distinct dirty-manager replacement-buffer coverage
 				# includes enabled FluidModel create/list/release fixture differential
 				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
@@ -5886,7 +5888,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1603  # includes the allocator-spy deleting-destructor assertion
+	'6' = 1604  # includes static/dynamic fluid shape-change dirty-byte coverage
+				# includes the allocator-spy deleting-destructor assertion
 				# includes enabled FluidModel create/list/release fixture differential
 				# all registered Phase 6 staged-pair and oracle-differential assertions
                # previous 1238 plus the D6 public global-anchor readback
@@ -5908,7 +5911,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1702  # includes distinct dirty-manager replacement-buffer coverage
+	'7' = 1703  # includes static/dynamic fluid shape-change dirty-byte coverage
+				# includes distinct dirty-manager replacement-buffer coverage
 				# includes the allocator release target's three required lines
 				# includes enabled FluidModel create/list/release fixture differential
 				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
