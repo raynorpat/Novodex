@@ -10529,3 +10529,9 @@ Mutation evidence for phys_fn_003630: suppressing the dirty refresh is rejected 
 
 The seeded populated-manager teardown dispatches both scalar deleting destructors, clears both array headers, and matches the oracle. Suppressing the dispatch fails the registered Phase 7 staged pair (stdout_delta=54); see [the row evidence](phase7-fluid-manager-populated-destructor-003641.md).
 Mutation evidence for phys_fn_003641: the registered populated-manager staged pair catches a disabled deleting dispatch (stdout_delta=54); restored control is exact.
+
+
+## Phase 7 fluid manager actor-release (`phys_fn_003639`)
+
+The restored map-resolved manager traversal matches six pinned-oracle callbacks; suppressing the candidate dispatch is caught by the direct oracle differential (mismatches=33). See [the row evidence](phase7-fluid-manager-actor-release-003639.md).
+Mutation evidence for phys_fn_003639: suppressing the candidate manager traversal is caught by the direct oracle differential (mismatches=33); restored control matches six callbacks.

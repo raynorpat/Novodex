@@ -68006,13 +68006,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1373",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12602",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x89dc0 confirms that, when the manager extension is initialized, the function walks the primary fluid pointer range and invokes the per-fluid release notification for each entry. The disabled manager still warns before the traversal.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares oracle RVA 0x89dc0 with candidate symbol nxNpFluidManagerNotifyReleasedActor resolved from the candidate map. With one live fluid and three emitters, oracle and candidate each emit six ordered callbacks and produce matching emitter state. Replacing the candidate dispatch with an array increment yields oracle_callbacks=6, candidate_callbacks=0, state_mismatches=27, callback_mismatches=6, mismatches=33, and exit 1. Restored Phase 7 passes at 1,698/1,697 assertions. See evidence/phase7-fluid-manager-actor-release-003639.md.",
+      "notes": "Primary fluid-array actor-release traversal is mutation-falsified against the pinned oracle with live emitter callbacks. Extension backend state beyond the supplied callback fixture remains outside this row proof."
     },
     {
       "id": "phys_fn_003640",
