@@ -10458,3 +10458,4 @@ Fresh Phase 5 and Phase 7 gates passed at 2,657/2,657 and 1,684/1,684 assertions
 
 The direct pinned-oracle `NxPhysicsFluidEmitterAbiTests` fixture covers the valid mesh record and the `-8` mesh-data sentinel. It verifies geometry order `+12,+20,+8,+16`, the defined 92-byte prefix, 96-byte stride, returns, count, stack, and untouched tail. The restored candidate matches (`oracle_contract=1`, `mismatches=0`); sourcing the first geometry word from `+8` is rejected (`mismatches=1`). See [the row evidence](phase7-fluid-collision-mesh-append-003541.md).
 Mutation evidence for phys_fn_003541: the wrong first geometry offset is detected (mismatches=1).
+Fresh Phase 5 and Phase 7 gates passed at 2,658/2,658 and 1,685/1,685 assertions respectively; all 810 reconstruction-tooling tests passed; inventory and the 80-file public Physics header manifest pass.
