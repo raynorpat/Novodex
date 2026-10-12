@@ -1,0 +1,9 @@
+Post-merge mainline validation (commit 7157f23a)
+
+Phase 5: phase_gate=5 status=pass; coverage_assertions_evaluated=2647 floor=2647. Includes required triangle-builder marker: fluid collision triangle-builder cases=3 oracle_digest=b2825642 candidate_present=1 oracle_cells=7 mismatches=0.
+
+Phase 7: phase_gate=7 status=pass; coverage_assertions_evaluated=1674 floor=1674. Includes the same required triangle-builder marker.
+
+Reconstruction tooling: Ran 810 tests in 84.294s; OK.
+
+Inventory: pass; Phase 7 closure has 107 closed / 454 deferred; unexplained=0. Both phase runners completed their 80-header immutable-manifest checks. Full runner logs are retained in the ignored mainline build directory `build/fluid-triangle-cells-mainline/phase5-final.log` and `phase7-final.log`.

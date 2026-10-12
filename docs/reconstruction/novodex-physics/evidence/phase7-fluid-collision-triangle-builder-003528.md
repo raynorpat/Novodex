@@ -7,3 +7,6 @@ The direct `NxPhysicsFluidEmitterAbiTests` differential covers an identity-trans
 A deliberate no-output mutation returns before the triangle loop. Both nonempty cases are rejected (`mismatches=2`); the empty case remains equivalent. After restoring the source and forcing a rebuild, all three controls pass exactly. Raw logs are under `evidence/raw/phase7-fluid-collision-triangle-builder-003528/`.
 
 The test calls oracle RVA `0x86b40`, whose internal triangle-cell helper calls indirect FluidModel callbacks. The supplied UE3 binary directory has no `FluidModel.dll`, so the harness binds independent SAT and array-growth references into the oracle callback slots. The test therefore validates indexed traversal, affine transformation, per-triangle accumulation, cell outputs, hash updates, and empty handling, while production callback integration and Unreal static-collision validation remain open. Dirty builder `phys_fn_003505` and full-DLL closure also remain open.
+
+
+Fresh mainline verification: Phase 5 passes at 2,647/2,647 registered assertions; Phase 7 passes at 1,674/1,674. All 810 reconstruction-tool tests pass, and inventory validation reports zero unexplained rows. The phase-gate runners also verified the immutable 80-header manifest. Concise outputs: `evidence/raw/phase7-fluid-collision-triangle-builder-003528/phase-gates.txt`.
