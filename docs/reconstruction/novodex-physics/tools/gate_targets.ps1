@@ -102,6 +102,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid collision shape-count-router cases=13 static=6 dynamic=5 excluded=1 refresh=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0'
         'fluid collision scene-shape-count cases=3 empty=1 collections=2 compound_lists=2 routed_shapes=9 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0'
         'fluid collision sphere-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0'
+        'fluid collision capsule-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0'
         'fluid collision static-copy buckets=3 cells=3 indices=4 oracle_return=4 candidate_return=4 rows=1 cells_match=1 indices_match=1 headers=1 source_preserved=1 stack=1/1 mismatches=0 undefined_bucket_word=ignored'
         'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
@@ -5826,7 +5827,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2654  # includes fluid sphere-array append differential
+	'5' = 2655  # includes fluid capsule-array append differential
+				# includes fluid sphere-array append differential
 				# includes fluid scene-shape collection differential
 				# includes fluid shape-count router differential
 				# includes fluid triangle-index builder caller reconstruction
@@ -5877,7 +5879,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1681  # includes fluid sphere-array append differential
+	'7' = 1682  # includes fluid capsule-array append differential
+				# includes fluid sphere-array append differential
 				# includes fluid scene-shape collection differential
 				# includes fluid shape-count router differential
 				# includes fluid triangle-index builder caller reconstruction
