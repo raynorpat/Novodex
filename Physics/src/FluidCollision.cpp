@@ -601,6 +601,45 @@ extern "C" int __cdecl nxFluidCollisionCountShapeType(void* builder,
 	return reinterpret_cast<int>(builder);
 	}
 
+// phys_fn_003549 (RVA 0x00087880) walks Scene::shapes at scene+0x624.
+// IceCore::Container stores its backing array at +0x18, its starting slot at
+// +0x04, and the two active-run lengths at +0x08/+0x0c. Compound shapes (type
+// 5) contribute their [shape+0xe0, shape+0xe4) member range instead of the
+// compound itself; every leaf is sent through phys_fn_003511.
+extern "C" int __cdecl nxFluidCollisionCountSceneShapes(void* builder,
+	void* scene)
+	{
+	unsigned char* const sceneBytes = static_cast<unsigned char*>(scene);
+	unsigned char* const container = *reinterpret_cast<unsigned char**>(
+		sceneBytes + 0x624 + 0x1c);
+	if(!container)
+		return 0;
+	const int count = *reinterpret_cast<int*>(container + 8)
+		+ *reinterpret_cast<int*>(container + 12);
+	void** const entries = *reinterpret_cast<void***>(container + 24)
+		+ *reinterpret_cast<unsigned*>(container + 4);
+	for(int i = 0; i != count; ++i)
+		{
+		void* const node = entries[i];
+		void* const shape = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(node) + 4);
+		const unsigned type = *reinterpret_cast<unsigned*>(
+			static_cast<unsigned char*>(shape) + 0xd0);
+		if(type == 5)
+			{
+			void** const begin = *reinterpret_cast<void***>(
+				static_cast<unsigned char*>(shape) + 0xe0);
+			void** const end = *reinterpret_cast<void***>(
+				static_cast<unsigned char*>(shape) + 0xe4);
+			for(void** item = begin; item != end; ++item)
+				nxFluidCollisionCountShapeType(builder, *item);
+			}
+		else
+			nxFluidCollisionCountShapeType(builder, shape);
+		}
+	return count;
+	}
+
 // phys_fn_003540 (RVA 0x00087580) packs the shape pose, selected geometry
 // bounds, and shape handle into a collision-object record. The update bit is
 // the embedded Prunable state at shape +0xa4; its callback is the same owner
