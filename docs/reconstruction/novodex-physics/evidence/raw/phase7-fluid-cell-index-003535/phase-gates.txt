@@ -1,0 +1,28 @@
+Fluid cell-index post-merge verification
+Source revision: 55ddd4a6da25c88e9cb460c91b05158d8442c478
+Target: Win32 Release, CMake NxPhysics.dll and NxPhysicsFluidEmitterAbiTests
+Oracle: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+Oracle SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: D:\github\Novodex\build\fluid-triangle-cells-mainline\pairs\candidate\NxPhysics.dll
+Candidate SHA-256: 86d7928544efa2a6c3e2d434524e67f00109ca840ea9e2a524c49791fd97e9b7
+Candidate test executable SHA-256: 6ec2a939fd5dc66367d310e885ac35b8e73216aab2b2d532a87c0462fbc035f0
+Implementation source SHA-256: 15c794447d09b7d7d4925269b956bef66aa37a1ea4a2beeff5b8ed12702f9625
+Differential source SHA-256: 5f4a3f5f3815909e531c1d002ab5cdcd43d4b39fc0c3f07dfa7cf828770a0eb5
+
+Commands (from D:\github\Novodex):
+- & .\docs\reconstruction\novodex-physics\tools\run_phase_gate.ps1 -Phase 5 -RepoRoot D:\github\Novodex -BuildRoot D:\github\Novodex\build\fluid-triangle-cells-mainline -OracleRoot D:\FlamingEnt__\Unreal_3
+- & .\docs\reconstruction\novodex-physics\tools\run_phase_gate.ps1 -Phase 7 -RepoRoot D:\github\Novodex -BuildRoot D:\github\Novodex\build\fluid-triangle-cells-mainline -OracleRoot D:\FlamingEnt__\Unreal_3
+- python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests
+- python docs/reconstruction/novodex-physics/tools/verify_public_headers.py --root Physics/include --manifest docs/reconstruction/novodex-physics/public_header_hashes.json
+
+Results: Phase 5 pass, 2,650/2,650; Phase 7 pass, 1,677/1,677; closure 111 closed / 450 deferred, unexplained=0; tooling 810 tests, OK; public header manifest 80/80 pass.
+The direct probe in both phase gates reports cell-index cases=3 (matched=1, missing=1, empty=1), candidate_present=1, mismatches=0.
+
+SHA-256 of retained raw logs:
+- phase5-gate.log: bf4273643d8a9a92bdc401d9240fa59f1d0cc0fa2846641d0961543f710a792d
+- phase7-gate.log: b2617ccc75deb42fd8f45f286b4a37c1da8e950720370ee8db032c5dedefe7ff
+- tooling-suite.log: 7591877fb9a41ee2efb99fa5d88cca404ba852295366a3080f8e3c80764195be
+- cell-index-red.log: 93809ead2dbc99fea1c8d6f8a69fd1334016176398a667f4d9bd25829961d9bb
+- cell-index-mutant.log: 97a46acddf1bb5cfb7b15dfc36dfed39aa59ad7aa688abece53d64ed6c36d686
+- cell-index-restored-control.log: 988383ac711b07ca365a6b2e3fc75dc25dcdbdd5c551dab5f3428053c9d35f3b
+- mutation.patch: cbed5a99bcb3a79245f101e483673e3465db2323baac30c6962f37a8a6dd3b3d
