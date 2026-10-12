@@ -2497,7 +2497,8 @@ int wmain(int argc, wchar_t** argv)
 		"nxFluidCollisionPackShapeData", &gCandidateFluidCollisionShapePackerAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid shape-packing row could not be resolved from its map\n");
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
-		"nxFluidCollisionCountShapeType", &gCandidateFluidCollisionShapeCounterAddress))
+		"@nxFluidCollisionCountShapeType@12",
+		&gCandidateFluidCollisionShapeCounterAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid shape-count router could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
