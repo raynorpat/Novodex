@@ -10470,3 +10470,5 @@ tests pass, inventory validation reports 6,338 functions / 5,138 data objects /
 zero unexplained entries, and all 80 public Physics headers match the pinned
 manifest. Candidate `NxPhysics.dll` SHA-256 is
 `20cf41661aa185fbe24ed8478d260a00921b75a85b8daea5026d90a14cdfa2cc`.
+
+Mutation evidence for phys_fn_003555: restricting compound traversal to the first child is detected (mismatches=5); restored control reports zero mismatches.

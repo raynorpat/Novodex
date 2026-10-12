@@ -1,6 +1,8 @@
 #include "fluids/NpFluidEmitter.h"
 #include "NpSceneGuard.h"
+#ifndef NX_FLUID_EMITTER_ABI_TEST
 #include "FoundationSDK.h"
+#endif
 #include "NxMat34.h"
 
 #include <windows.h>
@@ -8,11 +10,19 @@
 
 #define NX_NPFLUIDEMITTER_CPP "\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluidEmitter.cpp"
 
+#ifdef NX_FLUID_EMITTER_ABI_TEST
+extern "C" void __cdecl nxFluidEmitterAbiUnexpectedWriteLockFailure(unsigned);
+#endif
+
 static void nxFluidEmitterReportWriteLocked(unsigned line)
 	{
+#ifdef NX_FLUID_EMITTER_ABI_TEST
+	nxFluidEmitterAbiUnexpectedWriteLockFailure(line);
+#else
 	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 		NX_NPFLUIDEMITTER_CPP, line, 0,
 		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+#endif
 	}
 
 // phys_fn_003593 (0x00088090) owns the internal bitfield transition. The

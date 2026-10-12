@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 7,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 7 closes a function only with a registered, measured mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 121 functions are closed, the fresh full Phase 7 gate passes at 1,686/1,686 registered coverage assertions, 262 reconstructed functions remain unfalsified, 178 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact. Fluid emitter ABI continuation (2026-10-09): rows phys_fn_003792 and 003804/003806/003808/003816/003818/003820 are mutation-falsified by NxPhysicsFluidEmitterAbiTests, registered to Phase 7 and also exercised by Phase 5. The constructor mutation changed its cleared secondary-base word and was detected with mismatches=1; each of the six aggregate getter copy-offset mutations was detected with mismatches=2. Restored oracle control reports zero constructor, raw ABI, and aggregate mismatches; see evidence/fluid-emitter-aggregate-abi-2026-10-09.md. The fluid-emitter getFlag row phys_fn_003852 is independently mutation-falsified: shifting its mask read from internal+0x10 to +0x14 is caught by NxPhysicsFluidEmitterAbiTests with mismatches=1; restored output is exact. See evidence/fluid-emitter-get-flag-003852.md. Fluid emitter backend flag setter continuation (2026-10-09): phys_fn_003593 and public wrapper phys_fn_003850 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests candidate-DLL probe. A wrong mask-4 callback export is caught with callback_mismatches=2; a no-op wrapper is caught with 11 total mismatches. Restored controls match all six backend set/clear calls and non-backend flag state; see evidence/fluid-emitter-set-flag-backend-003593-003850.md. M1.5 continuation (2026-10-09): the six aggregate getters are now also dispatched through a wrapper constructed by the candidate DLL; the restored probe matches all six values and x86 return/stack checks, and a DLL-only local-position offset mutation is rejected. See evidence/fluid-emitter-candidate-dll-aggregate-abi-2026-10-09.md. Scheduler row phys_fn_000659 is now mutation-falsified by NxPhysicsSimulationTests: an immediate-return mutant exits 1 with stdout_delta=3829, and the restored control is exact (stdout_delta=0, stderr_exact=True); see evidence/phase7-scene-scheduler-000659-mutation.md. Scene release row phys_fn_000653 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant changes the staged output by 494 bytes (both exits zero, exact stderr); the restored control is exact. See evidence/phase7-scene-release-joint-000653-mutation.md. Scene insertion row phys_fn_000661 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant access-violates with stdout_delta=3282 (oracle exit 0, exact stderr); the restored control is exact. See evidence/phase7-scene-add-joint-000661-mutation.md. Actor-array teardown helper phys_fn_000596 is now mutation-falsified by NxPhysicsCoreDumpTests: restoring the swap-removing releaseActor loop changes the allocator event prefix (228-byte oracle free becomes 552 bytes) and is rejected with stdout_delta=2; the restored snapshot/destructor implementation is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-actor-teardown-000596.md. The enclosing Scene destructor phys_fn_000663 is now mutation-falsified through NxPhysicsPopulatedSceneTeardownTests; see evidence/phase7-scene-destructor-000663.md. Pruning stale-pair retirement row phys_fn_001953 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the Scene destructor sweep leaves 17 rather than 15 tracked allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control matches exactly. See evidence/phase7-pruning-stale-pair-release-001953.md. Pruning-engine storage teardown row phys_fn_001982 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the pair-storage release leaves 18 rather than 15 allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control is exact. Pruner owner cleanup row phys_fn_001963 is mutation-falsified by NxPhysicsPopulatedSceneTeardownTests, which seeds static and selected-dynamic owner sections and catches deletion-dispatch omission (stdout_delta=2); restored controls match the oracle. See evidence/phase7-pruner-owner-cleanup-001963.md. Active-root collection row phys_fn_000608 is now mutation-falsified through NxPhysicsSimulationTests: omitting every active root changes the staged transcript by 6,726 bytes and breaks the joint-break notification assertion; the restored control is exact. See evidence/phase7-scene-active-root-collection-000608.md. Scene joint-count getter phys_fn_000559 is mutation-falsified through NxPhysicsJointStagedPairTests: reading +0x6c4 instead of +0x6c8 changes the joint-count transcript (stdout_delta=296); restored control is exact. See evidence/phase7-scene-joint-count-000559.md. Scene effector-count getter phys_fn_000561 is mutation-falsified through NxPhysicsEffectorTests: reading +0x6c8 instead of +0x6c4 changes the effector-count transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-count-000561.md. Scene effector iterator reset phys_fn_000565 is mutation-falsified through NxPhysicsEffectorTests: clearing the cursor instead of copying the +0x5a4 list head changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-iterator-000565.md. Scene get-next-effector row phys_fn_000569 is mutation-falsified through NxPhysicsEffectorTests: returning null for a non-null cursor changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-next-000569.md. Scene remove-effector row phys_fn_000573 is mutation-falsified through NxPhysicsEffectorTests: a no-op leaves the released effector in the Scene list and crashes the candidate (candidate_exit=-1073741819, stdout_delta=48); restored control is exact. See evidence/phase7-scene-remove-effector-000573.md. Scene releaseEffectors row phys_fn_000575 is mutation-falsified through NxPhysicsEffectorTests: omitting the whole destructor walk produces four fewer scene-release frees and stdout_delta=2; the restored control is exact. See evidence/phase7-scene-release-effectors-000575.md. Scene joint-break event processing row phys_fn_000577 is mutation-falsified through NxPhysicsSimulationTests: an immediate-return mutant suppresses both retain/release notifications and fails the callback-count assertion (stdout_delta=801, candidate_exit=1); the restored control is exact. See evidence/phase7-scene-joint-break-events-000577.md. Scene debug-renderable row phys_fn_000579 is mutation-falsified through NxPhysicsSceneVisualizeTests: a null-return mutant crashes while visualization consumes the renderable (stdout_delta=869, candidate_exit=-1073741819); the restored control is exact. See evidence/phase7-scene-debug-renderable-000579.md. Scene releaseEffector row phys_fn_000594 is mutation-falsified through NxPhysicsEffectorTests: an immediate-return mutant leaves the count at 1, iterator at np, and performs no frees (stdout_delta=48); the restored control is exact. See evidence/phase7-scene-release-effector-000594.md. Scene createSpringAndDamperEffector row phys_fn_000587 is mutation-falsified through NxPhysicsEffectorTests: a null-return mutant changes creation from yes to no (stdout_delta=85); the restored control is exact. See evidence/phase7-scene-create-effector-000587.md. Scene collision-shape pruner traversal rows phys_fn_000581 and phys_fn_000583 are now mutation-falsified by NxPhysicsSceneVisualizeTests: removing the static or selected dynamic pruner loop changes the transcript by 1,382 or 1,322 bytes, respectively; the restored control is exact. See evidence/phase7-scene-collision-shape-pruners-000581-000583.md. Scene stats continuation (2026-10-10): phys_fn_000617 is mutation-falsified through NxPhysicsSimulationTests. Adding one to the populated actor count changes the staged transcript by 8 bytes; restored output is exact. An earlier ledger snapshot recorded 71 closed and 490 deferred; the current ledger has 78 closed and 483 deferred. Phase 7 public scene query wrappers phys_fn_000346 (getSceneStats) and phys_fn_000348 (getLimits) are independently mutation-falsified through NxPhysicsSimulationTests; their mutations change the registered output by 12 and 6 bytes, and each restored control is exact. See evidence/phase7-npscene-query-wrappers-000346-000348/README.md. The adjacent scene-limits row phys_fn_000621 is mutation-falsified through NxPhysicsSimulationTests: changing the active actor count to +1 changes the three selector lines from 8 to 9 (stdout_delta=8); restored control is exact. See evidence/phase7-scene-limits-000621/README.md. NpScene callback continuation (2026-10-10): rows phys_fn_000350/000352/000354/000356/000358/000360 are independently mutation-falsified through NxPhysicsSimulationTests. The notifier setter/getter now run directly through the public API in the fixture; trigger/contact rows use the existing callback simulation. Mutants change the staged transcript by 799/799/3958/2/1053/2 bytes respectively; all restored controls report stdout_delta=0 and exact stderr. See evidence/phase7-npscene-callbacks-000350-000360/README.md. Scene auxiliary manager destructor phys_fn_000649 is now mutation-falsified by NxPhysicsObjectLayoutTests: omitting the allocator free reports oracle_frees=10, candidate_frees=0 and mismatches=1; preserving metadata word +4 reports 29 byte mismatches. Restored control is exact with ten frees on both sides. See evidence/phase7-scene-auxiliary-dtor-000649.md. Scene joint iterator reset row phys_fn_000563 is mutation-falsified through NxPhysicsJointStagedPairTests: clearing the cursor changes the staged transcript by 296 bytes; restored focused output is exact and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. See evidence/phase7-scene-joint-iterator-000563.md. Scene get-next-joint row phys_fn_000567 is mutation-falsified through NxPhysicsJointStagedPairTests: clearing the cursor instead of advancing to the next Joint changes the staged transcript by 90 bytes; restored focused output is exact and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. See evidence/phase7-scene-get-next-joint-000567.md. Joint-break event insertion row phys_fn_000571 is mutation-falsified through NxPhysicsSimulationTests: clearing the event-list head suppresses the expected joint-break callbacks and is caught with stdout_delta=801; restored output is exact and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. See evidence/phase7-scene-add-joint-break-event-000571.md. Active-body integration row phys_fn_000726 is now mutation-falsified through NxPhysicsSimulationTests; see evidence/phase7-body-integration-000726.md. Fluid actor-release continuation (2026-10-11): NpFluid row phys_fn_003485 and manager row phys_fn_003635 are mutation-falsified by NxPhysicsFluidEmitterAbiTests; see evidence/phase7-fluid-actor-release.md. Both detach and attach/update arms of phys_fn_003622 are dynamically gated through matrix-backed and dynamic-body actor frames, Caller row phys_fn_000628 is also mutation-falsified through the public empty-manager actor-release fixture (stdout_delta=2); its live child chain is measured by the seeded oracle differential. Fluid emitter world-pose helper phys_fn_003605 is now mutation-falsified by three direct pinned-oracle cases; actor-translation mutation detected with mismatches=2. The caller phys_fn_003624 is now mutation-falsified by the direct body-state differential. Fluid emitter post-step body-state caller phys_fn_003624 is mutation-falsified with an offset mutant (mismatches=1); its two direct cases compare no-actor and attached-body callback behavior. See evidence/phase7-fluid-emitter-body-state-003624.md. Implicit surface-mesh dispatch phys_fn_003419 forwards context, fluid and mesh handles, and vertexCount/3 to ImplicitFluidMeshRun; the vertexCount/6 mutation is caught by the direct callback differential (mismatches=1). Its empty-mesh branch is checked for no callback and balanced stack, without claiming oracle EAX. See evidence/phase7-fluid-surface-mesh-003419.md. Public implicit-mesh wrapper phys_fn_003874 (RVA 0x0008d230) is independently mutation-falsified by NxPhysicsFluidEmitterAbiTests; omitting its internal-record dispatch is detected with public-wrapper mismatches=2. Restored valid/invalid wrapper cases match with zero mismatches; see evidence/phase7-implicit-mesh-set-mesh-data-003663.md. Fluid post-step continuation (2026-10-11): Scene traversal row phys_fn_000619 and per-fluid update row phys_fn_003475 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests direct oracle differential; the Scene-loop no-op and per-fluid immediate-return mutants each report mismatches=72; a mesh-copy-only mutant reports mismatches=4. The expanded differential compares seven ordered callback tuples, emitter handles, two-particle channel copies with distinct strides, bounds, mesh outputs, null optional-mesh behavior, and emitter poses; restored control reports zero mismatches. See evidence/phase7-fluid-post-step-000619-003475.md. Fluid static-collision copy rows phys_fn_003518/003520/003522 are now mutation-falsified through the same direct fluid ABI target; incrementing a copied index word is caught with mismatches=1, and the restored control reports zero. See evidence/phase7-fluid-collision-static-copy-003518.md. Fluid static-collision bucket-hash row phys_fn_003526 is now mutation-falsified by the direct fluid ABI differential: seven signed-coordinate cases and an empty range match, while a +2 count mutation is detected (mismatches=1). See evidence/phase7-fluid-collision-hash-count-003526.md. Fluid static-collision triangle-cell row phys_fn_003524 is now mutation-falsified by three direct oracle cases (positive coordinates, negative coordinates with margin, and zero-capacity array growth); suppressing cell writes is caught in all three. The oracle fixture supplies an independent SAT callback because FluidModel.dll is absent from the pinned UE3 binaries. See evidence/phase7-fluid-collision-triangle-cells-003524.md. Fluid static-collision triangle builder phys_fn_003528 is now mutation-falsified by identity and asymmetric affine mesh cases plus an empty mesh; its no-output mutant changes both nonempty cases (mismatches=2). The oracle callback slots use independent SAT and growth fixture references because FluidModel.dll is absent from the pinned UE3 binaries. See evidence/phase7-fluid-collision-triangle-builder-003528.md. Fluid static-collision cell-hash row phys_fn_003530 is now mutation-falsified with duplicate, cross-bucket, seeded-existing-cell, and empty-range inputs; a no-op mutation is detected in both nonempty cases (mismatches=2). The absent FindCDCell callback is supplied by an independent fixture reference because FluidModel.dll is absent. See evidence/phase7-fluid-collision-cell-hash-003530.md. Indexed fluid collision grid rows phys_fn_003532/003533 are now mutation-falsified as one contiguous routine; its asymmetric nonempty case detects a skipped triangle loop (mismatches=1), and restored output matches. See evidence/phase7-fluid-indexed-grid-003532-003533.md. Cell-to-triangle index row phys_fn_003535 is now mutation-falsified: the direct match/miss/empty differential catches a changed triangle index in both nonempty cases (mismatches=2); restored association arrays match. See evidence/phase7-fluid-cell-index-003535.md. Triangle-index caller rows phys_fn_003537/003538 are now mutation-falsified by the direct oracle differential; incrementing the stored mesh index is detected (mismatches=1). See evidence/phase7-fluid-triangle-index-builder-003537-003538.md. Scene shape collector row phys_fn_003549 is also mutation-falsified: skipping compound-member routing is detected in both nonempty scene cases (mismatches=2); restored control matches. See evidence/phase7-fluid-collision-scene-shape-count-003549.md.",
+  "note": "Phase 7 closes a function only with a registered, measured mutation falsification. The disabled FluidManager release path (phys_fn_003643) is mutation-falsified through its seeded array-removal and deleting-dispatch fixture. The inert flushStream slot (phys_fn_000333) is mutation-falsified through a direct public-call fixture and an error-report mutation. Phase 7 owns 561 function rows and 502 data objects: 122 functions are closed, the fresh full Phase 7 gate passes at 1,687/1,687 registered coverage assertions, 262 reconstructed functions remain unfalsified, 177 functions are not reconstructed in this phase, and no data object is dispositioned. The disabled fluid and implicit-mesh API wrappers are independently mutation-falsified through NxPhysicsSimulationTests; their tested oracle contract remains the shipped unavailable-feature behavior. Scene post-step row phys_fn_000615 is now mutation-falsified by NxPhysicsSimulationTests: replacing row000615 with a no-op changes the staged transcript by 7,232 bytes, and the restored control is exact. The ledger accounts for every owned row without treating transcript agreement alone as closure. Actor visualization row phys_fn_000020 is caught by NxPhysicsSceneVisualizeTests: a no-op changes the staged transcript by 916 bytes (both exits zero, exact stderr); the restored control is exact. Fluid emitter ABI continuation (2026-10-09): rows phys_fn_003792 and 003804/003806/003808/003816/003818/003820 are mutation-falsified by NxPhysicsFluidEmitterAbiTests, registered to Phase 7 and also exercised by Phase 5. The constructor mutation changed its cleared secondary-base word and was detected with mismatches=1; each of the six aggregate getter copy-offset mutations was detected with mismatches=2. Restored oracle control reports zero constructor, raw ABI, and aggregate mismatches; see evidence/fluid-emitter-aggregate-abi-2026-10-09.md. The fluid-emitter getFlag row phys_fn_003852 is independently mutation-falsified: shifting its mask read from internal+0x10 to +0x14 is caught by NxPhysicsFluidEmitterAbiTests with mismatches=1; restored output is exact. See evidence/fluid-emitter-get-flag-003852.md. Fluid emitter backend flag setter continuation (2026-10-09): phys_fn_003593 and public wrapper phys_fn_003850 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests candidate-DLL probe. A wrong mask-4 callback export is caught with callback_mismatches=2; a no-op wrapper is caught with 11 total mismatches. Restored controls match all six backend set/clear calls and non-backend flag state; see evidence/fluid-emitter-set-flag-backend-003593-003850.md. M1.5 continuation (2026-10-09): the six aggregate getters are now also dispatched through a wrapper constructed by the candidate DLL; the restored probe matches all six values and x86 return/stack checks, and a DLL-only local-position offset mutation is rejected. See evidence/fluid-emitter-candidate-dll-aggregate-abi-2026-10-09.md. Scheduler row phys_fn_000659 is now mutation-falsified by NxPhysicsSimulationTests: an immediate-return mutant exits 1 with stdout_delta=3829, and the restored control is exact (stdout_delta=0, stderr_exact=True); see evidence/phase7-scene-scheduler-000659-mutation.md. Scene release row phys_fn_000653 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant changes the staged output by 494 bytes (both exits zero, exact stderr); the restored control is exact. See evidence/phase7-scene-release-joint-000653-mutation.md. Scene insertion row phys_fn_000661 is now mutation-falsified by NxPhysicsJointStagedPairTests: an immediate-return mutant access-violates with stdout_delta=3282 (oracle exit 0, exact stderr); the restored control is exact. See evidence/phase7-scene-add-joint-000661-mutation.md. Actor-array teardown helper phys_fn_000596 is now mutation-falsified by NxPhysicsCoreDumpTests: restoring the swap-removing releaseActor loop changes the allocator event prefix (228-byte oracle free becomes 552 bytes) and is rejected with stdout_delta=2; the restored snapshot/destructor implementation is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-actor-teardown-000596.md. The enclosing Scene destructor phys_fn_000663 is now mutation-falsified through NxPhysicsPopulatedSceneTeardownTests; see evidence/phase7-scene-destructor-000663.md. Pruning stale-pair retirement row phys_fn_001953 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the Scene destructor sweep leaves 17 rather than 15 tracked allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control matches exactly. See evidence/phase7-pruning-stale-pair-release-001953.md. Pruning-engine storage teardown row phys_fn_001982 is now mutation-falsified by NxPhysicsPopulatedSceneTeardownTests: disabling the pair-storage release leaves 18 rather than 15 allocator blocks and is rejected (stdout_delta=2, candidate_exit=1); the restored control is exact. Pruner owner cleanup row phys_fn_001963 is mutation-falsified by NxPhysicsPopulatedSceneTeardownTests, which seeds static and selected-dynamic owner sections and catches deletion-dispatch omission (stdout_delta=2); restored controls match the oracle. See evidence/phase7-pruner-owner-cleanup-001963.md. Active-root collection row phys_fn_000608 is now mutation-falsified through NxPhysicsSimulationTests: omitting every active root changes the staged transcript by 6,726 bytes and breaks the joint-break notification assertion; the restored control is exact. See evidence/phase7-scene-active-root-collection-000608.md. Scene joint-count getter phys_fn_000559 is mutation-falsified through NxPhysicsJointStagedPairTests: reading +0x6c4 instead of +0x6c8 changes the joint-count transcript (stdout_delta=296); restored control is exact. See evidence/phase7-scene-joint-count-000559.md. Scene effector-count getter phys_fn_000561 is mutation-falsified through NxPhysicsEffectorTests: reading +0x6c8 instead of +0x6c4 changes the effector-count transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-count-000561.md. Scene effector iterator reset phys_fn_000565 is mutation-falsified through NxPhysicsEffectorTests: clearing the cursor instead of copying the +0x5a4 list head changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-iterator-000565.md. Scene get-next-effector row phys_fn_000569 is mutation-falsified through NxPhysicsEffectorTests: returning null for a non-null cursor changes the iterator transcript (stdout_delta=14); restored control is exact. See evidence/phase7-scene-effector-next-000569.md. Scene remove-effector row phys_fn_000573 is mutation-falsified through NxPhysicsEffectorTests: a no-op leaves the released effector in the Scene list and crashes the candidate (candidate_exit=-1073741819, stdout_delta=48); restored control is exact. See evidence/phase7-scene-remove-effector-000573.md. Scene releaseEffectors row phys_fn_000575 is mutation-falsified through NxPhysicsEffectorTests: omitting the whole destructor walk produces four fewer scene-release frees and stdout_delta=2; the restored control is exact. See evidence/phase7-scene-release-effectors-000575.md. Scene joint-break event processing row phys_fn_000577 is mutation-falsified through NxPhysicsSimulationTests: an immediate-return mutant suppresses both retain/release notifications and fails the callback-count assertion (stdout_delta=801, candidate_exit=1); the restored control is exact. See evidence/phase7-scene-joint-break-events-000577.md. Scene debug-renderable row phys_fn_000579 is mutation-falsified through NxPhysicsSceneVisualizeTests: a null-return mutant crashes while visualization consumes the renderable (stdout_delta=869, candidate_exit=-1073741819); the restored control is exact. See evidence/phase7-scene-debug-renderable-000579.md. Scene releaseEffector row phys_fn_000594 is mutation-falsified through NxPhysicsEffectorTests: an immediate-return mutant leaves the count at 1, iterator at np, and performs no frees (stdout_delta=48); the restored control is exact. See evidence/phase7-scene-release-effector-000594.md. Scene createSpringAndDamperEffector row phys_fn_000587 is mutation-falsified through NxPhysicsEffectorTests: a null-return mutant changes creation from yes to no (stdout_delta=85); the restored control is exact. See evidence/phase7-scene-create-effector-000587.md. Scene collision-shape pruner traversal rows phys_fn_000581 and phys_fn_000583 are now mutation-falsified by NxPhysicsSceneVisualizeTests: removing the static or selected dynamic pruner loop changes the transcript by 1,382 or 1,322 bytes, respectively; the restored control is exact. See evidence/phase7-scene-collision-shape-pruners-000581-000583.md. Scene stats continuation (2026-10-10): phys_fn_000617 is mutation-falsified through NxPhysicsSimulationTests. Adding one to the populated actor count changes the staged transcript by 8 bytes; restored output is exact. An earlier ledger snapshot recorded 71 closed and 490 deferred; the current ledger has 78 closed and 483 deferred. Phase 7 public scene query wrappers phys_fn_000346 (getSceneStats) and phys_fn_000348 (getLimits) are independently mutation-falsified through NxPhysicsSimulationTests; their mutations change the registered output by 12 and 6 bytes, and each restored control is exact. See evidence/phase7-npscene-query-wrappers-000346-000348/README.md. The adjacent scene-limits row phys_fn_000621 is mutation-falsified through NxPhysicsSimulationTests: changing the active actor count to +1 changes the three selector lines from 8 to 9 (stdout_delta=8); restored control is exact. See evidence/phase7-scene-limits-000621/README.md. NpScene callback continuation (2026-10-10): rows phys_fn_000350/000352/000354/000356/000358/000360 are independently mutation-falsified through NxPhysicsSimulationTests. The notifier setter/getter now run directly through the public API in the fixture; trigger/contact rows use the existing callback simulation. Mutants change the staged transcript by 799/799/3958/2/1053/2 bytes respectively; all restored controls report stdout_delta=0 and exact stderr. See evidence/phase7-npscene-callbacks-000350-000360/README.md. Scene auxiliary manager destructor phys_fn_000649 is now mutation-falsified by NxPhysicsObjectLayoutTests: omitting the allocator free reports oracle_frees=10, candidate_frees=0 and mismatches=1; preserving metadata word +4 reports 29 byte mismatches. Restored control is exact with ten frees on both sides. See evidence/phase7-scene-auxiliary-dtor-000649.md. Scene joint iterator reset row phys_fn_000563 is mutation-falsified through NxPhysicsJointStagedPairTests: clearing the cursor changes the staged transcript by 296 bytes; restored focused output is exact and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. See evidence/phase7-scene-joint-iterator-000563.md. Scene get-next-joint row phys_fn_000567 is mutation-falsified through NxPhysicsJointStagedPairTests: clearing the cursor instead of advancing to the next Joint changes the staged transcript by 90 bytes; restored focused output is exact and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. See evidence/phase7-scene-get-next-joint-000567.md. Joint-break event insertion row phys_fn_000571 is mutation-falsified through NxPhysicsSimulationTests: clearing the event-list head suppresses the expected joint-break callbacks and is caught with stdout_delta=801; restored output is exact and the full Phase 7 gate passes at 1,639 assertions against a 1,475 floor. See evidence/phase7-scene-add-joint-break-event-000571.md. Active-body integration row phys_fn_000726 is now mutation-falsified through NxPhysicsSimulationTests; see evidence/phase7-body-integration-000726.md. Fluid actor-release continuation (2026-10-11): NpFluid row phys_fn_003485 and manager row phys_fn_003635 are mutation-falsified by NxPhysicsFluidEmitterAbiTests; see evidence/phase7-fluid-actor-release.md. Both detach and attach/update arms of phys_fn_003622 are dynamically gated through matrix-backed and dynamic-body actor frames, Caller row phys_fn_000628 is also mutation-falsified through the public empty-manager actor-release fixture (stdout_delta=2); its live child chain is measured by the seeded oracle differential. Fluid emitter world-pose helper phys_fn_003605 is now mutation-falsified by three direct pinned-oracle cases; actor-translation mutation detected with mismatches=2. The caller phys_fn_003624 is now mutation-falsified by the direct body-state differential. Fluid emitter post-step body-state caller phys_fn_003624 is mutation-falsified with an offset mutant (mismatches=1); its two direct cases compare no-actor and attached-body callback behavior. See evidence/phase7-fluid-emitter-body-state-003624.md. Implicit surface-mesh dispatch phys_fn_003419 forwards context, fluid and mesh handles, and vertexCount/3 to ImplicitFluidMeshRun; the vertexCount/6 mutation is caught by the direct callback differential (mismatches=1). Its empty-mesh branch is checked for no callback and balanced stack, without claiming oracle EAX. See evidence/phase7-fluid-surface-mesh-003419.md. Public implicit-mesh wrapper phys_fn_003874 (RVA 0x0008d230) is independently mutation-falsified by NxPhysicsFluidEmitterAbiTests; omitting its internal-record dispatch is detected with public-wrapper mismatches=2. Restored valid/invalid wrapper cases match with zero mismatches; see evidence/phase7-implicit-mesh-set-mesh-data-003663.md. Fluid post-step continuation (2026-10-11): Scene traversal row phys_fn_000619 and per-fluid update row phys_fn_003475 are mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests direct oracle differential; the Scene-loop no-op and per-fluid immediate-return mutants each report mismatches=72; a mesh-copy-only mutant reports mismatches=4. The expanded differential compares seven ordered callback tuples, emitter handles, two-particle channel copies with distinct strides, bounds, mesh outputs, null optional-mesh behavior, and emitter poses; restored control reports zero mismatches. See evidence/phase7-fluid-post-step-000619-003475.md. Fluid static-collision copy rows phys_fn_003518/003520/003522 are now mutation-falsified through the same direct fluid ABI target; incrementing a copied index word is caught with mismatches=1, and the restored control reports zero. See evidence/phase7-fluid-collision-static-copy-003518.md. Fluid static-collision bucket-hash row phys_fn_003526 is now mutation-falsified by the direct fluid ABI differential: seven signed-coordinate cases and an empty range match, while a +2 count mutation is detected (mismatches=1). See evidence/phase7-fluid-collision-hash-count-003526.md. Fluid static-collision triangle-cell row phys_fn_003524 is now mutation-falsified by three direct oracle cases (positive coordinates, negative coordinates with margin, and zero-capacity array growth); suppressing cell writes is caught in all three. The oracle fixture supplies an independent SAT callback because FluidModel.dll is absent from the pinned UE3 binaries. See evidence/phase7-fluid-collision-triangle-cells-003524.md. Fluid static-collision triangle builder phys_fn_003528 is now mutation-falsified by identity and asymmetric affine mesh cases plus an empty mesh; its no-output mutant changes both nonempty cases (mismatches=2). The oracle callback slots use independent SAT and growth fixture references because FluidModel.dll is absent from the pinned UE3 binaries. See evidence/phase7-fluid-collision-triangle-builder-003528.md. Fluid static-collision cell-hash row phys_fn_003530 is now mutation-falsified with duplicate, cross-bucket, seeded-existing-cell, and empty-range inputs; a no-op mutation is detected in both nonempty cases (mismatches=2). The absent FindCDCell callback is supplied by an independent fixture reference because FluidModel.dll is absent. See evidence/phase7-fluid-collision-cell-hash-003530.md. Indexed fluid collision grid rows phys_fn_003532/003533 are now mutation-falsified as one contiguous routine; its asymmetric nonempty case detects a skipped triangle loop (mismatches=1), and restored output matches. See evidence/phase7-fluid-indexed-grid-003532-003533.md. Cell-to-triangle index row phys_fn_003535 is now mutation-falsified: the direct match/miss/empty differential catches a changed triangle index in both nonempty cases (mismatches=2); restored association arrays match. See evidence/phase7-fluid-cell-index-003535.md. Triangle-index caller rows phys_fn_003537/003538 are now mutation-falsified by the direct oracle differential; incrementing the stored mesh index is detected (mismatches=1). See evidence/phase7-fluid-triangle-index-builder-003537-003538.md. Scene shape collector row phys_fn_003549 is also mutation-falsified: skipping compound-member routing is detected in both nonempty scene cases (mismatches=2); restored control matches. See evidence/phase7-fluid-collision-scene-shape-count-003549.md. Scene shape collector phys_fn_003555 is now mutation-falsified by the registered NxPhysicsFluidEmitterAbiTests direct oracle differential: restricting compound traversal to its first child yields mismatches=5; restored control matches the empty and populated fixtures, including all twelve routed leaves. See evidence/phase7-fluid-scene-shape-collector-003555.md. Fresh isolated-worktree Phase 7 gate on 2026-10-12 passes at 1,687/1,687 assertions with phys_fn_003555 collector coverage; the first-child mutation yields mismatches=5 and restored control yields zero. Full output: evidence/raw/phase7-fluid-scene-shape-collector-003555/phase7-gate.log.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. phys_fn_000604 is the Phase 7 static-proof case: NxPhysicsInternalTests detects a no-op body-record reset before joint teardown.",
@@ -22,8 +22,8 @@
   "counts": {
     "differential_falsified": 75,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 45,
-    "deferred_not_reconstructed_in_phase": 178,
+    "oracle_differential_falsified": 46,
+    "deferred_not_reconstructed_in_phase": 177,
     "deferred_reconstructed_not_falsified": 262
   },
   "closed": [
@@ -140,6 +140,83 @@
       "note": "The registered fixture exercises active limits for all three broadphase selectors; the zero-limit mutant changes each populated result. Restored differential is exact."
     },
     {
+      "id": "phys_fn_000350",
+      "rva": "0x0000ccc0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000350` (Notifier setter retains callback through public setter/getter assertion.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000350.patch and the README transcript.",
+        "detected": "stdout_delta=799"
+      },
+      "note": "Notifier setter retains callback through public setter/getter assertion. Mutation DLL SHA-256 061F1AE8F21C8C6B1ECBEDD4265C7D4955CE736DC79715E1F582BE29B0AA87DB; restored staged-pair control is exact."
+    },
+    {
+      "id": "phys_fn_000352",
+      "rva": "0x0000cd20",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000352` (Notifier getter returns the registered callback.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000352.patch and the README transcript.",
+        "detected": "stdout_delta=799"
+      },
+      "note": "Notifier getter returns the registered callback. Mutation DLL SHA-256 563645DED5EE58E6739FCA20A88EDCB3D58313B9E1E1C6663B8E658F5A624A42; restored staged-pair control is exact."
+    },
+    {
+      "id": "phys_fn_000354",
+      "rva": "0x0000cd50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000354` (Trigger callback setter drives trigger-pair reports.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000354.patch and the README transcript.",
+        "detected": "stdout_delta=3958"
+      },
+      "note": "Trigger callback setter drives trigger-pair reports. Mutation DLL SHA-256 57A87C1B8808298CB93B59559F34CBFB8A4D5861B26C73738413426358C5DF9F; restored staged-pair control is exact."
+    },
+    {
+      "id": "phys_fn_000356",
+      "rva": "0x0000cdb0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000356` (Trigger getter is observed by trigger-pair fixture.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000356.patch and the README transcript.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "Trigger getter is observed by trigger-pair fixture. Mutation DLL SHA-256 C05DDECAFBD5429AF0E1D79782FE62369521C1513294B27CF8D490CD0091C610; restored staged-pair control is exact."
+    },
+    {
+      "id": "phys_fn_000358",
+      "rva": "0x0000cde0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000358` (Contact callback setter drives contact reports.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000358.patch and the README transcript.",
+        "detected": "stdout_delta=1053"
+      },
+      "note": "Contact callback setter drives contact reports. Mutation DLL SHA-256 8452A3A559E516087AD6CD0061775F89DFE4674DC34D6E34BA269EAD11480195; restored staged-pair control is exact."
+    },
+    {
+      "id": "phys_fn_000360",
+      "rva": "0x0000ce40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000360` (Contact getter is observed by contact-report fixture.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000360.patch and the README transcript.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "Contact getter is observed by contact-report fixture. Mutation DLL SHA-256 521D10DE5C46C97BC5F65555680C0AF44B52E8989F65123FBA10806BF150499F; restored staged-pair control is exact."
+    },
+    {
+      "id": "phys_fn_000392",
+      "rva": "0x0000d660",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In the isolated Win32 candidate build, changed the successful return in NpScene::isWritable from true to false after nxNpSceneGuardLeave. The registered public NxPhysicsSimulationTests staged-pair fixture records simulation writable=initial and compares it with the pinned oracle.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The mutant retained zero exits and exact stderr but changed the public writable result. Restoring and rebuilding returned the full simulation target to stdout_delta=0 with exact stderr. See evidence/phase7-iswritable-000392.md."
+    },
+    {
       "id": "phys_fn_000394",
       "rva": "0x0000d680",
       "proof": "differential_falsified",
@@ -148,6 +225,17 @@
         "mutation": "In a throwaway git-archive copy of committed HEAD, changed the row's Scene+0x544 store from `elapsedTime` to `elapsedTime + 0.125f`, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 differential against the pinned oracle. The fixture's expected submitted dt `3e000000` became `3e800000`; the mutated candidate still exited 0 but diverged across the simulation transcript.",
         "detected": "stdout_delta=1064"
       }
+    },
+    {
+      "id": "phys_fn_000396",
+      "rva": "0x0000d710",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In the isolated Win32 candidate build, changed the status-mask early return in NpScene::checkResults from true to false for status values with bit 0 clear, rebuilt NxPhysics, and ran the registered staged-pair NxPhysicsSimulationTests against the pinned oracle. The new public NxScene assertion calls checkResults(static_cast<NxSimulationStatus>(0), false).",
+        "detected": "stdout_delta=3846"
+      },
+      "note": "Restoring the early return and rebuilding returned the complete simulation target to stdout_delta=0 with exact stderr. See evidence/phase7-checkresults-status-mask-000396.md."
     },
     {
       "id": "phys_fn_000398",
@@ -262,6 +350,17 @@
       "note": "The mutant reports zero effectors during the two-effector lifecycle cases; both exits are zero and stderr is exact. Restoring the +0x6c4 read returns stdout_delta=0 and exact stderr. See evidence/phase7-scene-effector-count-000561.md."
     },
     {
+      "id": "phys_fn_000563",
+      "rva": "0x00010880",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Changed NxSceneInternal::resetJointIterator to clear Scene+0x6bc instead of copying the joint-list head from Scene+0x59c.",
+        "detected": "stdout_delta=296"
+      },
+      "note": "The registered joint lifecycle differential observes iterator output; both mutant processes exited zero and stderr remained exact. Restored control and full Phase 7 gate pass; see evidence/phase7-scene-joint-iterator-000563.md."
+    },
+    {
       "id": "phys_fn_000565",
       "rva": "0x00010890",
       "proof": "differential_falsified",
@@ -273,6 +372,17 @@
       "note": "The mutant reports iterator=none in the effector create, cycle, release, actor-release, and live states; both exits are zero and stderr is exact. Restoring the +0x5a4 head copy returns stdout_delta=0 and exact stderr. See evidence/phase7-scene-effector-iterator-000565.md."
     },
     {
+      "id": "phys_fn_000567",
+      "rva": "0x000108a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "Temporarily changed NxSceneInternal::getNextJoint to clear Scene+0x6bc after reading the current joint instead of advancing to Joint+0x10.",
+        "detected": "stdout_delta=90"
+      },
+      "note": "The registered joint lifecycle differential observes iterator order and termination; both mutant processes exited zero and stderr remained exact. Restored control and full Phase 7 gate pass; see evidence/phase7-scene-get-next-joint-000567.md."
+    },
+    {
       "id": "phys_fn_000569",
       "rva": "0x000108c0",
       "proof": "differential_falsified",
@@ -282,6 +392,17 @@
         "detected": "stdout_delta=14"
       },
       "note": "The mutant reports iterator=none in the effector create, cycle, release, actor-release, and live states; both exits are zero and stderr is exact. Restoring the effector return returns stdout_delta=0 and exact stderr. See evidence/phase7-scene-effector-next-000569.md."
+    },
+    {
+      "id": "phys_fn_000571",
+      "rva": "0x000108e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Changed NxSceneInternal::addJointBreakEvent to set Scene+0x620 to null after linking the new event, suppressing insertion into the Scene event list.",
+        "detected": "stdout_delta=801"
+      },
+      "note": "The registered broken-joint simulation reaches the joint-break callback assertion and rejects the missing event. The restored simulation differential and full Phase 7 gate pass; see evidence/phase7-scene-add-joint-break-event-000571.md."
     },
     {
       "id": "phys_fn_000573",
@@ -484,6 +605,17 @@
       }
     },
     {
+      "id": "phys_fn_000619",
+      "rva": "0x000114b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Replaced the candidate per-fluid dispatch in the Scene manager loop with a no-op, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. The oracle emitted seven ordered post-step callbacks while the candidate emitted none; the probe exited nonzero with mismatches=72. Restoring the dispatch returned the differential to zero mismatches.",
+        "detected": "mismatches=72"
+      },
+      "note": "Two-fluid direct pinned-oracle post-step traversal differential; see evidence/phase7-fluid-post-step-000619-003475.md."
+    },
+    {
       "id": "phys_fn_000621",
       "rva": "0x000115b0",
       "proof": "differential_falsified",
@@ -495,6 +627,17 @@
       "note": "Active limits for broadphase selectors 0, 1, and 2 report actors=8/bodies=5/static_shapes=3/dynamic_shapes=5/joints=0; the actor-count +1 mutant reports 9 actors in all three cases. Baseline and restored controls are exact. See evidence/phase7-scene-limits-000621/README.md."
     },
     {
+      "id": "phys_fn_000622",
+      "rva": "0x00011620",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Inserted an immediate return at the start of NxSceneInternal::releaseFluid in a candidate-only source mutation, rebuilt NxPhysics, and ran the registered staged-pair NxPhysicsSimulationTests against the pinned oracle. The public empty-manager release case and the seeded populated-array release case both reach this row.",
+        "detected": "stdout_delta=4"
+      },
+      "note": "The mutant omitted the warning and Scene manager clear for the public disabled-backend case and skipped seeded-array swap-removal/deleting dispatch. Oracle and candidate both exited zero with exact stderr. Restoring and rebuilding returned the full target to stdout_delta=0 with exact stderr. Callback reentry and extension-backed live-fluid notifications remain open. See evidence/phase7-scene-release-fluid-000622.md."
+    },
+    {
       "id": "phys_fn_000626",
       "rva": "0x00011730",
       "proof": "differential_falsified",
@@ -502,6 +645,16 @@
       "falsification": {
         "mutation": "the actor-validity guard was inverted in a throwaway `git archive` copy of HEAD: `if(!desc.isValid())` became `if(desc.isValid())`, so every valid descriptor took the failure path and `createActor` returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=27: the mutant exit=1 with a 7-line transcript against the oracle's 29, and the lines it loses are `fixture=a,created b,created` and all four cases' `created=yes`, `out_anchor`, `actors` and `released` lines -- so the mutation is caught by the registered assertion `case=revolute index=0 created=yes` as well as by the diff.",
         "detected": "stdout_delta=27"
+      }
+    },
+    {
+      "id": "phys_fn_000628",
+      "rva": "0x000123d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Suppress the conditional nxFluidManagerNotifyActorReleasedDisabled call in NxSceneInternal::releaseActor when Scene+0x61c is non-null.",
+        "detected": "stdout_delta=2"
       }
     },
     {
@@ -533,6 +686,17 @@
         "mutation": "In a throwaway git-archive copy of HEAD 0ac9f256, replaced NxSceneInternal::processSimulationCallbacks' `contactReport->onContactNotify(pair, events)` call with a no-op, rebuilt NxPhysics and NxPhysicsSimulationTests, and ran the registered Phase 7 staged-pair differential. Both processes exited 0 and stderr matched exactly; the candidate omitted the buffered actor-contact notifications exercised by the real contact simulation and the paired fetch callback fixture.",
         "detected": "stdout_delta=937"
       }
+    },
+    {
+      "id": "phys_fn_000649",
+      "rva": "0x00013000",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, omitted the candidate allocator free from nxSceneAuxDestroy while seeding all ten array slots with separately allocated blocks on the oracle and candidate copies. The registered direct oracle differential reported oracle_frees=10, candidate_frees=0, and layout candidate mismatches=1 (exit 1). Restoring the free path produced ten frees on both sides, zero byte mismatches, and exit 0. A second mutation preserving metadata word +4 was also caught with 29 byte mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "All ten populated array release paths and their 30-word clearing behavior; inter-array padding is compared unchanged."
     },
     {
       "id": "phys_fn_000651",
@@ -606,6 +770,16 @@
       }
     },
     {
+      "id": "phys_fn_000726",
+      "rva": "0x00016260",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In the clean mainline worktree, changed the active-body call from row000726(timestep, inverseTimestep) to row000726(0.0f, inverseTimestep), rebuilt NxPhysics, then ran the registered NxPhysicsSimulationTests staged-pair differential against the pinned oracle.",
+        "detected": "stdout_delta=6845"
+      }
+    },
+    {
       "id": "phys_fn_001953",
       "rva": "0x0004bd80",
       "proof": "differential_falsified",
@@ -626,6 +800,17 @@
       }
     },
     {
+      "id": "phys_fn_001974",
+      "rva": "0x0004c260",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsPopulatedSceneTeardownTests",
+      "falsification": {
+        "mutation": "Temporarily changed nxSceneEngineReleaseCoherent to clear the engine cache pointer without calling the SweepAndPrune destructor or freeing the 44-byte cache. The registered Phase 7 staged-pair teardown differential then left 22 allocator blocks versus the oracle 15 and rejected the candidate (candidate_exit=1, stdout_delta=17).",
+        "detected": "stdout_delta=17"
+      },
+      "note": "A coherent-mode public Scene fixture verifies the allocated SweepAndPrune cache at Scene+0x650 is freed by the destructor path; restored oracle/candidate outputs are exact."
+    },
+    {
       "id": "phys_fn_001982",
       "rva": "0x0004ca90",
       "proof": "differential_falsified",
@@ -634,6 +819,290 @@
         "mutation": "Temporarily disabled cpmDestroyScenePairStorage(scene) in Scene::nxSceneDelete, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsPopulatedSceneTeardownTests staged-pair differential against the pinned shipped oracle. The fixture retained one contact pair; candidate teardown left 18 allocator blocks versus the oracle 15 and exited 1.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_003419",
+      "rva": "0x00084a50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Divide the mesh vertex count by 6 instead of 3 before ImplicitFluidMeshRun.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_003475",
+      "rva": "0x000854d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Added an immediate return to the candidate per-fluid update, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. The oracle emitted seven ordered post-step callbacks while the candidate emitted none; the probe exited nonzero with mismatches=72. A second mutation that removed only the implicit-mesh cache copy was also detected with mismatches=4. Restoring the row returned the differential to zero mismatches.",
+        "detected": "mismatches=72"
+      },
+      "note": "Two-fluid per-fluid differential includes null optional-mesh coverage; see evidence/phase7-fluid-post-step-000619-003475.md."
+    },
+    {
+      "id": "phys_fn_003485",
+      "rva": "0x000857b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Reverse the internal-emitter frame-actor match condition in nxNpFluidNotifyActorReleased so matching emitters are skipped and the nonmatching emitter is detached.",
+        "detected": "mismatches=49"
+      }
+    },
+    {
+      "id": "phys_fn_003511",
+      "rva": "0x00086400",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the dynamic type-2 counter offset in nxFluidCollisionCountShapeType from builder+0x94 to builder+0x90, rebuilt the candidate DLL and reran the direct pinned-oracle differential. Case 8 observed the wrong count (oracle count valid=1, candidate count valid=0; mismatches=1). Restoring the source matched all 13 static/dynamic, unsupported, owner-exclusion, and refresh cases, including returns, complete state, and cdecl stack balance.",
+        "detected": "mismatches=1"
+      },
+      "note": "The direct shape classifier is closed by its row-specific oracle differential. The enclosing static-collision builder phys_fn_003505, its FluidModel callbacks, and the dirty manager path remain open. See evidence/phase7-fluid-collision-shape-counter-003511.md."
+    },
+    {
+      "id": "phys_fn_003514",
+      "rva": "0x000864e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Changed nxFluidCollisionBucketPrefix to add one to each row contribution, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. For four rows the oracle total was 9 while the mutant total was 13 and all nontrivial prefixes diverged; the probe reported mismatches=1. Restoring the accumulator returned the direct differential to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct prefix accumulator differential, including an empty range; see evidence/phase7-fluid-collision-bucket-prefix-003514.md."
+    },
+    {
+      "id": "phys_fn_003516",
+      "rva": "0x00086520",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Changed nxFluidCollisionCellPrefix to store totalIndices+1 in each cell prefix, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. The three-cell case reported prefixes=0 and mismatches=1 while total and cell-count clearing remained observable; the empty-range case still preserved its records. Restoring the exact prefix assignment returned both cases to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct cell-prefix differential covers populated and empty bucket ranges; see evidence/phase7-fluid-collision-cell-prefix-003516.md."
+    },
+    {
+      "id": "phys_fn_003518",
+      "rva": "0x00086590",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily incremented the second word of each copied 8-byte index record in nxFluidCollisionStaticCopy, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and called oracle RVA 0x86590 against the candidate. The controlled oracle callbacks allocate the three output arrays; the index mismatch is measured directly.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct static-collision copy differential covers this entry and its discontiguous continuations phys_fn_003520/003522; the undefined third bucket word is excluded. See evidence/phase7-fluid-collision-static-copy-003518.md. Fluid static-collision bucket-hash row phys_fn_003526 is now mutation-falsified by the direct fluid ABI differential: seven signed-coordinate cases and an empty range match, while a +2 count mutation is detected (mismatches=1). See evidence/phase7-fluid-collision-hash-count-003526.md."
+    },
+    {
+      "id": "phys_fn_003520",
+      "rva": "0x00086600",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily incremented the second word of each copied 8-byte index record in nxFluidCollisionStaticCopy, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and called oracle RVA 0x86590 against the candidate. The controlled oracle callbacks allocate the three output arrays; the index mismatch is measured directly.",
+        "detected": "mismatches=1"
+      },
+      "note": "Discontiguous continuation exercised by the same direct static-collision copy differential; see evidence/phase7-fluid-collision-static-copy-003518.md."
+    },
+    {
+      "id": "phys_fn_003522",
+      "rva": "0x00086690",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily incremented the second word of each copied 8-byte index record in nxFluidCollisionStaticCopy, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and called oracle RVA 0x86590 against the candidate. The controlled oracle callbacks allocate the three output arrays; the index mismatch is measured directly.",
+        "detected": "mismatches=1"
+      },
+      "note": "Discontiguous function tail exercised by the same direct static-collision copy differential; see evidence/phase7-fluid-collision-static-copy-003518.md."
+    },
+    {
+      "id": "phys_fn_003524",
+      "rva": "0x000866d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily suppressed all candidate triangle-cell output writes, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the three direct oracle cases. The pinned oracle callback slots were bound to the independent SAT and growth references because FluidModel.dll is absent from the supplied UE3 binary directory. Positive, negative-with-margin, and zero-capacity growth cases all diverged from the oracle; the restored candidate matched packed cells, capacity, return values, canaries, and x86 stack balance.",
+        "detected": "mismatches=3"
+      },
+      "note": "The three cases exercise the row with an independently supplied SAT callback; production FluidModel callback integration and Unreal static-collision validation remain open. See evidence/phase7-fluid-collision-triangle-cells-003524.md."
+    },
+    {
+      "id": "phys_fn_003526",
+      "rva": "0x00086ad0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed nxFluidCollisionCountBuckets to add two to each selected row count, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then called oracle RVA 0x86ad0 against the candidate. Seven signed coordinate triples include negative values; the candidate bucket counts diverge while untouched row words remain preserved.",
+        "detected": "mismatches=1"
+      },
+      "note": "Direct hash/count differential covers signed coordinates and an empty range; see evidence/phase7-fluid-collision-hash-count-003526.md."
+    },
+    {
+      "id": "phys_fn_003528",
+      "rva": "0x00086b40",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily returned before the indexed-triangle loop, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. Both nonempty mesh cases lost their final triangle cells and bucket increments (mismatches=2); the empty-mesh case remained unchanged. Restoring the row returned exact transformed cells, bucket records, array tails, and x86 stack balance.",
+        "detected": "mismatches=2"
+      },
+      "note": "The differential includes identity and asymmetric affine transforms plus an empty mesh. The oracle SAT and growth callbacks are bound to independent fixture references because FluidModel.dll is absent. See evidence/phase7-fluid-collision-triangle-builder-003528.md."
+    },
+    {
+      "id": "phys_fn_003530",
+      "rva": "0x00086e00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily returned before processing packed cells, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. Both nonempty seven-cell inputs failed to populate the cell records and bucket counts; the empty-range case remained equivalent (mismatches=2). Restoring the row matched all records, counts, returns, and x86 stack balance.",
+        "detected": "mismatches=2"
+      },
+      "note": "Seven signed-coordinate inputs cover duplicates, cross-bucket records, an existing seeded record, and an empty range. The oracle FindCDCell callback slot is bound to an independent linear lookup because FluidModel.dll is absent. See evidence/phase7-fluid-collision-cell-hash-003530.md."
+    },
+    {
+      "id": "phys_fn_003532",
+      "rva": "0x00086f00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily suppressed the indexed-triangle loop in nxFluidCollisionBuildIndexedGrid, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle fixture. The asymmetric two-triangle mesh lost its cell and bucket output (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the implementation matched all cells, bucket records, returns, and x86 stack balance.",
+        "detected": "mismatches=1"
+      },
+      "note": "This census row is one half of the single 717-byte function beginning at RVA 0x86f00; both rows use the same implementation and differential. The pinned binaries omit FluidModel.dll, so absent SAT/growth/FindCDCell callback slots use independent fixture references. Production callback integration and Unreal static-collision validation remain open. See evidence/phase7-fluid-indexed-grid-003532-003533.md."
+    },
+    {
+      "id": "phys_fn_003533",
+      "rva": "0x00086f11",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily suppressed the indexed-triangle loop in nxFluidCollisionBuildIndexedGrid, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle fixture. The asymmetric two-triangle mesh lost its cell and bucket output (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the implementation matched all cells, bucket records, returns, and x86 stack balance.",
+        "detected": "mismatches=1"
+      },
+      "note": "This census row is one half of the single 717-byte function beginning at RVA 0x86f00; both rows use the same implementation and differential. The pinned binaries omit FluidModel.dll, so absent SAT/growth/FindCDCell callback slots use independent fixture references. Production callback integration and Unreal static-collision validation remain open. See evidence/phase7-fluid-indexed-grid-003532-003533.md."
+    },
+    {
+      "id": "phys_fn_003535",
+      "rva": "0x000871d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the appended triangle index from triangleIndex to triangleIndex+1, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct oracle fixture. Both nonempty cases observed the wrong association values (mismatches=2); empty input was unchanged. Restoring the assignment matched bucket rows, cell records, association storage, returns, and x86 stack balance.",
+        "detected": "mismatches=2"
+      },
+      "note": "The direct oracle callback slot for FindCDCell is bound to an independent linear bucket-range lookup because FluidModel.dll is absent. The enclosing triangle emitter phys_fn_003537/003538 and dirty builder phys_fn_003505 remain open. See evidence/phase7-fluid-cell-index-003535.md."
+    },
+    {
+      "id": "phys_fn_003537",
+      "rva": "0x000872a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily incremented meshIndex before appending the per-cell association in nxFluidCollisionBuildTriangleIndices, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. The mesh case observed incorrect association values (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the source matched bucket rows, complete cell records, association storage, cell outputs, returns, and x86 stack balance.",
+        "detected": "mismatches=1"
+      },
+      "note": "These adjacent census rows split one continuous 721-byte function and share one implementation and direct oracle fixture. The differential exercises its triangle-cell and cell-index leaves; production FluidModel callback integration, the enclosing dirty builder phys_fn_003505, and Unreal static-collision validation remain open. See evidence/phase7-fluid-triangle-index-builder-003537-003538.md."
+    },
+    {
+      "id": "phys_fn_003538",
+      "rva": "0x000872b1",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily incremented meshIndex before appending the per-cell association in nxFluidCollisionBuildTriangleIndices, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. The mesh case observed incorrect association values (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the source matched bucket rows, complete cell records, association storage, cell outputs, returns, and x86 stack balance.",
+        "detected": "mismatches=1"
+      },
+      "note": "These adjacent census rows split one continuous 721-byte function and share one implementation and direct oracle fixture. The differential exercises its triangle-cell and cell-index leaves; production FluidModel callback integration, the enclosing dirty builder phys_fn_003505, and Unreal static-collision validation remain open. See evidence/phase7-fluid-triangle-index-builder-003537-003538.md."
+    },
+    {
+      "id": "phys_fn_003541",
+      "rva": "0x000876d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily sourced the first mesh geometry word from meshData+8 instead of meshData+12 in nxFluidCollisionAppendMesh. The pinned-oracle differential retained oracle_contract=1 and detected the wrong word with mismatches=1; restoring +12 returned the direct differential and aggregate to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "The mesh typed-array appender is closed by its row-specific oracle differential. It handles the -8 mesh-data sentinel and appends the geometry words from +12,+20,+8,+16 before the common 92-byte defined record prefix in a 96-byte stride. See evidence/phase7-fluid-collision-mesh-append-003541.md."
+    },
+    {
+      "id": "phys_fn_003543",
+      "rva": "0x00087740",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the selected sphere geometry-word source in nxFluidCollisionAppendSphere from shape+0xe0 to shape+0xe4, rebuilt the candidate DLL, and reran the direct pinned-oracle differential. Distinct fixture values made the mutation fail with oracle_contract=0 and mismatches=1. Restoring the source matched the selected sphere record and ignored non-sphere case, including array count, return value, untouched tail, and cdecl stack balance.",
+        "detected": "mismatches=1"
+      },
+      "note": "The sphere typed-array appender is closed by its row-specific oracle differential. The other typed-array appenders, parallel scene collector phys_fn_003555, and enclosing dirty static-collision builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-sphere-append-003543.md."
+    },
+    {
+      "id": "phys_fn_003545",
+      "rva": "0x000877a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily sourced the second capsule geometry word from shape+0xe0 instead of shape+0xe4 in nxFluidCollisionAppendCapsule, rebuilt the candidate DLL, and reran the direct pinned-oracle differential. Distinct fixture values caused the second word assertion to fail (oracle_contract=0, mismatches=1). Restoring shape+0xe4 matched the selected capsule and ignored non-capsule cases, including the defined record prefix, 88-byte stride, count, return value, untouched tail, and cdecl stack balance.",
+        "detected": "mismatches=1"
+      },
+      "note": "The capsule typed-array appender is closed by its row-specific oracle differential. The remaining plane, box, and mesh appenders, scene collector phys_fn_003555, and dirty builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-capsule-append-003545.md."
+    },
+    {
+      "id": "phys_fn_003547",
+      "rva": "0x00087810",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily sourced the third box geometry word from shape+0xe8 instead of shape+0xec in nxFluidCollisionAppendBox, rebuilt the candidate DLL, and reran the direct pinned-oracle differential. The distinct third-word fixture detected the error (oracle_contract=0, mismatches=1). Restoring shape+0xec matched the selected type-2 box and ignored type-1 shape, including the +0xe4/+0xe8/+0xec geometry words, defined record prefix, 92-byte stride, count, return, untouched tail, and cdecl stack.",
+        "detected": "mismatches=1"
+      },
+      "note": "The box typed-array appender is closed by its row-specific oracle differential. The mesh and plane appenders, router phys_fn_003553, scene collector phys_fn_003555, and dirty builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-box-append-003547.md."
+    },
+    {
+      "id": "phys_fn_003549",
+      "rva": "0x00087880",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily suppressed nxFluidCollisionCountShapeType for every compound member in nxFluidCollisionCountSceneShapes, rebuilt the candidate DLL and reran the direct pinned-oracle differential. Both nonempty collection cases then had incorrect builder counters (counts=1/0, mismatches=2). Restoring member traversal matched empty, mixed, and dynamic/compound fixtures, including all per-type counts, returns 0/4/2, full builder state, and cdecl stack balance.",
+        "detected": "mismatches=2"
+      },
+      "note": "Scene shape collection is closed by its row-specific oracle differential. The parallel typed-array collector phys_fn_003555 and enclosing dirty static-collision builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-scene-shape-count-003549.md."
+    },
+    {
+      "id": "phys_fn_003551",
+      "rva": "0x00087940",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily copied the plane scratch record from word 20 instead of word 19 in nxFluidCollisionAppendPlane. The pinned-oracle differential retained oracle_contract=1 and rejected the candidate with mismatches=1; restoring word 19 returned both the plane appender and fluid-emitter aggregate to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "The plane typed-array appender is closed by its row-specific oracle differential. It accepts type 0, dispatches shape vtable slot 13 with the reconstructed scratch query, appends the defined 16-byte prefix in a 96-byte stride, increments the array count, and returns the descriptor. See evidence/phase7-fluid-collision-plane-append-003551.md."
+    },
+    {
+      "id": "phys_fn_003553",
+      "rva": "0x00087a40",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily routed ordinary box shapes to builder+0x30 instead of builder+0x3c in nxFluidCollisionShapeArrayRouter. The 13-case pinned-oracle fixture detected the wrong destination and return with mismatches=1; restoring +0x3c returned the router and aggregate to zero mismatches.",
+        "detected": "mismatches=1"
+      },
+      "note": "The shape-array router is closed by a 13-case oracle differential covering five ordinary type routes, four 0x80 routes, the unsupported 0x80 type, excluded and owner-managed early returns, and an invalid type. See evidence/phase7-fluid-collision-shape-router-003553.md."
+    },
+    {
+      "id": "phys_fn_003555",
+      "rva": "0x00087b80",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Restricted nxFluidCollisionCollectSceneShapes compound traversal to the first member, rebuilt NxPhysics, and reran the registered pinned-oracle differential. The missing five members reduced the typed-array counts and omitted mesh, plane, and capsule records. Restoring the full member range matched both empty and populated fixtures, all twelve routed leaves, defined record prefixes, geometry callback payloads, untouched tails, and cdecl stack balance.",
+        "detected": "mismatches=5"
+      },
+      "note": "Scene shape collection is closed by its row-specific oracle differential. The enclosing dirty static-collision builder phys_fn_003505 and production callback integration remain open. See evidence/phase7-fluid-scene-shape-collector-003555.md."
     },
     {
       "id": "phys_fn_003593",
@@ -645,6 +1114,68 @@
         "detected": "mismatches=2"
       },
       "note": "Direct candidate-DLL callback dispatch and flag state coverage; see evidence/fluid-emitter-set-flag-backend-003593-003850.md."
+    },
+    {
+      "id": "phys_fn_003605",
+      "rva": "0x00088310",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Add 1.0 to the recomposed world-pose X translation for actor-backed emitters.",
+        "detected": "mismatches=2"
+      }
+    },
+    {
+      "id": "phys_fn_003622",
+      "rva": "0x000898d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Force EmitterSetAttachedFlag argument to zero in the nonzero actor-attach path.",
+        "detected": "mismatches=2"
+      }
+    },
+    {
+      "id": "phys_fn_003624",
+      "rva": "0x00089930",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Read body position from +0x154 instead of +0x158.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_003632",
+      "rva": "0x00089c80",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "In the registered NxPhysicsFluidEmitterAbiTests direct oracle differential, replaced the candidate manager's per-fluid helper dispatch with an increment-only loop and rebuilt NxPhysics.dll. The oracle reported two ImplicitFluidMeshRun callbacks and the mutant candidate reported none; the traversal assertion failed with mismatches=3. Restoring the dispatch returned both callback counts and all callback arguments to an exact match.",
+        "detected": "mismatches=3"
+      },
+      "note": "Two-fluid populated manager traversal differential; see evidence/phase7-fluid-manager-surface-mesh-003632-003634.md."
+    },
+    {
+      "id": "phys_fn_003634",
+      "rva": "0x00089cd0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "In the registered NxPhysicsFluidEmitterAbiTests direct oracle differential, replaced the candidate manager's per-fluid helper dispatch with an increment-only loop and rebuilt NxPhysics.dll. The oracle reported two ImplicitFluidMeshRun callbacks and the mutant candidate reported none; the traversal assertion failed with mismatches=3. Restoring the dispatch returned both callback counts and all callback arguments to an exact match.",
+        "detected": "mismatches=3"
+      },
+      "note": "Two-fluid populated manager traversal differential; see evidence/phase7-fluid-manager-surface-mesh-003632-003634.md."
+    },
+    {
+      "id": "phys_fn_003635",
+      "rva": "0x00089ce0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Skip the primary fluid-array loop in nxNpFluidManagerNotifyReleasedActor while preserving the warning branch.",
+        "detected": "mismatches=33"
+      }
     },
     {
       "id": "phys_fn_003637",
@@ -665,6 +1196,17 @@
         "mutation": "In a freshly configured and built throwaway git archive of HEAD e6616f8b2c9cfa5f4d44f9e728d47a3d9378df79, changed only the scalar deleting flag for the removed fluid from 1 to 0 in the FluidManager release helper. The registered NxPhysicsSimulationTests staged-pair differential rejected the mutant: both processes exited 0, stderr matched exactly, and the seeded array-release line changed from flags=1 to flags=0. Restoring the exact Scene.cpp source and rebuilding returned to stdout_delta=0.",
         "detected": "stdout_delta=2"
       }
+    },
+    {
+      "id": "phys_fn_003663",
+      "rva": "0x0008ac50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Temporarily changed the copy destination in NpImplicitMesh::setMeshData from object+0x08 to object+0x0c, rebuilt NxPhysicsFluidEmitterAbiTests, and ran the pinned-oracle differential. The probe rejected the mutant: valid_cases=0, invalid_cases=8, errors=8, stack_checks=11, mismatches=3. Restoring the +0x08 destination returned valid_cases=3, invalid_cases=8, errors=8, stack_checks=11, mismatches=0.",
+        "detected": "mismatches=3"
+      },
+      "note": "Direct NxImplicitMesh::setMeshData candidate-DLL probe; see evidence/phase7-implicit-mesh-set-mesh-data-003663.md."
     },
     {
       "id": "phys_fn_003792",
@@ -766,251 +1308,6 @@
       "note": "Direct public NxFluidEmitter flag getter coverage; details in evidence/fluid-emitter-get-flag-003852.md."
     },
     {
-      "id": "phys_fn_000350",
-      "rva": "0x0000ccc0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000350` (Notifier setter retains callback through public setter/getter assertion.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000350.patch and the README transcript.",
-        "detected": "stdout_delta=799"
-      },
-      "note": "Notifier setter retains callback through public setter/getter assertion. Mutation DLL SHA-256 061F1AE8F21C8C6B1ECBEDD4265C7D4955CE736DC79715E1F582BE29B0AA87DB; restored staged-pair control is exact."
-    },
-    {
-      "id": "phys_fn_000352",
-      "rva": "0x0000cd20",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000352` (Notifier getter returns the registered callback.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000352.patch and the README transcript.",
-        "detected": "stdout_delta=799"
-      },
-      "note": "Notifier getter returns the registered callback. Mutation DLL SHA-256 563645DED5EE58E6739FCA20A88EDCB3D58313B9E1E1C6663B8E658F5A624A42; restored staged-pair control is exact."
-    },
-    {
-      "id": "phys_fn_000354",
-      "rva": "0x0000cd50",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000354` (Trigger callback setter drives trigger-pair reports.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000354.patch and the README transcript.",
-        "detected": "stdout_delta=3958"
-      },
-      "note": "Trigger callback setter drives trigger-pair reports. Mutation DLL SHA-256 57A87C1B8808298CB93B59559F34CBFB8A4D5861B26C73738413426358C5DF9F; restored staged-pair control is exact."
-    },
-    {
-      "id": "phys_fn_000356",
-      "rva": "0x0000cdb0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000356` (Trigger getter is observed by trigger-pair fixture.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000356.patch and the README transcript.",
-        "detected": "stdout_delta=2"
-      },
-      "note": "Trigger getter is observed by trigger-pair fixture. Mutation DLL SHA-256 C05DDECAFBD5429AF0E1D79782FE62369521C1513294B27CF8D490CD0091C610; restored staged-pair control is exact."
-    },
-    {
-      "id": "phys_fn_000358",
-      "rva": "0x0000cde0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000358` (Contact callback setter drives contact reports.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000358.patch and the README transcript.",
-        "detected": "stdout_delta=1053"
-      },
-      "note": "Contact callback setter drives contact reports. Mutation DLL SHA-256 8452A3A559E516087AD6CD0061775F89DFE4674DC34D6E34BA269EAD11480195; restored staged-pair control is exact."
-    },
-    {
-      "id": "phys_fn_000360",
-      "rva": "0x0000ce40",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In an isolated archive of mainline 469e0b39, changed only `phys_fn_000360` (Contact getter is observed by contact-report fixture.); see evidence/phase7-npscene-callbacks-000350-000360/phys_fn_000360.patch and the README transcript.",
-        "detected": "stdout_delta=2"
-      },
-      "note": "Contact getter is observed by contact-report fixture. Mutation DLL SHA-256 521D10DE5C46C97BC5F65555680C0AF44B52E8989F65123FBA10806BF150499F; restored staged-pair control is exact."
-    },
-    {
-      "id": "phys_fn_000649",
-      "rva": "0x00013000",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "In a throwaway source mutation, omitted the candidate allocator free from nxSceneAuxDestroy while seeding all ten array slots with separately allocated blocks on the oracle and candidate copies. The registered direct oracle differential reported oracle_frees=10, candidate_frees=0, and layout candidate mismatches=1 (exit 1). Restoring the free path produced ten frees on both sides, zero byte mismatches, and exit 0. A second mutation preserving metadata word +4 was also caught with 29 byte mismatches.",
-        "detected": "mismatches=1"
-      },
-      "note": "All ten populated array release paths and their 30-word clearing behavior; inter-array padding is compared unchanged."
-    },
-    {
-      "id": "phys_fn_001974",
-      "rva": "0x0004c260",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsPopulatedSceneTeardownTests",
-      "falsification": {
-        "mutation": "Temporarily changed nxSceneEngineReleaseCoherent to clear the engine cache pointer without calling the SweepAndPrune destructor or freeing the 44-byte cache. The registered Phase 7 staged-pair teardown differential then left 22 allocator blocks versus the oracle 15 and rejected the candidate (candidate_exit=1, stdout_delta=17).",
-        "detected": "stdout_delta=17"
-      },
-      "note": "A coherent-mode public Scene fixture verifies the allocated SweepAndPrune cache at Scene+0x650 is freed by the destructor path; restored oracle/candidate outputs are exact."
-    },
-    {
-      "id": "phys_fn_000563",
-      "rva": "0x00010880",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointStagedPairTests",
-      "falsification": {
-        "mutation": "Changed NxSceneInternal::resetJointIterator to clear Scene+0x6bc instead of copying the joint-list head from Scene+0x59c.",
-        "detected": "stdout_delta=296"
-      },
-      "note": "The registered joint lifecycle differential observes iterator output; both mutant processes exited zero and stderr remained exact. Restored control and full Phase 7 gate pass; see evidence/phase7-scene-joint-iterator-000563.md."
-    },
-    {
-      "id": "phys_fn_000567",
-      "rva": "0x000108a0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointStagedPairTests",
-      "falsification": {
-        "mutation": "Temporarily changed NxSceneInternal::getNextJoint to clear Scene+0x6bc after reading the current joint instead of advancing to Joint+0x10.",
-        "detected": "stdout_delta=90"
-      },
-      "note": "The registered joint lifecycle differential observes iterator order and termination; both mutant processes exited zero and stderr remained exact. Restored control and full Phase 7 gate pass; see evidence/phase7-scene-get-next-joint-000567.md."
-    },
-    {
-      "id": "phys_fn_000571",
-      "rva": "0x000108e0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Changed NxSceneInternal::addJointBreakEvent to set Scene+0x620 to null after linking the new event, suppressing insertion into the Scene event list.",
-        "detected": "stdout_delta=801"
-      },
-      "note": "The registered broken-joint simulation reaches the joint-break callback assertion and rejects the missing event. The restored simulation differential and full Phase 7 gate pass; see evidence/phase7-scene-add-joint-break-event-000571.md."
-    },
-    {
-      "id": "phys_fn_000726",
-      "rva": "0x00016260",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In the clean mainline worktree, changed the active-body call from row000726(timestep, inverseTimestep) to row000726(0.0f, inverseTimestep), rebuilt NxPhysics, then ran the registered NxPhysicsSimulationTests staged-pair differential against the pinned oracle.",
-        "detected": "stdout_delta=6845"
-      }
-    },
-    {
-      "id": "phys_fn_000396",
-      "rva": "0x0000d710",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In the isolated Win32 candidate build, changed the status-mask early return in NpScene::checkResults from true to false for status values with bit 0 clear, rebuilt NxPhysics, and ran the registered staged-pair NxPhysicsSimulationTests against the pinned oracle. The new public NxScene assertion calls checkResults(static_cast<NxSimulationStatus>(0), false).",
-        "detected": "stdout_delta=3846"
-      },
-      "note": "Restoring the early return and rebuilding returned the complete simulation target to stdout_delta=0 with exact stderr. See evidence/phase7-checkresults-status-mask-000396.md."
-    },
-    {
-      "id": "phys_fn_000392",
-      "rva": "0x0000d660",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "In the isolated Win32 candidate build, changed the successful return in NpScene::isWritable from true to false after nxNpSceneGuardLeave. The registered public NxPhysicsSimulationTests staged-pair fixture records simulation writable=initial and compares it with the pinned oracle.",
-        "detected": "stdout_delta=2"
-      },
-      "note": "The mutant retained zero exits and exact stderr but changed the public writable result. Restoring and rebuilding returned the full simulation target to stdout_delta=0 with exact stderr. See evidence/phase7-iswritable-000392.md."
-    },
-    {
-      "id": "phys_fn_000622",
-      "rva": "0x00011620",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Inserted an immediate return at the start of NxSceneInternal::releaseFluid in a candidate-only source mutation, rebuilt NxPhysics, and ran the registered staged-pair NxPhysicsSimulationTests against the pinned oracle. The public empty-manager release case and the seeded populated-array release case both reach this row.",
-        "detected": "stdout_delta=4"
-      },
-      "note": "The mutant omitted the warning and Scene manager clear for the public disabled-backend case and skipped seeded-array swap-removal/deleting dispatch. Oracle and candidate both exited zero with exact stderr. Restoring and rebuilding returned the full target to stdout_delta=0 with exact stderr. Callback reentry and extension-backed live-fluid notifications remain open. See evidence/phase7-scene-release-fluid-000622.md."
-    },
-    {
-      "id": "phys_fn_003485",
-      "rva": "0x000857b0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Reverse the internal-emitter frame-actor match condition in nxNpFluidNotifyActorReleased so matching emitters are skipped and the nonmatching emitter is detached.",
-        "detected": "mismatches=49"
-      }
-    },
-    {
-      "id": "phys_fn_003635",
-      "rva": "0x00089ce0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Skip the primary fluid-array loop in nxNpFluidManagerNotifyReleasedActor while preserving the warning branch.",
-        "detected": "mismatches=33"
-      }
-    },
-    {
-      "id": "phys_fn_000628",
-      "rva": "0x000123d0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSimulationTests",
-      "falsification": {
-        "mutation": "Suppress the conditional nxFluidManagerNotifyActorReleasedDisabled call in NxSceneInternal::releaseActor when Scene+0x61c is non-null.",
-        "detected": "stdout_delta=2"
-      }
-    },
-    {
-      "id": "phys_fn_003622",
-      "rva": "0x000898d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Force EmitterSetAttachedFlag argument to zero in the nonzero actor-attach path.",
-        "detected": "mismatches=2"
-      }
-    },
-    {
-      "id": "phys_fn_003605",
-      "rva": "0x00088310",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Add 1.0 to the recomposed world-pose X translation for actor-backed emitters.",
-        "detected": "mismatches=2"
-      }
-    },
-    {
-      "id": "phys_fn_003624",
-      "rva": "0x00089930",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Read body position from +0x154 instead of +0x158.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_003419",
-      "rva": "0x00084a50",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Divide the mesh vertex count by 6 instead of 3 before ImplicitFluidMeshRun.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_003663",
-      "rva": "0x0008ac50",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the copy destination in NpImplicitMesh::setMeshData from object+0x08 to object+0x0c, rebuilt NxPhysicsFluidEmitterAbiTests, and ran the pinned-oracle differential. The probe rejected the mutant: valid_cases=0, invalid_cases=8, errors=8, stack_checks=11, mismatches=3. Restoring the +0x08 destination returned valid_cases=3, invalid_cases=8, errors=8, stack_checks=11, mismatches=0.",
-        "detected": "mismatches=3"
-      },
-      "note": "Direct NxImplicitMesh::setMeshData candidate-DLL probe; see evidence/phase7-implicit-mesh-set-mesh-data-003663.md."
-    },
-    {
       "id": "phys_fn_003874",
       "rva": "0x0008d230",
       "proof": "oracle_differential_falsified",
@@ -1020,292 +1317,6 @@
         "detected": "mismatches=2"
       },
       "note": "Public NxImplicitMesh::setMeshData lock-taking wrapper at RVA 0x0008d230; see evidence/phase7-implicit-mesh-set-mesh-data-003663.md."
-    },
-    {
-      "id": "phys_fn_003632",
-      "rva": "0x00089c80",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "In the registered NxPhysicsFluidEmitterAbiTests direct oracle differential, replaced the candidate manager's per-fluid helper dispatch with an increment-only loop and rebuilt NxPhysics.dll. The oracle reported two ImplicitFluidMeshRun callbacks and the mutant candidate reported none; the traversal assertion failed with mismatches=3. Restoring the dispatch returned both callback counts and all callback arguments to an exact match.",
-        "detected": "mismatches=3"
-      },
-      "note": "Two-fluid populated manager traversal differential; see evidence/phase7-fluid-manager-surface-mesh-003632-003634.md."
-    },
-    {
-      "id": "phys_fn_003634",
-      "rva": "0x00089cd0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "In the registered NxPhysicsFluidEmitterAbiTests direct oracle differential, replaced the candidate manager's per-fluid helper dispatch with an increment-only loop and rebuilt NxPhysics.dll. The oracle reported two ImplicitFluidMeshRun callbacks and the mutant candidate reported none; the traversal assertion failed with mismatches=3. Restoring the dispatch returned both callback counts and all callback arguments to an exact match.",
-        "detected": "mismatches=3"
-      },
-      "note": "Two-fluid populated manager traversal differential; see evidence/phase7-fluid-manager-surface-mesh-003632-003634.md."
-    },
-    {
-      "id": "phys_fn_000619",
-      "rva": "0x000114b0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Replaced the candidate per-fluid dispatch in the Scene manager loop with a no-op, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. The oracle emitted seven ordered post-step callbacks while the candidate emitted none; the probe exited nonzero with mismatches=72. Restoring the dispatch returned the differential to zero mismatches.",
-        "detected": "mismatches=72"
-      },
-      "note": "Two-fluid direct pinned-oracle post-step traversal differential; see evidence/phase7-fluid-post-step-000619-003475.md."
-    },
-    {
-      "id": "phys_fn_003475",
-      "rva": "0x000854d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Added an immediate return to the candidate per-fluid update, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. The oracle emitted seven ordered post-step callbacks while the candidate emitted none; the probe exited nonzero with mismatches=72. A second mutation that removed only the implicit-mesh cache copy was also detected with mismatches=4. Restoring the row returned the differential to zero mismatches.",
-        "detected": "mismatches=72"
-      },
-      "note": "Two-fluid per-fluid differential includes null optional-mesh coverage; see evidence/phase7-fluid-post-step-000619-003475.md."
-    },
-    {
-      "id": "phys_fn_003514",
-      "rva": "0x000864e0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Changed nxFluidCollisionBucketPrefix to add one to each row contribution, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. For four rows the oracle total was 9 while the mutant total was 13 and all nontrivial prefixes diverged; the probe reported mismatches=1. Restoring the accumulator returned the direct differential to zero mismatches.",
-        "detected": "mismatches=1"
-      },
-      "note": "Direct prefix accumulator differential, including an empty range; see evidence/phase7-fluid-collision-bucket-prefix-003514.md."
-    },
-    {
-      "id": "phys_fn_003516",
-      "rva": "0x00086520",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Changed nxFluidCollisionCellPrefix to store totalIndices+1 in each cell prefix, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct differential against the pinned oracle. The three-cell case reported prefixes=0 and mismatches=1 while total and cell-count clearing remained observable; the empty-range case still preserved its records. Restoring the exact prefix assignment returned both cases to zero mismatches.",
-        "detected": "mismatches=1"
-      },
-      "note": "Direct cell-prefix differential covers populated and empty bucket ranges; see evidence/phase7-fluid-collision-cell-prefix-003516.md."
-    },
-    {
-      "id": "phys_fn_003526",
-      "rva": "0x00086ad0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed nxFluidCollisionCountBuckets to add two to each selected row count, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then called oracle RVA 0x86ad0 against the candidate. Seven signed coordinate triples include negative values; the candidate bucket counts diverge while untouched row words remain preserved.",
-        "detected": "mismatches=1"
-      },
-      "note": "Direct hash/count differential covers signed coordinates and an empty range; see evidence/phase7-fluid-collision-hash-count-003526.md."
-    },
-    {
-      "id": "phys_fn_003518",
-      "rva": "0x00086590",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily incremented the second word of each copied 8-byte index record in nxFluidCollisionStaticCopy, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and called oracle RVA 0x86590 against the candidate. The controlled oracle callbacks allocate the three output arrays; the index mismatch is measured directly.",
-        "detected": "mismatches=1"
-      },
-      "note": "Direct static-collision copy differential covers this entry and its discontiguous continuations phys_fn_003520/003522; the undefined third bucket word is excluded. See evidence/phase7-fluid-collision-static-copy-003518.md. Fluid static-collision bucket-hash row phys_fn_003526 is now mutation-falsified by the direct fluid ABI differential: seven signed-coordinate cases and an empty range match, while a +2 count mutation is detected (mismatches=1). See evidence/phase7-fluid-collision-hash-count-003526.md."
-    },
-    {
-      "id": "phys_fn_003520",
-      "rva": "0x00086600",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily incremented the second word of each copied 8-byte index record in nxFluidCollisionStaticCopy, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and called oracle RVA 0x86590 against the candidate. The controlled oracle callbacks allocate the three output arrays; the index mismatch is measured directly.",
-        "detected": "mismatches=1"
-      },
-      "note": "Discontiguous continuation exercised by the same direct static-collision copy differential; see evidence/phase7-fluid-collision-static-copy-003518.md."
-    },
-    {
-      "id": "phys_fn_003522",
-      "rva": "0x00086690",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily incremented the second word of each copied 8-byte index record in nxFluidCollisionStaticCopy, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and called oracle RVA 0x86590 against the candidate. The controlled oracle callbacks allocate the three output arrays; the index mismatch is measured directly.",
-        "detected": "mismatches=1"
-      },
-      "note": "Discontiguous function tail exercised by the same direct static-collision copy differential; see evidence/phase7-fluid-collision-static-copy-003518.md."
-    },
-    {
-      "id": "phys_fn_003524",
-      "rva": "0x000866d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily suppressed all candidate triangle-cell output writes, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the three direct oracle cases. The pinned oracle callback slots were bound to the independent SAT and growth references because FluidModel.dll is absent from the supplied UE3 binary directory. Positive, negative-with-margin, and zero-capacity growth cases all diverged from the oracle; the restored candidate matched packed cells, capacity, return values, canaries, and x86 stack balance.",
-        "detected": "mismatches=3"
-      },
-      "note": "The three cases exercise the row with an independently supplied SAT callback; production FluidModel callback integration and Unreal static-collision validation remain open. See evidence/phase7-fluid-collision-triangle-cells-003524.md."
-    },
-    {
-      "id": "phys_fn_003528",
-      "rva": "0x00086b40",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily returned before the indexed-triangle loop, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. Both nonempty mesh cases lost their final triangle cells and bucket increments (mismatches=2); the empty-mesh case remained unchanged. Restoring the row returned exact transformed cells, bucket records, array tails, and x86 stack balance.",
-        "detected": "mismatches=2"
-      },
-      "note": "The differential includes identity and asymmetric affine transforms plus an empty mesh. The oracle SAT and growth callbacks are bound to independent fixture references because FluidModel.dll is absent. See evidence/phase7-fluid-collision-triangle-builder-003528.md."
-    },
-    {
-      "id": "phys_fn_003530",
-      "rva": "0x00086e00",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily returned before processing packed cells, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. Both nonempty seven-cell inputs failed to populate the cell records and bucket counts; the empty-range case remained equivalent (mismatches=2). Restoring the row matched all records, counts, returns, and x86 stack balance.",
-        "detected": "mismatches=2"
-      },
-      "note": "Seven signed-coordinate inputs cover duplicates, cross-bucket records, an existing seeded record, and an empty range. The oracle FindCDCell callback slot is bound to an independent linear lookup because FluidModel.dll is absent. See evidence/phase7-fluid-collision-cell-hash-003530.md."
-    },
-    {
-      "id": "phys_fn_003532",
-      "rva": "0x00086f00",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily suppressed the indexed-triangle loop in nxFluidCollisionBuildIndexedGrid, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle fixture. The asymmetric two-triangle mesh lost its cell and bucket output (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the implementation matched all cells, bucket records, returns, and x86 stack balance.",
-        "detected": "mismatches=1"
-      },
-      "note": "This census row is one half of the single 717-byte function beginning at RVA 0x86f00; both rows use the same implementation and differential. The pinned binaries omit FluidModel.dll, so absent SAT/growth/FindCDCell callback slots use independent fixture references. Production callback integration and Unreal static-collision validation remain open. See evidence/phase7-fluid-indexed-grid-003532-003533.md."
-    },
-    {
-      "id": "phys_fn_003533",
-      "rva": "0x00086f11",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily suppressed the indexed-triangle loop in nxFluidCollisionBuildIndexedGrid, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle fixture. The asymmetric two-triangle mesh lost its cell and bucket output (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the implementation matched all cells, bucket records, returns, and x86 stack balance.",
-        "detected": "mismatches=1"
-      },
-      "note": "This census row is one half of the single 717-byte function beginning at RVA 0x86f00; both rows use the same implementation and differential. The pinned binaries omit FluidModel.dll, so absent SAT/growth/FindCDCell callback slots use independent fixture references. Production callback integration and Unreal static-collision validation remain open. See evidence/phase7-fluid-indexed-grid-003532-003533.md."
-    },
-    {
-      "id": "phys_fn_003535",
-      "rva": "0x000871d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the appended triangle index from triangleIndex to triangleIndex+1, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct oracle fixture. Both nonempty cases observed the wrong association values (mismatches=2); empty input was unchanged. Restoring the assignment matched bucket rows, cell records, association storage, returns, and x86 stack balance.",
-        "detected": "mismatches=2"
-      },
-      "note": "The direct oracle callback slot for FindCDCell is bound to an independent linear bucket-range lookup because FluidModel.dll is absent. The enclosing triangle emitter phys_fn_003537/003538 and dirty builder phys_fn_003505 remain open. See evidence/phase7-fluid-cell-index-003535.md."
-    },
-    {
-      "id": "phys_fn_003538",
-      "rva": "0x000872b1",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily incremented meshIndex before appending the per-cell association in nxFluidCollisionBuildTriangleIndices, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. The mesh case observed incorrect association values (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the source matched bucket rows, complete cell records, association storage, cell outputs, returns, and x86 stack balance.",
-        "detected": "mismatches=1"
-      },
-      "note": "These adjacent census rows split one continuous 721-byte function and share one implementation and direct oracle fixture. The differential exercises its triangle-cell and cell-index leaves; production FluidModel callback integration, the enclosing dirty builder phys_fn_003505, and Unreal static-collision validation remain open. See evidence/phase7-fluid-triangle-index-builder-003537-003538.md."
-    },
-    {
-      "id": "phys_fn_003537",
-      "rva": "0x000872a0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily incremented meshIndex before appending the per-cell association in nxFluidCollisionBuildTriangleIndices, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, and reran the direct pinned-oracle differential. The mesh case observed incorrect association values (mismatches=1); empty input and null-output behavior remained unchanged. Restoring the source matched bucket rows, complete cell records, association storage, cell outputs, returns, and x86 stack balance.",
-        "detected": "mismatches=1"
-      },
-      "note": "These adjacent census rows split one continuous 721-byte function and share one implementation and direct oracle fixture. The differential exercises its triangle-cell and cell-index leaves; production FluidModel callback integration, the enclosing dirty builder phys_fn_003505, and Unreal static-collision validation remain open. See evidence/phase7-fluid-triangle-index-builder-003537-003538.md."
-    },
-    {
-      "id": "phys_fn_003511",
-      "rva": "0x00086400",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the dynamic type-2 counter offset in nxFluidCollisionCountShapeType from builder+0x94 to builder+0x90, rebuilt the candidate DLL and reran the direct pinned-oracle differential. Case 8 observed the wrong count (oracle count valid=1, candidate count valid=0; mismatches=1). Restoring the source matched all 13 static/dynamic, unsupported, owner-exclusion, and refresh cases, including returns, complete state, and cdecl stack balance.",
-        "detected": "mismatches=1"
-      },
-      "note": "The direct shape classifier is closed by its row-specific oracle differential. The enclosing static-collision builder phys_fn_003505, its FluidModel callbacks, and the dirty manager path remain open. See evidence/phase7-fluid-collision-shape-counter-003511.md."
-    },
-    {
-      "id": "phys_fn_003549",
-      "rva": "0x00087880",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily suppressed nxFluidCollisionCountShapeType for every compound member in nxFluidCollisionCountSceneShapes, rebuilt the candidate DLL and reran the direct pinned-oracle differential. Both nonempty collection cases then had incorrect builder counters (counts=1/0, mismatches=2). Restoring member traversal matched empty, mixed, and dynamic/compound fixtures, including all per-type counts, returns 0/4/2, full builder state, and cdecl stack balance.",
-        "detected": "mismatches=2"
-      },
-      "note": "Scene shape collection is closed by its row-specific oracle differential. The parallel typed-array collector phys_fn_003555 and enclosing dirty static-collision builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-scene-shape-count-003549.md."
-    },
-    {
-      "id": "phys_fn_003543",
-      "rva": "0x00087740",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily changed the selected sphere geometry-word source in nxFluidCollisionAppendSphere from shape+0xe0 to shape+0xe4, rebuilt the candidate DLL, and reran the direct pinned-oracle differential. Distinct fixture values made the mutation fail with oracle_contract=0 and mismatches=1. Restoring the source matched the selected sphere record and ignored non-sphere case, including array count, return value, untouched tail, and cdecl stack balance.",
-        "detected": "mismatches=1"
-      },
-      "note": "The sphere typed-array appender is closed by its row-specific oracle differential. The other typed-array appenders, parallel scene collector phys_fn_003555, and enclosing dirty static-collision builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-sphere-append-003543.md."
-    },
-    {
-      "id": "phys_fn_003545",
-      "rva": "0x000877a0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily sourced the second capsule geometry word from shape+0xe0 instead of shape+0xe4 in nxFluidCollisionAppendCapsule, rebuilt the candidate DLL, and reran the direct pinned-oracle differential. Distinct fixture values caused the second word assertion to fail (oracle_contract=0, mismatches=1). Restoring shape+0xe4 matched the selected capsule and ignored non-capsule cases, including the defined record prefix, 88-byte stride, count, return value, untouched tail, and cdecl stack balance.",
-        "detected": "mismatches=1"
-      },
-      "note": "The capsule typed-array appender is closed by its row-specific oracle differential. The remaining plane, box, and mesh appenders, scene collector phys_fn_003555, and dirty builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-capsule-append-003545.md."
-    },
-    {
-      "id": "phys_fn_003547",
-      "rva": "0x00087810",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily sourced the third box geometry word from shape+0xe8 instead of shape+0xec in nxFluidCollisionAppendBox, rebuilt the candidate DLL, and reran the direct pinned-oracle differential. The distinct third-word fixture detected the error (oracle_contract=0, mismatches=1). Restoring shape+0xec matched the selected type-2 box and ignored type-1 shape, including the +0xe4/+0xe8/+0xec geometry words, defined record prefix, 92-byte stride, count, return, untouched tail, and cdecl stack.",
-        "detected": "mismatches=1"
-      },
-      "note": "The box typed-array appender is closed by its row-specific oracle differential. The mesh and plane appenders, router phys_fn_003553, scene collector phys_fn_003555, and dirty builder phys_fn_003505 remain open. See evidence/phase7-fluid-collision-box-append-003547.md."
-    },
-    {
-      "id": "phys_fn_003551",
-      "rva": "0x00087940",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily copied the plane scratch record from word 20 instead of word 19 in nxFluidCollisionAppendPlane. The pinned-oracle differential retained oracle_contract=1 and rejected the candidate with mismatches=1; restoring word 19 returned both the plane appender and fluid-emitter aggregate to zero mismatches.",
-        "detected": "mismatches=1"
-      },
-      "note": "The plane typed-array appender is closed by its row-specific oracle differential. It accepts type 0, dispatches shape vtable slot 13 with the reconstructed scratch query, appends the defined 16-byte prefix in a 96-byte stride, increments the array count, and returns the descriptor. See evidence/phase7-fluid-collision-plane-append-003551.md."
-    },
-    {
-      "id": "phys_fn_003541",
-      "rva": "0x000876d0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily sourced the first mesh geometry word from meshData+8 instead of meshData+12 in nxFluidCollisionAppendMesh. The pinned-oracle differential retained oracle_contract=1 and detected the wrong word with mismatches=1; restoring +12 returned the direct differential and aggregate to zero mismatches.",
-        "detected": "mismatches=1"
-      },
-      "note": "The mesh typed-array appender is closed by its row-specific oracle differential. It handles the -8 mesh-data sentinel and appends the geometry words from +12,+20,+8,+16 before the common 92-byte defined record prefix in a 96-byte stride. See evidence/phase7-fluid-collision-mesh-append-003541.md."
-    },
-    {
-      "id": "phys_fn_003553",
-      "rva": "0x00087a40",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsFluidEmitterAbiTests",
-      "falsification": {
-        "mutation": "Temporarily routed ordinary box shapes to builder+0x30 instead of builder+0x3c in nxFluidCollisionShapeArrayRouter. The 13-case pinned-oracle fixture detected the wrong destination and return with mismatches=1; restoring +0x3c returned the router and aggregate to zero mismatches.",
-        "detected": "mismatches=1"
-      },
-      "note": "The shape-array router is closed by a 13-case oracle differential covering five ordinary type routes, four 0x80 routes, the unsupported 0x80 type, excluded and owner-managed early returns, and an invalid type. See evidence/phase7-fluid-collision-shape-router-003553.md."
     }
   ],
   "deferred": [
@@ -2935,14 +2946,6 @@
       "id": "phys_fn_003540",
       "rva": "0x00087580",
       "size": 336,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003555",
-      "rva": "0x00087b80",
-      "size": 189,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []

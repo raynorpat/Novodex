@@ -66462,13 +66462,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1331",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12481",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA listing/decompilation at RVA 0x00087b80 establishes cdecl (builder, scene), Scene::shapes container at scene+0x640, wrapper backing pointer at +0x1c, container active count as +0x08 plus +0x0c, slot start at +0x04, node shape pointer at node+4, compound type 5 member range [shape+0xe0, shape+0xe4), and void return.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares the pinned oracle and candidate DLL for an empty scene and a populated eight-entry scene containing one six-member compound and one empty compound. Twelve routed leaves check typed-array counts, defined record prefixes, geometry callback payloads, untouched tails, and cdecl stack balance. Restricting the compound loop to its first child is detected with mismatches=5; restored control reports oracle_contract=1, stack=1/1, mismatches=0. See evidence/phase7-fluid-scene-shape-collector-003555.md.",
+      "notes": "Scene shape collection is reconstructed and row-specifically mutation-falsified. The enclosing static-collision builder phys_fn_003505 and production FluidModel.dll callback integration remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionCollectSceneShapes"
     },
     {
       "id": "phys_fn_003556",

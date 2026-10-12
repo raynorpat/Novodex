@@ -923,7 +923,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsFluidEmitterAbiTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	target_compile_definitions(NxPhysicsFluidEmitterAbiTests PRIVATE NX_FLUID_EMITTER_ABI_TEST)
-	target_link_libraries(NxPhysicsFluidEmitterAbiTests NxFoundation bcrypt)
+	# The test-only emitter source reports unexpected write-lock failures via a
+	# harness callback, so this executable does not preload the build-tree
+	# NxFoundation.dll before selecting the isolated oracle/candidate pair.
+	target_link_libraries(NxPhysicsFluidEmitterAbiTests bcrypt)
 	add_dependencies(NxPhysicsFluidEmitterAbiTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	add_custom_command(TARGET NxPhysicsFluidEmitterAbiTests POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different

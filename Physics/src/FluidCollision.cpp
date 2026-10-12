@@ -601,6 +601,42 @@ extern "C" int __cdecl nxFluidCollisionCountShapeType(void* builder,
 	return reinterpret_cast<int>(builder);
 	}
 
+// phys_fn_003555 (RVA 0x00087b80) walks Scene::shapes in container order.
+// Compound shapes contribute each member in [shape+0xe0, shape+0xe4) instead
+// of the compound itself; every leaf is routed through phys_fn_003553.
+extern "C" void* __cdecl nxFluidCollisionShapeArrayRouter(void*, void*);
+extern "C" void __cdecl nxFluidCollisionCollectSceneShapes(void* builder,
+	void* scene)
+	{
+	unsigned char* const sceneBytes = static_cast<unsigned char*>(scene);
+	unsigned char* const container = *reinterpret_cast<unsigned char**>(
+		sceneBytes + 0x624 + 0x1c);
+	if(!container)
+		return;
+	const unsigned count = *reinterpret_cast<unsigned*>(container + 8)
+		+ *reinterpret_cast<unsigned*>(container + 12);
+	void** const entries = *reinterpret_cast<void***>(container + 24)
+		+ *reinterpret_cast<unsigned*>(container + 4);
+	for(unsigned index = 0; index != count; ++index)
+		{
+		void* const node = entries[index];
+		void* const shape = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(node) + 4);
+		if(*reinterpret_cast<unsigned*>(
+			static_cast<unsigned char*>(shape) + 0xd0) == 5)
+			{
+			unsigned char* const bytes = static_cast<unsigned char*>(shape);
+			void** const begin = *reinterpret_cast<void***>(bytes + 0xe0);
+			void** const end = *reinterpret_cast<void***>(bytes + 0xe4);
+			const unsigned childCount = static_cast<unsigned>(end - begin);
+			for(unsigned child = 0; child != childCount; ++child)
+				nxFluidCollisionShapeArrayRouter(builder, begin[child]);
+			}
+		else
+			nxFluidCollisionShapeArrayRouter(builder, shape);
+		}
+	}
+
 // phys_fn_003549 (RVA 0x00087880) walks Scene::shapes at scene+0x624.
 // IceCore::Container stores its backing array at +0x18, its starting slot at
 // +0x04, and the two active-run lengths at +0x08/+0x0c. Compound shapes (type

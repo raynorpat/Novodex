@@ -26,6 +26,14 @@ static void* gCandidateFluidCollisionBoxAppendAddress;
 static void* gCandidateFluidCollisionPlaneAppendAddress;
 static void* gCandidateFluidCollisionMeshAppendAddress;
 static void* gCandidateFluidCollisionShapeArrayRouterAddress;
+static void* gCandidateFluidCollisionSceneShapeCollectorAddress;
+
+extern "C" void __cdecl nxFluidEmitterAbiUnexpectedWriteLockFailure(unsigned line)
+	{
+	fprintf(stderr, "FAIL test-only NpFluidEmitter unexpectedly rejected write lock at line %u\n",
+		line);
+	++gFailures;
+	}
 
 struct ImplicitMeshErrorRecord
 	{
@@ -2810,6 +2818,321 @@ static unsigned nxRunFluidCollisionShapeArrayRouterDifferential(
 	return mismatches;
 	}
 
+static unsigned nxRunFluidCollisionSceneShapeCollectorDifferential(
+	const unsigned char* oracleBase, void* candidateAddress)
+	{
+	typedef void (__cdecl* CollectSceneShapes)(void*, void*);
+	CollectSceneShapes oracle = oracleBase ? reinterpret_cast<CollectSceneShapes>(
+		const_cast<unsigned char*>(oracleBase) + 0x87b80) : 0;
+	const bool candidatePresent = candidateAddress != 0;
+	CollectSceneShapes candidate = candidatePresent
+		? reinterpret_cast<CollectSceneShapes>(candidateAddress) : oracle;
+	if(!oracleBase)
+		{
+		printf("fluid collision scene-shape-collector cases=2 empty=1 "
+			"populated=1 compound_children=6 routed_shapes=12 "
+			"candidate_present=%u oracle_contract=0 stack=0/0 mismatches=1\n",
+			candidatePresent);
+		return 1;
+		}
+	struct ShapeFixture
+		{
+		unsigned char bytes[0x1c0];
+		unsigned char shapeData[0x20];
+		unsigned bounds[6];
+		unsigned meshWords[8];
+		void* vtable[14];
+		};
+	struct Node { unsigned char prefix[4]; void* shape; };
+	struct SceneFixture
+		{
+		unsigned char scene[0x700];
+		unsigned char container[32];
+		void* entries[10];
+		Node nodes[8];
+		ShapeFixture top[8];
+		ShapeFixture child[6];
+		void* childPointers[6];
+		};
+	struct BuilderFixture
+		{
+		unsigned char bytes[0xa0];
+		unsigned char outputs[9][768];
+		};
+	struct ArrayDescriptor
+		{
+		unsigned char* data;
+		unsigned count;
+		unsigned capacity;
+		};
+	static const unsigned descriptorOffsets[9] =
+		{ 0, 0x30, 0x3c, 0x48, 0x54, 0x6c, 0x78, 0x84, 0x90 };
+	unsigned char owners[13][0x20] = {};
+	SceneFixture oracleScene, candidateScene;
+	BuilderFixture oracleBuilder, candidateBuilder;
+	memset(&oracleScene, 0, sizeof(oracleScene));
+	memset(&candidateScene, 0, sizeof(candidateScene));
+	memset(&oracleBuilder, 0, sizeof(oracleBuilder));
+	memset(&candidateBuilder, 0, sizeof(candidateBuilder));
+	for(unsigned side = 0; side != 2; ++side)
+		{
+		SceneFixture& scene = side == 0 ? oracleScene : candidateScene;
+		BuilderFixture& builder = side == 0 ? oracleBuilder : candidateBuilder;
+		for(unsigned array = 0; array != 9; ++array)
+			{
+			memset(builder.outputs[array], 0xa5, sizeof(builder.outputs[array]));
+			ArrayDescriptor* const descriptor = reinterpret_cast<ArrayDescriptor*>(
+				builder.bytes + descriptorOffsets[array]);
+			descriptor->data = builder.outputs[array];
+			descriptor->count = 0;
+			descriptor->capacity = 8;
+			}
+		auto initializeShape = [&](ShapeFixture& shape, unsigned logicalIndex,
+			unsigned type, unsigned short flags)
+			{
+			memset(&shape, 0, sizeof(shape));
+			for(unsigned word = 0; word != 12; ++word)
+				*reinterpret_cast<unsigned*>(shape.bytes + 0x0c + word * 4) =
+					0x3f100001u + logicalIndex * 0x00010101u + word * 0x01020407u;
+			for(unsigned word = 0; word != 6; ++word)
+				shape.bounds[word] = 0x41000000u + logicalIndex * 0x100u + word * 7u;
+		for(unsigned word = 0; word != 8; ++word)
+				shape.meshWords[word] = 0x51000000u + logicalIndex * 0x100u + word * 9u;
+			*reinterpret_cast<void**>(shape.bytes + 4) = owners[logicalIndex];
+			*reinterpret_cast<unsigned short*>(shape.bytes + 0xcc) = 0;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xd0) = type;
+			*reinterpret_cast<unsigned short*>(shape.bytes + 0xde) = flags;
+			*reinterpret_cast<void**>(shape.bytes + 0xc4) = shape.shapeData;
+			*reinterpret_cast<void**>(shape.shapeData + 0x14) = shape.bounds;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xac) = 2;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0x1bc) = 0;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xe0) =
+				0x61000000u + logicalIndex * 0x100u;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xe4) =
+				0x62000000u + logicalIndex * 0x100u;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xe8) =
+				0x63000000u + logicalIndex * 0x100u;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xec) =
+				0x64000000u + logicalIndex * 0x100u;
+			if(type == 4)
+				*reinterpret_cast<void**>(shape.bytes + 0xe0) = shape.meshWords;
+			for(unsigned slot = 0; slot != 14; ++slot)
+				shape.vtable[slot] = reinterpret_cast<void*>(
+					&nxFluidCollisionPlaneAppendFixtureVirtual);
+			*reinterpret_cast<void***>(shape.bytes) = shape.vtable;
+			};
+		initializeShape(scene.top[0], 0, 1, 0); // sphere before the compound
+		initializeShape(scene.top[1], 1, 2, 0); // ordinary box
+		initializeShape(scene.top[2], 2, 5, 0); // compound
+		initializeShape(scene.top[3], 3, 1, 0); // sphere after the compound
+		initializeShape(scene.top[4], 4, 3, 0); // owner-managed capsule
+		initializeShape(scene.top[5], 5, 4, 0x200); // excluded mesh
+		initializeShape(scene.top[6], 6, 5, 0); // empty compound
+		initializeShape(scene.top[7], 7, 1, 0); // final sphere
+		static const unsigned childTypes[6] = { 2, 1, 0, 3, 4, 9 };
+		for(unsigned child = 0; child != 6; ++child)
+			{
+			initializeShape(scene.child[child], 7 + child, childTypes[child], 0);
+			scene.childPointers[child] = scene.child[child].bytes;
+			}
+		*reinterpret_cast<void**>(scene.top[2].bytes + 0xe0) =
+			scene.childPointers;
+		*reinterpret_cast<void**>(scene.top[2].bytes + 0xe4) =
+			scene.childPointers + 6;
+		*reinterpret_cast<void**>(scene.top[6].bytes + 0xe0) =
+			scene.childPointers + 6;
+		*reinterpret_cast<void**>(scene.top[6].bytes + 0xe4) =
+			scene.childPointers + 6;
+		owners[4][0x14] = 4;
+		*reinterpret_cast<void**>(scene.scene + 0x640) = scene.container;
+		*reinterpret_cast<unsigned*>(scene.container + 4) = 1;
+		*reinterpret_cast<unsigned*>(scene.container + 8) = 3;
+		*reinterpret_cast<unsigned*>(scene.container + 12) = 5;
+		*reinterpret_cast<void***>(scene.container + 24) = scene.entries;
+		for(unsigned index = 0; index != 8; ++index)
+			{
+			scene.entries[index + 1] = &scene.nodes[index];
+			scene.nodes[index].shape = scene.top[index].bytes;
+			}
+		}
+	// The two sides share logical owner addresses, as the packed record stores
+	// the owner pointer rather than a shape-local address.
+	owners[4][0x14] = 4;
+	unsigned mismatches = candidatePresent ? 0u : 1u;
+	bool oracleContract = true, oracleStackBalanced = true;
+	bool candidateStackBalanced = true;
+	const unsigned planeCallsBefore = gFluidCollisionPlaneAppendVirtualCalls;
+	for(unsigned test = 0; test != 2; ++test)
+		{
+		SceneFixture* const oracleInput = test == 0 ? &oracleScene : &oracleScene;
+		SceneFixture* const candidateInput = test == 0 ? &candidateScene : &candidateScene;
+		if(test == 0)
+			{
+			*reinterpret_cast<void**>(oracleInput->scene + 0x640) = 0;
+			*reinterpret_cast<void**>(candidateInput->scene + 0x640) = 0;
+			}
+		else
+			{
+			*reinterpret_cast<void**>(oracleInput->scene + 0x640) = oracleInput->container;
+			*reinterpret_cast<void**>(candidateInput->scene + 0x640) = candidateInput->container;
+			}
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		oracle(oracleBuilder.bytes, oracleInput->scene);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		candidate(candidateBuilder.bytes, candidateInput->scene);
+		__asm mov candidateAfter, esp
+		const bool oracleStack = oracleBefore == oracleAfter;
+		const bool candidateStack = candidateBefore == candidateAfter;
+		oracleStackBalanced &= oracleStack;
+		candidateStackBalanced &= candidateStack;
+		if(!oracleStack || !candidateStack)
+			{
+			++mismatches;
+			printf("fluid collision scene-shape-collector stack detail case=%u "
+				"balanced=%u/%u\n", test, oracleStack, candidateStack);
+			}
+		if(test == 0)
+			{
+			for(unsigned array = 0; array != 9; ++array)
+				{
+				ArrayDescriptor* const oracleDescriptor = reinterpret_cast<ArrayDescriptor*>(
+					oracleBuilder.bytes + descriptorOffsets[array]);
+				ArrayDescriptor* const candidateDescriptor = reinterpret_cast<ArrayDescriptor*>(
+					candidateBuilder.bytes + descriptorOffsets[array]);
+				if(oracleDescriptor->count != 0 || candidateDescriptor->count != 0
+					|| memcmp(oracleBuilder.outputs[array], candidateBuilder.outputs[array],
+						sizeof(oracleBuilder.outputs[array])) != 0)
+					{
+					++mismatches;
+					printf("fluid collision scene-shape-collector empty detail array=%u "
+						"count=%u/%u\n", array, oracleDescriptor->count,
+						candidateDescriptor->count);
+					}
+				}
+			}
+		}
+	static const unsigned expectedCounts[9] = { 1, 1, 2, 4, 1, 0, 0, 0, 0 };
+	static const unsigned definedPrefixes[9] = { 92, 16, 88, 80, 84, 0, 0, 0, 0 };
+	for(unsigned array = 0; array != 9; ++array)
+		{
+		ArrayDescriptor* const oracleDescriptor = reinterpret_cast<ArrayDescriptor*>(
+			oracleBuilder.bytes + descriptorOffsets[array]);
+		ArrayDescriptor* const candidateDescriptor = reinterpret_cast<ArrayDescriptor*>(
+			candidateBuilder.bytes + descriptorOffsets[array]);
+		if(oracleDescriptor->count != expectedCounts[array]
+			|| candidateDescriptor->count != expectedCounts[array])
+			{
+			oracleContract = 0;
+			++mismatches;
+			printf("fluid collision scene-shape-collector count detail array=%u "
+				"expected=%u actual=%u/%u\n", array, expectedCounts[array],
+				oracleDescriptor->count, candidateDescriptor->count);
+			continue;
+			}
+		const unsigned stride = array == 3 ? 84u : array == 4 ? 88u
+			: array == 2 ? 92u : 96u;
+		for(unsigned record = 0; record != expectedCounts[array]; ++record)
+			{
+			const unsigned prefix = definedPrefixes[array];
+			const unsigned* const oracleRecord = reinterpret_cast<const unsigned*>(
+				oracleBuilder.outputs[array] + record * stride);
+			const unsigned* const candidateRecord = reinterpret_cast<const unsigned*>(
+				candidateBuilder.outputs[array] + record * stride);
+			if(prefix && memcmp(oracleRecord, candidateRecord, prefix) != 0)
+				{
+				++mismatches;
+				unsigned firstDifferent = 0;
+				while(firstDifferent < prefix
+					&& oracleBuilder.outputs[array][record * stride + firstDifferent]
+						== candidateBuilder.outputs[array][record * stride + firstDifferent])
+					++firstDifferent;
+				printf("fluid collision scene-shape-collector record detail array=%u "
+					"record=%u prefix=%u oracle=%08x candidate=%08x diff=%u "
+					"bytes=%02x/%02x\n", array,
+					record, prefix,
+					*reinterpret_cast<unsigned*>(oracleBuilder.outputs[array] + record * stride),
+					*reinterpret_cast<unsigned*>(candidateBuilder.outputs[array] + record * stride),
+					firstDifferent,
+					oracleBuilder.outputs[array][record * stride + firstDifferent],
+					candidateBuilder.outputs[array][record * stride + firstDifferent]);
+				}
+			}
+		const unsigned used = expectedCounts[array] * stride;
+		if(memcmp(oracleBuilder.outputs[array] + used,
+			candidateBuilder.outputs[array] + used,
+			sizeof(oracleBuilder.outputs[array]) - used) != 0)
+			{
+			++mismatches;
+			printf("fluid collision scene-shape-collector tail detail array=%u used=%u "
+				"oracle=%02x candidate=%02x\n", array, used,
+				oracleBuilder.outputs[array][used], candidateBuilder.outputs[array][used]);
+			}
+		}
+	const unsigned expectedPlane[4] = { 0, 0x13579bdfu, 0x2468ace0u, 0x0badf00du };
+	const unsigned expectedSphereGeometry[4] = {
+		0x61000000u, 0x61000800u, 0x61000300u, 0x61000700u };
+	const unsigned expectedBoxGeometry[2][3] = {
+		{ 0x62000100u, 0x63000100u, 0x64000100u },
+		{ 0x62000700u, 0x63000700u, 0x64000700u } };
+	const unsigned expectedCapsule[2] = { 0x61000a00u, 0x62000a00u };
+	const unsigned expectedMesh[4] = { 0x51000b1bu, 0x51000b2du,
+		0x51000b12u, 0x51000b24u };
+	bool expectedGeometry =
+		memcmp(oracleBuilder.outputs[1], expectedPlane, sizeof(expectedPlane)) == 0
+		&& *reinterpret_cast<unsigned*>(oracleBuilder.outputs[3]) == expectedSphereGeometry[0]
+		&& *reinterpret_cast<unsigned*>(oracleBuilder.outputs[3] + 84) == expectedSphereGeometry[1]
+		&& *reinterpret_cast<unsigned*>(oracleBuilder.outputs[3] + 168) == expectedSphereGeometry[2]
+		&& *reinterpret_cast<unsigned*>(oracleBuilder.outputs[3] + 252) == expectedSphereGeometry[3]
+		&& memcmp(oracleBuilder.outputs[2], expectedBoxGeometry[0], 3 * sizeof(unsigned)) == 0
+		&& memcmp(oracleBuilder.outputs[2] + 92, expectedBoxGeometry[1], 3 * sizeof(unsigned)) == 0
+		&& memcmp(oracleBuilder.outputs[4], expectedCapsule,
+			sizeof(expectedCapsule)) == 0
+		&& memcmp(oracleBuilder.outputs[0], expectedMesh, sizeof(expectedMesh)) == 0;
+	oracleContract &= expectedGeometry
+		&& oracleStackBalanced
+		&& gFluidCollisionPlaneAppendVirtualCalls - planeCallsBefore == 2;
+	if(!expectedGeometry || !oracleStackBalanced
+		|| gFluidCollisionPlaneAppendVirtualCalls - planeCallsBefore != 2)
+		{
+		++mismatches;
+		printf("fluid collision scene-shape-collector oracle detail geometry=%u "
+			"plane_calls=%u counts=", expectedGeometry,
+			gFluidCollisionPlaneAppendVirtualCalls - planeCallsBefore);
+		for(unsigned array = 0; array != 5; ++array)
+			printf("%u%s", reinterpret_cast<ArrayDescriptor*>(oracleBuilder.bytes
+				+ descriptorOffsets[array])->count, array == 4 ? "" : ",");
+	printf(" plane=%08x.%08x.%08x.%08x box=%08x.%08x.%08x.%08x "
+		"capsule=%08x.%08x sphere_words=%08x.%08x.%08x.%08x "
+		"mesh_words=%08x.%08x.%08x.%08x\n",
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[1]),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[1] + 4),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[1] + 8),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[1] + 12),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[2]),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[2] + 4),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[2] + 8),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[2] + 12),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[4]),
+		*reinterpret_cast<unsigned*>(oracleBuilder.outputs[4] + 4),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[3]),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[3] + 84),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[3] + 168),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[3] + 252),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[0]),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[0] + 4),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[0] + 8),
+			*reinterpret_cast<unsigned*>(oracleBuilder.outputs[0] + 12));
+		}
+	printf("fluid collision scene-shape-collector cases=2 empty=1 populated=1 "
+		"compound_children=6 routed_shapes=12 candidate_present=%u "
+		"oracle_contract=%u stack=%u/%u mismatches=%u\n", candidatePresent,
+		oracleContract, oracleStackBalanced, candidateStackBalanced, mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunFluidCollisionBoxAppendDifferential(
 	const unsigned char* oracleBase, void* candidateAddress)
 	{
@@ -3417,6 +3740,19 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL fluid emitter probe did not load the pinned oracle\n");
 		return 1;
 		}
+	printf("loaded module=NxPhysics.dll path=%S sha256=%s\n", loadedPath, actualHash);
+	HMODULE foundationModule = GetModuleHandleW(L"NxFoundation.dll");
+	wchar_t foundationPath[MAX_PATH];
+	char foundationHash[65];
+	if(!foundationModule
+		|| !GetModuleFileNameW(foundationModule, foundationPath, MAX_PATH)
+		|| !nxSha256(foundationPath, foundationHash))
+		{
+		fprintf(stderr, "FAIL fluid emitter probe did not resolve staged NxFoundation.dll\n");
+		return 1;
+		}
+	printf("loaded module=NxFoundation.dll path=%S sha256=%s\n",
+		foundationPath, foundationHash);
 	unsigned char* image = reinterpret_cast<unsigned char*>(module);
 	NxLockSlots lockSlots = nxBindOracleLocks(image);
 	if(!lockSlots.protection)
@@ -3525,6 +3861,10 @@ int wmain(int argc, wchar_t** argv)
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionShapeArrayRouter", &gCandidateFluidCollisionShapeArrayRouterAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid shape-array router could not be resolved from its map\n");
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionCollectSceneShapes",
+		&gCandidateFluidCollisionSceneShapeCollectorAddress))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid scene-shape collector could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
@@ -3896,6 +4236,8 @@ int wmain(int argc, wchar_t** argv)
 		gCandidateFluidCollisionMeshAppendAddress);
 	gFailures += nxRunFluidCollisionShapeArrayRouterDifferential(image,
 		gCandidateFluidCollisionShapeArrayRouterAddress);
+	gFailures += nxRunFluidCollisionSceneShapeCollectorDifferential(image,
+		gCandidateFluidCollisionSceneShapeCollectorAddress);
 	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
 	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
 	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");
@@ -5369,8 +5711,12 @@ int wmain(int argc, wchar_t** argv)
 	// stubs, which would make this wrapper report a false write-lock collision.
 	nxUnbindOracleLocks(image, lockSlots);
 	ImplicitMeshOutputStream output;
-	NxFoundationSDK* foundation = NxCreateFoundationSDK(
-		NX_FOUNDATION_SDK_VERSION, &output, 0);
+	typedef NxFoundationSDK* (NX_CALL_CONV* CreateFoundationFn)(NxU32,
+		NxUserOutputStream*, NxUserAllocator*);
+	CreateFoundationFn createFoundation = reinterpret_cast<CreateFoundationFn>(
+		GetProcAddress(foundationModule, "NxCreateFoundationSDK"));
+	NxFoundationSDK* foundation = createFoundation
+		? createFoundation(NX_FOUNDATION_SDK_VERSION, &output, 0) : 0;
 	if(!foundation)
 		{
 		fprintf(stderr, "FAIL Foundation SDK creation failed for implicit-mesh validation cases\n");
