@@ -1829,7 +1829,7 @@ static unsigned nxRunFluidCollisionShapeCounterDifferential(
 	CountShape candidate = reinterpret_cast<CountShape>(candidateAddress);
 	struct Case
 		{
-		unsigned short builderFlags;
+		unsigned short shapeFlags;
 		unsigned char ownerFlags;
 		unsigned type;
 		unsigned counterOffset;
@@ -1865,10 +1865,10 @@ static unsigned nxRunFluidCollisionShapeCounterDifferential(
 		memset(candidateOwner, 0, sizeof(candidateOwner));
 		memset(oracleShape, 0, sizeof(oracleShape));
 		memset(candidateShape, 0, sizeof(candidateShape));
-		*reinterpret_cast<unsigned short*>(oracleBuilder + 0xde) =
-			cases[test].builderFlags;
-		*reinterpret_cast<unsigned short*>(candidateBuilder + 0xde) =
-			cases[test].builderFlags;
+		*reinterpret_cast<unsigned short*>(oracleShape + 0xde) =
+			cases[test].shapeFlags;
+		*reinterpret_cast<unsigned short*>(candidateShape + 0xde) =
+			cases[test].shapeFlags;
 		oracleOwner[0x14] = cases[test].ownerFlags;
 		candidateOwner[0x14] = cases[test].ownerFlags;
 		*reinterpret_cast<void**>(oracleShape + 4) = oracleOwner;
@@ -1930,9 +1930,9 @@ static unsigned nxRunFluidCollisionShapeCounterDifferential(
 			&& oracleStack && candidateStack;
 		if(!matched)
 			printf("fluid collision shape-count-router detail case=%u type=%u "
-				"flags=%04x owner=%02x return=%u/%u counts=%u/%u state=%u "
+				"shape_flags=%04x owner=%02x return=%u/%u counts=%u/%u state=%u "
 				"stack=%u/%u expected_offset=%x return_kind=%u\n", test,
-				cases[test].type, cases[test].builderFlags,
+				cases[test].type, cases[test].shapeFlags,
 				cases[test].ownerFlags, oracleReturnValid, candidateReturnValid,
 				oracleCountsValid, candidateCountsValid, stateMatches,
 				oracleStack, candidateStack, cases[test].counterOffset,

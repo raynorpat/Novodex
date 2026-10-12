@@ -561,12 +561,12 @@ extern "C" int __cdecl nxFluidCollisionCountShapeType(void* builder,
 	void* shape)
 	{
 	unsigned char* const builderBytes = static_cast<unsigned char*>(builder);
+	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
 	const unsigned short flags =
-		*reinterpret_cast<unsigned short*>(builderBytes + 0xde);
+		*reinterpret_cast<unsigned short*>(shapeBytes + 0xde);
 	if((flags & 0x200u) != 0)
 		return flags & 0x200u;
 
-	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
 	unsigned char* const owner =
 		*reinterpret_cast<unsigned char**>(shapeBytes + 4);
 	if((owner[0x14] & 4u) != 0)
