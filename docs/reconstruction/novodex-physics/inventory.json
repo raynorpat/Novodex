@@ -71994,13 +71994,19 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1443",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12958",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "static review: write-link guard, reentry guard, and internal registry update; raw caller pointer is retained",
+      "dynamic_proof": "row-specific mutation falsification in NxPhysicsFluidEmitterAbiTests; setter and getter mutants each report mismatches=2 and exit 1; restored oracle/candidate/candidate-DLL control reports zero name and aggregate mismatches; evidence/phase7-fluid-emitter-name-003858-003860.md",
+      "notes": "",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setName@NpFluidEmitter@@UAEXPBD@Z",
+        "address": "0x1003df60",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003859",
@@ -72030,13 +72036,19 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "lock-bracketed helper call (0x8d060u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1444",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12963",
-      "static_proof": "static review of the recorded shape: lock-bracketed helper call (0x8d060u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockhelper differential (3z188): failures=0 for all five rows, with the lock API, the registry global and each global function pointer bound to the same recorders the candidate uses",
-      "notes": ""
+      "static_proof": "static review: read-link bracket around the internal emitter-name registry lookup; returns the registered raw pointer",
+      "dynamic_proof": "row-specific mutation falsification in NxPhysicsFluidEmitterAbiTests; setter and getter mutants each report mismatches=2 and exit 1; restored oracle/candidate/candidate-DLL control reports zero name and aggregate mismatches; evidence/phase7-fluid-emitter-name-003858-003860.md",
+      "notes": "",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getName@NpFluidEmitter@@UBEPBDXZ",
+        "address": "0x1003cda0",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003861",

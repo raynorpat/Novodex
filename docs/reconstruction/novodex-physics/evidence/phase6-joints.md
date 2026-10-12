@@ -10504,3 +10504,5 @@ Phase 7 closure evidence: phys_fn_003559 and phys_fn_003561 copy the FluidModel 
 
 
 Fluid emitter local aggregate copy closure: rows phys_fn_003563, phys_fn_003565, and phys_fn_003567 are individually mutation-falsified through the local pose, position, and orientation calls. Shifting each source range by four bytes is detected with mismatches=1 for the matching aggregate on both candidate paths; restored runs report the required line `fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0`. Full setup and gate logs: evidence/phase7-fluid-emitter-local-copy-003563-003567.md.
+
+Phase 7 fluid-emitter name wrapper rows `phys_fn_003858` and `phys_fn_003860` were independently mutation-falsified through `NxPhysicsFluidEmitterAbiTests`: the setter update mutant and null-getter mutant each report `mismatches=2`, while restored candidate/oracle control reports zero. See `evidence/phase7-fluid-emitter-name-003858-003860.md`.

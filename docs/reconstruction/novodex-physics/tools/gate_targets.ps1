@@ -114,6 +114,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid collision static-rebuild case=1 empty=0 mesh=1 arrays=1 grid=1 parameters=1 return=1/1 stack=1/1 mismatches=0'
         'fluid collision static-rebuild cases=2 empty=1 nonempty_mesh=1 candidate_present=1 mismatches=0'
         'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
+		'fluid emitter name rows=2 replacements=1 clears=1 candidate_dll=1 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'
 		'fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
@@ -5839,7 +5840,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2667  # includes fluid emitter attribute callback and public-wrapper differentials
+	'5' = 2668  # includes fluid emitter attribute callbacks, name rows, and public-wrapper differentials
 				# plus fluid local pose-copy rows plus shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
@@ -5897,7 +5898,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1694  # includes fluid emitter attribute callback and public-wrapper differentials
+	'7' = 1695  # includes fluid emitter attribute callbacks, name rows, and public-wrapper differentials
 				# plus fluid local pose-copy rows plus shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential

@@ -10,6 +10,43 @@
 
 #include <windows.h>
 #include <string.h>
+#include <vector>
+
+struct NxFluidEmitterNameEntry
+	{
+	void* internal;
+	const char* name;
+	};
+
+static std::vector<NxFluidEmitterNameEntry> gFluidEmitterNames;
+
+static void nxSetFluidEmitterName(void* internal, const char* name)
+	{
+	for(std::vector<NxFluidEmitterNameEntry>::iterator entry = gFluidEmitterNames.begin();
+		entry != gFluidEmitterNames.end(); ++entry)
+		if(entry->internal == internal)
+			{
+			if(name)
+				entry->name = name;
+			else
+				gFluidEmitterNames.erase(entry);
+			return;
+		}
+	if(name)
+		{
+		NxFluidEmitterNameEntry entry = { internal, name };
+		gFluidEmitterNames.push_back(entry);
+		}
+	}
+
+static const char* nxGetFluidEmitterName(void* internal)
+	{
+	for(std::vector<NxFluidEmitterNameEntry>::const_iterator entry = gFluidEmitterNames.begin();
+		entry != gFluidEmitterNames.end(); ++entry)
+		if(entry->internal == internal)
+			return entry->name;
+	return 0;
+	}
 
 #define NX_NPFLUIDEMITTER_CPP "\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluidEmitter.cpp"
 
@@ -925,6 +962,39 @@ NxReal NpFluidEmitter::getParticleLifetime() const
 NpFluidEmitter::NpFluidEmitter(void* internal)
 	: mInternal(internal)
 	{
+	}
+
+// phys_fn_003858 (0x0008cfb0) keeps the supplied pointer in the internal
+// emitter-name registry while holding the wrapper's write link.
+void NpFluidEmitter::setName(const char* name)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(255);
+		return;
+		}
+	if(nxFluidEmitterReentryIsActive())
+		{
+		nxFluidEmitterReportReentry(256);
+		nxNpSceneGuardLeave(link);
+		return;
+		}
+	nxFluidEmitterSetReentryActive(true);
+	nxSetFluidEmitterName(mInternal, name);
+	nxFluidEmitterSetReentryActive(false);
+	nxNpSceneGuardLeave(link);
+	}
+
+// phys_fn_003860 (0x0008d060) returns the registered pointer under the
+// wrapper's read link. The registry does not copy the caller's string.
+const char* NpFluidEmitter::getName() const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	const char* name = nxGetFluidEmitterName(mInternal);
+	nxNpSceneGuardLeave(link);
+	return name;
 	}
 
 // The aggregate rows lock [this+0x10], copy through the caller-provided hidden

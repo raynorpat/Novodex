@@ -25,6 +25,9 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	public:
 	//! phys_fn_003792 (0x0008c2d0), 0x18-byte wrapper.
 	explicit NpFluidEmitter(void* internal);
+	//! phys_fn_003858/003860 store and retrieve a caller-owned name pointer.
+	virtual void setName(const char* name);
+	virtual const char* getName() const;
 
 	//! phys_fn_003804 (0x0008c590), struct-return ABI: hidden output pointer,
 	//! this in ecx, ret 4. Copies the global pose from internal+0x48.

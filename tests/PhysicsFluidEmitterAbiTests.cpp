@@ -4100,9 +4100,66 @@ class FluidEmitterProbe : public NpFluidEmitter
 		{ return NpFluidEmitter::getParticleLifetime(); }
 	virtual NX_BOOL getShape(NxEmitterShape) const { return 0; }
 	virtual NX_BOOL getType(NxEmitterType) const { return 0; }
-	virtual void setName(const char*) {}
-	virtual const char* getName() const { return 0; }
+	virtual void setName(const char* name) { NpFluidEmitter::setName(name); }
+	virtual const char* getName() const { return NpFluidEmitter::getName(); }
 	};
+
+static unsigned nxRunFluidEmitterNameRows(unsigned char* image,
+	NxFluidEmitter* oracle, NxFluidEmitter* candidate,
+	NxFluidEmitter* candidateDll, void* internal)
+	{
+	unsigned mismatches = 0;
+	static const char firstName[] = "fluid-emitter-name-first";
+	static const char replacementName[] = "fluid-emitter-name-replacement";
+	static const char seededName[] = "fluid-emitter-name-seeded";
+	static const char retainedName[] = "fluid-emitter-name-retained";
+	unsigned records[4] = {
+		static_cast<unsigned>(reinterpret_cast<size_t>(internal)),
+		static_cast<unsigned>(reinterpret_cast<size_t>(seededName)),
+		0x11110000u,
+		static_cast<unsigned>(reinterpret_cast<size_t>(retainedName)) };
+	unsigned* tracker[] = { records, records + 4, records + 4 };
+	void** trackerGlobal = reinterpret_cast<void**>(image + 0x123c0c);
+	void* originalTracker = *trackerGlobal;
+	DWORD ignored = 0, protection = 0;
+	if(!VirtualProtect(trackerGlobal, sizeof(*trackerGlobal), PAGE_READWRITE,
+		&protection))
+		{
+		fprintf(stderr, "FAIL oracle fluid-emitter name tracker protection error=%lu\n",
+			GetLastError());
+		return 1;
+		}
+	*trackerGlobal = tracker;
+	oracle->setName(firstName);
+	candidate->setName(firstName);
+	candidateDll->setName(firstName);
+	if(oracle->getName() != firstName || candidate->getName() != firstName
+		|| candidateDll->getName() != firstName
+		|| strcmp(oracle->getName(), candidate->getName()) != 0
+		|| strcmp(oracle->getName(), candidateDll->getName()) != 0)
+		++mismatches;
+	oracle->setName(replacementName);
+	candidate->setName(replacementName);
+	candidateDll->setName(replacementName);
+	if(oracle->getName() != replacementName || candidate->getName() != replacementName
+		|| candidateDll->getName() != replacementName
+		|| strcmp(oracle->getName(), candidate->getName()) != 0)
+		++mismatches;
+	oracle->setName(0);
+	candidate->setName(0);
+	candidateDll->setName(0);
+	if(oracle->getName() != 0 || candidate->getName() != 0
+		|| candidateDll->getName() != 0)
+		++mismatches;
+	if(records[0] != 0x11110000u || records[1]
+		!= static_cast<unsigned>(reinterpret_cast<size_t>(retainedName)))
+		++mismatches;
+	*trackerGlobal = originalTracker;
+	VirtualProtect(trackerGlobal, sizeof(*trackerGlobal), protection, &ignored);
+	printf("fluid emitter name rows=2 replacements=1 clears=1 candidate_dll=1 mismatches=%u\n",
+		mismatches);
+	return mismatches;
+	}
 
 struct NxFluidEmitterAttributeCallbackRecord
 	{
@@ -4744,6 +4801,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned char oracleLockData[0x20];
 	unsigned char oracleLockObject[4];
 	memset(oracleLockData, 0, sizeof(oracleLockData));
+	*reinterpret_cast<unsigned*>(oracleLockData + 0x18) = 1;
+	*reinterpret_cast<unsigned*>(oracleLockData + 0x1c) = 0x2222;
 	void* oracleLockDataPointer = oracleLockData;
 	memcpy(oracleLockObject, &oracleLockDataPointer, sizeof(oracleLockDataPointer));
 	void* oracleLockLink = oracleLockObject;
@@ -4762,7 +4821,13 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(candidateDllBytes + 0x10, &candidateSectionLink, sizeof(candidateSectionLink));
 	memcpy(reinterpret_cast<unsigned char*>(&candidate) + 0x10,
 		&candidateSectionLink, sizeof(candidateSectionLink));
+	memcpy(oracleBytes + 0x0c, &oracleLockLink, sizeof(oracleLockLink));
+	memcpy(candidateDllBytes + 0x0c, &candidateSectionLink, sizeof(candidateSectionLink));
+	memcpy(reinterpret_cast<unsigned char*>(&candidate) + 0x0c,
+		&candidateSectionLink, sizeof(candidateSectionLink));
 	NxFluidEmitter* candidateInterface = &candidate;
+	gFailures += nxRunFluidEmitterNameRows(image, oracle, candidateInterface,
+		candidateDllInterface, internal);
 	struct AggregateSlot { const char* name; unsigned slot; unsigned bytes; };
 	static const AggregateSlot aggregateSlots[] = {
 		{ "global_pose", 5, 0x30 }, { "global_position", 6, 0x0c },
