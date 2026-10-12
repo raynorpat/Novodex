@@ -121,8 +121,13 @@ function Invoke-Child([string] $Target, $Pair) {
 
     $startInfo = [Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $exe
-    # The pair directory is the only thing the child is told.
-    $startInfo.Arguments = '"' + $Pair.Directory + '"'
+    # Most probes receive only the pair directory. The fluid-emitter ABI probe
+    # also pins the exact staged Physics image before it makes direct row calls.
+    $arguments = @('"' + $Pair.Directory + '"')
+    if ($Target -ceq 'NxPhysicsFluidEmitterAbiTests') {
+        $arguments += '"' + $Pair.PhysicsSha256 + '"'
+    }
+    $startInfo.Arguments = $arguments -join ' '
     $startInfo.WorkingDirectory = $pairsRoot
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardOutput = $true
@@ -138,7 +143,7 @@ function Invoke-Child([string] $Target, $Pair) {
     $stdout = $stdoutTask.Result
     $stderr = $stderrTask.Result
 
-    Write-Host "child target=$Target pair=$($Pair.Name) command=`"$exe`" `"$($Pair.Directory)`" exit=$($process.ExitCode)"
+    Write-Host "child target=$Target pair=$($Pair.Name) command=`"$exe`" $($startInfo.Arguments) exit=$($process.ExitCode)"
     Write-Host 'child_stdout_begin'
     if ($stdout.Length -gt 0) { Write-Host -NoNewline $stdout }
     Write-Host 'child_stdout_end'
