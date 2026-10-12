@@ -2165,6 +2165,37 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation flush-stream errors=%u\n",
 		simulationOutput.errors - flushStreamErrorsBefore);
 
+	NxSceneDesc legacySceneDesc;
+	legacySceneDesc.setToDefault();
+	legacySceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	legacySceneDesc.maxTimestep = 0.01f;
+	legacySceneDesc.maxIter = 1;
+	NxScene* const legacyScene = sdk->createScene(legacySceneDesc);
+	if(!legacyScene)
+		return nxFail("legacy scene creation failed");
+	NxSphereShapeDesc legacyShape;
+	legacyShape.radius = 0.5f;
+	NxBodyDesc legacyBody;
+	NxActorDesc legacyActorDesc;
+	legacyActorDesc.body = &legacyBody;
+	legacyActorDesc.density = 1.0f;
+	legacyActorDesc.shapes.pushBack(&legacyShape);
+	NxActor* const legacyActor = legacyScene->createActor(legacyActorDesc);
+	if(!legacyActor)
+		{
+		sdk->releaseScene(*legacyScene);
+		return nxFail("legacy actor creation failed");
+		}
+	legacyScene->setTiming(0.01f, 1, NX_TIMESTEP_VARIABLE);
+	legacyActor->setLinearVelocity(NxVec3(1.0f, 0.0f, 0.0f));
+	nxPrintActorState("legacy-initial", *legacyActor);
+	legacyScene->startRun(0.01f);
+	legacyScene->finishRun();
+	nxPrintActorState("legacy-start-finish", *legacyActor);
+	legacyScene->runFor(0.02f, 0.01f, 1, NX_TIMESTEP_VARIABLE);
+	nxPrintActorState("legacy-runFor", *legacyActor);
+	sdk->releaseScene(*legacyScene);
+
 	scene->startRun(0.01f);
 	scene->finishRun();
 	printf("simulation legacy=start-finish returned\n");

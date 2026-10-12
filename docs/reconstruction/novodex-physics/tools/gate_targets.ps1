@@ -3344,6 +3344,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation gravity=changed 00000000.c1a00000.00000000'
         'simulation timing=initial 3c888889.8.0'
         'simulation timing=changed 3e000000.4.1'
+        'simulation stage=legacy-initial position=00000000.00000000.00000000 velocity=3f800000.00000000.00000000'
+        'simulation stage=legacy-start-finish position=3c23d70a.00000000.00000000 velocity=3f800000.00000000.00000000'
+        'simulation stage=legacy-runFor position=3cf5c28f.00000000.00000000 velocity=3f800000.00000000.00000000'
         'simulation writable=initial 1'
         'simulation negative-dt error=1 code=1 line=540 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=Scene::simulate: The elapsed time must be nonnegative!'
         'simulation zero-dt ready=1 fetched=1'
@@ -5849,7 +5852,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2673  # includes static/dynamic fluid shape-change dirty-byte coverage
+	'5' = 2676  # includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
 				# includes enabled FluidModel create/list/release fixture differential
 				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
@@ -5889,7 +5892,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1604  # includes static/dynamic fluid shape-change dirty-byte coverage
+	'6' = 1607  # includes the legacy NpScene run trajectory assertions
 				# includes the allocator-spy deleting-destructor assertion
 				# includes enabled FluidModel create/list/release fixture differential
 				# all registered Phase 6 staged-pair and oracle-differential assertions
@@ -5912,7 +5915,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1704  # includes static/dynamic fluid shape-change dirty-byte coverage
+	'7' = 1707  # includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
 				# includes the allocator release target's three required lines
 				# includes enabled FluidModel create/list/release fixture differential

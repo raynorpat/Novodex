@@ -6532,12 +6532,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/165",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1054",
       "static_proof": null,
-      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders",
+      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=4); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
       "notes": ""
     },
     {
@@ -6550,12 +6550,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/165",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1057",
       "static_proof": null,
-      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders",
+      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=4); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
       "notes": ""
     },
     {
@@ -6658,12 +6658,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/168",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1064",
       "static_proof": null,
-      "dynamic_proof": "confirmed via once0342 differential (3z177): both gate passes failures=0, comparing the report tuple and the whole four-call slot sequence including every argument, with the report slot and gate byte bound",
+      "dynamic_proof": "confirmed via once0342 differential (3z177): both gate passes failures=0, comparing the report tuple and the whole four-call slot sequence including every argument, with the report slot and gate byte bound; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=2); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
       "notes": ""
     },
     {
