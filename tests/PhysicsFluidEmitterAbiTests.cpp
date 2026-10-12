@@ -2167,6 +2167,10 @@ static unsigned nxRunFluidCollisionSphereAppendDifferential(
 		*reinterpret_cast<unsigned*>(candidateShape.bytes + 4) = 0x12340001u;
 		*reinterpret_cast<unsigned*>(oracleShape.bytes + 0xd0) = type;
 		*reinterpret_cast<unsigned*>(candidateShape.bytes + 0xd0) = type;
+		*reinterpret_cast<unsigned*>(oracleShape.bytes + 0xe0) = 0x55667788u;
+		*reinterpret_cast<unsigned*>(candidateShape.bytes + 0xe0) = 0x55667788u;
+		*reinterpret_cast<unsigned*>(oracleShape.bytes + 0xe4) = 0x11223344u;
+		*reinterpret_cast<unsigned*>(candidateShape.bytes + 0xe4) = 0x11223344u;
 		*reinterpret_cast<unsigned short*>(oracleShape.bytes + 0xcc) = 0;
 		*reinterpret_cast<unsigned short*>(candidateShape.bytes + 0xcc) = 0;
 		*reinterpret_cast<unsigned**>(oracleShape.bytes + 0xc4) =
