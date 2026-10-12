@@ -2346,15 +2346,18 @@ static unsigned nxRunFluidCollisionCapsuleAppendDifferential(
 
 static unsigned gFluidCollisionPlaneAppendVirtualCalls;
 
-static void __fastcall nxFluidCollisionPlaneAppendFixtureVirtual(
-	void*, void*, void* output)
+static void __declspec(naked) nxFluidCollisionPlaneAppendFixtureVirtual()
 	{
-	unsigned* const words = reinterpret_cast<unsigned*>(output);
-	words[20] = 0x13579bdfu;
-	words[21] = 0x2468ace0u;
-	words[22] = 0x0badf00du;
-	words[23] = 0xcafebabeu;
-	++gFluidCollisionPlaneAppendVirtualCalls;
+	__asm
+		{
+		mov eax, dword ptr [esp + 4]
+		mov dword ptr [eax + 050h], 13579bdfh
+		mov dword ptr [eax + 054h], 2468ace0h
+		mov dword ptr [eax + 058h], 0badf00dh
+		mov dword ptr [eax + 05ch], 0cafebabeh
+		inc dword ptr [gFluidCollisionPlaneAppendVirtualCalls]
+		ret 4
+		}
 	}
 
 static unsigned nxRunFluidCollisionPlaneAppendDifferential(
