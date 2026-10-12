@@ -7,6 +7,7 @@
 \*----------------------------------------------------------------------------*/
 
 #include "NxSdkAllocator.h"
+#include "opcode/IcePrunable.h"
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
@@ -551,4 +552,45 @@ extern "C" unsigned __cdecl nxFluidCollisionCellPrefix(void* descriptor)
 			}
 		}
 	return bucketCount;
+	}
+
+// phys_fn_003540 (RVA 0x00087580) packs the shape pose, selected geometry
+// bounds, and shape handle into a collision-object record. The update bit is
+// the embedded Prunable state at shape +0xa4; its callback is the same owner
+// world-AABB hook used by Prunable::UpdateWorldAABB.
+extern "C" int __cdecl nxFluidCollisionPackShapeData(unsigned* output,
+	void* shape)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(shape);
+	memcpy(output, bytes + 0x0c, 12 * sizeof(unsigned));
+	const unsigned short geometryIndex =
+		*reinterpret_cast<unsigned short*>(bytes + 0xcc);
+	if(geometryIndex == 0xffffu)
+		{
+		// The oracle's invalid-index path dereferences a null bounds pointer.
+		// Preserve that faulting access instead of fabricating a valid record.
+		const volatile unsigned* invalid = 0;
+		output[12] = *invalid;
+		}
+	else
+		{
+		unsigned char* const shapeData =
+			*reinterpret_cast<unsigned char**>(bytes + 0xc4);
+		unsigned* const bounds = *reinterpret_cast<unsigned**>(shapeData + 0x14)
+			+ geometryIndex * 6;
+		unsigned char* const prunable = bytes + 0xa4;
+		if((*reinterpret_cast<unsigned*>(prunable + 8) & 2u) == 0)
+			{
+			if(gPrunableOwnerWorldAABB)
+				gPrunableOwnerWorldAABB(
+					*reinterpret_cast<void**>(prunable + 4),
+					reinterpret_cast<AABB*>(bounds));
+			*reinterpret_cast<unsigned*>(prunable + 8) |= 2u;
+			}
+		memcpy(output + 12, bounds, 6 * sizeof(unsigned));
+		}
+	if((*reinterpret_cast<unsigned*>(bytes + 0x1bc) & 0x100u) != 0)
+		output[19] |= 1u;
+	output[18] = *reinterpret_cast<unsigned*>(bytes + 4);
+	return static_cast<int>(output[18]);
 	}

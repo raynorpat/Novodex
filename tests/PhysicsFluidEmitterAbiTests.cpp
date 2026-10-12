@@ -17,6 +17,7 @@
 
 static unsigned gFailures;
 static void* gCandidateTriangleIndexBuilderAddress;
+static void* gCandidateFluidCollisionShapePackerAddress;
 
 struct ImplicitMeshErrorRecord
 	{
@@ -1757,6 +1758,67 @@ static unsigned nxRunFluidCollisionTriangleIndexBuilderDifferential(
 	return mismatches;
 	}
 
+static unsigned nxRunFluidCollisionShapePackerDifferential(
+	const unsigned char* oracleBase, void* candidateAddress)
+	{
+	if(!oracleBase || !candidateAddress)
+		return 1;
+	typedef int (__cdecl* PackShape)(unsigned*, void*);
+	PackShape oracle = reinterpret_cast<PackShape>(
+		const_cast<unsigned char*>(oracleBase) + 0x87580);
+	PackShape candidate = reinterpret_cast<PackShape>(candidateAddress);
+	unsigned mismatches = 0;
+	for(unsigned test = 0; test != 2; ++test)
+		{
+		unsigned char shape[512];
+		unsigned char shapeSource[32];
+		unsigned records[2][6];
+		memset(shape, 0, sizeof(shape));
+		memset(shapeSource, 0, sizeof(shapeSource));
+		for(unsigned i = 0; i != 12; ++i)
+			reinterpret_cast<unsigned*>(shape + 12)[i] =
+				0x3e800001u + i * 0x01010101u;
+		for(unsigned record = 0; record != 2; ++record)
+			for(unsigned word = 0; word != 6; ++word)
+				records[record][word] = 0x41000000u + record * 0x100u + word;
+		*reinterpret_cast<void**>(shape + 196) = shapeSource;
+		*reinterpret_cast<void**>(shapeSource + 20) = records;
+		*reinterpret_cast<unsigned short*>(shape + 204) =
+			static_cast<unsigned short>(test);
+		*reinterpret_cast<unsigned char*>(shape + 172) = 2;
+		*reinterpret_cast<unsigned*>(shape + 444) = test ? 0x100u : 0u;
+		*reinterpret_cast<unsigned*>(shape + 4) = 0x12340000u + test;
+		unsigned oracleOutput[20], candidateOutput[20];
+		memset(oracleOutput, 0xa5, sizeof(oracleOutput));
+		memcpy(candidateOutput, oracleOutput, sizeof(oracleOutput));
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		const int oracleReturn = oracle(oracleOutput, shape);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		const int candidateReturn = candidate(candidateOutput, shape);
+		__asm mov candidateAfter, esp
+		const bool outputsMatch = memcmp(oracleOutput, candidateOutput,
+			sizeof(oracleOutput)) == 0;
+		const bool stackMatches = oracleBefore == oracleAfter
+			&& candidateBefore == candidateAfter;
+		const bool matched = outputsMatch && oracleReturn == candidateReturn
+			&& stackMatches;
+		printf("fluid collision shape-pack case=%u return=%08x/%08x "
+			"output=%u stack=%u/%u mismatches=%u\n", test,
+			static_cast<unsigned>(oracleReturn),
+			static_cast<unsigned>(candidateReturn), outputsMatch,
+			oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+			matched ? 0u : 1u);
+		if(!matched)
+			++mismatches;
+		}
+	printf("fluid collision shape-pack cases=2 selected_record=1 flag=1 "
+		"candidate_present=1 mismatches=%u\n", mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunFluidCollisionIndexedMeshDifferential(
 	const unsigned char* oracleBase, void* candidateAddress)
 	{
@@ -2311,6 +2373,9 @@ int wmain(int argc, wchar_t** argv)
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionBuildTriangleIndices", &gCandidateTriangleIndexBuilderAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll triangle-index builder could not be resolved from its map\n");
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionPackShapeData", &gCandidateFluidCollisionShapePackerAddress))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid shape-packing row could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
@@ -2664,6 +2729,8 @@ int wmain(int argc, wchar_t** argv)
 		candidateCellIndexAddress);
 	gFailures += nxRunFluidCollisionTriangleIndexBuilderDifferential(image,
 		gCandidateTriangleIndexBuilderAddress);
+	gFailures += nxRunFluidCollisionShapePackerDifferential(image,
+		gCandidateFluidCollisionShapePackerAddress);
 	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
 	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
 	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");
