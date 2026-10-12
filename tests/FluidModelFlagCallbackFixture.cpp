@@ -2,6 +2,165 @@
 #include <math.h>
 #include <stdlib.h>
 
+struct NxFluidCollisionArrayFixture
+	{
+	void* data;
+	unsigned count;
+	unsigned capacity;
+	};
+
+struct NxFluidCollisionGridFixture
+	{
+	void* buckets;
+	unsigned bucketCapacity;
+	unsigned bucketCount;
+	void* cells;
+	unsigned cellCount;
+	unsigned cellCapacity;
+	void* indices;
+	unsigned indexCount;
+	unsigned indexCapacity;
+	};
+
+struct NxFluidCollisionInt16Fixture
+	{
+	short* data;
+	int count;
+	unsigned capacity;
+	};
+
+static unsigned nxFluidCollisionFixtureGrow(NxFluidCollisionArrayFixture* array,
+	unsigned requested, unsigned fill, unsigned stride)
+	{
+	// StaticCollisionCreate first counts each collision shape into this field,
+	// then the FluidModel array-grow callbacks prepare the destination for the
+	// second traversal that packs those shapes.
+	array->count = 0;
+	if(requested <= array->capacity)
+		return array->capacity;
+	void* const resized = realloc(array->data,
+		static_cast<size_t>(requested) * stride);
+	if(!resized)
+		return 0;
+	if(requested > array->capacity)
+		memset(static_cast<unsigned char*>(resized)
+			+ static_cast<size_t>(array->capacity) * stride, 0,
+			(static_cast<size_t>(requested) - array->capacity) * stride);
+	array->data = resized;
+	array->capacity = requested;
+	(void)fill;
+	return requested;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl StaticCollisionCreate(void* state)
+	{
+	ZeroMemory(state, 0xa0);
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl CDMeshArrayGrow(
+	void* array, unsigned count, unsigned fill)
+	{ return nxFluidCollisionFixtureGrow(static_cast<NxFluidCollisionArrayFixture*>(array), count, fill, 96); }
+extern "C" __declspec(dllexport) unsigned __cdecl CDPlaneArrayGrow(
+	void* array, unsigned count, unsigned fill)
+	{ return nxFluidCollisionFixtureGrow(static_cast<NxFluidCollisionArrayFixture*>(array), count, fill, 96); }
+extern "C" __declspec(dllexport) unsigned __cdecl CDSphereArrayGrow(
+	void* array, unsigned count, unsigned fill)
+	{ return nxFluidCollisionFixtureGrow(static_cast<NxFluidCollisionArrayFixture*>(array), count, fill, 84); }
+extern "C" __declspec(dllexport) unsigned __cdecl CDCapsuleArrayGrow(
+	void* array, unsigned count, unsigned fill)
+	{ return nxFluidCollisionFixtureGrow(static_cast<NxFluidCollisionArrayFixture*>(array), count, fill, 88); }
+extern "C" __declspec(dllexport) unsigned __cdecl CDBoxArrayGrow(
+	void* array, unsigned count, unsigned fill)
+	{ return nxFluidCollisionFixtureGrow(static_cast<NxFluidCollisionArrayFixture*>(array), count, fill, 92); }
+
+extern "C" __declspec(dllexport) void __cdecl CDBucketAttributesArrayCreate(
+	void* array, unsigned count)
+	{
+	NxFluidCollisionGridFixture* const grid =
+		static_cast<NxFluidCollisionGridFixture*>(array);
+	grid->buckets = calloc(count, 12);
+	grid->bucketCapacity = count;
+	grid->bucketCount = count;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl CDBucketAttributesArrayInit(
+	void* array)
+	{
+	NxFluidCollisionGridFixture* const grid =
+		static_cast<NxFluidCollisionGridFixture*>(array);
+	if(grid->buckets)
+		memset(grid->buckets, 0,
+			static_cast<size_t>(grid->bucketCount) * 12);
+	}
+
+extern "C" __declspec(dllexport) void __cdecl CDBucketAttributesArrayCopy(
+	void* destination, const void* source)
+	{
+	NxFluidCollisionGridFixture* const output =
+		static_cast<NxFluidCollisionGridFixture*>(destination);
+	const NxFluidCollisionGridFixture* const input =
+		static_cast<const NxFluidCollisionGridFixture*>(source);
+	output->buckets = input->bucketCount
+		? malloc(static_cast<size_t>(input->bucketCount) * 12) : 0;
+	output->bucketCapacity = input->bucketCapacity;
+	output->bucketCount = input->bucketCount;
+	if(input->bucketCount)
+		memcpy(output->buckets, input->buckets,
+			static_cast<size_t>(input->bucketCount) * 12);
+	}
+
+extern "C" __declspec(dllexport) void __cdecl CDCellAttributesArrayCreate(
+	void* array, unsigned count)
+	{
+	NxFluidCollisionArrayFixture* const values =
+		static_cast<NxFluidCollisionArrayFixture*>(array);
+	values->data = count ? calloc(count, 16) : 0;
+	values->count = 0;
+	values->capacity = count;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl CDIndexArrayCreate(
+	void* array, unsigned count)
+	{
+	NxFluidCollisionArrayFixture* const values =
+		static_cast<NxFluidCollisionArrayFixture*>(array);
+	values->data = count ? calloc(count, 8) : 0;
+	values->count = 0;
+	values->capacity = count;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl Int16Vector3ArrayCreate(
+	void* array, unsigned count)
+	{
+	NxFluidCollisionInt16Fixture* const values =
+		static_cast<NxFluidCollisionInt16Fixture*>(array);
+	values->data = count ? static_cast<short*>(calloc(count * 3, sizeof(short))) : 0;
+	values->count = 0;
+	values->capacity = count;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl CDHashDestroy(void* array)
+	{
+	NxFluidCollisionGridFixture* const grid =
+		static_cast<NxFluidCollisionGridFixture*>(array);
+	free(grid->buckets);
+	free(grid->cells);
+	free(grid->indices);
+	grid->buckets = grid->cells = grid->indices = 0;
+	}
+
+extern "C" __declspec(dllexport) int __cdecl Int16Vector3ArrayDestroy(void* array)
+	{
+	NxFluidCollisionInt16Fixture* const values =
+		static_cast<NxFluidCollisionInt16Fixture*>(array);
+	const int result = values->count;
+	free(values->data);
+	values->data = 0;
+	values->count = 0;
+	values->capacity = 0;
+	return result;
+	}
+
 struct NxFluidEmitterFlagCallbackRecord
 	{
 	unsigned kind;

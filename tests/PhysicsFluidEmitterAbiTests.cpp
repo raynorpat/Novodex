@@ -27,6 +27,7 @@ static void* gCandidateFluidCollisionPlaneAppendAddress;
 static void* gCandidateFluidCollisionMeshAppendAddress;
 static void* gCandidateFluidCollisionShapeArrayRouterAddress;
 static void* gCandidateFluidCollisionSceneShapeCollectorAddress;
+static void* gCandidateFluidCollisionStaticRebuildAddress;
 
 extern "C" void __cdecl nxFluidEmitterAbiUnexpectedWriteLockFailure(unsigned line)
 	{
@@ -3495,6 +3496,259 @@ static unsigned nxRunFluidCollisionStaticCopyDifferential(const unsigned char* o
 	memcpy(image + 0x12645c, &savedIndexCreate, 4);
 	return matched ? 0 : 1;
 	}
+
+typedef int (__cdecl* NxFluidCollisionStaticRebuildFn)(void*, void*, float, float);
+
+struct NxFluidCollisionBuilderArrayView
+	{
+	void* data;
+	unsigned count;
+	unsigned capacity;
+	};
+
+static int nxCallFluidCollisionStaticRebuild(
+	NxFluidCollisionStaticRebuildFn function, void* state, void* scene,
+	float restDistance, float kernelMultiplier)
+	{
+	__try { return function(state, scene, restDistance, kernelMultiplier); }
+	__except(EXCEPTION_EXECUTE_HANDLER) { return static_cast<int>(0x80000000u); }
+	}
+
+static unsigned nxRunFluidCollisionStaticRebuildDifferential(
+	const unsigned char* oracleBase, void* candidateAddress, HMODULE fluidModel)
+	{
+	if(!oracleBase || !candidateAddress || !fluidModel)
+		return 1;
+	static const char* const names[16] = {
+		"StaticCollisionCreate", "CDMeshArrayGrow", "CDPlaneArrayGrow",
+		"CDSphereArrayGrow", "CDCapsuleArrayGrow", "CDBoxArrayGrow",
+		"CDBucketAttributesArrayCreate", "CDBucketAttributesArrayInit",
+		"CDCellAttributesArrayCreate", "CDIndexArrayCreate",
+		"Int16Vector3ArrayCreate", "CDHashDestroy",
+		"Int16Vector3ArrayDestroy", "CDBucketAttributesArrayCopy",
+		"Int16Vector3ArrayGrow", "triBoxOverlap" };
+	static const unsigned slots[16] = {
+		0x1265d0, 0x126420, 0x1265c8, 0x126460, 0x1265f4, 0x1264e8,
+		0x1264bc, 0x126560, 0x126434, 0x12645c, 0x126534, 0x1265fc,
+		0x126504, 0x126510, 0x126454, 0x126524 };
+	static const unsigned findCellSlot = 0x12658c;
+	void* saved[17] = {};
+	void* const page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(const_cast<unsigned char*>(oracleBase) + 0x126000)
+		& ~static_cast<size_t>(0xfff));
+	DWORD oldProtection = 0;
+	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, &oldProtection))
+		return 1;
+	FARPROC callbacks[16] = {};
+	for(unsigned i = 0; i != 16; ++i)
+		{
+		callbacks[i] = GetProcAddress(fluidModel, names[i]);
+		if(!callbacks[i])
+			{
+			DWORD ignored = 0;
+			VirtualProtect(page, 0x1000, oldProtection, &ignored);
+			fprintf(stderr, "FAIL static-collision fixture lacks %s\n", names[i]);
+			return 1;
+			}
+		void** const slot = reinterpret_cast<void**>(
+			const_cast<unsigned char*>(oracleBase) + slots[i]);
+		}
+	for(unsigned i = 0; i != 16; ++i)
+		{
+		void** const slot = reinterpret_cast<void**>(
+			const_cast<unsigned char*>(oracleBase) + slots[i]);
+		saved[i] = *slot;
+		*slot = reinterpret_cast<void*>(callbacks[i]);
+		}
+	void** const findCell = reinterpret_cast<void**>(
+		const_cast<unsigned char*>(oracleBase) + findCellSlot);
+	saved[16] = *findCell;
+	*findCell = reinterpret_cast<void*>(&nxOracleFluidFindCell);
+
+	struct ShapeFixture
+		{
+		unsigned char bytes[0x1c0];
+		unsigned char shapeData[0x20];
+		unsigned bounds[6];
+		unsigned char meshData[0x40];
+		unsigned indices[3];
+		float vertices[9];
+		unsigned char owner[0x20];
+		} shape = {};
+	struct Node { unsigned pad; void* shape; } node = {};
+	unsigned char scene[0x700] = {};
+	unsigned char container[32] = {};
+	void* entries[2] = {};
+	static const unsigned identity[12] = {
+		0x3f800000u, 0, 0, 0, 0x3f800000u, 0,
+		0, 0, 0x3f800000u, 0, 0, 0 };
+	memcpy(shape.bytes + 0x0c, identity, sizeof(identity));
+	shape.bounds[0] = 0xbf000000u; shape.bounds[1] = 0xbf000000u;
+	shape.bounds[2] = 0xbf000000u; shape.bounds[3] = 0x3f000000u;
+	shape.bounds[4] = 0x3f000000u; shape.bounds[5] = 0x3f000000u;
+	shape.indices[0] = 0; shape.indices[1] = 1; shape.indices[2] = 2;
+	shape.vertices[0] = 0.125f; shape.vertices[1] = 0.25f; shape.vertices[2] = 0.375f;
+	shape.vertices[3] = 0.875f; shape.vertices[4] = 0.25f; shape.vertices[5] = 0.375f;
+	shape.vertices[6] = 0.125f; shape.vertices[7] = 0.875f; shape.vertices[8] = 0.375f;
+	*reinterpret_cast<void**>(shape.bytes + 4) = shape.owner;
+	*reinterpret_cast<unsigned short*>(shape.bytes + 0xcc) = 0;
+	*reinterpret_cast<unsigned*>(shape.bytes + 0xd0) = 4;
+	*reinterpret_cast<unsigned short*>(shape.bytes + 0xde) = 0;
+	*reinterpret_cast<void**>(shape.bytes + 0xc4) = shape.shapeData;
+	*reinterpret_cast<void**>(shape.shapeData + 0x14) = shape.bounds;
+	*reinterpret_cast<unsigned*>(shape.bytes + 0xac) = 2;
+	*reinterpret_cast<unsigned*>(shape.bytes + 0x1bc) = 0x100;
+	*reinterpret_cast<void**>(shape.bytes + 0xe0) = shape.meshData;
+	*reinterpret_cast<unsigned*>(shape.meshData + 12) = 1;
+	*reinterpret_cast<unsigned*>(shape.meshData + 20) = reinterpret_cast<unsigned>(shape.indices);
+	*reinterpret_cast<unsigned*>(shape.meshData + 8) = 0x12345678u;
+	*reinterpret_cast<unsigned*>(shape.meshData + 16) = reinterpret_cast<unsigned>(shape.vertices);
+	node.shape = shape.bytes;
+	*reinterpret_cast<void**>(scene + 0x640) = container;
+	*reinterpret_cast<unsigned*>(container + 4) = 0;
+	*reinterpret_cast<unsigned*>(container + 8) = 2;
+	*reinterpret_cast<unsigned*>(container + 12) = 0;
+	*reinterpret_cast<void***>(container + 24) = entries;
+	entries[0] = &node;
+	entries[1] = &node;
+
+	NxFluidCollisionStaticRebuildFn const oracle =
+		reinterpret_cast<NxFluidCollisionStaticRebuildFn>(
+			const_cast<unsigned char*>(oracleBase) + 0x861b0);
+	NxFluidCollisionStaticRebuildFn const candidate =
+		reinterpret_cast<NxFluidCollisionStaticRebuildFn>(candidateAddress);
+	static const unsigned arrayOffsets[9] =
+		{ 0, 0x30, 0x3c, 0x48, 0x54, 0x6c, 0x78, 0x84, 0x90 };
+	static const unsigned arrayStrides[9] = { 96, 96, 92, 84, 88, 96, 84, 88, 92 };
+	unsigned mismatches = 0;
+	for(unsigned test = 0; test != 2; ++test)
+		{
+		unsigned char oracleState[0xa0] = {};
+		unsigned char candidateState[0xa0] = {};
+		*reinterpret_cast<void**>(scene + 0x640) = test ? container : 0;
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		const int oracleReturn = nxCallFluidCollisionStaticRebuild(
+			oracle, oracleState, scene, 0.0f, 0.125f);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		const int candidateReturn = nxCallFluidCollisionStaticRebuild(
+			candidate, candidateState, scene, 0.0f, 0.125f);
+		__asm mov candidateAfter, esp
+		bool arraysMatch = true;
+		for(unsigned i = 0; i != 9; ++i)
+			{
+			NxFluidCollisionBuilderArrayView* const oracleArray =
+				reinterpret_cast<NxFluidCollisionBuilderArrayView*>(oracleState + arrayOffsets[i]);
+			NxFluidCollisionBuilderArrayView* const candidateArray =
+				reinterpret_cast<NxFluidCollisionBuilderArrayView*>(candidateState + arrayOffsets[i]);
+			arraysMatch = arraysMatch && oracleArray->count == candidateArray->count;
+			if(oracleArray->count == candidateArray->count && oracleArray->count)
+				{
+				bool rowMatch = true;
+				if(i == 0)
+					{
+					// The final dword in each 96-byte mesh record is undefined in
+					// the oracle; its semantic record ends at byte 92.
+					for(unsigned row = 0; row != oracleArray->count; ++row)
+						rowMatch = rowMatch && memcmp(
+							static_cast<const unsigned char*>(oracleArray->data) + row * 96,
+							static_cast<const unsigned char*>(candidateArray->data) + row * 96,
+							92) == 0;
+					}
+				else
+				rowMatch = memcmp(oracleArray->data, candidateArray->data,
+					static_cast<size_t>(oracleArray->count) * arrayStrides[i]) == 0;
+				arraysMatch = arraysMatch && rowMatch;
+				if(!rowMatch)
+					{
+					unsigned offset = 0;
+					const unsigned char* const oracleBytes =
+						static_cast<const unsigned char*>(oracleArray->data);
+					const unsigned char* const candidateBytes =
+						static_cast<const unsigned char*>(candidateArray->data);
+					while(offset != oracleArray->count * arrayStrides[i]
+						&& oracleBytes[offset] == candidateBytes[offset])
+						++offset;
+					printf("fluid collision static-rebuild array-data-detail case=%u index=%u count=%u bytes=%u first_diff=%u oracle=%02x candidate=%02x\n",
+						test, i, oracleArray->count,
+						oracleArray->count * arrayStrides[i], offset,
+						oracleBytes[offset], candidateBytes[offset]);
+					}
+				}
+			if(oracleArray->count != candidateArray->count
+				|| oracleArray->capacity != candidateArray->capacity)
+				printf("fluid collision static-rebuild array-detail case=%u index=%u count=%u/%u capacity=%u/%u\n",
+					test, i, oracleArray->count, candidateArray->count,
+					oracleArray->capacity, candidateArray->capacity);
+			}
+	NxFluidCollisionCopyDescriptor* const oracleGrid =
+		reinterpret_cast<NxFluidCollisionCopyDescriptor*>(oracleState + 12);
+	NxFluidCollisionCopyDescriptor* const candidateGrid =
+		reinterpret_cast<NxFluidCollisionCopyDescriptor*>(candidateState + 12);
+	bool gridMatch = oracleGrid->bucketCount == candidateGrid->bucketCount
+		&& oracleGrid->cellCount == candidateGrid->cellCount
+		&& oracleGrid->indexCount == candidateGrid->indexCount
+		&& oracleGrid->bucketCapacity == candidateGrid->bucketCapacity
+		&& oracleGrid->cellCapacity == candidateGrid->cellCapacity
+		&& oracleGrid->indexCapacity == candidateGrid->indexCapacity;
+	if(!gridMatch)
+		printf("fluid collision static-rebuild grid-detail case=%u buckets=%u/%u cap=%u/%u cells=%u/%u cap=%u/%u indices=%u/%u cap=%u/%u\n",
+			test, oracleGrid->bucketCount, candidateGrid->bucketCount,
+			oracleGrid->bucketCapacity, candidateGrid->bucketCapacity,
+			oracleGrid->cellCount, candidateGrid->cellCount,
+			oracleGrid->cellCapacity, candidateGrid->cellCapacity,
+			oracleGrid->indexCount, candidateGrid->indexCount,
+			oracleGrid->indexCapacity, candidateGrid->indexCapacity);
+	if(gridMatch && oracleGrid->bucketCount)
+		{
+		const unsigned* const oracleBuckets =
+			static_cast<const unsigned*>(oracleGrid->buckets);
+		const unsigned* const candidateBuckets =
+			static_cast<const unsigned*>(candidateGrid->buckets);
+		for(unsigned i = 0; i != oracleGrid->bucketCount; ++i)
+			if(oracleBuckets[i * 3] != candidateBuckets[i * 3]
+				|| oracleBuckets[i * 3 + 1] != candidateBuckets[i * 3 + 1])
+				{
+				gridMatch = false;
+				break;
+				}
+		}
+	if(gridMatch && oracleGrid->cellCount)
+		gridMatch = memcmp(oracleGrid->cells, candidateGrid->cells,
+			static_cast<size_t>(oracleGrid->cellCount) * 16) == 0;
+	if(gridMatch && oracleGrid->indexCount)
+		gridMatch = memcmp(oracleGrid->indices, candidateGrid->indices,
+			static_cast<size_t>(oracleGrid->indexCount) * 8) == 0;
+	const bool parametersMatch = memcmp(oracleState + 0x64,
+		candidateState + 0x64, 8) == 0;
+	const bool stackMatch = oracleBefore == oracleAfter
+		&& candidateBefore == candidateAfter;
+	const bool matched = arraysMatch && gridMatch && parametersMatch
+		&& oracleReturn == candidateReturn && stackMatch;
+	printf("fluid collision static-rebuild case=%u empty=%u mesh=%u arrays=%u "
+		"grid=%u parameters=%u return=%d/%d stack=%u/%u mismatches=%u\n",
+		test, test == 0, test == 1, arraysMatch, gridMatch, parametersMatch,
+		oracleReturn, candidateReturn, oracleBefore == oracleAfter,
+		candidateBefore == candidateAfter, matched ? 0u : 1u);
+	if(!matched)
+		++mismatches;
+		// Both sides own nested array allocations through different module
+		// allocators. This short-lived harness retains these small outputs until
+		// process exit rather than crossing module CRT heaps during cleanup.
+	}
+	DWORD ignored = 0;
+	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
+	for(unsigned i = 0; i != 16; ++i)
+		*reinterpret_cast<void**>(const_cast<unsigned char*>(oracleBase) + slots[i]) = saved[i];
+	*reinterpret_cast<void**>(const_cast<unsigned char*>(oracleBase) + findCellSlot) = saved[16];
+	VirtualProtect(page, 0x1000, oldProtection, &ignored);
+	printf("fluid collision static-rebuild cases=2 empty=1 nonempty_mesh=1 "
+		"candidate_present=1 mismatches=%u\n", mismatches);
+	return mismatches;
+	}
+
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta;
 extern "C" volatile unsigned nxFluidEmitterRawStackDelta = 0xffffffffu;
 extern "C" volatile unsigned nxFluidEmitterRawStackBefore;
@@ -3875,6 +4129,13 @@ int wmain(int argc, wchar_t** argv)
 	else
 		gFailures += nxRunFluidCollisionStaticCopyDifferential(image,
 			candidateStaticCopyAddress);
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionBuildStaticCollision",
+		&gCandidateFluidCollisionStaticRebuildAddress))
+	{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll static-collision rebuild row could not be resolved from its map\n");
+		++gFailures;
+	}
 	void* candidateNotifyActorReleasedAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxNpFluidManagerNotifyReleasedActor", &candidateNotifyActorReleasedAddress))
@@ -4167,6 +4428,9 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL FluidModel flag callback fixture failed to load\n");
 		return 1;
 		}
+	if(gCandidateFluidCollisionStaticRebuildAddress)
+		gFailures += nxRunFluidCollisionStaticRebuildDifferential(image,
+			gCandidateFluidCollisionStaticRebuildAddress, fluidModel);
 	typedef void (__cdecl *ResetCallbacksFn)();
 	typedef unsigned (__cdecl *CallbackCountFn)();
 	typedef int (__cdecl *GetCallbackRecordFn)(unsigned, NxFluidEmitterFlagCallbackRecord*);

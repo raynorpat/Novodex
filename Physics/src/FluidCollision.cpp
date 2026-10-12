@@ -12,6 +12,11 @@
 #include <stdint.h>
 #include <string.h>
 
+typedef int (__stdcall* NxFluidCollisionFarProc)();
+extern "C" __declspec(dllimport) void* __stdcall GetModuleHandleA(const char*);
+extern "C" __declspec(dllimport) NxFluidCollisionFarProc __stdcall
+	GetProcAddress(void*, const char*);
+
 struct NxFluidCollisionBucketHashDescriptor
 	{
 	unsigned* buckets;
@@ -919,4 +924,109 @@ extern "C" void* __cdecl nxFluidCollisionShapeArrayRouter(void* builder,
 		default:
 			return reinterpret_cast<void*>(type);
 		}
+	}
+
+template<typename Callback>
+static Callback nxFluidCollisionResolveCallback(const char* name)
+	{
+	void* const fluidModel = GetModuleHandleA("FluidModel.dll");
+	return fluidModel ? reinterpret_cast<Callback>(
+		GetProcAddress(fluidModel, name)) : 0;
+	}
+
+// phys_fn_003505 (RVA 0x000861b0) rebuilds the static fluid collision grid.
+// FluidModel owns the persistent typed arrays and the temporary array
+// allocators, so this row resolves the same companion-DLL callbacks as the
+// original instead of substituting a private allocator or array format.
+extern "C" int __cdecl nxFluidCollisionBuildStaticCollision(void* collision,
+	void* scene, float restParticleDistance, float kernelRadiusMultiplier)
+	{
+	typedef void (__cdecl* StaticCollisionCreate)(void*);
+	typedef unsigned (__cdecl* ArrayGrow)(void*, unsigned, unsigned);
+	typedef void (__cdecl* BucketArrayCreate)(void*, unsigned);
+	typedef void (__cdecl* BucketArrayInit)(void*);
+	typedef void (__cdecl* ArrayCreate)(void*, unsigned);
+	typedef void (__cdecl* HashDestroy)(void*);
+	typedef int (__cdecl* Int16ArrayDestroy)(void*);
+	StaticCollisionCreate const create =
+		nxFluidCollisionResolveCallback<StaticCollisionCreate>("StaticCollisionCreate");
+	ArrayGrow const meshGrow = nxFluidCollisionResolveCallback<ArrayGrow>("CDMeshArrayGrow");
+	ArrayGrow const planeGrow = nxFluidCollisionResolveCallback<ArrayGrow>("CDPlaneArrayGrow");
+	ArrayGrow const sphereGrow = nxFluidCollisionResolveCallback<ArrayGrow>("CDSphereArrayGrow");
+	ArrayGrow const capsuleGrow = nxFluidCollisionResolveCallback<ArrayGrow>("CDCapsuleArrayGrow");
+	ArrayGrow const boxGrow = nxFluidCollisionResolveCallback<ArrayGrow>("CDBoxArrayGrow");
+	BucketArrayCreate const bucketCreate =
+		nxFluidCollisionResolveCallback<BucketArrayCreate>("CDBucketAttributesArrayCreate");
+	BucketArrayInit const bucketInit =
+		nxFluidCollisionResolveCallback<BucketArrayInit>("CDBucketAttributesArrayInit");
+	ArrayCreate const cellCreate =
+		nxFluidCollisionResolveCallback<ArrayCreate>("CDCellAttributesArrayCreate");
+	ArrayCreate const indexCreate =
+		nxFluidCollisionResolveCallback<ArrayCreate>("CDIndexArrayCreate");
+	BucketArrayCreate const int16Create =
+		nxFluidCollisionResolveCallback<BucketArrayCreate>("Int16Vector3ArrayCreate");
+	HashDestroy const hashDestroy =
+		nxFluidCollisionResolveCallback<HashDestroy>("CDHashDestroy");
+	Int16ArrayDestroy const int16Destroy =
+		nxFluidCollisionResolveCallback<Int16ArrayDestroy>("Int16Vector3ArrayDestroy");
+	if(!collision || !scene || !create || !meshGrow || !planeGrow || !sphereGrow
+		|| !capsuleGrow || !boxGrow || !bucketCreate || !bucketInit || !cellCreate
+		|| !indexCreate || !int16Create || !hashDestroy || !int16Destroy)
+		return 0;
+
+	unsigned char* const state = static_cast<unsigned char*>(collision);
+	create(collision);
+	const float cellSize = kernelRadiusMultiplier * 8.0f;
+	const float margin = restParticleDistance * 13.0f + 0.001f;
+	*reinterpret_cast<float*>(state + 0x64) = cellSize;
+	*reinterpret_cast<float*>(state + 0x68) = margin;
+	nxFluidCollisionCountSceneShapes(collision, scene);
+	meshGrow(state, *reinterpret_cast<unsigned*>(state + 4), 0);
+	planeGrow(state + 0x30, *reinterpret_cast<unsigned*>(state + 0x34), 0);
+	sphereGrow(state + 0x48, *reinterpret_cast<unsigned*>(state + 0x4c), 0);
+	capsuleGrow(state + 0x54, *reinterpret_cast<unsigned*>(state + 0x58), 0);
+	boxGrow(state + 0x3c, *reinterpret_cast<unsigned*>(state + 0x40), 0);
+	sphereGrow(state + 0x78, *reinterpret_cast<unsigned*>(state + 0x7c), 0);
+	capsuleGrow(state + 0x84, *reinterpret_cast<unsigned*>(state + 0x88), 0);
+	boxGrow(state + 0x90, *reinterpret_cast<unsigned*>(state + 0x94), 0);
+	planeGrow(state + 0x6c, *reinterpret_cast<unsigned*>(state + 0x70), 0);
+	nxFluidCollisionCollectSceneShapes(collision, scene);
+
+	NxFluidCollisionCopyDescriptor temporary = {};
+	NxFluidCollisionInt16Vector3Array cells = {};
+	bucketCreate(&temporary, 2048);
+	temporary.bucketCapacity = 2048;
+	temporary.bucketCount = 2048;
+	bucketInit(&temporary);
+	int16Create(&cells, 100);
+	const unsigned meshCount = *reinterpret_cast<unsigned*>(state + 4);
+	const unsigned char* const meshRecords =
+		*reinterpret_cast<unsigned char**>(state);
+	for(unsigned meshIndex = 0; meshIndex != meshCount; ++meshIndex)
+		nxFluidCollisionBuildTriangleCells(
+			reinterpret_cast<NxFluidCollisionBucketHashDescriptor*>(&temporary),
+			reinterpret_cast<const NxFluidCollisionTriangleMesh*>(
+				meshRecords + meshIndex * 96), margin, cellSize, &cells);
+	unsigned totalCellRecords = 0;
+	nxFluidCollisionBucketPrefix(&temporary, &totalCellRecords);
+	cellCreate(&temporary.cells, totalCellRecords);
+	for(unsigned meshIndex = 0; meshIndex != meshCount; ++meshIndex)
+		nxFluidCollisionBuildIndexedGrid(
+			reinterpret_cast<NxFluidCollisionBucketHashDescriptor*>(&temporary),
+			reinterpret_cast<int*>(&temporary.cells),
+			reinterpret_cast<const NxFluidCollisionTriangleMesh*>(
+				meshRecords + meshIndex * 96), margin, cellSize, &cells);
+	indexCreate(&temporary.indices, totalCellRecords);
+	nxFluidCollisionCellPrefix(&temporary);
+	NxFluidCollisionIndexDescriptor* const indexed =
+		reinterpret_cast<NxFluidCollisionIndexDescriptor*>(&temporary);
+	for(unsigned meshIndex = 0; meshIndex != meshCount; ++meshIndex)
+		nxFluidCollisionBuildTriangleIndices(indexed,
+			reinterpret_cast<const NxFluidCollisionTriangleMesh*>(
+				meshRecords + meshIndex * 96), meshIndex, margin, cellSize, &cells);
+	nxFluidCollisionStaticCopy(
+		reinterpret_cast<NxFluidCollisionCopyDescriptor*>(state + 12),
+		&temporary);
+	hashDestroy(&temporary);
+	return int16Destroy(&cells);
 	}

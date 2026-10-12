@@ -18,6 +18,30 @@ match, and the fresh Phase 5 gate passes at 2,651/2,651 assertions. See the
 local transcript at
 `build/phase5-approved-destructor-model/phase5-after-pose-order-fix.log`.
 
-This does not close the dirty static-collision rebuild row `003505`. Its
-collection path, array-growth operations, full builder, and row-specific
-mutation differential remain open.
+`phys_fn_003505` is now reconstructed in `Physics/src/FluidCollision.cpp` as
+`nxFluidCollisionBuildStaticCollision`. The implementation preserves the
+oracle's callback order, uses FluidModel-owned array and hash callbacks, and
+passes the count-then-grow-then-collect lifecycle into the mesh-grid pipeline.
+The explicit fixture models array growth by clearing the sizing-pass count
+before the collection pass.
+
+The registered differential calls the pinned oracle at RVA `0x861b0` and the
+map-resolved candidate DLL with two scenes. The empty case matches initialized
+parameters, all typed-array headers, the 2,048-bucket empty grid, return value,
+and x86 stack. The nonempty case routes one triangle mesh through the complete
+grid build and matches all typed arrays, defined mesh-record bytes, bucket
+counts/offsets, cell records, triangle associations, parameters, return value,
+and stack. Undefined mesh-record tail dwords and bucket words are ignored. The
+restored control reports zero mismatches in both cases.
+
+A targeted mutation changes the margin bias from `0.001` to `0.002`; both
+cases reject it through the registered parameters comparison (`mismatches=2`)
+and the harness exits nonzero. See the raw direct differential, mutation, and
+Phase 5/7 gate transcripts under
+`evidence/raw/phase7-fluid-static-collision-rebuild-003505/`.
+
+The pinned UE3 binaries do not contain production `FluidModel.dll`; this closes
+the `NxPhysics.dll` builder against explicit callback fixtures. Loading the
+production companion module in Unreal remains a separate integration check.
+
+Fresh Win32 Release gates on 2026-10-12 pass Phase 5 at 2,664/2,664 evaluated assertions and Phase 7 at 1,691/1,691. Full logs: vidence/raw/phase7-fluid-static-collision-rebuild-003505/phase5-gate.log and phase7-gate.log.

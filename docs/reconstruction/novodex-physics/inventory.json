@@ -65530,13 +65530,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1308",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12355",
       "static_proof": "IDA decompilation at RVA 0x861b0 (473 bytes) confirms a cdecl static-collision rebuild taking collision state, scene/shape source, rest-particle distance and kernel-radius multiplier. It recreates collision state; writes cell size = multiplier * 8 and margin = rest distance * 13 + 0.001; gathers scene shapes into mesh and primitive arrays; counts mesh triangle cells into 2,048 hash buckets; prefixes cells, builds indexed grid records, prefixes associations, appends mesh/triangle pairs, copies the completed descriptor into collision state, then destroys temporary hash and signed-16-bit cell storage. The scene enumeration helper reads the collection rooted at scene +0x624. Its 003630 caller destroys prior collision state, obtains the static-collision object, calls this builder when the dirty byte is set, and clears that byte after return.",
-      "dynamic_proof": null,
-      "notes": "Not implemented or dynamically tested. Its FluidModel callback dependencies are absent from the pinned UE3 binary directory. Required coverage must bind explicit fixture callbacks for static-collision/shape-array lifecycle and exercise both an empty scene and nonempty mesh geometry; the neighboring scene collection and shape-packing rows 003511, 003540-003549 also remain open."
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls pinned oracle RVA 0x861b0 and map-resolved candidate nxFluidCollisionBuildStaticCollision with empty and nonempty one-triangle mesh scenes. The callback fixture binds static-state creation, typed-array growth, temporary hash/cell/index allocation and destruction, triangle SAT, signed-16-bit cell growth, and cell lookup. Both cases match all typed-array headers and defined records, the 2,048-bucket static grid, cells and mesh/triangle associations, cell-size/margin parameters, return values, and x86 stack balance (mismatches=0); undefined mesh tail dwords and bucket third words are excluded. Changing the candidate margin bias from 0.001 to 0.002 is caught in both cases (mismatches=2, harness exit=1). Production FluidModel.dll is absent from the pinned UE3 binary directory, so its callback contract is supplied by the explicit fixture.",
+      "notes": "The static-collision builder is reconstructed and row-specifically mutation-falsified. The direct oracle fixture covers empty and nonempty mesh scenes; loading the production FluidModel.dll in Unreal remains a separate integration check.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionBuildStaticCollision"
     },
     {
       "id": "phys_fn_003506",
