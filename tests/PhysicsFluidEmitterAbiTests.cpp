@@ -3910,20 +3910,20 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 	FARPROC managerDestroyCallback = GetProcAddress(fluidModel,
 		"StaticCollisionDestroy");
 	typedef void (__cdecl* ResetManagerCallbacks)();
-	typedef void (__cdecl* SetManagerCollision)(void*);
+	typedef void (__cdecl* SetManagerCollisions)(void*, void*);
 	typedef unsigned (__cdecl* ManagerCallbackCount)();
 	typedef int (__cdecl* GetManagerCallbackRecord)(unsigned, void*);
 	ResetManagerCallbacks resetManagerCallbacks = reinterpret_cast<ResetManagerCallbacks>(
 		GetProcAddress(fluidModel, "NxResetFluidManagerCallbacks"));
-	SetManagerCollision setManagerCollision = reinterpret_cast<SetManagerCollision>(
-		GetProcAddress(fluidModel, "NxSetFluidManagerStaticCollision"));
+	SetManagerCollisions setManagerCollisions = reinterpret_cast<SetManagerCollisions>(
+		GetProcAddress(fluidModel, "NxSetFluidManagerStaticCollisions"));
 	ManagerCallbackCount managerCallbackCount = reinterpret_cast<ManagerCallbackCount>(
 		GetProcAddress(fluidModel, "NxGetFluidManagerCallbackCount"));
 	GetManagerCallbackRecord getManagerCallbackRecord =
 		reinterpret_cast<GetManagerCallbackRecord>(GetProcAddress(fluidModel,
 			"NxGetFluidManagerCallbackRecord"));
 	if(!managerGetCallback || !managerDestroyCallback || !resetManagerCallbacks
-		|| !setManagerCollision || !managerCallbackCount || !getManagerCallbackRecord
+		|| !setManagerCollisions || !managerCallbackCount || !getManagerCallbackRecord
 		|| !candidateManagerStepAddress)
 		{
 		fprintf(stderr, "FAIL dirty fluid-manager fixture exports are incomplete\n");
@@ -3977,10 +3977,14 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 	const unsigned backendWord = 0x13572468u;
 	*reinterpret_cast<unsigned*>(oracleManager + 0x30) = backendWord;
 	*reinterpret_cast<unsigned*>(candidateManager + 0x30) = backendWord;
-	unsigned char oracleCollision[0xa0];
-	unsigned char candidateCollision[0xa0];
-	memset(oracleCollision, 0xcd, sizeof(oracleCollision));
-	memset(candidateCollision, 0xcd, sizeof(candidateCollision));
+	unsigned char oracleOldCollision[0xa0];
+	unsigned char oracleReplacementCollision[0xa0];
+	unsigned char candidateOldCollision[0xa0];
+	unsigned char candidateReplacementCollision[0xa0];
+	memset(oracleOldCollision, 0xab, sizeof(oracleOldCollision));
+	memset(oracleReplacementCollision, 0xcd, sizeof(oracleReplacementCollision));
+	memset(candidateOldCollision, 0xab, sizeof(candidateOldCollision));
+	memset(candidateReplacementCollision, 0xcd, sizeof(candidateReplacementCollision));
 	const unsigned stepWord = 0x3e000000u;
 	const float step = *reinterpret_cast<const float*>(&stepWord);
 	NxFluidManagerStepFn const oracleStep = reinterpret_cast<NxFluidManagerStepFn>(
@@ -3988,7 +3992,7 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 	NxFluidManagerStepFn const candidateStep = reinterpret_cast<NxFluidManagerStepFn>(
 		candidateManagerStepAddress);
 	resetManagerCallbacks();
-	setManagerCollision(oracleCollision);
+	setManagerCollisions(oracleOldCollision, oracleReplacementCollision);
 	unsigned oracleBefore = 0, oracleAfter = 0;
 	unsigned oracleException = 0;
 	unsigned oracleExceptionAddress = 0;
@@ -4009,7 +4013,7 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 				oracleRecords[i].arguments[1], oracleRecords[i].arguments[2],
 				oracleRecords[i].arguments[3]);
 	resetManagerCallbacks();
-	setManagerCollision(candidateCollision);
+	setManagerCollisions(candidateOldCollision, candidateReplacementCollision);
 	unsigned candidateBefore = 0, candidateAfter = 0;
 	unsigned candidateException = 0;
 	unsigned candidateExceptionAddress = 0;
@@ -4034,8 +4038,8 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 				++callbackMismatches;
 			}
 		else if(i == 1 && (oracleRecords[i].kind != 2 || candidateRecords[i].kind != 2
-			|| oracleRecords[i].arguments[0] != reinterpret_cast<unsigned>(oracleCollision)
-			|| candidateRecords[i].arguments[0] != reinterpret_cast<unsigned>(candidateCollision)
+			|| oracleRecords[i].arguments[0] != reinterpret_cast<unsigned>(oracleOldCollision)
+			|| candidateRecords[i].arguments[0] != reinterpret_cast<unsigned>(candidateOldCollision)
 			|| memcmp(oracleRecords[i].arguments + 1, candidateRecords[i].arguments + 1,
 				sizeof(oracleRecords[i].arguments) - sizeof(oracleRecords[i].arguments[0])) != 0))
 			++callbackMismatches;
@@ -4048,11 +4052,21 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 				sizeof(oracleRecords[i].arguments) - 2 * sizeof(oracleRecords[i].arguments[0])) != 0))
 			++callbackMismatches;
 		}
-	const bool parametersMatch =
-		memcmp(oracleCollision + 0x64, candidateCollision + 0x64, 8) == 0
-		&& *reinterpret_cast<unsigned*>(oracleCollision + 0x64) == 0x40000000u
-		&& *reinterpret_cast<unsigned*>(oracleCollision + 0x68) ==
-			0x3fd020c5u;
+	const bool replacementBuilt =
+		memcmp(oracleReplacementCollision + 0x64,
+			candidateReplacementCollision + 0x64, 8) == 0
+		&& *reinterpret_cast<unsigned*>(oracleReplacementCollision + 0x64)
+			== 0x40000000u
+		&& *reinterpret_cast<unsigned*>(oracleReplacementCollision + 0x68)
+			== 0x3fd020c5u;
+	unsigned char untouchedOldCollision[sizeof(oracleOldCollision)];
+	memset(untouchedOldCollision, 0xab, sizeof(untouchedOldCollision));
+	const bool oldCollisionPreserved =
+		memcmp(oracleOldCollision, untouchedOldCollision,
+			sizeof(oracleOldCollision)) == 0
+		&& memcmp(candidateOldCollision, untouchedOldCollision,
+			sizeof(candidateOldCollision)) == 0;
+	const bool parametersMatch = replacementBuilt && oldCollisionPreserved;
 	const bool dirtyCleared = oracleManager[0x28] == 0
 		&& candidateManager[0x28] == 0;
 	const bool stackMatch = oracleBefore == oracleAfter
@@ -4069,6 +4083,8 @@ static unsigned nxRunFluidCollisionStaticRebuildDifferential(
 		oracleException, oracleExceptionAddress,
 		candidateException, candidateExceptionAddress,
 		matched ? 0u : 1u);
+	printf("fluid manager replacement-buffer built=%u old-preserved=%u\n",
+		replacementBuilt, oldCollisionPreserved);
 	if(!matched)
 		++mismatches;
 	*managerGetSlot = savedManagerGet;

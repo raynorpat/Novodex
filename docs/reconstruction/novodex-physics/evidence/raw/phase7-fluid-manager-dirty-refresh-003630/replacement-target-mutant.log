@@ -1,6 +1,34 @@
-loaded module=NxPhysics.dll path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
-loaded module=NxPhysicsCandidate.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-fluid-dirty-refresh-merge\Novodex\build\Release\NxPhysicsCandidate.dll sha256=c8e7aec354e9159d07a3b545961c4ed7b99e1870530d50fb4b379de8e7a8961d
+phase=none resolved_targets=NxPhysicsFluidEmitterAbiTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsFluidEmitterAbiTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: build\fluid-manager-dirty\Release\NxPhysics.dll
+pass: source exists: build\fluid-manager-dirty\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=build\fluid-manager-dirty\Release\NxPhysics.dll source_sha256=d902073f9f9a131b4fb0912d9c40dfda6967668daa66c236f01398b9eafd3bdd staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll staged_sha256=d902073f9f9a131b4fb0912d9c40dfda6967668daa66c236f01398b9eafd3bdd
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=build\fluid-manager-dirty\Release\NxFoundation.dll source_sha256=6849ec486d7892d53be21ca732f17cfc9213e733d6c73f60cfae23aa979b1d8a staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll staged_sha256=6849ec486d7892d53be21ca732f17cfc9213e733d6c73f60cfae23aa979b1d8a
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: build\fluid-manager-dirty\Release\NxPhysics.map
+staged candidate map source=build\fluid-manager-dirty\Release\NxPhysics.map staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: build\fluid-manager-dirty\Release\NxPhysicsFluidEmitterAbiTests.exe
+child target=NxPhysicsFluidEmitterAbiTests pair=oracle command="build\fluid-manager-dirty\Release\NxPhysicsFluidEmitterAbiTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\oracle" "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c" "D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysicsOracle.dll" "d902073f9f9a131b4fb0912d9c40dfda6967668daa66c236f01398b9eafd3bdd" exit=1
+child_stdout_begin
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysicsCandidate.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty\Novodex\build\fluid-manager-dirty\Release\NxPhysicsCandidate.dll sha256=d902073f9f9a131b4fb0912d9c40dfda6967668daa66c236f01398b9eafd3bdd
 fluid collision bucket-prefix records=4 oracle_total=9 candidate_total=9 prefixes=1 return=1 stack=1/1 mismatches=0
 fluid collision bucket-prefix empty total=0 return=1 preserved=1 stack=1/1 mismatches=0
 fluid collision cell-prefix buckets=3 cells=3 oracle_total=6 candidate_total=6 prefixes=1 counts_cleared=1 return=1 stack=1/1 mismatches=0
@@ -18,7 +46,9 @@ fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candid
 fluid emitter flags cases=2 mismatches=0
 fluid collision static-rebuild case=0 empty=1 mesh=0 arrays=1 grid=1 parameters=1 return=0/0 stack=1/1 mismatches=0
 fluid collision static-rebuild case=1 empty=0 mesh=1 arrays=1 grid=1 parameters=1 return=1/1 stack=1/1 mismatches=0
-fluid collision static-rebuild cases=2 empty=1 nonempty_mesh=1 candidate_present=1 mismatches=0
+fluid manager step dirty-refresh callbacks=3/3 order=1 parameters=0 dirty-clear=1 stack=1/1 exceptions=00000000@00000000/00000000@00000000 mismatches=1
+fluid manager replacement-buffer built=0 old-preserved=0
+fluid collision static-rebuild cases=2 empty=1 nonempty_mesh=1 candidate_present=1 mismatches=1
 fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0
 fluid emitter global-pose rows=2 callback_checks=2 stack_checks=2 mismatches=0
 fluid collision triangle-cells case=0 cells=3/3 capacity=512/512 return=1/1 cells_match=1 tails=1 stack=1/1 mismatches=0
@@ -73,6 +103,19 @@ fluid surface-mesh empty cases=1 oracle_callbacks=0 candidate_callbacks=0 stack=
 fluid manager surface-mesh traversal fluids=2 oracle_callbacks=2 candidate_callbacks=2 mismatches=0
 implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0
 implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0
-fluid manager replacement-buffer built=0 old-preserved=0
-fluid manager dirty-refresh get=1 destroy=1 create=1 data=0 flag=1 fluids=2/2 callbacks=1 timestep=1 state=1 stack=1/1 mismatches=1
 fluid emitter aggregate cases=6 mismatches=1
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsFluidEmitterAbiTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsFluidEmitterAbiTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsFluidEmitterAbiTests reported the loaded candidate DLL identity: loaded module=NxPhysicsCandidate.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty\Novodex\build\fluid-manager-dirty\Release\NxPhysicsCandidate.dll sha256=d902073f9f9a131b4fb0912d9c40dfda6967668daa66c236f01398b9eafd3bdd
+differential target=NxPhysicsFluidEmitterAbiTests oracle_exit=1 candidate_dll_sha256=d902073f9f9a131b4fb0912d9c40dfda6967668daa66c236f01398b9eafd3bdd candidate_rows_in_oracle_probe=True
+differential_targets=NxPhysicsFluidEmitterAbiTests
+differential_pairs=D:\FlamingEnt__\novodex-analysis\pairs\oracle,D:\FlamingEnt__\novodex-analysis\pairs\candidate
+Exception: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty\Novodex\docs\reconstruction\novodex-physics\tools\run_differential.ps1:62
+Line |
+  62 |          throw "GATE FAILED: requirement not met: $Requirement"
+     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | GATE FAILED: requirement not met: every requested target passes its registered oracle/candidate differential
+     | contract

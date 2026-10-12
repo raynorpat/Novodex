@@ -246,6 +246,7 @@ extern "C" __declspec(dllexport) void __cdecl NxSetFluidManagerStaticCollisions(
 	gFluidManagerOldStaticCollision = oldCollision;
 	gFluidManagerReplacementStaticCollision = replacementCollision;
 	gFluidManagerStaticCollisionGetIndex = 0;
+	gFluidManagerCallbackProbe = true;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxSetFluidManagerStaticCollision(
