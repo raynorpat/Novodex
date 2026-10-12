@@ -1696,3 +1696,10 @@ Phase 7 rows `phys_fn_000338` (`setTiming`) and `phys_fn_000340` (`getTiming`) a
 ### Continuation — NpScene legacy run wrappers (2026-10-12)
 
 Rows phys_fn_000335 (startRun), phys_fn_000336 (finishRun), and phys_fn_000342 (runFor) are mutation-falsified through an isolated moving-body fixture in NxPhysicsSimulationTests. Focused mutations change the recorded trajectory (stdout_delta=4, 4, and 2); restored output is exact. Phase 7 advances to 191 closed / 370 deferred functions (214 reconstructed but unfalsified and 156 unreconstructed). Fresh Phase 5, 6, and 7 gates pass at 2,676/2,676, 1,607/1,607, and 1,707/1,707 assertions after registering the new fixture outputs. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md.
+
+
+### Continuation — NpScene visualization wrapper (2026-10-12)
+
+Phase 7 row phys_fn_000344 (NpScene::visualize) is mutation-falsified through the existing renderer differential: omitting its Scene forward changes the transcript by 1,008 bytes; both processes exit zero with exact stderr, and restored output is exact. Phase 7 advances to 192 closed / 369 deferred functions (213 reconstructed but unfalsified and 156 unreconstructed). Evidence: docs/reconstruction/novodex-physics/evidence/phase7-npscene-visualize-wrapper-000344.md.
+
+Fresh Phase 7 passes at 1,707/1,707 assertions after closure of phys_fn_000344. The gate transcript is in evidence/raw/phase7-npscene-visualize-wrapper-000344-20261012/phase7-gate.log.gz.
