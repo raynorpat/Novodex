@@ -37996,9 +37996,9 @@
       "source": "Physics/src/PMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/794",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6467",
-      "static_proof": null,
-      "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
-      "notes": "P4 Task 3: the LOAD arm is reconstructed and driven by NxPhysicsAssetTests. The COMPUTE arm 0x00050768-0x00050f02 is NOT reconstructed.",
+      "static_proof": "IDA decompilation at RVA 0x00050640 establishes the load/compute split, temporary OPCODE model, voxel loop, and serialized output path; density-32 and density-80 payloads are pinned against the oracle.",
+      "dynamic_proof": "The load arm retains its registered direct NxPhysicsAssetTests probes. NxPhysicsTriangleMeshApiTests exercises real-mesh compute through the public API and pins density 32 at size 10444/hash 9a70de00aaf0edd4; changing the one-ray classifier loop to zero samples is caught with stdout_delta=26. The restored differential is exact, and Phase 4 also requires the density-80 output marker.",
+      "notes": "P4 Task 3: load and compute arms are reconstructed and mutation-falsified. Density 32 and 80 outputs match the pinned DLL. Allocation-failure exits and alternate OPCODE-tree shapes remain open branch coverage.",
       "implementation": "Physics/src/PMap.cpp",
       "implementation_symbol": "PenetrationMap::create"
     },
@@ -38030,13 +38030,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "export_pin",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/795",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6525",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x00050f70 confirms the public wrapper reads the TriangleMesh handle, invokes PenetrationMap::create in compute mode, copies the serialized stream into CRT-allocated pmap.data, and stores dataSize/data.",
+      "dynamic_proof": "NxPhysicsTriangleMeshApiTests calls the exported NxCreatePMap on an authored tetrahedron; the registered Phase 4 line pins density=32 size=10444 hash=9a70de00aaf0edd4. A return-false mutation changes the candidate line to created=0/size=0/hash=0 and is caught with stdout_delta=26; the restored staged oracle/candidate differential has stdout_delta=0 and exact stderr.",
+      "notes": "Only the exported wrapper row is closed here. PenetrationMap::create (phys_fn_002047) owns the separate compute algorithm and remains independently audited."
+      ,"implementation": "Physics/src/PMap.cpp"
+      ,"implementation_symbol": "NxCreatePMap"
     },
     {
       "id": "phys_fn_002050",

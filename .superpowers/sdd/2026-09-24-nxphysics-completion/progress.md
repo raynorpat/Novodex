@@ -234,3 +234,24 @@ Complete: implemented 12 backend callbacks and six discovered public wrappers wi
 ### Continuation — Fluid-emitter branch integration and gate repair (2026-10-12)
 
 Integrated the relevant emitter constructor branch with main's later owner/frame getter work, resolving the shared source, fixture, inventory, gate-floor, and work-unit files. The ABI test now loads a byte-verified uniquely named oracle image for fixed-RVA calls and runs only against the pinned oracle pair, avoiding dependency-name rebinding when candidate Foundation is already loaded. It hashes and reports the exact `NxPhysicsCandidate.dll` used for direct candidate-row calls; the standalone differential and phase gate pass, and a deliberately incorrect candidate digest is rejected. Other targets retain their existing CLI. Fresh Phase 5 and Phase 7 gates pass at 2,669/2,669 and 1,696/1,696 assertions; the tooling suite passes 810/810; inventory has 6,338 functions, 5,138 data objects, and zero unexplained bytes. Public Physics headers are unchanged. Full gate logs and ABI transcript are in `docs/reconstruction/novodex-physics/evidence/raw/phase7-fluid-emitter-merge-20261012/`.
+
+### M3 continuation — Phase 4 PMap compute and export
+
+Rows `phys_fn_002047` (`PenetrationMap::create`) and `phys_fn_002049`
+(`NxCreatePMap`) are now independently mutation-falsified through the public
+triangle-mesh path. Density 32 matches the oracle at 10,444 bytes/hash
+`9a70de00aaf0edd4`; density 80 matches at 144,272 bytes/hash
+`1c6814b928a39f10`. A zero-sample mutation in the compute arm changes the
+candidate to 4,120 bytes/hash `387b40b2b1eb1513` and is caught with
+`stdout_delta=26`; a wrapper early-return mutation is separately caught with
+the same output delta. Both restored staged differentials are exact. The fresh
+Phase 4 gate passed at 519 evaluated assertions (the recorded floor was 518 at
+that run); the floor is now 519 and its 39-test registry suite passes. Inventory
+validates at 34 closed / 1,019 deferred for Phase 4 and zero unexplained bytes.
+Public Physics headers remain unchanged. Allocation-failure and alternate
+OPCODE-tree branches remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase4-pmap-compute-002047.md`, `docs/reconstruction/novodex-physics/evidence/phase4-pmap-export-002049.md`.
+
+
+### M5 continuation — five-family destructor gate repair (2026-10-12)
+
+The approved private layout uses five final collision-object families with `EmbeddedHookBase` as the secondary base. The implementation and mutation probe already existed; the red gate came from `run_differential.ps1` omitting the expected staged hash and launching the oracle-relative harness a second time against the candidate image. The runner now passes the expected hash, validates the loaded oracle Physics identity, and runs this in-process source-vs-oracle probe once. Focused differential: five secondary destructors, five scalar deleting destructors, and five primary deleting destructors all match with zero mismatches; member-only mutation reports five mismatches. Full Phase 5 gate passes at 2,670/2,670 assertions. Oracle proof manifest now pins the normalized fixture source hash. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-five-family-destructor-model-2026-10-12.md`.

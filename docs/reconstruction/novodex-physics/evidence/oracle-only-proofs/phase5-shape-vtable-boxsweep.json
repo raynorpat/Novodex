@@ -4,11 +4,11 @@
   "format": "shape_boxsweep",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
   "fixture_source": "tests/PhysicsShapeVtableTests.cpp",
-  "fixture_source_sha256": "80f545d5a6983038e21ca2961a8b03eb8711388b3eb2128a86be07a6fb5d6ade",
+  "fixture_source_sha256": "6eedebdeb6b0c36b27cc85ebf97bfb34a88e531e470e2ec0af4ea56aedf865d7",
   "proof_lines_sha256": "d2d219afbd5d01794228691639c4150dcad928fbea5438618009a9012b27a0e5",
-  "baseline_sha256": "d17751dbda63c4e69ad9aa009d67386b20ffb856343f850f9d557e529fb7c1e9",
+  "baseline_sha256": "71f5d757e985f63fdda18796e978aafb864ad98e0ef010aba21866df9480215e",
   "cases": 84,
   "input_digest_fnv32": "46df40a9",
   "oracle_output_digest_fnv32": "2c5d5c09",
-  "proof_sha256": "5ce569456d126af66b0ca8404070c166b3c61174fcf64d72ef06ad65d7ac562a"
+  "proof_sha256": "6a77c8bb58585c09b5fce88890b62186e75dc795a7c9d4a662ae8c770aa8496e"
 }

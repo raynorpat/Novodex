@@ -64,18 +64,26 @@ destructor calls 0x000f48bb -- malloc and free -- while the allocator singleton
 at 0x101041bc is never consulted on this path. The same is true of the spread
 table and of the NxPMap buffer NxCreatePMap hands out.
 
-WHAT IS NOT RECONSTRUCTED, and must not be guessed:
+RECONSTRUCTED AND DRIVEN:
 
-  * The COMPUTE arm of Create, 0x00050768-0x00050f02. It rasterises the mesh
-    through an OPCODE tree it builds on the spot and is roughly two thousand of
-    this row's 2,340 bytes. It needs a real InternalTriangleMesh, which is the
-    mesh component's and not this task's.
+  * The COMPUTE arm of Create, 0x00050768-0x00050f02, rasterises the mesh
+    through a temporary OPCODE tree and emits the packed PMap payload. The
+    registered public-DLL fixture matches density 32 and density 80 against
+    the pinned binary; setting its one-ray classification loop to zero samples
+    changes the payload and is caught by NxPhysicsTriangleMeshApiTests.
+  * NxCreatePMap (phys_fn_002049, 0x00050f70) is exported and its wrapper,
+    stream collapse, CRT allocation, and output stores are mutation-falsified
+    through the same public differential.
+
+STILL OPEN:
+
   * The filename arm of the payload loader, 0x00050123-0x0005014f, and the arm
     at 0x0005017b that builds its own stream when the caller passes none. The
     bit-packed serializer called by the public size/data accessors is
     reconstructed below, but these alternate load sources remain open.
-  * NxCreatePMap (phys_fn_002049, 0x00050f70). Its whole body is the COMPUTE
-    arm above.
+  * Allocation-failure and alternate OPCODE-tree branches in the compute arm
+    need dedicated branch fixtures before their exact failure behavior is
+    claimed.
 */
 class PenetrationMap
 	{

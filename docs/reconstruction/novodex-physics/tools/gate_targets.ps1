@@ -148,6 +148,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid substep attached-live-body actor=1 emitter_callbacks=4 run_callbacks=1 repulsion_callbacks=3 state_clear=1 body_changed=1 stack=1 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
+        'pmap_compute density=32 created=1 size=10444 hash=9a70de00aaf0edd4',
         'triangle_mesh case=descriptor16 created=1',
         'triangle_mesh case=implicit_indices created=1',
         'triangle_mesh case=precomputed_convex created=1',
@@ -5849,7 +5850,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 518  # all registered asset and Scene raycast coverage lines
+    '4' = 519  # all registered asset, PMap export, and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions

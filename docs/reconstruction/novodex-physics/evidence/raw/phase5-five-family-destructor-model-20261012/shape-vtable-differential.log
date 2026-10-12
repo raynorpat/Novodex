@@ -1,0 +1,72 @@
+phase=none resolved_targets=NxPhysicsShapeVtableTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsShapeVtableTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: build\Release\NxPhysics.dll
+pass: source exists: build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=build\Release\NxPhysics.dll source_sha256=1601df0153e8c8b492e0f8e093e7cb3cac788dee23bac5c7a9b0a407c78d42a3 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\candidate\NxPhysics.dll staged_sha256=1601df0153e8c8b492e0f8e093e7cb3cac788dee23bac5c7a9b0a407c78d42a3
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=build\Release\NxFoundation.dll source_sha256=0b994f115ed1e2c9e5c6d68ae1a647a736d791cdd281349c3afa845c7bd74371 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\candidate\NxFoundation.dll staged_sha256=0b994f115ed1e2c9e5c6d68ae1a647a736d791cdd281349c3afa845c7bd74371
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: build\Release\NxPhysics.map
+staged candidate map source=build\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: build\Release\NxPhysicsShapeVtableTests.exe
+child target=NxPhysicsShapeVtableTests pair=oracle command="build\Release\NxPhysicsShapeVtableTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\oracle" "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c" exit=0
+child_stdout_begin
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+abi probe applygroup oracle_flags=0 candidate_flags=0 state_equal=1 mismatches=0
+abi probe negative_controls register_flags=1e stack_flags=1
+collision dtor family=0 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=0 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=1 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=1 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=2 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=2 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=3 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=3 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=4 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=4 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision primary deleting dtor family=0 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=1 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=2 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=3 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=4 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary dtor families=5 mismatches=0
+collision dtor families=5 mismatches=0
+collision dtor member-only mutant mismatches=5
+shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0
+shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1
+shape vtable base_stub slot5 oracle_null=1 candidate_null=1 esp_balanced=1
+shape vtable base_stub slot7 oracle_false=1 candidate_false=1 output_preserved=1
+shape vtable base_stub_cases=3 mismatches=0
+shape vtable oracle_digest=ed1294b6 cases=645 mismatches=0
+shape vtable base_stubs oracle_digest=6d347130 cases=3 mismatches=0
+shape vtable boxmass oracle_digest=82843962 cases=24 failures=0
+shape vtable capsule_load_return oracle=1 candidate=1
+shape vtable massframe oracle_digest=7c450cef cases=201 failures=0
+shape vtable massframe centre oracle_digest=65953565 cases=4 failures=0
+shape vtable boxsweep inputs=84 digest=46df40a9
+shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0
+box hull oracle_digest=e0477220 cases=324 failures=0
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsShapeVtableTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+differential target=NxPhysicsShapeVtableTests oracle_exit=0 candidate_sources_in_harness=True
+differential_targets=NxPhysicsShapeVtableTests
+differential_pairs=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\oracle,C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\focused-pairs\candidate
+pass: every requested target passes its registered oracle/candidate differential contract
+differential=pass

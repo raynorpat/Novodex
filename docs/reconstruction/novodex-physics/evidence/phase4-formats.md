@@ -673,9 +673,11 @@ settled and what it left.
 - **The accept arm of the mesh reader.** It allocates through the Foundation SDK
   allocator at `0x101041bc`, which is null until an `NxPhysicsSDK` exists.
   Driving it needs the mesh factory Task 2 reconstructs.
-- **`NxCreatePMap`'s compute path.** It needs a real triangle mesh. The plan
-  gives that to Task 3, and this task drives the load path instead, which reads
-  only the six floats at `mesh+0x44`.
+- **`NxCreatePMap`'s compute path.** This path is now driven through the public
+  API using an authored tetrahedron. Density 32 and density 80 outputs match
+  the pinned binary; zeroing the compute loop's ray count changes the public
+  result and is caught by `NxPhysicsTriangleMeshApiTests`. Allocation-failure
+  and alternate-tree branches remain open.
 
 ## The control word
 
@@ -884,9 +886,9 @@ which is the state Phase 4 is in on purpose for the next two tasks.
   between them.
 - `phys_fn_002081` at `0x00052240` runs under both control words and needs the
   `/arch:IA32` rule in whatever translation unit it lands in.
-- The mesh reader's accept arm and `NxCreatePMap`'s compute path are the two
-  format paths this task could not drive, and both are named above with the
-  reason.
+- The mesh reader's accept arm remains un-driven in this format task. The
+  `NxCreatePMap` compute path is now exercised by the public triangle-mesh API
+  fixtures documented above.
 - Seven fields and one sub-encoding are recorded as **unestablished**. None of
   them may be filled in from what a format usually looks like.
 - **`phys_fn_002162` at `0x000539d0` is the mesh-stream writer** and is slot 18

@@ -616,6 +616,10 @@ int wmain(int argc, wchar_t** argv)
         fprintf(stderr, "cannot load oracle: %lu\n", GetLastError());
         return 2;
     }
+    char loadedPath[MAX_PATH];
+    if(wcstombs_s(&converted, loadedPath, sizeof(loadedPath), path, _TRUNCATE))
+        return 2;
+    printf("loaded module=NxPhysics.dll path=%s sha256=%s\n", loadedPath, actualHash);
     const unsigned char* base = reinterpret_cast<const unsigned char*>(module);
     if(!installAllocator(base)) return 2;
     CandidateAllocator candidateAllocator;

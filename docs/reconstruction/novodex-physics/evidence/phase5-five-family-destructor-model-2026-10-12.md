@@ -24,3 +24,12 @@ evidence file records the three measured results. Inventory validation and the
 fresh Phase 5 gate both pass.
 
 Full transcript: [phase5-gate.log](raw/phase5-inventory-red-repair-20261012/phase5-gate.log).
+
+Fresh gate rerun on 2026-10-12 exposed a runner contract bug: this probe
+requires the staged Physics DLL hash and performs an in-process source-vs-oracle
+comparison, so it must run once against the oracle and must not be relaunched
+with candidate RVAs interpreted against the candidate image. The differential
+runner now passes the staged hash, validates the probe's explicit loaded-DLL
+identity, and treats its linked candidate implementation as the candidate
+side. The corrected full Phase 5 gate passes at 2,670/2,670 assertions. A fresh
+focused transcript is [shape-vtable-differential.log](raw/phase5-five-family-destructor-model-20261012/shape-vtable-differential.log).

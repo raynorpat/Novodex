@@ -6,10 +6,10 @@
   "closure_ledger": "gates/phase4-closure.json",
   "implementation_commit": "de565924ad85cba85490c54ebc99db37593833a3",
   "evidence_commit": "ec41abb1b18110d00643dbf784eff4cf694a411f",
-  "note": "Phase 4's recorded gate closed 26 code rows at its historical gate; two NovodeX pruning rows were subsequently closed by isolated direct-link oracle mutations. A later census correction retyped phys_fn_005493, phys_fn_005517 and phys_fn_005523 from compiler artifacts to OPCODE code, so its current ledger has 1,053 code rows: 33 closed and 1,020 deferred. The Phase 4 gate was rerun with NxPhysicsSceneRaycastTests registered to cover the bounded octree traversal. The PMap cell-run decoder has an oracle-matched 32-command matrix (asset digest 1daa095e) and is closed by mutation AA. Segment::SquareDistance (phys_fn_005493) was additionally closed on 2026-10-08 by a row-specific return-value mutation caught by NxPhysicsThirdPartyTests in a throwaway git-archive build; this proves the directly linked source row, while public-DLL routing remains separate. See the Phase 4 closure ledger for current counts and evidence/phase4-falsification.md section 13 for the mutation/control results. Earlier gate failures and recoveries remain recorded below as historical measurements. The final historical Phase 4 gate passed with coverage 251/251; remaining qhull topology and x87 residuals are explicitly measured and bounded rather than claimed exact; see evidence/qhull-gap.md. BoundedDynamicPruner::OverlapQuery (phys_fn_005562) was closed on 2026-10-10 by a child-slot-8 omission mutation caught as stdout_delta=8; the restored Phase 4 gate passed at 518/269 coverage assertions. See evidence/phase4-falsification.md section 15. The bounded-query setup/call-site row phys_fn_005564 was closed on 2026-10-10 by omitting the root tree dispatch (stdout_delta=14); the restored Phase 4 gate passed at 518/269 assertions. See evidence/phase4-falsification.md section 16.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 34 closed and 1,019 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Historical Phase 4 closures and vendored correspondence remain recorded below. The exported NxCreatePMap wrapper phys_fn_002049 is now mutation-falsified through NxPhysicsTriangleMeshApiTests, with the density-32 output required by the Phase 4 gate; its compute callee phys_fn_002047 is now independently mutation-falsified on a real mesh; allocation-failure and alternate-tree branches remain open. See evidence/phase4-falsification.md section 17 and evidence/phase4-pmap-export-002049.md. Earlier gate failures and recoveries remain recorded as historical measurements; remaining qhull topology and x87 residuals are explicitly measured and bounded rather than claimed exact. The fresh 2026-10-12 gate result is recorded in gate_sequence",
   "counts": {
-    "closed": 33,
-    "deferred": 1020
+    "closed": 34,
+    "deferred": 1019
   },
   "gate_sequence": [
     {
@@ -101,6 +101,16 @@
       "name": "triangle_mesh_release_guard_mutation_2026-10-09",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 4",
       "result": "Fresh Phase 4 gate passes at coverage_assertions_evaluated=269 floor=268, with the live-reference refusal line required by NxPhysicsTriangleMeshApiTests. A throwaway guard-bypass rebuild produces stdout_delta=6 and candidate exit=1 against oracle exit=0; restoring the source returns the focused differential to stdout_delta=0, two zero exits, and exact stderr. See evidence/phase4-row-002258-release-guard-mutation-2026-10-09.md. Successful-release cleanup helpers remain separate rows."
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 4",
+      "result": "Fresh Win32 Release configure/build succeeded. NxPhysicsTriangleMeshApiTests and NxPhysicsPMapResolution80Tests match the pinned oracle with stdout_delta=0 and exact stderr; registered PMap markers match density 32 size 10444 hash 9a70de00aaf0edd4 and density 80 size 144272 hash 1c6814b928a39f10. The run evaluated 519 assertions against the prior 518 floor; the updated registry floor is 519, verified by CoverageFloor.test_the_floor_matches_what_the_phase_actually_registers. Full transcript: evidence/raw/phase4-pmap-export-002049/phase4-gate.log."
+    },
+    {
+      "name": "mutation_differential:phys_fn_002047",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Targets NxPhysicsTriangleMeshApiTests",
+      "result": "With the row-specific zero-sample mutation, candidate PMap output changed from 10444 bytes/hash 9a70de00aaf0edd4 to 4120 bytes/hash 387b40b2b1eb1513; oracle exit 0, candidate exit 1, stdout_delta=26. Restoring the loop and rebuilding returned the registered differential to stdout_delta=0 with exact stderr. Full Phase 4 gate separately pins density 32 and density 80."
     }
   ],
   "excluded_from_comparison": [

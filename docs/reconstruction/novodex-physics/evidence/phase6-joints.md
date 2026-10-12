@@ -521,30 +521,20 @@ held on both the rounded and the unrounded build. The fix is therefore a
 precision improvement that no existing gate could have detected and none now
 regresses.
 
-## 6u. `NxCreatePMap` is not a gap to fill -- it is a recorded decision
+## 6u. `NxCreatePMap` compute/export gap (superseded 2026-10-12)
 
-The candidate's export set is 40 of the oracle's 41, and `NxCreatePMap`
-(`phys_fn_002049`, `0x00050f70`, 198 bytes) is the missing one. Reading the row
-and the phase-4 evidence shows it is not an omission:
+The earlier phase-4 decision below correctly described the then-current
+candidate, which omitted the compute arm and export. It has since been
+superseded: `PenetrationMap::create` now computes authored-mesh maps, the
+`NxCreatePMap` export is present, and both are exercised through the public
+triangle-mesh API test. Density-32 and density-80 payloads match the pinned
+oracle; row-specific mutations independently falsify the compute body and the
+export wrapper. See `evidence/phase4-pmap-compute-002047.md`,
+`evidence/phase4-pmap-export-002049.md`, and Phase 4 falsification sections 17
+and 18.
 
-    evidence/phase4-pmap-reconstruction.md §6:
-      "The COMPUTE arm of phys_fn_002047, 0x00050768-0x00050f02 -- roughly 2,000
-       of that row's bytes"
-      "NxCreatePMap (phys_fn_002049, 0x00050f70, 198 bytes) -- its whole body is
-       that arm. It is not exported by the reconstruction, because an export that
-       cannot compute is worse than an absent one."
-
-`NxCreatePMap`'s entire body is the compute arm, and that arm is a named,
-deliberate hole: `PenetrationMap::create` reaches it and returns through an
-`NX_ASSERT(!"PenetrationMap compute path is not reconstructed")` rather than
-pretending. Exporting a wrapper now would put a name in the export table whose
-body cannot compute, which is the facade the phase-4 decision already refused.
-
-**So the 41st export is gated on the ~2,000-byte compute arm, not on the 198-byte
-wrapper.** That is the real task, and it is a phase-4 one. It is recorded here
-because from the outside the export table looks like a one-row gap, and it is not.
-
-No rows move. No gate, coverage-floor, or policy change.
+The historical decision and its original rationale are retained below for
+traceability; they no longer describe the current candidate.
 
 ## 6v. `NxNormalToTangents` itself now keeps its products wide
 

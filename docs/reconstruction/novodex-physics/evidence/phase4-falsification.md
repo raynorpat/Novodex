@@ -457,3 +457,29 @@ path remain independent work.
 ## 16. 2026-10-10 follow-up: bounded-query setup wrapper
 
 `phys_fn_005564` (`0x000f2050`, 57 bytes) is closed through the registered staged-pair `NxPhysicsSceneRaycastTests` differential. IDA shows it packages query state and dispatches the bounded tree walk at root node 0. Omitting the equivalent candidate root dispatch after query preparation changes the transcript by `stdout_delta=14` while both processes exit zero. Restoring the call returns exact output; the fresh full Phase 4 gate passes at 518/269 assertions and both public-header checks pass. This call-site mutation is separate from the recursive `phys_fn_005562` child-slot-8 mutation in section 15. Full proof and transcripts are in [phase4-query-wrapper-005564.md](phase4-query-wrapper-005564.md).
+
+---
+
+## 17. 2026-10-12 follow-up: `NxCreatePMap` export wrapper
+
+`phys_fn_002049` (`NxCreatePMap`, RVA `0x00050f70`, 198 bytes) is closed through the registered staged-pair `NxPhysicsTriangleMeshApiTests` differential. The authored tetrahedron produces the pinned density-32 payload: 10,444 bytes with hash `9a70de00aaf0edd4`. Phase 4 now requires this exact line from both oracle and candidate processes.
+
+The row mutation inserted an immediate `false` return at the start of the wrapper. The oracle retained the pinned payload, while the candidate returned `created=0 size=0 hash=0000000000000000`; the candidate exited 1 and the differential reported `stdout_delta=26`. After restoration, both processes exited 0 with `stdout_delta=0` and exact stderr. The complete mutation, restored-control, and gate transcripts are in [phase4-pmap-export-002049.md](phase4-pmap-export-002049.md).
+
+This closes the exported wrapper. The compute body is independently covered in section 18.
+
+Measured row detection: phys_fn_002049 stdout_delta=26.
+
+Measured row detection: phys_fn_002049 stdout_delta=26.
+
+---
+
+## 18. 2026-10-12 follow-up: PMap compute arm
+
+`phys_fn_002047` (`PenetrationMap::create`, RVA `0x00050640`, 2,340 bytes) is now mutation-falsified through the public `NxPhysicsTriangleMeshApiTests` staged pair. The authored tetrahedron's density-32 compute result is 10,444 bytes with hash `9a70de00aaf0edd4`; the full Phase 4 gate also observes the density-80 result at 144,272 bytes with hash `1c6814b928a39f10`.
+
+The source mutation changed the compute arm's one-ray classification loop from one sample to zero. The candidate then produced a 4,120-byte map with hash `387b40b2b1eb1513` instead of the oracle's 10,444-byte map and failed the public fixture (`stdout_delta=26`, oracle exit 0, candidate exit 1). Restoring the loop returned the triangle-mesh API differential to zero output delta and exact stderr. The corresponding raw mutation and restored logs are retained in [`phase4-pmap-compute-002047.md`](phase4-pmap-compute-002047.md).
+
+This proves the exercised rasterization and classification path. The allocation-failure exits and alternate OPCODE-tree shapes remain open branch coverage. The Phase 4 gate log with both resolution markers is retained in [`phase4-pmap-export-002049.md`](phase4-pmap-export-002049.md).
+
+Measured row detection: phys_fn_002047 stdout_delta=26.

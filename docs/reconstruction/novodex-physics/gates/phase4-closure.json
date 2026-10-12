@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 33 closed and 1,020 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The two AABB tree rows phys_fn_005517 and phys_fn_005523 still have shared-overlay layout evidence but no isolated per-row falsification. The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 34 closed and 1,019 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The exported NxCreatePMap wrapper phys_fn_002049 and its PenetrationMap::create compute body phys_fn_002047 are independently mutation-falsified through NxPhysicsTriangleMeshApiTests. Density-32 and density-80 result markers are registered; allocation-failure and alternate-tree branches remain open. The two AABB tree rows phys_fn_005517 and phys_fn_005523 still have shared-overlay layout evidence but no isolated per-row falsification. The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway source copy, rebuilt and run through a registered Phase 4 staged-pair differential. Phase 4 now registers NxPhysicsTriangleMeshApiTests for the live-reference refusal path; bypassing the mReferenceCount guard changes the candidate transcript by stdout_delta=6 while the pinned oracle remains unchanged, and the restored control matches exactly.",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -50,15 +50,15 @@
       "NxPhysicsThirdPartyTests",
       "NxPhysicsTriangleMeshApiTests"
     ],
-    "method": "every address above but four is called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four -- 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772) and 0x000b3ac0 (phys_fn_004774) -- appear in no harness source: they are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly and which calls 0x000b3aa0 four times, 0x000b3ac0 twice, then 0x0004ff80 and 0x00050110. Those oracle-only rows were entered by blocks that print an oracle-side digest; the public staged-pair exception is phys_fn_002258, exercised through NxPhysicsTriangleMeshApiTests, and its row mutation is recorded in section 14. Each direct-call block prints an oracle-side digest, and every digest and coverage line is registered in tools/gate_targets.ps1 with a per-phase floor -- 100 for Phase 4, 34 from NxPhysicsAssetTests and 66 from NxPhysicsThirdPartyTests -- so a generator that degrades to nothing fails the gate rather than passing it",
+    "method": "Most internal addresses are called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four rows 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772), and 0x000b3ac0 (phys_fn_004774) are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly. The public staged-pair rows phys_fn_002258 and phys_fn_002049 are exercised through NxPhysicsTriangleMeshApiTests and independently mutation-falsified; their measurements are recorded in sections 14 and 17 of evidence/phase4-falsification.md. Direct-call digests and staged-pair coverage lines are registered in tools/gate_targets.ps1 so a generator that degrades to nothing fails the gate",
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 750,
-    "deferred_not_reconstructed_in_phase": 180,
+    "deferred_not_reconstructed_in_phase": 179,
     "deferred_vendored_not_falsified": 90,
-    "differential_falsified": 3,
-    "oracle_differential_falsified": 30
+    "differential_falsified": 5,
+    "oracle_differential_falsified": 29
   },
   "closed": [
     {
@@ -105,12 +105,24 @@
     {
       "id": "phys_fn_002047",
       "rva": "0x00050640",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsAssetTests",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
       "falsification": {
-        "mutation": "five mutations inside this row's extent, A to E: the third tag byte read but not compared (1), the version test `!= 4` written `< 4` (2), the two reported line numbers swapped (10), the resolution argument kept instead of the file's (4), and the version failure left unreported (5). The count recorded is the largest single one, C. Roughly 2,000 of this row's 2,340 bytes are the COMPUTE arm 0x00050768-0x00050f02, which is not reconstructed and which no mutation here reaches. Re-measured on branch p4-close-port in a `git archive` copy of de56592: control `asset candidate mismatches=0` before and after, `asset oracle digest=eaefc573 expect_mismatches=0` in every run. evidence/phase4-falsification.md section 5",
-        "detected": "mismatches=10"
-      }
+        "mutation": "The compute arm one-ray classifier loop in PenetrationMap::create was changed from one sample to zero. The existing direct NxPhysicsAssetTests mutations still falsify the load arm (largest result mismatches=10); the public real-mesh compute mutation is the row-level staged-pair proof.",
+        "detected": "stdout_delta=26"
+      },
+      "note": "The compute mutant changed the candidate PMap from the oracle’s density-32 10,444-byte payload (hash 9a70de00aaf0edd4) to 4,120 bytes (hash 387b40b2b1eb1513), and the candidate exited 1. Restored control exits zero on both sides with stdout_delta=0 and exact stderr. Density 80 is also pinned by the full Phase 4 gate. The earlier direct load-arm mutation remains documented in evidence/phase4-falsification.md section 5; compute details are in section 18. Alternate allocation-failure and OPCODE-tree branches remain open."
+    },
+    {
+      "id": "phys_fn_002049",
+      "rva": "0x00050f70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "In a throwaway source copy, inserted an immediate false return at the start of NxCreatePMap, removing its public wrapper's compute, stream-collapse, and output-store path.",
+        "detected": "stdout_delta=26"
+      },
+      "note": "The mutant preserves the pinned oracle line `created=1 size=10444 hash=9a70de00aaf0edd4` but candidate prints `created=0 size=0 hash=0000000000000000` and exits 1. Restored control exits zero on both sides with stdout_delta=0 and exact stderr. Phase 4 requires the density-32 line from the registered staged-pair target. Evidence: evidence/phase4-pmap-export-002049.md."
     },
     {
       "id": "phys_fn_002051",
@@ -1114,14 +1126,6 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "the Morton reorder, radix-sorted at 0x00050544 and applied at 0x00050599. Mutation U skips it entirely and comes out GREEN, re-measured on this branch: permuting an array of identical words is the identity. evidence/phase4-pmap-reconstruction.md section 5"
-    },
-    {
-      "id": "phys_fn_002049",
-      "rva": "0x00050f70",
-      "size": 198,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "export_pin",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_002054",
@@ -9310,5 +9314,6 @@
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     }
-  ]
+  ],
+  "method": "Most internal addresses are called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four rows 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772), and 0x000b3ac0 (phys_fn_004774) are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly. Public staged-pair rows phys_fn_002258, phys_fn_002047, and phys_fn_002049 run through NxPhysicsTriangleMeshApiTests and are independently mutation-falsified; measurements are in sections 14, 17, and 18 of evidence/phase4-falsification.md. Direct-call digests and staged-pair coverage lines are registered in tools/gate_targets.ps1."
 }

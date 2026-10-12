@@ -1957,12 +1957,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 1,
-    "dynamically_gated": 1
+    "dynamically_gated": 2
    },
    "bytes": {
-    "discovered": 198,
-    "dynamically_gated": 2340
+    "dynamically_gated": 2538
    },
    "phases": {
     "4": 2

@@ -238,14 +238,29 @@ load-bearing.
 
 ---
 
-## 6. What was NOT reconstructed, named rather than filled in
+## 6. 2026-10-12 continuation: PMap compute and export
 
-- **The COMPUTE arm of `phys_fn_002047`, `0x00050768`-`0x00050f02`** — roughly 2,000 of that row's
-  2,340 bytes. It rasterises the mesh through an OPCODE tree it builds on the spot and needs a real
-  `InternalTriangleMesh`. The census row carries this in its `notes`.
-- **`NxCreatePMap` (`phys_fn_002049`, `0x00050f70`, 198 bytes)** — its whole body is that arm. It is
-  not exported by the reconstruction, because an export that cannot compute is worse than an absent
-  one.
+The original gap recorded here is now reconstructed and mutation-falsified.
+`PenetrationMap::create` (`phys_fn_002047`) runs its compute arm over the real
+`InternalTriangleMesh`, builds the temporary OPCODE model, rasterizes voxels,
+classifies interior cells, and writes the packed payload. The public
+`NxPhysicsTriangleMeshApiTests` fixture pins density 32 at 10,444 bytes and
+hash `9a70de00aaf0edd4`; the separate density-80 fixture pins 144,272 bytes
+and hash `1c6814b928a39f10`.
+
+The row-specific mutation changed the one-ray classification loop from one
+sample to zero. The candidate then emitted a 4,120-byte payload with hash
+`387b40b2b1eb1513` instead of the oracle's 10,444-byte payload, and the
+registered staged-pair differential failed with `stdout_delta=26`. Restoring
+the loop returned the complete triangle-mesh API transcript to an exact match.
+The exported `NxCreatePMap` wrapper (`phys_fn_002049`) is separately
+mutation-falsified; details and retained transcripts are in
+[`phase4-pmap-compute-002047.md`](phase4-pmap-compute-002047.md) and
+[`phase4-pmap-export-002049.md`](phase4-pmap-export-002049.md).
+
+The filename load arm at `0x00050123`-`0x0005014f`, the internally-created
+stream arm at `0x0005017b`, and the compute path's allocation-failure and
+alternate-tree branches remain open.
 - **The filename arm of `phys_fn_002035` (`0x00050123`-`0x0005014f`) and the build-your-own-stream
   arm at `0x0005017b`**, both of which reach serialization rows this task does not cover.
 - **The 5-bit cell walk in `phys_fn_002008`** is now reconstructed from the 32-way jump table at
