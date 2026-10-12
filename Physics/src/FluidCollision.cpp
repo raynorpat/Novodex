@@ -761,3 +761,49 @@ extern "C" void* __cdecl nxFluidCollisionAppendBox(void* descriptor,
 	++*count;
 	return descriptor;
 	}
+
+// phys_fn_003551 (RVA 0x00087940) asks the plane shape's virtual slot 13 to
+// populate the four defined bounds words in its scratch query, then appends a
+// 96-byte record. The oracle leaves the record's remaining 80 bytes undefined.
+static void __fastcall nxFluidCollisionPlaneScratchDestructor(void*, void*) {}
+static int __fastcall nxFluidCollisionPlaneScratchInitialize(void*, void*)
+	{ return 0; }
+static int __fastcall nxFluidCollisionPlaneScratchValidate(void*, void*)
+	{ return 1; }
+
+static void* gFluidCollisionPlaneScratchVtable[3] =
+	{
+	reinterpret_cast<void*>(&nxFluidCollisionPlaneScratchDestructor),
+	reinterpret_cast<void*>(&nxFluidCollisionPlaneScratchInitialize),
+	reinterpret_cast<void*>(&nxFluidCollisionPlaneScratchValidate)
+	};
+
+extern "C" void* __cdecl nxFluidCollisionAppendPlane(void* descriptor,
+	void* shape)
+	{
+	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
+	if(*reinterpret_cast<unsigned*>(shapeBytes + 0xd0) != 0)
+		return 0;
+	unsigned scratch[24] = {};
+	scratch[0] = reinterpret_cast<unsigned>(gFluidCollisionPlaneScratchVtable);
+	scratch[2] = 0x3f800000u;
+	scratch[6] = 0x3f800000u;
+	scratch[10] = 0x3f800000u;
+	scratch[14] = 8;
+	scratch[21] = 0x3f800000u;
+	typedef void (__thiscall* UpdatePlaneScratch)(void*, void*);
+	void** const shapeVtable = *reinterpret_cast<void***>(shapeBytes);
+	UpdatePlaneScratch const update =
+		reinterpret_cast<UpdatePlaneScratch>(shapeVtable[13]);
+	update(shape, scratch);
+	unsigned record[24] = {};
+	memcpy(record, scratch + 19, 4 * sizeof(unsigned));
+	unsigned char* const descriptorBytes =
+		static_cast<unsigned char*>(descriptor);
+	unsigned char* const storage =
+		*reinterpret_cast<unsigned char**>(descriptorBytes);
+	unsigned* const count = reinterpret_cast<unsigned*>(descriptorBytes + 4);
+	memcpy(storage + *count * sizeof(record), record, sizeof(record));
+	++*count;
+	return descriptor;
+	}
