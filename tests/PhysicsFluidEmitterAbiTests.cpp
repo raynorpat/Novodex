@@ -2378,8 +2378,8 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 		}
 	struct ShapeFixture
 		{
-		void* vtable[14];
-		unsigned char bytes[0x1c0 - sizeof(vtable)];
+		void** vtable;
+		unsigned char bytes[0x1bc];
 		};
 	struct ArrayDescriptor
 		{
@@ -2393,18 +2393,21 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 	for(unsigned test = 0; test != 2; ++test)
 		{
 		ShapeFixture oracleShape, candidateShape;
+		void* oracleVtable[14], candidateVtable[14];
 		memset(&oracleShape, 0, sizeof(oracleShape));
 		memset(&candidateShape, 0, sizeof(candidateShape));
 		for(unsigned slot = 0; slot != 14; ++slot)
 			{
-			oracleShape.vtable[slot] = reinterpret_cast<void*>(
+			oracleVtable[slot] = reinterpret_cast<void*>(
 				&nxFluidCollisionPlaneAppendFixtureVirtual);
-			candidateShape.vtable[slot] = reinterpret_cast<void*>(
+			candidateVtable[slot] = reinterpret_cast<void*>(
 				&nxFluidCollisionPlaneAppendFixtureVirtual);
 			}
+		oracleShape.vtable = oracleVtable;
+		candidateShape.vtable = candidateVtable;
 		const unsigned type = test == 0 ? 0u : 1u;
-		*reinterpret_cast<unsigned*>(oracleShape.bytes + 0xd0 - sizeof(oracleShape.vtable)) = type;
-		*reinterpret_cast<unsigned*>(candidateShape.bytes + 0xd0 - sizeof(candidateShape.vtable)) = type;
+		*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(&oracleShape) + 0xd0) = type;
+		*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(&candidateShape) + 0xd0) = type;
 		unsigned char oracleOutput[192], candidateOutput[192];
 		memset(oracleOutput, 0xa5, sizeof(oracleOutput));
 		memset(candidateOutput, 0xa5, sizeof(candidateOutput));
