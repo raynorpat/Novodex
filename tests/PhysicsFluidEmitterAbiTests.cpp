@@ -1525,6 +1525,99 @@ static unsigned nxRunFluidCollisionCellHashDifferential(
 	return mismatches;
 	}
 
+static unsigned nxRunFluidCollisionIndexedMeshDifferential(
+	const unsigned char* oracleBase, void* candidateAddress)
+	{
+	if(!oracleBase || !candidateAddress)
+		return 1;
+	typedef int (__cdecl* BuildIndexedGrid)(NxFluidCollisionBucketHashDescriptor*,
+		int*, const NxFluidCollisionTriangleMesh*,
+		float, float, NxFluidCollisionInt16Vector3Array*);
+	BuildIndexedGrid oracle = reinterpret_cast<BuildIndexedGrid>(
+		const_cast<unsigned char*>(oracleBase) + 0x86f00);
+	BuildIndexedGrid candidate = reinterpret_cast<BuildIndexedGrid>(candidateAddress);
+	const unsigned indices[6] = { 0, 1, 2, 3, 4, 5 };
+	const float vertices[18] = {
+		0.125f, 0.25f, 0.375f, 1.125f, 0.25f, 0.375f,
+		0.125f, 1.25f, 0.375f,
+		-0.75f, 0.5f, 0.25f, 0.25f, 0.5f, 0.25f,
+		-0.75f, 1.25f, 0.25f
+		};
+	const float transform[12] = {
+		0.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, -0.25f, 1.5f, -0.125f };
+	unsigned mismatches = 0;
+	for(unsigned test = 0; test != 3; ++test)
+		{
+		NxFluidCollisionTriangleMesh mesh = {};
+		mesh.triangleCount = test == 0 ? 2 : 0;
+		mesh.indices = indices;
+		mesh.vertices = vertices;
+		memcpy(mesh.transform, transform, sizeof(transform));
+		NxFluidCollisionGridCell oracleRecords[9];
+		NxFluidCollisionGridCell candidateRecords[9];
+		memset(oracleRecords, 0x5a, sizeof(oracleRecords));
+		memcpy(candidateRecords, oracleRecords, sizeof(oracleRecords));
+		int oracleRecordBase = reinterpret_cast<int>(oracleRecords);
+		int candidateRecordBase = reinterpret_cast<int>(candidateRecords);
+		unsigned oracleBuckets[3][3] = {
+			{ 0, 0, 0xabcdef00u }, { 0, 3, 0xabcdef01u },
+			{ 0, 6, 0xabcdef02u }
+			};
+		unsigned candidateBuckets[3][3];
+		memcpy(candidateBuckets, oracleBuckets, sizeof(oracleBuckets));
+		NxFluidCollisionBucketHashDescriptor oracleHash = {
+			&oracleBuckets[0][0], 3 };
+		NxFluidCollisionBucketHashDescriptor candidateHash = {
+			&candidateBuckets[0][0], 3 };
+		short oracleCellStorage[512 * 3];
+		short candidateCellStorage[512 * 3];
+		memset(oracleCellStorage, 0x5a, sizeof(oracleCellStorage));
+		memcpy(candidateCellStorage, oracleCellStorage, sizeof(oracleCellStorage));
+		NxFluidCollisionInt16Vector3Array oracleCells = {
+			oracleCellStorage, test == 1 ? 77 : 0, 512 };
+		NxFluidCollisionInt16Vector3Array candidateCells = {
+			candidateCellStorage, test == 1 ? 77 : 0, 512 };
+		NxFluidCollisionInt16Vector3Array* oracleOutput = test == 2 ? 0 : &oracleCells;
+		NxFluidCollisionInt16Vector3Array* candidateOutput = test == 2 ? 0 : &candidateCells;
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		const int oracleReturn = oracle(&oracleHash, &oracleRecordBase, &mesh,
+			0.0f, 1.0f, oracleOutput);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		const int candidateReturn = candidate(&candidateHash, &candidateRecordBase,
+			&mesh, 0.0f, 1.0f, candidateOutput);
+		__asm mov candidateAfter, esp
+		const bool cellsMatch = oracleCells.count == candidateCells.count
+			&& oracleCells.capacity == candidateCells.capacity
+			&& memcmp(oracleCellStorage,
+			candidateCellStorage, sizeof(oracleCellStorage)) == 0;
+		const bool bucketsMatch = memcmp(oracleBuckets, candidateBuckets,
+			sizeof(oracleBuckets)) == 0;
+		const bool recordsMatch = memcmp(oracleRecords, candidateRecords,
+			sizeof(oracleRecords)) == 0;
+		const bool stackBalanced = oracleBefore == oracleAfter
+			&& candidateBefore == candidateAfter;
+		const int expectedReturn = test == 2 ? 0 : 1;
+		const bool matched = oracleReturn == expectedReturn
+			&& candidateReturn == expectedReturn && cellsMatch && bucketsMatch
+			&& recordsMatch && stackBalanced;
+		printf("fluid collision indexed-mesh-build case=%u cells=%d/%d "
+			"buckets=%u records=%u return=%d/%d stack=%u/%u mismatches=%u\n",
+			test, oracleCells.count, candidateCells.count, bucketsMatch,
+			recordsMatch, oracleReturn, candidateReturn,
+			oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+			matched ? 0u : 1u);
+		if(!matched)
+			++mismatches;
+		}
+	printf("fluid collision indexed-mesh-build cases=3 nonempty=1 empty=1 "
+		"null_output=1 candidate_present=1 mismatches=%u\n", mismatches);
+	return mismatches;
+	}
+
 struct NxFluidCollisionCopyDescriptor
 	{
 	void* buckets;
@@ -1975,6 +2068,10 @@ int wmain(int argc, wchar_t** argv)
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionAccumulateCellCounts", &candidateCellHashAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll cell-hash row could not be resolved from its map\n");
+	void* candidateIndexedMeshAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionBuildIndexedGrid", &candidateIndexedMeshAddress))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll indexed-mesh build row could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
@@ -2322,6 +2419,8 @@ int wmain(int argc, wchar_t** argv)
 		candidateTriangleBuilderAddress);
 	gFailures += nxRunFluidCollisionCellHashDifferential(image,
 		candidateCellHashAddress);
+	gFailures += nxRunFluidCollisionIndexedMeshDifferential(image,
+		candidateIndexedMeshAddress);
 	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
 	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
 	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");

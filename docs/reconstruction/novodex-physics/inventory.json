@@ -66034,13 +66034,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1318",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12431",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation and contiguous instruction flow show phys_fn_003532 at RVA 0x86f00 is the 17-byte function entry/guard and phys_fn_003533 at RVA 0x86f11 is its 700-byte continuation; together they are one callable routine. The body transforms indexed triangle vertices with the 3x4 mesh transform, resets cell output, calls phys_fn_003524 to enumerate triangle cells, and calls phys_fn_003530 to accumulate per-bucket records. A null output returns 0; empty mesh and successful processing return 1.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls pinned oracle RVA 0x86f00 and map-resolved nxFluidCollisionBuildIndexedGrid. Three cases compare a two-triangle asymmetric affine mesh, empty input with seeded output count/state, and null output. Cell data/count/capacity, bucket rows, complete records, return values, and x86 stack balance match (candidate_present=1, mismatches=0). A mutant that skips the triangle loop is detected in the nonempty case (mismatches=1); the restored control is exact. The absent FluidModel SAT, growth, and FindCDCell slots are bound to independent fixture references.",
+      "notes": "The census splits one function across these two adjacent rows; they share one implementation and one direct oracle fixture. Its leaf calls are independently reconstructed, but the pinned UE3 Binaries directory has no FluidModel.dll, so production callback integration and Unreal static-collision validation remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionBuildIndexedGrid"
     },
     {
       "id": "phys_fn_003533",
@@ -66052,13 +66054,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1319",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12432",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation and contiguous instruction flow show phys_fn_003532 at RVA 0x86f00 is the 17-byte function entry/guard and phys_fn_003533 at RVA 0x86f11 is its 700-byte continuation; together they are one callable routine. The body transforms indexed triangle vertices with the 3x4 mesh transform, resets cell output, calls phys_fn_003524 to enumerate triangle cells, and calls phys_fn_003530 to accumulate per-bucket records. A null output returns 0; empty mesh and successful processing return 1.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls pinned oracle RVA 0x86f00 and map-resolved nxFluidCollisionBuildIndexedGrid. Three cases compare a two-triangle asymmetric affine mesh, empty input with seeded output count/state, and null output. Cell data/count/capacity, bucket rows, complete records, return values, and x86 stack balance match (candidate_present=1, mismatches=0). A mutant that skips the triangle loop is detected in the nonempty case (mismatches=1); the restored control is exact. The absent FluidModel SAT, growth, and FindCDCell slots are bound to independent fixture references.",
+      "notes": "The census splits one function across these two adjacent rows; they share one implementation and one direct oracle fixture. Its leaf calls are independently reconstructed, but the pinned UE3 Binaries directory has no FluidModel.dll, so production callback integration and Unreal static-collision validation remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionBuildIndexedGrid"
     },
     {
       "id": "phys_fn_003534",

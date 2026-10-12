@@ -313,6 +313,38 @@ extern "C" int __cdecl nxFluidCollisionAccumulateCellCounts(
 	return 1;
 	}
 
+// phys_fn_003532/003533 (RVA 0x00086f00) is one entrypoint split across two
+// census rows: it transforms each mesh triangle, enumerates its grid cells,
+// and deduplicates those cells into the indexed collision grid.
+extern "C" int __cdecl nxFluidCollisionBuildIndexedGrid(
+	NxFluidCollisionBucketHashDescriptor* hash, int* cellStorage,
+	const NxFluidCollisionTriangleMesh* mesh, float margin, float cellSize,
+	NxFluidCollisionInt16Vector3Array* cells)
+	{
+	if(!cells)
+		return 0;
+	for(unsigned triangle = 0; triangle < mesh->triangleCount; ++triangle)
+		{
+		const unsigned* const indices = mesh->indices + triangle * 3;
+		const float* const first = mesh->vertices + indices[0] * 3;
+		const float* const second = mesh->vertices + indices[1] * 3;
+		const float* const third = mesh->vertices + indices[2] * 3;
+		float transformed[3][3];
+		nxFluidCollisionTransformVertex(first, mesh->transform, transformed[0]);
+		nxFluidCollisionTransformVertex(second, mesh->transform, transformed[1]);
+		nxFluidCollisionTransformVertex(third, mesh->transform, transformed[2]);
+		cells->count = 0;
+		const unsigned __int64 secondAndThird =
+			(static_cast<unsigned __int64>(reinterpret_cast<uintptr_t>(transformed[2])) << 32)
+			| reinterpret_cast<uintptr_t>(transformed[1]);
+		nxFluidCollisionTriangleCells(cells, transformed[0], secondAndThird,
+			margin, cellSize);
+		if(!nxFluidCollisionAccumulateCellCounts(cellStorage, hash, cells))
+			return 0;
+		}
+	return 1;
+	}
+
 struct NxFluidCollisionCopyDescriptor
 	{
 	NxFluidCollisionBucket* buckets;
