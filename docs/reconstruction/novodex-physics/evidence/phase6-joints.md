@@ -10594,3 +10594,5 @@ Phase 7 NpScene triangle overlap and wait wrappers (2026-10-12): phys_fn_000388 
 Phase 7 NpScene joint and effector lifecycle forwards (2026-10-12): `phys_fn_000299` (`NpScene::releaseJoint`) is mutation-falsified through `NxPhysicsJointStagedPairTests` (`stdout_delta=494`); `phys_fn_000301` (`NpScene::createSpringAndDamperEffector`) and `phys_fn_000303` (`NpScene::releaseEffector`) are mutation-falsified through `NxPhysicsEffectorTests` (`stdout_delta=85` and `48`). Each mutant has zero exit codes and exact stderr; restored controls are exact. See `evidence/phase7-npscene-lifecycle-wrappers-000299-000301-000303.md`.
 
 Phase 7 NpScene getter row `phys_fn_000291` (`NpScene::getGravity`) is mutation-falsified through `NxPhysicsSimulationTests` (`stdout_delta=4`); restored control is exact. See `evidence/phase7-npscene-getgravity-000291.md`.
+
+Phase 7 pair-query wrappers `phys_fn_000317` (`NpScene::getNbPairs`) and `phys_fn_000319` (`NpScene::getPairFlagArray`) are mutation-falsified through `NxPhysicsPairFlagTests` (`stdout_delta=6` and `4` respectively); restored controls are exact. See `evidence/phase7-npscene-pair-query-wrappers-000317-000319.md`.

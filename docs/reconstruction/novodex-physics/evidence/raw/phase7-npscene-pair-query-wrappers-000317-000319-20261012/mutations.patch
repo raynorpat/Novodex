@@ -1,0 +1,8 @@
+--- a/Physics/src/NpScene.cpp (temporary mutations; both restored before final build)
++++ b/Physics/src/NpScene.cpp
+@@ phys_fn_000317 NpScene::getNbPairs
+- const NxU32 count = mScene->getNbPairs();
++ const NxU32 count = 0;
+@@ phys_fn_000319 NpScene::getPairFlagArray
+- const bool result = mScene->getPairFlagArray(userArray, numPairs);
++ const bool result = false;

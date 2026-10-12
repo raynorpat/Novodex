@@ -1681,3 +1681,8 @@ Rows `phys_fn_000299`, `000301`, and `000303` now have independent mutation proo
 ### Continuation — NpScene gravity getter wrapper (2026-10-12)
 
 Phase 7 row `phys_fn_000291` (`NpScene::getGravity`) is mutation-falsified through the existing `NxPhysicsSimulationTests` fixture, which reads gravity before and after a public `setGravity`. Replacing the Scene read with zero changes the staged transcript (`stdout_delta=4`, both exits zero, exact stderr); restored control is exact. Phase 7 now has 184 closed / 377 deferred function rows, and its fresh full gate passes at 1,704/1,704 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getgravity-000291.md` and its archived mutation/control transcripts.
+
+
+### Continuation — NpScene pair-query wrappers (2026-10-12)
+
+Phase 7 rows `phys_fn_000317` (`NpScene::getNbPairs`) and `phys_fn_000319` (`NpScene::getPairFlagArray`) are now independently mutation-falsified through `NxPhysicsPairFlagTests`. Suppressing the pair count changes the staged transcript by 6 bytes; returning false instead of copying the pair array changes it by 4 bytes. Both mutants exit zero with exact stderr, and the restored controls are exact. Row 000319 is now mapped to its existing `NpScene::getPairFlagArray` implementation. Phase 7 advances to 186 closed / 375 deferred; the fresh full gate passes at 1,704/1,704 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-pair-query-wrappers-000317-000319.md` and its archived transcripts.

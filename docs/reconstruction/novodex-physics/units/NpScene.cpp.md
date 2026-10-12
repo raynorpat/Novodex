@@ -617,17 +617,18 @@ uint __thiscall FUN_1000c860(void *this,int param_1,int param_2)
 
 ```
 
-## phys_fn_000317 (0x0000c8a0, 36 B, reconstructed)
+## phys_fn_000317 (0x0000c8a0, 36 B, dynamically_gated)
 
 - ambiguous: no
-- source: locked field accessor over 000523 (0xc8a0)
-- implementation: None
+- source: Physics/src/NpScene.cpp
+- implementation: Physics/src/NpScene.cpp (`NpScene::getNbPairs`)
 - prototype: undefined4 __fastcall FUN_1000c8a0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000285 (0x0000c310)
 - callees: phys_fn_000523 (0x00010400), phys_fn_002362 (0x0005b700), phys_fn_002366 (0x0005b790)
 - indirect calls: none
 - strings: none
+- dynamic proof: `NxPhysicsPairFlagTests` catches a zero-count mutation (`stdout_delta=6`); restored control is exact.
 
 Decompile (ghidra manifest):
 
@@ -649,17 +650,18 @@ undefined4 __fastcall FUN_1000c8a0(int param_1)
 
 ```
 
-## phys_fn_000319 (0x0000c8d0, 50 B, discovered)
+## phys_fn_000319 (0x0000c8d0, 50 B, dynamically_gated)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/NpScene.cpp
+- implementation: Physics/src/NpScene.cpp (`NpScene::getPairFlagArray`)
 - prototype: bool __thiscall FUN_1000c8d0(undefined4 * param_1, int param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000285 (0x0000c310)
 - callees: phys_fn_000525 (0x00010410), phys_fn_002362 (0x0005b700), phys_fn_002366 (0x0005b790)
 - indirect calls: none
 - strings: none
+- dynamic proof: `NxPhysicsPairFlagTests` catches a false-return/no-copy mutation (`stdout_delta=4`); restored control is exact.
 
 Decompile (ghidra manifest):
 
