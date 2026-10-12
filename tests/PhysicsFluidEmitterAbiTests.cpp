@@ -19,6 +19,7 @@ static unsigned gFailures;
 static void* gCandidateTriangleIndexBuilderAddress;
 static void* gCandidateFluidCollisionShapePackerAddress;
 static void* gCandidateFluidCollisionShapeCounterAddress;
+static void* gCandidateFluidCollisionSceneShapeCounterAddress;
 
 struct ImplicitMeshErrorRecord
 	{
@@ -1948,6 +1949,172 @@ static unsigned nxRunFluidCollisionShapeCounterDifferential(
 	return mismatches;
 	}
 
+struct NxFluidCollisionSceneShapeNode
+	{
+	void* unused;
+	void* shape;
+	};
+
+struct NxFluidCollisionSceneShapeRecord
+	{
+	unsigned char bytes[0xe8];
+	unsigned char owner[0x20];
+	};
+
+struct NxFluidCollisionSceneShapeFixture
+	{
+	unsigned char scene[0x700];
+	unsigned char container[32];
+	void* entries[4];
+	void* childPointers[4];
+	NxFluidCollisionSceneShapeNode nodes[4];
+	NxFluidCollisionSceneShapeRecord top[4];
+	NxFluidCollisionSceneShapeRecord child[4];
+	};
+
+static void nxInitFluidCollisionSceneShape(NxFluidCollisionSceneShapeRecord* shape,
+	unsigned type, unsigned short flags, unsigned char ownerFlags)
+	{
+	memset(shape, 0, sizeof(*shape));
+	shape->owner[0x14] = ownerFlags;
+	*reinterpret_cast<void**>(shape->bytes + 4) = shape->owner;
+	*reinterpret_cast<unsigned*>(shape->bytes + 0xd0) = type;
+	*reinterpret_cast<unsigned short*>(shape->bytes + 0xde) = flags;
+	}
+
+static void nxInitFluidCollisionSceneShapeCollection(
+	NxFluidCollisionSceneShapeFixture* fixture, unsigned test)
+	{
+	memset(fixture, 0, sizeof(*fixture));
+	unsigned topCount = 0;
+	if(test == 1)
+		{
+		topCount = 4;
+		nxInitFluidCollisionSceneShape(&fixture->top[0], 0, 0, 0);
+		nxInitFluidCollisionSceneShape(&fixture->top[1], 4, 0, 0);
+		nxInitFluidCollisionSceneShape(&fixture->top[2], 5, 0, 0);
+		nxInitFluidCollisionSceneShape(&fixture->top[3], 9, 0, 0);
+		nxInitFluidCollisionSceneShape(&fixture->child[0], 2, 0, 0);
+		nxInitFluidCollisionSceneShape(&fixture->child[1], 3, 0, 0);
+		fixture->childPointers[0] = fixture->child[0].bytes;
+		fixture->childPointers[1] = fixture->child[1].bytes;
+		*reinterpret_cast<void**>(fixture->top[2].bytes + 0xe0) =
+			fixture->childPointers;
+		*reinterpret_cast<void**>(fixture->top[2].bytes + 0xe4) =
+			fixture->childPointers + 2;
+		}
+	else if(test == 2)
+		{
+		topCount = 2;
+		nxInitFluidCollisionSceneShape(&fixture->top[0], 1, 0x80, 0);
+		nxInitFluidCollisionSceneShape(&fixture->top[1], 5, 0, 0);
+		nxInitFluidCollisionSceneShape(&fixture->child[0], 3, 0x80, 0);
+		nxInitFluidCollisionSceneShape(&fixture->child[1], 1, 0, 4);
+		nxInitFluidCollisionSceneShape(&fixture->child[2], 0, 0x200, 0);
+		fixture->childPointers[0] = fixture->child[0].bytes;
+		fixture->childPointers[1] = fixture->child[1].bytes;
+		fixture->childPointers[2] = fixture->child[2].bytes;
+		*reinterpret_cast<void**>(fixture->top[1].bytes + 0xe0) =
+			fixture->childPointers;
+		*reinterpret_cast<void**>(fixture->top[1].bytes + 0xe4) =
+			fixture->childPointers + 3;
+		}
+	if(topCount == 0)
+		return;
+	*reinterpret_cast<void**>(fixture->scene + 0x624 + 0x1c) = fixture->container;
+	*reinterpret_cast<unsigned*>(fixture->container + 4) = 0;
+	*reinterpret_cast<unsigned*>(fixture->container + 8) = topCount;
+	*reinterpret_cast<unsigned*>(fixture->container + 12) = 0;
+	*reinterpret_cast<void***>(fixture->container + 24) = fixture->entries;
+	for(unsigned i = 0; i != topCount; ++i)
+		{
+		fixture->entries[i] = &fixture->nodes[i];
+		fixture->nodes[i].shape = fixture->top[i].bytes;
+		}
+	}
+
+static unsigned nxRunFluidCollisionSceneShapeCounterDifferential(
+	const unsigned char* oracleBase, void* candidateAddress)
+	{
+	typedef int (__cdecl* CountSceneShapes)(void*, void*);
+	CountSceneShapes oracle = oracleBase ? reinterpret_cast<CountSceneShapes>(
+		const_cast<unsigned char*>(oracleBase) + 0x87880) : 0;
+	CountSceneShapes candidate = reinterpret_cast<CountSceneShapes>(candidateAddress);
+	if(!oracleBase || !candidateAddress)
+		{
+		printf("fluid collision scene-shape-count cases=3 empty=1 collections=2 "
+			"compound_lists=2 routed_shapes=9 candidate_present=%u "
+			"oracle_contract=0 stack=0/0 mismatches=1\n", candidateAddress != 0);
+		return 1;
+		}
+	unsigned mismatches = 0, oracleContract = 1;
+	unsigned oracleStackBalanced = 1, candidateStackBalanced = 1;
+	for(unsigned test = 0; test != 3; ++test)
+		{
+		NxFluidCollisionSceneShapeFixture oracleFixture, candidateFixture;
+		nxInitFluidCollisionSceneShapeCollection(&oracleFixture, test);
+		nxInitFluidCollisionSceneShapeCollection(&candidateFixture, test);
+		unsigned char oracleBuilder[256], candidateBuilder[256];
+		memset(oracleBuilder, 0, sizeof(oracleBuilder));
+		memset(candidateBuilder, 0, sizeof(candidateBuilder));
+		const unsigned expectedReturn = test == 1 ? 4u : test == 2 ? 2u : 0u;
+		unsigned expected[256 / 4] = {};
+		if(test == 1)
+			{
+			expected[0x34 / 4] = 1;
+			expected[0x04 / 4] = 1;
+			expected[0x40 / 4] = 1;
+			expected[0x58 / 4] = 1;
+			}
+		else if(test == 2)
+			{
+			expected[0x7c / 4] = 1;
+			expected[0x88 / 4] = 1;
+			}
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		const int oracleReturn = oracle(oracleBuilder, oracleFixture.scene);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		const int candidateReturn = candidate(candidateBuilder, candidateFixture.scene);
+		__asm mov candidateAfter, esp
+		const bool oracleStack = oracleBefore == oracleAfter;
+		const bool candidateStack = candidateBefore == candidateAfter;
+		oracleStackBalanced = oracleStackBalanced && oracleStack;
+		candidateStackBalanced = candidateStackBalanced && candidateStack;
+		bool oracleCounts = true, candidateCounts = true;
+		for(unsigned offset = 4; offset <= 0x94; offset += 4)
+			{
+			const unsigned count = expected[offset / 4];
+			if(*reinterpret_cast<unsigned*>(oracleBuilder + offset) != count)
+				oracleCounts = false;
+			if(*reinterpret_cast<unsigned*>(candidateBuilder + offset) != count)
+				candidateCounts = false;
+			}
+		const bool matched = oracleReturn == static_cast<int>(expectedReturn)
+			&& candidateReturn == static_cast<int>(expectedReturn)
+			&& oracleCounts && candidateCounts
+			&& memcmp(oracleBuilder, candidateBuilder, sizeof(oracleBuilder)) == 0
+			&& oracleStack && candidateStack;
+		oracleContract &= oracleReturn == static_cast<int>(expectedReturn)
+			&& oracleCounts && oracleStack;
+		if(!matched)
+			{
+			++mismatches;
+			printf("fluid collision scene-shape-count detail case=%u return=%d/%d "
+				"counts=%u/%u stack=%u/%u\n", test, oracleReturn,
+				candidateReturn, oracleCounts, candidateCounts,
+				oracleStack, candidateStack);
+			}
+		}
+	printf("fluid collision scene-shape-count cases=3 empty=1 collections=2 "
+		"compound_lists=2 routed_shapes=9 candidate_present=1 oracle_contract=%u "
+		"stack=%u/%u mismatches=%u\n", oracleContract,
+		oracleStackBalanced, candidateStackBalanced, mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunFluidCollisionIndexedMeshDifferential(
 	const unsigned char* oracleBase, void* candidateAddress)
 	{
@@ -2509,6 +2676,10 @@ int wmain(int argc, wchar_t** argv)
 		"nxFluidCollisionCountShapeType",
 		&gCandidateFluidCollisionShapeCounterAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid shape-count router could not be resolved from its map\n");
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionCountSceneShapes",
+		&gCandidateFluidCollisionSceneShapeCounterAddress))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll scene shape-count router could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
@@ -2866,6 +3037,8 @@ int wmain(int argc, wchar_t** argv)
 		gCandidateFluidCollisionShapePackerAddress);
 	gFailures += nxRunFluidCollisionShapeCounterDifferential(image,
 		gCandidateFluidCollisionShapeCounterAddress);
+	gFailures += nxRunFluidCollisionSceneShapeCounterDifferential(image,
+		gCandidateFluidCollisionSceneShapeCounterAddress);
 	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
 	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
 	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");
