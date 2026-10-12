@@ -1,0 +1,26 @@
+Fluid indexed-grid post-merge verification
+Source revision: 6a84061e35f890b1252cba397e3087cac9faafb0
+Target: Win32 Release, CMake NxPhysics.dll and NxPhysicsFluidEmitterAbiTests
+Oracle: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+Oracle SHA-256: 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: D:\github\Novodex\build\fluid-triangle-cells-mainline\pairs\candidate\NxPhysics.dll
+Candidate SHA-256: d17075f756aa71b33e69ad3bfd83e7be35e7b4ce48c1d9f11e0cac89fc533d1c
+Candidate test executable SHA-256: 60e62d818fd965cff19a9720b5973be2293d71171b772594550bba5c8d6d1400
+Implementation source SHA-256: 3eaabe1c32786c60c1af25aa8e53743455e039435f1cc86773bcce7da235cda6
+Differential source SHA-256: 66ec6180d98582e557e600d0428d1143ee33c8c0994d4db5628ce18fbbfd311c
+
+Commands (from D:\github\Novodex):
+- & .\docs\reconstruction\novodex-physics\tools\run_phase_gate.ps1 -Phase 5 -RepoRoot D:\github\Novodex -BuildRoot D:\github\Novodex\build\fluid-triangle-cells-mainline -OracleRoot D:\FlamingEnt__\Unreal_3
+- & .\docs\reconstruction\novodex-physics\tools\run_phase_gate.ps1 -Phase 7 -RepoRoot D:\github\Novodex -BuildRoot D:\github\Novodex\build\fluid-triangle-cells-mainline -OracleRoot D:\FlamingEnt__\Unreal_3
+- python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests
+
+Results: Phase 5 pass, 2,649/2,649; Phase 7 pass, 1,676/1,676; inventory closure 110 closed / 451 deferred, unexplained=0; reconstruction tooling 810 tests, OK.
+The direct differential in each Phase 5/7 runner reports indexed-mesh-build cases=3 (nonempty=1, empty=1, null_output=1), candidate_present=1, mismatches=0.
+
+SHA-256 of retained raw logs:
+- phase5-gate.log: 2e2e749ad774cc71403d9340c184b39428f5d976f1b3eb56da558152a630e550
+- phase7-gate.log: ed4b97f683bc6556355203f1f9c508dfa896e6151156a0a6aef69cecc38a282e
+- tooling-suite.log: 9d1e5e86e7693f1a58d12e68c43d1b41697c0f538ef8edb382523ec961677f8f
+- indexed-grid-mutant.log: 17d2f72d03ecdc96df54277e8829cacb65f7ca8dc7ac393fe29ebf4f037728c4
+- indexed-grid-restored-control.log: a64bc4047198e809ebd32c061076760caa247c9af28e953e7b495f0e95b12f16
+- mutation.patch: be8a8ab5ecd69aa68df9849cb9977f153f9df0204e738ddfd6440076ca119299
