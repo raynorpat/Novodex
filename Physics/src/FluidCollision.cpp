@@ -311,6 +311,37 @@ extern "C" int __cdecl nxFluidCollisionAppendCellIndex(
 	return 1;
 	}
 
+// phys_fn_003537/003538 (RVA 0x000872a0) builds per-triangle grid cells and
+// appends each cell's mesh/triangle association to the indexed collision grid.
+extern "C" int __cdecl nxFluidCollisionBuildTriangleIndices(
+	NxFluidCollisionIndexDescriptor* descriptor,
+	const NxFluidCollisionTriangleMesh* mesh, unsigned meshIndex,
+	float margin, float cellSize, NxFluidCollisionInt16Vector3Array* cells)
+	{
+	if(!cells)
+		return 0;
+	for(unsigned triangle = 0; triangle < mesh->triangleCount; ++triangle)
+		{
+		const unsigned* const indices = mesh->indices + triangle * 3;
+		const float* const first = mesh->vertices + indices[0] * 3;
+		const float* const second = mesh->vertices + indices[1] * 3;
+		const float* const third = mesh->vertices + indices[2] * 3;
+		float transformed[3][3];
+		nxFluidCollisionTransformVertex(first, mesh->transform, transformed[0]);
+		nxFluidCollisionTransformVertex(second, mesh->transform, transformed[1]);
+		nxFluidCollisionTransformVertex(third, mesh->transform, transformed[2]);
+		cells->count = 0;
+		const unsigned __int64 secondAndThird =
+			(static_cast<unsigned __int64>(reinterpret_cast<uintptr_t>(transformed[2])) << 32)
+			| reinterpret_cast<uintptr_t>(transformed[1]);
+		nxFluidCollisionTriangleCells(cells, transformed[0], secondAndThird,
+			margin, cellSize);
+		if(!nxFluidCollisionAppendCellIndex(descriptor, meshIndex, triangle, cells))
+			return 0;
+		}
+	return 1;
+	}
+
 // phys_fn_003530 (RVA 0x00086e00) folds grid-cell coordinates into each
 // collision bucket, merging duplicates through the bucket's contiguous range.
 extern "C" int __cdecl nxFluidCollisionAccumulateCellCounts(

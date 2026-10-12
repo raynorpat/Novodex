@@ -16,6 +16,7 @@
 #include "fluids/NxMeshData.h"
 
 static unsigned gFailures;
+static void* gCandidateTriangleIndexBuilderAddress;
 
 struct ImplicitMeshErrorRecord
 	{
@@ -1635,6 +1636,127 @@ static unsigned nxRunFluidCollisionCellIndexDifferential(
 	return mismatches;
 	}
 
+static unsigned nxRunFluidCollisionTriangleIndexBuilderDifferential(
+	const unsigned char* oracleBase, void* candidateAddress)
+	{
+	if(!oracleBase || !candidateAddress)
+		return 1;
+	typedef int (__cdecl* BuildTriangleIndices)(NxFluidCollisionIndexDescriptor*,
+		const NxFluidCollisionTriangleMesh*, unsigned, float, float,
+		NxFluidCollisionInt16Vector3Array*);
+	BuildTriangleIndices oracle = reinterpret_cast<BuildTriangleIndices>(
+		const_cast<unsigned char*>(oracleBase) + 0x872a0);
+	BuildTriangleIndices candidate = reinterpret_cast<BuildTriangleIndices>(candidateAddress);
+	const unsigned indices[6] = { 0, 1, 2, 3, 4, 5 };
+	const float vertices[18] = {
+		0.125f, 0.25f, 0.375f, 1.125f, 0.25f, 0.375f,
+		0.125f, 1.25f, 0.375f,
+		-0.75f, 0.5f, 0.25f, 0.25f, 0.5f, 0.25f,
+		-0.75f, 1.25f, 0.25f
+		};
+	const float transform[12] = {
+		0.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, -0.25f, 1.5f, -0.125f };
+	const unsigned bucketCount = 31;
+	const unsigned recordCount = 9 * 9 * 9;
+	const unsigned indexCount = 8192;
+	unsigned mismatches = 0;
+	for(unsigned test = 0; test != 3; ++test)
+		{
+		NxFluidCollisionTriangleMesh mesh = {};
+		mesh.triangleCount = test == 0 ? 2 : 0;
+		mesh.indices = indices;
+		mesh.vertices = vertices;
+		memcpy(mesh.transform, transform, sizeof(transform));
+		unsigned oracleBuckets[31][3] = {};
+		unsigned candidateBuckets[31][3] = {};
+		NxFluidCollisionGridCell oracleRecords[729];
+		NxFluidCollisionGridCell candidateRecords[729];
+		unsigned oracleIndices[8192];
+		unsigned candidateIndices[8192];
+		for(unsigned i = 0; i != indexCount; ++i)
+			oracleIndices[i] = candidateIndices[i] = 0xdeadbeefu;
+		unsigned record = 0;
+		for(unsigned bucket = 0; bucket != bucketCount; ++bucket)
+			{
+			oracleBuckets[bucket][1] = record;
+			oracleBuckets[bucket][2] = 0xabcdef00u + bucket;
+			for(int x = -4; x <= 4; ++x)
+				for(int y = -4; y <= 4; ++y)
+					for(int z = -4; z <= 4; ++z)
+						{
+						const unsigned cellBucket = static_cast<unsigned>(x + 101 * y + 7919 * z)
+							% bucketCount;
+						if(cellBucket != bucket)
+							continue;
+						NxFluidCollisionGridCell& cell = oracleRecords[record++];
+						cell.xy = static_cast<unsigned short>(x)
+							| (static_cast<unsigned>(static_cast<unsigned short>(y)) << 16);
+						cell.z = static_cast<short>(z);
+						cell.opaqueZ = static_cast<short>(0x5a00u + bucket);
+						cell.sampleCount = 0;
+						cell.next = 0;
+						++oracleBuckets[bucket][0];
+						}
+			}
+		if(record != recordCount)
+			return mismatches + 1;
+		memcpy(candidateBuckets, oracleBuckets, sizeof(oracleBuckets));
+		memcpy(candidateRecords, oracleRecords, sizeof(oracleRecords));
+		NxFluidCollisionIndexDescriptor oracleDescriptor = {
+			&oracleBuckets[0][0], bucketCount, 0x10203040u, oracleRecords,
+			0x50607080u, 0x90a0b0c0u, oracleIndices };
+		NxFluidCollisionIndexDescriptor candidateDescriptor = {
+			&candidateBuckets[0][0], bucketCount, 0x10203040u, candidateRecords,
+			0x50607080u, 0x90a0b0c0u, candidateIndices };
+		short oracleCellStorage[512 * 3];
+		short candidateCellStorage[512 * 3];
+		memset(oracleCellStorage, 0x5a, sizeof(oracleCellStorage));
+		memcpy(candidateCellStorage, oracleCellStorage, sizeof(oracleCellStorage));
+		NxFluidCollisionInt16Vector3Array oracleCells = {
+			oracleCellStorage, test == 1 ? 5 : 0, 512 };
+		NxFluidCollisionInt16Vector3Array candidateCells = {
+			candidateCellStorage, test == 1 ? 5 : 0, 512 };
+		NxFluidCollisionInt16Vector3Array* oracleOutput = test == 2 ? 0 : &oracleCells;
+		NxFluidCollisionInt16Vector3Array* candidateOutput = test == 2 ? 0 : &candidateCells;
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		const int oracleReturn = oracle(&oracleDescriptor, &mesh, 4, 0.0f, 1.0f,
+			oracleOutput);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		const int candidateReturn = candidate(&candidateDescriptor, &mesh, 4,
+			0.0f, 1.0f, candidateOutput);
+		__asm mov candidateAfter, esp
+		const bool bucketsMatch = memcmp(oracleBuckets, candidateBuckets,
+			sizeof(oracleBuckets)) == 0;
+		const bool recordsMatch = memcmp(oracleRecords, candidateRecords,
+			sizeof(oracleRecords)) == 0;
+		const bool indicesMatch = memcmp(oracleIndices, candidateIndices,
+			sizeof(oracleIndices)) == 0;
+		const bool cellsMatch = oracleCells.count == candidateCells.count
+			&& oracleCells.capacity == candidateCells.capacity
+			&& memcmp(oracleCellStorage, candidateCellStorage,
+				sizeof(oracleCellStorage)) == 0;
+		const bool matched = bucketsMatch && recordsMatch && indicesMatch
+			&& cellsMatch && oracleReturn == (test == 2 ? 0 : 1)
+			&& candidateReturn == (test == 2 ? 0 : 1)
+			&& oracleBefore == oracleAfter && candidateBefore == candidateAfter;
+		printf("fluid collision triangle-index-builder case=%u cells=%d/%d "
+			"buckets=%u records=%u indices=%u return=%d/%d stack=%u/%u "
+			"mismatches=%u\n", test, oracleCells.count, candidateCells.count,
+			bucketsMatch, recordsMatch, indicesMatch, oracleReturn, candidateReturn,
+			oracleBefore == oracleAfter, candidateBefore == candidateAfter,
+			matched ? 0u : 1u);
+		if(!matched)
+			++mismatches;
+		}
+	printf("fluid collision triangle-index-builder cases=3 mesh=1 empty=1 "
+		"null_output=1 candidate_present=1 mismatches=%u\n", mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunFluidCollisionIndexedMeshDifferential(
 	const unsigned char* oracleBase, void* candidateAddress)
 	{
@@ -2186,6 +2308,9 @@ int wmain(int argc, wchar_t** argv)
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionAppendCellIndex", &candidateCellIndexAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll cell-index helper could not be resolved from its map\n");
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionBuildTriangleIndices", &gCandidateTriangleIndexBuilderAddress))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll triangle-index builder could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
@@ -2537,6 +2662,8 @@ int wmain(int argc, wchar_t** argv)
 		candidateIndexedMeshAddress);
 	gFailures += nxRunFluidCollisionCellIndexDifferential(image,
 		candidateCellIndexAddress);
+	gFailures += nxRunFluidCollisionTriangleIndexBuilderDifferential(image,
+		gCandidateTriangleIndexBuilderAddress);
 	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
 	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
 	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");

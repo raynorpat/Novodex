@@ -1,0 +1,9 @@
+# Fluid static-collision triangle-index builder: `phys_fn_003537/003538`
+
+`phys_fn_003537` at RVA `0x872a0` (17 bytes) and `phys_fn_003538` at RVA `0x872b1` (704 bytes) are the entry guard and contiguous body of one 721-byte routine. `nxFluidCollisionBuildTriangleIndices` walks the mesh triangles, transforms each indexed vertex through the mesh's 3x4 transform, generates the triangle's grid cells, then appends the mesh and triangle indices to each matching cell record through `nxFluidCollisionAppendCellIndex`. A null output array returns 0; empty input and completed processing return 1.
+
+The direct `NxPhysicsFluidEmitterAbiTests` fixture calls oracle RVA `0x872a0` and the candidate symbol resolved from the candidate DLL map. Its three cases cover a two-triangle asymmetric affine mesh, empty input with a seeded cell count, and null output. It compares complete bucket rows and cell records, association storage, cell output storage/count/capacity, return values, and x86 stack balance. The restored control reports zero mismatches in all cases.
+
+For mutation falsification, the candidate passed `meshIndex + 1` to the cell-index helper. The mesh case detected the wrong association (`mismatches=1`); empty and null-output cases remained unchanged. Restoring the saved implementation reproduced zero mismatches. The mutation and restoration builds and transcripts are retained in [the raw evidence directory](raw/phase7-fluid-triangle-index-builder-003537-003538/).
+
+The pinned UE3 binaries do not include `FluidModel.dll`. The oracle callback slots for `FindCDCell`, triangle SAT, and cell-array growth therefore use independent fixture references. This closes the caller rows only; production extension callback integration, the enclosing dirty builder `phys_fn_003505`, and Unreal static-collision validation remain open.
