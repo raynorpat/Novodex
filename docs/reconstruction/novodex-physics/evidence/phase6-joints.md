@@ -10472,3 +10472,9 @@ manifest. Candidate `NxPhysics.dll` SHA-256 is
 `20cf41661aa185fbe24ed8478d260a00921b75a85b8daea5026d90a14cdfa2cc`.
 
 Mutation evidence for phys_fn_003555: restricting compound traversal to the first child is detected (mismatches=5); restored control reports zero mismatches.
+
+## Phase 7 fluid collision shape packer (`phys_fn_003540`)
+
+The direct pinned-oracle `NxPhysicsFluidEmitterAbiTests` fixture compares both selected bounds records, all 20 output words, shape-handle returns, the record flag, and x86 stack balance. A rotation-word mutation is caught in both cases (`mismatches=2`); the restored candidate matches exactly. See [the row evidence](phase7-fluid-shape-packer-003540.md).
+Mutation evidence for phys_fn_003540: the rotation-word mutation is detected in both selected-record cases (mismatches=2); restored control reports zero mismatches.
+Fresh Phase 5/7 Release gates after phys_fn_003540 closure: 2,661/2,661 and 1,688/1,688 coverage assertions pass. The direct shape-packer marker is required in both phases; inventory reports 6,338 functions / 5,138 data objects / zero unexplained entries. Candidate SHA-256: ae8edb289e7b8b408eb196b8f5d1a262906ece7d6d52aaca9b1e76be9ea96fa8.

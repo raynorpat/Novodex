@@ -108,6 +108,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid collision mesh-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0'
         'fluid collision shape-array router cases=13 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0'
         'fluid collision scene-shape-collector cases=2 empty=1 populated=1 compound_children=6 routed_shapes=12 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0'
+        'fluid collision shape-pack cases=2 selected_record=1 flag=1 candidate_present=1 mismatches=0'
         'fluid collision static-copy buckets=3 cells=3 indices=4 oracle_return=4 candidate_return=4 rows=1 cells_match=1 indices_match=1 headers=1 source_preserved=1 stack=1/1 mismatches=0 undefined_bucket_word=ignored'
         'fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
@@ -5832,7 +5833,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2660  # includes fluid scene-shape collector differential
+	'5' = 2661  # includes fluid shape-packer differential
+				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential
 				# includes fluid box-array append differential
@@ -5888,7 +5890,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1687  # includes fluid scene-shape collector differential
+	'7' = 1688  # includes fluid shape-packer differential
+				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential
 				# includes fluid box-array append differential

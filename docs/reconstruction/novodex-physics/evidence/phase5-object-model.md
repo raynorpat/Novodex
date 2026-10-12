@@ -9085,3 +9085,4 @@ control reports five mismatches. The router and destructor markers are required
 gate assertions. Candidate `NxPhysics.dll` SHA-256:
 `20cf41661aa185fbe24ed8478d260a00921b75a85b8daea5026d90a14cdfa2cc`.
 The full gate transcript is `build/phase5-router-gate.log`.
+Fresh 2026-10-12 Release rerun after the fluid shape-packer closure: Phase 5 passes at 2,661/2,661 assertions and Phase 7 passes at 1,688/1,688. The shape-packer marker is required in both phases. The five collision-object family secondary and primary deleting-destructor probes remain exact, and the member-only negative control reports five mismatches. Candidate SHA-256: ae8edb289e7b8b408eb196b8f5d1a262906ece7d6d52aaca9b1e76be9ea96fa8. Full transcripts: evidence/raw/phase7-fluid-shape-packer-003540/phase5-gate.log and phase7-gate.log.
