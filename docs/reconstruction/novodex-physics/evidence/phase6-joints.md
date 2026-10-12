@@ -10459,3 +10459,8 @@ Fresh Phase 5 and Phase 7 gates passed at 2,657/2,657 and 1,684/1,684 assertions
 The direct pinned-oracle `NxPhysicsFluidEmitterAbiTests` fixture covers the valid mesh record and the `-8` mesh-data sentinel. It verifies geometry order `+12,+20,+8,+16`, the defined 92-byte prefix, 96-byte stride, returns, count, stack, and untouched tail. The restored candidate matches (`oracle_contract=1`, `mismatches=0`); sourcing the first geometry word from `+8` is rejected (`mismatches=1`). See [the row evidence](phase7-fluid-collision-mesh-append-003541.md).
 Mutation evidence for phys_fn_003541: the wrong first geometry offset is detected (mismatches=1).
 Fresh Phase 5 and Phase 7 gates passed at 2,658/2,658 and 1,685/1,685 assertions respectively; all 810 reconstruction-tooling tests passed; inventory and the 80-file public Physics header manifest pass.
+
+## Phase 7 fluid collision shape-array router (`phys_fn_003553`)
+
+The direct pinned-oracle fixture covers 13 ordinary/fluid-flag/early-return/default routes, checking selected array counts and records, untouched arrays, returns, and stack. The restored router matches with `oracle_contract=1` and `mismatches=0`; a type-2 ordinary route mutation to descriptor `+0x30` is detected (`mismatches=1`). See [the row evidence](phase7-fluid-collision-shape-router-003553.md).
+Mutation evidence for phys_fn_003553: routing ordinary boxes to descriptor +0x30 instead of +0x3c is detected (mismatches=1).

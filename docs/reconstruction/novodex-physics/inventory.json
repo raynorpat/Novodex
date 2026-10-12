@@ -66426,13 +66426,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1330",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12469",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "evidence/phase7-fluid-collision-shape-router-003553.md",
+      "notes": "Oracle differential and row-specific descriptor-offset mutation; see evidence/phase7-fluid-collision-shape-router-003553.md"
     },
     {
       "id": "phys_fn_003554",
