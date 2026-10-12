@@ -67843,13 +67843,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1369",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12581",
       "static_proof": "Partial: the +0x2b == 0 branch reports the exact stepFluids warning; with a clean static-collision flag, the row traverses [manager+4,manager+8) in order and calls 003495 for each fluid. The +0x28 branch obtains and destroys the old collision, reacquires it, rebuilds through 003505 with the step value and stored cell size, and clears the dirty byte.",
-      "dynamic_proof": "NxPhysicsSimulationTests preserves the disabled empty-manager warning transcript. NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x89bd0 and the map-resolved candidate with two distinct live fluids and clean collision state; callback order, handles, vectors, timestep bits, state clearing, return, and x86 stack balance match. A second oracle differential exercises the +0x28 refresh branch and checks callback counts, rebuilt cell parameters, flag clear, and stack balance. Suppressing the candidate refresh makes this row fail with one mismatch. See evidence/phase7-fluid-substep-003495-manager-clean-003630.md and evidence/phase7-fluid-manager-dirty-refresh-003630.md.",
-      "notes": "Private x86 thiscall/ret-4 scene-substep row. Clean-collision live-fluid iteration and dirty static-collision refresh are implemented and gated. The dirty refresh case uses an empty fluid range; combined dirty-refresh plus nonempty-fluid coverage remains open."
+      "dynamic_proof": "NxPhysicsSimulationTests preserves the disabled empty-manager warning transcript. NxPhysicsFluidEmitterAbiTests directly calls oracle RVA 0x89bd0 and the map-resolved candidate with two distinct live fluids and clean collision state; callback order, handles, vectors, timestep bits, state clearing, return, and x86 stack balance match. A combined dirty-branch oracle differential exercises old-collision destruction, replacement lookup/build, dirty-byte clear, and the same two-fluid callback/state loop. Suppressing the candidate refresh makes the combined case fail with one mismatch. See evidence/phase7-fluid-substep-003495-manager-clean-003630.md and evidence/phase7-fluid-manager-dirty-refresh-003630.md.",
+      "notes": "Private x86 thiscall/ret-4 scene-substep row. Clean-collision live-fluid iteration and dirty static-collision refresh are implemented and gated, including a combined dirty-refresh/nonempty-fluid case."
     },
     {
       "id": "phys_fn_003631",

@@ -8,19 +8,18 @@ implements that order in `nxFluidManagerStepImpl` in `Physics/src/Scene.cpp`.
 
 The registered `NxPhysicsFluidEmitterAbiTests` calls the pinned oracle and the
 map-resolved candidate with the dirty byte set, an enabled fixture manager,
-cell size `0.5`, and an empty scene shape collection. It checks two static
-collision lookups, one destroy, one builder initialization, the collision
-grid scale and margin, dirty-byte clearing, return value, and x86 stack
+cell size `0.5`, an empty scene shape collection, and two distinct live fluids.
+It checks two static collision lookups, one destroy, one builder
+initialization, the collision grid scale and margin, dirty-byte clearing,
+both ordered `FluidRun` payloads and state clears, return value, and x86 stack
 balance. The marker is:
 
 ```text
-fluid manager dirty-refresh get=1 destroy=1 create=1 data=1 flag=1 fluids=0 stack=1/1 mismatches=0
+fluid manager dirty-refresh get=1 destroy=1 create=1 data=1 flag=1 fluids=2/2 callbacks=1 timestep=1 state=1 stack=1/1 mismatches=0
 ```
 
 A mutation that suppresses the candidate dirty branch is rejected by the same
 test (`get=0 destroy=0 create=0 data=0 flag=0`, one mismatch, exit 1). After
-restoration, the full Phase 5 gate passes with 2,671 evaluated assertions
-against a 2,670 floor. It includes the clean two-fluid manager loop and the
-five-family collision-object destructor differentials. The clean differential
-and this dirty-refresh differential are separate cases; simultaneous dirty
-refresh and live-fluid iteration remains a follow-up.
+restoration, the full Phase 7 gate passes with 1,698 evaluated assertions
+against a 1,697 floor. The direct probe reports zero mismatches, and the clean
+two-fluid differential remains registered as an independent branch control.

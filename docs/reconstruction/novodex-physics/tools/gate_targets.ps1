@@ -137,7 +137,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid substep empty-emitter cases=1 callback=1 timestep=1 state-clear=1 mismatches=0'
 		'fluid substep nonempty-emitter cases=1 pose_callback=1 fluid_run=1 payloads_match=1 timestep=1 state-clear=1 repulsion-skipped=1 stack=1/1 mismatches=0'
 		'fluid manager step live-fluids=2 oracle_callbacks=2 candidate_callbacks=2 order=1 timestep=1 state=1 stack=1/1 mismatches=0'
-		'fluid manager dirty-refresh get=1 destroy=1 create=1 data=1 flag=1 fluids=0 stack=1/1 mismatches=0'
+		'fluid manager dirty-refresh get=1 destroy=1 create=1 data=1 flag=1 fluids=2/2 callbacks=1 timestep=1 state=1 stack=1/1 mismatches=0'
 		'implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0'
 		'implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0'
         'fluid emitter aggregate cases=6 mismatches=0'

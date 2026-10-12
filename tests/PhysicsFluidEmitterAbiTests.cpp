@@ -6730,12 +6730,41 @@ int wmain(int argc, wchar_t** argv)
 			void* const backendManager =
 				*reinterpret_cast<void**>(oracleManagerInit + 0x30);
 			unsigned char collisionScene[0x800] = {};
-			void* emptyFluidSlot = 0;
-			void** emptyFluidList = &emptyFluidSlot;
-			*reinterpret_cast<void***>(oracleManager + 4) = emptyFluidList;
-			*reinterpret_cast<void***>(oracleManager + 8) = emptyFluidList;
-			*reinterpret_cast<void***>(candidateManager + 4) = emptyFluidList;
-			*reinterpret_cast<void***>(candidateManager + 8) = emptyFluidList;
+			unsigned oracleFluidWords[2] = {}, candidateFluidWords[2] = {};
+			unsigned char oracleFluids[2][0x84] = {}, candidateFluids[2][0x84] = {};
+			unsigned char oracleBackends[2][0x534] = {}, candidateBackends[2][0x534] = {};
+			unsigned char oracleStates[2][8] = {}, candidateStates[2][8] = {};
+			unsigned char oracleCores[2][0x530] = {}, candidateCores[2][0x530] = {};
+			const unsigned expectedVectors[2][3] = {
+				{ 0x3e800001u, 0xbf000002u, 0x3f400003u },
+				{ 0x40000001u, 0xc0400002u, 0x40800003u } };
+			for(unsigned i = 0; i != 2; ++i)
+				{
+				oracleFluidWords[i] = reinterpret_cast<unsigned>(oracleFluids[i]);
+				candidateFluidWords[i] = reinterpret_cast<unsigned>(candidateFluids[i]);
+				memcpy(oracleCores[i] + 0x520, expectedVectors[i], sizeof(expectedVectors[i]));
+				memcpy(candidateCores[i] + 0x520, expectedVectors[i], sizeof(expectedVectors[i]));
+				*reinterpret_cast<void**>(oracleBackends[i] + 0x24) = oracleCores[i];
+				*reinterpret_cast<void**>(candidateBackends[i] + 0x24) = candidateCores[i];
+				*reinterpret_cast<unsigned*>(oracleBackends[i] + 0x30) = 0x10203040u + i;
+				*reinterpret_cast<unsigned*>(candidateBackends[i] + 0x30) = 0x10203040u + i;
+				*reinterpret_cast<void**>(oracleFluids[i] + 0x78) = oracleStates[i];
+				*reinterpret_cast<void**>(candidateFluids[i] + 0x78) = candidateStates[i];
+				*reinterpret_cast<unsigned*>(oracleStates[i] + 4) = 0xaaaaaaaau;
+				*reinterpret_cast<unsigned*>(candidateStates[i] + 4) = 0xaaaaaaaau;
+				*reinterpret_cast<void**>(oracleFluids[i] + 0x7c) = oracleBackends[i];
+				*reinterpret_cast<void**>(candidateFluids[i] + 0x7c) = candidateBackends[i];
+				*reinterpret_cast<unsigned*>(oracleFluids[i] + 0x80) = 0x55667780u + i;
+				*reinterpret_cast<unsigned*>(candidateFluids[i] + 0x80) = 0x55667780u + i;
+				}
+			*reinterpret_cast<void***>(oracleManager + 4) =
+				reinterpret_cast<void**>(oracleFluidWords);
+			*reinterpret_cast<void***>(oracleManager + 8) =
+				reinterpret_cast<void**>(oracleFluidWords + 2);
+			*reinterpret_cast<void***>(candidateManager + 4) =
+				reinterpret_cast<void**>(candidateFluidWords);
+			*reinterpret_cast<void***>(candidateManager + 8) =
+				reinterpret_cast<void**>(candidateFluidWords + 2);
 			*reinterpret_cast<void**>(oracleManager + 0x24) = collisionScene;
 			*reinterpret_cast<void**>(candidateManager + 0x24) = collisionScene;
 			*reinterpret_cast<unsigned*>(oracleManager + 0x2c) = 0x3f000000u;
@@ -6750,24 +6779,32 @@ int wmain(int argc, wchar_t** argv)
 			const float dirtyTimestep = *reinterpret_cast<const float*>(&timestepWord);
 			unsigned oracleEspBefore = 0, oracleEspAfter = 0;
 			unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+			resetRun();
 			__asm mov oracleEspBefore, esp
 			const int oracleResult = oracleStep(oracleManager, dirtyTimestep);
 			__asm mov oracleEspAfter, esp
 			__asm fstp st(0)
 			FluidManagerCallbackSummary oracleRefresh = {};
 			getManagerCallbackSummary(&oracleRefresh);
+			NxFluidRunCallbackRecord oracleRuns[2] = {};
+			const bool oracleRunsOk = fluidRunCount() == 2 &&
+				getFluidRun(0, &oracleRuns[0]) && getFluidRun(1, &oracleRuns[1]);
 			const unsigned oracleFlag = oracleManager[0x28];
 			const unsigned oracleScale = *reinterpret_cast<unsigned*>(
 				static_cast<unsigned char*>(staticCollision) + 0x64);
 			const unsigned oracleMargin = *reinterpret_cast<unsigned*>(
 				static_cast<unsigned char*>(staticCollision) + 0x68);
 			resetManagerCallbacks();
+			resetRun();
 			__asm mov candidateEspBefore, esp
 			const int candidateResult = candidateStep(candidateManager, dirtyTimestep);
 			__asm mov candidateEspAfter, esp
 			__asm fstp st(0)
 			FluidManagerCallbackSummary candidateRefresh = {};
 			getManagerCallbackSummary(&candidateRefresh);
+			NxFluidRunCallbackRecord candidateRuns[2] = {};
+			const bool candidateRunsOk = fluidRunCount() == 2 &&
+				getFluidRun(0, &candidateRuns[0]) && getFluidRun(1, &candidateRuns[1]);
 			const unsigned candidateFlag = candidateManager[0x28];
 			const unsigned candidateScale = *reinterpret_cast<unsigned*>(
 				static_cast<unsigned char*>(staticCollision) + 0x64);
@@ -6782,15 +6819,39 @@ int wmain(int argc, wchar_t** argv)
 			const bool dataMatch = oracleScale == 0x40800000u &&
 				oracleMargin == 0x408ab2dcu && candidateScale == oracleScale &&
 				candidateMargin == oracleMargin;
+			unsigned fluidMismatches = !oracleRunsOk || !candidateRunsOk;
+			for(unsigned i = 0; i != 2 && oracleRunsOk && candidateRunsOk; ++i)
+				{
+				const NxFluidRunCallbackRecord& expected = oracleRuns[i];
+				const NxFluidRunCallbackRecord& actual = candidateRuns[i];
+				if(expected.system != 0x10203040u + i || actual.system != expected.system ||
+					expected.fluid != 0x55667780u + i || actual.fluid != expected.fluid ||
+					expected.state != reinterpret_cast<unsigned>(oracleStates[i]) ||
+					actual.state != reinterpret_cast<unsigned>(candidateStates[i]) ||
+					memcmp(expected.vector, expectedVectors[i], sizeof(expected.vector)) ||
+					memcmp(actual.vector, expected.vector, sizeof(actual.vector)) ||
+					expected.timestep != timestepWord || actual.timestep != expected.timestep ||
+					expected.option != 1 || actual.option != expected.option ||
+					*reinterpret_cast<unsigned*>(oracleStates[i] + 4) != 0 ||
+					*reinterpret_cast<unsigned*>(candidateStates[i] + 4) != 0 ||
+				*reinterpret_cast<unsigned*>(oracleFluids[i] + 0x74) != timestepWord ||
+					*reinterpret_cast<unsigned*>(candidateFluids[i] + 0x74) != timestepWord)
+					++fluidMismatches;
+				}
 			mismatches += !callbacksMatch || !dataMatch || oracleFlag != 0 ||
 				candidateFlag != oracleFlag || oracleResult != candidateResult ||
+				fluidMismatches ||
 				oracleEspBefore != oracleEspAfter ||
 				candidateEspBefore != candidateEspAfter;
-		printf("fluid manager dirty-refresh get=%u destroy=%u create=%u data=%u flag=%u fluids=0 stack=%u/%u mismatches=%u\n",
+		printf("fluid manager dirty-refresh get=%u destroy=%u create=%u data=%u flag=%u fluids=%u/%u callbacks=%u timestep=%u state=%u stack=%u/%u mismatches=%u\n",
 				oracleRefresh.staticCollisionGet == 2 && candidateRefresh.staticCollisionGet == 2,
 				oracleRefresh.staticCollisionDestroy == 1 && candidateRefresh.staticCollisionDestroy == 1,
 				oracleRefresh.staticCollisionCreate == 1 && candidateRefresh.staticCollisionCreate == 1,
 				dataMatch, oracleFlag == 0 && candidateFlag == oracleFlag,
+				oracleRunsOk ? 2u : fluidRunCount(),
+				candidateRunsOk ? 2u : fluidRunCount(),
+				fluidMismatches == 0, fluidMismatches == 0,
+				fluidMismatches == 0,
 				oracleEspBefore == oracleEspAfter, candidateEspBefore == candidateEspAfter,
 			mismatches);
 		}
