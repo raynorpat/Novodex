@@ -562,7 +562,22 @@ extern "C" int __cdecl nxFluidCollisionPackShapeData(unsigned* output,
 	void* shape)
 	{
 	unsigned char* const bytes = static_cast<unsigned char*>(shape);
-	memcpy(output, bytes + 0x0c, 12 * sizeof(unsigned));
+	const unsigned* const matrix =
+		reinterpret_cast<const unsigned*>(bytes + 0x0c);
+	// phys_fn_003540 obtains the 3x4 pose from phys_fn_002584, whose packed
+	// collision record stores the first three columns before the translation.
+	output[0] = matrix[0];
+	output[1] = matrix[3];
+	output[2] = matrix[6];
+	output[3] = matrix[1];
+	output[4] = matrix[4];
+	output[5] = matrix[7];
+	output[6] = matrix[2];
+	output[7] = matrix[5];
+	output[8] = matrix[8];
+	output[9] = matrix[9];
+	output[10] = matrix[10];
+	output[11] = matrix[11];
 	const unsigned short geometryIndex =
 		*reinterpret_cast<unsigned short*>(bytes + 0xcc);
 	if(geometryIndex == 0xffffu)
