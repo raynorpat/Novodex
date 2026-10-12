@@ -1676,3 +1676,8 @@ Phase 7 rows `phys_fn_000388` (`NpScene::overlapAABBTriangles`) and `phys_fn_000
 ### Continuation — NpScene joint and effector lifecycle forwards (2026-10-12)
 
 Rows `phys_fn_000299`, `000301`, and `000303` now have independent mutation proofs through existing registered Phase 7 fixtures. Omitting the `Scene::releaseJoint` forward is caught by `NxPhysicsJointStagedPairTests` (`stdout_delta=494`); omitting effector creation is caught by `NxPhysicsEffectorTests` (`stdout_delta=85`); and omitting effector release is caught by the same target (`stdout_delta=48`). Both processes exit zero and stderr is exact for each mutant; restored controls are exact (`stdout_delta=0`). The Phase 7 ledger advances to 183 closed / 378 deferred, and the fresh full gate passes at 1,704/1,704 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-lifecycle-wrappers-000299-000301-000303.md` and its archived raw transcripts.
+
+
+### Continuation — NpScene gravity getter wrapper (2026-10-12)
+
+Phase 7 row `phys_fn_000291` (`NpScene::getGravity`) is mutation-falsified through the existing `NxPhysicsSimulationTests` fixture, which reads gravity before and after a public `setGravity`. Replacing the Scene read with zero changes the staged transcript (`stdout_delta=4`, both exits zero, exact stderr); restored control is exact. Phase 7 now has 184 closed / 377 deferred function rows, and its fresh full gate passes at 1,704/1,704 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getgravity-000291.md` and its archived mutation/control transcripts.

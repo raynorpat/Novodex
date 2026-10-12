@@ -5689,13 +5689,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "locked copy accessor, 3 dwords from +0x520 (0xc460, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/100",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1009",
       "static_proof": "locks [self+0x10], calls helper 000509 on [self+0x24] to write three dwords from [field+0x520] into the out argument, then unlocks; ret 4",
-      "dynamic_proof": "confirmed via lockacc3 differential (3z143): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "dynamic_proof": "confirmed via lockacc3 differential (3z143): failures=0, with the Foundation lock API bound to __stdcall no-op stubs Targeted Phase 7 no-op-output mutation of NpScene::getGravity is caught by NxPhysicsSimulationTests (stdout_delta=4; both processes exit zero and stderr is exact). Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-getgravity-000291.md.",
+      "notes": "",
+      "implementation_symbol": "NpScene::getGravity"
     },
     {
       "id": "phys_fn_000292",

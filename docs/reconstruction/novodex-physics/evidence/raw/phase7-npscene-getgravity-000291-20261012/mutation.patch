@@ -1,0 +1,5 @@
+--- a/Physics/src/NpScene.cpp (temporary mutation; restored before final build)
++++ b/Physics/src/NpScene.cpp
+@@ phys_fn_000291 NpScene::getGravity
+- mScene->getGravity(gravity);
++ gravity = NxVec3(0.0f, 0.0f, 0.0f);
