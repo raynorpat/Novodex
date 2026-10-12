@@ -5839,14 +5839,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/104",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1022",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
+      "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2) Targeted Phase 7 mutation of NpScene::releaseJoint is caught by NxPhysicsJointStagedPairTests (stdout_delta=494; both processes exit zero and stderr is exact). Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-lifecycle-wrappers-000299-000301-000303.md.",
       "notes": "",
-      "implementation": "Physics/src/NpScene.cpp"
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::releaseJoint"
     },
     {
       "id": "phys_fn_000300",
@@ -5876,14 +5877,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/105",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1025",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/effector-coredump-contract.md (## Effector) (effector-and-coredump Task 2)",
-      "dynamic_proof": "executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 5 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?createSpringAndDamperEffector@NpScene@@UAEPAVNxSpringAndDamperEffector@@ABVNxSpringAndDamperEffectorDesc@@@Z hit 6 times (Eff 5, Dump 1); equal to the oracle row's count on every target.",
+      "dynamic_proof": "executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 5 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?createSpringAndDamperEffector@NpScene@@UAEPAVNxSpringAndDamperEffector@@ABVNxSpringAndDamperEffectorDesc@@@Z hit 6 times (Eff 5, Dump 1); equal to the oracle row's count on every target. Targeted Phase 7 mutation of NpScene::createSpringAndDamperEffector is caught by NxPhysicsEffectorTests (stdout_delta=85; both processes exit zero and stderr is exact). Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-lifecycle-wrappers-000299-000301-000303.md.",
       "notes": "",
-      "implementation": "Physics/src/NpScene.cpp"
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::createSpringAndDamperEffector"
     },
     {
       "id": "phys_fn_000302",
@@ -5913,14 +5915,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/106",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1030",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/effector-coredump-contract.md (## Effector) (effector-and-coredump Task 2)",
-      "dynamic_proof": "executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?releaseEffector@NpScene@@UAEXAAVNxEffector@@@Z hit 3 times (Eff 3); equal to the oracle row's count on every target.",
+      "dynamic_proof": "executed under the effector staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 3 times in NxPhysicsEffectorTests against the staged candidate pair (NxPhysics.dll sha256 2f9815a105ac1fe5, identical to build/Release/NxPhysics.dll at the time of the trace), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 79/79 effector coverage lines); trace excerpt committed as evidence/effector-and-coredump-trace-effector.txt (effector-and-coredump Task 2; re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?releaseEffector@NpScene@@UAEXAAVNxEffector@@@Z hit 3 times (Eff 3); equal to the oracle row's count on every target. Targeted Phase 7 mutation of NpScene::releaseEffector is caught by NxPhysicsEffectorTests (stdout_delta=48; both processes exit zero and stderr is exact). Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-lifecycle-wrappers-000299-000301-000303.md.",
       "notes": "",
-      "implementation": "Physics/src/NpScene.cpp"
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::releaseEffector"
     },
     {
       "id": "phys_fn_000304",
