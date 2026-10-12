@@ -9,3 +9,8 @@ IDA confirms the cdecl `(builder, shape)` signature and its early-return order: 
 A row-specific mutation routed ordinary box shapes to descriptor `builder+0x30` instead of `builder+0x3c`. The type-2 case detected the wrong return and destination (`mismatches=1`, exit 1); restoring `+0x3c` returned the 13-case fixture and fluid-emitter aggregate to zero mismatches. Passing candidate SHA-256 `20cf41661aa185fbe24ed8478d260a00921b75a85b8daea5026d90a14cdfa2cc`; pinned oracle SHA-256 `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
 
 Raw oracle-only, passing differential, and mutation transcripts are in `evidence/raw/phase7-fluid-collision-shape-router-003553/`. This closes only the router. Scene collector `phys_fn_003555` and dirty static-collision builder `phys_fn_003505` remain open.
+
+Fresh mainline Release verification on 2026-10-12 passes Phase 5 at 2,659/2,659
+and Phase 7 at 1,686/1,686 assertions. The 810 reconstruction-tooling tests,
+inventory validation, and the 80-file public Physics header manifest also pass.
+The passing candidate DLL hash is recorded above.

@@ -9076,3 +9076,12 @@ family-specific secondary-vtable destructor probes and all five primary
 deleting-destructor probes match; the member-only model negative control fails
 for all five shapes. The complete gate transcript is retained locally at
 `build/phase5-approved-destructor-model/phase5-after-pose-order-fix.log`.
+
+Fresh 2026-10-12 mainline Release gate after the fluid shape-array router merge:
+Phase 5 passes at 2,659/2,659 assertions. All five family-specific secondary
+deleting-destructor calls still match on scratch and heap-backed objects; all
+five primary deleting-destructor calls match; and the member-only negative
+control reports five mismatches. The router and destructor markers are required
+gate assertions. Candidate `NxPhysics.dll` SHA-256:
+`20cf41661aa185fbe24ed8478d260a00921b75a85b8daea5026d90a14cdfa2cc`.
+The full gate transcript is `build/phase5-router-gate.log`.

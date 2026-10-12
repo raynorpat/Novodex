@@ -10464,3 +10464,9 @@ Fresh Phase 5 and Phase 7 gates passed at 2,658/2,658 and 1,685/1,685 assertions
 
 The direct pinned-oracle fixture covers 13 ordinary/fluid-flag/early-return/default routes, checking selected array counts and records, untouched arrays, returns, and stack. The restored router matches with `oracle_contract=1` and `mismatches=0`; a type-2 ordinary route mutation to descriptor `+0x30` is detected (`mismatches=1`). See [the row evidence](phase7-fluid-collision-shape-router-003553.md).
 Mutation evidence for phys_fn_003553: routing ordinary boxes to descriptor +0x30 instead of +0x3c is detected (mismatches=1).
+Fresh mainline verification on 2026-10-12: Phase 5 passes at 2,659/2,659
+assertions and Phase 7 passes at 1,686/1,686. The 810 reconstruction-tooling
+tests pass, inventory validation reports 6,338 functions / 5,138 data objects /
+zero unexplained entries, and all 80 public Physics headers match the pinned
+manifest. Candidate `NxPhysics.dll` SHA-256 is
+`20cf41661aa185fbe24ed8478d260a00921b75a85b8daea5026d90a14cdfa2cc`.
