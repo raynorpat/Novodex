@@ -66280,12 +66280,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1326",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12454",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "evidence/phase7-fluid-collision-capsule-append-003545.md",
       "notes": ""
     },
     {
