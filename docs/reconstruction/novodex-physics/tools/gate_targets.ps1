@@ -145,6 +145,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsFluidEmitterBodyRepulsionTests' = @(
         'fluid emitter body repulsion live actor=1 callbacks=3 callback_mismatches=0 applied=1 stack=1 mismatches=0'
+        'fluid substep attached-live-body actor=1 emitter_callbacks=4 run_callbacks=1 repulsion_callbacks=3 state_clear=1 body_changed=1 stack=1 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
         'triangle_mesh case=descriptor16 created=1',
@@ -5852,10 +5853,10 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2676  # includes the legacy NpScene run trajectory assertions
+	'5' = 2677  # adds the attached-body fluid substep to the current mainline floor
+				# includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
-				# includes enabled FluidModel create/list/release fixture differential
-				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
+				# includes allocator release, enabled FluidModel, owner/frame, callbacks, pose, shape-packer and static-collision coverage
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential
@@ -5915,11 +5916,11 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1707  # includes the legacy NpScene run trajectory assertions
+	'7' = 1708  # adds the attached-body fluid substep to the current mainline floor
+				# includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
-				# includes the allocator release target's three required lines
 				# includes enabled FluidModel create/list/release fixture differential
-				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
+				# includes fluid owner/frame, attribute callback, name, pose, shape-packer and static-collision coverage
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential

@@ -1,0 +1,90 @@
+phase=none resolved_targets=NxPhysicsFluidEmitterBodyRepulsionTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsFluidEmitterBodyRepulsionTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: FluidModel callback fixture exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\FluidModel.dll
+pass: staged oracle/FluidModel.dll byte-matches its source
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysics.dll source_sha256=3bbec60422a186a5f788e9962dfcf8e9750238aece56bb1e367e532ea20aef46 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate\NxPhysics.dll staged_sha256=3bbec60422a186a5f788e9962dfcf8e9750238aece56bb1e367e532ea20aef46
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxFoundation.dll source_sha256=9f1ccbdaca2db69678542003cd911ea52a7f8d8074e5e2f9b6584e5c0cd44b31 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate\NxFoundation.dll staged_sha256=9f1ccbdaca2db69678542003cd911ea52a7f8d8074e5e2f9b6584e5c0cd44b31
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate\NxPhysics.map
+pass: FluidModel callback fixture exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\FluidModel.dll
+pass: staged candidate/FluidModel.dll byte-matches its source
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysicsFluidEmitterBodyRepulsionTests.exe
+child target=NxPhysicsFluidEmitterBodyRepulsionTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysicsFluidEmitterBodyRepulsionTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+fluid emitter body repulsion live actor=1 callbacks=3 callback_mismatches=0 applied=1 stack=1 mismatches=0
+fluid emitter body repulsion live state=3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3ecccccc.3ecccccc.00000000
+fluid substep attached-live-body actor=1 emitter_callbacks=4 run_callbacks=1 repulsion_callbacks=3 state_clear=1 body_changed=1 stack=1 mismatches=0
+fluid substep attached-live-body run=10203040.55667788.00000001.3e800001.bf000002.3f400003.3eaaaaab.00000001
+fluid substep attached-live-body callback0=00000040.10203040.55667788.11223344.00000000.3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000.3e800000.bf000000.3f400000
+fluid substep attached-live-body callback1=00000100.10203040.55667788.11223344.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body callback2=00000200.10203040.55667788.11223344.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body callback3=00000400.10203040.55667788.11223344.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body repulsion0=00000001.10203040.55667788.11223344.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body repulsion1=00000002.10203040.55667788.11223344.3e800001.bf000002.3f400003.40000004.c0400005.40800006.00000000
+fluid substep attached-live-body repulsion2=00000003.10203040.55667788.00000000.00000000.00000000.00000000.00000000.00000000.00000000.3f2aaaab
+fluid substep attached-live-body state=3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3ecccccc.3ecccccc.00000000
+modules pair=3 trusted_system=12 rejected=0
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsFluidEmitterBodyRepulsionTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsFluidEmitterBodyRepulsionTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysicsFluidEmitterBodyRepulsionTests.exe
+child target=NxPhysicsFluidEmitterBodyRepulsionTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\Release\NxPhysicsFluidEmitterBodyRepulsionTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate" exit=1
+child_stdout_begin
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate
+modules pair=2 trusted_system=8 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate\NxPhysics.dll sha256=3bbec60422a186a5f788e9962dfcf8e9750238aece56bb1e367e532ea20aef46
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate\NxFoundation.dll sha256=9f1ccbdaca2db69678542003cd911ea52a7f8d8074e5e2f9b6584e5c0cd44b31
+fluid emitter body repulsion live actor=1 callbacks=3 callback_mismatches=0 applied=1 stack=1 mismatches=0
+fluid emitter body repulsion live state=3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3ecccccc.3ecccccc.00000000
+fluid substep attached-live-body actor=1 emitter_callbacks=0 run_callbacks=1 repulsion_callbacks=3 state_clear=1 body_changed=1 stack=1 mismatches=1
+fluid substep attached-live-body run=10203040.55667788.00000001.3e800001.bf000002.3f400003.3eaaaaab.00000001
+fluid substep attached-live-body callback0=00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body callback1=00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body callback2=00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body callback3=00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body repulsion0=00000001.10203040.55667788.11223344.00000000.00000000.00000000.00000000.00000000.00000000.00000000
+fluid substep attached-live-body repulsion1=00000002.10203040.55667788.11223344.3e800001.bf000002.3f400003.40000004.c0400005.40800006.00000000
+fluid substep attached-live-body repulsion2=00000003.10203040.55667788.00000000.00000000.00000000.00000000.00000000.00000000.00000000.3f2aaaab
+fluid substep attached-live-body state=3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3d08888a.bd88888b.3dccccd0.3f2aaab0.bf2aaab0.3f2aaab3.3ecccccc.3ecccccc.00000000
+modules pair=3 trusted_system=9 rejected=0
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsFluidEmitterBodyRepulsionTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate\NxPhysics.dll sha256=3bbec60422a186a5f788e9962dfcf8e9750238aece56bb1e367e532ea20aef46
+pass: NxPhysicsFluidEmitterBodyRepulsionTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate\NxFoundation.dll sha256=9f1ccbdaca2db69678542003cd911ea52a7f8d8074e5e2f9b6584e5c0cd44b31
+differential target=NxPhysicsFluidEmitterBodyRepulsionTests oracle_exit=0 candidate_exit=1 both_exit_zero=False stdout_delta=10 stderr_exact=True
+differential_targets=NxPhysicsFluidEmitterBodyRepulsionTests
+differential_pairs=C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\oracle,C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\build\approved-five-family-phase5\pairs\candidate
+GATE FAILED: requirement not met: every requested target passes its registered oracle/candidate differential contract
+At C:\Users\raynorpat\.codex\worktrees\nxphysics-full-recon\Novodex\docs\reconstruction\novodex-physics\tools\run_diffe
+rential.ps1:62 char:9
++         throw "GATE FAILED: requirement not met: $Requirement"
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (GATE FAILED: re...ential contract:String) [], RuntimeException
+    + FullyQualifiedErrorId : GATE FAILED: requirement not met: every requested target passes its registered oracle/ca
+   ndidate differential contract
