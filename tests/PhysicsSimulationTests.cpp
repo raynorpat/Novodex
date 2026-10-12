@@ -3131,6 +3131,94 @@ int wmain(int argc, wchar_t** argv)
 	*reinterpret_cast<void**>(fluidVtableSceneInternal + 0x61c) = 0;
 	printf("simulation fluid manager-vtable deleting-destructor=1\n");
 	sdk->releaseScene(*fluidVtableScene);
+	// Exercise the real extension-enabled create/release path with a deliberately
+	// small FluidModel companion fixture. Load it by absolute path after the
+	// disabled-backend cases above so those continue to measure the shipped
+	// missing-plugin behavior.
+	wchar_t fluidModelPath[MAX_PATH];
+	if(swprintf_s(fluidModelPath, L"%s\\FluidModel.dll", pairDirectory) < 0)
+		return nxFail("fluid model fixture path construction failed");
+	HMODULE fluidModel = LoadLibraryExW(fluidModelPath, 0,
+		LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!fluidModel)
+		return nxFail("staged fluid model callback fixture failed to load");
+	typedef void (__cdecl *ResetFluidManagerCallbacksFn)();
+	struct FluidManagerCallbackSummary
+		{
+		unsigned managerCreate;
+		unsigned managerDestroy;
+		unsigned fluidCreate;
+		unsigned fluidDestroy;
+		unsigned fluidCreateArguments[15];
+		};
+	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
+	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
+		ResetFluidManagerCallbacksFn>(GetProcAddress(fluidModel,
+			"NxResetFluidManagerCallbacks"));
+	GetFluidManagerCallbackSummaryFn getFluidManagerCallbackSummary = reinterpret_cast<
+		GetFluidManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
+			"NxGetFluidManagerCallbackSummary"));
+	if(!resetFluidManagerCallbacks || !getFluidManagerCallbackSummary)
+		return nxFail("fluid model manager callback controls are missing");
+	resetFluidManagerCallbacks();
+	NxScene* const enabledFluidScene = sdk->createScene(fluidSceneDesc);
+	if(!enabledFluidScene)
+		return nxFail("enabled fluid scene creation failed");
+	NxFluidDesc enabledInvalidDesc;
+	enabledInvalidDesc.setToDefault();
+	enabledInvalidDesc.restDensity = 0.0f;
+	simulationOutput.resetLast();
+	const bool enabledInvalidRejected = enabledFluidScene->createFluid(
+		enabledInvalidDesc) == 0;
+	const NxErrorCode enabledInvalidCode = simulationOutput.code;
+	const int enabledInvalidLine = simulationOutput.line;
+	unsigned char* const enabledFluidSceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(enabledFluidScene) + 0x24);
+	unsigned char* const enabledFluidManager = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(enabledFluidSceneInternal + 0x61c));
+	if(!enabledFluidManager)
+		return nxFail("enabled fluid manager was not created");
+	const bool enabledFluidManagerFlags = enabledFluidManager[0x2a] == 1 &&
+		enabledFluidManager[0x2b] == 1 &&
+		*reinterpret_cast<void**>(enabledFluidManager + 0x30) != 0;
+	// Keep this first enabled-fluid differential on construction, descriptor
+	// transfer, both manager arrays, release, and callback destruction. The
+	// static collision rebuild is a separate packet with its own callback corpus.
+	enabledFluidManager[0x29] = 0;
+	NxFluidDesc enabledFluidDesc;
+	enabledFluidDesc.setToDefault();
+	simulationOutput.resetLast();
+	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
+	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
+	const NxU32 enabledFluidCount = enabledFluidScene->getNbFluids();
+	NxFluid** const enabledFluidList = enabledFluidScene->getFluids();
+	const bool enabledFluidListed = enabledFluidCount == 1 && enabledFluidList &&
+		enabledFluidList[0] == enabledFluid;
+	if(enabledFluid)
+		enabledFluidScene->releaseFluid(*enabledFluid);
+	FluidManagerCallbackSummary fluidManagerCallbacks = {};
+	getFluidManagerCallbackSummary(&fluidManagerCallbacks);
+	const bool enabledFluidManagerCleared =
+		*reinterpret_cast<void**>(enabledFluidSceneInternal + 0x61c) == 0;
+	const unsigned enabledFluidErrors = simulationOutput.errors - enabledFluidErrorsBefore;
+	const bool enabledFluidCallbacks = fluidManagerCallbacks.managerCreate == 1 &&
+		fluidManagerCallbacks.managerDestroy == 1 &&
+		fluidManagerCallbacks.fluidCreate == 1 &&
+		fluidManagerCallbacks.fluidDestroy == 1;
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u manager-cleared=%u callbacks=%u.%u.%u.%u errors=%u\n",
+		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
+		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
+		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
+		enabledFluidCount, enabledFluidManagerCleared ? 1u : 0u,
+		fluidManagerCallbacks.managerCreate, fluidManagerCallbacks.fluidCreate,
+		fluidManagerCallbacks.fluidDestroy, fluidManagerCallbacks.managerDestroy,
+		enabledFluidErrors);
+	if(!enabledInvalidRejected || !enabledFluidManagerFlags || !enabledFluid ||
+		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
+		!enabledFluidListed || !enabledFluidManagerCleared || !enabledFluidCallbacks ||
+		enabledFluidErrors != 0)
+		return nxFail("enabled fluid creation lifecycle did not match the fixture contract");
+	sdk->releaseScene(*enabledFluidScene);
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
 	// header set, so supply its recovered byte layout without changing public

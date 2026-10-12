@@ -1034,16 +1034,27 @@ void NpScene::releaseFluid(NxFluid& fluid)
 	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) getNbFluids
 NxU32 NpScene::getNbFluids() const
 	{
-	return 0;
+	if(!mScene)
+		return 0;
+	const unsigned char* const scene = reinterpret_cast<const unsigned char*>(mScene);
+	const unsigned char* const manager = *reinterpret_cast<unsigned char* const*>(scene + 0x61c);
+	if(!manager)
+		return 0;
+	const unsigned first = *reinterpret_cast<const unsigned*>(manager + 4);
+	const unsigned last = *reinterpret_cast<const unsigned*>(manager + 8);
+	return last >= first ? (last - first) / sizeof(void*) : 0;
 	}
 
-// (unimplemented) getFluids
 NxFluid** NpScene::getFluids()
 	{
-	return 0;
+	if(!mScene)
+		return 0;
+	const unsigned char* const scene = reinterpret_cast<const unsigned char*>(mScene);
+	const unsigned char* const manager = *reinterpret_cast<unsigned char* const*>(scene + 0x61c);
+	return manager ? reinterpret_cast<NxFluid**>(
+		*reinterpret_cast<const unsigned*>(manager + 4)) : 0;
 	}
 
 // phys_fn_000404 (0x0000d8a0). Implicit meshes are unavailable in the pinned

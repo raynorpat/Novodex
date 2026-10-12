@@ -785,6 +785,95 @@ NxSceneInternal::NxSceneInternal()
 
 static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, unsigned char deleteObject);
 
+typedef void* (__cdecl *NxFluidManagerCreateCallback)();
+typedef void (__cdecl *NxFluidManagerDestroyCallback)(void*);
+typedef void* (__cdecl *NxFluidCreateCallback)(void*, unsigned, unsigned, unsigned,
+	unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned,
+	unsigned, unsigned, unsigned);
+typedef void (__cdecl *NxFluidDestroyCallback)(void*, void*);
+
+static NxFluidManagerCreateCallback gNxFluidManagerCreateCallback = 0;
+static NxFluidManagerDestroyCallback gNxFluidManagerDestroyCallback = 0;
+static NxFluidCreateCallback gNxFluidCreateCallback = 0;
+static NxFluidDestroyCallback gNxFluidDestroyCallback = 0;
+static bool gNxFluidModelLoaded = false;
+static bool gNxFluidModelInitialized = false;
+
+static bool nxFluidManagerResolveModel()
+	{
+	// phys_fn_003645 calls LoadLibraryA on every manager construction, then
+	// resolves the extension entrypoints. The complete table is recovered
+	// incrementally; these four callbacks are the required create/release path.
+	HMODULE module = LoadLibraryA("FluidModel.DLL");
+	if(!module)
+		{
+		gNxFluidModelLoaded = false;
+		gNxFluidModelInitialized = false;
+		return false;
+		}
+	gNxFluidManagerCreateCallback = reinterpret_cast<NxFluidManagerCreateCallback>(
+		GetProcAddress(module, "FluidManagerCreate"));
+	gNxFluidManagerDestroyCallback = reinterpret_cast<NxFluidManagerDestroyCallback>(
+		GetProcAddress(module, "FluidManagerDestroy"));
+	gNxFluidCreateCallback = reinterpret_cast<NxFluidCreateCallback>(
+		GetProcAddress(module, "FluidCreate"));
+	gNxFluidDestroyCallback = reinterpret_cast<NxFluidDestroyCallback>(
+		GetProcAddress(module, "FluidDestroy"));
+	gNxFluidModelLoaded = true;
+	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
+		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
+		gNxFluidDestroyCallback;
+	return gNxFluidModelInitialized;
+	}
+
+static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject);
+static void* gNxFluidVtable[] = {
+	reinterpret_cast<void*>(nxFluidDeletingDestructor)
+	};
+
+static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
+	{
+	if((deleteObject & 1) != 0)
+		nxFoundationSDKAllocator->free(helper);
+	return helper;
+	}
+
+static void* gNxFluidSolverVtable[] = {
+	reinterpret_cast<void*>(nxFluidSolverDeletingDestructor)
+	};
+
+static void nxFluidManagerArrayPush(void* arrayHeader, unsigned value)
+	{
+	unsigned* array = static_cast<unsigned*>(arrayHeader);
+	unsigned first = array[0];
+	unsigned last = array[1];
+	unsigned end = array[2];
+	if(!first || last >= end)
+		{
+		const unsigned count = first ? (last - first) >> 2 : 0;
+		const unsigned capacity = count * 2 + 2;
+		unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
+			capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+		if(!grown)
+			return;
+		for(unsigned i = 0; i != count; ++i)
+			grown[i] = reinterpret_cast<unsigned*>(first)[i];
+		if(first)
+			nxFoundationSDKAllocator->free(reinterpret_cast<void*>(first));
+		first = reinterpret_cast<unsigned>(grown);
+		last = reinterpret_cast<unsigned>(grown + count);
+		end = reinterpret_cast<unsigned>(grown + capacity);
+		array[0] = first;
+		array[1] = last;
+		array[2] = end;
+		}
+	if(last < end)
+		{
+		*reinterpret_cast<unsigned*>(last) = value;
+		array[1] = last + sizeof(unsigned);
+		}
+	}
+
 static void* gNxFluidManagerVtable[] = {
 	reinterpret_cast<void*>(nxFluidManagerDeletingDestructor)
 	};
@@ -795,7 +884,7 @@ extern "C" int __cdecl nxNpFluidEmitterGenerateSurfaceMesh(void* internal);
 // Scene link, and virtual dispatch pointer. The pinned build has no fluid
 // extension, so its extension flags are zero; the constructor leaves the
 // conditional backend storage untouched while that feature is unavailable.
-static void* nxSceneCreateDisabledFluidManager(NxSceneInternal* scene)
+static void* nxSceneCreateFluidManager(NxSceneInternal* scene)
 	{
 	void* memory = nxFoundationSDKAllocator->malloc(0x34, NX_MEMORY_PERSISTENT);
 	if(!memory)
@@ -812,6 +901,10 @@ static void* nxSceneCreateDisabledFluidManager(NxSceneInternal* scene)
 	bytes[0x2a] = 0;
 	bytes[0x2b] = 0;
 	bytes[0x29] = 1;
+	bytes[0x2a] = nxFluidManagerResolveModel() ? 1 : (gNxFluidModelLoaded ? 1 : 0);
+	bytes[0x2b] = gNxFluidModelInitialized ? 1 : 0;
+	if(bytes[0x2b] && gNxFluidManagerCreateCallback)
+		*reinterpret_cast<void**>(bytes + 0x30) = gNxFluidManagerCreateCallback();
 	return memory;
 	}
 
@@ -853,6 +946,9 @@ static void nxFluidManagerDestroyArrays(void* manager)
 			if(offset == 4)
 				break;
 			}
+		if(bytes[0x2b] && gNxFluidManagerDestroyCallback &&
+			*reinterpret_cast<void**>(bytes + 0x30))
+			gNxFluidManagerDestroyCallback(*reinterpret_cast<void**>(bytes + 0x30));
 		}
 	}
 
@@ -863,6 +959,27 @@ static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, u
 	if((deleteObject & 1) != 0)
 		nxFoundationSDKAllocator->free(manager);
 	return manager;
+	}
+
+static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(fluid);
+	void* helper = *reinterpret_cast<void**>(bytes + 0x54);
+	if(helper)
+		{
+		void** vtable = *reinterpret_cast<void***>(helper);
+		typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
+		reinterpret_cast<DeletingDestructor>(vtable[0])(helper, 1);
+		*reinterpret_cast<void**>(bytes + 0x54) = 0;
+		}
+	void* manager = *reinterpret_cast<void**>(bytes + 0x7c);
+	void* backendFluid = *reinterpret_cast<void**>(bytes + 0x80);
+	if(manager && backendFluid && gNxFluidDestroyCallback)
+		gNxFluidDestroyCallback(*reinterpret_cast<void**>(
+			static_cast<unsigned char*>(manager) + 0x30), backendFluid);
+	if((deleteObject & 1) != 0)
+		nxFoundationSDKAllocator->free(fluid);
+	return fluid;
 	}
 
 static void nxSceneReleaseDisabledFluidManager(void* manager)
@@ -1041,22 +1158,68 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 	{
 	void*& manager = at<void*>(0x61c);
 	if(!manager)
-		manager = nxSceneCreateDisabledFluidManager(this);
+		manager = nxSceneCreateFluidManager(this);
 	if(!manager)
 		return 0;
+	unsigned char* const managerBytes = static_cast<unsigned char*>(manager);
+	if(managerBytes[0x2b] == 0)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
+			0x8a, 0, "NxScene::createFluid(): Feature not available!");
+		return 0;
+		}
 	// The enabled FluidManager validates the descriptor before allocating a
 	// fluid or entering the extension-backed creation path.
-	if(static_cast<unsigned char*>(manager)[0x2b] != 0 && !desc.isValid())
+	if(!desc.isValid())
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
 			0x8c, 0, "Supplied NxFluidDesc is not valid. createFluid returns NULL.");
 		return 0;
 		}
-	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
-		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\FluidManager.cpp",
-		0x8a, 0, "NxScene::createFluid(): Feature not available!");
-	return 0;
+	if(!gNxFluidCreateCallback || !gNxFluidDestroyCallback)
+		return 0;
+	unsigned char* const fluid = static_cast<unsigned char*>(
+		nxFoundationSDKAllocator->malloc(0x84, NX_MEMORY_PERSISTENT));
+	if(!fluid)
+		return 0;
+	memset(fluid, 0, 0x84);
+	*reinterpret_cast<void***>(fluid) = gNxFluidVtable;
+	*reinterpret_cast<unsigned*>(fluid + 0x5c) = 0x7f7fffff;
+	*reinterpret_cast<unsigned*>(fluid + 0x60) = 0x7f7fffff;
+	*reinterpret_cast<unsigned*>(fluid + 0x64) = 0x7f7fffff;
+	*reinterpret_cast<unsigned*>(fluid + 0x68) = 0xff7fffff;
+	*reinterpret_cast<unsigned*>(fluid + 0x6c) = 0xff7fffff;
+	*reinterpret_cast<unsigned*>(fluid + 0x70) = 0xff7fffff;
+	*reinterpret_cast<void**>(fluid + 0x14) = fluid;
+	*reinterpret_cast<void**>(fluid + 0x7c) = manager;
+	unsigned char* const solver = static_cast<unsigned char*>(
+		nxFoundationSDKAllocator->malloc(0x18, NX_MEMORY_PERSISTENT));
+	if(solver)
+		{
+		memset(solver, 0, 0x18);
+		*reinterpret_cast<void***>(solver) = gNxFluidSolverVtable;
+		}
+	*reinterpret_cast<void**>(fluid + 0x54) = solver;
+	*reinterpret_cast<unsigned*>(fluid + 0x58) =
+		*reinterpret_cast<const unsigned*>(reinterpret_cast<const unsigned char*>(&desc) + 0xac);
+	memcpy(fluid + 0x28,
+		reinterpret_cast<const unsigned char*>(&desc) + 0x80, 0x2c);
+	const unsigned* const descriptorWords =
+		reinterpret_cast<const unsigned*>(&desc);
+	void* const backendManager = *reinterpret_cast<void**>(managerBytes + 0x30);
+	void* const backendFluid = gNxFluidCreateCallback(backendManager,
+		descriptorWords[19], descriptorWords[17], descriptorWords[16],
+		descriptorWords[18], descriptorWords[20], descriptorWords[21],
+		descriptorWords[22], descriptorWords[23], descriptorWords[24],
+		descriptorWords[25], 1024, descriptorWords[15], 0, 0);
+	*reinterpret_cast<void**>(fluid + 0x80) = backendFluid;
+	nxFluidManagerArrayPush(managerBytes + 4,
+		reinterpret_cast<unsigned>(fluid));
+	nxFluidManagerArrayPush(managerBytes + 0x14,
+		*reinterpret_cast<unsigned*>(fluid + 0x54));
+	return reinterpret_cast<NxFluid*>(fluid);
 	}
 
 

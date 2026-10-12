@@ -918,6 +918,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/FluidModelFlagCallbackFixture.cpp)
 	set_target_properties(NxPhysicsFluidModelCallbackFixture PROPERTIES
 		OUTPUT_NAME FluidModel PREFIX "")
+	# The simulation differential loads this staged companion only for its
+	# extension-enabled fluid lifecycle case; all earlier cases retain the
+	# missing-backend behavior.
+	target_compile_definitions(NxPhysicsSimulationTests PRIVATE
+		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1)
+	add_dependencies(NxPhysicsSimulationTests NxPhysicsFluidModelCallbackFixture)
 	add_executable(NxPhysicsFluidEmitterAbiTests tests/PhysicsFluidEmitterAbiTests.cpp
 		Physics/src/NpFluidEmitter.cpp)
 	target_include_directories(NxPhysicsFluidEmitterAbiTests PRIVATE

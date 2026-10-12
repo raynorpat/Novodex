@@ -234,7 +234,8 @@ if (-not (Test-Path -LiteralPath $pairsRoot)) {
     New-Item -ItemType Directory -Path $pairsRoot -Force | Out-Null
 }
 
-$stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets
+$stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets -or
+	'NxPhysicsSimulationTests' -cin $Targets
 $oraclePair = New-Pair 'oracle' $oraclePhysics $oracleFoundation -StageFluidModel:$stageFluidModel
 $candidatePair = New-Pair 'candidate' (Join-Path $releaseRoot 'NxPhysics.dll') (Join-Path $releaseRoot 'NxFoundation.dll') -StageFluidModel:$stageFluidModel
 Assert-True ($candidatePair.PhysicsSha256 -cne $oraclePair.PhysicsSha256) 'candidate NxPhysics.dll is not the shipped oracle file'

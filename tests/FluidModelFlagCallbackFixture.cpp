@@ -175,6 +175,71 @@ static NxFluidEmitterFlagCallbackRecord gRecords[16];
 static unsigned gRecordCount;
 static float gEmitterGlobalPose[12];
 
+struct NxFluidManagerCallbackSummary
+	{
+	unsigned managerCreate;
+	unsigned managerDestroy;
+	unsigned fluidCreate;
+	unsigned fluidDestroy;
+	unsigned fluidCreateArguments[15];
+	};
+
+static NxFluidManagerCallbackSummary gFluidManagerCallbackSummary;
+static unsigned char gFluidManagerBackend;
+static unsigned char gFluidBackendHandles[16];
+
+extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
+	{
+	ZeroMemory(&gFluidManagerCallbackSummary, sizeof(gFluidManagerCallbackSummary));
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxGetFluidManagerCallbackSummary(
+	NxFluidManagerCallbackSummary* summary)
+	{
+	if(summary)
+		*summary = gFluidManagerCallbackSummary;
+	}
+
+extern "C" __declspec(dllexport) void* __cdecl FluidManagerCreate()
+	{
+	++gFluidManagerCallbackSummary.managerCreate;
+	return &gFluidManagerBackend;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidManagerDestroy(void* manager)
+	{
+	if(manager == &gFluidManagerBackend)
+		++gFluidManagerCallbackSummary.managerDestroy;
+	}
+
+extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
+	unsigned restParticleDistance, unsigned maxParticles, unsigned simulationMethod,
+	unsigned restDensity, unsigned stiffness, unsigned viscosity, unsigned damping,
+	unsigned kernelRadiusMultiplier, unsigned packetSizeMultiplier,
+	unsigned initialParticleCapacity, unsigned collisionMethod,
+	unsigned particleWriteData, unsigned sparse, unsigned hardware)
+	{
+	++gFluidManagerCallbackSummary.fluidCreate;
+	const unsigned arguments[15] = {
+		reinterpret_cast<unsigned>(manager), restParticleDistance, maxParticles,
+		simulationMethod, restDensity, stiffness, viscosity, damping,
+		kernelRadiusMultiplier, packetSizeMultiplier, initialParticleCapacity,
+		collisionMethod, particleWriteData, sparse, hardware };
+	memcpy(gFluidManagerCallbackSummary.fluidCreateArguments, arguments,
+		sizeof(arguments));
+	if(manager != &gFluidManagerBackend)
+		return 0;
+	const unsigned index = (gFluidManagerCallbackSummary.fluidCreate - 1)
+		% (sizeof(gFluidBackendHandles) / sizeof(gFluidBackendHandles[0]));
+	return &gFluidBackendHandles[index];
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidDestroy(void* manager, void* fluid)
+	{
+	if(manager == &gFluidManagerBackend && fluid)
+		++gFluidManagerCallbackSummary.fluidDestroy;
+	}
+
 struct NxFluidPostStepCallbackRecord
 	{
 	unsigned kind;

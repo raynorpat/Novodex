@@ -3485,6 +3485,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # constructor state and scalar-deleting vtable slot directly.
         'simulation fluid manager-constructor owner=1 arrays-empty=1 initialized=1 extension=0 available=0'
         'simulation fluid manager-vtable deleting-destructor=1'
+        # The optional manager's enabled create path validates, builds and
+        # lists one fluid, then dispatches fluid and manager backend teardown.
+        'simulation fluid enabled valid=1 invalid=1.1.140 manager-flags=1 listed=1 count=1 manager-cleared=1 callbacks=1.1.1.1 errors=0'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
         'simulation fluid manager-populated-destructor calls=2 flags=1 target=1 arrays-cleared=1'
@@ -5841,7 +5844,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2669  # includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
+	'5' = 2670  # includes enabled FluidModel create/list/release fixture differential
+				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential
@@ -5878,7 +5882,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-    '6' = 1601  # all registered Phase 6 staged-pair and oracle-differential assertions
+	'6' = 1602  # includes enabled FluidModel create/list/release fixture differential
+				# all registered Phase 6 staged-pair and oracle-differential assertions
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
                # previous 1233 plus the D6 contended drive-position write-lock report
@@ -5898,7 +5903,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1696  # includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
+	'7' = 1697  # includes enabled FluidModel create/list/release fixture differential
+				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
 				# includes fluid plane-array append differential
