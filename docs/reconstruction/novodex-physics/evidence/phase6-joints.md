@@ -10523,3 +10523,9 @@ Phase 7 fluid-emitter name wrapper rows `phys_fn_003858` and `phys_fn_003860` we
 
 The registered direct pinned-oracle `NxPhysicsFluidEmitterAbiTests` fixture combines dirty static-collision refresh with two ordered live-fluid callbacks. It checks old-collision lookup/destruction, replacement lookup/build parameters, dirty-byte clearing, both callback payloads and state clears, return, and x86 stack balance. Suppressing the candidate refresh is rejected (`mismatches=1`); restored output reports zero mismatches. The full Phase 7 gate passes with 1,698 evaluated assertions against a 1,697 floor. See [the row evidence](phase7-fluid-manager-dirty-refresh-003630.md) and `build/phase7-fluid-003630-final.log`.
 Mutation evidence for phys_fn_003630: suppressing the dirty refresh is rejected by the combined two-fluid oracle differential (mismatches=1); restored control reports zero.
+
+
+## Phase 7 fluid manager populated teardown (`phys_fn_003641`)
+
+The seeded populated-manager teardown dispatches both scalar deleting destructors, clears both array headers, and matches the oracle. Suppressing the dispatch fails the registered Phase 7 staged pair (stdout_delta=54); see [the row evidence](phase7-fluid-manager-populated-destructor-003641.md).
+Mutation evidence for phys_fn_003641: the registered populated-manager staged pair catches a disabled deleting dispatch (stdout_delta=54); restored control is exact.
