@@ -2397,6 +2397,7 @@ static unsigned nxRunFluidCollisionBoxAppendDifferential(
 			*reinterpret_cast<unsigned*>(shape.bytes + 0xe0) = 0x55667788u;
 			*reinterpret_cast<unsigned*>(shape.bytes + 0xe4) = 0x11223344u;
 			*reinterpret_cast<unsigned*>(shape.bytes + 0xe8) = 0x99aabbccu;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xec) = 0xddeeff00u;
 			*reinterpret_cast<unsigned short*>(shape.bytes + 0xcc) = 0;
 			*reinterpret_cast<unsigned**>(shape.bytes + 0xc4) =
 				reinterpret_cast<unsigned*>(shape.data);
@@ -2429,10 +2430,10 @@ static unsigned nxRunFluidCollisionBoxAppendDifferential(
 		bool recordMatches = true, tailsMatch = true;
 		if(selected)
 			{
-			recordMatches = memcmp(oracleOutput, candidateOutput, 88) == 0
-				&& *reinterpret_cast<unsigned*>(oracleOutput) == 0x55667788u
-				&& *reinterpret_cast<unsigned*>(oracleOutput + 4) == 0x11223344u
-				&& *reinterpret_cast<unsigned*>(oracleOutput + 8) == 0x99aabbccu;
+				recordMatches = memcmp(oracleOutput, candidateOutput, 88) == 0
+					&& *reinterpret_cast<unsigned*>(oracleOutput) == 0x11223344u
+					&& *reinterpret_cast<unsigned*>(oracleOutput + 4) == 0x99aabbccu
+					&& *reinterpret_cast<unsigned*>(oracleOutput + 8) == 0xddeeff00u;
 			tailsMatch = memcmp(oracleOutput + 92, candidateOutput + 92,
 				sizeof(oracleOutput) - 92) == 0;
 			}

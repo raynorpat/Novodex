@@ -748,9 +748,9 @@ extern "C" void* __cdecl nxFluidCollisionAppendBox(void* descriptor,
 	if(*reinterpret_cast<unsigned*>(shapeBytes + 0xd0) != 2)
 		return shape;
 	unsigned record[23] = {};
-	record[0] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe0);
-	record[1] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe4);
-	record[2] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe8);
+	record[0] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe4);
+	record[1] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe8);
+	record[2] = *reinterpret_cast<unsigned*>(shapeBytes + 0xec);
 	nxFluidCollisionPackShapeData(record + 3, shape);
 	unsigned char* const descriptorBytes =
 		static_cast<unsigned char*>(descriptor);
