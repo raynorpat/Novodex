@@ -24,6 +24,7 @@ static void* gCandidateFluidCollisionSphereAppendAddress;
 static void* gCandidateFluidCollisionCapsuleAppendAddress;
 static void* gCandidateFluidCollisionBoxAppendAddress;
 static void* gCandidateFluidCollisionPlaneAppendAddress;
+static void* gCandidateFluidCollisionMeshAppendAddress;
 
 struct ImplicitMeshErrorRecord
 	{
@@ -2481,6 +2482,128 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 	return mismatches;
 	}
 
+static unsigned nxRunFluidCollisionMeshAppendDifferential(
+	const unsigned char* oracleBase, void* candidateAddress)
+	{
+	typedef void* (__cdecl* AppendMesh)(void*, void*);
+	AppendMesh oracle = oracleBase ? reinterpret_cast<AppendMesh>(
+		const_cast<unsigned char*>(oracleBase) + 0x876d0) : 0;
+	const bool candidatePresent = candidateAddress != 0;
+	AppendMesh candidate = candidatePresent
+		? reinterpret_cast<AppendMesh>(candidateAddress) : oracle;
+	if(!oracleBase)
+		{
+		printf("fluid collision mesh-array append cases=2 selected=1 ignored=1 "
+			"candidate_present=%u oracle_contract=0 stack=0/0 mismatches=1\n",
+			candidatePresent);
+		return 1;
+		}
+	struct ShapeFixture
+		{
+		unsigned char bytes[0x1c0];
+		unsigned char shapeData[0x20];
+		unsigned bounds[6];
+		unsigned meshWords[8];
+	};
+	struct ArrayDescriptor
+		{
+		unsigned char* data;
+		unsigned count;
+		unsigned capacity;
+		};
+	unsigned mismatches = candidatePresent ? 0u : 1u, oracleContract = 1;
+	unsigned oracleStackBalanced = 1, candidateStackBalanced = 1;
+	for(unsigned test = 0; test != 2; ++test)
+		{
+		ShapeFixture oracleShape, candidateShape;
+		memset(&oracleShape, 0, sizeof(oracleShape));
+		memset(&candidateShape, 0, sizeof(candidateShape));
+		for(unsigned side = 0; side != 2; ++side)
+			{
+			ShapeFixture& shape = side == 0 ? oracleShape : candidateShape;
+			for(unsigned word = 0; word != 12; ++word)
+				*reinterpret_cast<unsigned*>(shape.bytes + 0x0c + word * 4) =
+					0x3f21000bu + word * 0x01020407u;
+			for(unsigned word = 0; word != 6; ++word)
+				shape.bounds[word] = 0x44000000u + word * 7;
+			shape.meshWords[0] = 0x11223344u;
+			shape.meshWords[1] = 0x55667788u;
+			shape.meshWords[2] = 0x99aabbccu;
+			shape.meshWords[3] = 0xddeeff00u;
+			shape.meshWords[4] = 0x13579bdfu;
+			shape.meshWords[5] = 0x2468ace0u;
+			*reinterpret_cast<unsigned*>(shape.bytes + 4) = 0x12340004u;
+			*reinterpret_cast<unsigned short*>(shape.bytes + 0xcc) = 0;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0xd0) = 4;
+			*reinterpret_cast<unsigned**>(shape.bytes + 0xc4) =
+				reinterpret_cast<unsigned*>(shape.shapeData);
+			*reinterpret_cast<unsigned**>(shape.shapeData + 0x14) = shape.bounds;
+			*reinterpret_cast<unsigned short*>(shape.bytes + 0xde) = 0;
+			*reinterpret_cast<unsigned*>(shape.bytes + 0x1bc) = 0;
+			*reinterpret_cast<unsigned**>(shape.bytes + 0xe0) =
+				test == 0 ? shape.meshWords : reinterpret_cast<unsigned*>(-8);
+			}
+		unsigned char oracleOutput[192], candidateOutput[192];
+		memset(oracleOutput, 0xa5, sizeof(oracleOutput));
+		memset(candidateOutput, 0xa5, sizeof(candidateOutput));
+		ArrayDescriptor oracleArray = { oracleOutput, 0, 2 };
+		ArrayDescriptor candidateArray = { candidateOutput, 0, 2 };
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		void* const oracleReturn = oracle(&oracleArray, oracleShape.bytes);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		void* const candidateReturn = candidate(&candidateArray, candidateShape.bytes);
+		__asm mov candidateAfter, esp
+		const bool selected = test == 0;
+		const void* const expectedOracleReturn = selected
+			? static_cast<void*>(&oracleArray) : 0;
+		const void* const expectedCandidateReturn = selected
+			? static_cast<void*>(&candidateArray) : 0;
+		const unsigned expectedCount = selected ? 1u : 0u;
+		const bool oracleReturnValid = oracleReturn == expectedOracleReturn;
+		const bool candidateReturnValid = candidateReturn == expectedCandidateReturn;
+		const bool countsMatch = oracleArray.count == expectedCount
+			&& candidateArray.count == expectedCount;
+		bool recordMatches = true, tailsMatch = true;
+		if(selected)
+			{
+			const unsigned expectedGeometry[4] = {
+				0xddeeff00u, 0x2468ace0u, 0x99aabbccu, 0x13579bdfu };
+			recordMatches = memcmp(oracleOutput, candidateOutput, 92) == 0
+				&& memcmp(oracleOutput, expectedGeometry, sizeof(expectedGeometry)) == 0;
+			oracleContract &= memcmp(oracleOutput, expectedGeometry,
+				sizeof(expectedGeometry)) == 0;
+			tailsMatch = memcmp(oracleOutput + 96, candidateOutput + 96,
+				sizeof(oracleOutput) - 96) == 0;
+			}
+		else
+			recordMatches = memcmp(oracleOutput, candidateOutput,
+				sizeof(oracleOutput)) == 0;
+		const bool oracleStack = oracleBefore == oracleAfter;
+		const bool candidateStack = candidateBefore == candidateAfter;
+		oracleStackBalanced = oracleStackBalanced && oracleStack;
+		candidateStackBalanced = candidateStackBalanced && candidateStack;
+		oracleContract &= oracleReturnValid && oracleArray.count == expectedCount
+			&& oracleStack;
+		if(!oracleReturnValid || !candidateReturnValid || !countsMatch
+			|| !recordMatches || !tailsMatch || !oracleStack || !candidateStack)
+			{
+			++mismatches;
+			printf("fluid collision mesh-array append detail case=%u "
+				"return=%p/%p count=%u/%u stack=%u/%u\n", test,
+				oracleReturn, candidateReturn, oracleArray.count,
+				candidateArray.count, oracleStack, candidateStack);
+			}
+		}
+	printf("fluid collision mesh-array append cases=2 selected=1 ignored=1 "
+		"candidate_present=%u oracle_contract=%u stack=%u/%u mismatches=%u\n",
+		candidatePresent, oracleContract, oracleStackBalanced,
+		candidateStackBalanced, mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunFluidCollisionBoxAppendDifferential(
 	const unsigned char* oracleBase, void* candidateAddress)
 	{
@@ -3190,6 +3313,9 @@ int wmain(int argc, wchar_t** argv)
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionAppendPlane", &gCandidateFluidCollisionPlaneAppendAddress))
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid plane-array append row could not be resolved from its map\n");
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxFluidCollisionAppendMesh", &gCandidateFluidCollisionMeshAppendAddress))
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid mesh-array append row could not be resolved from its map\n");
 	void* candidateStaticCopyAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionStaticCopy", &candidateStaticCopyAddress))
@@ -3557,6 +3683,8 @@ int wmain(int argc, wchar_t** argv)
 		gCandidateFluidCollisionBoxAppendAddress);
 	gFailures += nxRunFluidCollisionPlaneAppendDifferential(image,
 		gCandidateFluidCollisionPlaneAppendAddress);
+	gFailures += nxRunFluidCollisionMeshAppendDifferential(image,
+		gCandidateFluidCollisionMeshAppendAddress);
 	FARPROC resetFluidRun = GetProcAddress(fluidModel, "NxResetFluidRunCallbacks");
 	FARPROC getFluidRunCount = GetProcAddress(fluidModel, "NxGetFluidRunCallbackCount");
 	FARPROC getFluidRunRecord = GetProcAddress(fluidModel, "NxGetFluidRunCallbackRecord");

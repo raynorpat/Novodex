@@ -807,3 +807,30 @@ extern "C" void* __cdecl nxFluidCollisionAppendPlane(void* descriptor,
 	++*count;
 	return descriptor;
 	}
+
+// phys_fn_003541 (RVA 0x000876d0) prepends a mesh's four packed geometry
+// words to the common collision record. The -8 mesh-data sentinel returns null;
+// the last dword of the 96-byte record remains undefined in the oracle.
+extern "C" void* __cdecl nxFluidCollisionAppendMesh(void* descriptor,
+	void* shape)
+	{
+	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
+	unsigned char* const meshData = *reinterpret_cast<unsigned char**>(
+		shapeBytes + 0xe0);
+	if(meshData == reinterpret_cast<unsigned char*>(-8))
+		return 0;
+	unsigned record[24] = {};
+	record[0] = *reinterpret_cast<unsigned*>(meshData + 12);
+	record[1] = *reinterpret_cast<unsigned*>(meshData + 20);
+	record[2] = *reinterpret_cast<unsigned*>(meshData + 8);
+	record[3] = *reinterpret_cast<unsigned*>(meshData + 16);
+	nxFluidCollisionPackShapeData(record + 4, shape);
+	unsigned char* const descriptorBytes =
+		static_cast<unsigned char*>(descriptor);
+	unsigned char* const storage =
+		*reinterpret_cast<unsigned char**>(descriptorBytes);
+	unsigned* const count = reinterpret_cast<unsigned*>(descriptorBytes + 4);
+	memcpy(storage + *count * sizeof(record), record, sizeof(record));
+	++*count;
+	return descriptor;
+	}
