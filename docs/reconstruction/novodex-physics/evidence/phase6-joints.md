@@ -12,6 +12,16 @@ oracle, in-process candidate, and candidate-DLL paths.
 `phys_fn_003796` owner-fluid pointer mutation detection: `mismatches=2`.
 `phys_fn_003824` frame-actor dereference mutation detection: `mismatches=2`.
 
+Phase 7 scene pair-flag getters `phys_fn_000311` and `phys_fn_000315` are
+mutation-falsified by `NxPhysicsPairFlagTests`. The valid actor-pair zero-return
+mutant changes the transcript by 4 bytes; the valid shape-pair zero-return
+mutant fails the newly added `NX_NOTIFY_ON_TOUCH` readback (`stdout_delta=14`).
+`phys_fn_000311` mutation detection: `stdout_delta=4`.
+`phys_fn_000315` mutation detection: `stdout_delta=14`.
+The restored controls are exact. Details and raw transcripts are in
+`evidence/phase7-npscene-pair-flag-getters-000311-000315/README.md` and
+`evidence/raw/phase7-npscene-pair-flag-getters-000311-000315-20261012/`.
+
 This file records Phase 6 evidence. It begins with the harness and an audit of
 the export contract, because the second turned out to bound the first.
 

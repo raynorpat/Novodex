@@ -3564,9 +3564,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # Releasing a compound actor must erase its actor-pair hash entry before
     # getPairFlagArray resolves the now-freed group shape ID.
     'NxPhysicsPairFlagTests' = @(
+        'pairflag shape flags=00000008 count=2'
         'pairflag compound_released count=0 array=0'
         'pairflag actor_contended reports=1 flags=00000001'
-        'pairflag contended reports=4 flags=00000000'
+		'pairflag contended reports=4 flags=00000008'
         'pairflag report=2.69.\Epic\Novodex\SDKs\Physics\src\NpScene.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!'
         'pairflag report=2.70.\Epic\Novodex\SDKs\Physics\src\NpScene.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!'
         'pairflag report=2.78.\Epic\Novodex\SDKs\Physics\src\NpScene.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!'
@@ -5911,7 +5912,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1703  # includes static/dynamic fluid shape-change dirty-byte coverage
+	'7' = 1704  # includes static/dynamic fluid shape-change dirty-byte coverage
 				# includes distinct dirty-manager replacement-buffer coverage
 				# includes the allocator release target's three required lines
 				# includes enabled FluidModel create/list/release fixture differential

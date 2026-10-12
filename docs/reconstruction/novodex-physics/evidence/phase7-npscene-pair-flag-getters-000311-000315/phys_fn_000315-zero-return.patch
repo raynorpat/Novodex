@@ -1,0 +1,9 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ NxU32 NpScene::getShapePairFlags(NxShape& shape0, NxShape& shape1) const
+    {
+@@
+-	return cpmGetShapePairFlags(mScene, internalShape0, internalShape1);
++	return 0;
+    }

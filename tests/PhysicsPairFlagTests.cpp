@@ -130,6 +130,14 @@ int wmain(int argc, wchar_t** argv)
 	printf("pairflag same_shape flags=%08x count=%u array=%u self_entries=%u errors=%u\n",
 		sameShapeFlags, sameShapeCount, sameShapeArray ? 1u : 0u, sameShapeEntries, errorStream.reports);
 
+	// A distinct, valid pair exercises the getter's stored-value path. The
+	// same-shape case above only proves the oracle's invalid-input return.
+	scene->setShapePairFlags(*compoundShapes[0], *compoundShapes[1], NX_NOTIFY_ON_TOUCH);
+	const NxU32 shapePairFlags = scene->getShapePairFlags(*compoundShapes[0], *compoundShapes[1]);
+	printf("pairflag shape flags=%08x count=%u\n", shapePairFlags, scene->getNbPairs());
+	if(shapePairFlags != NX_NOTIFY_ON_TOUCH)
+		return nxFail("shape-pair flags were not returned for a valid pair");
+
 	NxPairFlagHeldSceneWriteLock held = {
 		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(scene) + 0x0c),
 		CreateEventA(0, TRUE, FALSE, 0), CreateEventA(0, TRUE, FALSE, 0) };

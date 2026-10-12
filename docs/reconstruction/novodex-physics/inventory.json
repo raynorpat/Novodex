@@ -6064,13 +6064,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/108",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1038",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsPairFlagTests staged oracle/candidate differential; stdout_delta=4 under the row-specific zero-return mutant, baseline and restored differential exact (stdout_delta=0, stderr_exact=True).",
+      "notes": "The public pair-flag fixture queries the flags after setting NX_IGNORE_PAIR; the zero-return mutant is caught, and the restored candidate matches exactly. Evidence: evidence/phase7-npscene-pair-flag-getters-000311-000315/README.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getActorPairFlags",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getActorPairFlags@NpScene@@UBEIAAVNxActor@@0@Z",
+        "address": "0x100410e0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000312",
@@ -6138,13 +6146,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/110",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1042",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsPairFlagTests staged oracle/candidate differential; candidate_exit=1, stdout_delta=14 under the row-specific zero-return mutant, baseline and restored differential exact (stdout_delta=0, stderr_exact=True).",
+      "notes": "The public fixture now sets NX_NOTIFY_ON_TOUCH between two distinct shapes and asserts the stored flags are returned. This specifically falsifies the valid-pair lookup path; the previous same-shape error case alone could not detect a zero-return mutant. Evidence: evidence/phase7-npscene-pair-flag-getters-000311-000315/README.md.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getShapePairFlags",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getShapePairFlags@NpScene@@UBEIAAVNxShape@@0@Z",
+        "address": "0x10041530",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000316",

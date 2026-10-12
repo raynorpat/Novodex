@@ -1,0 +1,8 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ NxU32 NpScene::getActorPairFlags(NxActor& actor0, NxActor& actor1) const
+    {
+-	return mScene ? cpmGetActorPairFlags(mScene, &actor0, &actor1) : 0;
++	return 0;
+    }
