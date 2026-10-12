@@ -1928,6 +1928,15 @@ static unsigned nxRunFluidCollisionShapeCounterDifferential(
 		const bool matched = oracleReturnValid && candidateReturnValid
 			&& oracleCountsValid && candidateCountsValid && stateMatches
 			&& oracleStack && candidateStack;
+		if(!matched)
+			printf("fluid collision shape-count-router detail case=%u type=%u "
+				"flags=%04x owner=%02x return=%u/%u counts=%u/%u state=%u "
+				"stack=%u/%u expected_offset=%x return_kind=%u\n", test,
+				cases[test].type, cases[test].builderFlags,
+				cases[test].ownerFlags, oracleReturnValid, candidateReturnValid,
+				oracleCountsValid, candidateCountsValid, stateMatches,
+				oracleStack, candidateStack, cases[test].counterOffset,
+				cases[test].returnKind);
 		oracleContract &= oracleReturnValid && oracleCountsValid && oracleStack;
 		if(!matched)
 			++mismatches;
