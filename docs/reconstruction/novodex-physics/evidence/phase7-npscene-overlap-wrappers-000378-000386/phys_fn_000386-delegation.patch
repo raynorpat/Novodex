@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000386 (0x0000d580)
+-const bool result = mScene->checkOverlapAABB(worldBounds, shapeType);
++const bool result = false;

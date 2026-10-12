@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000382 (0x0000d480)
+-const NxU32 result = mScene->cullShapes(nbPlanes, worldPlanes, shapeType, nbShapes, shapes, callback);
++const NxU32 result = 0;

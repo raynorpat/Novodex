@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000384 (0x0000d500)
+-const bool result = mScene->checkOverlapSphere(worldSphere, shapeType);
++const bool result = false;

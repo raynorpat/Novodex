@@ -1,0 +1,6 @@
+--- a/Physics/src/NpScene.cpp
++++ b/Physics/src/NpScene.cpp
+@@
+ // phys_fn_000380 (0x0000d400)
+-const NxU32 result = mScene->overlapAABBShapes(worldBounds, shapeType, nbShapes, shapes, callback);
++const NxU32 result = 0;
