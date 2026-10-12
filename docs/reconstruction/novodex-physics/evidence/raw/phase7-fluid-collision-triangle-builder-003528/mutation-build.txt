@@ -1,0 +1,12 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-collision-continuation\Novodex\build\triangle-cells-red\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-collision-continuation\Novodex\build\triangle-cells-red\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-collision-continuation\Novodex\build\triangle-cells-red\External\Release\NxQhull.lib
+  FluidCollision.cpp
+     Creating library C:/Users/raynorpat/.codex/worktrees/fluid-collision-continuation/Novodex/build/triangle-cells-red/Release/NxPhysics.lib and object C:/Users/raynorpat/.codex/worktrees/fluid-collision-continuation/Novodex/build/triangle-cells-red/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-collision-continuation\Novodex\build\triangle-cells-red\Release\NxPhysics.dll
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-collision-continuation\Novodex\build\triangle-cells-red\Release\FluidModel.dll
+  NxPhysicsFluidEmitterAbiTests.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-collision-continuation\Novodex\build\triangle-cells-red\Release\NxPhysicsFluidEmitterAbiTests.exe
+  Staging NxPhysics.dll under a distinct module name for direct DLL-row testing

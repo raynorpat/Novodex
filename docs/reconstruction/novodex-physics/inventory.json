@@ -65958,13 +65958,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1316",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12422",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation and instruction flow at RVA 0x86b40 show that the row iterates indexed mesh triangles, transforms all three vertices by the mesh 3x4 affine transform, resets the output cell count, calls phys_fn_003524 with margin and cell size, then calls phys_fn_003526 to accumulate per-cell bucket hashes. The descriptor stores triangleCount at +0, indices at +4, vertices at +0x0c, and twelve transform floats at +0x10.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls pinned oracle RVA 0x86b40 and map-resolved nxFluidCollisionBuildTriangleCells. Three cases compare an identity-transformed mesh, an asymmetric rotated/translated mesh, and an empty mesh. Final triangle cells, all seven bucket records, untouched array tails, and x86 stack balance match (oracle digest b2825642, seven total final cells). A no-output candidate mutation is rejected by both nonempty mesh cases (mismatches=2); restored control is exact. The oracle triangle-cell callback slots are bound to the independent SAT and growth fixture because FluidModel.dll is absent from the supplied UE3 binaries.",
+      "notes": "Direct consumer of phys_fn_003524 and phys_fn_003526. Dirty static-collision builder phys_fn_003505 remains open. The direct row differential supplies independent triangle SAT and array-growth callbacks to the oracle; production FluidModel callback integration and Unreal-level static-collision validation remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionBuildTriangleCells"
     },
     {
       "id": "phys_fn_003529",

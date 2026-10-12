@@ -188,6 +188,63 @@ extern "C" short __cdecl nxFluidCollisionTriangleCells(
 	return completedLayers;
 	}
 
+struct NxFluidCollisionTriangleMesh
+	{
+	unsigned triangleCount;
+	const unsigned* indices;
+	unsigned reserved;
+	const float* vertices;
+	float transform[12];
+	};
+
+static_assert(offsetof(NxFluidCollisionTriangleMesh, transform) == 0x10,
+	"phys_fn_003528 reads the 3x4 transform at mesh descriptor +0x10");
+static_assert(sizeof(NxFluidCollisionTriangleMesh) == 0x40,
+	"phys_fn_003528 reads a 0x40-byte static collision mesh descriptor");
+
+static void nxFluidCollisionTransformVertex(const float* input,
+	const float* transform, float* output)
+	{
+	const float x = input[0];
+	const float y = input[1];
+	const float z = input[2];
+	output[0] = ((x * transform[0] + y * transform[3])
+		+ z * transform[6]) + transform[9];
+	output[1] = ((x * transform[1] + y * transform[4])
+		+ z * transform[7]) + transform[10];
+	output[2] = ((x * transform[2] + y * transform[5])
+		+ z * transform[8]) + transform[11];
+	}
+
+// phys_fn_003528 (RVA 0x00086b40) transforms each indexed mesh triangle,
+// enumerates its overlapped cells, then adds those cells to the bucket hash.
+extern "C" void __cdecl nxFluidCollisionBuildTriangleCells(
+	NxFluidCollisionBucketHashDescriptor* hash,
+	const NxFluidCollisionTriangleMesh* mesh, float margin, float cellSize,
+	NxFluidCollisionInt16Vector3Array* cells)
+	{
+	if(!cells)
+		return;
+	for(unsigned triangle = 0; triangle < mesh->triangleCount; ++triangle)
+		{
+		const unsigned* const indices = mesh->indices + triangle * 3;
+		const float* const first = mesh->vertices + indices[0] * 3;
+		const float* const second = mesh->vertices + indices[1] * 3;
+		const float* const third = mesh->vertices + indices[2] * 3;
+		float transformed[3][3];
+		nxFluidCollisionTransformVertex(first, mesh->transform, transformed[0]);
+		nxFluidCollisionTransformVertex(second, mesh->transform, transformed[1]);
+		nxFluidCollisionTransformVertex(third, mesh->transform, transformed[2]);
+		cells->count = 0;
+		const unsigned __int64 secondAndThird =
+			(static_cast<unsigned __int64>(reinterpret_cast<uintptr_t>(transformed[2])) << 32)
+			| reinterpret_cast<uintptr_t>(transformed[1]);
+		nxFluidCollisionTriangleCells(cells, transformed[0], secondAndThird,
+			margin, cellSize);
+		nxFluidCollisionCountBuckets(hash, cells);
+		}
+	}
+
 struct NxFluidCollisionBucket
 	{
 	int cellCount;
