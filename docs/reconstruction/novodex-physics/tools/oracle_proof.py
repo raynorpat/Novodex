@@ -24,6 +24,10 @@ SHAPE_BOXSWEEP_INPUT = re.compile(
 SHAPE_BOXSWEEP_OUTPUT = re.compile(
     r"^shape vtable boxsweep oracle_digest=([0-9a-f]{8}) cases=(\d+) failures=\d+$")
 LAYOUT_ORACLE_DIGEST = re.compile(r"^layout oracle digest=([0-9a-f]{8})$")
+FLUID_ORACLE_FIELD = re.compile(r"^oracle(?:_[A-Za-z0-9_]+)?=\S+$")
+FLUID_ORACLE_CONTEXT_FIELDS = frozenset((
+    "cases", "records", "buckets", "cells", "indices", "fluids", "emitters",
+    "live-fluids"))
 
 
 def sha256(data):
@@ -248,6 +252,44 @@ def _verify_layout_digest(expected, lines):
     }
 
 
+def _verify_fluid_oracle_lines(expected, lines):
+    selected_lines = []
+    for line in lines:
+        tokens = line.split()
+        fields = []
+        prefix = []
+        in_fields = False
+        has_oracle_value = False
+        for token in tokens:
+            if re.fullmatch(r"[A-Za-z0-9_-]+=\S+", token):
+                in_fields = True
+                key = token.split("=", 1)[0]
+                if FLUID_ORACLE_FIELD.fullmatch(token):
+                    fields.append(token)
+                    has_oracle_value = True
+                elif key in FLUID_ORACLE_CONTEXT_FIELDS:
+                    fields.append(token)
+            elif not in_fields:
+                prefix.append(token)
+        if has_oracle_value:
+            selected_lines.append(" ".join(prefix + fields))
+
+    failures = []
+    if len(selected_lines) != expected.get("oracle_output_lines"):
+        failures.append("oracle output line count differs from the pinned baseline")
+    output_digest = (sha256(("\n".join(selected_lines) + "\n").encode("ascii"))
+                     if selected_lines else None)
+    if output_digest != expected.get("oracle_output_digest_sha256"):
+        failures.append("oracle output digest differs from the pinned baseline")
+    if failures:
+        return failures, None
+    return failures, {
+        "oracle_output_lines": len(selected_lines),
+        "oracle_output_digest_sha256": output_digest,
+        "selected_lines": selected_lines,
+    }
+
+
 def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
                              repo_root):
     """Return (failures, proof); candidate-only values are intentionally ignored."""
@@ -287,6 +329,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
         failures_for_format, measurements = _verify_shape_boxsweep(expected, lines)
     elif proof_format == "layout_digest":
         failures_for_format, measurements = _verify_layout_digest(expected, lines)
+    elif proof_format == "fluid_oracle_lines":
+        failures_for_format, measurements = _verify_fluid_oracle_lines(expected, lines)
     else:
         failures_for_format, measurements = ["unsupported oracle proof format: %s"
                                                % proof_format], None

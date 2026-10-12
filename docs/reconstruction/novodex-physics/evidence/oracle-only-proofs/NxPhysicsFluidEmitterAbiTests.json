@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "target": "NxPhysicsFluidEmitterAbiTests",
+  "format": "fluid_oracle_lines",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
+  "fixture_source_sha256": "360f29f319b1740d2a696fcfc2b33f3e37c964dfdd79cfd77543937c104d990f",
+  "proof_lines_sha256": "41b8474e59aab537fe111737c7e3548b87ae77de7bd991600b71cd3773728265",
+  "baseline_sha256": "0a9887548bdd0649c0d2b204fae2e30a7a8f8f46b0ef4b8f6670c8ebf3b9b37b",
+  "oracle_output_lines": 24,
+  "oracle_output_digest_sha256": "41b8474e59aab537fe111737c7e3548b87ae77de7bd991600b71cd3773728265",
+  "proof_sha256": "d54782b912fd22a14b0569b991269733fa8f5624fc9a759ab32709b8f4c7a7db"
+}

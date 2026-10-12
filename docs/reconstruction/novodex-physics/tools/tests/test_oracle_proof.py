@@ -137,6 +137,62 @@ class OracleProofTests(unittest.TestCase):
                 ORACLE_SHA, self.root)
             self.assertTrue(failures, "changed layout evidence must be rejected")
 
+    def test_fluid_oracle_proof_ignores_candidate_fields_and_pins_oracle_fields(self):
+        source_bytes = b"fixed fluid emitter fixture"
+        source = self.root / "tests/PhysicsFluidEmitterAbiTests.cpp"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        normalized = (
+            "fluid collision triangle-cells cases=3 oracle_digest=86d21a58 oracle_cells=14\n"
+            "fluid emitter owner/frame cases=2 oracle_owner=1 oracle_frame_actor=1\n")
+        expected_digest = hashlib.sha256(normalized.encode("ascii")).hexdigest()
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsFluidEmitterAbiTests": {
+                    "format": "fluid_oracle_lines",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
+                    "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                    "oracle_output_lines": 2,
+                    "oracle_output_digest_sha256": expected_digest,
+                }
+            },
+        }
+        lines = [
+            "fluid collision triangle-cells cases=3 oracle_digest=86d21a58 "
+            "candidate_digest=86d21a58 oracle_cells=14 candidate_present=1 mismatches=0",
+            "fluid emitter owner/frame cases=2 oracle_owner=1 candidate_owner=1 "
+            "candidate_frame_actor=1 oracle_frame_actor=1 dll_owner=1 mismatches=0",
+        ]
+
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsFluidEmitterAbiTests", lines, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["oracle_output_lines"], 2)
+        self.assertEqual(proof["oracle_output_digest_sha256"], expected_digest)
+
+        candidate_changed = [
+            lines[0].replace("candidate_digest=86d21a58", "candidate_digest=ffffffff")
+                .replace("mismatches=0", "mismatches=17"),
+            lines[1].replace("candidate_owner=1", "candidate_owner=0")
+                .replace("candidate_frame_actor=1", "candidate_frame_actor=0")
+                .replace("dll_owner=1", "dll_owner=0"),
+        ]
+        failures, candidate_proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsFluidEmitterAbiTests", candidate_changed,
+            ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(candidate_proof["proof_sha256"], proof["proof_sha256"])
+
+        changed_oracle = list(lines)
+        changed_oracle[0] = changed_oracle[0].replace(
+            "oracle_digest=86d21a58", "oracle_digest=00000000")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsFluidEmitterAbiTests", changed_oracle,
+            ORACLE_SHA, self.root)
+        self.assertTrue(any("oracle output digest" in failure for failure in failures), failures)
+
     def test_rejects_changed_input_digest(self):
         lines = list(self.transcript)
         lines[1] = lines[1].replace(INPUT_DIGEST, "0000000000000000")
@@ -389,6 +445,9 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
             elif target == "NxPhysicsObjectLayoutTests":
                 self.assertEqual(phases, ["5", "6", "7"],
                     "the object-layout oracle differential is shared by Phases 5-7")
+            elif target == "NxPhysicsFluidEmitterAbiTests":
+                self.assertEqual(phases, ["5", "7"],
+                    "the fluid-emitter ABI oracle differential is shared by Phases 5 and 7")
             else:
                 self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
@@ -419,6 +478,10 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsObjectLayoutTests.cpp")
                 self.assertEqual(len(expected["oracle_digest_fnv32"]), 8)
                 self.assertEqual(sum(line == expected["coverage_line"] for line in lines), 1)
+            elif expected["format"] == "fluid_oracle_lines":
+                self.assertEqual(expected["fixture_source"], "tests/PhysicsFluidEmitterAbiTests.cpp")
+                self.assertEqual(expected["oracle_output_lines"], 24)
+                self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
             else:
                 self.assertEqual(expected["format"], "joint_matrix")
                 self.assertEqual(expected["cases"], 122)
@@ -472,6 +535,11 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                     self.assertEqual(proof["oracle_digest_fnv32"],
                                      expected["oracle_digest_fnv32"])
                     self.assertEqual(proof["coverage_line"], expected["coverage_line"])
+                elif proof["format"] == "fluid_oracle_lines":
+                    self.assertEqual(proof["oracle_output_lines"],
+                                     expected["oracle_output_lines"])
+                    self.assertEqual(proof["oracle_output_digest_sha256"],
+                                     expected["oracle_output_digest_sha256"])
                 else:
                     self.assertEqual(proof["input_lines"], expected["input_lines"])
                     self.assertEqual(proof["case_family_counts"], expected["case_family_counts"])
