@@ -1,0 +1,11 @@
+--- a/Physics/src/FluidCollision.cpp
++++ b/Physics/src/FluidCollision.cpp
+@@ -303,7 +303,7 @@
+ 			unsigned* const association = descriptor->indices
+ 				+ 2 * (record->words[2] + record->words[3]);
+ 			association[0] = meshIndex;
+-			association[1] = triangleIndex;
++			association[1] = triangleIndex + 1;
+ 			++record->words[2];
+ 			break;
+ 			}

@@ -66092,13 +66092,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1320",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12436",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation and instruction flow at RVA 0x871d0 show the helper walks signed-16-bit XYZ cells, computes (x + 101*y + 7919*z) modulo the bucket count, searches that bucket's contiguous cell-record range for matching packed XY and signed Z, appends the mesh and triangle indices at twice (record association count + prefix), increments the record count, and returns 1.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls pinned oracle RVA 0x871d0 and map-resolved nxFluidCollisionAppendCellIndex. Three cases cover a matching cell, two matching cells in separate buckets plus a miss, and empty input. Complete bucket rows, cell records, association storage, returns, and x86 stack balance match (mismatches=0). Changing the appended triangle index by +1 is detected by both nonempty cases (mismatches=2); restored control is exact. The absent FindCDCell callback slot is bound to an independent linear bucket-range lookup.",
+      "notes": "Called from phys_fn_003537/003538 while building mesh cell associations. The callback fixture supplies the absent FindCDCell operation because FluidModel.dll is not present in the pinned UE3 binaries. Production extension integration and the enclosing dirty builder phys_fn_003505 remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionAppendCellIndex"
     },
     {
       "id": "phys_fn_003536",

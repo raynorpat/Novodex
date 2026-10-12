@@ -10433,3 +10433,5 @@ Phase 7 indexed-grid closure: phys_fn_003532 and phys_fn_003533 share one contig
 
 Phase 7 closure evidence: phys_fn_003532 is the entry/guard row for the indexed-grid wrapper; the direct differential detects the nonempty skipped-loop mutant with mismatches=1, while empty and null-output behavior match.
 Phase 7 closure evidence: phys_fn_003533 is the contiguous body row of the same indexed-grid wrapper; the direct differential detects the nonempty skipped-loop mutant with mismatches=1, while restored cell/bucket data, returns, and x86 stack match.
+
+Phase 7 closure evidence: phys_fn_003535 appends mesh/triangle associations to matching cell records using signed-cell hashing and per-record prefix counts. The direct match/miss/empty oracle cases compare complete buckets, records, index storage, returns, and x86 stack. A triangle-index +1 mutation is caught in both nonempty cases (mismatches=2); restored control is exact. The absent FindCDCell callback is supplied by an independent bucket-range lookup. See evidence/phase7-fluid-cell-index-003535.md.

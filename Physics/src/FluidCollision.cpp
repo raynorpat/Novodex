@@ -257,6 +257,60 @@ struct NxFluidCollisionCell
 	unsigned words[4];
 	};
 
+struct NxFluidCollisionIndexDescriptor
+	{
+	unsigned* buckets;
+	unsigned bucketCount;
+	unsigned reserved08;
+	NxFluidCollisionCell* cells;
+	unsigned reserved10;
+	unsigned reserved14;
+	unsigned* indices;
+	};
+static_assert(sizeof(NxFluidCollisionIndexDescriptor) == 28,
+	"phys_fn_003535 reads the collision descriptor through +0x18");
+static_assert(offsetof(NxFluidCollisionIndexDescriptor, cells) == 0x0c,
+	"phys_fn_003535 reads cell records at +0x0c");
+static_assert(offsetof(NxFluidCollisionIndexDescriptor, indices) == 0x18,
+	"phys_fn_003535 reads association storage at +0x18");
+
+// phys_fn_003535 (RVA 0x000871d0) hashes one signed-16-bit XYZ grid cell,
+// finds its cell record in the selected 12-byte bucket, appends the mesh and
+// triangle indices at the record's prefix, and increments its association count.
+extern "C" int __cdecl nxFluidCollisionAppendCellIndex(
+	NxFluidCollisionIndexDescriptor* descriptor, unsigned meshIndex,
+	unsigned triangleIndex, const NxFluidCollisionInt16Vector3Array* cells)
+	{
+	for(int cell = 0; cell < cells->count; ++cell)
+		{
+		const short* const coordinates = cells->data + cell * 3;
+		unsigned xy = 0;
+		memcpy(&xy, coordinates, sizeof(xy));
+		const short z = coordinates[2];
+		const int signedHash = static_cast<int>(coordinates[0])
+			+ 101 * static_cast<int>(coordinates[1])
+			+ 7919 * static_cast<int>(z);
+		const unsigned bucketIndex = static_cast<unsigned>(signedHash)
+			% descriptor->bucketCount;
+		unsigned* const bucket = descriptor->buckets + bucketIndex * 3;
+		NxFluidCollisionCell* const first = descriptor->cells + bucket[1];
+		for(unsigned offset = 0; offset < bucket[0]; ++offset)
+			{
+			NxFluidCollisionCell* const record = first + offset;
+			if(record->words[0] != xy
+				|| *reinterpret_cast<const short*>(&record->words[1]) != z)
+				continue;
+			unsigned* const association = descriptor->indices
+				+ 2 * (record->words[2] + record->words[3]);
+			association[0] = meshIndex;
+			association[1] = triangleIndex;
+			++record->words[2];
+			break;
+			}
+		}
+	return 1;
+	}
+
 // phys_fn_003530 (RVA 0x00086e00) folds grid-cell coordinates into each
 // collision bucket, merging duplicates through the bucket's contiguous range.
 extern "C" int __cdecl nxFluidCollisionAccumulateCellCounts(
