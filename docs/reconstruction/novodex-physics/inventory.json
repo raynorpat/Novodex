@@ -68198,13 +68198,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1377",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12624",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "The scalar deleting destructor delegates to nxFluidManagerDestroyArrays for array/backend cleanup, then calls the Foundation allocator free only when deleteObject bit 0 is set.",
+      "dynamic_proof": "The populated-manager SimulationTests fixture mutation-falsifies cleanup delegation (calls=0, flags=0, arrays-cleared=0, stdout_delta=54). NxPhysicsAllocatorReleaseTests uses an allocator spy to invoke oracle RVA 0x89fd0 and candidate map symbol ?nxFluidManagerDeletingDestructor@@YIPAXPAX0E@Z with deleteObject 0 and 1, requiring no free for 0 and exactly one free of the manager pointer for 1. Suppressing the candidate free yields mismatches=1 and stdout_delta=2. Restored Phase 6 and Phase 7 gates pass at 1,603/1,603 and 1,701/1,700. See evidence/phase7-fluid-manager-deleting-destructor-003647.md.",
+      "notes": "Populated teardown delegation and delete-flag deallocation are separately mutation-falsified through the registered simulation and allocator-spy differentials.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?nxFluidManagerDeletingDestructor@@YIPAXPAX0E@Z",
+      "candidate_map_reference": {
+        "path": "build/approved-five-family-current/Release/NxPhysics.map",
+        "symbol": "?nxFluidManagerDeletingDestructor@@YIPAXPAX0E@Z",
+        "address": "0x100586d0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003648",

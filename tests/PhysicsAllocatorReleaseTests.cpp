@@ -137,6 +137,73 @@ static bool nxRunRow(HMODULE physics, const wchar_t* pairDirectory,
 	return failures == 0;
 	}
 
+static bool nxRunFluidManagerDeletingDestructor(HMODULE physics,
+	const wchar_t* pairDirectory, bool candidate)
+	{
+	void* entry = reinterpret_cast<unsigned char*>(physics) + 0x89fd0;
+	if(candidate && !nxResolveMapAddress(pairDirectory, physics,
+		"?nxFluidManagerDeletingDestructor@@YIPAXPAX0E@Z", &entry))
+		{
+		fprintf(stderr, "FAIL candidate fluid manager deleting destructor missing from map\n");
+		return false;
+		}
+	void** allocatorImportSlot = reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(physics) +
+			(candidate ? 0x0011a0b0 : 0x001041bc));
+	if(candidate && !nxResolveMapAddress(pairDirectory, physics,
+		"__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A",
+		reinterpret_cast<void**>(&allocatorImportSlot)))
+		{
+		fprintf(stderr, "FAIL candidate allocator import slot missing from map\n");
+		return false;
+		}
+	void** allocatorVariable = *reinterpret_cast<void***>(allocatorImportSlot);
+	if(!allocatorVariable)
+		{
+		fprintf(stderr, "FAIL imported allocator global variable is null\n");
+		return false;
+		}
+	DWORD oldProtect = 0;
+	if(!VirtualProtect(allocatorVariable, sizeof(void*), PAGE_READWRITE, &oldProtect))
+		return false;
+	void* originalAllocator = *allocatorVariable;
+	gAllocator.vtable = gAllocatorVtable;
+	gAllocatorVtable[5] = reinterpret_cast<void*>(&nxRecordFree);
+	*allocatorVariable = &gAllocator;
+
+	unsigned failures = 0;
+	for(unsigned char deleteObject = 0; deleteObject != 2; ++deleteObject)
+		{
+		unsigned char manager[0x34] = {};
+		gFreeCount = 0;
+		memset(gFreed, 0, sizeof(gFreed));
+		void* result = 0;
+		if(candidate)
+			{
+			typedef void* (__fastcall* CandidateDeletingDestructor)(void*, void*, unsigned char);
+			CandidateDeletingDestructor destroy = reinterpret_cast<CandidateDeletingDestructor>(entry);
+			result = destroy(manager, 0, deleteObject);
+			}
+		else
+			{
+			typedef void* (__thiscall* OracleDeletingDestructor)(void*, unsigned char);
+			OracleDeletingDestructor destroy = reinterpret_cast<OracleDeletingDestructor>(entry);
+			result = destroy(manager, deleteObject);
+			}
+		const unsigned expectedFrees = deleteObject & 1 ? 1u : 0u;
+		if(result != manager || gFreeCount != expectedFrees ||
+			(expectedFrees && gFreed[0] != manager))
+			++failures;
+		}
+
+	*allocatorVariable = originalAllocator;
+	DWORD ignored = 0;
+	VirtualProtect(allocatorVariable, sizeof(void*), oldProtect, &ignored);
+	printf("fluid manager deleting-destructor cases=2 frees=0,1 pointers=1 mismatches=%u\n",
+		failures);
+	return failures == 0;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -151,6 +218,7 @@ int wmain(int argc, wchar_t** argv)
 		"@nxReleaseAllocatorFields004149@4", 4149);
 	matched &= nxRunRow(physics, pairDirectory, candidate, 0x9a560,
 		"@nxReleaseAllocatorFields004151@4", 4151);
+	matched &= nxRunFluidManagerDeletingDestructor(physics, pairDirectory, candidate);
 	if(!matched) return 1;
 	return nxReportPairIdentity(pairDirectory);
 	}

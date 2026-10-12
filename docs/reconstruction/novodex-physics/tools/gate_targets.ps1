@@ -15,7 +15,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests')
     '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsAllocatorReleaseTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests')
     '8' = @()
 }
 
@@ -3551,6 +3551,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsAllocatorReleaseTests' = @(
         'allocrelease row=004149 cases=8 failures=0'
         'allocrelease row=004151 cases=8 failures=0'
+        'fluid manager deleting-destructor cases=2 frees=0,1 pointers=1 mismatches=0'
     )
     'NxPhysicsSceneBoundsPlanesTests' = @(
         # The descriptor creates six static AABB faces and the default ground plane.
@@ -5845,7 +5846,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2670  # includes enabled FluidModel create/list/release fixture differential
+	'5' = 2671  # includes enabled FluidModel create/list/release fixture differential
 				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential
@@ -5883,7 +5884,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1602  # includes enabled FluidModel create/list/release fixture differential
+	'6' = 1603  # includes the allocator-spy deleting-destructor assertion
+				# includes enabled FluidModel create/list/release fixture differential
 				# all registered Phase 6 staged-pair and oracle-differential assertions
                # previous 1238 plus the D6 public global-anchor readback
                # previous 1234 plus three contended D6 drive write-lock reports
@@ -5904,7 +5906,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1697  # includes enabled FluidModel create/list/release fixture differential
+	'7' = 1701  # includes the allocator release target's three required lines
+				# includes enabled FluidModel create/list/release fixture differential
 				# includes fluid owner/frame, attribute callbacks, name rows, local pose-copy rows and shape-packer/static-collision differentials
 				# includes fluid scene-shape collector differential
 				# includes fluid mesh-array append differential

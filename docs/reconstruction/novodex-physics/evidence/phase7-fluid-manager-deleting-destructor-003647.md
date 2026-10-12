@@ -1,0 +1,5 @@
+# Fluid manager scalar deleting destructor (`phys_fn_003647`)
+
+The destructor delegates array/backend cleanup to `nxFluidManagerDestroyArrays`, then frees the manager through the Foundation allocator only when delete flag bit 0 is set. The populated simulation fixture reaches the destructor through the manager vtable with deleteObject=0; a callsite mutant suppressing cleanup changes its marker from two destructor calls and cleared arrays to zero calls and uncleared arrays, with candidate exit 1 and `stdout_delta=54`.
+
+A focused allocator-spy differential invokes oracle RVA `0x89fd0` and candidate `?nxFluidManagerDeletingDestructor@@YIPAXPAX0E@Z` from the candidate map. It calls both deleteObject values, requiring no manager free for 0 and exactly one free of the manager pointer for 1. Suppressing the candidate free is caught (`mismatches=1`, candidate exit 1, `stdout_delta=2`); restored output is exact. Full Phase 6 and Phase 7 gates pass at 1,603/1,603 and 1,701/1,700 coverage assertions.
