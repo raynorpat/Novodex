@@ -65638,13 +65638,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1310",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12363",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA disassembly/decompilation at RVA 0x86400 establishes cdecl (builder, shape), shape flags at +0xde, owner pointer at +4, owner exclusion bit at owner+0x14, and type at shape+0xd0. It routes static types 0-4 to builder offsets +0x34/+0x4c/+0x40/+0x58/+0x04 and dynamic types 0-3 to +0x70/+0x7c/+0x94/+0x88.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares the pinned oracle RVA and candidate DLL for 13 cases covering all supported static/dynamic types, both unsupported paths, owner exclusion, and the 0x200 refresh early return. It checks literal counter expectations, return semantics, full builder/shape state, and cdecl stack balance. A dynamic type-2 offset mutation (+0x94 to +0x90) is detected in that case (oracle count valid=1, candidate count valid=0, mismatches=1); restored control reports oracle_contract=1, stack=1/1, mismatches=0. Phase 5 passes 2652/2652 and Phase 7 passes 1679/1679. See evidence/phase7-fluid-collision-shape-counter-003511.md.",
+      "notes": "The shape classifier is reconstructed and row-specifically mutation-falsified. Its dependent static-collision builder phys_fn_003505 and manager dirty-refresh path remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionCountShapeType"
     },
     {
       "id": "phys_fn_003512",
