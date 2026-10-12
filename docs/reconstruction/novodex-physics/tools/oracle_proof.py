@@ -23,6 +23,7 @@ SHAPE_BOXSWEEP_INPUT = re.compile(
     r"^shape vtable boxsweep inputs=(\d+) digest=([0-9a-f]{8})$")
 SHAPE_BOXSWEEP_OUTPUT = re.compile(
     r"^shape vtable boxsweep oracle_digest=([0-9a-f]{8}) cases=(\d+) failures=\d+$")
+LAYOUT_ORACLE_DIGEST = re.compile(r"^layout oracle digest=([0-9a-f]{8})$")
 
 
 def sha256(data):
@@ -218,6 +219,35 @@ def _verify_shape_boxsweep(expected, lines):
     }
 
 
+def _verify_layout_digest(expected, lines):
+    failures = []
+    digest_lines = [line for line in lines if line.startswith("layout oracle digest=")]
+    coverage_lines = [line for line in lines if line.startswith("layout coverage ")]
+    digest_match = (LAYOUT_ORACLE_DIGEST.fullmatch(digest_lines[0])
+                    if len(digest_lines) == 1 else None)
+    if len(digest_lines) != 1:
+        failures.append("expected exactly one layout oracle digest line; found %d"
+                        % len(digest_lines))
+    elif digest_match is None:
+        failures.append("layout oracle digest line is malformed")
+    if len(coverage_lines) != 1:
+        failures.append("expected exactly one layout coverage line; found %d"
+                        % len(coverage_lines))
+    elif coverage_lines[0] != expected.get("coverage_line"):
+        failures.append("layout coverage differs from the pinned baseline")
+
+    oracle_digest = digest_match.group(1) if digest_match else None
+    if oracle_digest and oracle_digest != expected.get("oracle_digest_fnv32"):
+        failures.append("oracle layout digest differs from the pinned baseline")
+    if failures or not digest_match or len(coverage_lines) != 1:
+        return failures, None
+    return failures, {
+        "oracle_digest_fnv32": oracle_digest,
+        "coverage_line": coverage_lines[0],
+        "selected_lines": [coverage_lines[0], digest_lines[0]],
+    }
+
+
 def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
                              repo_root):
     """Return (failures, proof); candidate-only values are intentionally ignored."""
@@ -255,6 +285,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
         failures_for_format, measurements = _verify_joint_matrix(expected, lines)
     elif proof_format == "shape_boxsweep":
         failures_for_format, measurements = _verify_shape_boxsweep(expected, lines)
+    elif proof_format == "layout_digest":
+        failures_for_format, measurements = _verify_layout_digest(expected, lines)
     else:
         failures_for_format, measurements = ["unsupported oracle proof format: %s"
                                                % proof_format], None
@@ -308,13 +340,19 @@ def main(argv=None):
     output = pathlib.Path(args.evidence_output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(proof, indent=2) + "\n", encoding="utf-8")
-    input_digest = proof.get("input_digest_fnv64", proof.get("input_digest_sha256"))
+    input_digest = proof.get("input_digest_fnv64",
+                             proof.get("input_digest_fnv32",
+                                       proof.get("input_digest_sha256")))
     output_digest = proof.get("oracle_output_digest_fnv64",
                               proof.get("oracle_output_digest_fnv32",
                                         proof.get("oracle_output_digest_sha256")))
-    sys.stdout.write("oracle proof pass target=%s cases=%d input_digest=%s "
+    cases = " cases=%d" % proof["cases"] if "cases" in proof else ""
+    output_digest = output_digest or proof.get("oracle_digest_fnv32")
+    input_digest_text = (" input_digest=%s" % input_digest
+                         if input_digest is not None else "")
+    sys.stdout.write("oracle proof pass target=%s%s%s "
                      "oracle_output_digest=%s proof_sha256=%s evidence=%s\n" %
-                     (proof["target"], proof["cases"], input_digest,
+                     (proof["target"], cases, input_digest_text,
                       output_digest, proof["proof_sha256"], output))
     return 0
 

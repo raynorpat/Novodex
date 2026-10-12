@@ -76,6 +76,67 @@ class OracleProofTests(unittest.TestCase):
         failures, _ = self.verify(lines=lines)
         self.assertTrue(any("oracle output digest" in failure for failure in failures), failures)
 
+    def test_layout_digest_proof_pins_oracle_and_coverage_markers(self):
+        source_bytes = b"fixed object layout fixture"
+        source = self.root / "tests/PhysicsObjectLayoutTests.cpp"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsObjectLayoutTests": {
+                    "format": "layout_digest",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
+                    "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                    "oracle_digest_fnv32": "6a5f0123",
+                    "coverage_line": "layout coverage tables=62 colobj=1 owner=1",
+                }
+            },
+        }
+        lines = [
+            "layout coverage tables=62 colobj=1 owner=1",
+            "layout oracle digest=6a5f0123",
+            "layout candidate digest=ffffffff",
+        ]
+
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsObjectLayoutTests", lines, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["oracle_digest_fnv32"], "6a5f0123")
+        self.assertEqual(proof["coverage_line"], "layout coverage tables=62 colobj=1 owner=1")
+
+    def test_layout_digest_proof_rejects_changed_or_missing_oracle_markers(self):
+        source_bytes = b"fixed object layout fixture"
+        source = self.root / "tests/PhysicsObjectLayoutTests.cpp"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsObjectLayoutTests": {
+                    "format": "layout_digest",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
+                    "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                    "oracle_digest_fnv32": "6a5f0123",
+                    "coverage_line": "layout coverage tables=62 colobj=1 owner=1",
+                }
+            },
+        }
+        good = [
+            "layout coverage tables=62 colobj=1 owner=1",
+            "layout oracle digest=6a5f0123",
+        ]
+        for changed in (
+                [good[0], "layout oracle digest=6a5f0000"],
+                ["layout coverage tables=61 colobj=1 owner=1", good[1]],
+                [good[0], good[1], good[1]]):
+            failures, _ = oracle_proof.verify_oracle_transcript(
+                manifest, "NxPhysicsObjectLayoutTests", changed,
+                ORACLE_SHA, self.root)
+            self.assertTrue(failures, "changed layout evidence must be rejected")
+
     def test_rejects_changed_input_digest(self):
         lines = list(self.transcript)
         lines[1] = lines[1].replace(INPUT_DIGEST, "0000000000000000")
@@ -317,12 +378,17 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
         registered = set(test_gate_targets.registered_targets(
             "NxRegisteredOracleDifferentialTargets"))
         coverage = test_gate_targets.registered_lines()
+        self.assertIn("NxPhysicsObjectLayoutTests", manifest["targets"],
+                      "Phase 5's object-layout oracle differential needs a pinned baseline")
 
         for target, expected in manifest["targets"].items():
             phases = [phase for phase, targets in phase_targets.items() if target in targets]
             if target == "NxPhysicsJointSupportTests":
                 self.assertEqual(phases, ["6", "7"],
                     "the shared joint-support oracle differential closes Phase 6 and remains in Phase 7")
+            elif target == "NxPhysicsObjectLayoutTests":
+                self.assertEqual(phases, ["5", "6", "7"],
+                    "the object-layout oracle differential is shared by Phases 5-7")
             else:
                 self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
@@ -349,6 +415,10 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(len(expected["oracle_output_digest_fnv32"]), 8)
                 self.assertEqual(sum(line.startswith("shape vtable boxsweep inputs=84 digest=")
                                       for line in lines), 1)
+            elif expected["format"] == "layout_digest":
+                self.assertEqual(expected["fixture_source"], "tests/PhysicsObjectLayoutTests.cpp")
+                self.assertEqual(len(expected["oracle_digest_fnv32"]), 8)
+                self.assertEqual(sum(line == expected["coverage_line"] for line in lines), 1)
             else:
                 self.assertEqual(expected["format"], "joint_matrix")
                 self.assertEqual(expected["cases"], 122)
@@ -381,7 +451,8 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(proof["baseline_sha256"], baseline_hash)
                 self.assertEqual(proof["oracle_sha256"], expected["oracle_sha256"])
                 self.assertEqual(proof["fixture_source_sha256"], expected["fixture_source_sha256"])
-                self.assertEqual(proof["cases"], expected["cases"])
+                if "cases" in expected:
+                    self.assertEqual(proof["cases"], expected["cases"])
                 self.assertEqual(proof["format"], expected.get("format", "joint_support"))
                 if proof["format"] == "joint_support":
                     self.assertEqual(proof["input_digest_fnv64"], expected["input_digest_fnv64"])
@@ -397,6 +468,10 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                                      expected["input_digest_fnv32"])
                     self.assertEqual(proof["oracle_output_digest_fnv32"],
                                      expected["oracle_output_digest_fnv32"])
+                elif proof["format"] == "layout_digest":
+                    self.assertEqual(proof["oracle_digest_fnv32"],
+                                     expected["oracle_digest_fnv32"])
+                    self.assertEqual(proof["coverage_line"], expected["coverage_line"])
                 else:
                     self.assertEqual(proof["input_lines"], expected["input_lines"])
                     self.assertEqual(proof["case_family_counts"], expected["case_family_counts"])
