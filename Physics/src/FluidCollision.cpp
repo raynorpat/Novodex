@@ -716,3 +716,25 @@ extern "C" void* __cdecl nxFluidCollisionAppendSphere(void* descriptor,
 	++*count;
 	return descriptor;
 	}
+
+// phys_fn_003545 (RVA 0x000877a0) appends a capsule's two geometry words
+// followed by its packed collision record to the caller-owned 88-byte array.
+extern "C" void* __cdecl nxFluidCollisionAppendCapsule(void* descriptor,
+	void* shape)
+	{
+	unsigned char* const shapeBytes = static_cast<unsigned char*>(shape);
+	if(*reinterpret_cast<unsigned*>(shapeBytes + 0xd0) != 3)
+		return 0;
+	unsigned record[22] = {};
+	record[0] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe0);
+	record[1] = *reinterpret_cast<unsigned*>(shapeBytes + 0xe4);
+	nxFluidCollisionPackShapeData(record + 2, shape);
+	unsigned char* const descriptorBytes =
+		static_cast<unsigned char*>(descriptor);
+	unsigned char* const storage =
+		*reinterpret_cast<unsigned char**>(descriptorBytes);
+	unsigned* const count = reinterpret_cast<unsigned*>(descriptorBytes + 4);
+	memcpy(storage + *count * sizeof(record), record, sizeof(record));
+	++*count;
+	return descriptor;
+	}
