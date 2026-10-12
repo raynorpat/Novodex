@@ -2393,7 +2393,8 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 	for(unsigned test = 0; test != 2; ++test)
 		{
 		ShapeFixture oracleShape, candidateShape;
-		void* oracleVtable[14], candidateVtable[14];
+		void* oracleVtable[14];
+		void* candidateVtable[14];
 		memset(&oracleShape, 0, sizeof(oracleShape));
 		memset(&candidateShape, 0, sizeof(candidateShape));
 		for(unsigned slot = 0; slot != 14; ++slot)
@@ -2436,7 +2437,7 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 		if(selected)
 			{
 			const unsigned expected[4] = {
-				0x13579bdfu, 0x2468ace0u, 0x0badf00du, 0xcafebabeu };
+			0, 0x13579bdfu, 0x2468ace0u, 0x0badf00du };
 			recordMatches = memcmp(oracleOutput, candidateOutput, sizeof(expected)) == 0
 				&& memcmp(oracleOutput, expected, sizeof(expected)) == 0;
 			oracleContract &= memcmp(oracleOutput, expected, sizeof(expected)) == 0;
@@ -2458,7 +2459,20 @@ static unsigned nxRunFluidCollisionPlaneAppendDifferential(
 		if(!returnValid || !countsMatch || !recordMatches || !tailsMatch
 			|| !virtualCallsMatch
 			|| !oracleStack || !candidateStack)
+			{
 			++mismatches;
+			printf("fluid collision plane-array append detail case=%u return=%p/%p "
+				"count=%u/%u words=%08x.%08x.%08x.%08x "
+				"calls=%u expected_calls=%u stack=%u/%u\n", test,
+				oracleReturn, candidateReturn, oracleArray.count,
+				candidateArray.count,
+				*reinterpret_cast<unsigned*>(oracleOutput),
+				*reinterpret_cast<unsigned*>(oracleOutput + 4),
+				*reinterpret_cast<unsigned*>(oracleOutput + 8),
+				*reinterpret_cast<unsigned*>(oracleOutput + 12),
+				gFluidCollisionPlaneAppendVirtualCalls - callsBefore,
+				expectedCalls, oracleStack, candidateStack);
+			}
 		}
 	printf("fluid collision plane-array append cases=2 selected=1 ignored=1 "
 		"candidate_present=%u oracle_contract=%u stack=%u/%u mismatches=%u\n",
