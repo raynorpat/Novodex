@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "target": "NxPhysicsAssetTests",
+  "format": "asset_oracle_digest",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "fixture_source_sha256": "4a7c4dd7c752d42b8875778074c08e6f5735fdf006b426f983c7990da201dceb",
+  "fixture_sources": [
+    "tests/PhysicsAssetTests.cpp",
+    "docs/reconstruction/novodex-physics/cases/assets/formats.json",
+    "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt"
+  ],
+  "proof_lines_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f",
+  "baseline_sha256": "40d01f319ee81f06426a843aa84cace4cef24505bbfd57b7a7a958fc5c15b1c7",
+  "cases": 32,
+  "accepted": 15,
+  "rejected": 16,
+  "errors": 10,
+  "oracle_output_digest_fnv32": "1daa095e",
+  "oracle_output_digest_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f",
+  "coverage_line": "asset coverage driven=32 accepted=15 rejected=16 errors=10",
+  "proof_sha256": "db1d330b9d14615491866203f04531690d34b0309ec1383c4d580a722f48748a"
+}

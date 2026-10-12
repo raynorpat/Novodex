@@ -69,6 +69,21 @@
       "oracle_output_lines": 3233,
       "input_digest_sha256": "a35c701865c1044c912493ee63ffc759ceb70457ca779e086fd300b1da5f953e",
       "oracle_output_digest_sha256": "ebb13c0e366b7dbe57a9232b7116d989706e7bc38b275a19872e3fb2105392f2"
+    },
+    "NxPhysicsAssetTests": {
+      "format": "asset_oracle_digest",
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_sources": [
+        "tests/PhysicsAssetTests.cpp",
+        "docs/reconstruction/novodex-physics/cases/assets/formats.json",
+        "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt"
+      ],
+      "fixture_source_sha256": "4a7c4dd7c752d42b8875778074c08e6f5735fdf006b426f983c7990da201dceb",
+      "cases": 32,
+      "expect_mismatches": 0,
+      "oracle_output_digest_fnv32": "1daa095e",
+      "coverage_line": "asset coverage driven=32 accepted=15 rejected=16 errors=10",
+      "oracle_output_digest_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f"
     }
   }
 }

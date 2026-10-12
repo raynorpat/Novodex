@@ -193,6 +193,74 @@ class OracleProofTests(unittest.TestCase):
             ORACLE_SHA, self.root)
         self.assertTrue(any("oracle output digest" in failure for failure in failures), failures)
 
+    def test_asset_oracle_proof_pins_multi_file_inputs_and_summary(self):
+        source_names = [
+            "tests/PhysicsAssetTests.cpp",
+            "docs/reconstruction/novodex-physics/cases/assets/formats.json",
+            "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt",
+        ]
+        source_bytes = {
+            source_names[0]: b"fixed asset harness",
+            source_names[1]: b"fixed asset fixture JSON",
+            source_names[2]: b"fixed recorded oracle transcript",
+        }
+        for source_name, content in source_bytes.items():
+            source = self.root / source_name
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_bytes(content)
+        source_hashes = [(name, hashlib.sha256(source_bytes[name]).hexdigest())
+                         for name in source_names]
+        source_bundle = "".join("%s:%s\n" % item for item in source_hashes)
+        source_digest = hashlib.sha256(source_bundle.encode("utf-8")).hexdigest()
+        selected = "asset coverage driven=32 accepted=15 rejected=16 errors=10\nasset oracle digest=1daa095e expect_mismatches=0\n"
+        output_digest = hashlib.sha256(selected.encode("ascii")).hexdigest()
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsAssetTests": {
+                    "format": "asset_oracle_digest",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_sources": source_names,
+                    "fixture_source_sha256": source_digest,
+                    "cases": 32,
+                    "oracle_output_digest_fnv32": "1daa095e",
+                    "coverage_line": "asset coverage driven=32 accepted=15 rejected=16 errors=10",
+                    "oracle_output_digest_sha256": output_digest,
+                }
+            },
+        }
+        lines = [
+            "asset coverage driven=32 accepted=15 rejected=16 errors=10",
+            "asset oracle digest=1daa095e expect_mismatches=0",
+            "asset candidate mismatches=0 mode=differential",
+        ]
+
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsAssetTests", lines, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["cases"], 32)
+        self.assertEqual(proof["oracle_output_digest_fnv32"], "1daa095e")
+        self.assertEqual(proof["oracle_output_digest_sha256"], output_digest)
+        self.assertEqual(proof["fixture_sources"], source_names)
+
+        candidate_changed = list(lines)
+        candidate_changed[2] = "asset candidate mismatches=99 mode=differential"
+        failures, candidate_proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsAssetTests", candidate_changed, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(candidate_proof["proof_sha256"], proof["proof_sha256"])
+
+        changed_oracle = list(lines)
+        changed_oracle[1] = changed_oracle[1].replace("1daa095e", "00000000")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsAssetTests", changed_oracle, ORACLE_SHA, self.root)
+        self.assertTrue(any("digest" in failure for failure in failures), failures)
+
+        (self.root / source_names[1]).write_bytes(b"changed asset fixture JSON")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsAssetTests", lines, ORACLE_SHA, self.root)
+        self.assertTrue(any("fixture source SHA-256" in failure for failure in failures), failures)
+
     def test_rejects_changed_input_digest(self):
         lines = list(self.transcript)
         lines[1] = lines[1].replace(INPUT_DIGEST, "0000000000000000")
@@ -448,13 +516,19 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
             elif target == "NxPhysicsFluidEmitterAbiTests":
                 self.assertEqual(phases, ["5", "7"],
                     "the fluid-emitter ABI oracle differential is shared by Phases 5 and 7")
+            elif target == "NxPhysicsAssetTests":
+                self.assertEqual(phases, ["4"], "asset oracle proof belongs to Phase 4")
             else:
                 self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
             lines = coverage[target]
-            source_path = TOOLS.parents[3] / expected["fixture_source"]
-            self.assertEqual(oracle_proof.file_sha256(source_path),
-                             expected["fixture_source_sha256"])
+            if "fixture_sources" in expected:
+                source_digest = oracle_proof.fixture_sources_sha256(
+                    expected["fixture_sources"], TOOLS.parents[3])
+            else:
+                source_digest = oracle_proof.file_sha256(
+                    TOOLS.parents[3] / expected["fixture_source"])
+            self.assertEqual(source_digest, expected["fixture_source_sha256"])
             if expected.get("format", "joint_support") == "joint_support":
                 output_prefix = "joint_support kind5 cases=%d oracle=%s " % (
                     expected["cases"], expected["oracle_output_digest_fnv64"])
@@ -481,6 +555,15 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
             elif expected["format"] == "fluid_oracle_lines":
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsFluidEmitterAbiTests.cpp")
                 self.assertEqual(expected["oracle_output_lines"], 24)
+                self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
+            elif expected["format"] == "asset_oracle_digest":
+                self.assertEqual(expected["fixture_sources"], [
+                    "tests/PhysicsAssetTests.cpp",
+                    "docs/reconstruction/novodex-physics/cases/assets/formats.json",
+                    "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt",
+                ])
+                self.assertEqual(expected["cases"], 32)
+                self.assertEqual(expected["oracle_output_digest_fnv32"], "1daa095e")
                 self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
             else:
                 self.assertEqual(expected["format"], "joint_matrix")
@@ -538,6 +621,13 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 elif proof["format"] == "fluid_oracle_lines":
                     self.assertEqual(proof["oracle_output_lines"],
                                      expected["oracle_output_lines"])
+                    self.assertEqual(proof["oracle_output_digest_sha256"],
+                                     expected["oracle_output_digest_sha256"])
+                elif proof["format"] == "asset_oracle_digest":
+                    self.assertEqual(proof["fixture_sources"], expected["fixture_sources"])
+                    self.assertEqual(proof["cases"], expected["cases"])
+                    self.assertEqual(proof["oracle_output_digest_fnv32"],
+                                     expected["oracle_output_digest_fnv32"])
                     self.assertEqual(proof["oracle_output_digest_sha256"],
                                      expected["oracle_output_digest_sha256"])
                 else:

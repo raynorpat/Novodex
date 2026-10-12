@@ -1,3 +1,15 @@
+### Continuation — retained Phase 4 asset oracle proof (2026-10-12)
+
+Pinned the shipped-oracle asset self-check as `NxPhysicsAssetTests` in the
+oracle-only baseline registry. The proof covers 32 cases (15 accepted, 16
+rejected, 10 expected errors), binds the harness and both checked-in asset
+fixture files, and retains the oracle digest `1daa095e`; candidate-only output
+is excluded. The proof is emitted from the asset self-oracle transcript and
+is integrity-checked against the manifest. Remaining unpinned registered
+oracle targets are `NxPhysicsCollisionTests` and `NxPhysicsThirdPartyTests`.
+This adds retained oracle evidence; it does not claim the Phase 4 candidate
+differential or the asset reconstruction is complete.
+
 ### Continuation — joint value-return observability and closure (2026-10-10)
 
 Added bit-exact anchor/axis values to the staged-pair joint family transcript and registered all ten family assertions. This makes the value-return wrappers independently observable; a `+1.0f` X mutation to either helper now changes the transcript by 244 bytes. Rows `phys_fn_004137` and `phys_fn_004139` are closed with clean restored controls. Phase 6 has 104 closed and 329 open function rows. The complete Phase 6 gate passes: all ten staged-pair targets exact and 1,564 coverage assertions run (minimum required: 1,267). The oracle-only joint matrix baseline was regenerated from the pinned DLL for the added transcript fields.

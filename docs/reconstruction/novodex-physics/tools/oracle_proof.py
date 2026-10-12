@@ -25,6 +25,10 @@ SHAPE_BOXSWEEP_OUTPUT = re.compile(
     r"^shape vtable boxsweep oracle_digest=([0-9a-f]{8}) cases=(\d+) failures=\d+$")
 LAYOUT_ORACLE_DIGEST = re.compile(r"^layout oracle digest=([0-9a-f]{8})$")
 FLUID_ORACLE_FIELD = re.compile(r"^oracle(?:_[A-Za-z0-9_]+)?=\S+$")
+ASSET_ORACLE_DIGEST = re.compile(
+    r"^asset oracle digest=([0-9a-f]{8}) expect_mismatches=(\d+)$")
+ASSET_COVERAGE = re.compile(
+    r"^asset coverage driven=(\d+) accepted=(\d+) rejected=(\d+) errors=(\d+)$")
 FLUID_ORACLE_CONTEXT_FIELDS = frozenset((
     "cases", "records", "buckets", "cells", "indices", "fluids", "emitters",
     "live-fluids"))
@@ -38,6 +42,23 @@ def file_sha256(path):
     # Fixture source is text and checkouts may materialize LF or CRLF. Pin the
     # logical source bytes so a proof remains valid across those worktrees.
     return sha256(pathlib.Path(path).read_bytes().replace(b"\r\n", b"\n"))
+
+
+def fixture_sources_sha256(source_names, repo_root):
+    """Hash an ordered set of normalized fixture and harness source files."""
+    if not isinstance(source_names, list) or not source_names:
+        raise ValueError("fixture_sources must be a nonempty list")
+    hashed_sources = []
+    for source_name in source_names:
+        source_rel = pathlib.PurePosixPath(source_name)
+        if not source_name or source_rel.is_absolute() or ".." in source_rel.parts:
+            raise ValueError("fixture source path is invalid: %s" % source_name)
+        source_path = pathlib.Path(repo_root).joinpath(*source_rel.parts)
+        if not source_path.is_file():
+            raise ValueError("fixture source is missing: %s" % source_name)
+        hashed_sources.append((source_name, file_sha256(source_path)))
+    bundle = "".join("%s:%s\n" % item for item in hashed_sources)
+    return sha256(bundle.encode("utf-8"))
 
 
 def _verify_joint_support(expected, lines):
@@ -290,6 +311,56 @@ def _verify_fluid_oracle_lines(expected, lines):
     }
 
 
+def _verify_asset_oracle_digest(expected, lines):
+    failures = []
+    digest_lines = [line for line in lines if line.startswith("asset oracle digest=")]
+    coverage_lines = [line for line in lines if line.startswith("asset coverage ")]
+    digest_match = (ASSET_ORACLE_DIGEST.fullmatch(digest_lines[0])
+                    if len(digest_lines) == 1 else None)
+    coverage_match = (ASSET_COVERAGE.fullmatch(coverage_lines[0])
+                      if len(coverage_lines) == 1 else None)
+    if len(digest_lines) != 1:
+        failures.append("expected exactly one asset oracle digest line; found %d"
+                        % len(digest_lines))
+    elif digest_match is None:
+        failures.append("asset oracle digest line is malformed")
+    if len(coverage_lines) != 1:
+        failures.append("expected exactly one asset coverage line; found %d"
+                        % len(coverage_lines))
+    elif coverage_match is None:
+        failures.append("asset coverage line is malformed")
+
+    if digest_match:
+        oracle_digest, expect_mismatches = digest_match.groups()
+        if oracle_digest != expected.get("oracle_output_digest_fnv32"):
+            failures.append("oracle asset digest differs from the pinned baseline")
+        if int(expect_mismatches) != expected.get("expect_mismatches", 0):
+            failures.append("oracle fixture mismatch count differs from the pinned baseline")
+    if coverage_match:
+        cases, accepted, rejected, errors = map(int, coverage_match.groups())
+        if cases != expected.get("cases"):
+            failures.append("oracle asset case count differs from the pinned baseline")
+        if coverage_lines[0] != expected.get("coverage_line"):
+            failures.append("asset coverage differs from the pinned baseline")
+
+    if failures or not digest_match or not coverage_match:
+        return failures, None
+    selected_lines = [coverage_lines[0], digest_lines[0]]
+    output_digest = sha256(("\n".join(selected_lines) + "\n").encode("ascii"))
+    if output_digest != expected.get("oracle_output_digest_sha256"):
+        return ["oracle output digest differs from the pinned baseline"], None
+    return failures, {
+        "cases": cases,
+        "accepted": accepted,
+        "rejected": rejected,
+        "errors": errors,
+        "oracle_output_digest_fnv32": oracle_digest,
+        "oracle_output_digest_sha256": output_digest,
+        "coverage_line": coverage_lines[0],
+        "selected_lines": selected_lines,
+    }
+
+
 def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
                              repo_root):
     """Return (failures, proof); candidate-only values are intentionally ignored."""
@@ -302,20 +373,23 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
     if oracle_sha256.lower() != expected.get("oracle_sha256", "").lower():
         failures.append("oracle DLL SHA-256 differs from the pinned baseline")
 
-    source_name = expected.get("fixture_source", "")
-    source_rel = pathlib.PurePosixPath(source_name)
-    if not source_name or source_rel.is_absolute() or ".." in source_rel.parts:
-        failures.append("fixture source path is invalid")
-        source_digest = None
-    else:
-        source_path = pathlib.Path(repo_root).joinpath(*source_rel.parts)
-        if not source_path.is_file():
+    source_names = expected.get("fixture_sources")
+    if source_names is None:
+        source_name = expected.get("fixture_source", "")
+        source_metadata = {"fixture_source": source_name}
+        source_path = pathlib.Path(repo_root) / source_name
+        source_digest = file_sha256(source_path) if source_name and source_path.is_file() else None
+        if source_digest is None:
             failures.append("fixture source is missing: %s" % source_name)
+    else:
+        source_metadata = {"fixture_sources": source_names}
+        try:
+            source_digest = fixture_sources_sha256(source_names, repo_root)
+        except ValueError as error:
+            failures.append(str(error))
             source_digest = None
-        else:
-            source_digest = file_sha256(source_path)
-            if source_digest != expected.get("fixture_source_sha256"):
-                failures.append("fixture source SHA-256 differs from the pinned baseline")
+    if source_digest and source_digest != expected.get("fixture_source_sha256"):
+        failures.append("fixture source SHA-256 differs from the pinned baseline")
 
     lines = [line.rstrip("\r\n") for line in transcript_lines]
     proof_format = expected.get("format", "joint_support")
@@ -331,6 +405,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
         failures_for_format, measurements = _verify_layout_digest(expected, lines)
     elif proof_format == "fluid_oracle_lines":
         failures_for_format, measurements = _verify_fluid_oracle_lines(expected, lines)
+    elif proof_format == "asset_oracle_digest":
+        failures_for_format, measurements = _verify_asset_oracle_digest(expected, lines)
     else:
         failures_for_format, measurements = ["unsupported oracle proof format: %s"
                                                % proof_format], None
@@ -344,8 +420,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
             "target": target,
             "format": proof_format,
             "oracle_sha256": oracle_sha256.lower(),
-            "fixture_source": source_name,
             "fixture_source_sha256": source_digest,
+            **source_metadata,
             "proof_lines_sha256": sha256(selected_text.encode("ascii")),
             "baseline_sha256": sha256(json.dumps(
                 manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")),
