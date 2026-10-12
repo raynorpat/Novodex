@@ -66352,13 +66352,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1328",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12458",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA disassembly/decompilation at RVA 0x87880 establishes cdecl (builder, scene), Scene::shapes at scene+0x624, the container wrapper backing pointer at +0x1c, collection start/count fields at backing +0x04/+0x08/+0x0c, node shape pointer at node+4, and compound type 5 member range [shape+0xe0, shape+0xe4).",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares the pinned oracle RVA and candidate DLL for an empty scene, a mixed four-shape scene with a two-member compound, and a dynamic scene with a three-member compound including owner-excluded and refresh-marked members. Nine routed leaves check literal counter expectations, returns 0/4/2, complete builder state, and cdecl stack balance. A compound-member loop mutation is detected in both nonempty cases (counts=1/0, mismatches=2); restored control reports oracle_contract=1, stack=1/1, mismatches=0. Phase 5 passes 2653/2653 and Phase 7 passes 1680/1680. See evidence/phase7-fluid-collision-scene-shape-count-003549.md.",
+      "notes": "Scene shape collection is reconstructed and row-specifically mutation-falsified. The parallel typed-array collector phys_fn_003555 and the callback-backed static-collision builder phys_fn_003505 remain open.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionCountSceneShapes"
     },
     {
       "id": "phys_fn_003550",

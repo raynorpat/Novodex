@@ -10438,4 +10438,6 @@ Phase 7 closure evidence: phys_fn_003535 appends mesh/triangle associations to m
 
 Phase 7 closure evidence: phys_fn_003511 routes static and dynamic collision-shape types to the builder counters, honors the owner-exclusion and refresh flags, and preserves cdecl returns and stack balance across 13 direct oracle cases. Changing the dynamic type-2 count offset from +0x94 to +0x90 is caught (mismatches=1); restored control is exact. See evidence/phase7-fluid-collision-shape-counter-003511.md.
 
+Phase 7 closure evidence: phys_fn_003549 walks the Scene shape container in order and expands type-5 compound shapes into their member range before routing each leaf to phys_fn_003511. Empty, mixed, and dynamic/compound fixtures check return counts, per-type counters, and x86 stack balance. Skipping compound-member routing is caught in both nonempty cases (mismatches=2); restored control is exact. See evidence/phase7-fluid-collision-scene-shape-count-003549.md.
+
 Phase 7 closure evidence: phys_fn_003537 and phys_fn_003538 are the adjacent guard/body rows of nxFluidCollisionBuildTriangleIndices. The asymmetric two-triangle mesh, seeded empty input, and null-output cases match the direct oracle differential; incrementing meshIndex before association append is detected with mismatches=1. See evidence/phase7-fluid-triangle-index-builder-003537-003538.md.
