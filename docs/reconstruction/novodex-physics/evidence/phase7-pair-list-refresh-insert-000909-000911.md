@@ -26,3 +26,5 @@ were `d4662c9124fd748c28ae83a75aa82f0ee23621955eea65c7c6ee7f80bb5ed534` /
 
 Raw mutant and restored logs and both source patches are in
 `evidence/raw/phase7-pair-list-refresh-insert-000909-000911-20261013/`.
+
+Post-merge verification on `main` passes Phase 7 at 1,744/1,744, with both public-header manifests and inventory validation passing. Mainline-built candidate DLL SHA-256: `b80a1ad8feb6f1036217d9f06b006db30a3680ee26481b388ec8676edd22e2bb`. Transcript: `evidence/raw/phase7-pair-list-refresh-insert-000909-000911-20261013/phase7-postmerge-gate.log.gz`.
