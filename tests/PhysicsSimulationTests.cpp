@@ -126,7 +126,7 @@ class NxSimulationFailSizeAllocator : public NxUserAllocator
 		}
 	void* mallocDEBUG(size_t size, const char* fileName, int line) override
 		{
-			if(size == mFailSize)
+			if(size == mFailSize && !mFailCount)
 				{
 				++mFailCount;
 				return 0;
@@ -135,7 +135,7 @@ class NxSimulationFailSizeAllocator : public NxUserAllocator
 		}
 	void* malloc(size_t size) override
 		{
-			if(size == mFailSize)
+			if(size == mFailSize && !mFailCount)
 				{
 				++mFailCount;
 				return 0;
@@ -3335,9 +3335,14 @@ int wmain(int argc, wchar_t** argv)
 	thirdEmitterDesc.dimensionX = 0.5f;
 	thirdEmitterDesc.dimensionY = 0.75f;
 	enabledFluidDesc.emitters.pushBack(thirdEmitterDesc);
+	NxFluidEmitterDesc fourthEmitterDesc;
+	fourthEmitterDesc.setToDefault();
+	fourthEmitterDesc.relPose.t.set(-1.25f, 0.5f, 0.25f);
+	fourthEmitterDesc.dimensionX = 0.625f;
+	fourthEmitterDesc.dimensionY = 0.375f;
+	enabledFluidDesc.emitters.pushBack(fourthEmitterDesc);
 	simulationOutput.resetLast();
 	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
-	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
 	HMODULE const fluidFoundationModule = GetModuleHandleW(L"NxFoundation.dll");
 	NxUserAllocator** const fluidFoundationAllocatorSlot = fluidFoundationModule
 		? reinterpret_cast<NxUserAllocator**>(GetProcAddress(
@@ -3346,6 +3351,12 @@ int wmain(int argc, wchar_t** argv)
 	if(!fluidFoundationAllocatorSlot || !*fluidFoundationAllocatorSlot)
 		return nxFail("fluid creation allocator hook is unavailable");
 	NxUserAllocator* const savedFluidAllocator = *fluidFoundationAllocatorSlot;
+	NxSimulationFailSizeAllocator emitterFailAllocator(*savedFluidAllocator, 0x78);
+	*fluidFoundationAllocatorSlot = &emitterFailAllocator;
+	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
+	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	const bool enabledEmitterAllocationFailure =
+		emitterFailAllocator.mFailCount == 1;
 	NxSimulationFailSizeAllocator fluidFailAllocator(*savedFluidAllocator, 0x84);
 	*fluidFoundationAllocatorSlot = &fluidFailAllocator;
 	simulationOutput.resetLast();
@@ -3460,12 +3471,14 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterDestroy == 0 &&
 		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
 		fluidManagerCallbacks.emitterGetGlobalPose == 3;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u allocation-failure=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u allocation-failure=%u.%u emitter-allocation-failure=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledDescriptorValidationPassed,
 		enabledDescriptorValidationDiagnosticsExact ? 1u : 0u,
 		enabledFluidAllocationFailure ? 1u : 0u, fluidFailAllocator.mFailCount,
+		enabledEmitterAllocationFailure ? 1u : 0u,
+		emitterFailAllocator.mFailCount,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
 		enabledFluidCount, enabledFluidManagerArraysMatch ? 1u : 0u,
 		enabledFluidManagerCleared ? 1u : 0u,
@@ -3489,6 +3502,7 @@ int wmain(int argc, wchar_t** argv)
 	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 12 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
 		!enabledFluidAllocationFailure ||
+		!enabledEmitterAllocationFailure ||
 		!enabledFluidManagerFlags || !enabledFluid ||
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
 		!enabledFluidListed || !enabledFluidManagerArraysMatch ||

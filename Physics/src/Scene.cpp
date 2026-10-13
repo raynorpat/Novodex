@@ -962,6 +962,10 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	void* const context = backendManager;
 	const unsigned backendFluidHandle = reinterpret_cast<unsigned>(backendFluid);
 	const unsigned* const words = reinterpret_cast<const unsigned*>(&desc);
+	unsigned char* const internal = static_cast<unsigned char*>(
+		nxFoundationSDKAllocator->malloc(0x78, NX_MEMORY_PERSISTENT));
+	if(!internal)
+		return 0;
 	NxVec3 actorPosition;
 	actorPosition.set(*reinterpret_cast<const float*>(words + 18),
 		*reinterpret_cast<const float*>(words + 19),
@@ -972,10 +976,6 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 		words[21], words[23], words[22], words[14], words[24],
 		words[25] & 0x10, words[25] & 8, words[25] & 4,
 		words[12] != 0, words[15] & 2, words[13] & 2);
-	unsigned char* const internal = static_cast<unsigned char*>(
-		nxFoundationSDKAllocator->malloc(0x78, NX_MEMORY_PERSISTENT));
-	if(!internal)
-		return 0;
 	memset(internal, 0, 0x78);
 	*reinterpret_cast<void***>(internal) = gNxFluidEmitterVtable;
 	*reinterpret_cast<void**>(internal + 4) = fluid;
