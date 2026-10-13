@@ -1,3 +1,19 @@
+### Continuation — FluidManager array growth and swap removal (`phys_fn_003649`, 2026-10-13)
+
+Added a public DLL differential that creates seven licensed fluids, forcing both
+parallel manager arrays to grow to capacity 14. It checks public/internal order,
+swap removal of the third handle, seven create/destroy callbacks, and manager
+teardown. A temporary no-op mutation of the array-push helper is rejected
+(`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=68`); restored control is
+exact (`stdout_delta=0`, exact stderr). Phases 5, 6, and 7 pass at 2,706,
+1,639, and 1,768 registered assertions. All 814 reconstruction tooling tests
+pass; inventory validation reports 6,338 functions, 5,138 data objects, and
+zero unexplained entries.
+Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-enabled-create-003649.md`.
+The `phys_fn_003649` row remains partial; constructor subrows, failure ordering,
+and teardown interactions still need a branch-by-branch audit. Full DLL
+reconstruction remains active.
+
 ### Continuation — Fluid body-repulsion guard completion (`phys_fn_003601`, 2026-10-12)
 
 IDA identified three early-return distinctions that were missing from the

@@ -4454,6 +4454,91 @@ int wmain(int argc, wchar_t** argv)
 	if(!surfaceMeshPublicApiMatches)
 		return nxFail("licensed NxFluid surface-mesh get/release did not match the fixture contract");
 	}
+	bool fluidManagerArrayGrowthMatches = false;
+	{
+	NxSimulationFluidLicenseOverride fluidArrayLicenseOverride(804);
+	resetFluidManagerCallbacks();
+	simulationOutput.resetLast();
+	const unsigned fluidArrayErrorsBefore = simulationOutput.errors;
+	NxScene* const fluidArrayScene = fluidArrayLicenseOverride.ready
+		? sdk->createScene(fluidSceneDesc) : 0;
+	NxFluid* fluidArrayHandles[7] = {};
+	NxFluidDesc fluidArrayDesc;
+	fluidArrayDesc.setToDefault();
+	for(unsigned i = 0; i != 7 && fluidArrayScene; ++i)
+		fluidArrayHandles[i] = fluidArrayScene->createFluid(fluidArrayDesc);
+	NxFluid** const fluidArrayPublished = fluidArrayScene
+		? fluidArrayScene->getFluids() : 0;
+	const unsigned fluidArrayCount = fluidArrayScene
+		? fluidArrayScene->getNbFluids() : 0;
+	unsigned char* const fluidArraySceneInternal = fluidArrayScene
+		? *reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(
+			fluidArrayScene) + 0x24) : 0;
+	unsigned char* const fluidArrayManager = fluidArraySceneInternal
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+			fluidArraySceneInternal + 0x61c)) : 0;
+	unsigned* const fluidArrayPrimary = fluidArrayManager
+		? reinterpret_cast<unsigned*>(fluidArrayManager + 4) : 0;
+	unsigned* const fluidArraySecondary = fluidArrayManager
+		? reinterpret_cast<unsigned*>(fluidArrayManager + 0x14) : 0;
+	unsigned fluidArrayPublicCapacity = 0;
+	unsigned fluidArrayInternalCapacity = 0;
+	if(fluidArrayPrimary && fluidArrayPrimary[0] && fluidArrayPrimary[2])
+		fluidArrayInternalCapacity = (fluidArrayPrimary[2] -
+			fluidArrayPrimary[0]) / sizeof(unsigned);
+	if(fluidArraySecondary && fluidArraySecondary[0] && fluidArraySecondary[2])
+		fluidArrayPublicCapacity = (fluidArraySecondary[2] -
+			fluidArraySecondary[0]) / sizeof(unsigned);
+	bool fluidArrayOrderMatches = fluidArrayCount == 7 && fluidArrayPublished &&
+		fluidArrayInternalCapacity == 14 && fluidArrayPublicCapacity == 14;
+	for(unsigned i = 0; i != 7; ++i)
+		fluidArrayOrderMatches = fluidArrayOrderMatches && fluidArrayHandles[i] &&
+			fluidArrayPublished && fluidArrayPublished[i] == fluidArrayHandles[i] &&
+			fluidArrayPrimary && fluidArraySecondary &&
+			reinterpret_cast<void**>(fluidArrayPrimary[0])[i] ==
+				*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
+					fluidArrayHandles[i]) + 0x14) &&
+			reinterpret_cast<void**>(fluidArraySecondary[0])[i] ==
+				fluidArrayHandles[i];
+	if(fluidArrayScene && fluidArrayHandles[2])
+		fluidArrayScene->releaseFluid(*fluidArrayHandles[2]);
+	NxFluid** const fluidArrayAfterSwap = fluidArrayScene
+		? fluidArrayScene->getFluids() : 0;
+	const unsigned fluidArrayCountAfterSwap = fluidArrayScene
+		? fluidArrayScene->getNbFluids() : 0;
+	const bool fluidArraySwapRemoveMatches = fluidArrayAfterSwap &&
+		fluidArrayCountAfterSwap == 6 &&
+		fluidArrayAfterSwap[0] == fluidArrayHandles[0] &&
+		fluidArrayAfterSwap[1] == fluidArrayHandles[1] &&
+		fluidArrayAfterSwap[2] == fluidArrayHandles[6] &&
+		fluidArrayAfterSwap[3] == fluidArrayHandles[3] &&
+		fluidArrayAfterSwap[4] == fluidArrayHandles[4] &&
+		fluidArrayAfterSwap[5] == fluidArrayHandles[5];
+	for(unsigned i = 0; i != 7; ++i)
+		if(i != 2 && fluidArrayScene && fluidArrayHandles[i])
+			fluidArrayScene->releaseFluid(*fluidArrayHandles[i]);
+	FluidManagerCallbackSummary fluidArrayCallbacks = {};
+	getFluidManagerCallbackSummary(&fluidArrayCallbacks);
+	const bool fluidArrayManagerCleared = fluidArraySceneInternal &&
+		*reinterpret_cast<void**>(fluidArraySceneInternal + 0x61c) == 0;
+	fluidManagerArrayGrowthMatches = fluidArrayLicenseOverride.ready &&
+		fluidArrayOrderMatches && fluidArraySwapRemoveMatches &&
+		fluidArrayManagerCleared && fluidArrayCallbacks.managerCreate == 1 &&
+		fluidArrayCallbacks.managerDestroy == 1 &&
+		fluidArrayCallbacks.fluidCreate == 7 &&
+		fluidArrayCallbacks.fluidDestroy == 7 &&
+		simulationOutput.errors == fluidArrayErrorsBefore;
+	printf("simulation fluid manager-array-growth created=%u listed=%u capacity=%u.%u swap-remove=%u order=%u callbacks=%u.%u manager-cleared=%u errors=%u\n",
+		7u, fluidArrayCount, fluidArrayInternalCapacity,
+		fluidArrayPublicCapacity, fluidArraySwapRemoveMatches ? 1u : 0u,
+		fluidArrayOrderMatches ? 1u : 0u, fluidArrayCallbacks.fluidCreate,
+		fluidArrayCallbacks.fluidDestroy, fluidArrayManagerCleared ? 1u : 0u,
+		simulationOutput.errors - fluidArrayErrorsBefore);
+	if(fluidArrayScene)
+		sdk->releaseScene(*fluidArrayScene);
+	if(!fluidManagerArrayGrowthMatches)
+		return nxFail("fluid manager arrays did not preserve growth and removal order");
+	}
 	sdk->releaseScene(*enabledFluidScene);
 	bool enabledLicensedKernelGetter = false;
 	bool licensedStiffnessSetter = false;
