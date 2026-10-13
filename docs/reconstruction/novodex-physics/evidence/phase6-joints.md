@@ -10661,3 +10661,5 @@ Phase 6 actor-group hash rows `phys_fn_004153` and `phys_fn_004155` are independ
  Phase 7 continuation (2026-10-13): NxFluid viscosity rows phys_fn_003720/003722 are mutation-falsified through NxPhysicsSimulationTests: the getter diagnostic mutant is rejected at stdout_delta=2 and setter no-forward mutant at stdout_delta=52; restored controls match. Fresh Phase 5/6/7 gates pass at 2,687/2,687, 1,621/1,621 and 1,729/1,729. See evidence/phase7-npfluid-set-viscosity-003720-003722.md.
 Phase 7 public NxFluid viscosity getter phys_fn_003720: no-diagnostic mutation rejected at stdout_delta=2; restored differential exact. Evidence: evidence/phase7-npfluid-set-viscosity-003720-003722.md.
 Phase 7 public NxFluid viscosity setter phys_fn_003722: no-forward mutation rejected at stdout_delta=52; restored differential exact. Evidence: evidence/phase7-npfluid-set-viscosity-003720-003722.md.
+
+Phase 7 public NxFluid damping setter phys_fn_003726: no-forward callback mutation rejected at stdout_delta=52; restored differential exact. Evidence: evidence/phase7-npfluid-set-damping-003726.md.

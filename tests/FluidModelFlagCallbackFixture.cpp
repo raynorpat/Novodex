@@ -73,6 +73,9 @@ static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidSetViscosityCalls;
 static unsigned gFluidSetViscosityBits;
 static unsigned gFluidSetViscosityArgumentsValid;
+static unsigned gFluidSetDampingCalls;
+static unsigned gFluidSetDampingBits;
+static unsigned gFluidSetDampingArgumentsValid;
 static unsigned gFluidGetStaticCollisionRestitutionCalls;
 static unsigned gFluidGetStaticCollisionAdhesionCalls;
 static unsigned char gFluidStaticCollision[0x200];
@@ -267,6 +270,9 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidSetViscosityCalls = 0;
 	gFluidSetViscosityBits = 0;
 	gFluidSetViscosityArgumentsValid = 0;
+	gFluidSetDampingCalls = 0;
+	gFluidSetDampingBits = 0;
+	gFluidSetDampingArgumentsValid = 0;
 	gFluidGetStaticCollisionRestitutionCalls = 0;
 	gFluidGetStaticCollisionAdhesionCalls = 0;
 	gFluidEmitterCreateNullIndex = ~0u;
@@ -459,6 +465,28 @@ extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetViscosityObservation(
 	if(calls) *calls = gFluidSetViscosityCalls;
 	if(valueBits) *valueBits = gFluidSetViscosityBits;
 	if(argumentsValid) *argumentsValid = gFluidSetViscosityArgumentsValid;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidSetDamping(
+	void* manager, void* fluid, float value)
+	{
+	++gFluidSetDampingCalls;
+	memcpy(&gFluidSetDampingBits, &value, sizeof(value));
+	bool fluidFound = false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) /
+		sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			fluidFound = true;
+	gFluidSetDampingArgumentsValid =
+		manager == &gFluidManagerBackend && fluidFound;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetDampingObservation(
+	unsigned* calls, unsigned* valueBits, unsigned* argumentsValid)
+	{
+	if(calls) *calls = gFluidSetDampingCalls;
+	if(valueBits) *valueBits = gFluidSetDampingBits;
+	if(argumentsValid) *argumentsValid = gFluidSetDampingArgumentsValid;
 	}
 
 static bool nxFluidFixtureHasBackendFluid(void* manager, void* fluid)

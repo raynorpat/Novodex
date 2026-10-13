@@ -3189,13 +3189,13 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 11,
-    "dynamically_gated": 11,
+    "discovered": 10,
+    "dynamically_gated": 12,
     "reconstructed": 24
    },
    "bytes": {
-    "discovered": 1977,
-    "dynamically_gated": 922,
+    "discovered": 1807,
+    "dynamically_gated": 1092,
     "reconstructed": 1404
    },
    "phases": {

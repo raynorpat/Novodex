@@ -3286,6 +3286,8 @@ int wmain(int argc, wchar_t** argv)
 		unsigned*, unsigned*, unsigned*);
 	typedef void (__cdecl *GetFluidSetViscosityObservationFn)(
 		unsigned*, unsigned*, unsigned*);
+	typedef void (__cdecl *GetFluidSetDampingObservationFn)(
+		unsigned*, unsigned*, unsigned*);
 	struct FluidManagerCallbackSummary
 		{
 		unsigned managerCreate;
@@ -3326,6 +3328,9 @@ int wmain(int argc, wchar_t** argv)
 	GetFluidSetViscosityObservationFn getFluidSetViscosityObservation =
 		reinterpret_cast<GetFluidSetViscosityObservationFn>(GetProcAddress(
 			fluidModel, "NxGetFluidSetViscosityObservation"));
+	GetFluidSetDampingObservationFn getFluidSetDampingObservation =
+		reinterpret_cast<GetFluidSetDampingObservationFn>(GetProcAddress(
+			fluidModel, "NxGetFluidSetDampingObservation"));
 	GetFluidScalarCallsFn getFluidStaticRestitutionCalls = reinterpret_cast<
 		GetFluidScalarCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidStaticCollisionRestitutionCalls"));
@@ -3340,6 +3345,7 @@ int wmain(int argc, wchar_t** argv)
 			"NxSetFluidEmitterCreateNullIndex"));
 	if(!resetFluidManagerCallbacks || !getFluidDampingCalls ||
 		!getFluidSetStiffnessObservation || !getFluidSetViscosityObservation ||
+		!getFluidSetDampingObservation ||
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex)
@@ -3920,6 +3926,7 @@ int wmain(int argc, wchar_t** argv)
 	bool enabledLicensedKernelGetter = false;
 	bool licensedStiffnessSetter = false;
 	bool licensedViscositySetter = false;
+	bool licensedDampingSetter = false;
 	{
 	NxSimulationFluidLicenseOverride licenseOverride;
 	NxScene* const licensedFluidScene = licenseOverride.ready
@@ -3978,6 +3985,26 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation fluid public-api configuration licensed-set-viscosity value=%08x calls=%u args=%u errors=%u\n",
 		viscosityBitsAfter, viscosityCallsAfter - viscosityCallsBefore,
 		viscosityArgumentsAfter, licensedSetViscosityErrors);
+	unsigned dampingCallsBefore = 0, dampingBitsBefore = 0,
+		dampingArgumentsBefore = 0;
+	getFluidSetDampingObservation(&dampingCallsBefore, &dampingBitsBefore,
+		&dampingArgumentsBefore);
+	const unsigned licensedSetDampingErrorsBefore = simulationOutput.errors;
+	if(licensedFluid)
+		licensedFluid->setDamping(0.25f);
+	const unsigned licensedSetDampingErrors = simulationOutput.errors -
+		licensedSetDampingErrorsBefore;
+	unsigned dampingCallsAfter = 0, dampingBitsAfter = 0,
+		dampingArgumentsAfter = 0;
+	getFluidSetDampingObservation(&dampingCallsAfter, &dampingBitsAfter,
+		&dampingArgumentsAfter);
+	licensedDampingSetter = licenseOverride.ready && licensedFluid &&
+		licensedSetDampingErrors == 0 &&
+		dampingCallsAfter == dampingCallsBefore + 1 &&
+		dampingBitsAfter == 0x3e800000u && dampingArgumentsAfter == 1;
+	printf("simulation fluid public-api configuration licensed-set-damping value=%08x calls=%u args=%u errors=%u\n",
+		dampingBitsAfter, dampingCallsAfter - dampingCallsBefore,
+		dampingArgumentsAfter, licensedSetDampingErrors);
 	printf("simulation fluid public-api configuration licensed-set-stiffness value=%08x calls=%u args=%u errors=%u\n",
 		stiffnessBitsAfter, stiffnessCallsAfter - stiffnessCallsBefore,
 		stiffnessArgumentsAfter, licensedSetStiffnessErrors);
@@ -3993,8 +4020,8 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseScene(*licensedFluidScene);
 	}
 	if(!enabledLicensedKernelGetter || !licensedStiffnessSetter ||
-		!licensedViscositySetter)
-		return nxFail("licensed NxFluid stiffness/viscosity setter or kernel-radius getter did not forward through FluidModel");
+		!licensedViscositySetter || !licensedDampingSetter)
+		return nxFail("licensed NxFluid scalar setter or kernel-radius getter did not forward through FluidModel");
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
 	// header set, so supply its recovered byte layout without changing public
