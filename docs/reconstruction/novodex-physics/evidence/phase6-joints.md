@@ -10708,3 +10708,8 @@ Rows `phys_fn_003696` and `phys_fn_003698` are independently mutation-falsified 
 # Phase 7 continuation: friction solver row `phys_fn_000879`
 
 `phys_fn_000879` (`NxActorPair::row000879`) is mutation-falsified through the registered sliding-sphere simulation. An immediate-return mutant changes 132 transcript lines (`stdout_delta=132`); restored control matches exactly. See [phase7-friction-row-000879.md](phase7-friction-row-000879.md).
+
+
+# Phase 7 continuation: contact-pair force aggregation `phys_fn_000881`
+
+`phys_fn_000881` (`NxActorPair::row000881`) is mutation-falsified through the registered sliding-sphere contact callback. A no-op changes the summed-force output and is rejected with `stdout_delta=30`; the restored control is exact. See [phase7-contact-pair-force-000881.md](phase7-contact-pair-force-000881.md).

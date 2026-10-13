@@ -557,6 +557,8 @@ struct NxSimulationContactStreamReport : NxUserContactReport
 	unsigned patches;
 	unsigned points;
 	unsigned normal[3];
+	unsigned sumNormalForce[3];
+	unsigned sumFrictionForce[3];
 	unsigned point[3];
 	unsigned separation;
 	unsigned capturedCallbacks;
@@ -568,6 +570,8 @@ struct NxSimulationContactStreamReport : NxUserContactReport
 			capturedCallbacks(0)
 		{
 		memset(normal, 0, sizeof(normal));
+		memset(sumNormalForce, 0, sizeof(sumNormalForce));
+		memset(sumFrictionForce, 0, sizeof(sumFrictionForce));
 		memset(point, 0, sizeof(point));
 		memset(callbackPointCount, 0, sizeof(callbackPointCount));
 		memset(callbackPoint, 0, sizeof(callbackPoint));
@@ -580,6 +584,12 @@ struct NxSimulationContactStreamReport : NxUserContactReport
 		if(callback < 8)
 			capturedCallbacks = callback + 1;
 		events |= eventFlags;
+		sumNormalForce[0] = nxFloatBits(pair.sumNormalForce.x);
+		sumNormalForce[1] = nxFloatBits(pair.sumNormalForce.y);
+		sumNormalForce[2] = nxFloatBits(pair.sumNormalForce.z);
+		sumFrictionForce[0] = nxFloatBits(pair.sumFrictionForce.x);
+		sumFrictionForce[1] = nxFloatBits(pair.sumFrictionForce.y);
+		sumFrictionForce[2] = nxFloatBits(pair.sumFrictionForce.z);
 		NxContactStreamIterator iterator(pair.stream);
 		while(iterator.goNextPair())
 			{
@@ -2972,6 +2982,10 @@ int wmain(int argc, wchar_t** argv)
 		frictionReport.calls, frictionReport.events, frictionReport.pairs,
 		frictionReport.patches, frictionReport.points,
 		nxFloatBits(frictionMaterial.staticFriction), nxFloatBits(frictionMaterial.dynamicFriction));
+	printf("simulation friction pair-force normal=%08x.%08x.%08x friction=%08x.%08x.%08x\n",
+		frictionReport.sumNormalForce[0], frictionReport.sumNormalForce[1],
+		frictionReport.sumNormalForce[2], frictionReport.sumFrictionForce[0],
+		frictionReport.sumFrictionForce[1], frictionReport.sumFrictionForce[2]);
 	nxPrintActorMotionState("friction60", *slidingActor);
 	sdk->releaseScene(*frictionScene);
 	}

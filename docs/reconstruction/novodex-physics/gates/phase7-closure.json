@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 166,
+    "differential_falsified": 167,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 139,
-    "deferred_reconstructed_not_falsified": 175
+    "deferred_reconstructed_not_falsified": 174
   },
   "closed": [
     {
@@ -2662,6 +2662,17 @@
         "detected": "stdout_delta=132"
       },
       "note": "The registered public sliding-sphere-on-plane fixture exercises the kind-4 friction solver and checks its final 60-step state. See evidence/phase7-friction-row-000879.md and evidence/raw/phase7-friction-row-000879/."
+    },
+    {
+      "id": "phys_fn_000881",
+      "rva": "0x0001e500",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Replaced the candidate NxActorPair::row000881 body with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair simulation differential. The friction fixture still completed, but NxContactPair summed-force output changed from normal=80000000.c11cf5e3.80000000 friction=3d5ae33a.00000000.00000000 to normal=6e747d32.00000000.00000000 friction=012d1004.6e747d26.ffffffff. Both processes exited zero; the staged differential reported stdout_delta=30. Restoring the row returned stdout_delta=0 with exact stderr.",
+        "detected": "stdout_delta=30"
+      },
+      "note": "The registered sliding-sphere fixture records the NxContactPair summed normal and friction forces from contact callbacks. See evidence/phase7-contact-pair-force-000881.md and evidence/raw/phase7-contact-pair-force-000881/."
     }
   ],
   "deferred": [
@@ -3398,15 +3409,6 @@
       "id": "phys_fn_000867",
       "rva": "0x0001d260",
       "size": 103,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000881",
-      "rva": "0x0001e500",
-      "size": 213,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
