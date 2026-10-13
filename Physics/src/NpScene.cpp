@@ -1088,12 +1088,16 @@ NxU32 NpScene::getNbFluids() const
 
 NxFluid** NpScene::getFluids()
 	{
-	if(!mScene)
-		return 0;
+	// phys_fn_000421 (0x0000dac0) holds the scene read lock while loading the
+	// optional fluid-manager public-object array.
+	void* link = mPointer08;
+	nxNpSceneGuardEnter(link);
 	const unsigned char* const scene = reinterpret_cast<const unsigned char*>(mScene);
 	const unsigned char* const manager = *reinterpret_cast<unsigned char* const*>(scene + 0x61c);
-	return manager ? reinterpret_cast<NxFluid**>(
+	NxFluid** const fluids = manager ? reinterpret_cast<NxFluid**>(
 		*reinterpret_cast<const unsigned*>(manager + 0x14)) : 0;
+	nxNpSceneGuardLeave(link);
+	return fluids;
 	}
 
 // phys_fn_000404 (0x0000d8a0). Implicit meshes are unavailable in the pinned

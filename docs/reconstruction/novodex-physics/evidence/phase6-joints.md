@@ -10641,3 +10641,5 @@ Phase 7 `NpScene::getNbActors` row `phys_fn_000416` is mutation-falsified throug
 Phase 7 `NpScene::getActors` row `phys_fn_000418` is mutation-falsified through `NxPhysicsSceneBoundsPlanesTests`: replacing the getter with a null return is rejected with `candidate_exit=1`, `stdout_delta=5`; restored control is exact. The full Phase 7 gate passes at 1,722/1,722. See `evidence/phase7-npscene-getactors-000418.md`.
 
 Phase 7 `NpScene::getNbFluids` row `phys_fn_000420` is mutation-falsified through `NxPhysicsSimulationTests`: replacing its count with zero is rejected with `candidate_exit=1`, `stdout_delta=53`; restored control is exact. The full Phase 7 gate passes at 1,722/1,722. See `evidence/phase7-npscene-getnbfluids-000420.md`.
+
+Phase 7 `NpScene::getFluids` row `phys_fn_000421` is mutation-falsified through `NxPhysicsSimulationTests`: replacing the getter with null is rejected with `candidate_exit=1`, `stdout_delta=53`; restored control is exact. The full Phase 7 gate passes at 1,722/1,722. See `evidence/phase7-npscene-getfluids-000421.md`.

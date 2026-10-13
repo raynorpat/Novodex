@@ -326,3 +326,7 @@ Restored the oracle's read-lock enter/read/leave sequence around `NpScene::getAc
 ### M7.17 — NpScene fluid-manager count (`phys_fn_000420`)
 
 Restored the oracle's scene read lock around the optional fluid-manager count read. The registered simulation fixture covers both empty and enabled manager states; a zero-count mutation fails enabled fluid creation and is rejected with `stdout_delta=53`, while the restored control is exact. Phase 7 now records 217 closed / 343 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getnbfluids-000420.md`.
+
+### M7.18 — NpScene fluid-array getter (`phys_fn_000421`)
+
+Restored the oracle's scene read lock around `NpScene::getFluids` and its optional manager array read. The registered simulation fixture verifies the enabled public-fluid array and empty manager case. A null-return mutation is rejected with `candidate_exit=1`, `stdout_delta=53`; the restored control is exact. Phase 7 now records 218 closed / 342 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getfluids-000421.md`.
