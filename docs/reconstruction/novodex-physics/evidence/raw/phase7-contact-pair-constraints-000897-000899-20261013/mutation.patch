@@ -1,0 +1,251 @@
+--- a/Physics/src/ContactPairManager.cpp
++++ b/Physics/src/ContactPairManager.cpp
+@@ -1985,247 +1985 @@
+-	const NxReal* parameter = nxPhysicsSDKParameters();
+-	JointSupportBody* const support0 = cpmBodySupport(at<const NxU8*>(8));
+-	JointSupportBody* const support1 = cpmBodySupport(at<const NxU8*>(0xc));
+-	if((cpmAt<NxU8>(at<const NxU8*>(0), 0x14) & 2) || (cpmAt<NxU8>(at<const NxU8*>(4), 0x14) & 2))
+-		return;
+-
+-	NxU8 storeAnchors = 0;		// frame +0x12
+-	NxU8 collectAnchors = 0;	// frame +0x11
+-	NxU8 newNormal = 0;			// frame +0x13
+-	NxFrictionPatch* patch = 0;	// frame +0x1c
+-	NxU32 anchorCount = 0;		// frame +0x18
+-	NxU32 materialKey = 0;		// frame +0x3c
+-	CpmAnchors anchors;
+-	anchors.point[0] = 0;
+-	anchors.point[1] = 0;
+-	anchors.distance2 = 0.0f;
+-	row000891(scene);
+-
+-	const NxU32* s = at<const NxU32*>(0x40);
+-	NxU32 pairCount = 0;
+-	if(s)
+-		pairCount = *s++;
+-	while(pairCount != 0)
+-		{
+-		const NxU8* object1 = static_cast<const NxU8*>(cpmPointer(s[0]));
+-		const NxU8* object0 = static_cast<const NxU8*>(cpmPointer(s[1]));
+-		const NxU32 header = s[2];
+-		s += 3;
+-		NxU16 normalCount = (NxU16)header;
+-		const NxU16 high = (NxU16)(header >> 16);
+-		const NxU8 flags = (NxU8)high;
+-		pairCount--;
+-		if(high & 2)
+-			continue;
+-
+-		const NxU8* body0 = at<const NxU8*>(8);
+-		if(!body0 || !at<const NxU8*>(0xc))
+-			{
+-			const NxU32 material = (NxU32)high >> 8;
+-			const NxU8* body = body0 ? body0 : at<const NxU8*>(0xc);
+-			if(cpmAt<NxU32>(body, 0x240) > material)
+-				{
+-				const_cast<NxU32*>(s)[-1] |= 0x20000;
+-				while(normalCount--)
+-					{
+-					NxU32 contacts = s[3];
+-					s += 4;
+-					while(contacts--)
+-						{
+-						const NxU32 wide = s[3] & 0x80000000;
+-						s += 4;
+-						if(flags & 1)
+-							s += 1;
+-						if(flags & 4)
+-							s += wide ? 2 : 1;
+-						}
+-					}
+-				continue;
+-				}
+-			}
+-
+-		const NxU8* shapeA = cpmAt<const NxU8*>(object1, 8);
+-		const NxU8* shapeB = cpmAt<const NxU8*>(object0, 8);
+-		NxU32 patchMaterials = ((NxU32)cpmAt<NxU16>(shapeB, 0xda) << 16) | cpmAt<NxU16>(shapeA, 0xda);
+-		CpmRestitution pairRestitution;
+-		CpmRestitution featureRestitution;
+-		cpmRestitution0857(patchMaterials, &pairRestitution);
+-		const CpmRestitution* restitution = &pairRestitution;
+-		const NxReal* previousNormal = 0;
+-		while(normalCount--)
+-			{
+-			const NxReal* normal = reinterpret_cast<const NxReal*>(s);
+-			const NxU32 contactCount = s[3];
+-			s += 4;
+-			if(!previousNormal
+-				|| ((double)normal[2] * previousNormal[2] + (double)normal[1] * previousNormal[1])
+-					+ (double)previousNormal[0] * normal[0] < (double)0.996f)
+-				{
+-				newNormal = 1;
+-				materialKey = 0xffffffff;
+-				}
+-			NxU32 remaining = contactCount;
+-			while(remaining--)
+-				{
+-				const NxReal* point = reinterpret_cast<const NxReal*>(s);
+-				const NxU32 separationWord = s[3];
+-				s += 4;
+-				const NxU32 separationBits = separationWord | 0x80000000;
+-				NxU32 feature = 0xffffffff;
+-				if(flags & 1)
+-					feature = *s++;
+-				if(flags & 4)
+-					s += (separationWord & 0x80000000) ? 2 : 1;
+-
+-				bool changed = false;
+-				if(feature != 0xffffffff)
+-					{
+-					patchMaterials = feature;
+-					if(feature != materialKey)
+-						{
+-						materialKey = feature;
+-						cpmRestitution0857(feature, &featureRestitution);
+-						restitution = &featureRestitution;
+-						changed = true;
+-						}
+-					}
+-				else if(materialKey != 0xffffffff)
+-					{
+-					restitution = &pairRestitution;
+-					materialKey = 0xffffffff;
+-					changed = true;
+-					}
+-				if(changed || newNormal)
+-					{
+-					if(storeAnchors)
+-						row000865(patch, anchors.point, (NxU8)anchorCount);
+-					else if(collectAnchors && anchorCount == 2)
+-						row000865(patch, anchors.point, 2);
+-					patch = row000895(shapeA, shapeB, normal, patchMaterials);
+-					const NxU8 count = patch->at<NxU8>(0x74);
+-					storeAnchors = count == 0 ? 1 : 0;
+-					collectAnchors = (count == 0 || (count < 2 && contactCount >= 2)) ? 1 : 0;
+-					anchorCount = 0;
+-					newNormal = 0;
+-					}
+-
+-				if(restitution->spring)
+-					row000883(scene, patch, separationBits, point, normal);
+-				else
+-					{
+-					NxReal r0[3];
+-					NxReal r1[3];
+-					cpmCopyWords(r0, point, 3);
+-					cpmCopyWords(r1, point, 3);
+-					const NxU8* b0 = at<const NxU8*>(8);
+-					if(b0)
+-						{
+-						const NxReal* p = cpmBodyPosition(b0);
+-						r0[0] = (NxReal)((double)r0[0] - p[0]);
+-						r0[1] = (NxReal)((double)r0[1] - p[1]);
+-						r0[2] = (NxReal)((double)r0[2] - p[2]);
+-						}
+-					const NxU8* b1 = at<const NxU8*>(0xc);
+-					if(b1)
+-						{
+-						const NxReal* p = cpmBodyPosition(b1);
+-						r1[0] = (NxReal)((double)r1[0] - p[0]);
+-						r1[1] = (NxReal)((double)r1[1] - p[1]);
+-						r1[2] = (NxReal)((double)r1[2] - p[2]);
+-						}
+-					const NxReal penalty = (NxReal)(((double)cpmFloat(separationBits)
+-						- parameter[NX_MIN_SEPARATION_FOR_PENALTY]) * penaltyScale);
+-					JointSupportRecord* record = cpmTakeRecord(scene);
+-					record->mBody[0] = support0;
+-					record->mBody[1] = support1;
+-					cpmCopyWords(&record->mUnknown000, normal, 3);
+-					{
+-					const double y = (double)r0[2] * normal[0] - (double)r0[0] * normal[2];
+-					const double z = (double)r0[0] * normal[1] - (double)r0[1] * normal[0];
+-					const double x = (double)r0[1] * normal[2] - (double)r0[2] * normal[1];
+-					record->mUnknown018.x = (NxReal)x;
+-					record->mUnknown018.y = (NxReal)y;
+-					record->mUnknown018.z = (NxReal)z;
+-					}
+-					{
+-					const double y = (double)r1[2] * normal[0] - (double)r1[0] * normal[2];
+-					const double z = (double)r1[0] * normal[1] - (double)r1[1] * normal[0];
+-					const double x = (double)r1[1] * normal[2] - (double)r1[2] * normal[1];
+-					record->mUnknown024.x = (NxReal)x;
+-					record->mUnknown024.y = (NxReal)y;
+-					record->mUnknown024.z = (NxReal)z;
+-					}
+-					cpmRecordKind(record, 0xffffffe0, 0);
+-					record->mUnknown038 = 0.0f;
+-					record->mUnknown044 = 0;
+-					record->mUnknown04c = 0;
+-					record->mUnknown030 = patch;
+-					record->mUnknown034 = penalty;
+-					record->mUnknown048 = FLT_MAX;
+-					cpmSolveRecord(record, parameter);
+-					if(restitution->restitution > 0.0f)
+-						{
+-						const double velocity = record->row004389();
+-						if(velocity < (double)parameter[NX_BOUNCE_TRESHOLD])
+-							{
+-							record->mUnknown034 = 0.0f;
+-							record->mUnknown038 = (NxReal)(-(velocity * restitution->restitution));
+-							}
+-						}
+-					}
+-
+-				if(collectAnchors)
+-					{
+-					switch(anchorCount)
+-						{
+-						case 0:
+-							anchors.point[0] = point;
+-							anchorCount = 1;
+-							break;
+-						case 1:
+-							{
+-							const NxReal* a = anchors.point[0];
+-							anchors.point[1] = point;
+-							anchorCount = 2;
+-							const double dx = (double)a[0] - point[0];
+-							const double dy = (double)a[1] - point[1];
+-							const double dz = (double)a[2] - point[2];
+-							anchors.distance2 = (NxReal)((dy * dy + dz * dz) + dx * dx);
+-							break;
+-							}
+-						default:
+-							{
+-							const NxReal* a = anchors.point[0];
+-							const double dx = (double)point[0] - a[0];
+-							const double dy = (double)point[1] - a[1];
+-							const double dz = (double)point[2] - a[2];
+-							const double d = (dz * dz + dy * dy) + dx * dx;
+-							if(d > anchors.distance2)
+-								{
+-								anchors.distance2 = (NxReal)d;
+-								anchors.point[1] = point;
+-								break;
+-								}
+-							const NxReal* b = anchors.point[1];
+-							const double ex = (double)point[0] - b[0];
+-							const double ey = (double)point[1] - b[1];
+-							const double ez = (double)point[2] - b[2];
+-							const double e = (ez * ez + ey * ey) + ex * ex;
+-							if(e > anchors.distance2)
+-								{
+-								anchors.distance2 = (NxReal)e;
+-								anchors.point[0] = point;
+-								}
+-							break;
+-							}
+-						}
+-					}
+-				}
+-			previousNormal = normal;
+-			}
+-		}
+-
+-	if(storeAnchors)
+-		row000865(patch, anchors.point, (NxU8)anchorCount);
+-	else if(collectAnchors && anchorCount == 2)
+-		row000865(patch, anchors.point, 2);
+-	row000879(scene, forceScale, penaltyScale);
++	return;

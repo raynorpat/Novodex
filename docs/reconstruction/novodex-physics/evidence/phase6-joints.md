@@ -10733,3 +10733,8 @@ The combined candidate spring-contact implementation for `phys_fn_000883` and `p
 # Phase 7 continuation: contact-pair patch lookup `phys_fn_000895`
 
 `phys_fn_000895` is mutation-falsified through the registered sliding-contact simulation. An immediate-null mutant removes the required friction patch and crashes the candidate (`candidate_exit=-1073741819`, `stdout_delta=3887`); restoring the lookup returns an exact differential (`stdout_delta=0`, exact stderr). See [phase7-contact-pair-patch-lookup-000895.md](phase7-contact-pair-patch-lookup-000895.md).
+
+
+# Phase 7 continuation: contact-pair constraints `phys_fn_000897` / `phys_fn_000899`
+
+Rows `phys_fn_000897` and `phys_fn_000899` map to the single candidate body `NxActorPair::row000897`; replacing it with an immediate return changes the registered contact/friction transcript (`stdout_delta=6644`, both exits zero, exact stderr), and restoring it returns an exact differential. See [phase7-contact-pair-constraints-000897-000899.md](phase7-contact-pair-constraints-000897-000899.md).

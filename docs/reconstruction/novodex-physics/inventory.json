@@ -16985,13 +16985,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/371",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2822",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1f320-0x1f548, 000899 = 0x1f550-0x1fa99 reached by the jmps at 0x1001f544/0x1f548/0x1f94a/0x1f9a8/0x1f9f0/0x1fa4c) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, penaltyScale), `ret 0xc`; the object +0x14 bit-1 exit, 000891, the contact stream per pair header (flag 2 skipped; a pair with a missing body whose other body's +0x240 exceeds the header material gets flag 2 and its contacts skipped), 000857 on (shape B material << 16 | shape A), the 0.996f new-normal test, the per-contact feature restitution (a -1 feature after a real one keeps the last feature word as the patch ids, 0x1001f5b6/0x1001f5e5), the anchors (000865) and next patch (000895), 000883 for a spring material else the kind-0 record (penalty, cross products in the listing's y, z, x order, 004391, the bounce), the anchor selection, then 000879; integration review: 0x1f320-0x1f800 re-walked instruction by instruction (frame slots, the stream walk, the restitution selection, the record take through 000598 and the lever arms), no difference. Candidate NxActorPair::row000897 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (002400 -> 000659 -> 000655 -> 000611 -> 000730 -> 000728; 000728 is Island.cpp Row000728Fixture::row000728, which now calls this function); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing, integrated into the pair-node construction path, and now mutation-falsified through the registered contact/friction simulation.",
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1f320-0x1f548, 000899 = 0x1f550-0x1fa99 reached by the jmps at 0x1001f544/0x1f548/0x1f94a/0x1f9a8/0x1f9f0/0x1fa4c) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, penaltyScale), `ret 0xc`; the object +0x14 bit-1 exit, 000891, the contact stream per pair header (flag 2 skipped; a pair with a missing body whose other body's +0x240 exceeds the header material gets flag 2 and its contacts skipped), 000857 on (shape B material << 16 | shape A), the 0.996f new-normal test, the per-contact feature restitution (a -1 feature after a real one keeps the last feature word as the patch ids, 0x1001f5b6/0x1001f5e5), the anchors (000865) and next patch (000895), 000883 for a spring material else the kind-0 record (penalty, cross products in the listing's y, z, x order, 004391, the bounce), the anchor selection, then 000879; integration review: 0x1f320-0x1f800 re-walked instruction by instruction (frame slots, the stream walk, the restitution selection, the record take through 000598 and the lever arms), no difference. Candidate NxActorPair::row000897 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reached by the registered contact/friction simulation through the candidate shared body NxActorPair::row000897, which contains both stable-ID ranges 000897 and 000899. units/scene-raycast-contract.md",
+      "dynamic_proof": "NxPhysicsSimulationTests immediate-return mutation of the shared NxActorPair::row000897/000899 body changed the registered contact/friction transcript (both exits=0, stdout_delta=6644); restored control stdout_delta=0, stderr_exact=True. See evidence/phase7-contact-pair-constraints-000897-000899.md.",
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing and integrated as one candidate contact-constraint method carrying both stable-ID ranges 000897 and 000899; mutation-falsified through the registered contact/friction simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
@@ -17022,13 +17022,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/371",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2844",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1f320-0x1f548, 000899 = 0x1f550-0x1fa99 reached by the jmps at 0x1001f544/0x1f548/0x1f94a/0x1f9a8/0x1f9f0/0x1fa4c) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, penaltyScale), `ret 0xc`; the object +0x14 bit-1 exit, 000891, the contact stream per pair header (flag 2 skipped; a pair with a missing body whose other body's +0x240 exceeds the header material gets flag 2 and its contacts skipped), 000857 on (shape B material << 16 | shape A), the 0.996f new-normal test, the per-contact feature restitution (a -1 feature after a real one keeps the last feature word as the patch ids, 0x1001f5b6/0x1001f5e5), the anchors (000865) and next patch (000895), 000883 for a spring material else the kind-0 record (penalty, cross products in the listing's y, z, x order, 004391, the bounce), the anchor selection, then 000879; integration review: 0x1f320-0x1f800 re-walked instruction by instruction (frame slots, the stream walk, the restitution selection, the record take through 000598 and the lever arms), no difference. Candidate NxActorPair::row000897 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (002400 -> 000659 -> 000655 -> 000611 -> 000730 -> 000728; 000728 is Island.cpp Row000728Fixture::row000728, which now calls this function); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0001f320 Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing, integrated into the pair-node construction path, and now mutation-falsified through the registered contact/friction simulation.",
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1f320-0x1f548, 000899 = 0x1f550-0x1fa99 reached by the jmps at 0x1001f544/0x1f548/0x1f94a/0x1f9a8/0x1f9f0/0x1fa4c) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, penaltyScale), `ret 0xc`; the object +0x14 bit-1 exit, 000891, the contact stream per pair header (flag 2 skipped; a pair with a missing body whose other body's +0x240 exceeds the header material gets flag 2 and its contacts skipped), 000857 on (shape B material << 16 | shape A), the 0.996f new-normal test, the per-contact feature restitution (a -1 feature after a real one keeps the last feature word as the patch ids, 0x1001f5b6/0x1001f5e5), the anchors (000865) and next patch (000895), 000883 for a spring material else the kind-0 record (penalty, cross products in the listing's y, z, x order, 004391, the bounce), the anchor selection, then 000879; integration review: 0x1f320-0x1f800 re-walked instruction by instruction (frame slots, the stream walk, the restitution selection, the record take through 000598 and the lever arms), no difference. Candidate NxActorPair::row000897 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reached by the registered contact/friction simulation through the candidate shared body NxActorPair::row000897, which contains both stable-ID ranges 000897 and 000899. units/scene-raycast-contract.md",
+      "dynamic_proof": "NxPhysicsSimulationTests immediate-return mutation of the shared NxActorPair::row000897/000899 body changed the registered contact/friction transcript (both exits=0, stdout_delta=6644); restored control stdout_delta=0, stderr_exact=True. See evidence/phase7-contact-pair-constraints-000897-000899.md.",
+      "notes": "continuation of the entry at 0x0001f320 Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing and integrated as one candidate contact-constraint method carrying both stable-ID ranges 000897 and 000899; mutation-falsified through the registered contact/friction simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
@@ -17065,7 +17065,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2881",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1faa0-0x1fb29) in scene-raycast Task 4 (contact-pair manager): thiscall(element0, element1, list), `ret 0xc`, returns this; 000893 on the elements' +0x10, +0x104 = -1, the list, and the tail or head link. Candidate NxPairNode::row000901 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000911 <- 001971/001976); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing, integrated into the pair-node construction path, and now mutation-falsified through the registered contact/friction simulation.",
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing and integrated as one candidate contact-constraint method carrying both stable-ID ranges 000897 and 000899; mutation-falsified through the registered contact/friction simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
@@ -17214,7 +17214,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2911",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fdb0-0x1fe10) in scene-raycast Task 4 (contact-pair manager): thiscall on the list (scene), `ret 4`; 000905 on every node of the list. Candidate NxPairList::row000909 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (001976 <- 000608 <- 000655); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing, integrated into the pair-node construction path, and now mutation-falsified through the registered contact/friction simulation.",
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing and integrated as one candidate contact-constraint method carrying both stable-ID ranges 000897 and 000899; mutation-falsified through the registered contact/friction simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
@@ -17251,7 +17251,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2917",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fe20-0x1feac) in scene-raycast Task 4 (contact-pair manager): thiscall(element0, element1), `ret 8`; the elements ordered by +0xd4 (unsigned), the group mask test (`shl edx,cl`: 1u << (g1 & 31)) on the live table .data 0x10123a98 (nxPhysicsSDKGroupCollisionMasks()), the 0x108 allocation on [0x101041bc] and 000901. Candidate NxPairList::row000911 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (001971/001976, the broadphase new pair); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing, integrated into the pair-node construction path, and now mutation-falsified through the registered contact/friction simulation.",
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing and integrated as one candidate contact-constraint method carrying both stable-ID ranges 000897 and 000899; mutation-falsified through the registered contact/friction simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
@@ -17288,7 +17288,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2922",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1feb0-0x20016) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, report, hash); for each hash entry holding a record: the events (shared with 000917), NxContactPair {objects, stream, 000881's sums} to the report's slot 0, a released record freed on [0x101041bc] and erased (004157); NxContactPair's inline constructor stores the stream NULL first (unobservable); with no node the sums are not written, as in the image. Candidate cpmFireContactReports0913 (Physics/src/ContactPairManager.cpp). Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the SDK's actor-group pair-flags hash (.data 0x10123c28) is absent (a null pointer is passed). Its caller 000663 (the Scene destructor, reached by NxPhysicsSDK::releaseScene via 000668) is reproduced as Scene.cpp nxSceneDelete, which does not call it; with no simulation step the image's report hash is empty and the row returns at 0x1001fec0. No candidate path runs it and no target executes it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing, integrated into the pair-node construction path, and now mutation-falsified through the registered contact/friction simulation.",
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing and integrated as one candidate contact-constraint method carrying both stable-ID ranges 000897 and 000899; mutation-falsified through the registered contact/friction simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
