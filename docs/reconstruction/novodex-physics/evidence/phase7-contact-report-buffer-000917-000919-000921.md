@@ -7,3 +7,5 @@ A row-scoped mutation set the shared pair-hash loop count to zero and explicitly
 After restoring the body and rebuilding, oracle and candidate both reported `calls=26` with matching contact payloads; the staged differential was exact (`stdout_delta=0`, `stderr_exact=True`). Restored candidate DLL SHA-256: `3a28cc7c4f4358faf04c9dee97a0893e038a8fcc4244720696b22611a5a6ec1e`.
 
 The mutation, build, and restored transcripts are compressed in [raw evidence](raw/phase7-contact-report-buffer-000917-000919-000921-20261013/). These closures cover the shared buffering implementation represented by these three spans; the row `phys_fn_000913` final scene-release flush remains a separate implementation and gate. Public Physics headers are unchanged.
+
+Fresh mainline verification after merge: the full Phase 7 gate passes at 1,745/1,745 assertions, with 262 closed / 298 deferred rows and all 80 public headers unchanged. The complete post-merge gate transcript is `raw/phase7-contact-report-buffer-000917-000919-000921-20261013/phase7-postmerge-gate.log.gz`.
