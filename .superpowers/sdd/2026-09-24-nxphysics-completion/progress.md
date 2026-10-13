@@ -346,3 +346,7 @@ M7.22 Scene pair-flag setter rows `phys_fn_000589`, `000590`, and `000592` compl
 
 
 Phase 2 actor-group pair-flag wrappers `phys_fn_000269` and `000271`: moved the existing round-trip fixture to run with two live Scenes so both lock loops execute. Their no-op mutations are rejected at stdout_delta=6 and 2; restored NxPhysicsSDKTests output is exact. Phase 2 closure now records 63 closed / 80 deferred; Phase 2 passes at 7/7 and Phase 3 at 561/561. A fresh Phase 3 link exposed missing FluidCollision.cpp and NpFluidEmitter.cpp sources in NxPhysicsCollisionTests; adding them resolves all seven link errors. Public headers unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-actor-group-pair-flags-000269-000271.md`.
+
+### M6 follow-up — actor-group pair hash rows (`phys_fn_004153`, `phys_fn_004155`)
+
+The registered `NxPhysicsSDKTests` differential now runs in Phase 6 with two live Scenes, exercising pair insertion, forward/reverse lookup, zero replacement, and lookup after releasing one Scene. Independent no-op mutations are rejected at `stdout_delta=2` and `6`; the restored control is exact. Phase 6 closure is 159 closed / 274 deferred. The full Phase 6 gate passes at 1,619/1,619; the fresh Phase 5 gate also passes at 2,685/2,685 with all five destructor families and the five-failure member-only control. Inventory validation passes with 6,338 functions, 5,138 data objects, and zero unexplained rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-actor-group-hash-004153-004155.md`.

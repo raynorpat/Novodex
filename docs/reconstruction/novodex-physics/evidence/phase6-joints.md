@@ -10655,3 +10655,5 @@ Phase 7 Scene pair-flag getter rows `phys_fn_000513` and `phys_fn_000515` now ma
 Phase 7 Scene shape/actor pair-flag setter rows `phys_fn_000589`, `phys_fn_000590`, and `phys_fn_000592` are mutation-falsified in `evidence/phase7-contact-pair-flag-setters-000589-000590-000592.md`; individual no-op mutants are rejected at stdout_delta=23/26/15 and the restored focused differential is exact.
 
 With these setters, Phase 7 records 225 closed / 335 deferred functions. The fresh full Phase 7 gate passes at 1,727/1,727 assertions; inventory validation and both 80-file public-header checks pass.
+
+Phase 6 actor-group hash rows `phys_fn_004153` and `phys_fn_004155` are independently mutation-falsified through `NxPhysicsSDKTests` with two live Scenes. Their no-op mutants are rejected at stdout_delta=2 and stdout_delta=6; the restored differential is exact. See `evidence/phase6-actor-group-hash-004153-004155.md`.

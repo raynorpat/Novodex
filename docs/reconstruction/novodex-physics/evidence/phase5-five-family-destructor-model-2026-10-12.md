@@ -45,3 +45,5 @@ mismatches for the five secondary and primary destructor families, and the
 member-only model mutation reports five mismatches. Candidate DLL SHA-256:
 83268060327066531df916359eebff96fec77e568a50bd7d96a7e2917e1321b4. Focused
 transcript: [phase5-focused-gate.txt](raw/phase5-five-family-destructor-model-20261013/phase5-focused-gate.txt).
+
+Fresh Phase 5 revalidation on 2026-10-13 rebuilt Release and passed at 2,685/2,685; all five secondary families match the oracle, and the member-only negative control still fails all five. Candidate DLL SHA-256: `fd84ab4d941da2871f6b3016badaef46d692575fce39bc0d58235366746a380e`.
