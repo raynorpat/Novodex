@@ -322,3 +322,7 @@ The existing `NpScene::getNbActors` implementation is now row-mapped to its cand
 ### M7.16 — NpScene actor-array getter (`phys_fn_000418`)
 
 Restored the oracle's read-lock enter/read/leave sequence around `NpScene::getActors`. The registered bounds-plane fixtures verify the returned actor array for six boundary planes, the ground plane, and the combined seven-actor scene. A null-return mutation exits 1 and is rejected with `stdout_delta=5`; restored control is exact. Phase 7 now records 216 closed / 344 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getactors-000418.md`.
+
+### M7.17 — NpScene fluid-manager count (`phys_fn_000420`)
+
+Restored the oracle's scene read lock around the optional fluid-manager count read. The registered simulation fixture covers both empty and enabled manager states; a zero-count mutation fails enabled fluid creation and is rejected with `stdout_delta=53`, while the restored control is exact. Phase 7 now records 217 closed / 343 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getnbfluids-000420.md`.

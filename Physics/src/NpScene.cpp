@@ -1069,15 +1069,21 @@ void NpScene::releaseFluid(NxFluid& fluid)
 
 NxU32 NpScene::getNbFluids() const
 	{
-	if(!mScene)
-		return 0;
+	// phys_fn_000420 (0x0000da80) holds the scene read lock while inspecting
+	// the optional manager's begin/end pointers.
+	void* link = mPointer08;
+	nxNpSceneGuardEnter(link);
 	const unsigned char* const scene = reinterpret_cast<const unsigned char*>(mScene);
 	const unsigned char* const manager = *reinterpret_cast<unsigned char* const*>(scene + 0x61c);
-	if(!manager)
-		return 0;
-	const unsigned first = *reinterpret_cast<const unsigned*>(manager + 4);
-	const unsigned last = *reinterpret_cast<const unsigned*>(manager + 8);
-	return last >= first ? (last - first) / sizeof(void*) : 0;
+	NxU32 count = 0;
+	if(manager)
+		{
+		const unsigned first = *reinterpret_cast<const unsigned*>(manager + 4);
+		const unsigned last = *reinterpret_cast<const unsigned*>(manager + 8);
+		count = last >= first ? (last - first) / sizeof(void*) : 0;
+		}
+	nxNpSceneGuardLeave(link);
+	return count;
 	}
 
 NxFluid** NpScene::getFluids()

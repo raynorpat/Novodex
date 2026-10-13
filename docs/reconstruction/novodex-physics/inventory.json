@@ -8134,13 +8134,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "locked conditional-count accessor (0xda80)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/148",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1171",
-      "static_proof": "static review of the recorded shape: locked conditional-count accessor (0xda80); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "static_proof": "IDA oracle decompilation at RVA 0xda80 takes the read lock at this+0x10, reads the optional manager at Scene+0x61c, and returns the four-byte pointer-range count from manager+4 to manager+8 or zero when absent.",
+      "dynamic_proof": "Registered Phase 7 NxPhysicsSimulationTests exercises empty and enabled managers. Replacing getNbFluids with return 0 is rejected during enabled fluid creation (candidate_exit=1, stdout_delta=53); restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-getnbfluids-000420.md.",
+      "notes": "Read-lock-protected optional fluid-manager count getter.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "?getNbFluids@NpScene@@UBEIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getNbFluids@NpScene@@UBEIXZ",
+        "address": "0x100418e0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000421",
