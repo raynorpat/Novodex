@@ -27,6 +27,9 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	explicit NpFluidEmitter(void* internal);
 	//! phys_fn_003796 (0x0008c350): returns the owning NxFluid reference.
 	virtual NxFluid& getFluid() const;
+	virtual void setGlobalPose(const NxMat34& pose);
+	virtual void setGlobalPosition(const NxVec3& position);
+	virtual void setGlobalOrientation(const NxMat33& orientation);
 	//! phys_fn_003824 (0x0008c9c0): returns the public actor stored by the frame body.
 	virtual NxActor* getFrameActor() const;
 	//! phys_fn_003858/003860 store and retrieve a caller-owned name pointer.
@@ -46,6 +49,9 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	virtual NxVec3 getLocalPositionVal() const;
 	//! phys_fn_003820 (0x0008c8d0), helper 003567 copies internal+0x18.
 	virtual NxMat33 getLocalOrientationVal() const;
+	virtual void setLocalPose(const NxMat34& pose);
+	virtual void setLocalPosition(const NxVec3& position);
+	virtual void setLocalOrientation(const NxMat33& orientation);
 	//! phys_fn_003622 sets or clears the emitter's actor-relative frame.
 	virtual void setFrameActor(NxActor* actor);
 	//! phys_fn_003569/003571 route dimension reads to the fluid backend.
@@ -70,6 +76,8 @@ class NpFluidEmitter : public NxFluidEmitter, public NpFluidEmitterReadLock
 	//! phys_fn_003850/003852: the bitfield is stored at internal emitter +0x10.
 	virtual void setFlag(NxFluidEmitterFlag flag, bool enabled);
 	virtual NX_BOOL getFlag(NxFluidEmitterFlag flag) const;
+	virtual NX_BOOL getShape(NxEmitterShape shape) const;
+	virtual NX_BOOL getType(NxEmitterType type) const;
 
 	protected:
 	void copyInternal(void* output, unsigned offset, unsigned bytes) const;

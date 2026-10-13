@@ -97,6 +97,7 @@
 #include "ContactPairManager.h"
 #include "NxScene.h"
 #include "fluids/NxFluidDesc.h"
+#include "fluids/NpFluidEmitter.h"
 #include "opcode/IcePruner.h"
 #include "NxDebugRenderable.h"
 #include "NarrowPhase.h"
@@ -794,6 +795,17 @@ typedef void (__cdecl *NxFluidDestroyCallback)(void*, void*);
 typedef void* (__cdecl *NxFluidManagerGetStaticCollisionCallback)(void*);
 typedef float (__cdecl *NxFluidGetCellSizeCallback)(void*, void*);
 typedef void (__cdecl *NxStaticCollisionDestroyCallback)(void*);
+typedef float (__cdecl *NxFluidGetRestParticleDistanceCallback)(void*, void*,
+	float, float, const NxVec3&, float, float, float, unsigned, float,
+	unsigned, unsigned, unsigned, bool, unsigned, unsigned);
+typedef void* (__cdecl *NxFluidEmitterCreateCallback)(unsigned, unsigned,
+	const float*, float);
+typedef void (__cdecl *NxFluidEmitterDestroyCallback)(unsigned, unsigned,
+	unsigned);
+typedef int (__cdecl *NxFluidEmitterSetGlobalPoseCallback)(unsigned, unsigned,
+	unsigned, const float*);
+typedef const float* (__cdecl *NxFluidEmitterGetGlobalPoseCallback)(unsigned,
+	unsigned, unsigned);
 
 static NxFluidManagerCreateCallback gNxFluidManagerCreateCallback = 0;
 static NxFluidManagerDestroyCallback gNxFluidManagerDestroyCallback = 0;
@@ -802,6 +814,11 @@ static NxFluidDestroyCallback gNxFluidDestroyCallback = 0;
 static NxFluidManagerGetStaticCollisionCallback gNxFluidManagerGetStaticCollisionCallback = 0;
 static NxFluidGetCellSizeCallback gNxFluidGetCellSizeCallback = 0;
 static NxStaticCollisionDestroyCallback gNxStaticCollisionDestroyCallback = 0;
+static NxFluidGetRestParticleDistanceCallback gNxFluidGetRestParticleDistanceCallback = 0;
+static NxFluidEmitterCreateCallback gNxFluidEmitterCreateCallback = 0;
+static NxFluidEmitterDestroyCallback gNxFluidEmitterDestroyCallback = 0;
+static NxFluidEmitterSetGlobalPoseCallback gNxFluidEmitterSetGlobalPoseCallback = 0;
+static NxFluidEmitterGetGlobalPoseCallback gNxFluidEmitterGetGlobalPoseCallback = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
 
@@ -834,6 +851,19 @@ static bool nxFluidManagerResolveModel()
 		GetProcAddress(module, "FluidGetCellSize"));
 	gNxStaticCollisionDestroyCallback = reinterpret_cast<NxStaticCollisionDestroyCallback>(
 		GetProcAddress(module, "StaticCollisionDestroy"));
+	gNxFluidGetRestParticleDistanceCallback = reinterpret_cast<
+		NxFluidGetRestParticleDistanceCallback>(GetProcAddress(module,
+			"FluidGetRestParticleDistance"));
+	gNxFluidEmitterCreateCallback = reinterpret_cast<NxFluidEmitterCreateCallback>(
+		GetProcAddress(module, "EmitterCreate"));
+	gNxFluidEmitterDestroyCallback = reinterpret_cast<NxFluidEmitterDestroyCallback>(
+		GetProcAddress(module, "EmitterDestroy"));
+	gNxFluidEmitterSetGlobalPoseCallback = reinterpret_cast<
+		NxFluidEmitterSetGlobalPoseCallback>(GetProcAddress(module,
+			"EmitterSetGlobalPose"));
+	gNxFluidEmitterGetGlobalPoseCallback = reinterpret_cast<
+		NxFluidEmitterGetGlobalPoseCallback>(GetProcAddress(module,
+			"EmitterGetGlobalPose"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
@@ -849,12 +879,36 @@ static void* gNxFluidVtable[] = {
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
 	{
 	if((deleteObject & 1) != 0)
-		nxFoundationSDKAllocator->free(helper);
+		::operator delete(helper);
+	return helper;
+	}
+
+static void* __fastcall nxFluidSolverReadLockDeletingDestructor(void* base,
+	void*, unsigned char deleteObject)
+	{
+	void* const helper = static_cast<unsigned char*>(base) - 8;
+	if((deleteObject & 1) != 0)
+		::operator delete(helper);
 	return helper;
 	}
 
 static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverDeletingDestructor)
+	};
+static void* gNxFluidSolverReadLockVtable[] = {
+	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)
+	};
+
+static void* __fastcall nxFluidEmitterDeletingDestructor(void* internal,
+	void*, unsigned char deleteObject)
+	{
+	if((deleteObject & 1) != 0)
+		nxFoundationSDKAllocator->free(internal);
+	return internal;
+	}
+
+static void* gNxFluidEmitterVtable[] = {
+	reinterpret_cast<void*>(nxFluidEmitterDeletingDestructor)
 	};
 
 static void nxFluidManagerArrayPush(void* arrayHeader, unsigned value)
@@ -887,6 +941,71 @@ static void nxFluidManagerArrayPush(void* arrayHeader, unsigned value)
 		*reinterpret_cast<unsigned*>(last) = value;
 		array[1] = last + sizeof(unsigned);
 		}
+	}
+
+extern "C" int __cdecl nxNpFluidEmitterUpdateGlobalPose(void* internal);
+extern "C" void* __cdecl nxNpFluidEmitterStoreGlobalPose(void* internal);
+
+static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
+	{
+	if(!gNxFluidGetRestParticleDistanceCallback || !gNxFluidEmitterCreateCallback ||
+		!gNxFluidEmitterSetGlobalPoseCallback ||
+		!gNxFluidEmitterGetGlobalPoseCallback)
+		return 0;
+	unsigned char* const fluidBytes = static_cast<unsigned char*>(fluid);
+	void* const manager = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	void* const backendManager = manager ? *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30) : 0;
+	void* const backendFluid = *reinterpret_cast<void**>(fluidBytes + 0x80);
+	if(!backendManager || !backendFluid)
+		return 0;
+	void* const context = backendManager;
+	const unsigned backendFluidHandle = reinterpret_cast<unsigned>(backendFluid);
+	const unsigned* const words = reinterpret_cast<const unsigned*>(&desc);
+	NxVec3 actorPosition;
+	actorPosition.set(*reinterpret_cast<const float*>(words + 18),
+		*reinterpret_cast<const float*>(words + 19),
+		*reinterpret_cast<const float*>(words + 20));
+	const float restParticleDistance = gNxFluidGetRestParticleDistanceCallback(
+		context, backendFluid, *reinterpret_cast<const float*>(words + 16),
+		*reinterpret_cast<const float*>(words + 17), actorPosition,
+		words[21], words[23], words[22], words[14], words[24],
+		words[25] & 0x10, words[25] & 8, words[25] & 4,
+		words[12] != 0, words[15] & 2, words[13] & 2);
+	unsigned char* const internal = static_cast<unsigned char*>(
+		nxFoundationSDKAllocator->malloc(0x78, NX_MEMORY_PERSISTENT));
+	if(!internal)
+		return 0;
+	memset(internal, 0, 0x78);
+	*reinterpret_cast<void***>(internal) = gNxFluidEmitterVtable;
+	*reinterpret_cast<void**>(internal + 4) = fluid;
+	*reinterpret_cast<unsigned*>(internal + 8) = 0xffffffff;
+	*reinterpret_cast<unsigned*>(internal + 0x10) = words[25];
+	if(desc.frameActor)
+		*reinterpret_cast<void**>(internal + 0x14) = *reinterpret_cast<void**>(
+			reinterpret_cast<unsigned char*>(desc.frameActor) + 0x14);
+	memcpy(internal + 0x18, &desc.relPose, 0x30);
+	NxFluidEmitter* const wrapper = new NpFluidEmitter(internal);
+	if(!wrapper)
+		{
+		nxFoundationSDKAllocator->free(internal);
+		return 0;
+		}
+	*reinterpret_cast<void**>(internal + 0x0c) = wrapper;
+	*reinterpret_cast<void**>(internal + 8) = gNxFluidEmitterCreateCallback(
+		reinterpret_cast<unsigned>(context), backendFluidHandle,
+		reinterpret_cast<const float*>(&desc.relPose), restParticleDistance);
+	if(!*reinterpret_cast<void**>(internal + 8))
+		{
+		delete static_cast<NpFluidEmitter*>(wrapper);
+		nxFoundationSDKAllocator->free(internal);
+		return 0;
+		}
+	nxNpFluidEmitterUpdateGlobalPose(internal);
+	nxNpFluidEmitterStoreGlobalPose(internal);
+	nxFluidManagerArrayPush(fluidBytes + 4, reinterpret_cast<unsigned>(internal));
+	nxFluidManagerArrayPush(fluidBytes + 0x14, reinterpret_cast<unsigned>(wrapper));
+	return wrapper;
 	}
 
 static void* gNxFluidManagerVtable[] = {
@@ -979,6 +1098,37 @@ static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, u
 static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(fluid);
+	unsigned emitterFirst = *reinterpret_cast<unsigned*>(bytes + 4);
+	unsigned emitterLast = *reinterpret_cast<unsigned*>(bytes + 8);
+	const unsigned emitterCount = emitterLast >= emitterFirst
+		? (emitterLast - emitterFirst) >> 2 : 0;
+	unsigned* emitters = reinterpret_cast<unsigned*>(emitterFirst);
+	for(unsigned i = 0; i != emitterCount; ++i)
+		{
+		void* const internalEmitter = reinterpret_cast<void*>(emitters[i]);
+		if(!internalEmitter)
+			continue;
+		void* const wrapper = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(internalEmitter) + 0x0c);
+		if(wrapper)
+			{
+			delete static_cast<NpFluidEmitter*>(wrapper);
+			}
+		void** const vtable = *reinterpret_cast<void***>(internalEmitter);
+		typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
+		reinterpret_cast<DeletingDestructor>(vtable[0])(internalEmitter, 1);
+		}
+	for(unsigned offset = 0x14; ; offset = 4)
+		{
+		void* const allocation = *reinterpret_cast<void**>(bytes + offset);
+		if(allocation)
+			nxFoundationSDKAllocator->free(allocation);
+		*reinterpret_cast<unsigned*>(bytes + offset) = 0;
+		*reinterpret_cast<unsigned*>(bytes + offset + 4) = 0;
+		*reinterpret_cast<unsigned*>(bytes + offset + 8) = 0;
+		if(offset == 4)
+			break;
+		}
 	void* helper = *reinterpret_cast<void**>(bytes + 0x54);
 	if(helper)
 		{
@@ -1241,14 +1391,14 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 	*reinterpret_cast<unsigned*>(fluid + 0x68) = 0xff7fffff;
 	*reinterpret_cast<unsigned*>(fluid + 0x6c) = 0xff7fffff;
 	*reinterpret_cast<unsigned*>(fluid + 0x70) = 0xff7fffff;
-	*reinterpret_cast<void**>(fluid + 0x14) = fluid;
 	*reinterpret_cast<void**>(fluid + 0x7c) = manager;
-	unsigned char* const solver = static_cast<unsigned char*>(
-		nxFoundationSDKAllocator->malloc(0x18, NX_MEMORY_PERSISTENT));
+	unsigned char* const solver = static_cast<unsigned char*>(::operator new(0x18));
 	if(solver)
 		{
 		memset(solver, 0, 0x18);
 		*reinterpret_cast<void***>(solver) = gNxFluidSolverVtable;
+		*reinterpret_cast<void***>(solver + 8) = gNxFluidSolverReadLockVtable;
+		*reinterpret_cast<void**>(solver + 0x14) = fluid;
 		}
 	*reinterpret_cast<void**>(fluid + 0x54) = solver;
 	*reinterpret_cast<unsigned*>(fluid + 0x58) =
@@ -1264,6 +1414,8 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		descriptorWords[22], descriptorWords[23], descriptorWords[24],
 		descriptorWords[25], 1024, descriptorWords[15], 0, 0);
 	*reinterpret_cast<void**>(fluid + 0x80) = backendFluid;
+	for(unsigned emitterIndex = 0; emitterIndex != desc.emitters.size(); ++emitterIndex)
+		nxFluidCreateEmitter(fluid, desc.emitters[emitterIndex]);
 	nxFluidManagerArrayPush(managerBytes + 4,
 		reinterpret_cast<unsigned>(fluid));
 	nxFluidManagerArrayPush(managerBytes + 0x14,
@@ -1285,7 +1437,7 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		managerBytes[0x28] = 0;
 		managerBytes[0x29] = 0;
 		}
-	return reinterpret_cast<NxFluid*>(fluid);
+	return reinterpret_cast<NxFluid*>(solver);
 	}
 
 

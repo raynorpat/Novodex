@@ -980,6 +980,73 @@ NxFluid& NpFluidEmitter::getFluid() const
 	return *fluid;
 	}
 
+void NpFluidEmitter::setGlobalPose(const NxMat34& pose)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(0x5d);
+		return;
+		}
+	memcpy(static_cast<unsigned char*>(mInternal) + 0x18, &pose, sizeof(pose));
+	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpSceneGuardLeave(link);
+	}
+
+void NpFluidEmitter::setGlobalPosition(const NxVec3& position)
+	{
+	NxMat34 pose = getLocalPoseVal();
+	pose.t = position;
+	setGlobalPose(pose);
+	}
+
+void NpFluidEmitter::setGlobalOrientation(const NxMat33& orientation)
+	{
+	NxMat34 pose = getLocalPoseVal();
+	pose.M = orientation;
+	setGlobalPose(pose);
+	}
+
+void NpFluidEmitter::setLocalPose(const NxMat34& pose)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(0x5e);
+		return;
+		}
+	memcpy(static_cast<unsigned char*>(mInternal) + 0x18, &pose, sizeof(pose));
+	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpSceneGuardLeave(link);
+	}
+
+void NpFluidEmitter::setLocalPosition(const NxVec3& position)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(0x5f);
+		return;
+		}
+	memcpy(static_cast<unsigned char*>(mInternal) + 0x3c, &position, sizeof(position));
+	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpSceneGuardLeave(link);
+	}
+
+void NpFluidEmitter::setLocalOrientation(const NxMat33& orientation)
+	{
+	void* link = mUnknown0c;
+	if(!nxNpSceneGuardWriteTry(link))
+		{
+		nxFluidEmitterReportWriteLocked(0x60);
+		return;
+		}
+	memcpy(static_cast<unsigned char*>(mInternal) + 0x18, &orientation,
+		sizeof(orientation));
+	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpSceneGuardLeave(link);
+	}
+
 // phys_fn_003824 (0x0008c9c0) reads the public NxActor pointer from the body
 // stored in the emitter's frame-actor slot under the same read lock.
 NxActor* NpFluidEmitter::getFrameActor() const
@@ -1111,4 +1178,52 @@ NX_BOOL NpFluidEmitter::getFlag(NxFluidEmitterFlag flag) const
 		static_cast<const unsigned char*>(mInternal) + 0x10);
 	nxNpSceneGuardLeave(link);
 	return static_cast<NX_BOOL>(flags & static_cast<unsigned>(flag));
+	}
+
+NX_BOOL NpFluidEmitter::getShape(NxEmitterShape shape) const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	unsigned char* const internal = static_cast<unsigned char*>(mInternal);
+	unsigned char* const fluid = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(internal + 4));
+	unsigned char* const manager = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(fluid + 0x7c));
+	unsigned char* const backend = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(manager + 0x30));
+	typedef int (__cdecl *GetShapeFlag)(unsigned, unsigned, unsigned, unsigned char);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	GetShapeFlag getShapeFlag = reinterpret_cast<GetShapeFlag>(
+		GetProcAddress(module, "EmitterGetShapeFlag"));
+	const NX_BOOL result = getShapeFlag ? static_cast<NX_BOOL>(getShapeFlag(
+		reinterpret_cast<unsigned>(backend),
+		*reinterpret_cast<unsigned*>(fluid + 0x80),
+		*reinterpret_cast<unsigned*>(internal + 8),
+		static_cast<unsigned char>(shape))) : 0;
+	nxNpSceneGuardLeave(link);
+	return result;
+	}
+
+NX_BOOL NpFluidEmitter::getType(NxEmitterType type) const
+	{
+	void* link = mReadLockLink;
+	nxNpSceneGuardEnter(link);
+	unsigned char* const internal = static_cast<unsigned char*>(mInternal);
+	unsigned char* const fluid = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(internal + 4));
+	unsigned char* const manager = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(fluid + 0x7c));
+	unsigned char* const backend = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(manager + 0x30));
+	typedef int (__cdecl *GetTypeFlag)(unsigned, unsigned, unsigned, unsigned char);
+	HMODULE module = GetModuleHandleA("FluidModel.DLL");
+	GetTypeFlag getTypeFlag = reinterpret_cast<GetTypeFlag>(
+		GetProcAddress(module, "EmitterGetTypeFlag"));
+	const NX_BOOL result = getTypeFlag ? static_cast<NX_BOOL>(getTypeFlag(
+		reinterpret_cast<unsigned>(backend),
+		*reinterpret_cast<unsigned*>(fluid + 0x80),
+		*reinterpret_cast<unsigned*>(internal + 8),
+		static_cast<unsigned char>(type))) : 0;
+	nxNpSceneGuardLeave(link);
+	return result;
 	}

@@ -40,6 +40,12 @@ struct NxFluidManagerCallbackSummary
 	unsigned fluidGetCellSize;
 	unsigned staticCollisionDestroy;
 	unsigned fluidCreateArguments[15];
+	unsigned fluidGetRestParticleDistance;
+	unsigned emitterCreate;
+	unsigned emitterDestroy;
+	unsigned emitterSetGlobalPose;
+	unsigned emitterGetGlobalPose;
+	unsigned emitterCreateArguments[4];
 	};
 
 struct NxFluidManagerCallbackRecord
@@ -59,6 +65,7 @@ static void* gFluidManagerReplacementStaticCollision = gFluidStaticCollision;
 static unsigned gFluidManagerStaticCollisionGetIndex;
 static unsigned char gFluidManagerBackend;
 static unsigned char gFluidBackendHandles[16];
+static unsigned char gFluidEmitterBackendHandles[16][16];
 
 static void nxRecordFluidManagerCallback(unsigned kind, unsigned argument0,
 	unsigned argument1, unsigned argument2, unsigned argument3)
@@ -358,6 +365,37 @@ extern "C" __declspec(dllexport) void __cdecl FluidDestroy(void* manager, void* 
 	{
 	if(manager == &gFluidManagerBackend && fluid)
 		++gFluidManagerCallbackSummary.fluidDestroy;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetRestParticleDistance(
+	unsigned context, unsigned fluid, ...)
+	{
+	if(context && fluid)
+		++gFluidManagerCallbackSummary.fluidGetRestParticleDistance;
+	return 0.02f;
+	}
+
+// Keep the oracle's optional emitter path callable in differential tests. The
+// production DLL discovers these exports by name from FluidModel.dll.
+extern "C" __declspec(dllexport) void* __cdecl EmitterCreate(
+	unsigned context, unsigned fluid, ...)
+	{
+	++gFluidManagerCallbackSummary.emitterCreate;
+	unsigned* const args = gFluidManagerCallbackSummary.emitterCreateArguments;
+	args[0] = context;
+	args[1] = fluid;
+	args[2] = 0;
+	args[3] = 0;
+	const unsigned index = (gFluidManagerCallbackSummary.emitterCreate - 1)
+		% (sizeof(gFluidEmitterBackendHandles) / sizeof(gFluidEmitterBackendHandles[0]));
+	return gFluidEmitterBackendHandles[index];
+	}
+
+extern "C" __declspec(dllexport) void __cdecl EmitterDestroy(
+	unsigned context, unsigned fluid, unsigned emitter)
+	{
+	if(context && fluid && emitter)
+		++gFluidManagerCallbackSummary.emitterDestroy;
 	}
 
 struct NxFluidPostStepCallbackRecord
@@ -776,6 +814,7 @@ extern "C" __declspec(dllexport) int __cdecl EmitterSetEnabledFlag(
 extern "C" __declspec(dllexport) const float* __cdecl EmitterGetGlobalPose(
 	unsigned argument0, unsigned argument1, unsigned argument2)
 	{
+	++gFluidManagerCallbackSummary.emitterGetGlobalPose;
 	nxRecord(32, argument0, argument1, argument2, 0);
 	const unsigned emitterHandle = argument2;
 	nxRecordPostStepCallback(32768, argument0, argument1, &emitterHandle, 1);
@@ -785,6 +824,7 @@ extern "C" __declspec(dllexport) const float* __cdecl EmitterGetGlobalPose(
 extern "C" __declspec(dllexport) int __cdecl EmitterSetGlobalPose(
 	unsigned argument0, unsigned argument1, unsigned argument2, const float* pose)
 	{
+	++gFluidManagerCallbackSummary.emitterSetGlobalPose;
 	nxRecord(64, argument0, argument1, argument2, 0);
 	if(gRecordCount && pose)
 		CopyMemory(gRecords[gRecordCount - 1].pose, pose, sizeof(gRecords[0].pose));
