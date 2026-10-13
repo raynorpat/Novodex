@@ -10723,3 +10723,8 @@ The combined candidate spring-contact implementation for `phys_fn_000883` and `p
 # Phase 7 continuation: contact-patch refresh `phys_fn_000891`
 
 `phys_fn_000891` is mutation-falsified through the registered sliding-sphere contact scene. A no-op changes the summed friction aggregate (`stdout_delta=118`); the restored control is exact. See [phase7-contact-patch-refresh-000891.md](phase7-contact-patch-refresh-000891.md).
+
+
+# Phase 7 continuation: contact-pair constructor `phys_fn_000893`
+
+`phys_fn_000893` is mutation-falsified through the registered contact/friction simulation. Replacing the constructor with an immediate-return no-op makes the candidate access-violate (`candidate_exit=-1073741819`, `stdout_delta=3983`); restoring it returns an exact differential (`stdout_delta=0`, exact stderr). See [phase7-contact-pair-constructor-000893.md](phase7-contact-pair-constructor-000893.md).

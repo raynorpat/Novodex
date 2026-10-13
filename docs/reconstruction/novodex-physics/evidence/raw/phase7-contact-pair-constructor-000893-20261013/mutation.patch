@@ -1,0 +1,19 @@
+--- a/Physics/src/ContactPairManager.cpp
++++ b/Physics/src/ContactPairManager.cpp
+@@ -1851,14 +1851,2 @@
+-	cpmOpen002356(mBytes + 0x10);
+-	new (mBytes + 0x4c) NxFrictionPatch;
+-	at<void*>(0xc4) = 0;
+-	at<void*>(0xc8) = 0;
+-	at<void*>(0xcc) = 0;
+-	at<NxU8>(0xe8) = 0xff;
+-	at<NxU8>(0xe9) = 0xff;
+-	at<NxU32>(0x48) = 0;
+-	at<const void*>(0) = cpmAt<const void*>(shape0, 4);
+-	at<const void*>(4) = cpmAt<const void*>(shape1, 4);
+-	at<const void*>(8) = cpmAt<const void*>(at<const NxU8*>(0), 8);
+-	at<NxU32>(0xd4) = 0;
+-	at<NxU32>(0xd8) = 0;
+-	at<const void*>(0xc) = cpmAt<const void*>(at<const NxU8*>(4), 8);
++	(void)shape0;
++	(void)shape1;
