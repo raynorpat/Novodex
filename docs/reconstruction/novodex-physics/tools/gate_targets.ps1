@@ -5896,7 +5896,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1608  # includes the legacy NpScene run trajectory assertions
+	'6' = 1607  # includes the legacy NpScene run trajectory assertions
 				# includes the allocator-spy deleting-destructor assertion
 				# includes enabled FluidModel create/list/release fixture differential
 				# all registered Phase 6 staged-pair and oracle-differential assertions

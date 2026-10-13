@@ -1,6 +1,22 @@
 {
   "schema_version": 1,
   "targets": {
+    "NxPhysicsObjectLayoutTests": {
+      "format": "layout_digest",
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
+      "fixture_source_sha256": "b4d478647c22d6cbfadcebaada7673ed359a00086fdae990dbb5b014314e6c12",
+      "oracle_digest_fnv32": "774d629d",
+      "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1"
+    },
+    "NxPhysicsFluidEmitterAbiTests": {
+      "format": "fluid_oracle_lines",
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
+      "fixture_source_sha256": "eb56e5564204747524aa0913844694f1b808c2e229f3012e1fa2845414736088",
+      "oracle_output_lines": 24,
+      "oracle_output_digest_sha256": "41b8474e59aab537fe111737c7e3548b87ae77de7bd991600b71cd3773728265"
+    },
     "NxPhysicsShapeVtableTests": {
       "format": "shape_boxsweep",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -53,6 +69,21 @@
       "oracle_output_lines": 3234,
       "input_digest_sha256": "a35c701865c1044c912493ee63ffc759ceb70457ca779e086fd300b1da5f953e",
       "oracle_output_digest_sha256": "d73476e792b3ef2df8789d59a918b312b5d4e33e51f11e0f1273901e52b18b83"
+    },
+    "NxPhysicsAssetTests": {
+      "format": "asset_oracle_digest",
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_sources": [
+        "tests/PhysicsAssetTests.cpp",
+        "docs/reconstruction/novodex-physics/cases/assets/formats.json",
+        "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt"
+      ],
+      "fixture_source_sha256": "4a7c4dd7c752d42b8875778074c08e6f5735fdf006b426f983c7990da201dceb",
+      "cases": 32,
+      "expect_mismatches": 0,
+      "oracle_output_digest_fnv32": "1daa095e",
+      "coverage_line": "asset coverage driven=32 accepted=15 rejected=16 errors=10",
+      "oracle_output_digest_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f"
     }
   }
 }
