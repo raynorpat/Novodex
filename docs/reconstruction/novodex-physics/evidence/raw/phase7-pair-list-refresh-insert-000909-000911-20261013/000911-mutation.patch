@@ -1,0 +1,20 @@
+--- a/Physics/src/ContactPairManager.cpp
++++ b/Physics/src/ContactPairManager.cpp
+@@ -2400,16 +2400 @@
+-	NxU8* first = element0;
+-	NxU8* second = element1;
+-	if(cpmAt<NxU32>(cpmAt<NxU8*>(element0, 0x10), 0xd4) > cpmAt<NxU32>(cpmAt<NxU8*>(element1, 0x10), 0xd4))
+-		{
+-		first = element1;
+-		second = element0;
+-		}
+-	const NxU32 group0 = cpmAt<NxU16>(cpmAt<NxU8*>(first, 0x10), 0xd8);
+-	const NxU32 group1 = cpmAt<NxU16>(cpmAt<NxU8*>(second, 0x10), 0xd8);
+-	if(group0 != 0xffff && group1 != 0xffff
+-		&& !(nxPhysicsSDKGroupCollisionMasks()[group0] & (1u << (group1 & 31))))
+-		return 0;
+-	void* block = nxFoundationSDKAllocator->malloc(0x108, NX_MEMORY_PERSISTENT);
+-	if(!block)
+-		return 0;
+-	return static_cast<NxPairNode*>(block)->row000901(first, second, this);
++	return 0;

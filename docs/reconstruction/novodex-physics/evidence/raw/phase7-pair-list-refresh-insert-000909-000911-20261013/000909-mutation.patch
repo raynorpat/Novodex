@@ -1,0 +1,16 @@
+--- a/Physics/src/ContactPairManager.cpp
++++ b/Physics/src/ContactPairManager.cpp
+@@ -2379,12 +2379 @@
+-	for(NxPairNode* node = head; node; node = node->at<NxPairNode*>(8))
+-		{
+-		const NxU8* body0 = cpmAt<const NxU8*>(node->at<NxU8*>(0x14), 8);
+-		if(body0 && cpmAt<NxU32>(body0, 0x4c) != 0)
+-			{
+-			node->row000905(scene);
+-			continue;
+-			}
+-		const NxU8* body1 = cpmAt<const NxU8*>(node->at<NxU8*>(0x18), 8);
+-		if(body1 && cpmAt<NxU32>(body1, 0x4c) != 0)
+-			node->row000905(scene);
+-		}
++	return;
