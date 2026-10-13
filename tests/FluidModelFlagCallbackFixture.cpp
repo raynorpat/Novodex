@@ -76,6 +76,9 @@ static unsigned gFluidSetViscosityArgumentsValid;
 static unsigned gFluidSetDampingCalls;
 static unsigned gFluidSetDampingBits;
 static unsigned gFluidSetDampingArgumentsValid;
+static unsigned gFluidSetStaticCollisionRestitutionCalls;
+static unsigned gFluidSetStaticCollisionRestitutionBits;
+static unsigned gFluidSetStaticCollisionRestitutionArgumentsValid;
 static unsigned gFluidGetStaticCollisionRestitutionCalls;
 static unsigned gFluidGetStaticCollisionAdhesionCalls;
 static unsigned char gFluidStaticCollision[0x200];
@@ -273,6 +276,9 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidSetDampingCalls = 0;
 	gFluidSetDampingBits = 0;
 	gFluidSetDampingArgumentsValid = 0;
+	gFluidSetStaticCollisionRestitutionCalls = 0;
+	gFluidSetStaticCollisionRestitutionBits = 0;
+	gFluidSetStaticCollisionRestitutionArgumentsValid = 0;
 	gFluidGetStaticCollisionRestitutionCalls = 0;
 	gFluidGetStaticCollisionAdhesionCalls = 0;
 	gFluidEmitterCreateNullIndex = ~0u;
@@ -487,6 +493,28 @@ extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetDampingObservation(
 	if(calls) *calls = gFluidSetDampingCalls;
 	if(valueBits) *valueBits = gFluidSetDampingBits;
 	if(argumentsValid) *argumentsValid = gFluidSetDampingArgumentsValid;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidSetStaticCollisionRestitution(
+	void* manager, void* fluid, float value)
+	{
+	++gFluidSetStaticCollisionRestitutionCalls;
+	memcpy(&gFluidSetStaticCollisionRestitutionBits, &value, sizeof(value));
+	bool fluidFound = false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) /
+		sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			fluidFound = true;
+	gFluidSetStaticCollisionRestitutionArgumentsValid =
+		manager == &gFluidManagerBackend && fluidFound;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetStaticCollisionRestitutionObservation(
+	unsigned* calls, unsigned* valueBits, unsigned* argumentsValid)
+	{
+	if(calls) *calls = gFluidSetStaticCollisionRestitutionCalls;
+	if(valueBits) *valueBits = gFluidSetStaticCollisionRestitutionBits;
+	if(argumentsValid) *argumentsValid = gFluidSetStaticCollisionRestitutionArgumentsValid;
 	}
 
 static bool nxFluidFixtureHasBackendFluid(void* manager, void* fluid)

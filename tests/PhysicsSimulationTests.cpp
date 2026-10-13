@@ -3288,6 +3288,8 @@ int wmain(int argc, wchar_t** argv)
 		unsigned*, unsigned*, unsigned*);
 	typedef void (__cdecl *GetFluidSetDampingObservationFn)(
 		unsigned*, unsigned*, unsigned*);
+	typedef void (__cdecl *GetFluidSetStaticCollisionRestitutionObservationFn)(
+		unsigned*, unsigned*, unsigned*);
 	struct FluidManagerCallbackSummary
 		{
 		unsigned managerCreate;
@@ -3331,6 +3333,9 @@ int wmain(int argc, wchar_t** argv)
 	GetFluidSetDampingObservationFn getFluidSetDampingObservation =
 		reinterpret_cast<GetFluidSetDampingObservationFn>(GetProcAddress(
 			fluidModel, "NxGetFluidSetDampingObservation"));
+	GetFluidSetStaticCollisionRestitutionObservationFn getFluidSetStaticCollisionRestitutionObservation =
+		reinterpret_cast<GetFluidSetStaticCollisionRestitutionObservationFn>(GetProcAddress(
+			fluidModel, "NxGetFluidSetStaticCollisionRestitutionObservation"));
 	GetFluidScalarCallsFn getFluidStaticRestitutionCalls = reinterpret_cast<
 		GetFluidScalarCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidStaticCollisionRestitutionCalls"));
@@ -3346,6 +3351,7 @@ int wmain(int argc, wchar_t** argv)
 	if(!resetFluidManagerCallbacks || !getFluidDampingCalls ||
 		!getFluidSetStiffnessObservation || !getFluidSetViscosityObservation ||
 		!getFluidSetDampingObservation ||
+		!getFluidSetStaticCollisionRestitutionObservation ||
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex)
@@ -3927,6 +3933,7 @@ int wmain(int argc, wchar_t** argv)
 	bool licensedStiffnessSetter = false;
 	bool licensedViscositySetter = false;
 	bool licensedDampingSetter = false;
+	bool licensedStaticCollisionRestitutionSetter = false;
 	{
 	NxSimulationFluidLicenseOverride licenseOverride;
 	NxScene* const licensedFluidScene = licenseOverride.ready
@@ -4005,6 +4012,30 @@ int wmain(int argc, wchar_t** argv)
 	printf("simulation fluid public-api configuration licensed-set-damping value=%08x calls=%u args=%u errors=%u\n",
 		dampingBitsAfter, dampingCallsAfter - dampingCallsBefore,
 		dampingArgumentsAfter, licensedSetDampingErrors);
+	unsigned staticRestitutionSetCallsBefore = 0, staticRestitutionSetBitsBefore = 0,
+		staticRestitutionSetArgumentsBefore = 0;
+	getFluidSetStaticCollisionRestitutionObservation(
+		&staticRestitutionSetCallsBefore, &staticRestitutionSetBitsBefore,
+		&staticRestitutionSetArgumentsBefore);
+	const unsigned licensedSetStaticRestitutionErrorsBefore = simulationOutput.errors;
+	if(licensedFluid)
+		licensedFluid->setStaticCollisionRestitution(0.5f);
+	const unsigned licensedSetStaticRestitutionErrors = simulationOutput.errors -
+		licensedSetStaticRestitutionErrorsBefore;
+	unsigned staticRestitutionSetCallsAfter = 0, staticRestitutionSetBitsAfter = 0,
+		staticRestitutionSetArgumentsAfter = 0;
+	getFluidSetStaticCollisionRestitutionObservation(
+		&staticRestitutionSetCallsAfter, &staticRestitutionSetBitsAfter,
+		&staticRestitutionSetArgumentsAfter);
+	licensedStaticCollisionRestitutionSetter = licenseOverride.ready && licensedFluid &&
+		licensedSetStaticRestitutionErrors == 0 &&
+		staticRestitutionSetCallsAfter == staticRestitutionSetCallsBefore + 1 &&
+		staticRestitutionSetBitsAfter == 0x3f000000u &&
+		staticRestitutionSetArgumentsAfter == 1;
+	printf("simulation fluid public-api configuration licensed-set-static-restitution value=%08x calls=%u args=%u errors=%u\n",
+		staticRestitutionSetBitsAfter,
+		staticRestitutionSetCallsAfter - staticRestitutionSetCallsBefore,
+		staticRestitutionSetArgumentsAfter, licensedSetStaticRestitutionErrors);
 	printf("simulation fluid public-api configuration licensed-set-stiffness value=%08x calls=%u args=%u errors=%u\n",
 		stiffnessBitsAfter, stiffnessCallsAfter - stiffnessCallsBefore,
 		stiffnessArgumentsAfter, licensedSetStiffnessErrors);
@@ -4020,7 +4051,8 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseScene(*licensedFluidScene);
 	}
 	if(!enabledLicensedKernelGetter || !licensedStiffnessSetter ||
-		!licensedViscositySetter || !licensedDampingSetter)
+		!licensedViscositySetter || !licensedDampingSetter ||
+		!licensedStaticCollisionRestitutionSetter)
 		return nxFail("licensed NxFluid scalar setter or kernel-radius getter did not forward through FluidModel");
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
