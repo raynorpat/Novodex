@@ -4491,7 +4491,12 @@ int wmain(int argc, wchar_t** argv)
 			fluidArraySecondary[0]) / sizeof(unsigned);
 	bool fluidArrayOrderMatches = fluidArrayCount == 7 && fluidArrayPublished &&
 		fluidArrayInternalCapacity == 14 && fluidArrayPublicCapacity == 14;
+	bool fluidConstructorMatches = fluidArrayCount == 7 && fluidArrayPublished;
+	bool fluidConstructorArraysMatch = fluidConstructorMatches;
+	bool fluidConstructorBoundsMatch = fluidConstructorMatches;
+	bool fluidConstructorSolverMatch = fluidConstructorMatches;
 	for(unsigned i = 0; i != 7; ++i)
+		{
 		fluidArrayOrderMatches = fluidArrayOrderMatches && fluidArrayHandles[i] &&
 			fluidArrayPublished && fluidArrayPublished[i] == fluidArrayHandles[i] &&
 			fluidArrayPrimary && fluidArraySecondary &&
@@ -4500,6 +4505,54 @@ int wmain(int argc, wchar_t** argv)
 					fluidArrayHandles[i]) + 0x14) &&
 			reinterpret_cast<void**>(fluidArraySecondary[0])[i] ==
 				fluidArrayHandles[i];
+		unsigned char* const internalFluid = fluidArrayHandles[i]
+			? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+				reinterpret_cast<unsigned char*>(fluidArrayHandles[i]) + 0x14))
+			: 0;
+		unsigned char* const solver = internalFluid
+			? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+				internalFluid + 0x54)) : 0;
+		const bool fluidArraysDefault = internalFluid &&
+			*reinterpret_cast<unsigned*>(internalFluid + 4) == 0 &&
+			*reinterpret_cast<unsigned*>(internalFluid + 8) == 0 &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0xc) == 0 &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x14) == 0 &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x18) == 0 &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x1c) == 0 &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x24) == 0;
+		const bool fluidBoundsDefault = internalFluid &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x5c) == 0x7f7fffffu &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x60) == 0x7f7fffffu &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x64) == 0x7f7fffffu &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x68) == 0xff7fffffu &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x6c) == 0xff7fffffu &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x70) == 0xff7fffffu &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x74) == 0;
+		const bool fluidSolverLinksMatch = internalFluid &&
+			solver == reinterpret_cast<unsigned char*>(fluidArrayHandles[i]) &&
+			*reinterpret_cast<void***>(internalFluid) != 0 &&
+			*reinterpret_cast<unsigned*>(internalFluid + 0x58) ==
+				NX_FF_VISUALIZATION &&
+			*reinterpret_cast<void**>(internalFluid + 0x78) == 0 &&
+			*reinterpret_cast<void**>(internalFluid + 0x7c) == fluidArrayManager &&
+			*reinterpret_cast<void**>(internalFluid + 0x80) != 0 &&
+			*reinterpret_cast<void***>(solver) != 0 &&
+			*reinterpret_cast<void***>(solver + 8) != 0 &&
+			*reinterpret_cast<void**>(solver + 0x14) == internalFluid;
+		fluidConstructorArraysMatch = fluidConstructorArraysMatch &&
+			fluidArraysDefault;
+		fluidConstructorBoundsMatch = fluidConstructorBoundsMatch &&
+			fluidBoundsDefault;
+		fluidConstructorSolverMatch = fluidConstructorSolverMatch &&
+			fluidSolverLinksMatch;
+		fluidConstructorMatches = fluidConstructorMatches && fluidArraysDefault &&
+			fluidBoundsDefault && fluidSolverLinksMatch;
+		}
+	printf("simulation fluid constructor initialized=%u fluids=%u arrays=%u bounds=%u solver-links=%u\n",
+		fluidConstructorMatches ? 1u : 0u, fluidArrayCount,
+		fluidConstructorArraysMatch ? 1u : 0u,
+		fluidConstructorBoundsMatch ? 1u : 0u,
+		fluidConstructorSolverMatch ? 1u : 0u);
 	if(fluidArrayScene && fluidArrayHandles[2])
 		fluidArrayScene->releaseFluid(*fluidArrayHandles[2]);
 	NxFluid** const fluidArrayAfterSwap = fluidArrayScene

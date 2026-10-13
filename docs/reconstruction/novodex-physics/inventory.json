@@ -65500,13 +65500,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1304",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12325",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x00085b00 shows the 0x84-byte Fluid constructor installs its vtable, initializes the empty member arrays, seeds the six AABB words with (+FLT_MAX,+FLT_MAX,+FLT_MAX,-FLT_MAX,-FLT_MAX,-FLT_MAX), stores the manager pointer, constructs the 0x18-byte FluidSolver/read-lock pair, clears +0x74, and seeds +0x80 to -1 before initialization replaces it. Candidate construction is inline in NxSceneInternal::createFluid.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests enabled-fluid fixture creates seven public fluids and checks the constructor-backed empty arrays, default user-data slot, exact AABB words, manager and solver links, solver vtables/back-pointer, and backend handle. The 003497 marker matches exactly (stdout_delta=0, stderr_exact=True). A temporary +0x74=1 mutation is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=2); restored control is exact. Evidence: evidence/phase7-fluid-internal-create-003497-003503.md.",
+      "notes": "Partial row evidence: the registered check covers the observable default/member initialization listed in static_proof, but not every constructor store or allocation-failure behavior. The solver base constructor and full constructor instruction sequence remain open.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+        "address": "0x1005c690",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003498",
@@ -65609,12 +65617,20 @@
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "Physics/src/SceneRaycast.cpp",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1307",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12348",
-      "static_proof": null,
-      "dynamic_proof": "NxPhysicsSceneRaycastTests staged-pair differential for hit, miss, prefilled output, and translated mesh; exact oracle/candidate output in build/overlap-tri-diff.log and registered Phase 7 coverage.",
-      "notes": "The public cases are covered; direct actor/mesh traversal is an approximation of the oracle's selected-pruner query and remains subject to broader ordering and narrow-phase falsification."
+      "static_proof": "IDA at oracle RVA 0x00086080 shows descriptor copies into internal-fluid state, license-gated FluidCreate arguments, descriptor-emitter construction, initial-particle array population, and manager refresh clearing followed by initial particle/state setup. The candidate implements descriptor properties/write-data, license flags, emitters, and the enabled-manager path inline in NxSceneInternal::createFluid; initial-particle ParticleArray population is not implemented.",
+      "dynamic_proof": "The enabled NxPhysicsSimulationTests fixture differentially exercises descriptor/write-data state, licensed callback arguments, descriptor emitters, and the manager dirty refresh through NxSceneInternal::createFluid. This is partial path coverage only. Constructor state and no-op mutation evidence for the adjacent 003497 row are recorded separately in evidence/phase7-fluid-internal-create-003497-003503.md.",
+      "notes": "Partial implementation/proof: the candidate inline method does not reproduce the oracle initialParticleData/ParticleArray path, its allocator and callback ordering, or the complete function body. The prior SceneRaycast source attribution was incorrect and has been replaced with the actual Scene.cpp implementation location. Keep this row open.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+        "address": "0x1005c690",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003504",
@@ -68363,8 +68379,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1378",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12626",
       "static_proof": null,
-      "dynamic_proof": "NxPhysicsSimulationTests loads a staged FluidModel callback fixture and differentially exercises invalid-descriptor rejection, enabled manager creation, valid FluidCreate calls, public getNbFluids/getFluids visibility, the initial dirty static-collision build, release, manager teardown, license-derived FluidCreate arguments, and manager-array growth/order. Product 465 matches sparse=1/hardware=0; product 804 matches sparse=1/hardware=1. Seven fluids grow the parallel arrays to 14 entries, preserve internal/public order, and swap-remove the requested fluid; the no-op array-push mutant is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=68), and restored control matches exactly. The license pre-fix candidate passed 0,0 for both products and was rejected (stdout_delta=62). Phases 5/6/7 require the new marker at floors 2706/1639/1768. Evidence: evidence/phase7-fluid-enabled-create-003649.md.",
-      "notes": "Partial reconstruction only. NxSceneInternal::createFluid in Scene.cpp is the mapped candidate implementation and its manager create/list/release, initial 0x29 dirty build, validation/allocation cases, descriptor emitters, license-derived FluidCreate arguments, and manager fluid-array growth/order are fixture-backed. The complete 2452-byte oracle body, constructor subrows 003497/003503, callback table, failure ordering, and teardown combinations remain open; keep this row reconstructed until the full row is audited and covered.",
+      "dynamic_proof": "NxPhysicsSimulationTests loads a staged FluidModel callback fixture and differentially exercises invalid-descriptor rejection, enabled manager creation, valid FluidCreate calls, public getNbFluids/getFluids visibility, the initial dirty static-collision build, release, manager teardown, license-derived FluidCreate arguments, and manager-array growth/order. Product 465 matches sparse=1/hardware=0; product 804 matches sparse=1/hardware=1. Seven fluids grow the parallel arrays to 14 entries, preserve internal/public order, and swap-remove the requested fluid; the no-op array-push mutant is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=68), and restored control matches exactly. The license pre-fix candidate passed 0,0 for both products and was rejected (stdout_delta=62). Phases 5/6/7 require the new marker at floors 2706/1639/1768. Evidence: evidence/phase7-fluid-enabled-create-003649.md. A seven-fluid fixture also checks constructor defaults for adjacent phys_fn_003497; the +0x74 mutation is rejected. Evidence: evidence/phase7-fluid-internal-create-003497-003503.md.",
+      "notes": "Partial reconstruction only. NxSceneInternal::createFluid in Scene.cpp and its manager create/list/release, initial 0x29 dirty build, validation/allocation cases, descriptor emitters, license-derived FluidCreate arguments, manager fluid-array growth/order, and the tested internal-fluid constructor defaults are fixture-backed. The complete 2452-byte oracle body, full constructor/initialization instruction sequences (including subrows 003497/003503), initial-particle ParticleArray path, callback table, failure ordering, and teardown combinations remain open; keep this row reconstructed until every branch is audited and covered.",
       "implementation": "Physics/src/Scene.cpp",
       "implementation_symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
       "candidate_map_reference": {

@@ -1741,3 +1741,16 @@ Rows phys_fn_000335 (startRun), phys_fn_000336 (finishRun), and phys_fn_000342 (
 Phase 7 row phys_fn_000344 (NpScene::visualize) is mutation-falsified through the existing renderer differential: omitting its Scene forward changes the transcript by 1,008 bytes; both processes exit zero with exact stderr, and restored output is exact. Phase 7 advances to 192 closed / 369 deferred functions (213 reconstructed but unfalsified and 156 unreconstructed). Evidence: docs/reconstruction/novodex-physics/evidence/phase7-npscene-visualize-wrapper-000344.md.
 
 Fresh Phase 7 passes at 1,707/1,707 assertions after closure of phys_fn_000344. The gate transcript is in evidence/raw/phase7-npscene-visualize-wrapper-000344-20261012/phase7-gate.log.gz.
+### Continuation — Fluid constructor default-state differential (`phys_fn_003497`, `2026-10-13`)
+
+Extended the seven-fluid public DLL fixture to check the internal constructor's
+default arrays, exact AABB sentinels, manager link, backend handle, and solver
+vtable/back-pointer for every handle. A mutation of the constructor's `+0x74`
+zero word is caught (`stdout_delta=2`); restored output matches exactly. Fresh
+Phase 5, 6, and 7 gates pass at 2,707/2,707, 1,640/1,640, and 1,769/1,769
+assertions; all 814 reconstruction tooling tests pass. Evidence and compressed
+logs are in
+`docs/reconstruction/novodex-physics/evidence/phase7-fluid-internal-create-003497-003503.md`.
+This closes only the tested constructor slice. `phys_fn_003503` still lacks
+initial-particle `ParticleArray` support, allocator-failure ordering, and full
+callback-table coverage; full DLL reconstruction remains active.

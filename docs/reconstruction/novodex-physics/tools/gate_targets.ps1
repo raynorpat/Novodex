@@ -3534,6 +3534,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # Seven public fluids force two manager-array growths, preserve both
         # internal/public ordering, and verify swap removal plus teardown.
         'simulation fluid manager-array-growth created=7 listed=7 capacity=14.14 swap-remove=1 order=1 callbacks=7.7 manager-cleared=1 errors=0'
+        # The same public creation path checks the 0x84-byte internal-fluid
+        # constructor defaults, bound sentinels, manager link, and solver bases.
+        'simulation fluid constructor initialized=1 fluids=7 arrays=1 bounds=1 solver-links=1'
         # Public NxFluid emitter count and list must expose the same three
         # retained wrappers as the internal arrays through the wrapper vtable.
         'simulation fluid public-api emitter-count=3 count-match=1 array-match=1'
@@ -5932,7 +5935,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2706  # adds seven-fluid manager-array growth and swap-remove coverage
+	'5' = 2707  # adds Fluid constructor state and default-layout coverage
 				# previous 2703 plus two product-code-specific FluidCreate assertions
 				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
@@ -5988,7 +5991,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1639  # adds seven-fluid manager-array growth and swap-remove coverage
+	'6' = 1640  # adds Fluid constructor state and default-layout coverage
 				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
@@ -6025,7 +6028,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1768  # adds seven-fluid manager-array growth and swap-remove coverage
+	'7' = 1769  # adds Fluid constructor state and default-layout coverage
 				# adds the scene-release contact report row phys_fn_000913
 				# adds 11 collision-pruner visualization assertions to NxPhysicsSceneVisualizeTests
 				# adds a mutation-falsified contact-pair force aggregate

@@ -2923,14 +2923,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 8,
+    "discovered": 7,
     "dynamically_gated": 2,
-    "reconstructed": 1
+    "reconstructed": 2
    },
    "bytes": {
-    "discovered": 2432,
+    "discovered": 2257,
     "dynamically_gated": 209,
-    "reconstructed": 42
+    "reconstructed": 217
    },
    "phases": {
     "7": 11
