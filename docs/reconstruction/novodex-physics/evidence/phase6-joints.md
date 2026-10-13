@@ -10671,3 +10671,7 @@ Rows `phys_fn_003738` and `phys_fn_003742` are now closed by registered `NxPhysi
 # Phase 7 continuation: public NxFluid world bounds
 
 `phys_fn_003784` is mutation-falsified through the registered `NxPhysicsSimulationTests` public vtable call. A +0x60 bounds-offset mutant fails with `candidate_exit=1`, `stdout_delta=60`; the restored +0x5c implementation matches exactly. The Phase 5/6/7 gates now pass at 2,693/1,627/1,735 assertions. See [phase7-npfluid-world-bounds-003784.md](phase7-npfluid-world-bounds-003784.md).
+
+# Phase 7 continuation: public NxFluid name registry
+
+`phys_fn_003786` is mutation-falsified through the registered `NxPhysicsSimulationTests` public set/get/clear round-trip. A no-op setter is rejected with `stdout_delta=60`; the restored shared-registry implementation matches exactly. See [phase7-npfluid-name-003786.md](phase7-npfluid-name-003786.md).

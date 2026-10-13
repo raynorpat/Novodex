@@ -3574,6 +3574,20 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidWorldBoundsMatch ? 1u : 0u,
 		fluidBoundsActual[0], fluidBoundsActual[1], fluidBoundsActual[2],
 		fluidBoundsActual[3], fluidBoundsActual[4], fluidBoundsActual[5]);
+	static const char enabledFluidName[] = "simulation-fluid-name";
+	if(enabledFluid)
+		enabledFluid->setName(enabledFluidName);
+	const char* const enabledFluidNameRead = enabledFluid
+		? enabledFluid->getName() : 0;
+	const bool enabledFluidNameStored = enabledFluidNameRead &&
+		strcmp(enabledFluidNameRead, enabledFluidName) == 0;
+	if(enabledFluid)
+		enabledFluid->setName(0);
+	const bool enabledFluidNameCleared = enabledFluid &&
+		enabledFluid->getName() == 0;
+	printf("simulation fluid public-api name stored=%u cleared=%u\n",
+		enabledFluidNameStored ? 1u : 0u,
+		enabledFluidNameCleared ? 1u : 0u);
 	const bool enabledEmitterAllocationFailure =
 		emitterFailAllocator.mFailCount == 1;
 	const NxU32 enabledPublicEmitterCount = enabledFluid
@@ -3954,6 +3968,7 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
 		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
 		!enabledFluidWorldBoundsMatch ||
+		!enabledFluidNameStored || !enabledFluidNameCleared ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
 		!enabledFluidConfigCallbacks || enabledPublicMaxParticles != 0x1234u ||
 		nxFloatBits(enabledPublicRestParticlesPerMeter) != 0x42480000u ||

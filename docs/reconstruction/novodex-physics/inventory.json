@@ -70815,13 +70815,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1415",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12866",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Takes the Scene write lock from wrapper+0x0c, updates the shared SDK pointer-binding registry using the internal Fluid pointer at wrapper+0x14, then unlocks; on lock failure reports the line-393 invalid-operation diagnostic.",
+      "dynamic_proof": "NxPhysicsSimulationTests calls NxFluid::setName/getName through the public vtable, verifies the stored caller-owned string and null removal. A no-op setName mutant is rejected (candidate_exit=1, stdout_delta=60); restored oracle/candidate output matches exactly (stdout_delta=0, stderr_exact=True).",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidSetName"
     },
     {
       "id": "phys_fn_003787",

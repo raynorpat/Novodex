@@ -30,6 +30,7 @@
 
 #include "Containers.h"
 #include "NxPhysicsBackend.h"
+#include "PhysicsInternal.h"
 #define NOMINMAX
 #include <windows.h>
 #if !NX_PHYSICS_USE_X87
@@ -1475,6 +1476,39 @@ static void __fastcall nxFluidGetWorldBounds(void* wrapper, void*, NxBounds3& bo
 	nxNpSceneGuardLeave(readLock);
 	}
 
+// phys_fn_003786 (0x0008c240): register the caller-owned name against the
+// internal Fluid pointer while holding the Scene write lock.
+static void __fastcall nxFluidSetName(void* wrapper, void*, const char* name)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			393, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	nxSetSdkPointerBinding(internal, const_cast<char*>(name));
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+// phys_fn_003860 (0x0008d060): read the shared SDK object-name binding under
+// the wrapper's Scene read lock.
+static const char* __fastcall nxFluidGetName(void* wrapper, void*)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
+	nxNpSceneGuardEnter(readLock);
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	const char* const name = static_cast<const char*>(
+		nxGetSdkPointerBinding(internal));
+	nxNpSceneGuardLeave(readLock);
+	return name;
+	}
+
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
 	{
 	if((deleteObject & 1) != 0)
@@ -1520,7 +1554,9 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidGetParticleMass),
 	reinterpret_cast<void*>(nxFluidGetSimulationMethod),
 	reinterpret_cast<void*>(nxFluidGetCollisionMethod),
-	reinterpret_cast<void*>(nxFluidGetWorldBounds), 0, 0
+	reinterpret_cast<void*>(nxFluidGetWorldBounds),
+	reinterpret_cast<void*>(nxFluidSetName),
+	reinterpret_cast<void*>(nxFluidGetName)
 	};
 static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)
