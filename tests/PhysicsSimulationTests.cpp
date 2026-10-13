@@ -3210,6 +3210,7 @@ int wmain(int argc, wchar_t** argv)
 	if(!fluidModel)
 		return nxFail("staged fluid model callback fixture failed to load");
 	typedef void (__cdecl *ResetFluidManagerCallbacksFn)();
+	typedef unsigned (__cdecl *GetFluidDampingCallsFn)();
 	struct FluidManagerCallbackSummary
 		{
 		unsigned managerCreate;
@@ -3233,13 +3234,17 @@ int wmain(int argc, wchar_t** argv)
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
 		ResetFluidManagerCallbacksFn>(GetProcAddress(fluidModel,
 			"NxResetFluidManagerCallbacks"));
+	GetFluidDampingCallsFn getFluidDampingCalls = reinterpret_cast<
+		GetFluidDampingCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidDampingCalls"));
 	GetFluidManagerCallbackSummaryFn getFluidManagerCallbackSummary = reinterpret_cast<
 		GetFluidManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
 			"NxGetFluidManagerCallbackSummary"));
 	SetFluidEmitterCreateNullIndexFn setFluidEmitterCreateNullIndex = reinterpret_cast<
 		SetFluidEmitterCreateNullIndexFn>(GetProcAddress(fluidModel,
 			"NxSetFluidEmitterCreateNullIndex"));
-	if(!resetFluidManagerCallbacks || !getFluidManagerCallbackSummary ||
+	if(!resetFluidManagerCallbacks || !getFluidDampingCalls ||
+		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
@@ -3448,6 +3453,13 @@ int wmain(int argc, wchar_t** argv)
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
 		strcmp(simulationOutput.message,
 			"NxFluid::getViscosity(): Feature not available!") == 0;
+	const unsigned enabledFluidDampingCallsBefore = getFluidDampingCalls();
+	const NxReal enabledPublicDamping = enabledFluid
+		? enabledFluid->getDamping() : -1.0f;
+	const unsigned enabledPublicDampingBits =
+		*reinterpret_cast<const unsigned*>(&enabledPublicDamping);
+	const unsigned enabledFluidDampingCalls =
+		getFluidDampingCalls() - enabledFluidDampingCallsBefore;
 	NxSimulationFailSizeAllocator fluidFailAllocator(*savedFluidAllocator, 0x84);
 	*fluidFoundationAllocatorSlot = &fluidFailAllocator;
 	simulationOutput.resetLast();
@@ -3546,6 +3558,8 @@ int wmain(int argc, wchar_t** argv)
 		enabledPublicViscosityBits, enabledPublicViscosityErrors,
 		enabledPublicStiffnessDiagnosticExact ? 1u : 0u,
 		enabledPublicViscosityDiagnosticExact ? 1u : 0u);
+	printf("simulation fluid public-api damping value=%08x calls=%u\n",
+		enabledPublicDampingBits, enabledFluidDampingCalls);
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
@@ -3650,6 +3664,8 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
 		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
+		enabledPublicDampingBits != 0x3ec00000u ||
+		enabledFluidDampingCalls != 1 ||
 		!fluidDynamicAddClean || !fluidDynamicRemoveClean ||
 		!fluidStaticRemoveDirty ||
 		enabledFluidErrors != 0)

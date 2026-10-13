@@ -3506,6 +3506,8 @@ $NxRequiredCoverageLines = [ordered] @{
 		# The unlicensed scalar getters return zero and report their precise
 		# feature-unavailable diagnostics through the public NxFluid vtable.
 		'simulation fluid public-api scalars stiffness=00000000.1 viscosity=00000000.1 diagnostics=1.1'
+		# Damping remains callback-backed and returns the FluidModel's exact scalar.
+		'simulation fluid public-api damping value=3ec00000 calls=1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
@@ -5865,7 +5867,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2680  # adds public NxFluid stiffness/viscosity getters
+	'5' = 2681  # adds public NxFluid damping getter
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
@@ -5929,7 +5931,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1713  # adds public NxFluid stiffness/viscosity getters
+	'7' = 1714  # adds public NxFluid damping getter
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions

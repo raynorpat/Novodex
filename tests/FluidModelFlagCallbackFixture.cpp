@@ -59,6 +59,7 @@ static NxFluidManagerCallbackRecord gFluidManagerRecords[8];
 static unsigned gFluidManagerRecordCount;
 static unsigned gFluidManagerGetCallCount;
 static bool gFluidManagerCallbackProbe;
+static unsigned gFluidGetDampingCalls;
 static unsigned char gFluidStaticCollision[0x200];
 static void* gFluidManagerOldStaticCollision = gFluidStaticCollision;
 static void* gFluidManagerReplacementStaticCollision = gFluidStaticCollision;
@@ -244,6 +245,7 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidManagerRecordCount = 0;
 	gFluidManagerGetCallCount = 0;
 	gFluidManagerCallbackProbe = false;
+	gFluidGetDampingCalls = 0;
 	gFluidEmitterCreateNullIndex = ~0u;
 	ZeroMemory(gFluidStaticCollision, sizeof(gFluidStaticCollision));
 	gFluidManagerStaticCollisionGetIndex = 0;
@@ -373,6 +375,23 @@ extern "C" __declspec(dllexport) void __cdecl FluidDestroy(void* manager, void* 
 	{
 	if(manager == &gFluidManagerBackend && fluid)
 		++gFluidManagerCallbackSummary.fluidDestroy;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetDamping(
+	void* manager, void* fluid)
+	{
+	++gFluidGetDampingCalls;
+	if(manager != &gFluidManagerBackend || !fluid)
+		return -1.0f;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) / sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			return 0.375f;
+	return -1.0f;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidDampingCalls()
+	{
+	return gFluidGetDampingCalls;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetRestParticleDistance(

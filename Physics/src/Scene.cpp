@@ -826,6 +826,7 @@ static NxFluidEmitterSetGlobalPoseCallback gNxFluidEmitterSetGlobalPoseCallback 
 static NxFluidEmitterGetGlobalPoseCallback gNxFluidEmitterGetGlobalPoseCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStiffnessCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetViscosityCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetDampingCallback = 0;
 static unsigned gNxFluidLicensedFeatureFlags = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
@@ -876,6 +877,8 @@ static bool nxFluidManagerResolveModel()
 		GetProcAddress(module, "FluidGetStiffness"));
 	gNxFluidGetViscosityCallback = reinterpret_cast<NxFluidScalarGetCallback>(
 		GetProcAddress(module, "FluidGetViscosity"));
+	gNxFluidGetDampingCallback = reinterpret_cast<NxFluidScalarGetCallback>(
+		GetProcAddress(module, "FluidGetDamping"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
@@ -972,16 +975,9 @@ static NxFluidEmitter** __fastcall nxFluidGetEmitters(void* wrapper, void*)
 	return emitters;
 	}
 
-static NxReal nxFluidCallScalarGetter(void* wrapper,
-	NxFluidScalarGetCallback callback, int unavailableLine, const char* message)
+static NxReal nxFluidCallBackendScalarGetter(void* wrapper,
+	NxFluidScalarGetCallback callback)
 	{
-	if((gNxFluidLicensedFeatureFlags & 1) == 0)
-		{
-		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
-			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
-			unavailableLine, 0, message);
-		return 0.0f;
-		}
 	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
 	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
 	nxNpSceneGuardEnter(readLock);
@@ -996,6 +992,19 @@ static NxReal nxFluidCallScalarGetter(void* wrapper,
 	return result;
 	}
 
+static NxReal nxFluidCallScalarGetter(void* wrapper,
+	NxFluidScalarGetCallback callback, int unavailableLine, const char* message)
+	{
+	if((gNxFluidLicensedFeatureFlags & 1) == 0)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			unavailableLine, 0, message);
+		return 0.0f;
+		}
+	return nxFluidCallBackendScalarGetter(wrapper, callback);
+	}
+
 static NxReal __fastcall nxFluidGetStiffness(void* wrapper, void*)
 	{
 	return nxFluidCallScalarGetter(wrapper, gNxFluidGetStiffnessCallback, 109,
@@ -1006,6 +1015,11 @@ static NxReal __fastcall nxFluidGetViscosity(void* wrapper, void*)
 	{
 	return nxFluidCallScalarGetter(wrapper, gNxFluidGetViscosityCallback, 128,
 		"NxFluid::getViscosity(): Feature not available!");
+	}
+
+static NxReal __fastcall nxFluidGetDamping(void* wrapper, void*)
+	{
+	return nxFluidCallBackendScalarGetter(wrapper, gNxFluidGetDampingCallback);
 	}
 
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
@@ -1033,7 +1047,9 @@ static void* gNxFluidSolverVtable[] = {
 	0, 0, 0, 0, 0, 0,
 	reinterpret_cast<void*>(nxFluidGetStiffness),
 	0,
-	reinterpret_cast<void*>(nxFluidGetViscosity)
+	reinterpret_cast<void*>(nxFluidGetViscosity),
+	0,
+	reinterpret_cast<void*>(nxFluidGetDamping)
 	};
 static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)
