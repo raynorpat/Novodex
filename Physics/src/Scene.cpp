@@ -995,12 +995,6 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	*reinterpret_cast<void**>(internal + 8) = gNxFluidEmitterCreateCallback(
 		reinterpret_cast<unsigned>(context), backendFluidHandle,
 		reinterpret_cast<const float*>(&desc.relPose), restParticleDistance);
-	if(!*reinterpret_cast<void**>(internal + 8))
-		{
-		delete static_cast<NpFluidEmitter*>(wrapper);
-		nxFoundationSDKAllocator->free(internal);
-		return 0;
-		}
 	nxNpFluidEmitterUpdateGlobalPose(internal);
 	nxNpFluidEmitterStoreGlobalPose(internal);
 	nxFluidManagerArrayPush(fluidBytes + 4, reinterpret_cast<unsigned>(internal));

@@ -3193,15 +3193,23 @@ int wmain(int argc, wchar_t** argv)
 		unsigned emitterCreateArguments[4];
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
+	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
 		ResetFluidManagerCallbacksFn>(GetProcAddress(fluidModel,
 			"NxResetFluidManagerCallbacks"));
 	GetFluidManagerCallbackSummaryFn getFluidManagerCallbackSummary = reinterpret_cast<
 		GetFluidManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
 			"NxGetFluidManagerCallbackSummary"));
-	if(!resetFluidManagerCallbacks || !getFluidManagerCallbackSummary)
+	SetFluidEmitterCreateNullIndexFn setFluidEmitterCreateNullIndex = reinterpret_cast<
+		SetFluidEmitterCreateNullIndexFn>(GetProcAddress(fluidModel,
+			"NxSetFluidEmitterCreateNullIndex"));
+	if(!resetFluidManagerCallbacks || !getFluidManagerCallbackSummary ||
+		!setFluidEmitterCreateNullIndex)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
+	// A null backend handle still leaves the oracle's local emitter wrapper
+	// initialized and published in both fluid-owned arrays.
+	setFluidEmitterCreateNullIndex(1);
 	NxScene* const enabledFluidScene = sdk->createScene(fluidSceneDesc);
 	if(!enabledFluidScene)
 		return nxFail("enabled fluid scene creation failed");
@@ -3233,6 +3241,12 @@ int wmain(int argc, wchar_t** argv)
 	enabledEmitterDesc.dimensionX = 0.375f;
 	enabledEmitterDesc.dimensionY = 0.625f;
 	enabledFluidDesc.emitters.pushBack(enabledEmitterDesc);
+	NxFluidEmitterDesc nullBackendEmitterDesc;
+	nullBackendEmitterDesc.setToDefault();
+	nullBackendEmitterDesc.relPose.t.set(-0.75f, 0.125f, 1.25f);
+	nullBackendEmitterDesc.dimensionX = 0.875f;
+	nullBackendEmitterDesc.dimensionY = 0.25f;
+	enabledFluidDesc.emitters.pushBack(nullBackendEmitterDesc);
 	simulationOutput.resetLast();
 	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
 	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
@@ -3249,6 +3263,33 @@ int wmain(int argc, wchar_t** argv)
 	const bool enabledFluidManagerArraysMatch = enabledFluidPrimaryArray &&
 		enabledFluidSecondaryArray && enabledFluidPrimaryArray[0] == enabledFluidInternal &&
 		enabledFluidSecondaryArray[0] == enabledFluid;
+	unsigned* const enabledEmitterInternalArray = enabledFluidInternal
+		? *reinterpret_cast<unsigned**>(static_cast<unsigned char*>(
+			enabledFluidInternal) + 4) : 0;
+	unsigned* const enabledEmitterInternalLast = enabledFluidInternal
+		? *reinterpret_cast<unsigned**>(static_cast<unsigned char*>(
+			enabledFluidInternal) + 8) : 0;
+	unsigned* const enabledEmitterWrapperArray = enabledFluidInternal
+		? *reinterpret_cast<unsigned**>(static_cast<unsigned char*>(
+			enabledFluidInternal) + 0x14) : 0;
+	unsigned* const enabledEmitterWrapperLast = enabledFluidInternal
+		? *reinterpret_cast<unsigned**>(static_cast<unsigned char*>(
+			enabledFluidInternal) + 0x18) : 0;
+	const unsigned enabledEmitterCount = enabledEmitterInternalArray &&
+		enabledEmitterInternalLast >= enabledEmitterInternalArray
+		? static_cast<unsigned>(enabledEmitterInternalLast -
+			enabledEmitterInternalArray) : 0;
+	const unsigned enabledEmitterWrapperCount = enabledEmitterWrapperArray &&
+		enabledEmitterWrapperLast >= enabledEmitterWrapperArray
+		? static_cast<unsigned>(enabledEmitterWrapperLast -
+			enabledEmitterWrapperArray) : 0;
+	const bool enabledNullBackendEmitterRetained = enabledEmitterCount == 2 &&
+		enabledEmitterWrapperCount == 2 && enabledEmitterInternalArray &&
+		enabledEmitterWrapperArray && enabledEmitterInternalArray[1] &&
+		enabledEmitterWrapperArray[1] &&
+		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[1] + 8) == 0 &&
+		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[1] + 0x0c) ==
+			enabledEmitterWrapperArray[1];
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
@@ -3301,12 +3342,12 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.fluidGetCellSize == 1 &&
 		fluidManagerCallbacks.staticCollisionDestroy == 0;
 	const bool enabledFluidEmitterCallbacks =
-		fluidManagerCallbacks.fluidGetRestParticleDistance == 1 &&
-		fluidManagerCallbacks.emitterCreate == 1 &&
+		fluidManagerCallbacks.fluidGetRestParticleDistance == 2 &&
+		fluidManagerCallbacks.emitterCreate == 2 &&
 		fluidManagerCallbacks.emitterDestroy == 0 &&
-		fluidManagerCallbacks.emitterSetGlobalPose == 1 &&
-		fluidManagerCallbacks.emitterGetGlobalPose == 1;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u dirty-cleared=%u cell-size=%u errors=%u\n",
+		fluidManagerCallbacks.emitterSetGlobalPose == 2 &&
+		fluidManagerCallbacks.emitterGetGlobalPose == 2;
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
@@ -3323,6 +3364,8 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterDestroy,
 		fluidManagerCallbacks.emitterSetGlobalPose,
 		fluidManagerCallbacks.emitterGetGlobalPose,
+		enabledEmitterCount, enabledEmitterWrapperCount,
+		enabledNullBackendEmitterRetained ? 1u : 0u,
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
@@ -3331,7 +3374,7 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidListed || !enabledFluidManagerArraysMatch ||
 		!enabledFluidManagerCleared || !enabledFluidCallbacks ||
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
-		!enabledFluidEmitterCallbacks ||
+		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
 		!fluidDynamicAddClean || !fluidDynamicRemoveClean ||
 		!fluidStaticRemoveDirty ||
