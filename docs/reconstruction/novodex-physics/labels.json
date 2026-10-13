@@ -3059,6 +3059,13 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json#/entries/3370",
       "reason": "57-byte family constructor initializes the mesh primary interface and EmbeddedHookBase secondary subobject, copies the shape argument at +0x08/+0x18, and installs the mesh tables; the secondary deleting-destructor differential exercises it."
+    },
+    {
+      "id": "phys_fn_000283",
+      "label": "NxScene scalar-deleting destructor",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/139",
+      "reason": "Oracle NxScene base-vtable slot 0 points to this routine. The frozen header defines an inline virtual destructor; the rebuilt NpScene.obj emits the corresponding NxScene scalar-deleting destructor and base vtable, with the same base-vptr transition, this return, x86 cleanup, and CRT-free path. See evidence/phase7-nxscene-inline-scalar-dtor-000283.md."
     }
   ]
 }
