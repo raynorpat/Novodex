@@ -3247,6 +3247,12 @@ int wmain(int argc, wchar_t** argv)
 	nullBackendEmitterDesc.dimensionX = 0.875f;
 	nullBackendEmitterDesc.dimensionY = 0.25f;
 	enabledFluidDesc.emitters.pushBack(nullBackendEmitterDesc);
+	NxFluidEmitterDesc thirdEmitterDesc;
+	thirdEmitterDesc.setToDefault();
+	thirdEmitterDesc.relPose.t.set(1.5f, 0.25f, -0.375f);
+	thirdEmitterDesc.dimensionX = 0.5f;
+	thirdEmitterDesc.dimensionY = 0.75f;
+	enabledFluidDesc.emitters.pushBack(thirdEmitterDesc);
 	simulationOutput.resetLast();
 	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
 	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
@@ -3283,13 +3289,17 @@ int wmain(int argc, wchar_t** argv)
 		enabledEmitterWrapperLast >= enabledEmitterWrapperArray
 		? static_cast<unsigned>(enabledEmitterWrapperLast -
 			enabledEmitterWrapperArray) : 0;
-	const bool enabledNullBackendEmitterRetained = enabledEmitterCount == 2 &&
-		enabledEmitterWrapperCount == 2 && enabledEmitterInternalArray &&
+	const bool enabledNullBackendEmitterRetained = enabledEmitterCount == 3 &&
+		enabledEmitterWrapperCount == 3 && enabledEmitterInternalArray &&
 		enabledEmitterWrapperArray && enabledEmitterInternalArray[1] &&
 		enabledEmitterWrapperArray[1] &&
 		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[1] + 8) == 0 &&
 		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[1] + 0x0c) ==
-			enabledEmitterWrapperArray[1];
+			enabledEmitterWrapperArray[1] && enabledEmitterInternalArray[2] &&
+		enabledEmitterWrapperArray[2] &&
+		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[2] + 8) != 0 &&
+		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[2] + 0x0c) ==
+			enabledEmitterWrapperArray[2];
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
@@ -3342,12 +3352,12 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.fluidGetCellSize == 1 &&
 		fluidManagerCallbacks.staticCollisionDestroy == 0;
 	const bool enabledFluidEmitterCallbacks =
-		fluidManagerCallbacks.fluidGetRestParticleDistance == 2 &&
-		fluidManagerCallbacks.emitterCreate == 2 &&
+		fluidManagerCallbacks.fluidGetRestParticleDistance == 3 &&
+		fluidManagerCallbacks.emitterCreate == 3 &&
 		fluidManagerCallbacks.emitterDestroy == 0 &&
-		fluidManagerCallbacks.emitterSetGlobalPose == 2 &&
-		fluidManagerCallbacks.emitterGetGlobalPose == 2;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
+		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
+		fluidManagerCallbacks.emitterGetGlobalPose == 3;
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
@@ -3365,6 +3375,7 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterSetGlobalPose,
 		fluidManagerCallbacks.emitterGetGlobalPose,
 		enabledEmitterCount, enabledEmitterWrapperCount,
+		enabledEmitterCount >= 3 && enabledEmitterWrapperCount >= 3 ? 1u : 0u,
 		enabledNullBackendEmitterRetained ? 1u : 0u,
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
