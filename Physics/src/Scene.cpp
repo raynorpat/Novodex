@@ -108,6 +108,7 @@
 void nxContainerAddThunk(void* innerThis);
 
 #include <string.h>
+#include <stdlib.h>
 #include <new>
 
 class NxGroupsMask;
@@ -809,6 +810,7 @@ typedef int (__cdecl *NxFluidEmitterSetGlobalPoseCallback)(unsigned, unsigned,
 	unsigned, const float*);
 typedef const float* (__cdecl *NxFluidEmitterGetGlobalPoseCallback)(unsigned,
 	unsigned, unsigned);
+typedef float (__cdecl *NxFluidScalarGetCallback)(void*, void*);
 
 static NxFluidManagerCreateCallback gNxFluidManagerCreateCallback = 0;
 static NxFluidManagerDestroyCallback gNxFluidManagerDestroyCallback = 0;
@@ -822,6 +824,9 @@ static NxFluidEmitterCreateCallback gNxFluidEmitterCreateCallback = 0;
 static NxFluidEmitterDestroyCallback gNxFluidEmitterDestroyCallback = 0;
 static NxFluidEmitterSetGlobalPoseCallback gNxFluidEmitterSetGlobalPoseCallback = 0;
 static NxFluidEmitterGetGlobalPoseCallback gNxFluidEmitterGetGlobalPoseCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetStiffnessCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetViscosityCallback = 0;
+static unsigned gNxFluidLicensedFeatureFlags = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
 
@@ -867,11 +872,54 @@ static bool nxFluidManagerResolveModel()
 	gNxFluidEmitterGetGlobalPoseCallback = reinterpret_cast<
 		NxFluidEmitterGetGlobalPoseCallback>(GetProcAddress(module,
 			"EmitterGetGlobalPose"));
+	gNxFluidGetStiffnessCallback = reinterpret_cast<NxFluidScalarGetCallback>(
+		GetProcAddress(module, "FluidGetStiffness"));
+	gNxFluidGetViscosityCallback = reinterpret_cast<NxFluidScalarGetCallback>(
+		GetProcAddress(module, "FluidGetViscosity"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
 		gNxFluidDestroyCallback;
 	return gNxFluidModelInitialized;
+	}
+
+// phys_fn_003641's constructor checks the installed FluidKey and maps the
+// decoded product code to the two licensed NxFluid feature bits.
+static unsigned nxFluidResolveLicensedFeatureFlags()
+	{
+	HKEY key = 0;
+	if(RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\NovodeXSDK212", 0,
+		KEY_QUERY_VALUE, &key) != ERROR_SUCCESS)
+		return 0;
+	BYTE data[1024];
+	memset(data, 0, sizeof(data));
+	DWORD type = 0;
+	DWORD dataSize = sizeof(data);
+	const LONG queryResult = RegQueryValueExA(key, "FluidKey", 0, &type,
+		data, &dataSize);
+	RegCloseKey(key);
+	if(queryResult != ERROR_SUCCESS || type != REG_SZ || dataSize == 0)
+		return 0;
+	char* const first = strtok(reinterpret_cast<char*>(data), "-");
+	char* const product = strtok(0, "-");
+	char* const encoded = strtok(0, "-");
+	if(!first || !product || !encoded)
+		return 0;
+	const long productCode = atol(product);
+	const size_t length = strlen(first);
+	if(length != strlen(encoded))
+		return 0;
+	for(size_t i = 0; i != length; ++i)
+		encoded[i] = static_cast<char>(-101 - static_cast<signed char>(encoded[i]));
+	if(strcmp(first, encoded) != 0)
+		return 0;
+	switch(productCode)
+		{
+		case 381: return 2;
+		case 465: return 1;
+		case 804: return 3;
+		default: return 0;
+		}
 	}
 
 static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject);
@@ -924,6 +972,42 @@ static NxFluidEmitter** __fastcall nxFluidGetEmitters(void* wrapper, void*)
 	return emitters;
 	}
 
+static NxReal nxFluidCallScalarGetter(void* wrapper,
+	NxFluidScalarGetCallback callback, int unavailableLine, const char* message)
+	{
+	if((gNxFluidLicensedFeatureFlags & 1) == 0)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			unavailableLine, 0, message);
+		return 0.0f;
+		}
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
+	nxNpSceneGuardEnter(readLock);
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	unsigned char* const fluid = static_cast<unsigned char*>(internal);
+	void* const manager = *reinterpret_cast<void**>(fluid + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(fluid + 0x80);
+	const NxReal result = callback(backendManager, backendFluid);
+	nxNpSceneGuardLeave(readLock);
+	return result;
+	}
+
+static NxReal __fastcall nxFluidGetStiffness(void* wrapper, void*)
+	{
+	return nxFluidCallScalarGetter(wrapper, gNxFluidGetStiffnessCallback, 109,
+		"NxFluid::getStiffness(): Feature not available!");
+	}
+
+static NxReal __fastcall nxFluidGetViscosity(void* wrapper, void*)
+	{
+	return nxFluidCallScalarGetter(wrapper, gNxFluidGetViscosityCallback, 128,
+		"NxFluid::getViscosity(): Feature not available!");
+	}
+
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
 	{
 	if((deleteObject & 1) != 0)
@@ -945,7 +1029,11 @@ static void* gNxFluidSolverVtable[] = {
 	0,
 	0,
 	reinterpret_cast<void*>(nxFluidGetNbEmitters),
-	reinterpret_cast<void*>(nxFluidGetEmitters)
+	reinterpret_cast<void*>(nxFluidGetEmitters),
+	0, 0, 0, 0, 0, 0,
+	reinterpret_cast<void*>(nxFluidGetStiffness),
+	0,
+	reinterpret_cast<void*>(nxFluidGetViscosity)
 	};
 static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)
@@ -1085,6 +1173,7 @@ static void* nxSceneCreateFluidManager(NxSceneInternal* scene)
 	bytes[0x2b] = gNxFluidModelInitialized ? 1 : 0;
 	if(bytes[0x2b] && gNxFluidManagerCreateCallback)
 		*reinterpret_cast<void**>(bytes + 0x30) = gNxFluidManagerCreateCallback();
+	gNxFluidLicensedFeatureFlags = nxFluidResolveLicensedFeatureFlags();
 	return memory;
 	}
 

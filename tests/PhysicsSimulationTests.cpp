@@ -3418,6 +3418,36 @@ int wmain(int argc, wchar_t** argv)
 		? enabledFluid->getNbEmitters() : 0;
 	NxFluidEmitter** const enabledPublicEmitterList = enabledFluid
 		? enabledFluid->getEmitters() : 0;
+	simulationOutput.resetLast();
+	const unsigned enabledPublicStiffnessErrorsBefore = simulationOutput.errors;
+	const NxReal enabledPublicStiffness = enabledFluid
+		? enabledFluid->getStiffness() : 0.0f;
+	const unsigned enabledPublicStiffnessBits =
+		*reinterpret_cast<const unsigned*>(&enabledPublicStiffness);
+	const unsigned enabledPublicStiffnessErrors =
+		simulationOutput.errors - enabledPublicStiffnessErrorsBefore;
+	const bool enabledPublicStiffnessDiagnosticExact =
+		enabledPublicStiffnessErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 109 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::getStiffness(): Feature not available!") == 0;
+	simulationOutput.resetLast();
+	const unsigned enabledPublicViscosityErrorsBefore = simulationOutput.errors;
+	const NxReal enabledPublicViscosity = enabledFluid
+		? enabledFluid->getViscosity() : 0.0f;
+	const unsigned enabledPublicViscosityBits =
+		*reinterpret_cast<const unsigned*>(&enabledPublicViscosity);
+	const unsigned enabledPublicViscosityErrors =
+		simulationOutput.errors - enabledPublicViscosityErrorsBefore;
+	const bool enabledPublicViscosityDiagnosticExact =
+		enabledPublicViscosityErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 128 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::getViscosity(): Feature not available!") == 0;
 	NxSimulationFailSizeAllocator fluidFailAllocator(*savedFluidAllocator, 0x84);
 	*fluidFoundationAllocatorSlot = &fluidFailAllocator;
 	simulationOutput.resetLast();
@@ -3511,6 +3541,11 @@ int wmain(int argc, wchar_t** argv)
 		enabledPublicEmitterCount,
 		enabledPublicEmitterCount == 3 ? 1u : 0u,
 		enabledPublicEmitterApiMatches ? 1u : 0u);
+	printf("simulation fluid public-api scalars stiffness=%08x.%u viscosity=%08x.%u diagnostics=%u.%u\n",
+		enabledPublicStiffnessBits, enabledPublicStiffnessErrors,
+		enabledPublicViscosityBits, enabledPublicViscosityErrors,
+		enabledPublicStiffnessDiagnosticExact ? 1u : 0u,
+		enabledPublicViscosityDiagnosticExact ? 1u : 0u);
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
@@ -3552,7 +3587,9 @@ int wmain(int argc, wchar_t** argv)
 	getFluidManagerCallbackSummary(&fluidManagerCallbacks);
 	const bool enabledFluidManagerCleared =
 		*reinterpret_cast<void**>(enabledFluidSceneInternal + 0x61c) == 0;
-	const unsigned enabledFluidErrors = simulationOutput.errors - enabledFluidErrorsBefore;
+	const unsigned enabledFluidErrors = simulationOutput.errors -
+		enabledFluidErrorsBefore - enabledPublicStiffnessErrors -
+		enabledPublicViscosityErrors;
 	const bool enabledFluidCallbacks = fluidManagerCallbacks.managerCreate == 1 &&
 		fluidManagerCallbacks.managerDestroy == 1 &&
 		fluidManagerCallbacks.fluidCreate == 1 &&
