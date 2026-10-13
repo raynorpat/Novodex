@@ -10703,3 +10703,8 @@ Rows `phys_fn_003696` and `phys_fn_003698` are independently mutation-falsified 
 # Phase 7 continuation: friction-patch assignment `phys_fn_000877`
 
 `phys_fn_000877` (`NxFrictionPatch::operator=`) is mutation-falsified through `NxPhysicsFluidEmitterAbiTests`. A no-op retains the candidate payload and fails all three oracle-copy comparisons (`mismatches=3`); the restored direct differential matches payload, preserved vptr/tail padding, return-this, and x86 stack balance. See [phase7-friction-patch-assignment-000877.md](phase7-friction-patch-assignment-000877.md).
+
+
+# Phase 7 continuation: friction solver row `phys_fn_000879`
+
+`phys_fn_000879` (`NxActorPair::row000879`) is mutation-falsified through the registered sliding-sphere simulation. An immediate-return mutant changes 132 transcript lines (`stdout_delta=132`); restored control matches exactly. See [phase7-friction-row-000879.md](phase7-friction-row-000879.md).

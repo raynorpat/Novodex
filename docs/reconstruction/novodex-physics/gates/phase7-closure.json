@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 165,
+    "differential_falsified": 166,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 139,
-    "deferred_reconstructed_not_falsified": 176
+    "deferred_reconstructed_not_falsified": 175
   },
   "closed": [
     {
@@ -2651,6 +2651,17 @@
         "detected": "mismatches=3"
       },
       "note": "Direct ABI coverage for NxFrictionPatch::operator= at RVA 0x1dc80. Public headers remain unchanged. See evidence/phase7-friction-patch-assignment-000877.md and evidence/raw/phase7-friction-patch-assignment-000877/."
+    },
+    {
+      "id": "phys_fn_000879",
+      "rva": "0x0001dd40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Replaced the candidate NxActorPair::row000879 body with an immediate return, rebuilt NxPhysics.dll and NxPhysicsSimulationTests, and ran the registered staged-pair differential. The friction scenario still produced contact callbacks, but its final sliding state diverged: oracle position.x=0x3fbbb856 and velocity.x=0x3fb101df; the no-op candidate remained at position.x=0x3ffffff4 and velocity.x=0x40000000. The complete transcript changed by 132 lines (stdout_delta=132). Restoring the row returns the public simulation differential to stdout_delta=0 with both processes exiting zero.",
+        "detected": "stdout_delta=132"
+      },
+      "note": "The registered public sliding-sphere-on-plane fixture exercises the kind-4 friction solver and checks its final 60-step state. See evidence/phase7-friction-row-000879.md and evidence/raw/phase7-friction-row-000879/."
     }
   ],
   "deferred": [
@@ -3387,15 +3398,6 @@
       "id": "phys_fn_000867",
       "rva": "0x0001d260",
       "size": 103,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000879",
-      "rva": "0x0001dd40",
-      "size": 1983,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],

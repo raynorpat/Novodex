@@ -16652,13 +16652,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/364",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2711",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1dd40-0x1e4fc) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, errorScale), `ret 0xc`; per patch and anchor: the world anchors, e1 stored and e2 kept, the lever arms, the error, the two kind-4 friction records through 000598/004391 (one loop body for k = 0, 1 in the listing's order), the penalty/0.7 scaling, +0x4c = dynamic / dynamicV, patch +0x58..+0x64 zeroed; /GS gives the candidate a stack cookie the image does not have (local arrays, the joint rows' accepted difference). Candidate NxActorPair::row000879 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897 <- 000728); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "differential_falsified",
+      "notes": "The public sliding-sphere friction simulation detects an immediate-return mutant in this row (stdout_delta=132); restored control matches the pinned oracle exactly. Final 60-step position/velocity differ for the mutant and match for restored code. See evidence/phase7-friction-row-000879.md.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {

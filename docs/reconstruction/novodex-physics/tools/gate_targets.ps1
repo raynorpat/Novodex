@@ -3276,6 +3276,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # blocking simulate/check/fetch cycles. These outputs were captured from
     # the pinned oracle before the candidate step path was implemented.
     'NxPhysicsSimulationTests' = @(
+        'simulation motion stage=friction60 position=3fbbb856.3ee66666.00000000 velocity=3fb101df.00000000.00000000 angular=00000000.00000000.c031321f'
         # Pair reconciliation produces one enter, one stay and one leave event
         # with the corresponding public shape handles across fetched steps.
         'simulation trigger-lifecycle summary fetched=1 calls=3 bad_shapes=0 exact=1'
@@ -5897,7 +5898,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2699  # adds direct friction-patch assignment oracle differential
+	'5' = 2700  # adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch
@@ -5950,7 +5951,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1632  # adds public NxFluid createEmitter/releaseEmitter paired-array differential
+	'6' = 1633  # adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch
@@ -5985,7 +5986,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1741  # adds direct friction-patch assignment oracle differential
+	'7' = 1742  # adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch
