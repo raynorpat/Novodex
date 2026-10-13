@@ -20,7 +20,7 @@ The descriptor fixture now creates three emitters and forces the second `Emitter
 
 ### Continuation — expanded fluid descriptor validation (`phys_fn_003649`, 2026-10-13)
 
-Extended the enabled-manager differential from one bad-density descriptor to twelve invalid cases: eight scalar limits plus initial-particle pointer pairing, initial-position stride, write-flags stride, and invalid surface-mesh descriptor checks. Each returns null with exactly one `NXE_INVALID_PARAMETER` at line 140, matching the pinned DLL. The marker is mandatory in both Phase 5 and Phase 7. Allocation failures and broader lifecycle behavior remain open, so `phys_fn_003649` stays open. Evidence: `docs/reconstruction/novodex-physics/evidence/fluid-enabled-descriptor-validation.md`.
+Extended the enabled-manager differential from one bad-density descriptor to twelve invalid cases: eight scalar limits plus initial-particle pointer pairing, initial-position stride, write-flags stride, and invalid surface-mesh descriptor checks. Each returns null with exactly one `NXE_INVALID_PARAMETER` at line 140, matching the pinned DLL. A size-targeted allocator test also confirms the `0x84`-byte fluid-object allocation failure returns null without diagnostics, callbacks, or array insertion. Both cases are required by Phase 5 and 7 markers. Array-growth failures, later allocations, and broader lifecycle behavior remain open, so `phys_fn_003649` stays open. Evidence: `docs/reconstruction/novodex-physics/evidence/fluid-enabled-descriptor-validation.md`.
 
 ### Continuation — actor-pair contact stream reset (`phys_fn_000863`, 2026-10-12)
 

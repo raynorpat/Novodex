@@ -117,6 +117,42 @@ class NxSimulationOutputStream : public NxUserOutputStream
 		}
 	};
 
+class NxSimulationFailSizeAllocator : public NxUserAllocator
+	{
+	public:
+	NxSimulationFailSizeAllocator(NxUserAllocator& inner, size_t failSize)
+		: mInner(inner), mFailSize(failSize), mFailCount(0)
+		{
+		}
+	void* mallocDEBUG(size_t size, const char* fileName, int line) override
+		{
+			if(size == mFailSize)
+				{
+				++mFailCount;
+				return 0;
+				}
+			return mInner.mallocDEBUG(size, fileName, line);
+		}
+	void* malloc(size_t size) override
+		{
+			if(size == mFailSize)
+				{
+				++mFailCount;
+				return 0;
+				}
+			return mInner.malloc(size);
+		}
+	void* realloc(void* memory, size_t size) override
+		{
+			return mInner.realloc(memory, size);
+		}
+	void free(void* memory) override { mInner.free(memory); }
+	unsigned mFailCount;
+	private:
+	NxUserAllocator& mInner;
+	size_t mFailSize;
+	};
+
 static void nxPrintSimulationSceneState(NxScene* scene, unsigned selector, const char* phase)
 	{
 	NxSceneStats* const sceneStats = scene->getSceneStats();
@@ -3302,6 +3338,27 @@ int wmain(int argc, wchar_t** argv)
 	simulationOutput.resetLast();
 	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
 	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
+	HMODULE const fluidFoundationModule = GetModuleHandleW(L"NxFoundation.dll");
+	NxUserAllocator** const fluidFoundationAllocatorSlot = fluidFoundationModule
+		? reinterpret_cast<NxUserAllocator**>(GetProcAddress(
+			fluidFoundationModule, "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A"))
+		: 0;
+	if(!fluidFoundationAllocatorSlot || !*fluidFoundationAllocatorSlot)
+		return nxFail("fluid creation allocator hook is unavailable");
+	NxUserAllocator* const savedFluidAllocator = *fluidFoundationAllocatorSlot;
+	NxSimulationFailSizeAllocator fluidFailAllocator(*savedFluidAllocator, 0x84);
+	*fluidFoundationAllocatorSlot = &fluidFailAllocator;
+	simulationOutput.resetLast();
+	const unsigned allocationFailureErrorsBefore = simulationOutput.errors;
+	NxFluidDesc allocationFailureDesc;
+	allocationFailureDesc.setToDefault();
+	NxFluid* const allocationFailureFluid = enabledFluidScene->createFluid(
+		allocationFailureDesc);
+	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	const bool enabledFluidAllocationFailure = !allocationFailureFluid &&
+		fluidFailAllocator.mFailCount == 1 &&
+		simulationOutput.errors == allocationFailureErrorsBefore &&
+		simulationOutput.code == NXE_NO_ERROR;
 	const NxU32 enabledFluidCount = enabledFluidScene->getNbFluids();
 	NxFluid** const enabledFluidList = enabledFluidScene->getFluids();
 	const bool enabledFluidListed = enabledFluidCount == 1 && enabledFluidList &&
@@ -3403,11 +3460,12 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterDestroy == 0 &&
 		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
 		fluidManagerCallbacks.emitterGetGlobalPose == 3;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u allocation-failure=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledDescriptorValidationPassed,
 		enabledDescriptorValidationDiagnosticsExact ? 1u : 0u,
+		enabledFluidAllocationFailure ? 1u : 0u, fluidFailAllocator.mFailCount,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
 		enabledFluidCount, enabledFluidManagerArraysMatch ? 1u : 0u,
 		enabledFluidManagerCleared ? 1u : 0u,
@@ -3430,6 +3488,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidErrors);
 	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 12 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
+		!enabledFluidAllocationFailure ||
 		!enabledFluidManagerFlags || !enabledFluid ||
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
 		!enabledFluidListed || !enabledFluidManagerArraysMatch ||
