@@ -330,3 +330,7 @@ Restored the oracle's scene read lock around the optional fluid-manager count re
 ### M7.18 — NpScene fluid-array getter (`phys_fn_000421`)
 
 Restored the oracle's scene read lock around `NpScene::getFluids` and its optional manager array read. The registered simulation fixture verifies the enabled public-fluid array and empty manager case. A null-return mutation is rejected with `candidate_exit=1`, `stdout_delta=53`; the restored control is exact. Phase 7 now records 218 closed / 342 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getfluids-000421.md`.
+
+### M7.19 — Scene gravity helper (`phys_fn_000507`)
+
+Row-mapped `NxSceneInternal::setGravity` stores the three gravity words at the oracle offsets `+0x520/+0x524/+0x528`. The registered simulation fixture checks the initial and changed gravity values and trajectories. A no-op mutation changes the staged transcript by `stdout_delta=2` with both processes alive; restored control is exact. Phase 7 now records 219 closed / 341 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-setgravity-000507.md`.

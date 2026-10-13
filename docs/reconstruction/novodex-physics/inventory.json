@@ -9761,13 +9761,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "copy arg[0/4/8] to [this+0x520/524/528] (0x101d0, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/186",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1398",
-      "static_proof": "3 dword moves from arg; ret 4",
-      "dynamic_proof": "confirmed via triplecopy drive (3z58): failures=0",
-      "notes": ""
+      "static_proof": "IDA oracle decompilation at RVA 0x101d0 stores the three NxVec3 argument words at Scene+0x520/+0x524/+0x528 and returns the final word.",
+      "dynamic_proof": "Registered Phase 7 NxPhysicsSimulationTests checks initial and changed public gravity and their simulation trajectories. Replacing NxSceneInternal::setGravity with a no-op changes the staged transcript (stdout_delta=2); restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-setgravity-000507.md.",
+      "notes": "Three-word internal scene gravity setter.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?setGravity@NxSceneInternal@@QAEXABVNxVec3@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setGravity@NxSceneInternal@@QAEXABVNxVec3@@@Z",
+        "address": "0x100683d0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000508",
