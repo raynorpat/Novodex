@@ -1,0 +1,27 @@
+--- a/Physics/src/ContactPairManager.cpp
++++ b/Physics/src/ContactPairManager.cpp
+@@ -2240,24 +2239,0 @@
+-	pair()->row000893(cpmAt<const NxU8*>(element0, 0x10), cpmAt<const NxU8*>(element1, 0x10));
+-	at<NxU32>(0x104) = 0xffffffff;
+-	at<NxPairList*>(0x10) = list;
+-	at<NxU32>(0x100) = 0;
+-	at<NxU32>(0) = 0;
+-	at<NxU32>(4) = 0;
+-	if(cpmAt<void*>(element0, 8) && cpmAt<void*>(element1, 8))
+-		{
+-		at<NxPairNode*>(0xc) = list->tail;
+-		if(list->tail)
+-			list->tail->at<NxPairNode*>(8) = this;
+-		if(!list->head)
+-			list->head = this;
+-		list->tail = this;
+-		at<NxPairNode*>(8) = 0;
+-		return this;
+-		}
+-	if(!list->tail)
+-		list->tail = this;
+-	at<NxPairNode*>(8) = list->head;
+-	if(list->head)
+-		list->head->at<NxPairNode*>(0xc) = this;
+-	list->head = this;
+-	at<NxPairNode*>(0xc) = 0;
