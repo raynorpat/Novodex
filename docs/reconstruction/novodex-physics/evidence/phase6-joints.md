@@ -10713,3 +10713,8 @@ Rows `phys_fn_003696` and `phys_fn_003698` are independently mutation-falsified 
 # Phase 7 continuation: contact-pair force aggregation `phys_fn_000881`
 
 `phys_fn_000881` (`NxActorPair::row000881`) is mutation-falsified through the registered sliding-sphere contact callback. A no-op changes the summed-force output and is rejected with `stdout_delta=30`; the restored control is exact. See [phase7-contact-pair-force-000881.md](phase7-contact-pair-force-000881.md).
+
+
+# Phase 7 continuation: swept-capsule spring record `phys_fn_000883` / `phys_fn_000885`
+
+The combined candidate spring-contact implementation for `phys_fn_000883` and `phys_fn_000885` is mutation-falsified through the registered swept-capsule contact fixture. Its no-op changes callback count and final body state (`stdout_delta=2`); the restored control is exact. See [phase7-contact-spring-record-000883-000885.md](phase7-contact-spring-record-000883-000885.md).

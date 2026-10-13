@@ -3591,6 +3591,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # The sliding-contact callback exposes NxActorPair's normal and
         # friction-force aggregation (phys_fn_000881).
         'simulation friction pair-force normal=80000000.c11cf5e3.80000000 friction=3d5ae33a.00000000.00000000'
+        # Spring-contact callbacks exercise the swept-capsule solver record
+        # (`phys_fn_000883` and its continuation `phys_fn_000885`).
+        'simulation spring-contact callbacks=4 events=0000000a pairs=4 patches=4 points=4 position=3e7ffff4.c0e729a1.00000000 velocity=3e800000.c18694ef.00000000 normal-force=80000000.00000000.80000000 friction-force=00000000.00000000.00000000'
     )
     'NxPhysicsCcdSimulationTests' = @(
         'ccd step=0 x=40e00000 vx=100.000 ready=1 fetched=1'
@@ -5901,7 +5904,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2701  # adds a mutation-falsified contact-pair force aggregate
+	'5' = 2702  # adds a mutation-falsified swept-capsule spring-contact row
+				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
@@ -5955,7 +5959,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1634  # adds a mutation-falsified contact-pair force aggregate
+	'6' = 1635  # adds a mutation-falsified swept-capsule spring-contact row
+				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
@@ -5991,7 +5996,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1743  # adds a mutation-falsified contact-pair force aggregate
+	'7' = 1744  # adds a mutation-falsified swept-capsule spring-contact row
+				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip

@@ -2988,6 +2988,82 @@ int wmain(int argc, wchar_t** argv)
 		frictionReport.sumFrictionForce[1], frictionReport.sumFrictionForce[2]);
 	nxPrintActorMotionState("friction60", *slidingActor);
 	sdk->releaseScene(*frictionScene);
+
+	// Spring contact uses the swept-capsule material program and emits a
+	// different solver record from ordinary penalty contact.
+	NxSpringDesc contactSpring(1200.0f, 25.0f, 0.05f);
+	NxMaterial springMaterial;
+	springMaterial.flags |= NX_MF_SPRING_CONTACT;
+	springMaterial.programData = &contactSpring;
+	const NxMaterialIndex springMaterialIndex = sdk->addMaterial(springMaterial);
+	NxSimulationContactStreamReport springReport;
+	NxSceneDesc springSceneDesc;
+	springSceneDesc.setToDefault();
+	springSceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	springSceneDesc.timeStepMethod = NX_TIMESTEP_VARIABLE;
+	springSceneDesc.userContactReport = &springReport;
+	NxScene* springScene = sdk->createScene(springSceneDesc);
+	if(!springScene)
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("spring-contact scene creation failed");
+		}
+	NxBoxShapeDesc springGround;
+	springGround.dimensions = NxVec3(2.0f, 0.25f, 2.0f);
+	springGround.materialIndex = springMaterialIndex;
+	NxActorDesc springGroundDesc;
+	springGroundDesc.globalPose.t = NxVec3(0.0f, -0.25f, 0.0f);
+	springGroundDesc.shapes.pushBack(&springGround);
+	NxActor* springGroundActor = springScene->createActor(springGroundDesc);
+	NxCapsuleShapeDesc springCapsule;
+	springCapsule.radius = 0.5f;
+	springCapsule.height = 1.0f;
+	springCapsule.flags = NX_SWEPT_SHAPE;
+	springCapsule.materialIndex = springMaterialIndex;
+	NxBodyDesc springBody;
+	springBody.mass = 1.0f;
+	springBody.massSpaceInertia = NxVec3(0.2f, 0.1f, 0.2f);
+	springBody.linearVelocity = NxVec3(0.25f, -0.5f, 0.0f);
+	NxActorDesc springActorDesc;
+	springActorDesc.body = &springBody;
+	springActorDesc.globalPose.t = NxVec3(0.0f, 1.5f, 0.0f);
+	springActorDesc.shapes.pushBack(&springCapsule);
+	NxActor* springActor = springScene->createActor(springActorDesc);
+	if(!springGroundActor || !springActor)
+		{
+		sdk->releaseScene(*springScene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("spring-contact actors creation failed");
+		}
+	springScene->setActorPairFlags(*springGroundActor, *springActor,
+			NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+	for(unsigned step = 0; step < 60; ++step)
+		{
+		springScene->simulate(1.0f / 60.0f);
+		const bool ready = springScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = springScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			{
+			sdk->releaseScene(*springScene);
+			sdk->release();
+			FreeLibrary(physics);
+			return nxFail("spring-contact scene result was not ready and fetched");
+			}
+		}
+	NxVec3 springPosition;
+	NxVec3 springVelocity;
+	springActor->getGlobalPosition(springPosition);
+	springActor->getLinearVelocity(springVelocity);
+	printf("simulation spring-contact callbacks=%u events=%08x pairs=%u patches=%u points=%u position=%08x.%08x.%08x velocity=%08x.%08x.%08x normal-force=%08x.%08x.%08x friction-force=%08x.%08x.%08x\n",
+		springReport.calls, springReport.events, springReport.pairs,
+		springReport.patches, springReport.points,
+		nxFloatBits(springPosition.x), nxFloatBits(springPosition.y), nxFloatBits(springPosition.z),
+		nxFloatBits(springVelocity.x), nxFloatBits(springVelocity.y), nxFloatBits(springVelocity.z),
+		springReport.sumNormalForce[0], springReport.sumNormalForce[1], springReport.sumNormalForce[2],
+		springReport.sumFrictionForce[0], springReport.sumFrictionForce[1], springReport.sumFrictionForce[2]);
+	sdk->releaseScene(*springScene);
 	}
 
 	// The shipped SDK exports the fluid API while this build disables its

@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 167,
+    "differential_falsified": 169,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 139,
-    "deferred_reconstructed_not_falsified": 174
+    "deferred_reconstructed_not_falsified": 172
   },
   "closed": [
     {
@@ -2673,6 +2673,28 @@
         "detected": "stdout_delta=30"
       },
       "note": "The registered sliding-sphere fixture records the NxContactPair summed normal and friction forces from contact callbacks. See evidence/phase7-contact-pair-force-000881.md and evidence/raw/phase7-contact-pair-force-000881/."
+    },
+    {
+      "id": "phys_fn_000883",
+      "rva": "0x0001e5e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Replaced the combined candidate NxActorPair::row000883 spring-contact preparation and row000885 record body with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair simulation differential. The swept-capsule spring fixture generated four oracle callbacks but 24 mutant callbacks and changed the final body state. Both processes exited zero; the differential rejected the mutant with stdout_delta=2. Restoring both code spans returned stdout_delta=0 with exact stderr.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The registered swept-capsule spring-contact fixture reaches the combined candidate implementation for the 000883 preparation and 000885 record spans. See evidence/phase7-contact-spring-record-000883-000885.md."
+    },
+    {
+      "id": "phys_fn_000885",
+      "rva": "0x0001e6b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Replaced the combined candidate NxActorPair::row000883 spring-contact preparation and row000885 record body with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair simulation differential. The swept-capsule spring fixture generated four oracle callbacks but 24 mutant callbacks and changed the final body state. Both processes exited zero; the differential rejected the mutant with stdout_delta=2. Restoring both code spans returned stdout_delta=0 with exact stderr.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The registered swept-capsule spring-contact fixture reaches the combined candidate implementation for the 000883 preparation and 000885 record spans. See evidence/phase7-contact-spring-record-000883-000885.md."
     }
   ],
   "deferred": [
@@ -3409,24 +3431,6 @@
       "id": "phys_fn_000867",
       "rva": "0x0001d260",
       "size": 103,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000883",
-      "rva": "0x0001e5e0",
-      "size": 200,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000885",
-      "rva": "0x0001e6b0",
-      "size": 593,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
