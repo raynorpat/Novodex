@@ -20,10 +20,10 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 182,
+    "differential_falsified": 183,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
-    "deferred_not_reconstructed_in_phase": 139,
+    "deferred_not_reconstructed_in_phase": 138,
     "deferred_reconstructed_not_falsified": 159
   },
   "closed": [
@@ -2838,6 +2838,17 @@
         "detected": "stdout_delta=669"
       },
       "note": "The three spans share cpmBufferContactReports0917; suppressing its hash loop removes public simulation reports. Restored output is exact. See evidence/phase7-contact-report-buffer-000917-000919-000921.md."
+    },
+    {
+      "id": "phys_fn_001978",
+      "rva": "0x0004c980",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneVisualizeTests",
+      "falsification": {
+        "mutation": "Temporarily replaced nxSceneVisualizeCollisionPruners with a no-op, rebuilt NxPhysics.dll, and ran the registered Phase 7 public oracle/candidate staged-pair differential.",
+        "detected": "stdout_delta=1963"
+      },
+      "note": "Exact public render output covers the SAP empty case and static, dynamic, and free pruning visualization. See evidence/phase7-visualize-pruners-001978.md."
     }
   ],
   "deferred": [
@@ -3682,14 +3693,6 @@
       "id": "phys_fn_001976",
       "rva": "0x0004c290",
       "size": 1770,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001978",
-      "rva": "0x0004c980",
-      "size": 165,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []

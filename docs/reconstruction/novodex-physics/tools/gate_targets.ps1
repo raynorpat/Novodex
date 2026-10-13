@@ -3097,6 +3097,17 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize created stage=collision_aabbs line=36 p0=40800000.3f666668.40980000 p1=40c00000.3f666668.40980000 color=ffffff00'
         'visualize created stage=collision_aabbs line=48 p0=41980000.bf800000.40800000 p1=41a80000.bf800000.40800000 color=ffffff00'
         'visualize created stage=collision_aabbs renderables=1'
+        'visualize created stage=collision_sap renderables=1'
+        'visualize created stage=collision_static renderable=2 points=0 lines=36 triangles=0'
+        'visualize created stage=collision_static line=0 p0=bf800000.bfcccccd.bf800000 p1=40bccccd.bfcccccd.bf800000 color=ffff0000'
+        'visualize created stage=collision_static renderables=2'
+        'visualize created stage=collision_dynamic renderable=2 points=0 lines=36 triangles=0'
+        'visualize created stage=collision_dynamic line=0 p0=bf800000.bfcccccd.bf800000 p1=40bccccd.bfcccccd.bf800000 color=ffff0000'
+        'visualize created stage=collision_dynamic renderables=2'
+        'visualize created stage=collision_free renderable=2 points=0 lines=96 triangles=0'
+        'visualize created stage=collision_free line=0 p0=bf800000.bfcccccd.bf800000 p1=40bccccd.bfcccccd.bf800000 color=ffff0000'
+        'visualize created stage=collision_free line=36 p0=bf000000.00000000.40600000 p1=3f000000.00000000.40600000 color=ff0000ff'
+        'visualize created stage=collision_free renderables=2'
         'visualize created stage=world_axes renderable=1 points=0 lines=15 triangles=0'
         'visualize created stage=world_axes line=0 p0=00000000.00000000.00000000 p1=3fc00000.00000000.00000000 color=ffff0000'
         'visualize created stage=world_axes line=1 p0=3fc00000.00000000.00000000 p1=3fa33333.3e666667.00000000 color=ffff0000'
@@ -3262,15 +3273,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize created stage=joint_groups renderable=1 points=0 lines=0 triangles=0'
         'visualize created stage=joint_groups renderables=1'
         'visualize created stage=all renderable=1 points=0 lines=210 triangles=0'
-        'visualize created stage=all renderables=1'
+        'visualize created stage=all renderables=2'
         'visualize again stage=all renderable=1 points=0 lines=210 triangles=0'
-        'visualize again stage=all renderables=1'
+        'visualize again stage=all renderables=2'
         'visualize cleared stage=scale_zero renderable=1 points=0 lines=0 triangles=0'
-        'visualize cleared stage=scale_zero renderables=1'
+        'visualize cleared stage=scale_zero renderables=2'
         'visualize moved d_box d_sphere'
         'visualize moved stage=all renderable=1 points=0 lines=210 triangles=0'
-        'visualize moved stage=all renderables=1'
-        'visualize scene_released renderables=0'
+        'visualize moved stage=all renderables=2'
+        'visualize scene_released renderables=1'
     )
     # M1 public-path baseline: one dynamic sphere under gravity, 1,000
     # blocking simulate/check/fetch cycles. These outputs were captured from
@@ -5997,7 +6008,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1745  # adds the scene-release contact report row phys_fn_000913
+	'7' = 1756  # adds the scene-release contact report row phys_fn_000913
+				# adds 11 collision-pruner visualization assertions to NxPhysicsSceneVisualizeTests
 				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip

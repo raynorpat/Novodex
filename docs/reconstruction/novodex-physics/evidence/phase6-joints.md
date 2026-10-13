@@ -10769,3 +10769,7 @@ The shared `cpmBufferContactReports0917` loop-count mutation suppresses the publ
 `phys_fn_000919` is separately enumerated in the shared `cpmBufferContactReports0917` row family; its loop-suppression mutation is detected at `stdout_delta=669`, and restored output is exact.
 
 `phys_fn_000921` is separately enumerated in the shared `cpmBufferContactReports0917` row family; its loop-suppression mutation is detected at `stdout_delta=669`, and restored output is exact.
+
+## Phase 7 continuation: pruning visualization `phys_fn_001978`
+
+`phys_fn_001978` is mutation-falsified through the registered `NxPhysicsSceneVisualizeTests` public DLL differential: replacing the collision-pruner visualization body with a no-op is rejected (`stdout_delta=1963`); the restored oracle/candidate output is exact. See [phase7-visualize-pruners-001978.md](phase7-visualize-pruners-001978.md).

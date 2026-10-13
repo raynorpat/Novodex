@@ -184,6 +184,10 @@ void PhysicsSDK::release()
 // calls the Scene's scalar deleting destructor through `(**(code**)*puVar5)(1)`.
 NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	{
+	// A scene starts with a clean SDK-wide pruning visualization buffer. The
+	// buffer is otherwise retained across frames so it can be inspected after
+	// its producing Scene has been released.
+	clearDebugRenderable();
 	if(!desc.isValid())
 		{
 		// The oracle routes this through NxFoundation::FoundationSDK::error with its

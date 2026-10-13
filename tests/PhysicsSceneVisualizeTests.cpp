@@ -136,14 +136,15 @@ static const NxParameter nxVisParameters[] =
 	NX_VISUALIZATION_SCALE, NX_VISUALIZE_WORLD_AXES, NX_VISUALIZE_ACTOR_AXES, NX_VISUALIZE_BODY_AXES,
 	NX_VISUALIZE_BODY_MASS_AXES, NX_VISUALIZE_BODY_LIN_VELOCITY, NX_VISUALIZE_BODY_ANG_VELOCITY,
 	NX_VISUALIZE_BODY_JOINT_GROUPS, NX_VISUALIZE_COLLISION_SHAPES, NX_VISUALIZE_COLLISION_AABBS,
-	NX_VISUALIZE_COLLISION_COMPOUNDS
+	NX_VISUALIZE_COLLISION_COMPOUNDS, NX_VISUALIZE_COLLISION_SAP, NX_VISUALIZE_COLLISION_STATIC,
+	NX_VISUALIZE_COLLISION_DYNAMIC, NX_VISUALIZE_COLLISION_FREE
 	};
 static const unsigned kVisParameterCount = sizeof(nxVisParameters) / sizeof(nxVisParameters[0]);
 
 struct NxStage
 	{
 	const char* name;
-	NxReal values[11];		// in nxVisParameters' order
+	NxReal values[15];		// in nxVisParameters' order
 	};
 
 static const NxStage nxStages[] =
@@ -159,6 +160,10 @@ static const NxStage nxStages[] =
 	{ "joint_groups", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
 	{ "collision_shapes", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
 	{ "collision_aabbs", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
+	{ "collision_sap", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
+	{ "collision_static", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
+	{ "collision_dynamic", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
+	{ "collision_free", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
 	{ "all", { 0.5f, 1.0f, 2.0f, 1.25f, 3.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f } },
 	};
 static const unsigned kStageCount = sizeof(nxStages) / sizeof(nxStages[0]);
