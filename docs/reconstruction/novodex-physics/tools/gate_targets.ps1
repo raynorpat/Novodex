@@ -3594,6 +3594,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsPairFlagTests' = @(
         'pairflag shape flags=00000008 count=2'
         'pairflag compound_released count=0 array=0'
+        'pairflag actor_pair_cleared flags=00000000'
         'pairflag actor_contended reports=1 flags=00000001'
 		'pairflag contended reports=4 flags=00000008'
         'pairflag report=2.69.\Epic\Novodex\SDKs\Physics\src\NpScene.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!'
@@ -5941,7 +5942,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1722  # adds NpScene secondary-base destructor and actor-count row coverage
+	'7' = 1723  # adds allocated actor-pair clear regression coverage
 				# adds public NxFluid static/dynamic, configuration, and licensed kernel getters
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor

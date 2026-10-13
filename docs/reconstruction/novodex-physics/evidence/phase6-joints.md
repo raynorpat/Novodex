@@ -10645,3 +10645,6 @@ Phase 7 `NpScene::getNbFluids` row `phys_fn_000420` is mutation-falsified throug
 Phase 7 `NpScene::getFluids` row `phys_fn_000421` is mutation-falsified through `NxPhysicsSimulationTests`: replacing the getter with null is rejected with `candidate_exit=1`, `stdout_delta=53`; restored control is exact. The full Phase 7 gate passes at 1,722/1,722. See `evidence/phase7-npscene-getfluids-000421.md`.
 
 Phase 7 Scene gravity helper `phys_fn_000507` is mutation-falsified through `NxPhysicsSimulationTests`: a no-op changes the staged transcript by `stdout_delta=2` with both exits zero; restored control is exact. The full Phase 7 gate passes at 1,722/1,722. See `evidence/phase7-scene-setgravity-000507.md`.
+
+
+Phase 7 actor-pair report clear row `phys_fn_000511` is now mutation-falsified through `NxPhysicsPairFlagTests`: a no-op leaves allocated `NX_NOTIFY_ON_TOUCH` flags visible after a zero clear (`candidate_exit=1`, `stdout_delta=5`); the restored differential is exact. Phase 7 now records 220 closed / 340 deferred, and the full gate passes at 1,723/1,723 assertions. See `evidence/phase7-contact-pair-flags-clear-000511.md`.

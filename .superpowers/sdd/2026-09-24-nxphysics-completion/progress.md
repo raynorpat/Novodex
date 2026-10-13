@@ -334,3 +334,7 @@ Restored the oracle's scene read lock around `NpScene::getFluids` and its option
 ### M7.19 — Scene gravity helper (`phys_fn_000507`)
 
 Row-mapped `NxSceneInternal::setGravity` stores the three gravity words at the oracle offsets `+0x520/+0x524/+0x528`. The registered simulation fixture checks the initial and changed gravity values and trajectories. A no-op mutation changes the staged transcript by `stdout_delta=2` with both processes alive; restored control is exact. Phase 7 now records 219 closed / 341 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-setgravity-000507.md`.
+
+### M7.20 — Actor-pair report clear (`phys_fn_000511`)
+
+Added a public pair-flag regression that stores allocated `NX_NOTIFY_ON_TOUCH`, clears it with zero, and verifies the getter returns zero. A no-op `cpmClearActorPairFlags` mutation leaves `0x8` visible and is rejected (`candidate_exit=1`, `stdout_delta=5`); restoring source byte-for-byte returns an exact control. The Phase 7 row state and closure ledger now record 220 closed / 340 deferred. Raised the Phase 7 coverage floor to 1,723; the full Phase 7 gate passes at 1,723/1,723, the gate-target unittest module passes 39 tests, and inventory validation passes with zero unexplained rows. Evidence and compressed transcripts: `docs/reconstruction/novodex-physics/evidence/phase7-contact-pair-flags-clear-000511.md`.

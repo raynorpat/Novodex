@@ -204,6 +204,17 @@ int wmain(int argc, wchar_t** argv)
 	if(!reuseGround || !recycled)
 		return nxFail("pair-flag recycle actor creation failed");
 	const unsigned recycledRootId = nxPairActorRootId(recycled);
+	reuseScene->setActorPairFlags(*reuseGround, *recycled, NX_NOTIFY_ON_TOUCH);
+	const NxU32 allocatedFlags = reuseScene->getActorPairFlags(*reuseGround, *recycled);
+	if(allocatedFlags != NX_NOTIFY_ON_TOUCH)
+		return nxFail("allocated actor-pair flags were not stored");
+	// Clearing an allocated report record must free it and remove its hash key;
+	// a no-op cpmClearActorPairFlags leaves the previous nonzero value visible.
+	reuseScene->setActorPairFlags(*reuseGround, *recycled, 0);
+	const NxU32 clearedFlags = reuseScene->getActorPairFlags(*reuseGround, *recycled);
+	printf("pairflag actor_pair_cleared flags=%08x\n", clearedFlags);
+	if(clearedFlags != 0)
+		return nxFail("actor-pair flags survived an explicit clear");
 	reuseScene->setActorPairFlags(*reuseGround, *recycled, NX_IGNORE_PAIR);
 	reuseScene->releaseActor(*recycled);
 	NxActor* replacement = reuseScene->createActor(recycleDesc);

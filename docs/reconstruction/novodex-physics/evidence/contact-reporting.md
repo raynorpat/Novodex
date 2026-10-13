@@ -30,3 +30,9 @@ contact records to isolate `000640`. This checkpoint does not reconstruct
 trigger-event generation, end-touch transitions, multi-shape actor-pair flag
 expansion, actor-group pair flags, or same-actor error behavior. Those remain
 open; the synthetic trigger fixture is not evidence for real trigger generation.
+
+Row `phys_fn_000511`'s allocated actor-pair clear path is now independently
+covered: the registered pair-flag fixture stores `NX_NOTIFY_ON_TOUCH`, clears
+the pair with zero flags, and checks the getter returns zero. A no-op mutation
+leaves `0x8` visible and is rejected (`stdout_delta=5`); the restored control is
+exact. See [the row-specific evidence](phase7-contact-pair-flags-clear-000511.md).
