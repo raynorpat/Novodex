@@ -65447,14 +65447,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "decompiled",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1303",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12319",
-      "static_proof": "Partial: RVA 0x85a40 stores the stack timestep at fluid+0x74, calls 003624 for each emitter before FluidRun, calls 003601 for each emitter afterward, then clears state+4. Empty, nonempty bodyless-emitter, and nonempty attached-body paths are dynamically gated through the complete caller. The only caller decrements its loop counter after the call and does not read EAX.",
-      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle RVA 0x85a40 and the map-resolved candidate with empty and one-element bodyless-emitter ranges. The nonempty bodyless case compares the 003624 pose callback tuple/12 words, FluidRun arguments/vector/timestep, state stores/clear, skipped bodyless repulsion, and stack. NxPhysicsFluidEmitterBodyRepulsionTests also executes the full substep with a live SDK-created actor attached to a nonempty emitter, comparing all emitter callback payloads, FluidRun arguments, all repulsion callback vectors/mass, resulting body words, state clear, and x86 stack. The attached-path no-op mutation removes the four emitter callbacks and is rejected with one candidate mismatch; restoring the call yields stdout_delta=0. IDA confirms the sole 003495 caller ignores EAX. The same fixture drives two live fluids through 003630. See evidence/phase7-fluid-nonempty-emitter-substep-003495.md, evidence/phase7-fluid-attached-body-substep-003495.md, and evidence/phase7-fluid-substep-003495-manager-clean-003630.md.",
-      "notes": "Private x86 thiscall/ret-4 substep entry. Empty, nonempty bodyless-emitter, and nonempty attached-body paths are gated end to end. The 003601 actor-null, flag-disabled, and enabled-callback-false guards remain open; dirty static-collision reconstruction through the fluid manager is also open.",
-      "implementation": "Physics/src/NpFluidEmitter.cpp"
+      "static_proof": "RVA 0x85a40 stores the stack timestep at fluid+0x74, updates each emitter through 003624 before FluidRun, invokes the body-repulsion path after FluidRun, and clears state+4. Its x86 entry is thiscall/ret-4. IDA confirms the sole caller decrements its loop counter and does not read EAX.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle RVA 0x85a40 and the map-resolved candidate with empty and one-element bodyless-emitter ranges. The nonempty bodyless case compares the 003624 pose callback tuple/12 words, FluidRun arguments/vector/timestep, state stores/clear, skipped bodyless repulsion, and stack. NxPhysicsFluidEmitterBodyRepulsionTests also executes the full substep with a live SDK-created actor attached to a nonempty emitter, comparing all emitter callback payloads, FluidRun arguments, all repulsion callback vectors/mass, resulting body words, state clear, and x86 stack. The attached-path no-op mutation removes the four emitter callbacks and is rejected by NxPhysicsFluidEmitterBodyRepulsionTests (candidate_exit=1, stdout_delta=10, mismatches=1); restoring the call yields stdout_delta=0. IDA confirms the sole 003495 caller ignores EAX. The same fixture drives two live fluids through 003630. See evidence/phase7-fluid-nonempty-emitter-substep-003495.md, evidence/phase7-fluid-attached-body-substep-003495.md, and evidence/phase7-fluid-substep-003495-manager-clean-003630.md.",
+      "notes": "Private x86 thiscall/ret-4 substep entry. Empty, nonempty bodyless-emitter, and nonempty attached-body paths are registered and mutation-falsified. FluidModel callbacks use the explicit fixture because the supplied UE3 binary directory lacks FluidModel.dll; production companion-module integration remains an Unreal validation item.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "@nxNpFluidStep@12",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "@nxNpFluidStep@12",
+        "address": "0x1003eae0",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003496",
