@@ -10753,3 +10753,7 @@ Rows `phys_fn_000897` and `phys_fn_000899` map to the single candidate body `NxA
 # Phase 7 continuation: pair-list refresh/insertion `phys_fn_000909` / `phys_fn_000911`
 
 `phys_fn_000909` no-op and `phys_fn_000911` null-return mutants are independently caught by the registered contact simulation (`candidate_exit=1`, `stdout_delta=3985` for each); each restored control is exact (`stdout_delta=0`, exact stderr). See [phase7-pair-list-refresh-insert-000909-000911.md](phase7-pair-list-refresh-insert-000909-000911.md).
+
+# Phase 7 continuation: scene-release contact-report flush `phys_fn_000913`
+
+`phys_fn_000913` is mutation-falsified by the registered `NxPhysicsSimulationTests` release fixture: setting its pair-hash loop count to zero suppresses the final end-touch callback and is rejected (`stdout_delta=439`, oracle_exit=0, candidate_exit=1); restored control reports `calls=2`, `events=00000004`, and `end_touch=1`. See [phase7-scene-release-contact-report-000913.md](phase7-scene-release-contact-report-000913.md).

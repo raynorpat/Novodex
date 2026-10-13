@@ -17282,14 +17282,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/378",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2922",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1feb0-0x20016) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, report, hash); for each hash entry holding a record: the events (shared with 000917), NxContactPair {objects, stream, 000881's sums} to the report's slot 0, a released record freed on [0x101041bc] and erased (004157); NxContactPair's inline constructor stores the stream NULL first (unobservable); with no node the sums are not written, as in the image. Candidate cpmFireContactReports0913 (Physics/src/ContactPairManager.cpp). Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the SDK's actor-group pair-flags hash (.data 0x10123c28) is absent (a null pointer is passed). Its caller 000663 (the Scene destructor, reached by NxPhysicsSDK::releaseScene via 000668) is reproduced as Scene.cpp nxSceneDelete, which does not call it; with no simulation step the image's report hash is empty and the row returns at 0x1001fec0. No candidate path runs it and no target executes it. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the Capstone listing and integrated in the live broadphase pair-node path; mutation-falsified through the registered contact/friction simulation.",
-      "implementation": "Physics/src/ContactPairManager.cpp"
+      "static_proof": "Oracle Capstone listing cross-checked against the Scene destructor path: the scene stamp advances, stale broadphase nodes retire, then the embedded contact-report hash is flushed before actor teardown. See evidence/phase7-scene-release-contact-report-000913.md.",
+      "dynamic_proof": "evidence/phase7-scene-release-contact-report-000913.md: the public scene-release fixture delivers the final end-touch callback to the same live actors; restored oracle/candidate output is exact (stdout_delta=0, stderr_exact=True). A row-specific loop-suppression mutant is rejected (candidate_exit=1, stdout_delta=439).",
+      "notes": "Scene teardown dispatches this row after stale-pair retirement and before actor destruction; NxPhysicsSimulationTests stops at the first live touch and proves the final end-touch callback during release.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmFireContactReports0913"
     },
     {
       "id": "phys_fn_000914",

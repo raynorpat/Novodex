@@ -562,13 +562,16 @@ struct NxSimulationContactStreamReport : NxUserContactReport
 	unsigned point[3];
 	unsigned separation;
 	unsigned capturedCallbacks;
+	NxU32 lastEvents;
+	NxActor* lastActors[2];
 	unsigned callbackPointCount[8];
 	unsigned callbackPoint[8][8][4];
 
 	NxSimulationContactStreamReport()
 		: calls(0), events(0), pairs(0), patches(0), points(0), separation(0),
-			capturedCallbacks(0)
+			capturedCallbacks(0), lastEvents(0)
 		{
+		lastActors[0] = lastActors[1] = 0;
 		memset(normal, 0, sizeof(normal));
 		memset(sumNormalForce, 0, sizeof(sumNormalForce));
 		memset(sumFrictionForce, 0, sizeof(sumFrictionForce));
@@ -581,6 +584,9 @@ struct NxSimulationContactStreamReport : NxUserContactReport
 		{
 		const unsigned callback = calls;
 		++calls;
+		lastEvents = eventFlags;
+		lastActors[0] = pair.actors[0];
+		lastActors[1] = pair.actors[1];
 		if(callback < 8)
 			capturedCallbacks = callback + 1;
 		events |= eventFlags;
@@ -2765,6 +2771,64 @@ int wmain(int argc, wchar_t** argv)
 		contactReport.separation);
 	nxPrintActorState("contact60", *fallingActor);
 	sdk->releaseScene(*contactScene);
+
+	// Stop immediately after the first real contact report so scene release
+	// observes a live touching pair and must emit its final end-touch callback
+	// from phys_fn_000913 before destroying either actor wrapper.
+	NxSimulationContactStreamReport sceneReleaseReport;
+	NxSceneDesc sceneReleaseDesc;
+	sceneReleaseDesc.setToDefault();
+	sceneReleaseDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
+	sceneReleaseDesc.userContactReport = &sceneReleaseReport;
+	NxScene* sceneReleaseScene = sdk->createScene(sceneReleaseDesc);
+	if(!sceneReleaseScene)
+		return nxFail("scene-release contact scene creation failed");
+	NxPlaneShapeDesc sceneReleaseGround;
+	NxActorDesc sceneReleaseGroundDesc;
+	sceneReleaseGroundDesc.shapes.pushBack(&sceneReleaseGround);
+	NxActor* sceneReleaseGroundActor = sceneReleaseScene->createActor(sceneReleaseGroundDesc);
+	NxSphereShapeDesc sceneReleaseSphere;
+	sceneReleaseSphere.radius = 0.5f;
+	NxBodyDesc sceneReleaseBody;
+	sceneReleaseBody.mass = 1.0f;
+	sceneReleaseBody.massSpaceInertia = NxVec3(0.1f, 0.1f, 0.1f);
+	NxActorDesc sceneReleaseSphereDesc;
+	sceneReleaseSphereDesc.body = &sceneReleaseBody;
+	sceneReleaseSphereDesc.shapes.pushBack(&sceneReleaseSphere);
+	sceneReleaseSphereDesc.globalPose.t = NxVec3(0.0f, 1.0f, 0.0f);
+	NxActor* sceneReleaseSphereActor = sceneReleaseScene->createActor(sceneReleaseSphereDesc);
+	if(!sceneReleaseGroundActor || !sceneReleaseSphereActor)
+		return nxFail("scene-release contact actor creation failed");
+	sceneReleaseScene->setActorPairFlags(*sceneReleaseGroundActor,
+		*sceneReleaseSphereActor, NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH |
+		NX_NOTIFY_ON_END_TOUCH);
+	for(unsigned step = 0; step < 60 &&
+		!(sceneReleaseReport.events & NX_NOTIFY_ON_START_TOUCH); ++step)
+		{
+		sceneReleaseScene->simulate(1.0f / 60.0f);
+		const bool ready = sceneReleaseScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+		const bool fetched = sceneReleaseScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!ready || !fetched)
+			return nxFail("scene-release contact step was not ready and fetched");
+		}
+	const unsigned sceneReleaseCallsBefore = sceneReleaseReport.calls;
+	const bool sceneReleaseStartedTouch = sceneReleaseCallsBefore != 0 &&
+		(sceneReleaseReport.lastEvents & NX_NOTIFY_ON_START_TOUCH) != 0;
+	sdk->releaseScene(*sceneReleaseScene);
+	const bool sceneReleaseEndTouch =
+		(sceneReleaseReport.lastEvents & NX_NOTIFY_ON_END_TOUCH) != 0;
+	const bool sceneReleaseActorsMatch =
+		(sceneReleaseReport.lastActors[0] == sceneReleaseGroundActor &&
+		 sceneReleaseReport.lastActors[1] == sceneReleaseSphereActor) ||
+		(sceneReleaseReport.lastActors[1] == sceneReleaseGroundActor &&
+		 sceneReleaseReport.lastActors[0] == sceneReleaseSphereActor);
+	printf("simulation scene-release-contact start=%u before=%u calls=%u events=%08x end_touch=%u actors=%u\n",
+		sceneReleaseStartedTouch, sceneReleaseCallsBefore,
+		sceneReleaseReport.calls, sceneReleaseReport.lastEvents,
+		sceneReleaseEndTouch, sceneReleaseActorsMatch);
+	if(!sceneReleaseStartedTouch || !sceneReleaseEndTouch || !sceneReleaseActorsMatch ||
+		sceneReleaseReport.calls <= sceneReleaseCallsBefore)
+		return nxFail("scene release did not deliver the final end-touch report");
 
 	// The box-plane path exercises a distinct narrow-phase emitter and the
 	// angular contact response. Keep every step in the differential transcript
