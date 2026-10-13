@@ -9,3 +9,5 @@ A row-specific mutation changes the helper to return 4 unconditionally, incorrec
 Mutant worktree candidate DLL SHA-256: `283871b0384a4ac5ea706a5de1d1069870440aaf6f7db0c1cef1f37e45fb32db`. Restored worktree candidate DLL SHA-256: `e25caa24ff4a50ee8a6e503ce5694d8941fcc49aa666663cbd8170b5a5772f4e`. Pinned oracle DLL SHA-256: `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
 
 The fresh Phase 7 gate passes at 1,711/1,711 assertions. Raw mutant, restored-control, and full-gate transcripts are retained under `evidence/raw/phase7-contact-spring-patch-classification-000871-20261012/`.
+
+Post-merge validation on main rebuilt the DLL with CMake and passed the Phase 7 gate at 1,711/1,711 assertions (phase_gate=7 status=pass). Mainline candidate DLL SHA-256: e56a50e29b71d5ec8f980e92c993ac275e008e1cb097310479356548d1a69b7b. The captured transcript is raw/phase7-contact-spring-patch-classification-000871-20261012/phase7-gate-mainline-post-merge.log.gz.
