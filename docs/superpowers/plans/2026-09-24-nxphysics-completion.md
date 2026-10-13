@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-12 after `phys_fn_000865` mutation closure:** Full-DLL semantic and ABI reconstruction remains open; the Phase 8 full-image audit is pending, and all 80 public Physics headers remain unchanged. Phase 5 passes at 2,678/2,678 registered assertions; Phase 6 records 157 closed / 276 deferred functions and passes at 1,607/1,607; Phase 7 records 202 closed / 358 deferred functions and passes at 1,711/1,711. The callback-backed `StaticCollisionDestroy` thunk at `phys_fn_003509` now has a data-driven oracle marker that rejects a no-forward mutant. The Viewer suite remains at 48/48 selected CTests across all 39 available scene entrypoints, with five verified asset-dependent skips. The completion census still has 2,786 code rows open for terminal full-image closure.
+**Status, updated 2026-10-12 after `phys_fn_000869` mutation closure:** Full-DLL semantic and ABI reconstruction remains open; the Phase 8 full-image audit is pending, and all 80 public Physics headers remain unchanged. Phase 5 passes at 2,678/2,678 registered assertions; Phase 6 records 157 closed / 276 deferred functions and passes at 1,607/1,607; Phase 7 records 203 closed / 357 deferred functions and passes at 1,711/1,711. The callback-backed `StaticCollisionDestroy` thunk at `phys_fn_003509` now has a data-driven oracle marker that rejects a no-forward mutant. The Viewer suite remains at 48/48 selected CTests across all 39 available scene entrypoints, with five verified asset-dependent skips. The completion census still has 2,786 code rows open for terminal full-image closure.
 
 ### Continuation — actor-pair contact stream reset (`phys_fn_000863`, 2026-10-12)
 
@@ -17,6 +17,10 @@ The live contact visualization fixture also exercises the per-step pair refresh 
 ### Continuation — contact-anchor storage (`phys_fn_000865`, 2026-10-12)
 
 The registered public `NxPhysicsSimulationTests` contact, box-contact, sphere-pair, and friction scenarios exercise the friction-patch anchor store. An immediate-return row mutation omitting count and both local-anchor writes changes the transcript by 120 bytes (both exits zero, exact stderr); the restored control matches exactly. Phase 7 remains at 1,711/1,711 assertions and now records 202 closed / 358 deferred functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-contact-anchor-store-000865.md`.
+
+### Continuation — contact-stream visualization (`phys_fn_000869`, 2026-10-12)
+
+The existing public plane/sphere contact fixture now mutation-falsifies the pair renderer: a no-op `row000869` produces zero contact lines and fails the visualization assertion (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=9`). The restored candidate renders the same three lines as the oracle and matches exactly. Phase 7 remains at 1,711/1,711 assertions and now records 203 closed / 357 deferred functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-contact-visualization-000869.md`.
 
 ### Continuation — contact-pair visualization thunk (`phys_fn_000907`, 2026-10-12)
 

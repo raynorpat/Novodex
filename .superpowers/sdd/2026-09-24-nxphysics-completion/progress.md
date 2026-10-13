@@ -296,3 +296,8 @@ Task M7.10 progress: a no-op cpmActorPairResetStream0863 mutation preserves stal
 ### M7.11 — contact-anchor storage row closure (`phys_fn_000865`)
 
 The registered public NxPhysicsSimulationTests multi-step contact scenarios exercise the friction-patch anchor store. A row-specific early-return mutation changes the staged transcript by 120 bytes (both exits zero, exact stderr); the restored control matches exactly. Phase 7 remains at 1,711/1,711 and records 202 closed / 358 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-contact-anchor-store-000865.md.
+
+
+### M7.12 — contact-stream visualization row closure (`phys_fn_000869`)
+
+The existing public plane/sphere contact visualization fixture reaches the renderer after 60 fetched steps. A no-op row mutation renders zero contact lines and fails the fixture assertion (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=9`); restored control exactly matches the oracle's three contact lines. Phase 7 remains at 1,711/1,711 and records 203 closed / 357 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-contact-visualization-000869.md.

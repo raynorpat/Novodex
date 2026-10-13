@@ -16409,13 +16409,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/359",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2640",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d2d0-0x1d586) in scene-raycast Task 4 (visualisation): thiscall on the actor pair (the pair node's +0x14, ContactPairManager.h NxActorPair), ret 4; the contact stream at +0x40 (the entries of the SdkContainer at +0x38 that 000873/000875 fill): the pair count word, 12-byte pair headers whose third word holds the normal count (low 16) and the flags (bits 16-23; flag 2 skipped), 16-byte normals with their point counts, 16-byte points plus 4 bytes with flag 1 and 4 or 8 (separation sign bit set) with flag 4; per point one addLine along the normal of length NX_VISUALIZE_CONTACT_FORCE * scale (ff0000), else _NORMAL * scale (ff), else |-|sep| * _ERROR * scale| (ffff00), drawn when not 0 (x and y products spilled, z kept), then the NX_VISUALIZE_CONTACT_POINT cross of half size float(float(param * scale) * 0.1f) in ff whose second and third lines re-add and re-subtract from the first's rounded coordinates. Reproduced as NxActorPair::row000869 (Physics/src/SceneVisualize.cpp); parameters through PhysicsSDK::getParameter. reachable only from the simulation step; no public path while NpScene::simulate is a stub: 000657 reaches it only for contact pairs on the Scene's +0x674 list, which only the step creates. Runs at API time (0x027f) when reached.",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted on a static proof; integrated onto the contact-pair manager's NxActorPair and its stream container (was a raw-offset receiver class). Hit on neither side over the 24 staged targets (evidence/scene-raycast-trace-task4-vis.txt).",
+      "static_proof": "Capstone at RVA 0x0001d2d0 gives thiscall on NxActorPair (pair-node +0x14), ret 4. The routine walks the contact stream at pair+0x40: pair headers, normal blocks, and per-point records, honoring header flags 1/2/4 and variable-width feature/separation payloads. It draws configured force, normal, or penetration-error vectors and the three-line contact-point cross using the SDK visualization parameters. Candidate: NxActorPair::row000869 (Physics/src/SceneVisualize.cpp).",
+      "dynamic_proof": "The registered NxPhysicsSceneVisualizeTests public plane/sphere scene simulates and fetches 60 steps, then enables only contact-point rendering. Oracle and restored candidate each render three contact lines and match exactly (stdout_delta=0, both exits zero, exact stderr). An immediate-return mutation in row000869 renders zero contact lines and triggers the fixture assertion (oracle_exit=0, candidate_exit=1, stdout_delta=9); the paired differential rejects it. Fresh Phase 7 gate passes at 1,711/1,711 assertions. Evidence: evidence/phase7-contact-visualization-000869.md.",
+      "notes": "Contact-stream visualization is now exercised through public scene simulation and fetched plane/sphere contacts. Omitting this row removes the three asserted contact-point lines and fails the registered visualization test.",
       "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
