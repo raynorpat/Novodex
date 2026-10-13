@@ -36,3 +36,17 @@ covered: the registered pair-flag fixture stores `NX_NOTIFY_ON_TOUCH`, clears
 the pair with zero flags, and checks the getter returns zero. A no-op mutation
 leaves `0x8` visible and is rejected (`stdout_delta=5`); the restored control is
 exact. See [the row-specific evidence](phase7-contact-pair-flags-clear-000511.md).
+
+The same fixture now exercises Scene getter rows `phys_fn_000513` and
+`phys_fn_000515`. Same-shape and same-actor calls must each return zero and
+emit their exact invalid-parameter diagnostic; separate no-op mutations are
+rejected with `stdout_delta=23` and `stdout_delta=11`. See
+[the getter evidence](phase7-contact-pair-flag-getters-000513-000515.md).
+
+The same registered target covers setter rows `phys_fn_000589`, `000590`, and
+`000592`: valid record update/clear, the same-shape setter diagnostic, and the
+same-actor setter diagnostic. A no-op mutant for each row is rejected with
+`stdout_delta=23`, `26`, and `15`; after restoration the focused differential
+is exact. Row 000590 now explicitly calls the recovered const-byte-pointer
+implementation of 000589, avoiding an older overload that left the oracle row
+unreachable. See [the setter evidence](phase7-contact-pair-flag-setters-000589-000590-000592.md).

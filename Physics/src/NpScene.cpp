@@ -453,19 +453,26 @@ void NpScene::setActorPairFlags(NxActor& actor0, NxActor& actor1, NxU32 nxContac
 		return;
 		}
 	void* link = mPointer04;
-	NxU8* body0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor0) + 0x14);
-	NxU8* body1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor1) + 0x14);
-	NxU8* shape0 = body0 ? *reinterpret_cast<NxU8**>(body0 + 0x10) : 0;
-	NxU8* shape1 = body1 ? *reinterpret_cast<NxU8**>(body1 + 0x10) : 0;
-	if(mScene && shape0 && shape1 && shape0 != shape1)
-		cpmSetShapePairFlags(mScene, shape0, shape1, nxContactPairFlag);
+	NxU8* const internalActor0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor0) + 0x14);
+	NxU8* const internalActor1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor1) + 0x14);
+	if(mScene)
+		mScene->setActorPairFlags(internalActor0, internalActor1, nxContactPairFlag);
 	nxNpSceneGuardLeave(link);
 	}
 
 // Return the flags stored by setActorPairFlags.
 NxU32 NpScene::getActorPairFlags(NxActor& actor0, NxActor& actor1) const
 	{
-	return mScene ? cpmGetActorPairFlags(mScene, &actor0, &actor1) : 0;
+	void* link = mPointer08;
+	nxNpSceneGuardEnter(link);
+	const NxU8* const internalActor0 = *reinterpret_cast<const NxU8* const*>(
+		reinterpret_cast<const NxU8*>(&actor0) + 0x14);
+	const NxU8* const internalActor1 = *reinterpret_cast<const NxU8* const*>(
+		reinterpret_cast<const NxU8*>(&actor1) + 0x14);
+	const NxU32 flags = mScene
+		? mScene->getActorPairFlags(internalActor0, internalActor1) : 0;
+	nxNpSceneGuardLeave(link);
+	return flags;
 	}
 
 // phys_fn_000313 (0x0000c7f0): write-locked forward to Scene::setShapePairFlags.
@@ -492,7 +499,7 @@ NxU32 NpScene::getShapePairFlags(NxShape& shape0, NxShape& shape1) const
 	if(!mScene) return 0;
 	const NxU8* const internalShape0 = *reinterpret_cast<NxU8* const*>(reinterpret_cast<const NxU8*>(&shape0) + 8);
 	const NxU8* const internalShape1 = *reinterpret_cast<NxU8* const*>(reinterpret_cast<const NxU8*>(&shape1) + 8);
-	return cpmGetShapePairFlags(mScene, internalShape0, internalShape1);
+	return mScene->getShapePairFlags(internalShape0, internalShape1);
 	}
 
 // Read-lock while forwarding the active contact-pair count from Scene.

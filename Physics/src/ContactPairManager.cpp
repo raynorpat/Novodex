@@ -1044,20 +1044,6 @@ void cpmSetActorPairFlags(NxSceneInternal* scene, void* actor0, void* actor1, Nx
 		nxFoundationSDKAllocator->free(value);
 	}
 
-NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, const void* actor1)
-	{
-	NxU32 shape0 = 0, shape1 = 0;
-	if(!scene || !cpmActorFirstShapeIds(actor0, shape0) ||
-		!cpmActorFirstShapeIds(actor1, shape1))
-		return 0;
-	CpmPairHash* const hash = reinterpret_cast<CpmPairHash*>(
-		const_cast<NxU8*>(scene->bytes()) + 0x2c);
-	CpmPairHashEntry* const entry = cpmOpen004153(hash, shape0, shape1);
-	if(!entry) return 0;
-	if(entry->value & 1) return entry->value & 0x1fffffffu;
-	return *static_cast<NxU32*>(cpmPointer(entry->value)) & 0x1fffffffu;
-	}
-
 void cpmSetShapePairFlags(NxSceneInternal* scene, void* shape0, void* shape1, NxU32 flags)
 	{
 	if(!scene || !shape0 || !shape1) return;

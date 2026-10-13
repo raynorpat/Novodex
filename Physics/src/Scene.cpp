@@ -5564,6 +5564,37 @@ void nxActorReleaseShape(unsigned char* body, unsigned char* shape)
 
 #define NX_SCENE_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp"
 
+// phys_fn_000513 (0x000102a0): validate identical shape references before
+// reading the pair hash; this diagnostic is distinct from the setter's line.
+NxU32 NxSceneInternal::getShapePairFlags(const void* shape0, const void* shape1) const
+	{
+	if(shape0 == shape1)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_SCENE_CPP, 0x394, 0,
+			"Scene::getShapePairFlags: The two shape references must not reference the same shape.");
+		return 0;
+		}
+	return cpmGetShapePairFlags(this, shape0, shape1);
+	}
+
+// phys_fn_000515 (0x00010310): resolve the actors' internal records to their
+// first shapes and forward through the same validated hash lookup as 000513.
+NxU32 NxSceneInternal::getActorPairFlags(const void* actor0, const void* actor1) const
+	{
+	if(actor0 == actor1)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_SCENE_CPP, 0x3b4, 0,
+			"Scene::getActorPairFlags: The two actor references must not reference the same actor.");
+		return 0;
+		}
+	const NxU8* const shape0 = *reinterpret_cast<const NxU8* const*>(
+		static_cast<const NxU8*>(actor0) + 0x10);
+	const NxU8* const shape1 = *reinterpret_cast<const NxU8* const*>(
+		static_cast<const NxU8*>(actor1) + 0x10);
+	if(!shape0 || !shape1) return 0;
+	return getShapePairFlags(shape0, shape1);
+	}
+
 // phys_fn_000590 (0x00010dc0) validates the shape references before entering
 // the pair hash. The hash path does not support a key whose two shape IDs are
 // equal; the oracle reports the invalid parameter and leaves the table intact.
@@ -5575,7 +5606,24 @@ void NxSceneInternal::setShapePairFlags(void* shape0, void* shape1, NxU32 flags)
 			"Scene::setShapePairFlags: The two shape references must not reference the same shape.");
 		return;
 		}
-	cpmSetShapePairFlags(this, shape0, shape1, flags);
+	cpmSetShapePairFlags(this, static_cast<const NxU8*>(shape0),
+		static_cast<const NxU8*>(shape1), flags);
+	}
+
+// phys_fn_000592 (0x00010e20): reject identical actors, then resolve their
+// first shapes and use the validated shape-pair setter (000590).
+void NxSceneInternal::setActorPairFlags(void* actor0, void* actor1, NxU32 flags)
+	{
+	if(actor0 == actor1)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_SCENE_CPP, 0x3a2, 0,
+			"Scene::setActorPairFlags: The two actor references must not reference the same actor.");
+		return;
+		}
+	NxU8* const shape0 = *reinterpret_cast<NxU8**>(static_cast<NxU8*>(actor0) + 0x10);
+	NxU8* const shape1 = *reinterpret_cast<NxU8**>(static_cast<NxU8*>(actor1) + 0x10);
+	if(!shape0 || !shape1) return;
+	setShapePairFlags(shape0, shape1, flags);
 	}
 
 // phys_fn_000661 (0x00013e00, 290 B, phase 7) is Scene::addJoint.

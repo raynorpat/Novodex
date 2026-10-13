@@ -10648,3 +10648,10 @@ Phase 7 Scene gravity helper `phys_fn_000507` is mutation-falsified through `NxP
 
 
 Phase 7 actor-pair report clear row `phys_fn_000511` is now mutation-falsified through `NxPhysicsPairFlagTests`: a no-op leaves allocated `NX_NOTIFY_ON_TOUCH` flags visible after a zero clear (`candidate_exit=1`, `stdout_delta=5`); the restored differential is exact. Phase 7 now records 220 closed / 340 deferred, and the full gate passes at 1,723/1,723 assertions. See `evidence/phase7-contact-pair-flags-clear-000511.md`.
+
+Phase 7 Scene pair-flag getter rows `phys_fn_000513` and `phys_fn_000515` now match the oracle's valid-value and same-object diagnostic paths. Their independent no-op mutations are rejected (`stdout_delta=23` and `stdout_delta=11`); restored controls are exact. Phase 7 now records 222 closed / 338 deferred. The full gate passes at 1,725/1,725 assertions. See `evidence/phase7-contact-pair-flag-getters-000513-000515.md`.
+
+
+Phase 7 Scene shape/actor pair-flag setter rows `phys_fn_000589`, `phys_fn_000590`, and `phys_fn_000592` are mutation-falsified in `evidence/phase7-contact-pair-flag-setters-000589-000590-000592.md`; individual no-op mutants are rejected at stdout_delta=23/26/15 and the restored focused differential is exact.
+
+With these setters, Phase 7 records 225 closed / 335 deferred functions. The fresh full Phase 7 gate passes at 1,727/1,727 assertions; inventory validation and both 80-file public-header checks pass.

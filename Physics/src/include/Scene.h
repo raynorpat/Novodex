@@ -217,9 +217,18 @@ class NxSceneInternal
 	void finishSimulation();
 	// phys_fn_000523 (0x00010400). The pair-flag count at +0x3c.
 	NxU32 getNbPairs() const;
+	// phys_fn_000513 (0x000102a0): reject an identical shape pair with the
+	// oracle's invalid-parameter diagnostic, otherwise read its stored flags.
+	NxU32 getShapePairFlags(const void* shape0, const void* shape1) const;
+	// phys_fn_000515 (0x00010310): reject identical actors, resolve their first
+	// internal shapes, and forward to the shape-pair getter.
+	NxU32 getActorPairFlags(const void* actor0, const void* actor1) const;
 	// phys_fn_000590 (0x00010dc0). Rejects a same-shape pair before touching
 	// the pair hash, then stores or clears the exact shape-pair flags.
 	void setShapePairFlags(void* shape0, void* shape1, NxU32 flags);
+	// phys_fn_000592 (0x00010e20): reject identical actors and forward their
+	// first internal shapes to the validated shape-pair setter.
+	void setActorPairFlags(void* actor0, void* actor1, NxU32 flags);
 	// phys_fn_000525 (0x00010410), with its continuation phys_fn_000527. The
 	// pair flags, walked out of the hash at +0x624. Deferred (see Scene.cpp).
 	bool getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const;

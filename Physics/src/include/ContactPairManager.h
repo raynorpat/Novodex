@@ -54,9 +54,10 @@ struct CpmPairHash
 void cpmSetActorGroupPairFlags(NxU16 group0, NxU16 group1, NxU32 flags);
 NxU32 cpmGetActorGroupPairFlags(NxU16 group0, NxU16 group1);
 void cpmResetActorGroupPairFlags();
-NxU32 cpmGetActorPairFlags(const NxSceneInternal* scene, const void* actor0, const void* actor1);
 NxU32 cpmGetShapePairFlags(const NxSceneInternal* scene, const void* shape0, const void* shape1);
 void cpmSetShapePairFlags(NxSceneInternal* scene, void* shape0, void* shape1, NxU32 flags);
+void cpmSetShapePairFlags(NxSceneInternal* scene, const NxU8* shape0,
+	const NxU8* shape1, NxU32 flags);
 
 // The per-actor-pair report record (0x14 bytes, allocated by 000905 through
 // nxFoundationSDKAllocator and freed by 000913/000917): +0x00 state (bit 31

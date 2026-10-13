@@ -115,10 +115,19 @@ int wmain(int argc, wchar_t** argv)
 	NxShape** compoundShapes = compound->getShapes();
 	if(!compoundShapes || !compoundShapes[0])
 		return nxFail("compound shape handle unavailable");
+	const unsigned sameShapeSetReportsBefore = errorStream.reports;
 	errorStream.enabled = true;
 	scene->setShapePairFlags(*compoundShapes[0], *compoundShapes[0], NX_IGNORE_PAIR);
 	errorStream.enabled = false;
+	const unsigned sameShapeSetReports = errorStream.reports - sameShapeSetReportsBefore;
+	printf("pairflag same_shape_set errors=%u\n", sameShapeSetReports);
+	if(sameShapeSetReports != 1)
+		return nxFail("same-shape pair setter did not report invalid parameters");
 	const NxU32 sameShapeFlags = scene->getShapePairFlags(*compoundShapes[0], *compoundShapes[0]);
+	const unsigned sameShapeGetReportsBefore = errorStream.reports;
+	errorStream.enabled = true;
+	const NxU32 sameShapeGetFlags = scene->getShapePairFlags(*compoundShapes[0], *compoundShapes[0]);
+	errorStream.enabled = false;
 	const NxU32 sameShapeCount = scene->getNbPairs();
 	NxPairFlag sameShapePairs[16] = {};
 	const bool sameShapeArray = scene->getPairFlagArray(sameShapePairs, sameShapeCount);
@@ -129,6 +138,10 @@ int wmain(int argc, wchar_t** argv)
 			++sameShapeEntries;
 	printf("pairflag same_shape flags=%08x count=%u array=%u self_entries=%u errors=%u\n",
 		sameShapeFlags, sameShapeCount, sameShapeArray ? 1u : 0u, sameShapeEntries, errorStream.reports);
+	printf("pairflag same_shape_get flags=%08x errors=%u\n", sameShapeGetFlags,
+		errorStream.reports - sameShapeGetReportsBefore);
+	if(sameShapeGetFlags != 0 || errorStream.reports - sameShapeGetReportsBefore != 1)
+		return nxFail("same-shape pair getter did not report invalid parameters");
 
 	// A distinct, valid pair exercises the getter's stored-value path. The
 	// same-shape case above only proves the oracle's invalid-input return.
@@ -204,6 +217,24 @@ int wmain(int argc, wchar_t** argv)
 	if(!reuseGround || !recycled)
 		return nxFail("pair-flag recycle actor creation failed");
 	const unsigned recycledRootId = nxPairActorRootId(recycled);
+	const unsigned sameActorGetReportsBefore = errorStream.reports;
+	errorStream.enabled = true;
+	const NxU32 sameActorGetFlags = reuseScene->getActorPairFlags(*reuseGround, *reuseGround);
+	errorStream.enabled = false;
+	printf("pairflag same_actor_get flags=%08x errors=%u\n", sameActorGetFlags,
+		errorStream.reports - sameActorGetReportsBefore);
+	if(sameActorGetFlags != 0 || errorStream.reports - sameActorGetReportsBefore != 1)
+		return nxFail("same-actor pair getter did not report invalid parameters");
+	const unsigned sameActorSetReportsBefore = errorStream.reports;
+	errorStream.enabled = true;
+	reuseScene->setActorPairFlags(*reuseGround, *reuseGround, NX_IGNORE_PAIR);
+	errorStream.enabled = false;
+	const unsigned sameActorSetReports = errorStream.reports - sameActorSetReportsBefore;
+	const NxU32 sameActorSetFlags = reuseScene->getActorPairFlags(*reuseGround, *recycled);
+	printf("pairflag same_actor_set flags=%08x errors=%u\n", sameActorSetFlags,
+		sameActorSetReports);
+	if(sameActorSetFlags != 0 || sameActorSetReports != 1)
+		return nxFail("same-actor pair setter did not report invalid parameters");
 	reuseScene->setActorPairFlags(*reuseGround, *recycled, NX_NOTIFY_ON_TOUCH);
 	const NxU32 allocatedFlags = reuseScene->getActorPairFlags(*reuseGround, *recycled);
 	if(allocatedFlags != NX_NOTIFY_ON_TOUCH)
