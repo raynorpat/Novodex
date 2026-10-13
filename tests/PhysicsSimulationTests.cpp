@@ -3362,6 +3362,25 @@ int wmain(int argc, wchar_t** argv)
 	enabledFluidManager[0x28] = 0;
 	NxFluidDesc enabledFluidDesc;
 	enabledFluidDesc.setToDefault();
+	NxBodyDesc fluidFrameBodyDesc;
+	fluidFrameBodyDesc.setToDefault();
+	fluidFrameBodyDesc.mass = 1.0f;
+	fluidFrameBodyDesc.massSpaceInertia.set(1.0f, 1.0f, 1.0f);
+	NxActorDesc fluidFrameActorDesc;
+	fluidFrameActorDesc.body = &fluidFrameBodyDesc;
+	NxReal fluidFrameRotation[9] = {
+		-1.0f, 0.0f, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f
+		};
+	fluidFrameActorDesc.globalPose.M.setRowMajor(fluidFrameRotation);
+	fluidFrameActorDesc.globalPose.t.set(10.0f, -2.0f, 3.0f);
+	NxActor* const fluidFrameActor = enabledFluidScene->createActor(
+		fluidFrameActorDesc);
+	if(!fluidFrameActor)
+		return nxFail("fluid emitter frame actor creation failed");
+	void* const fluidFrameActorInternal = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(fluidFrameActor) + 0x14);
 	NxFluidEmitterDesc enabledEmitterDesc;
 	enabledEmitterDesc.setToDefault();
 	enabledEmitterDesc.relPose.t.set(0.25f, -0.5f, 0.75f);
@@ -3385,6 +3404,7 @@ int wmain(int argc, wchar_t** argv)
 	fourthEmitterDesc.relPose.t.set(-1.25f, 0.5f, 0.25f);
 	fourthEmitterDesc.dimensionX = 0.625f;
 	fourthEmitterDesc.dimensionY = 0.375f;
+	fourthEmitterDesc.frameActor = fluidFrameActor;
 	enabledFluidDesc.emitters.pushBack(fourthEmitterDesc);
 	simulationOutput.resetLast();
 	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
@@ -3451,6 +3471,29 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[2] + 8) != 0 &&
 		*reinterpret_cast<unsigned*>(enabledEmitterInternalArray[2] + 0x0c) ==
 			enabledEmitterWrapperArray[2];
+	const bool enabledEmitterFrameActorBound = fluidFrameActorInternal &&
+		enabledEmitterInternalArray &&
+		enabledEmitterInternalArray[2] &&
+		*reinterpret_cast<void**>(enabledEmitterInternalArray[2] + 0x14) ==
+			fluidFrameActorInternal;
+	NxMat34 enabledEmitterFrameWorldPose;
+	enabledEmitterFrameWorldPose.id();
+	if(enabledEmitterWrapperArray && enabledEmitterWrapperCount >= 3)
+		enabledEmitterFrameWorldPose = reinterpret_cast<NxFluidEmitter*>(
+			enabledEmitterWrapperArray[2])->getGlobalPoseVal();
+	const bool enabledEmitterFrameWorldPoseMatches =
+		enabledEmitterFrameWorldPose.M(0, 0) == -1.0f &&
+		enabledEmitterFrameWorldPose.M(0, 1) == 0.0f &&
+		enabledEmitterFrameWorldPose.M(0, 2) == 0.0f &&
+		enabledEmitterFrameWorldPose.M(1, 0) == 0.0f &&
+		enabledEmitterFrameWorldPose.M(1, 1) == -1.0f &&
+		enabledEmitterFrameWorldPose.M(1, 2) == 0.0f &&
+		enabledEmitterFrameWorldPose.M(2, 0) == 0.0f &&
+		enabledEmitterFrameWorldPose.M(2, 1) == 0.0f &&
+		enabledEmitterFrameWorldPose.M(2, 2) == 1.0f &&
+		enabledEmitterFrameWorldPose.t.x == 11.25f &&
+		enabledEmitterFrameWorldPose.t.y == -2.5f &&
+		enabledEmitterFrameWorldPose.t.z == 3.25f;
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
@@ -3508,7 +3551,7 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterDestroy == 0 &&
 		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
 		fluidManagerCallbacks.emitterGetGlobalPose == 3;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u manager-allocation-failure=%u.%u allocation-failure=%u.%u emitter-allocation-failure=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u manager-allocation-failure=%u.%u allocation-failure=%u.%u emitter-allocation-failure=%u.%u frame-actor=%u frame-pose=%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledDescriptorValidationPassed,
@@ -3517,6 +3560,8 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidAllocationFailure ? 1u : 0u, fluidFailAllocator.mFailCount,
 		enabledEmitterAllocationFailure ? 1u : 0u,
 		emitterFailAllocator.mFailCount,
+		enabledEmitterFrameActorBound ? 1u : 0u,
+		enabledEmitterFrameWorldPoseMatches ? 1u : 0u,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
 		enabledFluidCount, enabledFluidManagerArraysMatch ? 1u : 0u,
 		enabledFluidManagerCleared ? 1u : 0u,
@@ -3542,6 +3587,8 @@ int wmain(int argc, wchar_t** argv)
 		!managerAllocationFailure ||
 		!enabledFluidAllocationFailure ||
 		!enabledEmitterAllocationFailure ||
+		!enabledEmitterFrameActorBound ||
+		!enabledEmitterFrameWorldPoseMatches ||
 		!enabledFluidManagerFlags || !enabledFluid ||
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
 		!enabledFluidListed || !enabledFluidManagerArraysMatch ||
