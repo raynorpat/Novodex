@@ -10698,3 +10698,8 @@ Rows `phys_fn_003696` and `phys_fn_003698` are independently mutation-falsified 
 # Phase 7 continuation: per-fluid substep 003495
 
 `phys_fn_003495` is mutation-falsified through the registered `NxPhysicsFluidEmitterBodyRepulsionTests` staged-pair differential. Removing the pre-FluidRun emitter-state update eliminates four oracle callbacks and is rejected with `stdout_delta=10`; the restored control matches exactly. The current full Phase 7 gate passes at 1,740/1,740. See [phase7-fluid-substep-003495-closure.md](phase7-fluid-substep-003495-closure.md).
+
+
+# Phase 7 continuation: friction-patch assignment `phys_fn_000877`
+
+`phys_fn_000877` (`NxFrictionPatch::operator=`) is mutation-falsified through `NxPhysicsFluidEmitterAbiTests`. A no-op retains the candidate payload and fails all three oracle-copy comparisons (`mismatches=3`); the restored direct differential matches payload, preserved vptr/tail padding, return-this, and x86 stack balance. See [phase7-friction-patch-assignment-000877.md](phase7-friction-patch-assignment-000877.md).

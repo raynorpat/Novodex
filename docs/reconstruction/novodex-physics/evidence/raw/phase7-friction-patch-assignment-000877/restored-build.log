@@ -1,0 +1,15 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\m7-23-cpm-copy\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\m7-23-cpm-copy\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\m7-23-cpm-copy\External\Release\NxQhull.lib
+  ContactPairManager.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+     Creating library C:/Users/raynorpat/.codex/worktrees/fluid-manager-dirty-mainline/Novodex/build/m7-23-cpm-copy/Release/NxPhysics.lib and object C:/Users/raynorpat/.codex/worktrees/fluid-manager-dirty-mainline/Novodex/build/m7-23-cpm-copy/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\m7-23-cpm-copy\Release\NxPhysics.dll
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\m7-23-cpm-copy\Release\FluidModel.dll
+  NxPhysicsFluidEmitterAbiTests.vcxproj -> C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\m7-23-cpm-copy\Release\NxPhysicsFluidEmitterAbiTests.exe
+  Staging NxPhysics.dll under a distinct module name for direct DLL-row testing

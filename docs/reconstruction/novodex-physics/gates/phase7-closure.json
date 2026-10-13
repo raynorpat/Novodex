@@ -22,9 +22,9 @@
   "counts": {
     "differential_falsified": 165,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 78,
+    "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 139,
-    "deferred_reconstructed_not_falsified": 177
+    "deferred_reconstructed_not_falsified": 176
   },
   "closed": [
     {
@@ -2640,6 +2640,17 @@
         "detected": "stdout_delta=10"
       },
       "note": "The registered empty, nonempty bodyless-emitter, and live attached-body substep cases cover the timestep store, ordered emitter pose updates, FluidRun payload, repulsion callbacks/body state, state clear, return behavior, and x86 stack. The sole caller ignores EAX. See evidence/phase7-fluid-substep-003495-closure.md and evidence/raw/phase7-fluid-attached-substep-003495-20261012/."
+    },
+    {
+      "id": "phys_fn_000877",
+      "rva": "0x0001dc80",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Replaced NxFrictionPatch::operator= with a no-op, rebuilt NxPhysics.dll and NxPhysicsFluidEmitterAbiTests, then ran the registered direct pinned-oracle differential on three distinct patterned scratch source/destination pairs. The candidate retained the old payload while the oracle copied bytes +0x04..+0x75; all three payload comparisons failed (mismatches=3). Restoring the assignment implementation passes all three cases with matching payload, preserved vptr and tail padding, return-this, and x86 stack balance.",
+        "detected": "mismatches=3"
+      },
+      "note": "Direct ABI coverage for NxFrictionPatch::operator= at RVA 0x1dc80. Public headers remain unchanged. See evidence/phase7-friction-patch-assignment-000877.md and evidence/raw/phase7-friction-patch-assignment-000877/."
     }
   ],
   "deferred": [
@@ -3376,15 +3387,6 @@
       "id": "phys_fn_000867",
       "rva": "0x0001d260",
       "size": 103,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000877",
-      "rva": "0x0001dc80",
-      "size": 189,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],

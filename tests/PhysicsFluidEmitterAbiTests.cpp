@@ -14,6 +14,7 @@
 #include "fluids/NxFluidEmitter.h"
 #include "fluids/NpFluidEmitter.h"
 #include "fluids/NxMeshData.h"
+#include "ContactPairManager.h"
 
 static bool nxSha256(const wchar_t* path, char output[65]);
 
@@ -820,6 +821,76 @@ static bool nxResolveCandidateFluidEmitterSymbol(HMODULE module, const char* exp
 		}
 	fprintf(stderr, "candidate NxPhysics map has no symbol: %s\n", expected);
 	return false;
+	}
+
+static unsigned nxRunFrictionPatchAssignment(void* oracleAddress,
+	void* candidateAddress)
+	{
+	if(!oracleAddress || !candidateAddress)
+		{
+		fprintf(stderr, "FAIL friction-patch assignment row address unavailable\n");
+		printf("contact patch assignment cases=0 oracle_return=0 candidate_return=0 "
+			"payload_equal=0 vptr_preserved=0 padding_preserved=0 stack=0/0 mismatches=1\n");
+		return 1;
+		}
+	typedef void* (__thiscall *AssignFn)(void*, const void*);
+	AssignFn oracleAssign = reinterpret_cast<AssignFn>(oracleAddress);
+	AssignFn candidateAssign = reinterpret_cast<AssignFn>(candidateAddress);
+	unsigned mismatches = 0;
+	unsigned oracleReturns = 0, candidateReturns = 0;
+	unsigned payloadEqual = 0, vptrPreserved = 0, paddingPreserved = 0;
+	unsigned stackBalanced = 0;
+	for(unsigned test = 0; test != 3; ++test)
+		{
+		unsigned char oracleDestination[0x78], candidateDestination[0x78];
+		unsigned char oracleSource[0x78], candidateSource[0x78];
+		unsigned char expected[0x78];
+		for(unsigned i = 0; i != sizeof(expected); ++i)
+			{
+			const unsigned char destinationByte = static_cast<unsigned char>(
+				0x13u + test * 29u + i * 7u);
+			const unsigned char sourceByte = static_cast<unsigned char>(
+				0x91u + test * 17u + i * 11u);
+			oracleDestination[i] = candidateDestination[i] = destinationByte;
+			oracleSource[i] = candidateSource[i] = sourceByte;
+			expected[i] = destinationByte;
+			}
+		memcpy(expected + 4, oracleSource + 4, 0x72);
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		void* const oracleResult = oracleAssign(oracleDestination, oracleSource);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		void* const candidateResult = candidateAssign(candidateDestination, candidateSource);
+		__asm mov candidateAfter, esp
+		const bool oracleReturn = oracleResult == oracleDestination;
+		const bool candidateReturn = candidateResult == candidateDestination;
+		const bool equal = memcmp(oracleDestination, candidateDestination,
+			sizeof(oracleDestination)) == 0
+			&& memcmp(oracleDestination, expected, sizeof(expected)) == 0;
+		const bool preservedVptr = memcmp(oracleDestination, expected, 4) == 0
+			&& memcmp(candidateDestination, expected, 4) == 0;
+		const bool preservedPadding = memcmp(oracleDestination + 0x76,
+			expected + 0x76, 2) == 0
+			&& memcmp(candidateDestination + 0x76, expected + 0x76, 2) == 0;
+		const bool balanced = oracleBefore == oracleAfter
+			&& candidateBefore == candidateAfter;
+		oracleReturns += oracleReturn;
+		candidateReturns += candidateReturn;
+		payloadEqual += equal;
+		vptrPreserved += preservedVptr;
+		paddingPreserved += preservedPadding;
+		stackBalanced += balanced;
+		if(!oracleReturn || !candidateReturn || !equal || !preservedVptr
+			|| !preservedPadding || !balanced)
+			++mismatches;
+		}
+	printf("contact patch assignment cases=3 oracle_return=%u candidate_return=%u "
+		"payload_equal=%u vptr_preserved=%u padding_preserved=%u stack=%u/3 mismatches=%u\n",
+		oracleReturns, candidateReturns, payloadEqual, vptrPreserved,
+		paddingPreserved, stackBalanced, mismatches);
+	return mismatches;
 	}
 
 static unsigned nxRunFluidEmitterGlobalPoseRows(void* oracleStoreAddress,
@@ -4850,6 +4921,13 @@ int wmain(int argc, wchar_t** argv)
 			expectedCandidateHash, actualCandidateHash);
 		return 1;
 		}
+	void* candidateFrictionPatchAssignAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"??4NxFrictionPatch@@QAEAAV0@ABV0@@Z", &candidateFrictionPatchAssignAddress))
+		++gFailures;
+	else
+		gFailures += nxRunFrictionPatchAssignment(image + 0x1dc80,
+			candidateFrictionPatchAssignAddress);
 	void* candidateBucketPrefixAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxFluidCollisionBucketPrefix", &candidateBucketPrefixAddress))

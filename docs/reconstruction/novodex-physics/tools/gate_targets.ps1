@@ -90,6 +90,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
+        'contact patch assignment cases=3 oracle_return=3 candidate_return=3 payload_equal=3 vptr_preserved=3 padding_preserved=3 stack=3/3 mismatches=0'
         'fluid collision bucket-prefix records=4 oracle_total=9 candidate_total=9 prefixes=1 return=1 stack=1/1 mismatches=0'
         'fluid collision bucket-prefix empty total=0 return=1 preserved=1 stack=1/1 mismatches=0'
         'fluid collision cell-prefix buckets=3 cells=3 oracle_total=6 candidate_total=6 prefixes=1 counts_cleared=1 return=1 stack=1/1 mismatches=0'
@@ -5896,7 +5897,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2698  # adds public NxFluid createEmitter/releaseEmitter paired-array differential
+	'5' = 2699  # adds direct friction-patch assignment oracle differential
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch
@@ -5984,7 +5985,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1740  # adds public NxFluid createEmitter/releaseEmitter paired-array differential
+	'7' = 1741  # adds direct friction-patch assignment oracle differential
 				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch

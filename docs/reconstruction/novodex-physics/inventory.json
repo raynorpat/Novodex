@@ -16615,13 +16615,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/363",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2710",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1dc80-0x1dd3a) in scene-raycast Task 4 (contact-pair manager): thiscall(src), `ret 4`, returns this; the dwords +0x04..+0x70 and the bytes +0x74/+0x75 copied by integer moves, the vptr untouched. Candidate NxFrictionPatch::operator= (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000891); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "oracle_differential_falsified",
+      "notes": "Scene-raycast Task 4 contact-pair assignment implementation; direct pinned-oracle/candidate ABI differential calls the row on three patterned scratch pairs and checks copied payload, preserved vptr/tail padding, return-this and x86 stack balance. A no-op mutation is rejected (mismatches=3); restored control is exact. See evidence/phase7-friction-patch-assignment-000877.md.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
