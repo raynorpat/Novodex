@@ -12,4 +12,4 @@ Oracle and restored candidate both exit 0 with `stdout_delta=0` and exact stderr
 
 The mutation source patch and compressed build/run transcripts are in [raw evidence](raw/phase7-scene-release-contact-report-000913-20261013/).
 
-The Phase 7 registry now requires the end-touch marker from `NxPhysicsSimulationTests`; its coverage floor increases by one. This closes `phys_fn_000913` only. Rows `phys_fn_000917`, `000919`, and `000921` remain deferred for their own row-specific mutations. Public Physics headers are unchanged.
+Fresh full mainline gates pass at Phase 5 `2,703/2,703`, Phase 6 `1,636/1,636`, and Phase 7 `1,745/1,745`; all three require the scene-release marker. Candidate DLL SHA-256: `b80a1ad8feb6f1036217d9f06b006db30a3680ee26481b388ec8676edd22e2bb`. The complete post-merge transcripts are compressed in the raw evidence directory. This closes `phys_fn_000913` only. Rows `phys_fn_000917`, `000919`, and `000921` remain deferred for their own row-specific mutations. Public Physics headers are unchanged.

@@ -10757,3 +10757,5 @@ Rows `phys_fn_000897` and `phys_fn_000899` map to the single candidate body `NxA
 # Phase 7 continuation: scene-release contact-report flush `phys_fn_000913`
 
 `phys_fn_000913` is mutation-falsified by the registered `NxPhysicsSimulationTests` release fixture: setting its pair-hash loop count to zero suppresses the final end-touch callback and is rejected (`stdout_delta=439`, oracle_exit=0, candidate_exit=1); restored control reports `calls=2`, `events=00000004`, and `end_touch=1`. See [phase7-scene-release-contact-report-000913.md](phase7-scene-release-contact-report-000913.md).
+
+Fresh post-merge Phase 5/6/7 gates pass at `2,703/2,703`, `1,636/1,636`, and `1,745/1,745`; the new `NxPhysicsSimulationTests` release marker is required in all three phases. Full logs: [Phase 5](raw/phase7-scene-release-contact-report-000913-20261013/phase5-postmerge-gate.log.gz), [Phase 6](raw/phase7-scene-release-contact-report-000913-20261013/phase6-postmerge-gate.log.gz), [Phase 7](raw/phase7-scene-release-contact-report-000913-20261013/phase7-postmerge-gate.log.gz).
