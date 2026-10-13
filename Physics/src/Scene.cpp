@@ -97,7 +97,10 @@
 #include "ContactPairManager.h"
 #include "NxScene.h"
 #include "fluids/NxFluidDesc.h"
+#include "fluids/NxFluid.h"
+#include "fluids/NxFluidEmitter.h"
 #include "fluids/NpFluidEmitter.h"
+#include "NpSceneGuard.h"
 #include "opcode/IcePruner.h"
 #include "NxDebugRenderable.h"
 #include "NarrowPhase.h"
@@ -876,6 +879,51 @@ static void* gNxFluidVtable[] = {
 	reinterpret_cast<void*>(nxFluidDeletingDestructor)
 	};
 
+// Public NpFluid count/list reads use the scene's read-lock link at wrapper
+// offsets +0x10/+0x14 and expose the paired public-emitter array stored in the
+// internal Fluid object at +0x14. These are primary NxFluid vtable slots 3/4.
+static NxU32 __fastcall nxFluidGetNbEmitters(void* wrapper, void*)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(bytes + 0x10);
+	if(readLock)
+		nxNpSceneGuardEnter(readLock);
+	void* const internal = *reinterpret_cast<void**>(bytes + 0x14);
+	unsigned count = 0;
+	if(internal)
+		{
+		unsigned char* const fluid = static_cast<unsigned char*>(internal);
+		const unsigned first = *reinterpret_cast<unsigned*>(fluid + 4);
+		const unsigned last = *reinterpret_cast<unsigned*>(fluid + 8);
+		if(last >= first)
+			count = (last - first) >> 2;
+		}
+	if(readLock)
+		nxNpSceneGuardLeave(readLock);
+	return count;
+	}
+
+static NxFluidEmitter** __fastcall nxFluidGetEmitters(void* wrapper, void*)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(bytes + 0x10);
+	if(readLock)
+		nxNpSceneGuardEnter(readLock);
+	NxFluidEmitter** emitters = 0;
+	void* const internal = *reinterpret_cast<void**>(bytes + 0x14);
+	if(internal)
+		{
+		unsigned char* const fluid = static_cast<unsigned char*>(internal);
+		const unsigned first = *reinterpret_cast<unsigned*>(fluid + 0x14);
+		const unsigned last = *reinterpret_cast<unsigned*>(fluid + 0x18);
+		if(last >= first && last != first)
+			emitters = reinterpret_cast<NxFluidEmitter**>(first);
+		}
+	if(readLock)
+		nxNpSceneGuardLeave(readLock);
+	return emitters;
+	}
+
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
 	{
 	if((deleteObject & 1) != 0)
@@ -893,7 +941,11 @@ static void* __fastcall nxFluidSolverReadLockDeletingDestructor(void* base,
 	}
 
 static void* gNxFluidSolverVtable[] = {
-	reinterpret_cast<void*>(nxFluidSolverDeletingDestructor)
+	reinterpret_cast<void*>(nxFluidSolverDeletingDestructor),
+	0,
+	0,
+	reinterpret_cast<void*>(nxFluidGetNbEmitters),
+	reinterpret_cast<void*>(nxFluidGetEmitters)
 	};
 static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)

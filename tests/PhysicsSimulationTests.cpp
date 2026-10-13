@@ -3414,6 +3414,10 @@ int wmain(int argc, wchar_t** argv)
 	*fluidFoundationAllocatorSlot = savedFluidAllocator;
 	const bool enabledEmitterAllocationFailure =
 		emitterFailAllocator.mFailCount == 1;
+	const NxU32 enabledPublicEmitterCount = enabledFluid
+		? enabledFluid->getNbEmitters() : 0;
+	NxFluidEmitter** const enabledPublicEmitterList = enabledFluid
+		? enabledFluid->getEmitters() : 0;
 	NxSimulationFailSizeAllocator fluidFailAllocator(*savedFluidAllocator, 0x84);
 	*fluidFoundationAllocatorSlot = &fluidFailAllocator;
 	simulationOutput.resetLast();
@@ -3494,6 +3498,19 @@ int wmain(int argc, wchar_t** argv)
 		enabledEmitterFrameWorldPose.t.x == 11.25f &&
 		enabledEmitterFrameWorldPose.t.y == -2.5f &&
 		enabledEmitterFrameWorldPose.t.z == 3.25f;
+	const bool enabledPublicEmitterApiMatches = enabledPublicEmitterCount == 3 &&
+		enabledPublicEmitterList == reinterpret_cast<NxFluidEmitter**>(
+			enabledEmitterWrapperArray) && enabledPublicEmitterList &&
+		enabledPublicEmitterList[0] == reinterpret_cast<NxFluidEmitter*>(
+			enabledEmitterWrapperArray[0]) &&
+		enabledPublicEmitterList[1] == reinterpret_cast<NxFluidEmitter*>(
+			enabledEmitterWrapperArray[1]) &&
+		enabledPublicEmitterList[2] == reinterpret_cast<NxFluidEmitter*>(
+			enabledEmitterWrapperArray[2]);
+	printf("simulation fluid public-api emitter-count=%u count-match=%u array-match=%u\n",
+		enabledPublicEmitterCount,
+		enabledPublicEmitterCount == 3 ? 1u : 0u,
+		enabledPublicEmitterApiMatches ? 1u : 0u);
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =

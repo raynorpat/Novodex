@@ -3500,6 +3500,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # The optional manager's enabled create path validates, builds and
         # lists one fluid and three emitters, then dispatches teardown.
         'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=14.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=3 emitter=3.0.3.3 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
+        # Public NxFluid emitter count and list must expose the same three
+        # retained wrappers as the internal arrays through the wrapper vtable.
+        'simulation fluid public-api emitter-count=3 count-match=1 array-match=1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
@@ -5859,7 +5862,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2678  # adds the dirty-refresh callback argument differential
+	'5' = 2679  # adds public NxFluid emitter count/list dispatch
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
@@ -5923,7 +5926,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1711  # adds bodyless-joint insertion and contact-pair visualization coverage
+	'7' = 1712  # adds public NxFluid emitter count/list dispatch
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions
