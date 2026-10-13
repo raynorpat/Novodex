@@ -3284,6 +3284,8 @@ int wmain(int argc, wchar_t** argv)
 	typedef unsigned (__cdecl *GetFluidDampingCallsFn)();
 	typedef void (__cdecl *GetFluidSetStiffnessObservationFn)(
 		unsigned*, unsigned*, unsigned*);
+	typedef void (__cdecl *GetFluidSetViscosityObservationFn)(
+		unsigned*, unsigned*, unsigned*);
 	struct FluidManagerCallbackSummary
 		{
 		unsigned managerCreate;
@@ -3321,6 +3323,9 @@ int wmain(int argc, wchar_t** argv)
 	GetFluidSetStiffnessObservationFn getFluidSetStiffnessObservation =
 		reinterpret_cast<GetFluidSetStiffnessObservationFn>(GetProcAddress(
 			fluidModel, "NxGetFluidSetStiffnessObservation"));
+	GetFluidSetViscosityObservationFn getFluidSetViscosityObservation =
+		reinterpret_cast<GetFluidSetViscosityObservationFn>(GetProcAddress(
+			fluidModel, "NxGetFluidSetViscosityObservation"));
 	GetFluidScalarCallsFn getFluidStaticRestitutionCalls = reinterpret_cast<
 		GetFluidScalarCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidStaticCollisionRestitutionCalls"));
@@ -3334,7 +3339,7 @@ int wmain(int argc, wchar_t** argv)
 		SetFluidEmitterCreateNullIndexFn>(GetProcAddress(fluidModel,
 			"NxSetFluidEmitterCreateNullIndex"));
 	if(!resetFluidManagerCallbacks || !getFluidDampingCalls ||
-		!getFluidSetStiffnessObservation ||
+		!getFluidSetStiffnessObservation || !getFluidSetViscosityObservation ||
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex)
@@ -3914,6 +3919,7 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*enabledFluidScene);
 	bool enabledLicensedKernelGetter = false;
 	bool licensedStiffnessSetter = false;
+	bool licensedViscositySetter = false;
 	{
 	NxSimulationFluidLicenseOverride licenseOverride;
 	NxScene* const licensedFluidScene = licenseOverride.ready
@@ -3952,6 +3958,26 @@ int wmain(int argc, wchar_t** argv)
 		licensedSetStiffnessErrors == 0 &&
 		stiffnessCallsAfter == stiffnessCallsBefore + 1 &&
 		stiffnessBitsAfter == 0x3f200000u && stiffnessArgumentsAfter == 1;
+	unsigned viscosityCallsBefore = 0, viscosityBitsBefore = 0,
+		viscosityArgumentsBefore = 0;
+	getFluidSetViscosityObservation(&viscosityCallsBefore, &viscosityBitsBefore,
+		&viscosityArgumentsBefore);
+	const unsigned licensedSetViscosityErrorsBefore = simulationOutput.errors;
+	if(licensedFluid)
+		licensedFluid->setViscosity(0.375f);
+	const unsigned licensedSetViscosityErrors = simulationOutput.errors -
+		licensedSetViscosityErrorsBefore;
+	unsigned viscosityCallsAfter = 0, viscosityBitsAfter = 0,
+		viscosityArgumentsAfter = 0;
+	getFluidSetViscosityObservation(&viscosityCallsAfter, &viscosityBitsAfter,
+		&viscosityArgumentsAfter);
+	licensedViscositySetter = licenseOverride.ready && licensedFluid &&
+		licensedSetViscosityErrors == 0 &&
+		viscosityCallsAfter == viscosityCallsBefore + 1 &&
+		viscosityBitsAfter == 0x3ec00000u && viscosityArgumentsAfter == 1;
+	printf("simulation fluid public-api configuration licensed-set-viscosity value=%08x calls=%u args=%u errors=%u\n",
+		viscosityBitsAfter, viscosityCallsAfter - viscosityCallsBefore,
+		viscosityArgumentsAfter, licensedSetViscosityErrors);
 	printf("simulation fluid public-api configuration licensed-set-stiffness value=%08x calls=%u args=%u errors=%u\n",
 		stiffnessBitsAfter, stiffnessCallsAfter - stiffnessCallsBefore,
 		stiffnessArgumentsAfter, licensedSetStiffnessErrors);
@@ -3966,8 +3992,9 @@ int wmain(int argc, wchar_t** argv)
 	if(licensedFluidScene)
 		sdk->releaseScene(*licensedFluidScene);
 	}
-	if(!enabledLicensedKernelGetter || !licensedStiffnessSetter)
-		return nxFail("licensed NxFluid stiffness setter or kernel-radius getter did not forward through FluidModel");
+	if(!enabledLicensedKernelGetter || !licensedStiffnessSetter ||
+		!licensedViscositySetter)
+		return nxFail("licensed NxFluid stiffness/viscosity setter or kernel-radius getter did not forward through FluidModel");
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
 	// header set, so supply its recovered byte layout without changing public

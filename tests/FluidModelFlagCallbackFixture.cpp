@@ -70,6 +70,9 @@ static unsigned gFluidGetDampingCalls;
 static unsigned gFluidSetStiffnessCalls;
 static unsigned gFluidSetStiffnessBits;
 static unsigned gFluidSetStiffnessArgumentsValid;
+static unsigned gFluidSetViscosityCalls;
+static unsigned gFluidSetViscosityBits;
+static unsigned gFluidSetViscosityArgumentsValid;
 static unsigned gFluidGetStaticCollisionRestitutionCalls;
 static unsigned gFluidGetStaticCollisionAdhesionCalls;
 static unsigned char gFluidStaticCollision[0x200];
@@ -261,6 +264,9 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidSetStiffnessCalls = 0;
 	gFluidSetStiffnessBits = 0;
 	gFluidSetStiffnessArgumentsValid = 0;
+	gFluidSetViscosityCalls = 0;
+	gFluidSetViscosityBits = 0;
+	gFluidSetViscosityArgumentsValid = 0;
 	gFluidGetStaticCollisionRestitutionCalls = 0;
 	gFluidGetStaticCollisionAdhesionCalls = 0;
 	gFluidEmitterCreateNullIndex = ~0u;
@@ -431,6 +437,28 @@ extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetStiffnessObservation(
 	if(calls) *calls = gFluidSetStiffnessCalls;
 	if(valueBits) *valueBits = gFluidSetStiffnessBits;
 	if(argumentsValid) *argumentsValid = gFluidSetStiffnessArgumentsValid;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidSetViscosity(
+	void* manager, void* fluid, float value)
+	{
+	++gFluidSetViscosityCalls;
+	memcpy(&gFluidSetViscosityBits, &value, sizeof(value));
+	bool fluidFound = false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) /
+		sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			fluidFound = true;
+	gFluidSetViscosityArgumentsValid =
+		manager == &gFluidManagerBackend && fluidFound;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetViscosityObservation(
+	unsigned* calls, unsigned* valueBits, unsigned* argumentsValid)
+	{
+	if(calls) *calls = gFluidSetViscosityCalls;
+	if(valueBits) *valueBits = gFluidSetViscosityBits;
+	if(argumentsValid) *argumentsValid = gFluidSetViscosityArgumentsValid;
 	}
 
 static bool nxFluidFixtureHasBackendFluid(void* manager, void* fluid)

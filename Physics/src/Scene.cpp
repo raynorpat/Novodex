@@ -831,6 +831,7 @@ static NxFluidScalarGetCallback gNxFluidGetStiffnessCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetViscosityCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetDampingCallback = 0;
 static NxFluidScalarSetCallback gNxFluidSetStiffnessCallback = 0;
+static NxFluidScalarSetCallback gNxFluidSetViscosityCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionRestitutionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionAdhesionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetKernelRadiusMultiplierCallback = 0;
@@ -893,6 +894,8 @@ static bool nxFluidManagerResolveModel()
 		GetProcAddress(module, "FluidGetDamping"));
 	gNxFluidSetStiffnessCallback = reinterpret_cast<NxFluidScalarSetCallback>(
 		GetProcAddress(module, "FluidSetStiffness"));
+	gNxFluidSetViscosityCallback = reinterpret_cast<NxFluidScalarSetCallback>(
+		GetProcAddress(module, "FluidSetViscosity"));
 	gNxFluidGetStaticCollisionRestitutionCallback = reinterpret_cast<
 		NxFluidScalarGetCallback>(GetProcAddress(module,
 			"FluidGetStaticCollisionRestitution"));
@@ -1119,6 +1122,47 @@ static void __fastcall nxFluidSetStiffness(void* wrapper, void*, NxReal value)
 	nxNpSceneGuardLeave(writeLock);
 	}
 
+// phys_fn_003722 (0x0008b7d0): warn when viscosity is unavailable, then use
+// the wrapper's write lock and shared callback guard before forwarding the
+// backend manager/fluid pair and scalar to FluidModel.
+static void __fastcall nxFluidSetViscosity(void* wrapper, void*, NxReal value)
+	{
+	if((gNxFluidLicensedFeatureFlags & 1) == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			137, 0, "NxFluid::setViscosity(): Feature not available!");
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			139, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			140, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* const internal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	void* const manager = *reinterpret_cast<void**>(internal + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(internal + 0x80);
+	if(gNxFluidSetViscosityCallback)
+		gNxFluidSetViscosityCallback(backendManager, backendFluid, value);
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	}
+
 static NxReal __fastcall nxFluidGetStaticCollisionRestitution(void* wrapper, void*)
 	{
 	return nxFluidCallBackendScalarGetter(wrapper,
@@ -1229,7 +1273,7 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidGetStiffness),
 	reinterpret_cast<void*>(nxFluidSetStiffness),
 	reinterpret_cast<void*>(nxFluidGetViscosity),
-	0,
+	reinterpret_cast<void*>(nxFluidSetViscosity),
 	reinterpret_cast<void*>(nxFluidGetDamping),
 	0,
 	reinterpret_cast<void*>(nxFluidGetStaticCollisionRestitution),
