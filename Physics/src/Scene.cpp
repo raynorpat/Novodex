@@ -1033,6 +1033,53 @@ static NxFluidEmitter** __fastcall nxFluidGetEmitters(void* wrapper, void*)
 	return emitters;
 	}
 
+// phys_fn_003712 (0x0008b530): copy the internal particle write-data record
+// to the caller's aggregate return buffer under the Scene read lock.
+static NxParticleData* __fastcall nxFluidGetParticlesWriteData(void* wrapper,
+	void*, NxParticleData* result)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
+	nxNpSceneGuardEnter(readLock);
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	memcpy(result, static_cast<unsigned char*>(internal) + 0x28,
+		sizeof(*result));
+	nxNpSceneGuardLeave(readLock);
+	return result;
+	}
+
+// phys_fn_003714 (0x0008b560): update the internal particle write-data record
+// under the Scene write lock and shared fluid API reentry guard.
+static void __fastcall nxFluidSetParticlesWriteData(void* wrapper, void*,
+	const NxParticleData& data)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			100, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			101, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* const internal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	memcpy(internal + 0x28, &data, sizeof(data));
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	}
+
 // phys_fn_003706 (0x0008b350): report the unavailable feature when unlicensed,
 // then release the internal surface-mesh object under the Scene write lock.
 static void __fastcall nxFluidReleaseSurfaceMesh(void* wrapper, void*)
@@ -1654,7 +1701,9 @@ static void* gNxFluidSolverVtable[] = {
 	0,
 	reinterpret_cast<void*>(nxFluidReleaseSurfaceMesh),
 	reinterpret_cast<void*>(nxFluidGetSurfaceMesh),
-	0, 0, 0,
+	0,
+	reinterpret_cast<void*>(nxFluidSetParticlesWriteData),
+	reinterpret_cast<void*>(nxFluidGetParticlesWriteData),
 	reinterpret_cast<void*>(nxFluidGetStiffness),
 	reinterpret_cast<void*>(nxFluidSetStiffness),
 	reinterpret_cast<void*>(nxFluidGetViscosity),

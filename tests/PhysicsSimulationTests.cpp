@@ -3620,6 +3620,65 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidFlagInitial == NX_FF_MESH_INCLUDE_SEPARATED ? 1u : 0u,
 		enabledFluidFlagCleared == 0 ? 1u : 0u,
 		enabledFluidFlagSet == NX_FF_MESH_INCLUDE_SEPARATED ? 1u : 0u);
+	unsigned char particleWriteDataSaved[44] = {};
+	unsigned particleWriteDataInitial[11] = {
+		0x10203040u, 0x11223344u, 0x22334455u, 0x33445566u,
+		0x44556677u, 0x55667788u, 12u, 16u, 4u, 4u, 0x66778899u
+	};
+	NxParticleData particleWriteDataDesired;
+	static NxU32 particleWriteDataCount = 7;
+	static NxF32 particleWriteDataPositions[3] = { 1.25f, -2.5f, 3.75f };
+	static NxF32 particleWriteDataVelocities[3] = { -4.5f, 5.25f, -6.75f };
+	static NxF32 particleWriteDataLifetimes[1] = { 8.5f };
+	static NxU32 particleWriteDataFlags[1] = { NX_FP_SEPARATED };
+	static const char particleWriteDataName[] = "simulation-fluid-particle-write-data";
+	particleWriteDataDesired.maxParticles = 0x76543210u;
+	particleWriteDataDesired.numParticlesPtr = &particleWriteDataCount;
+	particleWriteDataDesired.bufferPos = particleWriteDataPositions;
+	particleWriteDataDesired.bufferVel = particleWriteDataVelocities;
+	particleWriteDataDesired.bufferLife = particleWriteDataLifetimes;
+	particleWriteDataDesired.bufferFlags = particleWriteDataFlags;
+	particleWriteDataDesired.bufferPosByteStride = 12;
+	particleWriteDataDesired.bufferVelByteStride = 16;
+	particleWriteDataDesired.bufferLifeByteStride = 4;
+	particleWriteDataDesired.bufferFlagsByteStride = 4;
+	particleWriteDataDesired.name = particleWriteDataName;
+	if(enabledFluidInternalForBounds)
+		{
+		unsigned char* const fluidBytes = static_cast<unsigned char*>(
+			enabledFluidInternalForBounds);
+		memcpy(particleWriteDataSaved, fluidBytes + 0x28,
+			sizeof(particleWriteDataSaved));
+		memcpy(fluidBytes + 0x28, particleWriteDataInitial,
+			sizeof(particleWriteDataInitial));
+		}
+	NxParticleData particleWriteDataInitialRead;
+	if(enabledFluid)
+		particleWriteDataInitialRead = enabledFluid->getParticlesWriteData();
+	const bool particleWriteDataInitialMatch = enabledFluidInternalForBounds &&
+		memcmp(&particleWriteDataInitialRead, particleWriteDataInitial,
+			sizeof(particleWriteDataInitial)) == 0;
+	if(enabledFluid)
+		enabledFluid->setParticlesWriteData(particleWriteDataDesired);
+	const bool particleWriteDataStored = enabledFluidInternalForBounds &&
+		memcmp(static_cast<unsigned char*>(enabledFluidInternalForBounds) + 0x28,
+			&particleWriteDataDesired, sizeof(particleWriteDataDesired)) == 0;
+	NxParticleData particleWriteDataRoundTrip;
+	if(enabledFluid)
+		particleWriteDataRoundTrip = enabledFluid->getParticlesWriteData();
+	const bool particleWriteDataRoundTripMatch =
+		memcmp(&particleWriteDataRoundTrip, &particleWriteDataDesired,
+			sizeof(particleWriteDataDesired)) == 0;
+	if(enabledFluidInternalForBounds)
+		memcpy(static_cast<unsigned char*>(enabledFluidInternalForBounds) + 0x28,
+			particleWriteDataSaved, sizeof(particleWriteDataSaved));
+	const bool enabledFluidPublicParticleWriteDataMatch =
+		particleWriteDataInitialMatch && particleWriteDataStored &&
+		particleWriteDataRoundTripMatch;
+	printf("simulation fluid public-api particle-write-data initial=%u stored=%u roundtrip=%u\n",
+		particleWriteDataInitialMatch ? 1u : 0u,
+		particleWriteDataStored ? 1u : 0u,
+		particleWriteDataRoundTripMatch ? 1u : 0u);
 	static const char enabledFluidName[] = "simulation-fluid-name";
 	if(enabledFluid)
 		enabledFluid->setName(enabledFluidName);
@@ -4015,6 +4074,7 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
 		!enabledFluidWorldBoundsMatch ||
 		!enabledFluidPublicFlagsMatch ||
+		!enabledFluidPublicParticleWriteDataMatch ||
 		!enabledFluidNameStored || !enabledFluidNameCleared ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
 		!enabledFluidConfigCallbacks || enabledPublicMaxParticles != 0x1234u ||
