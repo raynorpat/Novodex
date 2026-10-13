@@ -8,23 +8,24 @@ the extension-backed creation path. An invalid descriptor reports
 `Supplied NxFluidDesc is not valid. createFluid returns NULL.`
 
 The simulation fixture seeds that manager flag and calls the public API with
-`restDensity=0`. It now also checks eight additional invalid descriptors:
+`restDensity=0`. It now also checks twelve additional invalid descriptors:
 kernel radius below one, zero particle spacing, zero stiffness, zero viscosity,
 damping above one, negative dynamic restitution, an empty simulation-method
-mask, and `maxParticles` above `0x7d00`. Each must return null and emit exactly
-one `NXE_INVALID_PARAMETER` diagnostic at `FluidManager.cpp:140`. The
-implementation uses the existing descriptor validation method; no public
-header changed. Surface-mesh and particle-buffer validation, allocation
-failures, and the remaining extension-backed lifecycle are still open, so the
-encompassing `phys_fn_003649` row remains open.
+mask, `maxParticles` above `0x7d00`, invalid initial-particle pointer pairing,
+missing initial-position stride, missing write-flags stride, and an invalid
+surface-mesh descriptor. Each must return null and emit exactly one
+`NXE_INVALID_PARAMETER` diagnostic at `FluidManager.cpp:140`. The implementation
+uses the existing descriptor validation method; no public header changed.
+Allocation failures and the remaining extension-backed lifecycle are still
+open, so the encompassing `phys_fn_003649` row remains open.
 
 The original rest-density test was first run against the unmodified
 implementation and diverged from the oracle (`stdout_delta=2`); after the
 implementation, the staged-pair differential matched exactly. The expanded
-eight-case validation differential also matches exactly (`stdout_delta=0`,
+twelve-case validation differential also matches exactly (`stdout_delta=0`,
 both processes exit 0, exact stderr). Fresh Phase 5 and Phase 7 gates pass at
 2,678/2,678 and 1,711/1,711 assertions, and both require the
-`descriptor-validation=8.1` coverage marker.
+`descriptor-validation=12.1` coverage marker.
 
 The Viewer all-scenes suite remains part of the approved validation design:
 48 registered CTest entries cover the 39 available scenes. It is a separate

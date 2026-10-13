@@ -3232,7 +3232,13 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<void**>(enabledFluidManager + 0x30) != 0;
 	unsigned enabledDescriptorValidationPassed = 0;
 	bool enabledDescriptorValidationDiagnosticsExact = true;
-	for(unsigned invalidCase = 0; invalidCase != 8; ++invalidCase)
+	NxU32 invalidParticleCount = 0;
+	NxF32 invalidParticlePosition[3] = {};
+	NxU32 invalidParticleFlags = 0;
+	NxImplicitMeshDesc invalidSurfaceMesh;
+	invalidSurfaceMesh.setToDefault();
+	invalidSurfaceMesh.singleRadius = 0.0f;
+	for(unsigned invalidCase = 0; invalidCase != 12; ++invalidCase)
 		{
 		NxFluidDesc invalidDesc;
 		invalidDesc.setToDefault();
@@ -3245,7 +3251,19 @@ int wmain(int argc, wchar_t** argv)
 			case 4: invalidDesc.damping = 1.01f; break;
 			case 5: invalidDesc.dynamicCollisionRestitution = -0.01f; break;
 			case 6: invalidDesc.simulationMethod = 0; break;
-			default: invalidDesc.maxParticles = 0x7d01; break;
+			case 7: invalidDesc.maxParticles = 0x7d01; break;
+			case 8:
+				invalidDesc.initialParticleData.numParticlesPtr = &invalidParticleCount;
+				break;
+			case 9:
+				invalidDesc.initialParticleData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.initialParticleData.bufferPos = invalidParticlePosition;
+				break;
+			case 10:
+				invalidDesc.particlesWriteData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.particlesWriteData.bufferFlags = &invalidParticleFlags;
+				break;
+			default: invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh; break;
 			}
 		const unsigned errorsBefore = simulationOutput.errors;
 		simulationOutput.resetLast();
@@ -3410,7 +3428,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
-	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 8 ||
+	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 12 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
 		!enabledFluidManagerFlags || !enabledFluid ||
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
