@@ -25,5 +25,10 @@ DLL SHA-256 is
 pinned oracle DLL SHA-256 is
 `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
 
-Raw paired transcripts and the full gate log are in
+After commit `83717ac6`, the same full Phase 7 gate was rerun on local `main`
+and passed at 1,711/1,711. The mainline candidate DLL SHA-256 was
+`e379690a37768564d46ed691ab496d457e41769eb809bf7a2730915b920cd85a`. Its
+post-merge transcript is `evidence/raw/phase7-scene-contact-stream-reset-000863-20261012/phase7-mainline-post-merge.log.gz`.
+
+Raw paired transcripts and the worktree full gate log are in
 `evidence/raw/phase7-scene-contact-stream-reset-000863-20261012/`.
