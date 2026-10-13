@@ -10743,3 +10743,8 @@ Rows `phys_fn_000897` and `phys_fn_000899` map to the single candidate body `NxA
 # Phase 7 continuation: pair-node constructor `phys_fn_000901`
 
 `phys_fn_000901` is mutation-falsified through the registered contact simulation. A return-this mutant skips pair initialization and list linking and crashes the candidate (`candidate_exit=-1073741819`, `stdout_delta=3984`); restoring it returns an exact differential (`stdout_delta=0`, exact stderr). See [phase7-pair-node-constructor-000901.md](phase7-pair-node-constructor-000901.md).
+
+
+# Phase 7 continuation: pair-node refresh `phys_fn_000905`
+
+`phys_fn_000905` is mutation-falsified through the registered contact-report simulation. A no-op suppresses refresh and fails the candidate fixture (`candidate_exit=1`, `stdout_delta=3985`); restoring it returns an exact differential (`stdout_delta=0`, exact stderr). See [phase7-pair-node-refresh-000905.md](phase7-pair-node-refresh-000905.md).

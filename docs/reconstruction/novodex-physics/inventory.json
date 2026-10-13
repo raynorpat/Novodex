@@ -17133,13 +17133,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/374",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2893",
       "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
-      "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
-      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "dynamic_proof": "NxPhysicsSimulationTests no-op mutation of NxPairNode::row000905 suppresses the contact-report refresh and fails the staged differential (candidate_exit=1, stdout_delta=3985); restored control stdout_delta=0, stderr_exact=True. See evidence/phase7-pair-node-refresh-000905.md.",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. A no-op mutation is rejected by the registered Phase 7 contact-report simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp",
       "implementation_symbol": "NxPairNode::row000905"
     },
@@ -17362,7 +17362,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2938",
       "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
       "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
-      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. A no-op mutation is rejected by the registered Phase 7 contact-report simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp",
       "implementation_symbol": "cpmBufferContactReports0917"
     },
@@ -17400,7 +17400,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2939",
       "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
       "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
-      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. A no-op mutation is rejected by the registered Phase 7 contact-report simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp",
       "implementation_symbol": "cpmBufferContactReports0917"
     },
@@ -17438,7 +17438,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2951",
       "static_proof": "Oracle Capstone listing cross-checked against the current implementation and the contact-reporting public differential.",
       "dynamic_proof": "evidence/contact-reporting.md: the standalone public actor-pair fixture matches the pinned oracle transcript exactly (six contact callbacks, start/touch flags, actor identity and force words; stdout_delta=0, stderr_exact=True).",
-      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. The recorded fixture covers one-shape actors and touch/start-touch events only.",
+      "notes": "Reached through real plane/sphere contact generation, per-substep report buffering, and fetchResults callback delivery. A no-op mutation is rejected by the registered Phase 7 contact-report simulation.",
       "implementation": "Physics/src/ContactPairManager.cpp",
       "implementation_symbol": "cpmBufferContactReports0917"
     },

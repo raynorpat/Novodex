@@ -1,0 +1,65 @@
+--- a/Physics/src/ContactPairManager.cpp
++++ b/Physics/src/ContactPairManager.cpp
+@@ -2311,61 +2311 @@
+-	const NxU32 frame = scene->at<NxU32>(0x540);
+-	const NxU32 reporting = scene->at<NxU32>(0x6b4);
+-	NxU8* shape1 = cpmAt<NxU8*>(at<NxU8*>(0x18), 0x10);
+-	NxU8* shape0 = cpmAt<NxU8*>(at<NxU8*>(0x14), 0x10);
+-	const NxU8* owner0 = cpmAt<const NxU8*>(shape0, 4);
+-	const NxU8* owner1 = cpmAt<const NxU8*>(shape1, 4);
+-	const CpmJointedBody* body0 = cpmAt<const CpmJointedBody*>(owner0, 8);
+-	const CpmJointedBody* body1 = cpmAt<const CpmJointedBody*>(owner1, 8);
+-	NxU8 dynamic0 = 0;
+-	if(body0)
+-		{
+-		if(body1 && body0->row000750(body1))
+-			return;
+-		dynamic0 = (cpmAt<NxU8>(body0, 0x10c) & 0x80) ? 0 : 1;
+-		}
+-	const NxU8 dynamic1 = (body1 && !(cpmAt<NxU8>(body1, 0x10c) & 0x80)) ? 1 : 0;
+-	if(!dynamic0 && !dynamic1)
+-		return;
+-	if((cpmAt<NxU8>(owner0, 0x14) & 1) || (cpmAt<NxU8>(owner1, 0x14) & 1))
+-		return;
+-
+-	CpmPairHash* hash = reinterpret_cast<CpmPairHash*>(scene->bytes() + 0x2c);
+-	CpmPairHashEntry* entry = cpmOpen004153(hash, cpmAt<NxU32>(shape0, 0xd4), cpmAt<NxU32>(shape1, 0xd4));
+-	if(entry && (entry->value & 1))
+-		return;
+-	CpmPairHashEntry* recordEntry = 0;
+-	if(reporting)
+-		{
+-		if(entry)
+-			{
+-			static_cast<NxU32*>(cpmPointer(entry->value))[1] = frame;
+-			recordEntry = entry;
+-			}
+-		else
+-			{
+-			NxU32* record = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+-			record[1] = frame;
+-			record[0] = 0;
+-			recordEntry = cpmOpen004155(hash, cpmAt<NxU32>(shape0, 0xd4), cpmAt<NxU32>(shape1, 0xd4), record);
+-			}
+-		}
+-
+-	if(cpmAt<void*>(shape0, 8) != at<void*>(0)
+-		|| cpmAt<void*>(shape1, 8) != at<void*>(4))
+-		{
+-		cpmActorPairResetStream0863(pair());
+-		cpmOpen002348(cpmAt<NxU8*>(at<NxU8*>(0x14), 0x10), cpmAt<NxU8*>(at<NxU8*>(0x18), 0x10), pair(), scene);
+-		at<void*>(0) = cpmAt<void*>(shape0, 8);
+-		at<void*>(4) = cpmAt<void*>(shape1, 8);
+-		}
+-
+-	if(reporting && recordEntry)
+-		{
+-		NxU32* record = static_cast<NxU32*>(cpmPointer(recordEntry->value));
+-		NxU32 state = record[0];
+-		state = at<NxU32>(0x24) ? (state | 0x80000000) : (state & 0x7fffffff);
+-		record[0] = state;
+-		record[2] = (NxU32)(size_t)this;
+-		record[3] = at<NxU32>(0x14);
+-		record[4] = at<NxU32>(0x18);
+-		}
++	return;
