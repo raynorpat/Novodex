@@ -39,6 +39,22 @@ static void nxSetFluidEmitterName(void* internal, const char* name)
 		}
 	}
 
+extern "C" void __cdecl nxNpFluidEmitterInitializeMetadata(void* internal,
+	void* wrapper, void* userData, const char* name, void* lockSource)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	*reinterpret_cast<void**>(wrapperBytes + 4) = userData;
+	if(lockSource)
+		{
+		unsigned char* const lockBytes = static_cast<unsigned char*>(lockSource);
+		*reinterpret_cast<void**>(wrapperBytes + 0x0c) =
+			*reinterpret_cast<void**>(lockBytes + 0x0c);
+		*reinterpret_cast<void**>(wrapperBytes + 0x10) =
+			*reinterpret_cast<void**>(lockBytes + 0x10);
+		}
+	nxSetFluidEmitterName(internal, name);
+	}
+
 static const char* nxGetFluidEmitterName(void* internal)
 	{
 	for(std::vector<NxFluidEmitterNameEntry>::const_iterator entry = gFluidEmitterNames.begin();

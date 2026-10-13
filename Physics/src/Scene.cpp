@@ -1692,10 +1692,14 @@ static void* __fastcall nxFluidSolverReadLockDeletingDestructor(void* base,
 	return helper;
 	}
 
+static NxFluidEmitter* __fastcall nxFluidCreateEmitterPublic(void*, void*,
+	const NxFluidEmitterDesc&);
+static void __fastcall nxFluidReleaseEmitterPublic(void*, void*, NxFluidEmitter&);
+
 static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverDeletingDestructor),
-	0,
-	0,
+	reinterpret_cast<void*>(nxFluidCreateEmitterPublic),
+	reinterpret_cast<void*>(nxFluidReleaseEmitterPublic),
 	reinterpret_cast<void*>(nxFluidGetNbEmitters),
 	reinterpret_cast<void*>(nxFluidGetEmitters),
 	0,
@@ -1783,14 +1787,29 @@ static void nxFluidManagerArrayPush(void* arrayHeader, unsigned value)
 
 extern "C" int __cdecl nxNpFluidEmitterUpdateGlobalPose(void* internal);
 extern "C" void* __cdecl nxNpFluidEmitterStoreGlobalPose(void* internal);
+extern "C" void __cdecl nxNpFluidEmitterInitializeMetadata(void* internal,
+	void* wrapper, void* userData, const char* name, void* lockSource);
 
 static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	{
+	if(!desc.isValid())
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
+			206, 0,
+			"Supplied NxFluidEmitterDesc is not valid. createEmitter returns NULL.");
+		return 0;
+		}
+	unsigned char* const fluidBytes = static_cast<unsigned char*>(fluid);
+	const unsigned emitterFirst = *reinterpret_cast<unsigned*>(fluidBytes + 4);
+	const unsigned emitterLast = *reinterpret_cast<unsigned*>(fluidBytes + 8);
+	if(emitterLast >= emitterFirst &&
+		((emitterLast - emitterFirst) & ~3u) == 0x50u)
+		return 0;
 	if(!gNxFluidGetRestParticleDistanceCallback || !gNxFluidEmitterCreateCallback ||
 		!gNxFluidEmitterSetGlobalPoseCallback ||
 		!gNxFluidEmitterGetGlobalPoseCallback)
 		return 0;
-	unsigned char* const fluidBytes = static_cast<unsigned char*>(fluid);
 	void* const manager = *reinterpret_cast<void**>(fluidBytes + 0x7c);
 	void* const backendManager = manager ? *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(manager) + 0x30) : 0;
@@ -1829,6 +1848,12 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 		nxFoundationSDKAllocator->free(internal);
 		return 0;
 		}
+	void* const sceneOwner = manager ? *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x24) : 0;
+	void* const sceneLockSource = sceneOwner ? *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(sceneOwner) + 0x6cc) : 0;
+	nxNpFluidEmitterInitializeMetadata(internal, wrapper, desc.userData,
+		desc.name, sceneLockSource);
 	*reinterpret_cast<void**>(internal + 0x0c) = wrapper;
 	*reinterpret_cast<void**>(internal + 8) = gNxFluidEmitterCreateCallback(
 		reinterpret_cast<unsigned>(context), backendFluidHandle,
@@ -1838,6 +1863,124 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	nxFluidManagerArrayPush(fluidBytes + 4, reinterpret_cast<unsigned>(internal));
 	nxFluidManagerArrayPush(fluidBytes + 0x14, reinterpret_cast<unsigned>(wrapper));
 	return wrapper;
+	}
+
+// phys_fn_003696 (0x0008b080) is NxFluid::createEmitter. The wrapper's write
+// lock and the global API-reentry flag bracket both backend callbacks and the
+// internal paired-array insertion.
+static NxFluidEmitter* __fastcall nxFluidCreateEmitterPublic(void* wrapper,
+	void*, const NxFluidEmitterDesc& desc)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			19, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return 0;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			20, 0, "Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return 0;
+		}
+	gNxApiReentry = true;
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	NxFluidEmitter* const result = internal
+		? static_cast<NxFluidEmitter*>(nxFluidCreateEmitter(internal, desc)) : 0;
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	return result;
+	}
+
+// phys_fn_003698 (0x0008b140) releases a backend emitter and removes matching
+// entries from the internal and public arrays using the same swap index.
+static void nxFluidReleaseEmitterInternal(void* fluid, void* emitter)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(fluid);
+	unsigned* const internalFirst = *reinterpret_cast<unsigned**>(bytes + 4);
+	unsigned* const internalLast = *reinterpret_cast<unsigned**>(bytes + 8);
+	const unsigned internalCount = internalFirst && internalLast >= internalFirst
+		? static_cast<unsigned>(internalLast - internalFirst) : 0;
+	if(internalCount == 0)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
+			249, 0, "Fluid::releaseEmitter: emitter not found!");
+		return;
+		}
+	unsigned index = internalCount;
+	for(unsigned i = 0; i != internalCount; ++i)
+		if(reinterpret_cast<void*>(internalFirst[i]) == emitter)
+			{
+			index = i;
+			break;
+			}
+	if(index == internalCount)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
+			245, 0, "Fluid::releaseEmitter: emitter not found!");
+		return;
+		}
+	void* const manager = *reinterpret_cast<void**>(bytes + 0x7c);
+	void* const backendManager = manager ? *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30) : 0;
+	void* const backendFluid = *reinterpret_cast<void**>(bytes + 0x80);
+	const unsigned backendEmitter = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(emitter) + 8);
+	if(gNxFluidEmitterDestroyCallback && backendManager && backendFluid)
+		gNxFluidEmitterDestroyCallback(reinterpret_cast<unsigned>(backendManager),
+			reinterpret_cast<unsigned>(backendFluid), backendEmitter);
+	unsigned* const wrapperFirst = *reinterpret_cast<unsigned**>(bytes + 0x14);
+	unsigned* const wrapperLast = *reinterpret_cast<unsigned**>(bytes + 0x18);
+	const unsigned wrapperCount = wrapperFirst && wrapperLast >= wrapperFirst
+		? static_cast<unsigned>(wrapperLast - wrapperFirst) : 0;
+	if(index + 1 != internalCount)
+		{
+		internalFirst[index] = internalFirst[internalCount - 1];
+		if(wrapperFirst && index < wrapperCount)
+			wrapperFirst[index] = wrapperFirst[wrapperCount - 1];
+		}
+	*reinterpret_cast<unsigned**>(bytes + 8) = internalLast - 1;
+	if(wrapperFirst && wrapperLast >= wrapperFirst)
+		*reinterpret_cast<unsigned**>(bytes + 0x18) = wrapperLast - 1;
+	}
+
+static void __fastcall nxFluidReleaseEmitterPublic(void* wrapper, void*,
+	NxFluidEmitter& emitter)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			27, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			28, 0, "Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	void* const emitterInternal = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(&emitter) + 0x14);
+	if(internal)
+		nxFluidReleaseEmitterInternal(internal, emitterInternal);
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 static void* gNxFluidManagerVtable[] = {

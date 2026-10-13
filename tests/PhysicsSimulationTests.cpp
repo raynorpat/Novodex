@@ -3952,6 +3952,87 @@ int wmain(int argc, wchar_t** argv)
 		enabledPublicEmitterCount,
 		enabledPublicEmitterCount == 3 ? 1u : 0u,
 		enabledPublicEmitterApiMatches ? 1u : 0u);
+	// Exercise the public NxFluid emitter mutators against a live enabled
+	// FluidModel. Releasing a non-tail entry must swap the last internal and
+	// public handles into the same slot, then notify the backend exactly once.
+	NxFluidEmitter* const initialEmitters[3] = {
+		enabledPublicEmitterList && enabledPublicEmitterCount > 0
+			? enabledPublicEmitterList[0] : 0,
+		enabledPublicEmitterList && enabledPublicEmitterCount > 1
+			? enabledPublicEmitterList[1] : 0,
+		enabledPublicEmitterList && enabledPublicEmitterCount > 2
+			? enabledPublicEmitterList[2] : 0
+		};
+	FluidManagerCallbackSummary emitterMutationBefore = {};
+	getFluidManagerCallbackSummary(&emitterMutationBefore);
+	static const char publicEmitterName[] = "simulation-public-emitter";
+	static unsigned publicEmitterUserData = 0x6a71c0deu;
+	NxFluidEmitterDesc publicEmitterDesc = enabledEmitterDesc;
+	publicEmitterDesc.name = publicEmitterName;
+	publicEmitterDesc.userData = &publicEmitterUserData;
+	NxFluidEmitter* const publiclyCreatedEmitter = enabledFluid
+		? enabledFluid->createEmitter(publicEmitterDesc) : 0;
+	NxFluidEmitter** const emittersAfterCreate = enabledFluid
+		? enabledFluid->getEmitters() : 0;
+	const unsigned emitterCountAfterCreate = enabledFluid
+		? enabledFluid->getNbEmitters() : 0;
+	const char* const publiclyCreatedEmitterName = publiclyCreatedEmitter
+		? publiclyCreatedEmitter->getName() : 0;
+	const bool publicEmitterMetadataMatch = publiclyCreatedEmitter &&
+		publiclyCreatedEmitter->userData == &publicEmitterUserData &&
+		publiclyCreatedEmitterName &&
+		strcmp(publiclyCreatedEmitterName, publicEmitterName) == 0;
+	const bool publicEmitterCreateMatch = publiclyCreatedEmitter &&
+		publicEmitterMetadataMatch &&
+		emitterCountAfterCreate == 4 && emittersAfterCreate &&
+		emittersAfterCreate[0] == initialEmitters[0] &&
+		emittersAfterCreate[1] == initialEmitters[1] &&
+		emittersAfterCreate[2] == initialEmitters[2] &&
+		emittersAfterCreate[3] == publiclyCreatedEmitter;
+	if(enabledFluid && initialEmitters[0])
+		enabledFluid->releaseEmitter(*initialEmitters[0]);
+	NxFluidEmitter** const emittersAfterRelease = enabledFluid
+		? enabledFluid->getEmitters() : 0;
+	const unsigned emitterCountAfterRelease = enabledFluid
+		? enabledFluid->getNbEmitters() : 0;
+	void* const fluidBytesForEmitterMutation = enabledFluidInternal
+		? enabledFluidInternal : 0;
+	unsigned* const internalEmittersAfterRelease = fluidBytesForEmitterMutation
+		? *reinterpret_cast<unsigned**>(static_cast<unsigned char*>(
+			fluidBytesForEmitterMutation) + 4) : 0;
+	const bool publicEmitterReleaseMatch = publicEmitterCreateMatch &&
+		emitterCountAfterRelease == 3 && emittersAfterRelease &&
+		emittersAfterRelease[0] == publiclyCreatedEmitter &&
+		emittersAfterRelease[1] == initialEmitters[1] &&
+		emittersAfterRelease[2] == initialEmitters[2] &&
+		internalEmittersAfterRelease &&
+		*reinterpret_cast<void**>(internalEmittersAfterRelease) ==
+			*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
+				publiclyCreatedEmitter) + 0x14) &&
+		*reinterpret_cast<void**>(internalEmittersAfterRelease + 1) ==
+			*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
+				initialEmitters[1]) + 0x14) &&
+		*reinterpret_cast<void**>(internalEmittersAfterRelease + 2) ==
+			*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
+				initialEmitters[2]) + 0x14);
+	FluidManagerCallbackSummary emitterMutationAfter = {};
+	getFluidManagerCallbackSummary(&emitterMutationAfter);
+	const bool publicEmitterCallbackMatch =
+		emitterMutationAfter.emitterCreate ==
+			emitterMutationBefore.emitterCreate + 1 &&
+		emitterMutationAfter.emitterDestroy ==
+			emitterMutationBefore.emitterDestroy + 1;
+	printf("simulation fluid public-api emitter-create-release created=%u.%u.%u.%u metadata=%u released=%u.%u.%u.%u callback=%u mismatches=%u\n",
+		publicEmitterCreateMatch ? 1u : 0u,
+		emitterCountAfterCreate, emittersAfterCreate ? 1u : 0u,
+		publiclyCreatedEmitter ? 1u : 0u,
+		publicEmitterMetadataMatch ? 1u : 0u,
+		publicEmitterReleaseMatch ? 1u : 0u,
+		emitterCountAfterRelease, internalEmittersAfterRelease ? 1u : 0u,
+		emittersAfterRelease ? 1u : 0u,
+		publicEmitterCallbackMatch ? 1u : 0u,
+		publicEmitterCreateMatch && publicEmitterReleaseMatch &&
+			publicEmitterCallbackMatch ? 0u : 1u);
 	printf("simulation fluid public-api scalars stiffness=%08x.%u viscosity=%08x.%u diagnostics=%u.%u\n",
 		enabledPublicStiffnessBits, enabledPublicStiffnessErrors,
 		enabledPublicViscosityBits, enabledPublicViscosityErrors,
@@ -4023,11 +4104,11 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.fluidGetCellSize == 1 &&
 		fluidManagerCallbacks.staticCollisionDestroy == 0;
 	const bool enabledFluidEmitterCallbacks =
-		fluidManagerCallbacks.fluidGetRestParticleDistance == 5 &&
-		fluidManagerCallbacks.emitterCreate == 3 &&
-		fluidManagerCallbacks.emitterDestroy == 0 &&
-		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
-		fluidManagerCallbacks.emitterGetGlobalPose == 3;
+		fluidManagerCallbacks.fluidGetRestParticleDistance == 6 &&
+		fluidManagerCallbacks.emitterCreate == 4 &&
+		fluidManagerCallbacks.emitterDestroy == 1 &&
+		fluidManagerCallbacks.emitterSetGlobalPose == 4 &&
+		fluidManagerCallbacks.emitterGetGlobalPose == 4;
 	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u manager-allocation-failure=%u.%u allocation-failure=%u.%u emitter-allocation-failure=%u.%u frame-actor=%u frame-pose=%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
@@ -4071,7 +4152,9 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidListed || !enabledFluidManagerArraysMatch ||
 		!enabledFluidManagerCleared || !enabledFluidCallbacks ||
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
-		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
+		!enabledFluidEmitterCallbacks || !publicEmitterCreateMatch ||
+		!publicEmitterReleaseMatch || !publicEmitterCallbackMatch ||
+		!enabledNullBackendEmitterRetained ||
 		!enabledFluidWorldBoundsMatch ||
 		!enabledFluidPublicFlagsMatch ||
 		!enabledFluidPublicParticleWriteDataMatch ||

@@ -10689,3 +10689,7 @@ Rows `phys_fn_003744` and `phys_fn_003746` are mutation-falsified through the re
 # Phase 7 continuation: public NxFluid particle write-data accessors
 
 Rows `phys_fn_003712` and `phys_fn_003714` are mutation-falsified through the registered `NxPhysicsSimulationTests` 44-byte particle-data round-trip. Separate no-op setter and zero-return getter mutants are rejected with `stdout_delta=61`; restored output is exact. See [phase7-npfluid-particle-write-data-003712-003714.md](phase7-npfluid-particle-write-data-003712-003714.md).
+
+# Phase 7 continuation: public NxFluid emitter creation and release
+
+Rows `phys_fn_003696` and `phys_fn_003698` are independently mutation-falsified through the registered `NxPhysicsSimulationTests` fixture. The null create-slot mutant is rejected with `stdout_delta=66`; the immediate-return release mutant is rejected with `stdout_delta=63`. The fixture verifies userData, paired-array ordering after non-tail removal, and one backend destroy callback. See [phase7-npfluid-emitter-create-release-003696-003698.md](phase7-npfluid-emitter-create-release-003696-003698.md).

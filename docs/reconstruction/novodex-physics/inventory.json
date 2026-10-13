@@ -69190,13 +69190,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1400",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12731",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests drives public NxFluid::createEmitter with a valid descriptor and checks returned public handle, userData, emitter count/order, paired internal/public arrays, and backend callback counts. A null-slot mutant is rejected (stdout_delta=66); the restored differential passes. See evidence/phase7-npfluid-emitter-create-release-003696-003698.md.",
+      "notes": "Public NxFluid emitter mutation is independently falsified by the registered staged simulation differential.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidCreateEmitterPublic"
     },
     {
       "id": "phys_fn_003697",
@@ -69226,13 +69228,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1401",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12738",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests drives public NxFluid::releaseEmitter on a non-tail emitter and checks swap removal at the same index in both arrays and exactly one backend destroy callback. An immediate-return mutant is rejected (stdout_delta=63); the restored differential passes. See evidence/phase7-npfluid-emitter-create-release-003696-003698.md.",
+      "notes": "Public NxFluid emitter mutation is independently falsified by the registered staged simulation differential.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidReleaseEmitterPublic"
     },
     {
       "id": "phys_fn_003699",

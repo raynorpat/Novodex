@@ -3503,10 +3503,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid manager-vtable deleting-destructor=1'
         # The optional manager's enabled create path validates, builds and
         # lists one fluid and three emitters, then dispatches teardown.
-        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=14.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=5 emitter=3.0.3.3 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
+        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=14.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=6 emitter=4.1.4.4 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
         # Public NxFluid emitter count and list must expose the same three
         # retained wrappers as the internal arrays through the wrapper vtable.
         'simulation fluid public-api emitter-count=3 count-match=1 array-match=1'
+		'simulation fluid public-api emitter-create-release created=1.4.1.1 metadata=1 released=1.3.1.1 callback=1 mismatches=0'
 		# The unlicensed scalar getters return zero and report their precise
 		# feature-unavailable diagnostics through the public NxFluid vtable.
 		'simulation fluid public-api scalars stiffness=00000000.1 viscosity=00000000.1 diagnostics=1.1'
@@ -5895,7 +5896,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2697  # adds public NxFluid set/getParticlesWriteData round-trip
+	'5' = 2698  # adds public NxFluid createEmitter/releaseEmitter paired-array differential
+				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch
 				# plus NxFluid public setName/getName registry round-trip
@@ -5947,7 +5949,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1631  # adds public NxFluid set/getParticlesWriteData round-trip
+	'6' = 1632  # adds public NxFluid createEmitter/releaseEmitter paired-array differential
+				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch
 				# plus NxFluid public setName/getName registry round-trip
@@ -5981,7 +5984,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1739  # adds public NxFluid set/getParticlesWriteData round-trip
+	'7' = 1740  # adds public NxFluid createEmitter/releaseEmitter paired-array differential
+				# adds public NxFluid set/getParticlesWriteData round-trip
 				# adds public NxFluid setFlag/getFlag round-trip
 				# adds licensed NxFluid surface-mesh get/release dispatch
 				# plus NxFluid public setName/getName registry round-trip
