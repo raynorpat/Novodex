@@ -3243,6 +3243,35 @@ int wmain(int argc, wchar_t** argv)
 		!setFluidEmitterCreateNullIndex)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
+	HMODULE const fluidFoundationModule = GetModuleHandleW(L"NxFoundation.dll");
+	NxUserAllocator** const fluidFoundationAllocatorSlot = fluidFoundationModule
+		? reinterpret_cast<NxUserAllocator**>(GetProcAddress(
+			fluidFoundationModule, "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A"))
+		: 0;
+	if(!fluidFoundationAllocatorSlot || !*fluidFoundationAllocatorSlot)
+		return nxFail("fluid creation allocator hook is unavailable");
+	NxScene* const managerAllocationFailureScene = sdk->createScene(fluidSceneDesc);
+	if(!managerAllocationFailureScene)
+		return nxFail("fluid manager allocation-failure scene creation failed");
+	NxUserAllocator* const savedFluidAllocator = *fluidFoundationAllocatorSlot;
+	NxSimulationFailSizeAllocator managerFailAllocator(*savedFluidAllocator, 0x34);
+	*fluidFoundationAllocatorSlot = &managerFailAllocator;
+	simulationOutput.resetLast();
+	const unsigned managerAllocationFailureErrorsBefore = simulationOutput.errors;
+	NxFluidDesc managerAllocationFailureDesc;
+	managerAllocationFailureDesc.setToDefault();
+	const NxFluid* const managerAllocationFailureFluid =
+		managerAllocationFailureScene->createFluid(managerAllocationFailureDesc);
+	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	unsigned char* const managerAllocationFailureSceneInternal =
+		*reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(
+			managerAllocationFailureScene) + 0x24);
+	const bool managerAllocationFailure = !managerAllocationFailureFluid &&
+		managerFailAllocator.mFailCount == 1 &&
+		simulationOutput.errors == managerAllocationFailureErrorsBefore &&
+		simulationOutput.code == NXE_NO_ERROR &&
+		*reinterpret_cast<void**>(managerAllocationFailureSceneInternal + 0x61c) == 0;
+	sdk->releaseScene(*managerAllocationFailureScene);
 	// A null backend handle still leaves the oracle's local emitter wrapper
 	// initialized and published in both fluid-owned arrays.
 	setFluidEmitterCreateNullIndex(1);
@@ -3343,14 +3372,6 @@ int wmain(int argc, wchar_t** argv)
 	enabledFluidDesc.emitters.pushBack(fourthEmitterDesc);
 	simulationOutput.resetLast();
 	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
-	HMODULE const fluidFoundationModule = GetModuleHandleW(L"NxFoundation.dll");
-	NxUserAllocator** const fluidFoundationAllocatorSlot = fluidFoundationModule
-		? reinterpret_cast<NxUserAllocator**>(GetProcAddress(
-			fluidFoundationModule, "?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A"))
-		: 0;
-	if(!fluidFoundationAllocatorSlot || !*fluidFoundationAllocatorSlot)
-		return nxFail("fluid creation allocator hook is unavailable");
-	NxUserAllocator* const savedFluidAllocator = *fluidFoundationAllocatorSlot;
 	NxSimulationFailSizeAllocator emitterFailAllocator(*savedFluidAllocator, 0x78);
 	*fluidFoundationAllocatorSlot = &emitterFailAllocator;
 	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
@@ -3471,11 +3492,12 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterDestroy == 0 &&
 		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
 		fluidManagerCallbacks.emitterGetGlobalPose == 3;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u allocation-failure=%u.%u emitter-allocation-failure=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u manager-allocation-failure=%u.%u allocation-failure=%u.%u emitter-allocation-failure=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledDescriptorValidationPassed,
 		enabledDescriptorValidationDiagnosticsExact ? 1u : 0u,
+		managerAllocationFailure ? 1u : 0u, managerFailAllocator.mFailCount,
 		enabledFluidAllocationFailure ? 1u : 0u, fluidFailAllocator.mFailCount,
 		enabledEmitterAllocationFailure ? 1u : 0u,
 		emitterFailAllocator.mFailCount,
@@ -3501,6 +3523,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidErrors);
 	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 12 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
+		!managerAllocationFailure ||
 		!enabledFluidAllocationFailure ||
 		!enabledEmitterAllocationFailure ||
 		!enabledFluidManagerFlags || !enabledFluid ||
