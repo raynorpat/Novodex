@@ -301,3 +301,8 @@ The registered public NxPhysicsSimulationTests multi-step contact scenarios exer
 ### M7.12 — contact-stream visualization row closure (`phys_fn_000869`)
 
 The existing public plane/sphere contact visualization fixture reaches the renderer after 60 fetched steps. A no-op row mutation renders zero contact lines and fails the fixture assertion (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=9`); restored control exactly matches the oracle's three contact lines. Phase 7 remains at 1,711/1,711 and records 203 closed / 357 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-contact-visualization-000869.md.
+
+
+### M7.13 — spring-patch material classifier row closure (`phys_fn_000871`)
+
+The registered public simulation contact/friction fixture detects forcing `cpmPatchSpring0871` to classify all patches as spring contact: the transcript changes by 116 bytes with both exits zero and exact stderr. Restoring the two-material flag OR matches exactly. Phase 7 remains at 1,711/1,711 and records 204 closed / 356 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-contact-spring-patch-classification-000871.md.

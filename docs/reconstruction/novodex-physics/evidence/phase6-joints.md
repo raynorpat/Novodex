@@ -10628,3 +10628,6 @@ Phase 7 contact-anchor row `phys_fn_000865` is mutation-falsified through the re
 
 
 Phase 7 contact visualizer row `phys_fn_000869` is mutation-falsified through `NxPhysicsSceneVisualizeTests`: the plane/sphere public scene emits three oracle contact lines, while an immediate-return mutant emits none and fails the fixture (`candidate_exit=1`, `stdout_delta=9`). The restored control is exact. Phase 7 now records 203 closed / 357 deferred. See `evidence/phase7-contact-visualization-000869.md`.
+
+
+Phase 7 spring-patch classifier row `phys_fn_000871` is mutation-falsified through `NxPhysicsSimulationTests`: forcing ordinary patches to the spring branch changes the public simulation transcript by 116 bytes (both exits zero, exact stderr); restored output is exact. Phase 7 now records 204 closed / 356 deferred. See `evidence/phase7-contact-spring-patch-classification-000871.md`.

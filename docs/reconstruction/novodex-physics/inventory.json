@@ -16446,13 +16446,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/360",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2657",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d590-0x1d609) in scene-raycast Task 4 (contact-pair manager): cdecl(patch); (material[+0x68].flags | material[+0x6a].flags) & 4 through the inlined getMaterial. Candidate cpmPatchSpring0871 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000891, 000895 <- 000897); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "static_proof": "Capstone at RVA 0x0001d590 gives cdecl(patch), returning (material[patch+0x68].flags | material[patch+0x6a].flags) & 4. The test is NX_MF_SPRING_CONTACT. Candidate implementation: cpmPatchSpring0871 in Physics/src/ContactPairManager.cpp; callers are NxActorPair::row000891 (patch retention/re-anchor) and row000895 (spring normal-force initialization).",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests public contact and friction scenarios reach the patch classifier. Oracle and restored candidate match exactly (stdout_delta=0, both exits zero, exact stderr). A row-specific mutation that forces the helper to classify every patch as spring contact changes the staged transcript by 116 bytes (both exits zero, exact stderr); the paired differential rejects it. Fresh Phase 7 gate passes at 1,711/1,711 assertions. Evidence: evidence/phase7-contact-spring-patch-classification-000871.md.",
+      "notes": "The public contact and friction scenarios detect a false spring-contact classification: normal material patches must remain non-spring when neither material carries NX_MF_SPRING_CONTACT.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
