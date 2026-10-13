@@ -8,4 +8,4 @@ A row-specific mutation inserts an immediate return at the start of `row000865`,
 
 Mutant candidate DLL SHA-256: `cbbf9867d07fe33e0500129169c234a93da0fd76c4af69689601ddb84c5a3dca`. Restored worktree candidate DLL SHA-256: `e36034bce6fa5b16c7d2e4e4ec8af52208a14167a787fc5c80698cbff6f83a53`. Pinned oracle DLL SHA-256: `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
 
-The fresh Phase 7 gate passes at 1,711/1,711 assertions. Raw mutant, restored-control, and full-gate transcripts are retained under `evidence/raw/phase7-contact-anchor-store-000865-20261012/`.
+The fresh Phase 7 gate on the worktree passes at 1,711/1,711 assertions. After commit `0ed8187a`, the same gate was rerun on local `main` and passed at 1,711/1,711. The mainline candidate DLL SHA-256 is `d6239d16603fbf309b9860f96b5c2005bc6f7fc3c159ac22f77a509c5f5033a8`. Raw mutant, restored-control, worktree-gate, and post-merge mainline-gate transcripts are retained under `evidence/raw/phase7-contact-anchor-store-000865-20261012/`.
