@@ -276,3 +276,8 @@ Phase 7 gate rejects it at the required coverage check. Restored Phase 5/6/7
 gates pass at 2,678/2,678, 1,607/1,607, and 1,710/1,710. Phase 7 ledger:
 198 closed / 362 deferred. Evidence:
 `docs/reconstruction/novodex-physics/evidence/phase7-indirect-tail-003509.md`.
+
+
+Task M7.8 ruling: close `phys_fn_000501` next because its public bounds-plane fixture already checks the row’s six-face behavior and is registered to the Phase 7 gate; a one-face omission is an isolated falsification. Cost if wrong: this closes only the helper’s tested descriptor-driven path and says nothing about other scene creation behavior.
+
+Task M7.8 progress: changing the six-face loop limit to five in a throwaway source copy is rejected (`oracle actors=6`, `candidate actors=5`, `candidate_exit=1`, `stdout_delta=7`). Restored source control matches (`stdout_delta=0`, exact stderr). The Phase 7 closure ledger now has 199 closed / 361 deferred rows; public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-bounds-planes-000501.md`.

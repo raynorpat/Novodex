@@ -10614,3 +10614,5 @@ An immediate-return mutation of `NxSceneInternal::pushJointWithoutBodies` omits 
 ## Phase 7 static-collision destroy trampoline row `phys_fn_003509` — `mismatches=1`
 
 Suppressing the cdecl callback forward yields candidate=0, a mismatched collision argument, and return 0 instead of 0x3509; the registered Phase 7 coverage marker disappears and the gate rejects the mutant. The restored marker matches. Full row evidence: `evidence/phase7-indirect-tail-003509.md`.
+
+Correction (2026-10-12): phys_fn_000501 is now mutation-falsified; a five-face nxSceneBuildBoundsPlanes mutant is rejected by NxPhysicsSceneBoundsPlanesTests (stdout_delta=7), and restored control matches exactly. See evidence/phase7-scene-bounds-planes-000501.md.

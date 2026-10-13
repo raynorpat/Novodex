@@ -8,7 +8,11 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-12 after `phys_fn_003509` mutation closure:** Full-DLL semantic and ABI reconstruction remains open; the Phase 8 full-image audit is pending, and all 80 public Physics headers remain unchanged. Phase 5 passes at 2,678/2,678 registered assertions; Phase 6 records 157 closed / 276 deferred functions and passes at 1,607/1,607; Phase 7 records 198 closed / 362 deferred functions and passes at 1,710/1,710. The callback-backed `StaticCollisionDestroy` thunk at `phys_fn_003509` now has a data-driven oracle marker that rejects a no-forward mutant. The Viewer suite remains at 48/48 selected CTests across all 39 available scene entrypoints, with five verified asset-dependent skips. The completion census still has 2,786 code rows open for terminal full-image closure.
+**Status, updated 2026-10-12 after `phys_fn_000501` mutation closure:** Full-DLL semantic and ABI reconstruction remains open; the Phase 8 full-image audit is pending, and all 80 public Physics headers remain unchanged. Phase 5 passes at 2,678/2,678 registered assertions; Phase 6 records 157 closed / 276 deferred functions and passes at 1,607/1,607; Phase 7 records 199 closed / 361 deferred functions and passes at 1,710/1,710. The callback-backed `StaticCollisionDestroy` thunk at `phys_fn_003509` now has a data-driven oracle marker that rejects a no-forward mutant. The Viewer suite remains at 48/48 selected CTests across all 39 available scene entrypoints, with five verified asset-dependent skips. The completion census still has 2,786 code rows open for terminal full-image closure.
+
+### Continuation — Scene bounds-plane builder falsification (`phys_fn_000501`, 2026-10-12)
+
+A five-face loop mutant in `nxSceneBuildBoundsPlanes` is rejected by the existing `NxPhysicsSceneBoundsPlanesTests` target: the oracle creates six actors, the candidate creates five, and the staged transcript differs by 7 bytes. The restored Release DLL matches exactly. This closes `phys_fn_000501`; Phase 7 now records 199 closed / 361 deferred. The full DLL census remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-bounds-planes-000501.md`.
 
 ### Continuation — `NpScene::setGravity` row falsification (2026-10-12)
 
