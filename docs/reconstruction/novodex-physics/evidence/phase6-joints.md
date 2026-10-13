@@ -10718,3 +10718,8 @@ Rows `phys_fn_003696` and `phys_fn_003698` are independently mutation-falsified 
 # Phase 7 continuation: swept-capsule spring record `phys_fn_000883` / `phys_fn_000885`
 
 The combined candidate spring-contact implementation for `phys_fn_000883` and `phys_fn_000885` is mutation-falsified through the registered swept-capsule contact fixture. Its no-op changes callback count and final body state (`stdout_delta=2`); the restored control is exact. See [phase7-contact-spring-record-000883-000885.md](phase7-contact-spring-record-000883-000885.md).
+
+
+# Phase 7 continuation: contact-patch refresh `phys_fn_000891`
+
+`phys_fn_000891` is mutation-falsified through the registered sliding-sphere contact scene. A no-op changes the summed friction aggregate (`stdout_delta=118`); the restored control is exact. See [phase7-contact-patch-refresh-000891.md](phase7-contact-patch-refresh-000891.md).

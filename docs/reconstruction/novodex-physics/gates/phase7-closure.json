@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 169,
+    "differential_falsified": 170,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 139,
-    "deferred_reconstructed_not_falsified": 172
+    "deferred_reconstructed_not_falsified": 171
   },
   "closed": [
     {
@@ -2695,6 +2695,17 @@
         "detected": "stdout_delta=2"
       },
       "note": "The registered swept-capsule spring-contact fixture reaches the combined candidate implementation for the 000883 preparation and 000885 record spans. See evidence/phase7-contact-spring-record-000883-000885.md."
+    },
+    {
+      "id": "phys_fn_000891",
+      "rva": "0x0001e9b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Replaced NxActorPair::row000891 with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair simulation differential. The ordinary sliding-contact callbacks still occurred, but the aggregate friction output changed from 3d5ae33a.00000000.00000000 to 4096ae9b.00000000.00000000. Both processes exited zero; the differential rejected the mutant with stdout_delta=118. Restoring the row returned stdout_delta=0 with exact stderr.",
+        "detected": "stdout_delta=118"
+      },
+      "note": "The registered sliding-sphere contact fixture exercises patch refresh across frames; its pair-force assertion detects the changed patch aggregate. See evidence/phase7-contact-patch-refresh-000891.md."
     }
   ],
   "deferred": [
@@ -3431,15 +3442,6 @@
       "id": "phys_fn_000867",
       "rva": "0x0001d260",
       "size": 103,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000891",
-      "rva": "0x0001e9b0",
-      "size": 1509,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
