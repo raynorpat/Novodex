@@ -2,7 +2,7 @@
 // Task 4, visualisation sub-area). Phase 7 staged-pair target.
 //
 // Drives NxScene::visualize (NpScene slot 31 -> 000344 -> 000657) over a
-// scene of static and dynamic actors, no simulate, and prints what an
+// scene of static and dynamic actors, and prints what an
 // NxUserDebugRenderer receives from NxPhysicsSDK::visualize (the Foundation's
 // renderDebugData over every renderable it holds; the Scene's own renderable
 // is created by 000579 on the first visualize with a non-zero
@@ -15,10 +15,9 @@
 // velocity arrows (the bodies carry non-zero velocities and a non-uniform
 // inertia), and a body without NX_BF_VISUALIZATION; NX_VISUALIZE_BODY_JOINT_GROUPS
 // runs 000766's island test (+0x1e0 is 0 on both sides before a simulation
-// step, so 004163 is not reached). The collision, contact and fluid parameters
-// stay 0: their rows are unwritten placeholders (collision, fluid) or are
-// reached only with contact pairs, which exist only after a simulation step
-// (000907, 000869).
+// step, so 004163 is not reached). Contact-pair visualization has a separate
+// 60-step plane/sphere scene so rows 000907 and 000869 see a live pair.
+// Fluid visualization remains disabled because its manager is not created.
 //
 // Then the scale goes back to 0 (000657 clears the renderable and draws
 // nothing), bodies move, and after releaseScene the renderer must receive no
@@ -41,9 +40,11 @@
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxPlaneShapeDesc.h"
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
 #include "NxUserOutputStream.h"
+#include "NxUserContactReport.h"
 #include "NxDebugRenderable.h"
 #include "NxUserDebugRenderer.h"
 #include "NxRay.h"
@@ -89,12 +90,13 @@ static void nxPrintVec(const char* name, const NxVec3& v)
 class NxRecordingRenderer : public NxUserDebugRenderer
 	{
 	public:
-	NxRecordingRenderer() : mCalls(0) {}
+	NxRecordingRenderer() : mCalls(0), mLines(0) {}
 	virtual void renderData(const NxDebugRenderable& data) const
 		{
 		mCalls++;
 		const NxU32 points = data.getNbPoints();
 		const NxU32 lines = data.getNbLines();
+		mLines += lines;
 		const NxU32 triangles = data.getNbTriangles();
 		printf("visualize %s renderable=%u points=%u lines=%u triangles=%u\n", nxStage, mCalls,
 			static_cast<unsigned>(points), static_cast<unsigned>(lines), static_cast<unsigned>(triangles));
@@ -124,6 +126,7 @@ class NxRecordingRenderer : public NxUserDebugRenderer
 			}
 		}
 	mutable unsigned mCalls;
+	mutable unsigned mLines;
 	};
 
 // The visualisation parameters the stages set; everything else stays at its
@@ -272,6 +275,68 @@ static NxActor* nxCreateCase(NxScene* scene, unsigned index)
 	return created;
 	}
 
+static bool nxRunContactStage(NxPhysicsSDK* sdk)
+	{
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	sceneDesc.gravity.set(0.0f, -9.81f, 0.0f);
+	sceneDesc.timeStepMethod = NX_TIMESTEP_VARIABLE;
+	NxScene* scene = sdk->createScene(sceneDesc);
+	if(!scene)
+		return false;
+
+	NxPlaneShapeDesc ground;
+	NxActorDesc staticDesc;
+	staticDesc.shapes.pushBack(&ground);
+	NxActor* staticActor = scene->createActor(staticDesc);
+
+	NxSphereShapeDesc dynamicSphere;
+	dynamicSphere.radius = 0.5f;
+	NxBodyDesc body;
+	body.mass = 2.0f;
+	body.massSpaceInertia.set(0.1f, 0.1f, 0.1f);
+	NxActorDesc dynamicDesc;
+	dynamicDesc.shapes.pushBack(&dynamicSphere);
+	dynamicDesc.body = &body;
+	dynamicDesc.globalPose.t.set(0.0f, 1.0f, 0.0f);
+	NxActor* dynamicActor = scene->createActor(dynamicDesc);
+	printf("visualize contacts actors static=%u dynamic=%u\n", staticActor ? 1u : 0u,
+		dynamicActor ? 1u : 0u);
+	if(!staticActor || !dynamicActor)
+		{
+		sdk->releaseScene(*scene);
+		return false;
+		}
+	scene->setActorPairFlags(*staticActor, *dynamicActor,
+		NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH);
+
+	bool fetched = true;
+	for(unsigned step = 0; step < 60; ++step)
+		{
+		scene->simulate(1.0f / 60.0f);
+		fetched = scene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		if(!fetched)
+			break;
+		}
+	printf("visualize contacts fetched=%u\n", fetched ? 1u : 0u);
+	for(unsigned i = 0; i < kVisParameterCount; i++)
+		sdk->setParameter(nxVisParameters[i], 0.0f);
+	sdk->setParameter(NX_VISUALIZATION_SCALE, 1.0f);
+	sdk->setParameter(NX_VISUALIZE_CONTACT_POINT, 1.0f);
+	sdk->setParameter(NX_VISUALIZE_CONTACT_NORMAL, 0.0f);
+	sdk->setParameter(NX_VISUALIZE_CONTACT_ERROR, 0.0f);
+	sdk->setParameter(NX_VISUALIZE_CONTACT_FORCE, 0.0f);
+	nxStage = "contacts stage=after_step";
+	scene->visualize();
+	NxRecordingRenderer renderer;
+	sdk->visualize(renderer);
+	printf("visualize contacts stage=after_step contact_lines=%s count=%u\n",
+		renderer.mLines ? "observed" : "missing", renderer.mLines);
+	nxStage = "";
+	sdk->releaseScene(*scene);
+	return fetched && renderer.mLines != 0;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -351,6 +416,8 @@ int wmain(int argc, wchar_t** argv)
 		printf("visualize scene_released renderables=%u\n", renderer.mCalls);
 		nxStage = "";
 	}
+	if(!nxRunContactStage(sdk))
+		return nxFail("contact visualization did not produce rendered contact points");
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

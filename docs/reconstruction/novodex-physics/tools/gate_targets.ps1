@@ -3067,6 +3067,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # lines. Before this task NxScene::visualize was a stub, and the candidate
     # Foundation's arrows and box corners differed from the oracle's by 1 ulp.
     'NxPhysicsSceneVisualizeTests' = @(
+        'visualize contacts stage=after_step contact_lines=observed'
         'visualize empty renderables=0'
         'visualize create s_box created=1'
         'visualize create s_rotated created=1'
@@ -5922,7 +5923,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1710  # adds the bodyless-joint list insertion differential
+	'7' = 1711  # adds bodyless-joint insertion and contact-pair visualization coverage
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions

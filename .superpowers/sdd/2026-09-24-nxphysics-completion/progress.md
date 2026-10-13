@@ -281,3 +281,8 @@ gates pass at 2,678/2,678, 1,607/1,607, and 1,710/1,710. Phase 7 ledger:
 Task M7.8 ruling: close `phys_fn_000501` next because its public bounds-plane fixture already checks the row’s six-face behavior and is registered to the Phase 7 gate; a one-face omission is an isolated falsification. Cost if wrong: this closes only the helper’s tested descriptor-driven path and says nothing about other scene creation behavior.
 
 Task M7.8 progress: changing the six-face loop limit to five in a throwaway source copy is rejected (`oracle actors=6`, `candidate actors=5`, `candidate_exit=1`, `stdout_delta=7`). Restored source control matches (`stdout_delta=0`, exact stderr). The Phase 7 closure ledger now has 199 closed / 361 deferred rows; public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-bounds-planes-000501.md`.
+
+
+Task M7.9 ruling: close `phys_fn_000907` by extending the existing registered visualization differential with a fetched simulation contact pair; this directly reaches the 8-byte contact-pair thunk. Cost if wrong: it proves only current-stamp pair visitation and contact-point rendering for this fixture, not all contact channels or manager lifecycle behavior.
+
+Task M7.9 progress: the plane/sphere contact fixture emits three lines on oracle and restored candidate with exact staged output. A no-op `row000907` mutant emits zero and is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=9`, `stderr_exact=False` on the candidate failure path). Phase 7 passes at 1,711/1,711; ledger now records 200 closed / 360 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-contact-pair-000907.md`.

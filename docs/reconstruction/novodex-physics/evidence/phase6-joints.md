@@ -10616,3 +10616,6 @@ An immediate-return mutation of `NxSceneInternal::pushJointWithoutBodies` omits 
 Suppressing the cdecl callback forward yields candidate=0, a mismatched collision argument, and return 0 instead of 0x3509; the registered Phase 7 coverage marker disappears and the gate rejects the mutant. The restored marker matches. Full row evidence: `evidence/phase7-indirect-tail-003509.md`.
 
 Correction (2026-10-12): phys_fn_000501 is now mutation-falsified; a five-face nxSceneBuildBoundsPlanes mutant is rejected by NxPhysicsSceneBoundsPlanesTests (stdout_delta=7), and restored control matches exactly. See evidence/phase7-scene-bounds-planes-000501.md.
+
+
+Phase 7 scene contact-pair thunk `phys_fn_000907` is mutation-falsified by NxPhysicsSceneVisualizeTests: a no-op forward removes all three contact-point lines (`stdout_delta=9`); the restored control is exact. The full Phase 7 gate passes at 1,711/1,711, with 200 closed / 360 deferred. See evidence/phase7-scene-contact-pair-000907.md.

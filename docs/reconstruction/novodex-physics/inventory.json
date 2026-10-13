@@ -17113,13 +17113,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/375",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2910",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fda0-0x1fda7) in scene-raycast Task 4 (visualisation): `add ecx, 0x14; jmp 0x1001d2d0`, the pair node's actor pair visualising its contacts; reproduced as NxPairNode::row000907 (Physics/src/SceneVisualize.cpp), which forwards to NxActorPair::row000869 on pair() (node + 0x14); 000869 is noinline, so the candidate emits the forwarding thunk. reachable only from the simulation step; no public path while NpScene::simulate is a stub: 000657 reaches it only for contact pairs on the Scene's +0x674 list, which only the step creates.",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted on a static proof; a member of the contact-pair manager's NxPairNode. Hit on neither side over the 24 staged targets (evidence/scene-raycast-trace-task4-vis.txt).",
+      "static_proof": "Capstone at RVA 0x0001fda0 gives `add ecx,0x14; jmp 0x1001d2d0`: the NxPairNode tail thunk forwards to NxActorPair::row000869 on pair() at node+0x14. The row is reached by NxSceneInternal::visualize for current-stamp contact-pair nodes after simulation; the registered contact visualization fixture creates an overlapping plane/sphere pair, fetches 60 steps, and renders contact points through the public scene visualization path.",
+      "dynamic_proof": "NxPhysicsSceneVisualizeTests now simulates an overlapping plane/sphere pair with contact notifications, enables only contact-point visualization, and requires a nonzero contact-line marker. Oracle and restored candidate each render 3 contact lines and match exactly (stdout_delta=0, exact stderr). A no-op phys_fn_000907 mutant renders zero contact lines and is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=9, stderr_exact=False because the candidate exits through the fixture failure path). Fresh Phase 7 gate passes at 1,711/1,711 assertions. Candidate SHA-256 9c8a0f99cdf1f836bef0dbbbb899942c95c9c43724cb9b4707f6aea5b38fc97c; oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Evidence: evidence/phase7-scene-contact-pair-000907.md.",
+      "notes": "Scene contact-pair visualization thunk; now exercised through a fetched simulation step and NxScene::visualize. Mutation proof is registered to the Phase 7 staged-pair gate.",
       "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
