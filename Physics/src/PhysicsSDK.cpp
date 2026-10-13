@@ -119,6 +119,7 @@ PhysicsSDK::~PhysicsSDK()
 	//     phys_fn_004149, each guarded by a pointer that is still null.
 
 	gFoundation->releaseDebugRenderable(gDebugRenderable);
+	gDebugRenderable = 0;
 	if(gFoundation)
 		{
 		gFoundation->release();
@@ -184,10 +185,10 @@ void PhysicsSDK::release()
 // calls the Scene's scalar deleting destructor through `(**(code**)*puVar5)(1)`.
 NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	{
-	// A scene starts with a clean SDK-wide pruning visualization buffer. The
-	// buffer is otherwise retained across frames so it can be inspected after
-	// its producing Scene has been released.
-	clearDebugRenderable();
+	// The default scene path resets the SDK-wide pruning renderable. The bounded
+	// maxBounds path leaves that buffer intact, as in the pinned SDK.
+	if(!desc.maxBounds)
+		clearDebugRenderable();
 	if(!desc.isValid())
 		{
 		// The oracle routes this through NxFoundation::FoundationSDK::error with its

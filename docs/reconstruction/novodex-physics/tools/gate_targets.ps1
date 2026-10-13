@@ -3098,6 +3098,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize created stage=collision_aabbs line=48 p0=41980000.bf800000.40800000 p1=41a80000.bf800000.40800000 color=ffffff00'
         'visualize created stage=collision_aabbs renderables=1'
         'visualize created stage=collision_sap renderables=1'
+        'visualize bounded stage=bounded_dynamic parameters sap=0 static=0 dynamic=1 free=0'
+        'visualize bounded stage=bounded_dynamic renderable=2 points=0 lines=108 triangles=0'
+        'visualize bounded stage=bounded_dynamic line=0 p0=c2800000.c2800000.c2800000 p1=42800000.c2800000.c2800000 color=ffff0000'
+        'visualize bounded stage=bounded_dynamic line=96 p0=c2000000.c1800000.c1800000 p1=42000000.c1800000.c1800000 color=ffff00ff'
+        'visualize bounded stage=bounded_dynamic_empty renderable=1 points=0 lines=108 triangles=0'
+        'visualize bounded stage=bounded_dynamic_fresh_empty renderable=1 points=0 lines=0 triangles=0'
+        'visualize contacts stage=collision_sap_after_step renderable=2 points=0 lines=24 triangles=0'
+        'visualize contacts stage=collision_sap_after_step line=0 p0=feffffff.feffffff.feffffff p1=7effffff.feffffff.feffffff color=ff00ffff'
+        'visualize contacts stage=collision_sap_after_step renderables=2'
         'visualize created stage=collision_static renderable=2 points=0 lines=36 triangles=0'
         'visualize created stage=collision_static line=0 p0=bf800000.bfcccccd.bf800000 p1=40bccccd.bfcccccd.bf800000 color=ffff0000'
         'visualize created stage=collision_static renderables=2'
@@ -6008,7 +6017,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1756  # adds the scene-release contact report row phys_fn_000913
+	'7' = 1765  # adds populated, empty and fresh-empty bounded pruner visualization assertions
+				# adds the scene-release contact report row phys_fn_000913
 				# adds 11 collision-pruner visualization assertions to NxPhysicsSceneVisualizeTests
 				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result

@@ -7,29 +7,257 @@ pass: shipped NxPhysics.dll matches the pinned oracle size
 pass: shipped NxFoundation.dll matches the pinned oracle hash
 pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
 pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
-pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle
-staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
 pass: staged oracle/NxPhysics.dll byte-matches its source
-staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: staged oracle/NxFoundation.dll byte-matches its source
 pass: oracle-address image byte-matches staged oracle NxPhysics.dll
 pass: source exists: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysics.dll
 pass: source exists: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxFoundation.dll
-pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate
-staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysics.dll source_sha256=c679e4c8c2952b2b79514062a311510b41cbf472bbe46929524b978fdec7d8a5 staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxPhysics.dll staged_sha256=c679e4c8c2952b2b79514062a311510b41cbf472bbe46929524b978fdec7d8a5
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysics.dll source_sha256=d8fc8c0c41fcd2d1710bc9f8bda60d6800c4923529344b88876030197cd5cfc5 staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxPhysics.dll staged_sha256=d8fc8c0c41fcd2d1710bc9f8bda60d6800c4923529344b88876030197cd5cfc5
 pass: staged candidate/NxPhysics.dll byte-matches its source
-staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxFoundation.dll source_sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8 staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxFoundation.dll staged_sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxFoundation.dll source_sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8 staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxFoundation.dll staged_sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
 pass: staged candidate/NxFoundation.dll byte-matches its source
 pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysics.map
-staged candidate map source=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxPhysics.map
 pass: candidate NxPhysics.dll is not the shipped oracle file
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysicsSceneVisualizeTests.exe
-child target=NxPhysicsSceneVisualizeTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle" exit=0
+child target=NxPhysicsSceneVisualizeTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle
+pair_directory=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle
 modules pair=2 trusted_system=10 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+visualize create d_box created=1
+visualize create d_sphere created=1
+visualize bounded bounds_cache_warm hit=0
+visualize bounded stage=bounded_dynamic parameters sap=0 static=0 dynamic=1 free=0
+visualize bounded stage=bounded_dynamic renderable=1 points=0 lines=0 triangles=0
+visualize bounded stage=bounded_dynamic renderable=2 points=0 lines=108 triangles=0
+visualize bounded stage=bounded_dynamic line=0 p0=c2800000.c2800000.c2800000 p1=42800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=1 p0=42800000.c2800000.c2800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=2 p0=42800000.42800000.c2800000 p1=c2800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=3 p0=c2800000.42800000.c2800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=4 p0=c2800000.42800000.42800000 p1=42800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=5 p0=42800000.42800000.42800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=6 p0=42800000.c2800000.42800000 p1=c2800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=7 p0=c2800000.c2800000.42800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=8 p0=42800000.c2800000.c2800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=9 p0=42800000.42800000.42800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=10 p0=c2800000.42800000.c2800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=11 p0=c2800000.c2800000.42800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=12 p0=c1800000.c1800000.c1800000 p1=42400000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=13 p0=42400000.c1800000.c1800000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=14 p0=42400000.42400000.c1800000 p1=c1800000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=15 p0=c1800000.42400000.c1800000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=16 p0=c1800000.42400000.42400000 p1=42400000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=17 p0=42400000.42400000.42400000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=18 p0=42400000.c1800000.42400000 p1=c1800000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=19 p0=c1800000.c1800000.42400000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=20 p0=42400000.c1800000.c1800000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=21 p0=42400000.42400000.42400000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=22 p0=c1800000.42400000.c1800000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=23 p0=c1800000.c1800000.42400000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=24 p0=c1000000.c1000000.c1000000 p1=41c00000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=25 p0=41c00000.c1000000.c1000000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=26 p0=41c00000.41c00000.c1000000 p1=c1000000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=27 p0=c1000000.41c00000.c1000000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=28 p0=c1000000.41c00000.41c00000 p1=41c00000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=29 p0=41c00000.41c00000.41c00000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=30 p0=41c00000.c1000000.41c00000 p1=c1000000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=31 p0=c1000000.c1000000.41c00000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=32 p0=41c00000.c1000000.c1000000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=33 p0=41c00000.41c00000.41c00000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=34 p0=c1000000.41c00000.c1000000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=35 p0=c1000000.c1000000.41c00000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=36 p0=c0800000.c0800000.c0800000 p1=41400000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=37 p0=41400000.c0800000.c0800000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=38 p0=41400000.41400000.c0800000 p1=c0800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=39 p0=c0800000.41400000.c0800000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=40 p0=c0800000.41400000.41400000 p1=41400000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=41 p0=41400000.41400000.41400000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=42 p0=41400000.c0800000.41400000 p1=c0800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=43 p0=c0800000.c0800000.41400000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=44 p0=41400000.c0800000.c0800000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=45 p0=41400000.41400000.41400000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=46 p0=c0800000.41400000.c0800000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=47 p0=c0800000.c0800000.41400000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=48 p0=c0000000.c0000000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=49 p0=40c00000.c0000000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=50 p0=40c00000.40c00000.40000000 p1=c0000000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=51 p0=c0000000.40c00000.40000000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=52 p0=c0000000.40c00000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=53 p0=40c00000.40c00000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=54 p0=40c00000.c0000000.41200000 p1=c0000000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=55 p0=c0000000.c0000000.41200000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=56 p0=40c00000.c0000000.40000000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=57 p0=40c00000.40c00000.41200000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=58 p0=c0000000.40c00000.40000000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=59 p0=c0000000.c0000000.41200000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=60 p0=40800000.c0800000.c0800000 p1=41a00000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=61 p0=41a00000.c0800000.c0800000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=62 p0=41a00000.41400000.c0800000 p1=40800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=63 p0=40800000.41400000.c0800000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=64 p0=40800000.41400000.41400000 p1=41a00000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=65 p0=41a00000.41400000.41400000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=66 p0=41a00000.c0800000.41400000 p1=40800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=67 p0=40800000.c0800000.41400000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=68 p0=41a00000.c0800000.c0800000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=69 p0=41a00000.41400000.41400000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=70 p0=40800000.41400000.c0800000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=71 p0=40800000.c0800000.41400000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=72 p0=40c00000.c0000000.40000000 p1=41600000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=73 p0=41600000.c0000000.40000000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=74 p0=41600000.40c00000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=75 p0=40c00000.40c00000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=76 p0=40c00000.40c00000.41200000 p1=41600000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=77 p0=41600000.40c00000.41200000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=78 p0=41600000.c0000000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=79 p0=40c00000.c0000000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=80 p0=41600000.c0000000.40000000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=81 p0=41600000.40c00000.41200000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=82 p0=40c00000.40c00000.40000000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=83 p0=40c00000.c0000000.41200000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=84 p0=41100000.bf800000.40400000 p1=41500000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=85 p0=41500000.bf800000.40400000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=86 p0=41500000.40400000.40400000 p1=41100000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=87 p0=41100000.40400000.40400000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=88 p0=41100000.40400000.40e00000 p1=41500000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=89 p0=41500000.40400000.40e00000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=90 p0=41500000.bf800000.40e00000 p1=41100000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=91 p0=41100000.bf800000.40e00000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=92 p0=41500000.bf800000.40400000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=93 p0=41500000.40400000.40e00000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=94 p0=41100000.40400000.40400000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=95 p0=41100000.bf800000.40e00000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=96 p0=c2000000.c1800000.c1800000 p1=42000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=97 p0=42000000.c1800000.c1800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=98 p0=42000000.41800000.c1800000 p1=c2000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=99 p0=c2000000.41800000.c1800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=100 p0=c2000000.41800000.41800000 p1=42000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=101 p0=42000000.41800000.41800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=102 p0=42000000.c1800000.41800000 p1=c2000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=103 p0=c2000000.c1800000.41800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=104 p0=42000000.c1800000.c1800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=105 p0=42000000.41800000.41800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=106 p0=c2000000.41800000.c1800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=107 p0=c2000000.c1800000.41800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic renderables=2
+visualize bounded stage=bounded_dynamic_empty renderable=1 points=0 lines=108 triangles=0
+visualize bounded stage=bounded_dynamic_empty line=0 p0=c2800000.c2800000.c2800000 p1=42800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=1 p0=42800000.c2800000.c2800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=2 p0=42800000.42800000.c2800000 p1=c2800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=3 p0=c2800000.42800000.c2800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=4 p0=c2800000.42800000.42800000 p1=42800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=5 p0=42800000.42800000.42800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=6 p0=42800000.c2800000.42800000 p1=c2800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=7 p0=c2800000.c2800000.42800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=8 p0=42800000.c2800000.c2800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=9 p0=42800000.42800000.42800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=10 p0=c2800000.42800000.c2800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=11 p0=c2800000.c2800000.42800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=12 p0=c1800000.c1800000.c1800000 p1=42400000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=13 p0=42400000.c1800000.c1800000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=14 p0=42400000.42400000.c1800000 p1=c1800000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=15 p0=c1800000.42400000.c1800000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=16 p0=c1800000.42400000.42400000 p1=42400000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=17 p0=42400000.42400000.42400000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=18 p0=42400000.c1800000.42400000 p1=c1800000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=19 p0=c1800000.c1800000.42400000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=20 p0=42400000.c1800000.c1800000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=21 p0=42400000.42400000.42400000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=22 p0=c1800000.42400000.c1800000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=23 p0=c1800000.c1800000.42400000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=24 p0=c1000000.c1000000.c1000000 p1=41c00000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=25 p0=41c00000.c1000000.c1000000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=26 p0=41c00000.41c00000.c1000000 p1=c1000000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=27 p0=c1000000.41c00000.c1000000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=28 p0=c1000000.41c00000.41c00000 p1=41c00000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=29 p0=41c00000.41c00000.41c00000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=30 p0=41c00000.c1000000.41c00000 p1=c1000000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=31 p0=c1000000.c1000000.41c00000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=32 p0=41c00000.c1000000.c1000000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=33 p0=41c00000.41c00000.41c00000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=34 p0=c1000000.41c00000.c1000000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=35 p0=c1000000.c1000000.41c00000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=36 p0=c0800000.c0800000.c0800000 p1=41400000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=37 p0=41400000.c0800000.c0800000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=38 p0=41400000.41400000.c0800000 p1=c0800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=39 p0=c0800000.41400000.c0800000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=40 p0=c0800000.41400000.41400000 p1=41400000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=41 p0=41400000.41400000.41400000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=42 p0=41400000.c0800000.41400000 p1=c0800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=43 p0=c0800000.c0800000.41400000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=44 p0=41400000.c0800000.c0800000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=45 p0=41400000.41400000.41400000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=46 p0=c0800000.41400000.c0800000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=47 p0=c0800000.c0800000.41400000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=48 p0=c0000000.c0000000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=49 p0=40c00000.c0000000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=50 p0=40c00000.40c00000.40000000 p1=c0000000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=51 p0=c0000000.40c00000.40000000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=52 p0=c0000000.40c00000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=53 p0=40c00000.40c00000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=54 p0=40c00000.c0000000.41200000 p1=c0000000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=55 p0=c0000000.c0000000.41200000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=56 p0=40c00000.c0000000.40000000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=57 p0=40c00000.40c00000.41200000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=58 p0=c0000000.40c00000.40000000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=59 p0=c0000000.c0000000.41200000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=60 p0=40800000.c0800000.c0800000 p1=41a00000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=61 p0=41a00000.c0800000.c0800000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=62 p0=41a00000.41400000.c0800000 p1=40800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=63 p0=40800000.41400000.c0800000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=64 p0=40800000.41400000.41400000 p1=41a00000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=65 p0=41a00000.41400000.41400000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=66 p0=41a00000.c0800000.41400000 p1=40800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=67 p0=40800000.c0800000.41400000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=68 p0=41a00000.c0800000.c0800000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=69 p0=41a00000.41400000.41400000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=70 p0=40800000.41400000.c0800000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=71 p0=40800000.c0800000.41400000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=72 p0=40c00000.c0000000.40000000 p1=41600000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=73 p0=41600000.c0000000.40000000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=74 p0=41600000.40c00000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=75 p0=40c00000.40c00000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=76 p0=40c00000.40c00000.41200000 p1=41600000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=77 p0=41600000.40c00000.41200000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=78 p0=41600000.c0000000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=79 p0=40c00000.c0000000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=80 p0=41600000.c0000000.40000000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=81 p0=41600000.40c00000.41200000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=82 p0=40c00000.40c00000.40000000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=83 p0=40c00000.c0000000.41200000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=84 p0=41100000.bf800000.40400000 p1=41500000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=85 p0=41500000.bf800000.40400000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=86 p0=41500000.40400000.40400000 p1=41100000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=87 p0=41100000.40400000.40400000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=88 p0=41100000.40400000.40e00000 p1=41500000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=89 p0=41500000.40400000.40e00000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=90 p0=41500000.bf800000.40e00000 p1=41100000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=91 p0=41100000.bf800000.40e00000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=92 p0=41500000.bf800000.40400000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=93 p0=41500000.40400000.40e00000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=94 p0=41100000.40400000.40400000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=95 p0=41100000.bf800000.40e00000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=96 p0=c2000000.c1800000.c1800000 p1=42000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=97 p0=42000000.c1800000.c1800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=98 p0=42000000.41800000.c1800000 p1=c2000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=99 p0=c2000000.41800000.c1800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=100 p0=c2000000.41800000.41800000 p1=42000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=101 p0=42000000.41800000.41800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=102 p0=42000000.c1800000.41800000 p1=c2000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=103 p0=c2000000.c1800000.41800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=104 p0=42000000.c1800000.c1800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=105 p0=42000000.41800000.41800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=106 p0=c2000000.41800000.c1800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=107 p0=c2000000.c1800000.41800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty renderable=2 points=0 lines=0 triangles=0
+visualize bounded stage=bounded_dynamic_empty renderables=2
+visualize bounded stage=bounded_dynamic_fresh_empty renderable=1 points=0 lines=0 triangles=0
+visualize bounded stage=bounded_dynamic_fresh_empty renderables=1
 visualize empty renderables=0
 visualize create s_box created=1
 visualize create s_rotated created=1
@@ -1696,6 +1924,33 @@ visualize scene_released line=95 p0=41980000.bf800000.40c00000 p1=41980000.bf800
 visualize scene_released renderables=1
 visualize contacts actors static=1 dynamic=1
 visualize contacts fetched=1
+visualize contacts stage=collision_sap_after_step renderable=1 points=0 lines=0 triangles=0
+visualize contacts stage=collision_sap_after_step renderable=2 points=0 lines=24 triangles=0
+visualize contacts stage=collision_sap_after_step line=0 p0=feffffff.feffffff.feffffff p1=7effffff.feffffff.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=1 p0=7effffff.feffffff.feffffff p1=7effffff.00000000.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=2 p0=7effffff.00000000.feffffff p1=feffffff.00000000.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=3 p0=feffffff.00000000.feffffff p1=feffffff.feffffff.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=4 p0=feffffff.00000000.7effffff p1=7effffff.00000000.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=5 p0=7effffff.00000000.7effffff p1=7effffff.feffffff.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=6 p0=7effffff.feffffff.7effffff p1=feffffff.feffffff.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=7 p0=feffffff.feffffff.7effffff p1=feffffff.00000000.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=8 p0=7effffff.feffffff.feffffff p1=7effffff.feffffff.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=9 p0=7effffff.00000000.7effffff p1=7effffff.00000000.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=10 p0=feffffff.00000000.feffffff p1=feffffff.00000000.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=11 p0=feffffff.feffffff.7effffff p1=feffffff.feffffff.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=12 p0=bf000000.bd4cccd0.bf000000 p1=3f000000.bd4cccd0.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=13 p0=3f000000.bd4cccd0.bf000000 p1=3f000000.3f733333.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=14 p0=3f000000.3f733333.bf000000 p1=bf000000.3f733333.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=15 p0=bf000000.3f733333.bf000000 p1=bf000000.bd4cccd0.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=16 p0=bf000000.3f733333.3f000000 p1=3f000000.3f733333.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=17 p0=3f000000.3f733333.3f000000 p1=3f000000.bd4cccd0.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=18 p0=3f000000.bd4cccd0.3f000000 p1=bf000000.bd4cccd0.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=19 p0=bf000000.bd4cccd0.3f000000 p1=bf000000.3f733333.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=20 p0=3f000000.bd4cccd0.bf000000 p1=3f000000.bd4cccd0.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=21 p0=3f000000.3f733333.3f000000 p1=3f000000.3f733333.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=22 p0=bf000000.3f733333.bf000000 p1=bf000000.3f733333.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=23 p0=bf000000.bd4cccd0.3f000000 p1=bf000000.bd4cccd0.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step renderables=2
 visualize contacts stage=after_step renderable=1 points=0 lines=0 triangles=0
 visualize contacts stage=after_step renderable=2 points=0 lines=3 triangles=0
 visualize contacts stage=after_step line=0 p0=bdcccccd.bd4cccd0.00000000 p1=3dcccccd.bd4cccd0.00000000 color=000000ff
@@ -1703,20 +1958,249 @@ visualize contacts stage=after_step line=1 p0=00000000.be19999a.00000000 p1=0000
 visualize contacts stage=after_step line=2 p0=00000000.bd4cccce.bdcccccd p1=00000000.bd4cccd0.3dcccccd color=000000ff
 visualize contacts stage=after_step contact_lines=observed count=3
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
-pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSceneVisualizeTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
 pass: test target is built: C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysicsSceneVisualizeTests.exe
-child target=NxPhysicsSceneVisualizeTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate" exit=0
+child target=NxPhysicsSceneVisualizeTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\approved-five-family-current\Release\NxPhysicsSceneVisualizeTests.exe" "C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate" exit=0
 child_stdout_begin
-pair_directory=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate
+pair_directory=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate
 modules pair=2 trusted_system=11 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxPhysics.dll sha256=c679e4c8c2952b2b79514062a311510b41cbf472bbe46929524b978fdec7d8a5
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxFoundation.dll sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxPhysics.dll sha256=d8fc8c0c41fcd2d1710bc9f8bda60d6800c4923529344b88876030197cd5cfc5
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxFoundation.dll sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
+visualize create d_box created=1
+visualize create d_sphere created=1
+visualize bounded bounds_cache_warm hit=0
+visualize bounded stage=bounded_dynamic parameters sap=0 static=0 dynamic=1 free=0
+visualize bounded stage=bounded_dynamic renderable=1 points=0 lines=0 triangles=0
+visualize bounded stage=bounded_dynamic renderable=2 points=0 lines=108 triangles=0
+visualize bounded stage=bounded_dynamic line=0 p0=c2800000.c2800000.c2800000 p1=42800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=1 p0=42800000.c2800000.c2800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=2 p0=42800000.42800000.c2800000 p1=c2800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=3 p0=c2800000.42800000.c2800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=4 p0=c2800000.42800000.42800000 p1=42800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=5 p0=42800000.42800000.42800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=6 p0=42800000.c2800000.42800000 p1=c2800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=7 p0=c2800000.c2800000.42800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=8 p0=42800000.c2800000.c2800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=9 p0=42800000.42800000.42800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=10 p0=c2800000.42800000.c2800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=11 p0=c2800000.c2800000.42800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=12 p0=c1800000.c1800000.c1800000 p1=42400000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=13 p0=42400000.c1800000.c1800000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=14 p0=42400000.42400000.c1800000 p1=c1800000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=15 p0=c1800000.42400000.c1800000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=16 p0=c1800000.42400000.42400000 p1=42400000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=17 p0=42400000.42400000.42400000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=18 p0=42400000.c1800000.42400000 p1=c1800000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=19 p0=c1800000.c1800000.42400000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=20 p0=42400000.c1800000.c1800000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=21 p0=42400000.42400000.42400000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=22 p0=c1800000.42400000.c1800000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=23 p0=c1800000.c1800000.42400000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=24 p0=c1000000.c1000000.c1000000 p1=41c00000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=25 p0=41c00000.c1000000.c1000000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=26 p0=41c00000.41c00000.c1000000 p1=c1000000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=27 p0=c1000000.41c00000.c1000000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=28 p0=c1000000.41c00000.41c00000 p1=41c00000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=29 p0=41c00000.41c00000.41c00000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=30 p0=41c00000.c1000000.41c00000 p1=c1000000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=31 p0=c1000000.c1000000.41c00000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=32 p0=41c00000.c1000000.c1000000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=33 p0=41c00000.41c00000.41c00000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=34 p0=c1000000.41c00000.c1000000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=35 p0=c1000000.c1000000.41c00000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=36 p0=c0800000.c0800000.c0800000 p1=41400000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=37 p0=41400000.c0800000.c0800000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=38 p0=41400000.41400000.c0800000 p1=c0800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=39 p0=c0800000.41400000.c0800000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=40 p0=c0800000.41400000.41400000 p1=41400000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=41 p0=41400000.41400000.41400000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=42 p0=41400000.c0800000.41400000 p1=c0800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=43 p0=c0800000.c0800000.41400000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=44 p0=41400000.c0800000.c0800000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=45 p0=41400000.41400000.41400000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=46 p0=c0800000.41400000.c0800000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=47 p0=c0800000.c0800000.41400000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=48 p0=c0000000.c0000000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=49 p0=40c00000.c0000000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=50 p0=40c00000.40c00000.40000000 p1=c0000000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=51 p0=c0000000.40c00000.40000000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=52 p0=c0000000.40c00000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=53 p0=40c00000.40c00000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=54 p0=40c00000.c0000000.41200000 p1=c0000000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=55 p0=c0000000.c0000000.41200000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=56 p0=40c00000.c0000000.40000000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=57 p0=40c00000.40c00000.41200000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=58 p0=c0000000.40c00000.40000000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=59 p0=c0000000.c0000000.41200000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=60 p0=40800000.c0800000.c0800000 p1=41a00000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=61 p0=41a00000.c0800000.c0800000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=62 p0=41a00000.41400000.c0800000 p1=40800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=63 p0=40800000.41400000.c0800000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=64 p0=40800000.41400000.41400000 p1=41a00000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=65 p0=41a00000.41400000.41400000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=66 p0=41a00000.c0800000.41400000 p1=40800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=67 p0=40800000.c0800000.41400000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=68 p0=41a00000.c0800000.c0800000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=69 p0=41a00000.41400000.41400000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=70 p0=40800000.41400000.c0800000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=71 p0=40800000.c0800000.41400000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=72 p0=40c00000.c0000000.40000000 p1=41600000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=73 p0=41600000.c0000000.40000000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=74 p0=41600000.40c00000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=75 p0=40c00000.40c00000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=76 p0=40c00000.40c00000.41200000 p1=41600000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=77 p0=41600000.40c00000.41200000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=78 p0=41600000.c0000000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=79 p0=40c00000.c0000000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=80 p0=41600000.c0000000.40000000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=81 p0=41600000.40c00000.41200000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=82 p0=40c00000.40c00000.40000000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=83 p0=40c00000.c0000000.41200000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=84 p0=41100000.bf800000.40400000 p1=41500000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=85 p0=41500000.bf800000.40400000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=86 p0=41500000.40400000.40400000 p1=41100000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=87 p0=41100000.40400000.40400000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=88 p0=41100000.40400000.40e00000 p1=41500000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=89 p0=41500000.40400000.40e00000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=90 p0=41500000.bf800000.40e00000 p1=41100000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=91 p0=41100000.bf800000.40e00000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=92 p0=41500000.bf800000.40400000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=93 p0=41500000.40400000.40e00000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=94 p0=41100000.40400000.40400000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=95 p0=41100000.bf800000.40e00000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic line=96 p0=c2000000.c1800000.c1800000 p1=42000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=97 p0=42000000.c1800000.c1800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=98 p0=42000000.41800000.c1800000 p1=c2000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=99 p0=c2000000.41800000.c1800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=100 p0=c2000000.41800000.41800000 p1=42000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=101 p0=42000000.41800000.41800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=102 p0=42000000.c1800000.41800000 p1=c2000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=103 p0=c2000000.c1800000.41800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=104 p0=42000000.c1800000.c1800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=105 p0=42000000.41800000.41800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=106 p0=c2000000.41800000.c1800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic line=107 p0=c2000000.c1800000.41800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic renderables=2
+visualize bounded stage=bounded_dynamic_empty renderable=1 points=0 lines=108 triangles=0
+visualize bounded stage=bounded_dynamic_empty line=0 p0=c2800000.c2800000.c2800000 p1=42800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=1 p0=42800000.c2800000.c2800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=2 p0=42800000.42800000.c2800000 p1=c2800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=3 p0=c2800000.42800000.c2800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=4 p0=c2800000.42800000.42800000 p1=42800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=5 p0=42800000.42800000.42800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=6 p0=42800000.c2800000.42800000 p1=c2800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=7 p0=c2800000.c2800000.42800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=8 p0=42800000.c2800000.c2800000 p1=42800000.c2800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=9 p0=42800000.42800000.42800000 p1=42800000.42800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=10 p0=c2800000.42800000.c2800000 p1=c2800000.42800000.42800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=11 p0=c2800000.c2800000.42800000 p1=c2800000.c2800000.c2800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=12 p0=c1800000.c1800000.c1800000 p1=42400000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=13 p0=42400000.c1800000.c1800000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=14 p0=42400000.42400000.c1800000 p1=c1800000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=15 p0=c1800000.42400000.c1800000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=16 p0=c1800000.42400000.42400000 p1=42400000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=17 p0=42400000.42400000.42400000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=18 p0=42400000.c1800000.42400000 p1=c1800000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=19 p0=c1800000.c1800000.42400000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=20 p0=42400000.c1800000.c1800000 p1=42400000.c1800000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=21 p0=42400000.42400000.42400000 p1=42400000.42400000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=22 p0=c1800000.42400000.c1800000 p1=c1800000.42400000.42400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=23 p0=c1800000.c1800000.42400000 p1=c1800000.c1800000.c1800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=24 p0=c1000000.c1000000.c1000000 p1=41c00000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=25 p0=41c00000.c1000000.c1000000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=26 p0=41c00000.41c00000.c1000000 p1=c1000000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=27 p0=c1000000.41c00000.c1000000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=28 p0=c1000000.41c00000.41c00000 p1=41c00000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=29 p0=41c00000.41c00000.41c00000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=30 p0=41c00000.c1000000.41c00000 p1=c1000000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=31 p0=c1000000.c1000000.41c00000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=32 p0=41c00000.c1000000.c1000000 p1=41c00000.c1000000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=33 p0=41c00000.41c00000.41c00000 p1=41c00000.41c00000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=34 p0=c1000000.41c00000.c1000000 p1=c1000000.41c00000.41c00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=35 p0=c1000000.c1000000.41c00000 p1=c1000000.c1000000.c1000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=36 p0=c0800000.c0800000.c0800000 p1=41400000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=37 p0=41400000.c0800000.c0800000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=38 p0=41400000.41400000.c0800000 p1=c0800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=39 p0=c0800000.41400000.c0800000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=40 p0=c0800000.41400000.41400000 p1=41400000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=41 p0=41400000.41400000.41400000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=42 p0=41400000.c0800000.41400000 p1=c0800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=43 p0=c0800000.c0800000.41400000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=44 p0=41400000.c0800000.c0800000 p1=41400000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=45 p0=41400000.41400000.41400000 p1=41400000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=46 p0=c0800000.41400000.c0800000 p1=c0800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=47 p0=c0800000.c0800000.41400000 p1=c0800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=48 p0=c0000000.c0000000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=49 p0=40c00000.c0000000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=50 p0=40c00000.40c00000.40000000 p1=c0000000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=51 p0=c0000000.40c00000.40000000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=52 p0=c0000000.40c00000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=53 p0=40c00000.40c00000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=54 p0=40c00000.c0000000.41200000 p1=c0000000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=55 p0=c0000000.c0000000.41200000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=56 p0=40c00000.c0000000.40000000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=57 p0=40c00000.40c00000.41200000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=58 p0=c0000000.40c00000.40000000 p1=c0000000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=59 p0=c0000000.c0000000.41200000 p1=c0000000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=60 p0=40800000.c0800000.c0800000 p1=41a00000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=61 p0=41a00000.c0800000.c0800000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=62 p0=41a00000.41400000.c0800000 p1=40800000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=63 p0=40800000.41400000.c0800000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=64 p0=40800000.41400000.41400000 p1=41a00000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=65 p0=41a00000.41400000.41400000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=66 p0=41a00000.c0800000.41400000 p1=40800000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=67 p0=40800000.c0800000.41400000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=68 p0=41a00000.c0800000.c0800000 p1=41a00000.c0800000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=69 p0=41a00000.41400000.41400000 p1=41a00000.41400000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=70 p0=40800000.41400000.c0800000 p1=40800000.41400000.41400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=71 p0=40800000.c0800000.41400000 p1=40800000.c0800000.c0800000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=72 p0=40c00000.c0000000.40000000 p1=41600000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=73 p0=41600000.c0000000.40000000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=74 p0=41600000.40c00000.40000000 p1=40c00000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=75 p0=40c00000.40c00000.40000000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=76 p0=40c00000.40c00000.41200000 p1=41600000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=77 p0=41600000.40c00000.41200000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=78 p0=41600000.c0000000.41200000 p1=40c00000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=79 p0=40c00000.c0000000.41200000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=80 p0=41600000.c0000000.40000000 p1=41600000.c0000000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=81 p0=41600000.40c00000.41200000 p1=41600000.40c00000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=82 p0=40c00000.40c00000.40000000 p1=40c00000.40c00000.41200000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=83 p0=40c00000.c0000000.41200000 p1=40c00000.c0000000.40000000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=84 p0=41100000.bf800000.40400000 p1=41500000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=85 p0=41500000.bf800000.40400000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=86 p0=41500000.40400000.40400000 p1=41100000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=87 p0=41100000.40400000.40400000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=88 p0=41100000.40400000.40e00000 p1=41500000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=89 p0=41500000.40400000.40e00000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=90 p0=41500000.bf800000.40e00000 p1=41100000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=91 p0=41100000.bf800000.40e00000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=92 p0=41500000.bf800000.40400000 p1=41500000.bf800000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=93 p0=41500000.40400000.40e00000 p1=41500000.40400000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=94 p0=41100000.40400000.40400000 p1=41100000.40400000.40e00000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=95 p0=41100000.bf800000.40e00000 p1=41100000.bf800000.40400000 color=ffff0000
+visualize bounded stage=bounded_dynamic_empty line=96 p0=c2000000.c1800000.c1800000 p1=42000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=97 p0=42000000.c1800000.c1800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=98 p0=42000000.41800000.c1800000 p1=c2000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=99 p0=c2000000.41800000.c1800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=100 p0=c2000000.41800000.41800000 p1=42000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=101 p0=42000000.41800000.41800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=102 p0=42000000.c1800000.41800000 p1=c2000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=103 p0=c2000000.c1800000.41800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=104 p0=42000000.c1800000.c1800000 p1=42000000.c1800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=105 p0=42000000.41800000.41800000 p1=42000000.41800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=106 p0=c2000000.41800000.c1800000 p1=c2000000.41800000.41800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty line=107 p0=c2000000.c1800000.41800000 p1=c2000000.c1800000.c1800000 color=ffff00ff
+visualize bounded stage=bounded_dynamic_empty renderable=2 points=0 lines=0 triangles=0
+visualize bounded stage=bounded_dynamic_empty renderables=2
+visualize bounded stage=bounded_dynamic_fresh_empty renderable=1 points=0 lines=0 triangles=0
+visualize bounded stage=bounded_dynamic_fresh_empty renderables=1
 visualize empty renderables=0
 visualize create s_box created=1
 visualize create s_rotated created=1
@@ -3383,6 +3867,33 @@ visualize scene_released line=95 p0=41980000.bf800000.40c00000 p1=41980000.bf800
 visualize scene_released renderables=1
 visualize contacts actors static=1 dynamic=1
 visualize contacts fetched=1
+visualize contacts stage=collision_sap_after_step renderable=1 points=0 lines=0 triangles=0
+visualize contacts stage=collision_sap_after_step renderable=2 points=0 lines=24 triangles=0
+visualize contacts stage=collision_sap_after_step line=0 p0=feffffff.feffffff.feffffff p1=7effffff.feffffff.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=1 p0=7effffff.feffffff.feffffff p1=7effffff.00000000.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=2 p0=7effffff.00000000.feffffff p1=feffffff.00000000.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=3 p0=feffffff.00000000.feffffff p1=feffffff.feffffff.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=4 p0=feffffff.00000000.7effffff p1=7effffff.00000000.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=5 p0=7effffff.00000000.7effffff p1=7effffff.feffffff.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=6 p0=7effffff.feffffff.7effffff p1=feffffff.feffffff.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=7 p0=feffffff.feffffff.7effffff p1=feffffff.00000000.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=8 p0=7effffff.feffffff.feffffff p1=7effffff.feffffff.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=9 p0=7effffff.00000000.7effffff p1=7effffff.00000000.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=10 p0=feffffff.00000000.feffffff p1=feffffff.00000000.7effffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=11 p0=feffffff.feffffff.7effffff p1=feffffff.feffffff.feffffff color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=12 p0=bf000000.bd4cccd0.bf000000 p1=3f000000.bd4cccd0.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=13 p0=3f000000.bd4cccd0.bf000000 p1=3f000000.3f733333.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=14 p0=3f000000.3f733333.bf000000 p1=bf000000.3f733333.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=15 p0=bf000000.3f733333.bf000000 p1=bf000000.bd4cccd0.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=16 p0=bf000000.3f733333.3f000000 p1=3f000000.3f733333.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=17 p0=3f000000.3f733333.3f000000 p1=3f000000.bd4cccd0.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=18 p0=3f000000.bd4cccd0.3f000000 p1=bf000000.bd4cccd0.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=19 p0=bf000000.bd4cccd0.3f000000 p1=bf000000.3f733333.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=20 p0=3f000000.bd4cccd0.bf000000 p1=3f000000.bd4cccd0.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=21 p0=3f000000.3f733333.3f000000 p1=3f000000.3f733333.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=22 p0=bf000000.3f733333.bf000000 p1=bf000000.3f733333.3f000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step line=23 p0=bf000000.bd4cccd0.3f000000 p1=bf000000.bd4cccd0.bf000000 color=ff00ffff
+visualize contacts stage=collision_sap_after_step renderables=2
 visualize contacts stage=after_step renderable=1 points=0 lines=0 triangles=0
 visualize contacts stage=after_step renderable=2 points=0 lines=3 triangles=0
 visualize contacts stage=after_step line=0 p0=bdcccccd.bd4cccd0.00000000 p1=3dcccccd.bd4cccd0.00000000 color=000000ff
@@ -3390,15 +3901,16 @@ visualize contacts stage=after_step line=1 p0=00000000.be19999a.00000000 p1=0000
 visualize contacts stage=after_step line=2 p0=00000000.bd4cccce.bdcccccd p1=00000000.bd4cccd0.3dcccccd color=000000ff
 visualize contacts stage=after_step contact_lines=observed count=3
 modules pair=2 trusted_system=12 rejected=0
-loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxPhysics.dll sha256=c679e4c8c2952b2b79514062a311510b41cbf472bbe46929524b978fdec7d8a5
-loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxFoundation.dll sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxPhysics.dll sha256=d8fc8c0c41fcd2d1710bc9f8bda60d6800c4923529344b88876030197cd5cfc5
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxFoundation.dll sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
+
 child_stdout_end
 child_stderr_begin
 child_stderr_end
-pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxPhysics.dll sha256=c679e4c8c2952b2b79514062a311510b41cbf472bbe46929524b978fdec7d8a5
-pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate\NxFoundation.dll sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
+pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxPhysics.dll sha256=d8fc8c0c41fcd2d1710bc9f8bda60d6800c4923529344b88876030197cd5cfc5
+pass: NxPhysicsSceneVisualizeTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate\NxFoundation.dll sha256=c3b85ab2a0840a53c89f3166fc3b6fe707a4dd7e55586d5a40cacb478e270fa8
 differential target=NxPhysicsSceneVisualizeTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
 differential_targets=NxPhysicsSceneVisualizeTests
-differential_pairs=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\oracle,C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-pairs-approved-design\candidate
+differential_pairs=C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\oracle,C:\Users\raynorpat\.codex\worktrees\fluid-manager-dirty-mainline\Novodex\build\visualizer-final-control-after\candidate
 pass: every requested target passes its registered oracle/candidate differential contract
 differential=pass

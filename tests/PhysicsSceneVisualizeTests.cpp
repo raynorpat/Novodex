@@ -34,6 +34,7 @@
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
+#include "NxBounds3.h"
 #include "NxScene.h"
 #include "NxSceneDesc.h"
 #include "NxActor.h"
@@ -175,6 +176,12 @@ static void nxRunStage(NxPhysicsSDK* sdk, NxScene* scene, const NxStage& stage, 
 	nxStage = label;
 	for(unsigned i = 0; i < kVisParameterCount; i++)
 		sdk->setParameter(nxVisParameters[i], stage.values[i]);
+	if(strcmp(stage.name, "bounded_dynamic") == 0)
+		printf("visualize %s parameters sap=%g static=%g dynamic=%g free=%g\n", label,
+			sdk->getParameter(NX_VISUALIZE_COLLISION_SAP),
+			sdk->getParameter(NX_VISUALIZE_COLLISION_STATIC),
+			sdk->getParameter(NX_VISUALIZE_COLLISION_DYNAMIC),
+			sdk->getParameter(NX_VISUALIZE_COLLISION_FREE));
 	scene->visualize();
 	NxRecordingRenderer renderer;
 	sdk->visualize(renderer);
@@ -326,6 +333,11 @@ static bool nxRunContactStage(NxPhysicsSDK* sdk)
 	printf("visualize contacts fetched=%u\n", fetched ? 1u : 0u);
 	for(unsigned i = 0; i < kVisParameterCount; i++)
 		sdk->setParameter(nxVisParameters[i], 0.0f);
+	NxStage sapStage = { "collision_sap_after_step", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f } };
+	nxRunStage(sdk, scene, sapStage, "contacts");
+	for(unsigned i = 0; i < kVisParameterCount; i++)
+		sdk->setParameter(nxVisParameters[i], 0.0f);
 	sdk->setParameter(NX_VISUALIZATION_SCALE, 1.0f);
 	sdk->setParameter(NX_VISUALIZE_CONTACT_POINT, 1.0f);
 	sdk->setParameter(NX_VISUALIZE_CONTACT_NORMAL, 0.0f);
@@ -340,6 +352,53 @@ static bool nxRunContactStage(NxPhysicsSDK* sdk)
 	nxStage = "";
 	sdk->releaseScene(*scene);
 	return fetched && renderer.mLines != 0;
+	}
+
+static bool nxRunBoundedDynamicStage(NxPhysicsSDK* sdk)
+	{
+	NxBounds3 bounds;
+	bounds.set(NxVec3(-32.0f, -16.0f, -16.0f), NxVec3(32.0f, 16.0f, 16.0f));
+	NxSceneDesc desc;
+	desc.setToDefault();
+	desc.maxBounds = &bounds;
+	NxScene* scene = sdk->createScene(desc);
+	if(!scene)
+		return false;
+
+	NxActor* first = nxCreateCase(scene, 2);
+	NxActor* second = nxCreateCase(scene, 4);
+	const NxRay cacheWarmRay(NxVec3(-100.0f, -100.0f, -100.0f), NxVec3(1.0f, 0.0f, 0.0f));
+	const bool cacheWarmHit = scene->raycastAnyShape(cacheWarmRay, NX_ALL_SHAPES, 0xffffffff, 500.0f);
+	printf("visualize bounded bounds_cache_warm hit=%u\n", cacheWarmHit ? 1u : 0u);
+	NxStage stage = { "bounded_dynamic", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f } };
+	nxRunStage(sdk, scene, stage, "bounded");
+	sdk->releaseScene(*scene);
+	scene = sdk->createScene(desc);
+	if(!scene)
+		return false;
+	NxStage emptyStage = { "bounded_dynamic_empty", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f } };
+	nxRunStage(sdk, scene, emptyStage, "bounded");
+	sdk->releaseScene(*scene);
+	return first != 0 && second != 0;
+	}
+
+static bool nxRunEmptyBoundedDynamicStage(NxPhysicsSDK* sdk)
+	{
+	NxBounds3 bounds;
+	bounds.set(NxVec3(-32.0f, -16.0f, -16.0f), NxVec3(32.0f, 16.0f, 16.0f));
+	NxSceneDesc desc;
+	desc.setToDefault();
+	desc.maxBounds = &bounds;
+	NxScene* scene = sdk->createScene(desc);
+	if(!scene)
+		return false;
+	NxStage stage = { "bounded_dynamic_fresh_empty", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f } };
+	nxRunStage(sdk, scene, stage, "bounded");
+	sdk->releaseScene(*scene);
+	return true;
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -359,6 +418,18 @@ int wmain(int argc, wchar_t** argv)
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &allocator, &output);
 	if(!sdk)
 		return nxFail("SDK creation failed");
+	if(!nxRunBoundedDynamicStage(sdk))
+		return nxFail("bounded dynamic visualization fixture could not create its actors");
+	sdk->release();
+	sdk = createSDK(NX_PHYSICS_SDK_VERSION, &allocator, &output);
+	if(!sdk)
+		return nxFail("SDK recreation after bounded dynamic fixture failed");
+	if(!nxRunEmptyBoundedDynamicStage(sdk))
+		return nxFail("fresh empty bounded dynamic visualization fixture could not create its scene");
+	sdk->release();
+	sdk = createSDK(NX_PHYSICS_SDK_VERSION, &allocator, &output);
+	if(!sdk)
+		return nxFail("SDK recreation after empty bounded dynamic fixture failed");
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();
 	NxScene* scene = sdk->createScene(sceneDesc);
