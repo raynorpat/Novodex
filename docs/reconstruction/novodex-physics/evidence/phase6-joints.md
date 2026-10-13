@@ -10602,3 +10602,5 @@ Phase 7 NpScene timing wrappers `phys_fn_000338` (`setTiming`) and `phys_fn_0003
 Phase 7 legacy NpScene run wrappers phys_fn_000335 (startRun), phys_fn_000336 (finishRun), and phys_fn_000342 (runFor) are mutation-falsified through NxPhysicsSimulationTests (stdout_delta=4, 4, and 2); both processes exit zero with exact stderr for each mutant, and the restored control is exact. See evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md.
 
 Phase 7 NpScene wrapper phys_fn_000344 (visualize) is mutation-falsified through NxPhysicsSceneVisualizeTests (stdout_delta=1008); both processes exit zero with exact stderr and the restored control is exact. See evidence/phase7-npscene-visualize-wrapper-000344.md.
+
+Phase 7 NpScene fluid contact-report wrappers: phys_fn_000362 (setUserFluidContactReport) is mutation-falsified through NxPhysicsSimulationTests (`stdout_delta=2`); phys_fn_000364 (getUserFluidContactReport) is independently mutation-falsified through the same registered target (`stdout_delta=2`). Both mutant pairs exit zero with exact stderr, and both restored controls are exact. See evidence/phase7-npscene-fluid-contact-report-000362-000364.md.

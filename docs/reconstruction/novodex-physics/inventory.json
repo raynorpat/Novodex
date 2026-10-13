@@ -7029,12 +7029,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/178",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1084",
       "static_proof": "phys_fn_000362 (0x0000ce70) ignores the callback and calls Foundation error with code 0xce, NpScene.cpp, line 0x179, and the unavailable-feature message.",
-      "dynamic_proof": "NxPhysicsSimulationTests: the pinned oracle and candidate both ignore the callback and report code 206, line 377, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxFluid::setUserFluidContactReport(): Feature not available!; stdout_delta=0 and stderr_exact=True (evidence/fluid-contact-report-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple.",
+      "dynamic_proof": "NxPhysicsSimulationTests: the pinned oracle and candidate both ignore the callback and report code 206, line 377, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxFluid::setUserFluidContactReport(): Feature not available!; stdout_delta=0 and stderr_exact=True (evidence/fluid-contact-report-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple. Targeted mutation: changing only its unavailable-feature warning to \"Feature still available!\" is caught by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True); restored control stdout_delta=0, stderr_exact=True. See evidence/phase7-npscene-fluid-contact-report-000362-000364.md.",
       "notes": "The API is explicitly unavailable in the pinned release; the callback is not retained."
     },
     {
@@ -7065,12 +7065,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/179",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1086",
       "static_proof": "phys_fn_000364 (0x0000cea0) calls Foundation error with code 0xce, NpScene.cpp, line 0x17f, and the unavailable-feature message, then returns null.",
-      "dynamic_proof": "NxPhysicsSimulationTests: the pinned oracle and candidate report code 206, line 383, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxFluid::getUserFluidContactReport(): Feature not available!, and return null after the attempted setter; stdout_delta=0 and stderr_exact=True (evidence/fluid-contact-report-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple.",
+      "dynamic_proof": "NxPhysicsSimulationTests: the pinned oracle and candidate report code 206, line 383, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxFluid::getUserFluidContactReport(): Feature not available!, and return null after the attempted setter; stdout_delta=0 and stderr_exact=True (evidence/fluid-contact-report-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple. Targeted mutation: changing only its unavailable-feature warning to \"Feature still available!\" is caught by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True); restored control stdout_delta=0, stderr_exact=True. See evidence/phase7-npscene-fluid-contact-report-000362-000364.md.",
       "notes": "The API is explicitly unavailable in the pinned release and always returns null."
     },
     {
