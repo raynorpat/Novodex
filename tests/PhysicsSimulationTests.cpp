@@ -3230,6 +3230,34 @@ int wmain(int argc, wchar_t** argv)
 	const bool enabledFluidManagerFlags = enabledFluidManager[0x2a] == 1 &&
 		enabledFluidManager[0x2b] == 1 &&
 		*reinterpret_cast<void**>(enabledFluidManager + 0x30) != 0;
+	unsigned enabledDescriptorValidationPassed = 0;
+	bool enabledDescriptorValidationDiagnosticsExact = true;
+	for(unsigned invalidCase = 0; invalidCase != 8; ++invalidCase)
+		{
+		NxFluidDesc invalidDesc;
+		invalidDesc.setToDefault();
+		switch(invalidCase)
+			{
+			case 0: invalidDesc.kernelRadiusMultiplier = 0.5f; break;
+			case 1: invalidDesc.restParticlesPerMeter = 0.0f; break;
+			case 2: invalidDesc.stiffness = 0.0f; break;
+			case 3: invalidDesc.viscosity = 0.0f; break;
+			case 4: invalidDesc.damping = 1.01f; break;
+			case 5: invalidDesc.dynamicCollisionRestitution = -0.01f; break;
+			case 6: invalidDesc.simulationMethod = 0; break;
+			default: invalidDesc.maxParticles = 0x7d01; break;
+			}
+		const unsigned errorsBefore = simulationOutput.errors;
+		simulationOutput.resetLast();
+		const bool rejected = enabledFluidScene->createFluid(invalidDesc) == 0;
+		if(rejected && simulationOutput.errors == errorsBefore + 1)
+			++enabledDescriptorValidationPassed;
+		else
+			enabledDescriptorValidationDiagnosticsExact = false;
+		if(simulationOutput.code != NXE_INVALID_PARAMETER ||
+			simulationOutput.line != 140)
+			enabledDescriptorValidationDiagnosticsExact = false;
+		}
 	// The initial manager collision-dirty flag must drive the same callback and
 	// static-grid build sequence as the pinned FluidManager on first creation.
 	enabledFluidManager[0x28] = 0;
@@ -3357,9 +3385,11 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterDestroy == 0 &&
 		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
 		fluidManagerCallbacks.emitterGetGlobalPose == 3;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
+		enabledDescriptorValidationPassed,
+		enabledDescriptorValidationDiagnosticsExact ? 1u : 0u,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
 		enabledFluidCount, enabledFluidManagerArraysMatch ? 1u : 0u,
 		enabledFluidManagerCleared ? 1u : 0u,
@@ -3380,7 +3410,9 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
-	if(!enabledInvalidRejected || !enabledFluidManagerFlags || !enabledFluid ||
+	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 8 ||
+		!enabledDescriptorValidationDiagnosticsExact ||
+		!enabledFluidManagerFlags || !enabledFluid ||
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
 		!enabledFluidListed || !enabledFluidManagerArraysMatch ||
 		!enabledFluidManagerCleared || !enabledFluidCallbacks ||
