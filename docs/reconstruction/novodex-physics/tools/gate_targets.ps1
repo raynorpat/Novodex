@@ -3499,7 +3499,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid manager-vtable deleting-destructor=1'
         # The optional manager's enabled create path validates, builds and
         # lists one fluid and three emitters, then dispatches teardown.
-        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=14.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=3 emitter=3.0.3.3 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
+        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=14.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=5 emitter=3.0.3.3 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
         # Public NxFluid emitter count and list must expose the same three
         # retained wrappers as the internal arrays through the wrapper vtable.
         'simulation fluid public-api emitter-count=3 count-match=1 array-match=1'
@@ -3511,6 +3511,9 @@ $NxRequiredCoverageLines = [ordered] @{
 		# Static collision scalars forward; unavailable dynamic properties warn exactly.
 		'simulation fluid public-api static-collision restitution=3e000000 calls=1 adhesion=3f200000 calls=1'
 		'simulation fluid public-api dynamic-collision restitution=00000000.1.1 adhesion=00000000.1.1'
+		# The remaining config getters are reachable through the solver's primary vtable.
+		'simulation fluid public-api configuration max=00001234 kernel=00000000.1.1 rest-per-meter=42480000 rest-density=447a0000 rest-distance=3ca3d70a particle-mass=3f2aaaab simulation=00000002 collision=00000000.1.1 callbacks=1.1.0.1.2.1.1'
+		'simulation fluid public-api configuration licensed-kernel=3fe00000 calls=1 errors=0 setup=1 fluid=1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
@@ -5870,7 +5873,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2683  # adds public NxFluid static/dynamic collision scalar getters
+	'5' = 2685  # adds public NxFluid static/dynamic, configuration, and licensed kernel getters
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
@@ -5911,7 +5914,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1607  # includes the legacy NpScene run trajectory assertions
+	'6' = 1614  # includes the legacy NpScene and licensed-fluid getter assertions
 				# includes the allocator-spy deleting-destructor assertion
 				# includes enabled FluidModel create/list/release fixture differential
 				# all registered Phase 6 staged-pair and oracle-differential assertions
@@ -5934,7 +5937,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1716  # adds public NxFluid static/dynamic collision scalar getters
+	'7' = 1718  # adds public NxFluid static/dynamic, configuration, and licensed kernel getters
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions

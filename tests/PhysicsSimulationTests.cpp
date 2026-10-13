@@ -117,6 +117,77 @@ class NxSimulationOutputStream : public NxUserOutputStream
 		}
 	};
 
+// Redirect this process's HKLM view to an isolated HKCU key so the licensed
+// NxFluid getter branch can be exercised without changing machine-wide state.
+struct NxSimulationFluidLicenseOverride
+	{
+	NxSimulationFluidLicenseOverride()
+		: root(0), product(0), rootCreated(false), overridden(false), ready(false)
+		{
+		rootPath[0] = 0;
+		sprintf_s(rootPath, sizeof(rootPath),
+			"Software\\NxPhysicsFluidKeyTest-%lu-%lu",
+			static_cast<unsigned long>(GetCurrentProcessId()),
+			static_cast<unsigned long>(GetTickCount()));
+		DWORD disposition = 0;
+		if(RegCreateKeyExA(HKEY_CURRENT_USER, rootPath, 0, 0, 0, KEY_ALL_ACCESS,
+			0, &root, &disposition) != ERROR_SUCCESS)
+			return;
+		rootCreated = disposition == REG_CREATED_NEW_KEY;
+		if(!rootCreated)
+			return;
+		if(RegOverridePredefKey(HKEY_LOCAL_MACHINE, root) != ERROR_SUCCESS)
+			return;
+		overridden = true;
+		if(RegCreateKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\NovodexSDK212", 0,
+			0, 0, KEY_ALL_ACCESS, 0, &product, &disposition) != ERROR_SUCCESS)
+			return;
+		const char fluidKey[] = "a-465-:";
+		if(RegSetValueExA(product, "FluidKey", 0, REG_SZ,
+			reinterpret_cast<const BYTE*>(fluidKey), sizeof(fluidKey)) != ERROR_SUCCESS)
+			return;
+		HKEY verify = 0;
+		char readback[32] = {};
+		DWORD type = 0;
+		DWORD size = sizeof(readback);
+		const bool readbackMatches =
+			RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\NovodexSDK212", 0,
+				KEY_QUERY_VALUE, &verify) == ERROR_SUCCESS &&
+			RegQueryValueExA(verify, "FluidKey", 0, &type,
+				reinterpret_cast<BYTE*>(readback), &size) == ERROR_SUCCESS &&
+			type == REG_SZ && strcmp(readback, fluidKey) == 0;
+		if(verify)
+			RegCloseKey(verify);
+		ready = readbackMatches;
+		}
+	~NxSimulationFluidLicenseOverride()
+		{
+		if(product)
+			RegCloseKey(product);
+		if(overridden)
+			RegOverridePredefKey(HKEY_LOCAL_MACHINE, 0);
+		if(root)
+			RegCloseKey(root);
+		if(rootCreated && rootPath[0])
+			{
+			char productPath[192];
+			char softwarePath[160];
+			sprintf_s(productPath, sizeof(productPath), "%s\\SOFTWARE\\NovodexSDK212",
+				rootPath);
+			sprintf_s(softwarePath, sizeof(softwarePath), "%s\\SOFTWARE", rootPath);
+			RegDeleteKeyA(HKEY_CURRENT_USER, productPath);
+			RegDeleteKeyA(HKEY_CURRENT_USER, softwarePath);
+			RegDeleteKeyA(HKEY_CURRENT_USER, rootPath);
+			}
+		}
+	HKEY root;
+	HKEY product;
+	bool rootCreated;
+	bool overridden;
+	bool ready;
+	char rootPath[128];
+	};
+
 class NxSimulationFailSizeAllocator : public NxUserAllocator
 	{
 	public:
@@ -3230,6 +3301,11 @@ int wmain(int argc, wchar_t** argv)
 		unsigned emitterCreateArguments[4];
 		unsigned fluidGetStaticCollisionRestitution;
 		unsigned fluidGetStaticCollisionAdhesion;
+		unsigned fluidGetMaxParticles;
+		unsigned fluidGetKernelRadiusMultiplier;
+		unsigned fluidGetRestDensity;
+		unsigned fluidGetSimulationMethod;
+		unsigned fluidGetParticleMass;
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
@@ -3517,6 +3593,82 @@ int wmain(int argc, wchar_t** argv)
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
 		strcmp(simulationOutput.message,
 			"NxFluid::getDynamicCollisionAdhesion(): Feature not available!") == 0;
+	FluidManagerCallbackSummary fluidConfigCallbacksBefore = {};
+	getFluidManagerCallbackSummary(&fluidConfigCallbacksBefore);
+	const unsigned enabledPublicMaxParticles = enabledFluid
+		? enabledFluid->getMaxParticles() : 0;
+	simulationOutput.resetLast();
+	const unsigned enabledKernelErrorsBefore = simulationOutput.errors;
+	const NxReal enabledPublicKernelRadius = enabledFluid
+		? enabledFluid->getKernelRadiusMultiplier() : 0.0f;
+	const unsigned enabledKernelErrors = simulationOutput.errors -
+		enabledKernelErrorsBefore;
+	const bool enabledKernelDiagnosticExact = enabledKernelErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 336 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::getKernelRadiusMultiplier(): Feature not available!") == 0;
+	const NxReal enabledPublicRestParticlesPerMeter = enabledFluid
+		? enabledFluid->getRestParticlesPerMeter() : -1.0f;
+	const NxReal enabledPublicRestDensity = enabledFluid
+		? enabledFluid->getRestDensity() : -1.0f;
+	const NxReal enabledPublicRestParticleDistance = enabledFluid
+		? enabledFluid->getRestParticleDistance() : -1.0f;
+	const NxReal enabledPublicParticleMass = enabledFluid
+		? enabledFluid->getParticleMass() : -1.0f;
+	const unsigned enabledPublicSimulationMethod = enabledFluid
+		? enabledFluid->getSimulationMethod() : 0;
+	simulationOutput.resetLast();
+	const unsigned enabledCollisionMethodErrorsBefore = simulationOutput.errors;
+	const unsigned enabledPublicCollisionMethod = enabledFluid
+		? enabledFluid->getCollisionMethod() : 0;
+	const unsigned enabledCollisionMethodErrors = simulationOutput.errors -
+		enabledCollisionMethodErrorsBefore;
+	const bool enabledCollisionMethodDiagnosticExact =
+		enabledCollisionMethodErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 374 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::getCollisionMethod(): Feature not available!") == 0;
+	FluidManagerCallbackSummary fluidConfigCallbacksAfter = {};
+	getFluidManagerCallbackSummary(&fluidConfigCallbacksAfter);
+	const bool enabledFluidConfigCallbacks =
+		fluidConfigCallbacksAfter.fluidGetMaxParticles ==
+			fluidConfigCallbacksBefore.fluidGetMaxParticles + 1 &&
+		fluidConfigCallbacksAfter.fluidGetKernelRadiusMultiplier ==
+			fluidConfigCallbacksBefore.fluidGetKernelRadiusMultiplier &&
+		fluidConfigCallbacksAfter.fluidGetRestDensity ==
+			fluidConfigCallbacksBefore.fluidGetRestDensity + 1 &&
+		fluidConfigCallbacksAfter.fluidGetRestParticleDistance ==
+			fluidConfigCallbacksBefore.fluidGetRestParticleDistance + 2 &&
+		fluidConfigCallbacksAfter.fluidGetParticleMass ==
+			fluidConfigCallbacksBefore.fluidGetParticleMass + 1 &&
+		fluidConfigCallbacksAfter.fluidGetSimulationMethod ==
+			fluidConfigCallbacksBefore.fluidGetSimulationMethod + 1;
+	printf("simulation fluid public-api configuration max=%08x kernel=%08x.%u.%u rest-per-meter=%08x rest-density=%08x rest-distance=%08x particle-mass=%08x simulation=%08x collision=%08x.%u.%u callbacks=%u.%u.%u.%u.%u.%u.%u\n",
+		enabledPublicMaxParticles, nxFloatBits(enabledPublicKernelRadius),
+		enabledKernelErrors, enabledKernelDiagnosticExact ? 1u : 0u,
+		nxFloatBits(enabledPublicRestParticlesPerMeter),
+		nxFloatBits(enabledPublicRestDensity),
+		nxFloatBits(enabledPublicRestParticleDistance),
+		nxFloatBits(enabledPublicParticleMass), enabledPublicSimulationMethod,
+		enabledPublicCollisionMethod, enabledCollisionMethodErrors,
+		enabledCollisionMethodDiagnosticExact ? 1u : 0u,
+		enabledFluidConfigCallbacks ? 1u : 0u,
+		fluidConfigCallbacksAfter.fluidGetMaxParticles -
+			fluidConfigCallbacksBefore.fluidGetMaxParticles,
+		fluidConfigCallbacksAfter.fluidGetKernelRadiusMultiplier -
+			fluidConfigCallbacksBefore.fluidGetKernelRadiusMultiplier,
+		fluidConfigCallbacksAfter.fluidGetRestDensity -
+			fluidConfigCallbacksBefore.fluidGetRestDensity,
+		fluidConfigCallbacksAfter.fluidGetRestParticleDistance -
+			fluidConfigCallbacksBefore.fluidGetRestParticleDistance,
+		fluidConfigCallbacksAfter.fluidGetParticleMass -
+			fluidConfigCallbacksBefore.fluidGetParticleMass,
+		fluidConfigCallbacksAfter.fluidGetSimulationMethod -
+			fluidConfigCallbacksBefore.fluidGetSimulationMethod);
 	NxSimulationFailSizeAllocator fluidFailAllocator(*savedFluidAllocator, 0x84);
 	*fluidFoundationAllocatorSlot = &fluidFailAllocator;
 	simulationOutput.resetLast();
@@ -3669,7 +3821,8 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned enabledFluidErrors = simulationOutput.errors -
 		enabledFluidErrorsBefore - enabledPublicStiffnessErrors -
 		enabledPublicViscosityErrors - enabledDynamicRestitutionErrors -
-		enabledDynamicAdhesionErrors;
+		enabledDynamicAdhesionErrors - enabledKernelErrors -
+		enabledCollisionMethodErrors;
 	const bool enabledFluidCallbacks = fluidManagerCallbacks.managerCreate == 1 &&
 		fluidManagerCallbacks.managerDestroy == 1 &&
 		fluidManagerCallbacks.fluidCreate == 1 &&
@@ -3680,7 +3833,7 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.fluidGetCellSize == 1 &&
 		fluidManagerCallbacks.staticCollisionDestroy == 0;
 	const bool enabledFluidEmitterCallbacks =
-		fluidManagerCallbacks.fluidGetRestParticleDistance == 3 &&
+		fluidManagerCallbacks.fluidGetRestParticleDistance == 5 &&
 		fluidManagerCallbacks.emitterCreate == 3 &&
 		fluidManagerCallbacks.emitterDestroy == 0 &&
 		fluidManagerCallbacks.emitterSetGlobalPose == 3 &&
@@ -3730,6 +3883,14 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
 		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
+		!enabledFluidConfigCallbacks || enabledPublicMaxParticles != 0x1234u ||
+		nxFloatBits(enabledPublicRestParticlesPerMeter) != 0x42480000u ||
+		nxFloatBits(enabledPublicRestDensity) != 0x447a0000u ||
+		nxFloatBits(enabledPublicRestParticleDistance) != nxFloatBits(0.02f) ||
+		nxFloatBits(enabledPublicParticleMass) != 0x3f2aaaabu ||
+		enabledPublicSimulationMethod != 2 ||
+		!enabledKernelDiagnosticExact ||
+		!enabledCollisionMethodDiagnosticExact ||
 		enabledPublicDampingBits != 0x3ec00000u ||
 		enabledFluidDampingCalls != 1 ||
 		enabledPublicStaticRestitutionBits != 0x3e000000u ||
@@ -3745,6 +3906,41 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidErrors != 0)
 		return nxFail("enabled fluid creation lifecycle did not match the fixture contract");
 	sdk->releaseScene(*enabledFluidScene);
+	bool enabledLicensedKernelGetter = false;
+	{
+	NxSimulationFluidLicenseOverride licenseOverride;
+	NxScene* const licensedFluidScene = licenseOverride.ready
+		? sdk->createScene(fluidSceneDesc) : 0;
+	NxFluidDesc licensedFluidDesc;
+	licensedFluidDesc.setToDefault();
+	NxFluid* const licensedFluid = licensedFluidScene
+		? licensedFluidScene->createFluid(licensedFluidDesc) : 0;
+	FluidManagerCallbackSummary licensedCallbacksBefore = {};
+	getFluidManagerCallbackSummary(&licensedCallbacksBefore);
+	const unsigned licensedKernelErrorsBefore = simulationOutput.errors;
+	const NxReal licensedKernelRadius = licensedFluid
+		? licensedFluid->getKernelRadiusMultiplier() : 0.0f;
+	const unsigned licensedKernelBits = nxFloatBits(licensedKernelRadius);
+	FluidManagerCallbackSummary licensedCallbacksAfter = {};
+	getFluidManagerCallbackSummary(&licensedCallbacksAfter);
+	enabledLicensedKernelGetter = licenseOverride.ready && licensedFluid &&
+		licensedKernelBits == 0x3fe00000u &&
+		licensedCallbacksAfter.fluidGetKernelRadiusMultiplier ==
+			licensedCallbacksBefore.fluidGetKernelRadiusMultiplier + 1 &&
+		simulationOutput.errors == licensedKernelErrorsBefore;
+	printf("simulation fluid public-api configuration licensed-kernel=%08x calls=%u errors=%u setup=%u fluid=%u\n",
+		licensedKernelBits,
+		licensedCallbacksAfter.fluidGetKernelRadiusMultiplier -
+			licensedCallbacksBefore.fluidGetKernelRadiusMultiplier,
+		simulationOutput.errors - licensedKernelErrorsBefore,
+		licenseOverride.ready ? 1u : 0u, licensedFluid ? 1u : 0u);
+	if(licensedFluid)
+		licensedFluidScene->releaseFluid(*licensedFluid);
+	if(licensedFluidScene)
+		sdk->releaseScene(*licensedFluidScene);
+	}
+	if(!enabledLicensedKernelGetter)
+		return nxFail("licensed NxFluid kernel-radius getter did not forward through FluidModel");
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
 	// header set, so supply its recovered byte layout without changing public

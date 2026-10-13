@@ -811,6 +811,7 @@ typedef int (__cdecl *NxFluidEmitterSetGlobalPoseCallback)(unsigned, unsigned,
 typedef const float* (__cdecl *NxFluidEmitterGetGlobalPoseCallback)(unsigned,
 	unsigned, unsigned);
 typedef float (__cdecl *NxFluidScalarGetCallback)(void*, void*);
+typedef unsigned (__cdecl *NxFluidUnsignedGetCallback)(void*, void*);
 
 static NxFluidManagerCreateCallback gNxFluidManagerCreateCallback = 0;
 static NxFluidManagerDestroyCallback gNxFluidManagerDestroyCallback = 0;
@@ -829,6 +830,12 @@ static NxFluidScalarGetCallback gNxFluidGetViscosityCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetDampingCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionRestitutionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionAdhesionCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetKernelRadiusMultiplierCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetRestDensityCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetRestParticleDistanceScalarCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetParticleMassCallback = 0;
+static NxFluidUnsignedGetCallback gNxFluidGetMaxParticlesCallback = 0;
+static NxFluidUnsignedGetCallback gNxFluidGetSimulationMethodCallback = 0;
 static unsigned gNxFluidLicensedFeatureFlags = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
@@ -887,6 +894,21 @@ static bool nxFluidManagerResolveModel()
 	gNxFluidGetStaticCollisionAdhesionCallback = reinterpret_cast<
 		NxFluidScalarGetCallback>(GetProcAddress(module,
 			"FluidGetStaticCollisionAdhesion"));
+	gNxFluidGetKernelRadiusMultiplierCallback = reinterpret_cast<
+		NxFluidScalarGetCallback>(GetProcAddress(module,
+			"FluidGetKernelRadiusMultiplier"));
+	gNxFluidGetRestDensityCallback = reinterpret_cast<NxFluidScalarGetCallback>(
+		GetProcAddress(module, "FluidGetRestDensity"));
+	gNxFluidGetRestParticleDistanceScalarCallback = reinterpret_cast<
+		NxFluidScalarGetCallback>(GetProcAddress(module,
+			"FluidGetRestParticleDistance"));
+	gNxFluidGetParticleMassCallback = reinterpret_cast<NxFluidScalarGetCallback>(
+		GetProcAddress(module, "FluidGetParticleMass"));
+	gNxFluidGetMaxParticlesCallback = reinterpret_cast<NxFluidUnsignedGetCallback>(
+		GetProcAddress(module, "FluidGetMaxParticles"));
+	gNxFluidGetSimulationMethodCallback = reinterpret_cast<
+		NxFluidUnsignedGetCallback>(GetProcAddress(module,
+			"FluidGetSimulationMethod"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
@@ -1000,6 +1022,23 @@ static NxReal nxFluidCallBackendScalarGetter(void* wrapper,
 	return result;
 	}
 
+static NxU32 nxFluidCallBackendUnsignedGetter(void* wrapper,
+	NxFluidUnsignedGetCallback callback)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
+	nxNpSceneGuardEnter(readLock);
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	unsigned char* const fluid = static_cast<unsigned char*>(internal);
+	void* const manager = *reinterpret_cast<void**>(fluid + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(fluid + 0x80);
+	const NxU32 result = callback(backendManager, backendFluid);
+	nxNpSceneGuardLeave(readLock);
+	return result;
+	}
+
 static NxReal nxFluidReportUnavailableScalar(int unavailableLine,
 	const char* message)
 	{
@@ -1058,6 +1097,66 @@ static NxReal __fastcall nxFluidGetDynamicCollisionAdhesion(void*, void*)
 		"NxFluid::getDynamicCollisionAdhesion(): Feature not available!");
 	}
 
+static NxU32 nxFluidReportUnavailableUnsigned(int unavailableLine,
+	const char* message)
+	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+		unavailableLine, 0, message);
+	return 0;
+	}
+
+static NxU32 __fastcall nxFluidGetMaxParticles(void* wrapper, void*)
+	{
+	return nxFluidCallBackendUnsignedGetter(wrapper,
+		gNxFluidGetMaxParticlesCallback);
+	}
+
+static NxReal __fastcall nxFluidGetKernelRadiusMultiplier(void* wrapper, void*)
+	{
+	if((gNxFluidLicensedFeatureFlags & 1) == 0)
+		return nxFluidReportUnavailableScalar(336,
+			"NxFluid::getKernelRadiusMultiplier(): Feature not available!");
+	return nxFluidCallBackendScalarGetter(wrapper,
+		gNxFluidGetKernelRadiusMultiplierCallback);
+	}
+
+static NxReal __fastcall nxFluidGetRestParticlesPerMeter(void* wrapper, void*)
+	{
+	return 1.0f / nxFluidCallBackendScalarGetter(wrapper,
+		gNxFluidGetRestParticleDistanceScalarCallback);
+	}
+
+static NxReal __fastcall nxFluidGetRestDensity(void* wrapper, void*)
+	{
+	return nxFluidCallBackendScalarGetter(wrapper,
+		gNxFluidGetRestDensityCallback);
+	}
+
+static NxReal __fastcall nxFluidGetRestParticleDistance(void* wrapper, void*)
+	{
+	return nxFluidCallBackendScalarGetter(wrapper,
+		gNxFluidGetRestParticleDistanceScalarCallback);
+	}
+
+static NxReal __fastcall nxFluidGetParticleMass(void* wrapper, void*)
+	{
+	return nxFluidCallBackendScalarGetter(wrapper,
+		gNxFluidGetParticleMassCallback);
+	}
+
+static NxU32 __fastcall nxFluidGetSimulationMethod(void* wrapper, void*)
+	{
+	return nxFluidCallBackendUnsignedGetter(wrapper,
+		gNxFluidGetSimulationMethodCallback);
+	}
+
+static NxU32 __fastcall nxFluidGetCollisionMethod(void*, void*)
+	{
+	return nxFluidReportUnavailableUnsigned(374,
+		"NxFluid::getCollisionMethod(): Feature not available!");
+	}
+
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
 	{
 	if((deleteObject & 1) != 0)
@@ -1093,7 +1192,17 @@ static void* gNxFluidSolverVtable[] = {
 	0,
 	reinterpret_cast<void*>(nxFluidGetDynamicCollisionRestitution),
 	0,
-	reinterpret_cast<void*>(nxFluidGetDynamicCollisionAdhesion)
+	reinterpret_cast<void*>(nxFluidGetDynamicCollisionAdhesion),
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	reinterpret_cast<void*>(nxFluidGetMaxParticles),
+	reinterpret_cast<void*>(nxFluidGetKernelRadiusMultiplier),
+	reinterpret_cast<void*>(nxFluidGetRestParticlesPerMeter),
+	reinterpret_cast<void*>(nxFluidGetRestDensity),
+	reinterpret_cast<void*>(nxFluidGetRestParticleDistance),
+	reinterpret_cast<void*>(nxFluidGetParticleMass),
+	reinterpret_cast<void*>(nxFluidGetSimulationMethod),
+	reinterpret_cast<void*>(nxFluidGetCollisionMethod),
+	0, 0, 0
 	};
 static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)

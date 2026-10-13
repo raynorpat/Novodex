@@ -48,6 +48,11 @@ struct NxFluidManagerCallbackSummary
 	unsigned emitterCreateArguments[4];
 	unsigned fluidGetStaticCollisionRestitution;
 	unsigned fluidGetStaticCollisionAdhesion;
+	unsigned fluidGetMaxParticles;
+	unsigned fluidGetKernelRadiusMultiplier;
+	unsigned fluidGetRestDensity;
+	unsigned fluidGetSimulationMethod;
+	unsigned fluidGetParticleMass;
 	};
 
 struct NxFluidManagerCallbackRecord
@@ -436,6 +441,33 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetStaticCollisionAdhesion(
 	return 0.625f;
 	}
 
+extern "C" __declspec(dllexport) unsigned __cdecl FluidGetMaxParticles(
+	void* manager, void* fluid)
+	{
+	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
+		return 0;
+	++gFluidManagerCallbackSummary.fluidGetMaxParticles;
+	return 0x1234u;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetKernelRadiusMultiplier(
+	void* manager, void* fluid)
+	{
+	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
+		return -1.0f;
+	++gFluidManagerCallbackSummary.fluidGetKernelRadiusMultiplier;
+	return 1.75f;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetRestDensity(
+	void* manager, void* fluid)
+	{
+	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
+		return -1.0f;
+	++gFluidManagerCallbackSummary.fluidGetRestDensity;
+	return 1000.0f;
+	}
+
 extern "C" __declspec(dllexport) unsigned __cdecl
 NxGetFluidStaticCollisionAdhesionCalls()
 	{
@@ -742,11 +774,21 @@ extern "C" __declspec(dllexport) int __cdecl EmitterGetBodyRepulsion(
 extern "C" __declspec(dllexport) float __cdecl FluidGetParticleMass(
 	unsigned system, unsigned fluid)
 	{
+	++gFluidManagerCallbackSummary.fluidGetParticleMass;
 	NxFluidRepulsionCallbackRecord& record = nxNextFluidRepulsionRecord(
 		3, system, fluid, 0);
 	const unsigned mass = 0x3f2aaaab;
 	record.mass = mass;
 	return *reinterpret_cast<const float*>(&mass);
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl FluidGetSimulationMethod(
+	void* manager, void* fluid)
+	{
+	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
+		return 0;
+	++gFluidManagerCallbackSummary.fluidGetSimulationMethod;
+	return 2u;
 	}
 
 extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidPostStepCallbackCount()
