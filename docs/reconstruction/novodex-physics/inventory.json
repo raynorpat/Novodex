@@ -68358,13 +68358,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/FluidManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1378",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12626",
       "static_proof": null,
-      "dynamic_proof": "NxPhysicsSimulationTests loads a staged FluidModel callback fixture and differentially exercises invalid-descriptor rejection, enabled manager creation, one valid FluidCreate call, public getNbFluids/getFluids visibility, the initial dirty static-collision build, release, and manager teardown. Oracle and candidate are exact (stdout_delta=0, stderr_exact=True); mutations suppressing FluidCreate or the collision builder are both caught (candidate_exit=1, stdout_delta=52). Evidence: evidence/phase7-fluid-enabled-create-003649.md.",
-      "notes": "Partial reconstruction only. Enabled create/list/release and the initial 0x29 dirty build are fixture-backed. The shape-change 0x28 refresh in phys_fn_003630, broader FluidModel callback table and descriptor validation/allocation failure branches remain open; keep this row discovered until the full row is covered."
+      "dynamic_proof": "NxPhysicsSimulationTests loads a staged FluidModel callback fixture and differentially exercises invalid-descriptor rejection, enabled manager creation, one valid FluidCreate call, public getNbFluids/getFluids visibility, the initial dirty static-collision build, release, manager teardown, and license-derived FluidCreate arguments. Product 465 matches sparse=1/hardware=0; product 804 matches sparse=1/hardware=1. The pre-fix candidate passed 0,0 for both and was rejected (oracle_exit=0, candidate_exit=1, stdout_delta=62); the restored DLL matches exactly (stdout_delta=0, stderr_exact=True). Phase 5 and 7 pass at 2705 and 1767 coverage assertions. Evidence: evidence/phase7-fluid-enabled-create-003649.md.",
+      "notes": "Partial reconstruction only. NxSceneInternal::createFluid in Scene.cpp is the mapped candidate implementation and its manager create/list/release, initial 0x29 dirty build, validation/allocation cases, descriptor emitters, and license-derived FluidCreate arguments are fixture-backed. The complete 2452-byte oracle body, constructor subrows 003497/003503, callback table, failure ordering, array-growth sequencing, and teardown combinations remain open; keep this row reconstructed until the full row is audited and covered.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+        "address": "0x1005c690",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003650",

@@ -7,8 +7,8 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1808,
-    "source_correspondence_only_rows": 469,
+    "mapped_code_rows": 1809,
+    "source_correspondence_only_rows": 468,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
     "artifact_bytes": 116213,
@@ -178,12 +178,12 @@
         "rows": 560,
         "bytes": 113976,
         "open_rows": 560,
-        "rows_without_implementation_mapping": 327,
+        "rows_without_implementation_mapping": 326,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
-          "discovered": 132,
+          "discovered": 131,
           "dynamically_gated": 262,
-          "reconstructed": 165,
+          "reconstructed": 166,
           "statically_reviewed": 1
         }
       }
@@ -28208,7 +28208,7 @@
           {
             "id": "phys_fn_003649",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -155171,17 +155171,23 @@
       "size": 2452,
       "phase": 7,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_003649",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/Scene.cpp",
+        "role": "reconstruction",
+        "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+        "file_exists": true,
         "oracle_source": "Physics/src/fluids/FluidManager.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+          "address": "0x1005c690",
+          "object": "Scene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -155269,7 +155275,7 @@
       },
       "evidence": {
         "strength": "proof_text_recorded",
-        "inventory_state": "discovered",
+        "inventory_state": "reconstructed",
         "static_proof_recorded": false,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
@@ -155282,7 +155288,7 @@
         "owner_phase": 7,
         "row_id": "phys_fn_003649",
         "rva": "0x0008a000",
-        "action": "recover_contract_and_reconstruct",
+        "action": "add_row_specific_falsification",
         "ledger_reason": "not_reconstructed_in_phase",
         "driving_phases": [],
         "requires_dependency_review": true
@@ -231033,7 +231039,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "9dbf49c21aa6dfe0ac7eaab39e991184b07d28b8506ee3fad7fb112edb7fb265",
+    "inventory_sha256": "7802f0e8e0173b67875a73fdcc13eb488d28122606e5cb0ceca36dcb7ae7b955",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",

@@ -2388,7 +2388,9 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		descriptorWords[19], descriptorWords[17], descriptorWords[16],
 		descriptorWords[18], descriptorWords[20], descriptorWords[21],
 		descriptorWords[22], descriptorWords[23], descriptorWords[24],
-		descriptorWords[25], 1024, descriptorWords[15], 0, 0);
+		descriptorWords[25], 1024, descriptorWords[15],
+		(gNxFluidLicensedFeatureFlags & 1u) != 0 && descriptorWords[26] == 2u,
+		(gNxFluidLicensedFeatureFlags & 2u) != 0);
 	*reinterpret_cast<void**>(fluid + 0x80) = backendFluid;
 	for(unsigned emitterIndex = 0; emitterIndex != desc.emitters.size(); ++emitterIndex)
 		nxFluidCreateEmitter(fluid, desc.emitters[emitterIndex]);
