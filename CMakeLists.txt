@@ -1066,7 +1066,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp
 		Physics/src/Containers.cpp
-		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
+		Physics/src/Scene.cpp Physics/src/FluidCollision.cpp Physics/src/NpScene.cpp
+		Physics/src/NpActor.cpp Physics/src/NpFluidEmitter.cpp
 		Physics/src/SceneAuxiliary.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
 		Physics/src/ObjectModel.cpp Physics/src/BodyStep.cpp Physics/src/Island.cpp

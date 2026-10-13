@@ -230,6 +230,14 @@ int wmain(int argc, wchar_t** argv)
 	printf("step=parameters out_of_range=%d in_range=%d value=%.6f scenes=%u materials=%u\n",
 		rejected ? 1 : 0, accepted ? 1 : 0, first->getParameter(NX_PENALTY_FORCE),
 		first->getNbScenes(), first->getNbMaterials());
+	NxSceneDesc sceneDesc;
+	NxScene* sceneA = first->createScene(sceneDesc);
+	NxScene* sceneB = first->createScene(sceneDesc);
+	int sceneLookupFailed = !sceneA || !sceneB || first->getScene(0) != sceneA ||
+		first->getScene(1) != sceneB;
+	printf("step=actor_group_pair_flags_scenes count=%u\n", first->getNbScenes());
+	if(first->getNbScenes() != 2)
+		return nxFail("actor-group pair-flag scenes were not created");
 	const NxActorGroup groupA = 7;
 	const NxActorGroup groupB = 3;
 	const NxU32 initialPairFlags = first->getActorGroupPairFlags(groupA, groupB);
@@ -241,11 +249,6 @@ int wmain(int argc, wchar_t** argv)
 	printf("step=actor_group_pair_flags initial=%u forward=%u reverse=%u cleared=%u\n",
 		initialPairFlags, forwardPairFlags, reversePairFlags, clearedPairFlags);
 
-	NxSceneDesc sceneDesc;
-	NxScene* sceneA = first->createScene(sceneDesc);
-	NxScene* sceneB = first->createScene(sceneDesc);
-	int sceneLookupFailed = !sceneA || !sceneB || first->getScene(0) != sceneA ||
-		first->getScene(1) != sceneB;
 	printf("step=scenes_created count=%u both=%d first_lookup=%d second_lookup=%d\n",
 		first->getNbScenes(), sceneA && sceneB ? 1 : 0,
 		first->getScene(0) == sceneA ? 1 : 0,

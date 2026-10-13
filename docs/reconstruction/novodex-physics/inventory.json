@@ -5284,14 +5284,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/93",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/967",
       "static_proof": "The wrapper takes every scene write lock, forwards setActorGroupPairFlags to PhysicsSDK, and unwinds acquired locks on failure or return.",
-      "dynamic_proof": "NxPhysicsSDKTests round-trips (7,3)=0xA and reads the same value in reverse key order; the complete public transcript matches the pinned oracle.",
-      "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "dynamic_proof": "NxPhysicsSDKTests creates two live scenes, exercises this wrapper through its scene-lock loop, and checks actor-group pair values. A row-specific no-op mutation is rejected (stdout_delta=6); restored output is exact. See evidence/phase2-actor-group-pair-flags-000269-000271.md.",
+      "notes": "Reconstructed and independently mutation-falsified with two live Scenes: acquires all live scene write locks and forwards the actor-group pair setter.",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::setActorGroupPairFlags"
     },
     {
       "id": "phys_fn_000270",
@@ -5321,14 +5322,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/94",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/976",
       "static_proof": "The wrapper takes every scene read lock, forwards getActorGroupPairFlags to PhysicsSDK, then unwinds all acquired locks.",
-      "dynamic_proof": "NxPhysicsSDKTests observes initial=0, forward=10, reverse=10, cleared=0; the complete public transcript matches the pinned oracle.",
-      "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "dynamic_proof": "NxPhysicsSDKTests creates two live scenes, exercises this wrapper through its scene-lock loop, and checks actor-group pair values. A row-specific no-op mutation is rejected (stdout_delta=2); restored output is exact. See evidence/phase2-actor-group-pair-flags-000269-000271.md.",
+      "notes": "Reconstructed and independently mutation-falsified with two live Scenes: acquires all live scene read locks and forwards the actor-group pair getter.",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::getActorGroupPairFlags"
     },
     {
       "id": "phys_fn_000272",

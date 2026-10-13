@@ -168,6 +168,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsSDKTests' = @(
         # Public SDK-side sparse actor-group flag hash, queried in both key orders and cleared.
         'step=actor_group_pair_flags initial=0 forward=10 reverse=10 cleared=0'
+        'step=actor_group_pair_flags_scenes count=2'
         # Public createScene/releaseScene wrapper rows 000234/000236: two
         # returned wrappers are indexed in order, then the first release
         # swap-removes it while preserving lookup of the surviving scene.
@@ -5864,8 +5865,8 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 6  # previous 4 plus contended and successful triangle-mesh release assertions
-    '3' = 560  # includes retained body-record destruction during Scene teardown
+    '2' = 7  # adds actor-group pair flags with multiple live scene locks
+    '3' = 561  # adds the two-live-scene actor-group flag wrapper case
                # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
                # includes controller-owned proxy cleanup during Scene destruction
                # plus the three retained event/root buffer release assertions

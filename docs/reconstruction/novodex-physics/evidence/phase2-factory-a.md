@@ -9,6 +9,11 @@ sequences are `oracle/capstone/manifest.json`.
 This closes seven `NxPhysicsSDK` vtable slots, including **both placeholders that
 returned a value the oracle would not**.
 
+The actor-group pair flag wrapper rows `phys_fn_000269` and `phys_fn_000271`
+are additionally mutation-falsified with two live Scenes. Their no-op mutants
+are rejected at `stdout_delta=6` and `stdout_delta=2`; restored output is
+exact. See [the lock-loop evidence](phase2-actor-group-pair-flags-000269-000271.md).
+
 ---
 
 ## 1. Rows
