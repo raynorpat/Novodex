@@ -35,3 +35,13 @@ side. The corrected full Phase 5 gate passes at 2,670/2,670 assertions. A fresh
 focused transcript is [shape-vtable-differential.log](raw/phase5-five-family-destructor-model-20261012/shape-vtable-differential.log).
 
 Current-main revalidation on 2026-10-13 passes the fresh Phase 5 gate at 2,678/2,678 assertions (phase_gate=5 status=pass). Candidate DLL SHA-256: 100584a3191d3cda2087ed9bc745446325e1c2cd26c520ecbb975fc7470196bc.
+
+The 2026-10-13 rerun from the fluid-emitter integration worktree found the
+Phase 5 gate still expected the earlier enabled-fluid summary line, even
+though `NxPhysicsSimulationTests` now reports array agreement and the emitter
+callback counts. Updated the required coverage line to match the measured
+record; the full fresh gate passes at 2,678/2,678. This run again reports zero
+mismatches for the five secondary and primary destructor families, and the
+member-only model mutation reports five mismatches. Candidate DLL SHA-256:
+83268060327066531df916359eebff96fec77e568a50bd7d96a7e2917e1321b4. Focused
+transcript: [phase5-focused-gate.txt](raw/phase5-five-family-destructor-model-20261013/phase5-focused-gate.txt).

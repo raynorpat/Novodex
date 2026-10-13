@@ -1,0 +1,16 @@
+loaded module=NxPhysicsCandidate.dll path=C:\Users\raynorpat\.codex\worktrees\fluid-create-003649\Novodex\build\Release\NxPhysicsCandidate.dll sha256=83268060327066531df916359eebff96fec77e568a50bd7d96a7e2917e1321b4
+collision dtor family=0 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=0 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=1 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=1 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=2 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=2 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=3 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=3 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=4 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=4 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision primary dtor families=5 mismatches=0
+collision dtor families=5 mismatches=0
+collision dtor member-only mutant mismatches=5
+coverage_assertions_evaluated=2678 floor=2678
+phase_gate=5 status=pass
