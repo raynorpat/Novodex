@@ -10728,3 +10728,8 @@ The combined candidate spring-contact implementation for `phys_fn_000883` and `p
 # Phase 7 continuation: contact-pair constructor `phys_fn_000893`
 
 `phys_fn_000893` is mutation-falsified through the registered contact/friction simulation. Replacing the constructor with an immediate-return no-op makes the candidate access-violate (`candidate_exit=-1073741819`, `stdout_delta=3983`); restoring it returns an exact differential (`stdout_delta=0`, exact stderr). See [phase7-contact-pair-constructor-000893.md](phase7-contact-pair-constructor-000893.md).
+
+
+# Phase 7 continuation: contact-pair patch lookup `phys_fn_000895`
+
+`phys_fn_000895` is mutation-falsified through the registered sliding-contact simulation. An immediate-null mutant removes the required friction patch and crashes the candidate (`candidate_exit=-1073741819`, `stdout_delta=3887`); restoring the lookup returns an exact differential (`stdout_delta=0`, exact stderr). See [phase7-contact-pair-patch-lookup-000895.md](phase7-contact-pair-patch-lookup-000895.md).

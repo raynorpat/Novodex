@@ -1,0 +1,76 @@
+--- a/Physics/src/ContactPairManager.cpp
++++ b/Physics/src/ContactPairManager.cpp
+@@ -1881,72 +1881 @@
+-	NxReal local0[3];
+-	const NxU8* body0 = at<const NxU8*>(8);
+-	if(body0)
+-		cpmDirectionToBody0895(body0, normal, local0);
+-	else
+-		cpmCopyWords(local0, normal, 3);
+-
+-	const NxU32 existing = at<NxU32>(0x48);
+-	for(NxU32 i = 0; i < at<NxU32>(0x48); i++)
+-		{
+-		NxFrictionPatch* candidate = i == 0
+-			? reinterpret_cast<NxFrictionPatch*>(mBytes + 0x4c)
+-			: at<NxFrictionPatch**>(0xc4)[i - 1];
+-		if(candidate->at<NxU32>(0x68) == materialIds && candidate->at<const NxU8*>(0x6c) == shape0
+-			&& candidate->at<const NxU8*>(0x70) == shape1
+-			&& ((double)local0[2] * candidate->at<NxReal>(0x3c) + (double)local0[1] * candidate->at<NxReal>(0x38))
+-				+ (double)local0[0] * candidate->at<NxReal>(0x34) >= (double)0.996f)
+-			return candidate;
+-		}
+-
+-	NxFrictionPatch* patch;
+-	if(existing == 0)
+-		patch = reinterpret_cast<NxFrictionPatch*>(mBytes + 0x4c);
+-	else
+-		{
+-		void* block = nxFoundationSDKAllocator->malloc(0x78, NX_MEMORY_PERSISTENT);
+-		patch = block ? new (block) NxFrictionPatch : 0;
+-		NxFrictionPatch** begin = at<NxFrictionPatch**>(0xc4);
+-		NxFrictionPatch** end = at<NxFrictionPatch**>(0xc8);
+-		NxFrictionPatch** capacity = at<NxFrictionPatch**>(0xcc);
+-		if(!(capacity > end))
+-			{
+-			const NxU32 wanted = (NxU32)(end - begin) * 2 + 2;
+-			const NxU32 have = begin ? (NxU32)(capacity - begin) : 0;
+-			if(have < wanted)
+-				{
+-				const NxU32 bytes = wanted * 4;
+-				NxFrictionPatch** grown = static_cast<NxFrictionPatch**>(
+-					nxFoundationSDKAllocator->malloc(bytes, NX_MEMORY_PERSISTENT));
+-				NxFrictionPatch** to = grown;
+-				for(NxFrictionPatch** from = at<NxFrictionPatch**>(0xc4); from != at<NxFrictionPatch**>(0xc8); from++)
+-					*to++ = *from;
+-				if(at<void*>(0xc4))
+-					nxFoundationSDKAllocator->free(at<void*>(0xc4));
+-				const NxU32 size = (NxU32)(at<NxFrictionPatch**>(0xc8) - at<NxFrictionPatch**>(0xc4));
+-				at<NxFrictionPatch**>(0xc4) = grown;
+-				at<NxU8*>(0xcc) = reinterpret_cast<NxU8*>(grown) + bytes;
+-				at<NxFrictionPatch**>(0xc8) = grown + size;
+-				}
+-			}
+-		at<NxFrictionPatch**>(0xc8) = at<NxFrictionPatch**>(0xc8) + 1;
+-		at<NxFrictionPatch**>(0xc8)[-1] = patch;
+-		}
+-
+-	at<NxU32>(0x48) = at<NxU32>(0x48) + 1;
+-	cpmCopyWords(&patch->at<NxReal>(0x34), local0, 3);
+-	const NxU8* body1 = at<const NxU8*>(0xc);
+-	if(body1)
+-		cpmDirectionToBody0895(body1, normal, &patch->at<NxReal>(0x40));
+-	else
+-		cpmCopyWords(&patch->at<NxReal>(0x40), normal, 3);
+-	cpmCopyWords(&patch->at<NxReal>(0x4c), normal, 3);
+-	patch->at<NxU8>(0x74) = 0;
+-	patch->at<NxU32>(0x68) = materialIds;
+-	patch->at<const NxU8*>(0x6c) = shape0;
+-	patch->at<const NxU8*>(0x70) = shape1;
+-	patch->at<NxU8>(0x75) = 0;
+-	patch->at<NxReal>(0x64) = cpmPatchSpring0871(patch) ? 0.0f : at<NxReal>(0xd4);
+-	patch->at<NxU32>(0x60) = 0;
+-	patch->at<NxU32>(0x5c) = 0;
+-	patch->at<NxU32>(0x58) = 0;
+-	return patch;
++	return 0;
