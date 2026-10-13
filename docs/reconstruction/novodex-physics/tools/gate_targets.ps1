@@ -3527,6 +3527,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'simulation fluid public-api configuration licensed-set-dynamic-adhesion value=3e000000 calls=1 args=1 errors=1 diagnostic=1'
 		'simulation fluid public-api world-bounds matched=1 output=3f000001.bf000002.3f800003.40000004.c0000005.40400006'
 		'simulation fluid public-api name stored=1 cleared=1'
+		'simulation fluid public-api surface-mesh get=1 released=1 calls=1 flags=1 errors=0 unlicensed=1.1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
@@ -5892,7 +5893,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2694  # adds NxFluid public setName/getName registry round-trip
+	'5' = 2695  # adds licensed NxFluid surface-mesh get/release dispatch
+				# plus NxFluid public setName/getName registry round-trip
 				# plus NxFluid public world-bounds read path
 				# adds both dynamic-collision fluid setter callback paths
 				# adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
@@ -5941,7 +5943,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1628  # adds NxFluid public setName/getName registry round-trip
+	'6' = 1629  # adds licensed NxFluid surface-mesh get/release dispatch
+				# plus NxFluid public setName/getName registry round-trip
 				# plus NxFluid public world-bounds read path
 				# adds both dynamic-collision fluid setter callback paths
 				# adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
@@ -5972,7 +5975,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1736  # adds NxFluid public setName/getName registry round-trip
+	'7' = 1737  # adds licensed NxFluid surface-mesh get/release dispatch
+				# plus NxFluid public setName/getName registry round-trip
 				# plus NxFluid public world-bounds read path
 				# adds both dynamic-collision fluid setter callback paths
 				# adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch

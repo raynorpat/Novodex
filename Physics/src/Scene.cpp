@@ -1033,6 +1033,74 @@ static NxFluidEmitter** __fastcall nxFluidGetEmitters(void* wrapper, void*)
 	return emitters;
 	}
 
+// phys_fn_003706 (0x0008b350): report the unavailable feature when unlicensed,
+// then release the internal surface-mesh object under the Scene write lock.
+static void __fastcall nxFluidReleaseSurfaceMesh(void* wrapper, void*)
+	{
+	if((gNxFluidLicensedFeatureFlags & 2) == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			66, 0, "NxFluid::releaseSurfaceMesh(): Feature not available!");
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			68, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			69, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	void** const surfaceMeshSlot = reinterpret_cast<void**>(
+		static_cast<unsigned char*>(internal) + 0x24);
+	void* const surfaceMesh = *surfaceMeshSlot;
+	if(surfaceMesh)
+		{
+		void** const vtable = *reinterpret_cast<void***>(surfaceMesh);
+		typedef void* (__fastcall *DeletingDestructor)(void*, void*, unsigned char);
+		reinterpret_cast<DeletingDestructor>(vtable[0])(
+			surfaceMesh, 0, 1);
+		*surfaceMeshSlot = 0;
+		}
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+// phys_fn_003708 (0x0008b420): return the public mesh stored at internal
+// surface-manager+0x38, or report the unavailable feature and return null.
+static NxImplicitMesh* __fastcall nxFluidGetSurfaceMesh(void* wrapper, void*)
+	{
+	if((gNxFluidLicensedFeatureFlags & 2) == 0)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			76, 0, "NxFluid::getSurfaceMesh(): Feature not available!");
+		return 0;
+		}
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
+	nxNpSceneGuardEnter(readLock);
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	void* const surfaceManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(internal) + 0x24);
+	NxImplicitMesh* const result = surfaceManager
+		? *reinterpret_cast<NxImplicitMesh**>(
+			static_cast<unsigned char*>(surfaceManager) + 0x38) : 0;
+	nxNpSceneGuardLeave(readLock);
+	return result;
+	}
+
 static NxReal nxFluidCallBackendScalarGetter(void* wrapper,
 	NxFluidScalarGetCallback callback)
 	{
@@ -1531,7 +1599,10 @@ static void* gNxFluidSolverVtable[] = {
 	0,
 	reinterpret_cast<void*>(nxFluidGetNbEmitters),
 	reinterpret_cast<void*>(nxFluidGetEmitters),
-	0, 0, 0, 0, 0, 0,
+	0,
+	reinterpret_cast<void*>(nxFluidReleaseSurfaceMesh),
+	reinterpret_cast<void*>(nxFluidGetSurfaceMesh),
+	0, 0, 0,
 	reinterpret_cast<void*>(nxFluidGetStiffness),
 	reinterpret_cast<void*>(nxFluidSetStiffness),
 	reinterpret_cast<void*>(nxFluidGetViscosity),

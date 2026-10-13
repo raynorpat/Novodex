@@ -69370,13 +69370,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1789",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12753",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Takes the Scene write lock and checks the shared fluid-API reentry guard. Releases the internal surface manager at internal-fluid+0x24 by invoking its deleting destructor with flag 1, then clears the slot; reports the line-66 unavailable-feature warning when license bit 2 is absent.",
+      "dynamic_proof": "A licensed product-code-804 public fixture seeds a fake surface manager, verifies getSurfaceMesh returns its public pointer, and verifies releaseSurfaceMesh invokes the deleting dispatch and clears the slot. A no-op release mutant is rejected (candidate_exit=1, stdout_delta=60); product-code-465 checks the exact unavailable-feature warning.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidReleaseSurfaceMesh"
     },
     {
       "id": "phys_fn_003707",
@@ -69406,14 +69408,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1790",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12760",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via gate3708 differential (3z159): both arms failures=0, with the report slot, gate byte and lock API all bound",
+      "static_proof": "When license bit 2 is absent, reports the line-76 unavailable-feature warning and returns null. Otherwise takes the Scene read lock and reads the public mesh pointer from internal surface-manager+0x38.",
+      "dynamic_proof": "A licensed product-code-804 public fixture seeds a fake surface manager and checks the returned pointer. A no-op getter mutant is rejected (candidate_exit=1, stdout_delta=60); product-code-465 checks the exact unavailable-feature warning and null return.",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidGetSurfaceMesh"
     },
     {
       "id": "phys_fn_003709",

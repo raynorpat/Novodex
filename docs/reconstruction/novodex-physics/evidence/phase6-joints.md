@@ -10675,3 +10675,7 @@ Rows `phys_fn_003738` and `phys_fn_003742` are now closed by registered `NxPhysi
 # Phase 7 continuation: public NxFluid name registry
 
 `phys_fn_003786` is mutation-falsified through the registered `NxPhysicsSimulationTests` public set/get/clear round-trip. A no-op setter is rejected with `stdout_delta=60`; the restored shared-registry implementation matches exactly. See [phase7-npfluid-name-003786.md](phase7-npfluid-name-003786.md).
+
+# Phase 7 continuation: public NxFluid surface-mesh accessors
+
+Rows `phys_fn_003706` and `phys_fn_003708` are mutation-falsified through the registered `NxPhysicsSimulationTests` licensed and unavailable-feature paths. Independent no-op getter and release mutants each fail with `stdout_delta=60`; the restored differential is exact. See [phase7-npfluid-surface-mesh-003706-003708.md](phase7-npfluid-surface-mesh-003706-003708.md).

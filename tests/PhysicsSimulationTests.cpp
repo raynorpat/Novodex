@@ -121,7 +121,7 @@ class NxSimulationOutputStream : public NxUserOutputStream
 // NxFluid getter branch can be exercised without changing machine-wide state.
 struct NxSimulationFluidLicenseOverride
 	{
-	NxSimulationFluidLicenseOverride()
+	NxSimulationFluidLicenseOverride(unsigned productCode = 465)
 		: root(0), product(0), rootCreated(false), overridden(false), ready(false)
 		{
 		rootPath[0] = 0;
@@ -142,7 +142,8 @@ struct NxSimulationFluidLicenseOverride
 		if(RegCreateKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\NovodexSDK212", 0,
 			0, 0, KEY_ALL_ACCESS, 0, &product, &disposition) != ERROR_SUCCESS)
 			return;
-		const char fluidKey[] = "a-465-:";
+		char fluidKey[32] = {};
+		sprintf_s(fluidKey, sizeof(fluidKey), "a-%u-:", productCode);
 		if(RegSetValueExA(product, "FluidKey", 0, REG_SZ,
 			reinterpret_cast<const BYTE*>(fluidKey), sizeof(fluidKey)) != ERROR_SUCCESS)
 			return;
@@ -186,6 +187,21 @@ struct NxSimulationFluidLicenseOverride
 	bool overridden;
 	bool ready;
 	char rootPath[128];
+	};
+
+static unsigned gSimulationSurfaceMeshDeletingCalls;
+static unsigned gSimulationSurfaceMeshDeleteFlags;
+
+static void* __fastcall nxSimulationSurfaceMeshDeletingDestructor(
+	void* mesh, void*, unsigned char deleting)
+	{
+	++gSimulationSurfaceMeshDeletingCalls;
+	gSimulationSurfaceMeshDeleteFlags = deleting;
+	return mesh;
+	}
+
+static void* gSimulationSurfaceMeshVtable[] = {
+	reinterpret_cast<void*>(&nxSimulationSurfaceMeshDeletingDestructor)
 	};
 
 class NxSimulationFailSizeAllocator : public NxUserAllocator
@@ -3992,6 +4008,101 @@ int wmain(int argc, wchar_t** argv)
 		!fluidStaticRemoveDirty ||
 		enabledFluidErrors != 0)
 		return nxFail("enabled fluid creation lifecycle did not match the fixture contract");
+	bool unlicensedSurfaceMeshGetterExact = false;
+	bool unlicensedSurfaceMeshReleaseExact = false;
+	{
+	NxSimulationFluidLicenseOverride partialSurfaceMeshLicenseOverride(465);
+	NxScene* const partialSurfaceMeshScene = partialSurfaceMeshLicenseOverride.ready
+		? sdk->createScene(fluidSceneDesc) : 0;
+	NxFluidDesc partialSurfaceMeshFluidDesc;
+	partialSurfaceMeshFluidDesc.setToDefault();
+	NxFluid* const partialSurfaceMeshFluid = partialSurfaceMeshScene
+		? partialSurfaceMeshScene->createFluid(partialSurfaceMeshFluidDesc) : 0;
+	simulationOutput.resetLast();
+	const unsigned partialGetterErrorsBefore = simulationOutput.errors;
+	const NxImplicitMesh* const partialSurfaceMesh = partialSurfaceMeshFluid
+		? partialSurfaceMeshFluid->getSurfaceMesh() : 0;
+	const unsigned partialGetterErrors =
+		simulationOutput.errors - partialGetterErrorsBefore;
+	unlicensedSurfaceMeshGetterExact = partialSurfaceMeshLicenseOverride.ready &&
+		partialSurfaceMeshFluid && partialSurfaceMesh == 0 &&
+		partialGetterErrors == 1 && simulationOutput.code == NXE_DB_WARNING &&
+		simulationOutput.line == 76 && strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::getSurfaceMesh(): Feature not available!") == 0;
+	const unsigned partialReleaseErrorsBefore = simulationOutput.errors;
+	if(partialSurfaceMeshFluid)
+		partialSurfaceMeshFluid->releaseSurfaceMesh();
+	unlicensedSurfaceMeshReleaseExact = partialSurfaceMeshFluid &&
+		simulationOutput.errors - partialReleaseErrorsBefore == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 66 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::releaseSurfaceMesh(): Feature not available!") == 0;
+	if(partialSurfaceMeshFluid)
+		partialSurfaceMeshScene->releaseFluid(*partialSurfaceMeshFluid);
+	if(partialSurfaceMeshScene)
+		sdk->releaseScene(*partialSurfaceMeshScene);
+	}
+	{
+	NxSimulationFluidLicenseOverride surfaceMeshLicenseOverride(804);
+	NxScene* const surfaceMeshScene = surfaceMeshLicenseOverride.ready
+		? sdk->createScene(fluidSceneDesc) : 0;
+	NxFluidDesc surfaceMeshFluidDesc;
+	surfaceMeshFluidDesc.setToDefault();
+	NxFluid* const surfaceMeshFluid = surfaceMeshScene
+		? surfaceMeshScene->createFluid(surfaceMeshFluidDesc) : 0;
+	unsigned char surfaceMeshObject[0x3c] = {};
+	static unsigned char returnedSurfaceMeshMarker;
+	*reinterpret_cast<void***>(surfaceMeshObject) = gSimulationSurfaceMeshVtable;
+	*reinterpret_cast<void**>(surfaceMeshObject + 0x38) =
+		&returnedSurfaceMeshMarker;
+	unsigned char* const surfaceMeshInternal = surfaceMeshFluid
+		? *reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(
+			surfaceMeshFluid) + 0x14) : 0;
+	void* savedSurfaceMesh = 0;
+	if(surfaceMeshInternal)
+		{
+		savedSurfaceMesh = *reinterpret_cast<void**>(surfaceMeshInternal + 0x24);
+		*reinterpret_cast<void**>(surfaceMeshInternal + 0x24) = surfaceMeshObject;
+		}
+	gSimulationSurfaceMeshDeletingCalls = 0;
+	gSimulationSurfaceMeshDeleteFlags = 0;
+	simulationOutput.resetLast();
+	const unsigned surfaceMeshErrorsBefore = simulationOutput.errors;
+	NxImplicitMesh* const returnedSurfaceMesh = surfaceMeshFluid
+		? surfaceMeshFluid->getSurfaceMesh() : 0;
+	if(surfaceMeshFluid)
+		surfaceMeshFluid->releaseSurfaceMesh();
+	const unsigned surfaceMeshErrors =
+		simulationOutput.errors - surfaceMeshErrorsBefore;
+	const bool surfaceMeshReleased = surfaceMeshInternal &&
+		*reinterpret_cast<void**>(surfaceMeshInternal + 0x24) == 0;
+	if(surfaceMeshInternal)
+		*reinterpret_cast<void**>(surfaceMeshInternal + 0x24) = savedSurfaceMesh;
+	const bool surfaceMeshPublicApiMatches = surfaceMeshLicenseOverride.ready &&
+		surfaceMeshFluid &&
+		returnedSurfaceMesh == reinterpret_cast<NxImplicitMesh*>(
+			&returnedSurfaceMeshMarker) && surfaceMeshReleased &&
+		gSimulationSurfaceMeshDeletingCalls == 1 &&
+		gSimulationSurfaceMeshDeleteFlags == 1 && surfaceMeshErrors == 0 &&
+		unlicensedSurfaceMeshGetterExact && unlicensedSurfaceMeshReleaseExact;
+	printf("simulation fluid public-api surface-mesh get=%u released=%u calls=%u flags=%u errors=%u unlicensed=%u.%u\n",
+		returnedSurfaceMesh == reinterpret_cast<NxImplicitMesh*>(
+			&returnedSurfaceMeshMarker) ? 1u : 0u,
+		surfaceMeshReleased ? 1u : 0u,
+		gSimulationSurfaceMeshDeletingCalls, gSimulationSurfaceMeshDeleteFlags,
+		surfaceMeshErrors, unlicensedSurfaceMeshGetterExact ? 1u : 0u,
+		unlicensedSurfaceMeshReleaseExact ? 1u : 0u);
+	if(surfaceMeshFluid)
+		surfaceMeshScene->releaseFluid(*surfaceMeshFluid);
+	if(surfaceMeshScene)
+		sdk->releaseScene(*surfaceMeshScene);
+	if(!surfaceMeshPublicApiMatches)
+		return nxFail("licensed NxFluid surface-mesh get/release did not match the fixture contract");
+	}
 	sdk->releaseScene(*enabledFluidScene);
 	bool enabledLicensedKernelGetter = false;
 	bool licensedStiffnessSetter = false;
