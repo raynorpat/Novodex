@@ -515,8 +515,9 @@ bool NpScene::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	return result;
 	}
 
-// The Scene actor array begins at internal +0x55c. The wrapper forwards the
-// count as the distance from its first pointer to its last pointer.
+// phys_fn_000416 (0x0000da10): the Scene actor array begins at internal +0x55c.
+// The wrapper forwards the count as the distance from its first pointer to its
+// last pointer.
 NxU32 NpScene::getNbActors() const
 	{
 	const NxActor* const* first = mScene->at<NxActor**>(0x55c);

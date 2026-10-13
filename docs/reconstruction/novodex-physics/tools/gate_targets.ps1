@@ -3584,6 +3584,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsSceneBoundsPlanesTests' = @(
         # The descriptor creates six static AABB faces and the default ground plane.
+        'scene bounds_planes actors=6'
         'scene bounds_planes verified=6 faces=xmax,xmin,ymax,ymin,zmax,zmin'
         'scene ground_plane verified=1 y=0'
         'scene combined_planes verified=7 ground_then_bounds=1'
@@ -5940,7 +5941,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1721  # adds the NpScene secondary-base destructor differential and negative control
+	'7' = 1722  # adds NpScene secondary-base destructor and actor-count row coverage
 				# adds public NxFluid static/dynamic, configuration, and licensed kernel getters
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor

@@ -8046,13 +8046,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "locked element-count accessor (0xda10)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/146",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1169",
-      "static_proof": "locks [self+0x10] and returns ([field+0x560]-[field+0x55c])>>2 with field from [self+0x24], computed inline with no helper call",
-      "dynamic_proof": "confirmed via lockacc7 differential (3z151): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; the earlier instability was a test overrun fixed in 3z151, not a property of these rows",
-      "notes": ""
+      "static_proof": "IDA oracle decompilation at RVA 0xda10 reads the internal Scene from this+0x24, loads the actor-array begin/end pointers at Scene+0x55c/+0x560, and returns their four-byte element count.",
+      "dynamic_proof": "Registered Phase 7 NxPhysicsSceneBoundsPlanesTests exercises actor counts 6, 1, and 7. Replacing getNbActors with return 0 is rejected (candidate_exit=1, stdout_delta=7); restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-getnbactors-000416.md.",
+      "notes": "Candidate implementation symbol and map address are recorded below.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "?getNbActors@NpScene@@UBEIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getNbActors@NpScene@@UBEIXZ",
+        "address": "0x10041830",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000417",
