@@ -318,3 +318,7 @@ Reconstructed `NpScene` with `EmbeddedHookBase` at `this + 8`, so MSVC emits the
 ### M7.15 — NpScene actor-count row (`phys_fn_000416`)
 
 The existing `NpScene::getNbActors` implementation is now row-mapped to its candidate symbol and exercised explicitly by the registered bounds-plane target for six boundary actors, one ground-plane actor, and seven combined actors. A zero-return mutation exits 1 and is rejected with `stdout_delta=7`; the restored oracle/candidate control is exact. Phase 7 now records 215 closed / 345 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getnbactors-000416.md`.
+
+### M7.16 — NpScene actor-array getter (`phys_fn_000418`)
+
+Restored the oracle's read-lock enter/read/leave sequence around `NpScene::getActors`. The registered bounds-plane fixtures verify the returned actor array for six boundary planes, the ground plane, and the combined seven-actor scene. A null-return mutation exits 1 and is rejected with `stdout_delta=5`; restored control is exact. Phase 7 now records 216 closed / 344 deferred. Fresh Win32 Release Phase 7 gate passes at 1,722/1,722. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-getactors-000418.md`.

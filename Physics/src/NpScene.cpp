@@ -525,10 +525,15 @@ NxU32 NpScene::getNbActors() const
 	return first ? static_cast<NxU32>(last - first) : 0;
 	}
 
-// The public pointer is the Scene's existing contiguous actor array.
+// phys_fn_000418 (0x0000da50): return the public actor-array pointer under the
+// scene read lock at this+0x10.
 NxActor** NpScene::getActors()
 	{
-	return mScene->at<NxActor**>(0x55c);
+	void* link = mPointer08;
+	nxNpSceneGuardEnter(link);
+	NxActor** const actors = mScene->at<NxActor**>(0x55c);
+	nxNpSceneGuardLeave(link);
+	return actors;
 	}
 
 // phys_fn_000321 (0x0000c910, 36 B, phase 7): NxScene::getNbJoints. The

@@ -10637,3 +10637,5 @@ Phase 7 `NxFluid` configuration getters are mutation-falsified through the regis
 Phase 7 `NpScene` secondary destructor rows `phys_fn_000412` and `phys_fn_000414` are mutation-falsified through `NxPhysicsSceneConstructorTests`: the no-op destructor mutant exits 1 with `stdout_delta=6`; the restored direct secondary-vtable differential is exact. The full Phase 7 gate passes at 1,721/1,721. See `evidence/phase7-npscene-secondary-destructor-000412-000414.md`.
 
 Phase 7 `NpScene::getNbActors` row `phys_fn_000416` is mutation-falsified through `NxPhysicsSceneBoundsPlanesTests`: replacing the count with zero is rejected with `candidate_exit=1`, `stdout_delta=7`; restored control is exact. The full Phase 7 gate passes at 1,722/1,722. See `evidence/phase7-npscene-getnbactors-000416.md`.
+
+Phase 7 `NpScene::getActors` row `phys_fn_000418` is mutation-falsified through `NxPhysicsSceneBoundsPlanesTests`: replacing the getter with a null return is rejected with `candidate_exit=1`, `stdout_delta=5`; restored control is exact. The full Phase 7 gate passes at 1,722/1,722. See `evidence/phase7-npscene-getactors-000418.md`.
