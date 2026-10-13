@@ -5224,7 +5224,7 @@ $NxRequiredCoverageLines = [ordered] @{
     #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
     'NxPhysicsObjectLayoutTests' = @(
         'tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match',
-        'tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509',
+        'tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0',
         'tailabi row=003936 cleanup=0 oracle=1 candidate=1 this=match',
         'vt name=actor_interface slots=87 digest=62936499',
         'vt name=actor_dynamic slots=88 digest=cdd44a90',

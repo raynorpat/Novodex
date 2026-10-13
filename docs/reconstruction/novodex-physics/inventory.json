@@ -65644,13 +65644,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "six-byte global trampoline (0x863f0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1309",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12362",
       "static_proof": "static review of the recorded shape: six-byte global trampoline (0x863f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares the pinned oracle row at RVA 0x863f0 with nxStaticCollisionDestroyTrampoline using a marked collision pointer and callback return 0x3509. The clean row marker is tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0. Replacing the candidate forward with return 0 yields candidate=0, arg=mismatch, return=0, mismatches=1; the Phase 7 gate rejects the missing required marker (0 occurrences). Restored marker matches. Fresh Phase 5/6/7 gates pass at 2678/2678, 1607/1607, and 1710/1710. Evidence: evidence/phase7-indirect-tail-003509.md.",
+      "notes": "The per-row marker is data-driven so the registered gate detects a lost callback forward; the helper and both callback contracts remain x86 cdecl."
     },
     {
       "id": "phys_fn_003510",

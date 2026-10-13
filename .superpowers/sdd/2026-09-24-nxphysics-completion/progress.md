@@ -265,3 +265,14 @@ mutation omits the insertion and is rejected (candidate exit 1,
 gate passes at 1,710/1,710 assertions. Phase 7 ledger: 197 closed / 363
 deferred. Public Physics headers are unchanged. Evidence:
 `docs/reconstruction/novodex-physics/evidence/phase7-joint-bodyless-list-000557.md`.
+### M7 continuation — `StaticCollisionDestroy` tail forwarding
+
+Closed Phase 7 row `phys_fn_003509` (`0x863f0`). The object-layout oracle
+fixture's candidate marker had been hardcoded, allowing a no-forward mutation
+to print a mismatch while the row still appeared green. The marker now reports
+measured oracle/candidate forwarding, argument, and return status. A no-op
+candidate returns zero, loses the callback, and changes the marker; the full
+Phase 7 gate rejects it at the required coverage check. Restored Phase 5/6/7
+gates pass at 2,678/2,678, 1,607/1,607, and 1,710/1,710. Phase 7 ledger:
+198 closed / 362 deferred. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-indirect-tail-003509.md`.

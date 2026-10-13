@@ -1,0 +1,4 @@
+nr 003509 forwarding mismatch
+tailabi row=003509 cleanup=0 oracle=1 candidate=0 arg=mismatch return=0 mismatches=1
+newreach candidate failures=1 provisional=1
+GATE FAILED: requirement not met: NxPhysicsObjectLayoutTests reported its recorded oracle-side coverage (0 occurrences): tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0

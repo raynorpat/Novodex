@@ -1,0 +1,4 @@
+tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0
+pass: NxPhysicsObjectLayoutTests reported its recorded oracle-side coverage (1 occurrences): tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0
+coverage_assertions_evaluated=1607 floor=1607
+phase_gate=6 status=pass
