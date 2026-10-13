@@ -10759,3 +10759,13 @@ Rows `phys_fn_000897` and `phys_fn_000899` map to the single candidate body `NxA
 `phys_fn_000913` is mutation-falsified by the registered `NxPhysicsSimulationTests` release fixture: setting its pair-hash loop count to zero suppresses the final end-touch callback and is rejected (`stdout_delta=439`, oracle_exit=0, candidate_exit=1); restored control reports `calls=2`, `events=00000004`, and `end_touch=1`. See [phase7-scene-release-contact-report-000913.md](phase7-scene-release-contact-report-000913.md).
 
 Fresh post-merge Phase 5/6/7 gates pass at `2,703/2,703`, `1,636/1,636`, and `1,745/1,745`; the new `NxPhysicsSimulationTests` release marker is required in all three phases. Full logs: [Phase 5](raw/phase7-scene-release-contact-report-000913-20261013/phase5-postmerge-gate.log.gz), [Phase 6](raw/phase7-scene-release-contact-report-000913-20261013/phase6-postmerge-gate.log.gz), [Phase 7](raw/phase7-scene-release-contact-report-000913-20261013/phase7-postmerge-gate.log.gz).
+
+# Phase 7 continuation: buffered contact-report spans `phys_fn_000917`, `phys_fn_000919`, `phys_fn_000921`
+
+The shared `cpmBufferContactReports0917` loop-count mutation suppresses the public callback transcript and closes each represented span (`stdout_delta=669`, oracle_exit=0, candidate_exit=1); restored controls are exact. Evidence: [phase7-contact-report-buffer-000917-000919-000921.md](phase7-contact-report-buffer-000917-000919-000921.md).
+
+`phys_fn_000917` is separately enumerated in the shared `cpmBufferContactReports0917` row family; its loop-suppression mutation is detected at `stdout_delta=669`, and restored output is exact.
+
+`phys_fn_000919` is separately enumerated in the shared `cpmBufferContactReports0917` row family; its loop-suppression mutation is detected at `stdout_delta=669`, and restored output is exact.
+
+`phys_fn_000921` is separately enumerated in the shared `cpmBufferContactReports0917` row family; its loop-suppression mutation is detected at `stdout_delta=669`, and restored output is exact.
