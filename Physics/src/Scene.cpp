@@ -789,6 +789,7 @@ NxSceneInternal::NxSceneInternal()
 	}
 
 static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, unsigned char deleteObject);
+static bool gNxApiReentry = false;
 
 typedef void* (__cdecl *NxFluidManagerCreateCallback)();
 typedef void (__cdecl *NxFluidManagerDestroyCallback)(void*);
@@ -811,6 +812,7 @@ typedef int (__cdecl *NxFluidEmitterSetGlobalPoseCallback)(unsigned, unsigned,
 typedef const float* (__cdecl *NxFluidEmitterGetGlobalPoseCallback)(unsigned,
 	unsigned, unsigned);
 typedef float (__cdecl *NxFluidScalarGetCallback)(void*, void*);
+typedef void (__cdecl *NxFluidScalarSetCallback)(void*, void*, float);
 typedef unsigned (__cdecl *NxFluidUnsignedGetCallback)(void*, void*);
 
 static NxFluidManagerCreateCallback gNxFluidManagerCreateCallback = 0;
@@ -828,6 +830,7 @@ static NxFluidEmitterGetGlobalPoseCallback gNxFluidEmitterGetGlobalPoseCallback 
 static NxFluidScalarGetCallback gNxFluidGetStiffnessCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetViscosityCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetDampingCallback = 0;
+static NxFluidScalarSetCallback gNxFluidSetStiffnessCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionRestitutionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionAdhesionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetKernelRadiusMultiplierCallback = 0;
@@ -888,6 +891,8 @@ static bool nxFluidManagerResolveModel()
 		GetProcAddress(module, "FluidGetViscosity"));
 	gNxFluidGetDampingCallback = reinterpret_cast<NxFluidScalarGetCallback>(
 		GetProcAddress(module, "FluidGetDamping"));
+	gNxFluidSetStiffnessCallback = reinterpret_cast<NxFluidScalarSetCallback>(
+		GetProcAddress(module, "FluidSetStiffness"));
 	gNxFluidGetStaticCollisionRestitutionCallback = reinterpret_cast<
 		NxFluidScalarGetCallback>(GetProcAddress(module,
 			"FluidGetStaticCollisionRestitution"));
@@ -1073,6 +1078,47 @@ static NxReal __fastcall nxFluidGetDamping(void* wrapper, void*)
 	return nxFluidCallBackendScalarGetter(wrapper, gNxFluidGetDampingCallback);
 	}
 
+// phys_fn_003718 (0x0008b680): warn when the stiffness license bit is absent,
+// then try the wrapper's write lock, enforce the shared API reentry guard, and
+// forward the backend manager/fluid pair plus the supplied scalar.
+static void __fastcall nxFluidSetStiffness(void* wrapper, void*, NxReal value)
+	{
+	if((gNxFluidLicensedFeatureFlags & 1) == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			118, 0, "NxFluid::setStiffness(): Feature not available!");
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			120, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			121, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* const internal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	void* const manager = *reinterpret_cast<void**>(internal + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(internal + 0x80);
+	if(gNxFluidSetStiffnessCallback)
+		gNxFluidSetStiffnessCallback(backendManager, backendFluid, value);
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	}
+
 static NxReal __fastcall nxFluidGetStaticCollisionRestitution(void* wrapper, void*)
 	{
 	return nxFluidCallBackendScalarGetter(wrapper,
@@ -1181,7 +1227,7 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidGetEmitters),
 	0, 0, 0, 0, 0, 0,
 	reinterpret_cast<void*>(nxFluidGetStiffness),
-	0,
+	reinterpret_cast<void*>(nxFluidSetStiffness),
 	reinterpret_cast<void*>(nxFluidGetViscosity),
 	0,
 	reinterpret_cast<void*>(nxFluidGetDamping),
@@ -2665,8 +2711,6 @@ void nxActorDestroy(unsigned char* body);
 // releaseJoint, Scene::createEffector and releaseEffector, Scene::releaseActor
 // and Actor.cpp's createShape and
 // releaseShape (000036/000024) test, set and clear it.
-static bool gNxApiReentry = false;
-
 extern "C" bool nxApiReentryIsActive(void)
 	{
 	return gNxApiReentry;

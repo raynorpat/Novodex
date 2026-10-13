@@ -3282,6 +3282,8 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("staged fluid model callback fixture failed to load");
 	typedef void (__cdecl *ResetFluidManagerCallbacksFn)();
 	typedef unsigned (__cdecl *GetFluidDampingCallsFn)();
+	typedef void (__cdecl *GetFluidSetStiffnessObservationFn)(
+		unsigned*, unsigned*, unsigned*);
 	struct FluidManagerCallbackSummary
 		{
 		unsigned managerCreate;
@@ -3316,6 +3318,9 @@ int wmain(int argc, wchar_t** argv)
 	GetFluidDampingCallsFn getFluidDampingCalls = reinterpret_cast<
 		GetFluidDampingCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidDampingCalls"));
+	GetFluidSetStiffnessObservationFn getFluidSetStiffnessObservation =
+		reinterpret_cast<GetFluidSetStiffnessObservationFn>(GetProcAddress(
+			fluidModel, "NxGetFluidSetStiffnessObservation"));
 	GetFluidScalarCallsFn getFluidStaticRestitutionCalls = reinterpret_cast<
 		GetFluidScalarCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidStaticCollisionRestitutionCalls"));
@@ -3329,6 +3334,7 @@ int wmain(int argc, wchar_t** argv)
 		SetFluidEmitterCreateNullIndexFn>(GetProcAddress(fluidModel,
 			"NxSetFluidEmitterCreateNullIndex"));
 	if(!resetFluidManagerCallbacks || !getFluidDampingCalls ||
+		!getFluidSetStiffnessObservation ||
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex)
@@ -3907,6 +3913,7 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("enabled fluid creation lifecycle did not match the fixture contract");
 	sdk->releaseScene(*enabledFluidScene);
 	bool enabledLicensedKernelGetter = false;
+	bool licensedStiffnessSetter = false;
 	{
 	NxSimulationFluidLicenseOverride licenseOverride;
 	NxScene* const licensedFluidScene = licenseOverride.ready
@@ -3917,6 +3924,19 @@ int wmain(int argc, wchar_t** argv)
 		? licensedFluidScene->createFluid(licensedFluidDesc) : 0;
 	FluidManagerCallbackSummary licensedCallbacksBefore = {};
 	getFluidManagerCallbackSummary(&licensedCallbacksBefore);
+	unsigned stiffnessCallsBefore = 0, stiffnessBitsBefore = 0,
+		stiffnessArgumentsBefore = 0;
+	getFluidSetStiffnessObservation(&stiffnessCallsBefore, &stiffnessBitsBefore,
+		&stiffnessArgumentsBefore);
+	const unsigned licensedSetStiffnessErrorsBefore = simulationOutput.errors;
+	if(licensedFluid)
+		licensedFluid->setStiffness(0.625f);
+	const unsigned licensedSetStiffnessErrors = simulationOutput.errors -
+		licensedSetStiffnessErrorsBefore;
+	unsigned stiffnessCallsAfter = 0, stiffnessBitsAfter = 0,
+		stiffnessArgumentsAfter = 0;
+	getFluidSetStiffnessObservation(&stiffnessCallsAfter, &stiffnessBitsAfter,
+		&stiffnessArgumentsAfter);
 	const unsigned licensedKernelErrorsBefore = simulationOutput.errors;
 	const NxReal licensedKernelRadius = licensedFluid
 		? licensedFluid->getKernelRadiusMultiplier() : 0.0f;
@@ -3928,6 +3948,13 @@ int wmain(int argc, wchar_t** argv)
 		licensedCallbacksAfter.fluidGetKernelRadiusMultiplier ==
 			licensedCallbacksBefore.fluidGetKernelRadiusMultiplier + 1 &&
 		simulationOutput.errors == licensedKernelErrorsBefore;
+	licensedStiffnessSetter = licenseOverride.ready && licensedFluid &&
+		licensedSetStiffnessErrors == 0 &&
+		stiffnessCallsAfter == stiffnessCallsBefore + 1 &&
+		stiffnessBitsAfter == 0x3f200000u && stiffnessArgumentsAfter == 1;
+	printf("simulation fluid public-api configuration licensed-set-stiffness value=%08x calls=%u args=%u errors=%u\n",
+		stiffnessBitsAfter, stiffnessCallsAfter - stiffnessCallsBefore,
+		stiffnessArgumentsAfter, licensedSetStiffnessErrors);
 	printf("simulation fluid public-api configuration licensed-kernel=%08x calls=%u errors=%u setup=%u fluid=%u\n",
 		licensedKernelBits,
 		licensedCallbacksAfter.fluidGetKernelRadiusMultiplier -
@@ -3939,8 +3966,8 @@ int wmain(int argc, wchar_t** argv)
 	if(licensedFluidScene)
 		sdk->releaseScene(*licensedFluidScene);
 	}
-	if(!enabledLicensedKernelGetter)
-		return nxFail("licensed NxFluid kernel-radius getter did not forward through FluidModel");
+	if(!enabledLicensedKernelGetter || !licensedStiffnessSetter)
+		return nxFail("licensed NxFluid stiffness setter or kernel-radius getter did not forward through FluidModel");
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
 	// header set, so supply its recovered byte layout without changing public

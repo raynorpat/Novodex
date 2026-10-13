@@ -67,6 +67,9 @@ static unsigned gFluidManagerRecordCount;
 static unsigned gFluidManagerGetCallCount;
 static bool gFluidManagerCallbackProbe;
 static unsigned gFluidGetDampingCalls;
+static unsigned gFluidSetStiffnessCalls;
+static unsigned gFluidSetStiffnessBits;
+static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidGetStaticCollisionRestitutionCalls;
 static unsigned gFluidGetStaticCollisionAdhesionCalls;
 static unsigned char gFluidStaticCollision[0x200];
@@ -255,6 +258,9 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidManagerGetCallCount = 0;
 	gFluidManagerCallbackProbe = false;
 	gFluidGetDampingCalls = 0;
+	gFluidSetStiffnessCalls = 0;
+	gFluidSetStiffnessBits = 0;
+	gFluidSetStiffnessArgumentsValid = 0;
 	gFluidGetStaticCollisionRestitutionCalls = 0;
 	gFluidGetStaticCollisionAdhesionCalls = 0;
 	gFluidEmitterCreateNullIndex = ~0u;
@@ -403,6 +409,28 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetDamping(
 extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidDampingCalls()
 	{
 	return gFluidGetDampingCalls;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidSetStiffness(
+	void* manager, void* fluid, float value)
+	{
+	++gFluidSetStiffnessCalls;
+	memcpy(&gFluidSetStiffnessBits, &value, sizeof(value));
+	bool fluidFound = false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) /
+		sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			fluidFound = true;
+	gFluidSetStiffnessArgumentsValid =
+		manager == &gFluidManagerBackend && fluidFound;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetStiffnessObservation(
+	unsigned* calls, unsigned* valueBits, unsigned* argumentsValid)
+	{
+	if(calls) *calls = gFluidSetStiffnessCalls;
+	if(valueBits) *valueBits = gFluidSetStiffnessBits;
+	if(argumentsValid) *argumentsValid = gFluidSetStiffnessArgumentsValid;
 	}
 
 static bool nxFluidFixtureHasBackendFluid(void* manager, void* fluid)
