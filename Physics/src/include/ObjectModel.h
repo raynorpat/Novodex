@@ -9,6 +9,7 @@
 \*----------------------------------------------------------------------------*/
 #include "PhysicsInternal.h"
 #include "IcePrunable.h"
+#include "EmbeddedHookBase.h"
 
 /**
 The shared object-model rows Phase 5 Task 1 locked: the 0x1c-byte collision
@@ -29,14 +30,6 @@ secondary-base tables. The subobject is twelve bytes: one virtual slot plus
 two words. What the single virtual MEANS is not established; the class has
 no recovered name.
 */
-struct EmbeddedHookBase
-	{
-	EmbeddedHookBase() : mWord04(0), mWord08(0) {}
-	virtual ~EmbeddedHookBase() {}
-	NxU32				mWord04;
-	NxU32				mWord08;
-	};
-
 /**
 The 0x1c-byte collision object has a four-slot primary interface at +0x00,
 EmbeddedHookBase as its secondary base at +0x0c, and a duplicated shape

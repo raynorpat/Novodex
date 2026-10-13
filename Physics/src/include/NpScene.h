@@ -28,18 +28,19 @@
 
 #include "Nxp.h"
 #include "PhysicsInternal.h"
+#include "EmbeddedHookBase.h"
 #include "NxScene.h"
 
 class NxSceneInternal;
 class NxActorDescBase;
 class NxActor;
 
-class NpScene : public NxScene, public NxAllocateable
+class NpScene : public NxScene, public NxAllocateable, public EmbeddedHookBase
 	{
 	public:
 	// phys_fn_000285 (0x0000c310).
 	NpScene(NxSceneInternal* scene);
-	~NpScene();
+	~NpScene() override;
 
 	// The Scene's internal pointer, which the forwarding slots below use and which
 	// getScene reads back out of the Scene at +0x6cc.
@@ -49,7 +50,7 @@ class NpScene : public NxScene, public NxAllocateable
 	// The write-lock link at +0x0c (the VALUE, not its address): what the SDK
 	// singletons' scene walks pass to nxNpSceneGuardWriteTry/Leave
 	// (NpPhysicsSDK::coreDump, phys_fn_000267).
-	void* writeLink() const { return mWriteLock; }
+	void* writeLink() const { return mPointer04; }
 
 	// phys_fn_000293 (0x0000c490) reads the write lock, forwards, and releases it.
 	// The lock walk itself is Phase 3's; the forward is in NpScene.cpp.
@@ -133,9 +134,6 @@ class NpScene : public NxScene, public NxAllocateable
 	NpScene(const NpScene&);
 	NpScene& operator=(const NpScene&);
 
-	unsigned char mLockObject[0x04];		// +0x08
-	void* mWriteLock;						// +0x0c
-	void* mReadLock;						// +0x10
 	unsigned char mLockA[0x04];				// +0x14
 	unsigned char mLockB[0x04];				// +0x18
 	void* mCondition;						// +0x1c
@@ -148,5 +146,9 @@ class NpScene : public NxScene, public NxAllocateable
 // past the difference is written out of bounds -- which is what a heap overrun
 // looks like from a crash in an unrelated helper.
 static_assert(sizeof(NpScene) == 0x28, "NpScene is 40 bytes in the oracle");
+static_assert(offsetof(NpScene, mPointer04) == 0x0c,
+	"the EmbeddedHookBase write-lock link is at +0x0c");
+static_assert(offsetof(NpScene, mPointer08) == 0x10,
+	"the EmbeddedHookBase read-lock link is at +0x10");
 
 #endif

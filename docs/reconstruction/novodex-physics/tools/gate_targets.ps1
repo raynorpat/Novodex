@@ -1832,6 +1832,9 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsSceneConstructorTests' = @(
         'scene constructor internal_link=1'
+        'scene secondary dtor nondeleting root=1 primary_transition=1 secondary_transition=1 frees=6'
+        'scene secondary dtor deleting root=1 frees=7'
+        'scene secondary dtor member-only mutant detected=1'
     )
     'NxPhysicsControllerSweepFaceTests' = @(
         'controller correction_face actors=2',
@@ -5937,7 +5940,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1718  # adds public NxFluid static/dynamic, configuration, and licensed kernel getters
+	'7' = 1721  # adds the NpScene secondary-base destructor differential and negative control
+				# adds public NxFluid static/dynamic, configuration, and licensed kernel getters
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions

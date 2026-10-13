@@ -7958,13 +7958,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/203",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1164",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle listing at RVA 0xd960 is an 8-byte secondary-base deleting adjustor: subtract 8 from this then transfer to the NpScene destructor at RVA 0xd970. The candidate MSVC map emits the matching W7 deleting adjustor thunk.",
+      "dynamic_proof": "NxPhysicsSceneConstructorTests calls the secondary-vtable destructor on scratch scenes and compares the root pointer, both vptr transitions, and allocator frees with the pinned oracle. Nondeleting path: root=1 primary_transition=1 secondary_transition=1 frees=6; deleting path: root=1 frees=7. The member-only negative control is detected. The full Phase 7 gate passed at 1721/1721. See evidence/phase7-npscene-secondary-destructor-000412-000414.md.",
+      "notes": "secondary-base deleting adjustor thunk; the secondary polymorphic subobject begins at this+8.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "??_ENpScene@@W7AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ENpScene@@W7AEPAXI@Z",
+        "address": "0x10040e97",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000413",
@@ -7994,13 +8002,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/145",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1165",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle listing at RVA 0xd960 is an 8-byte secondary-base deleting adjustor: subtract 8 from this then transfer to the NpScene destructor at RVA 0xd970. The candidate MSVC map emits the matching W7 deleting adjustor thunk.",
+      "dynamic_proof": "NxPhysicsSceneConstructorTests calls the secondary-vtable destructor on scratch scenes and compares the root pointer, both vptr transitions, and allocator frees with the pinned oracle. Nondeleting path: root=1 primary_transition=1 secondary_transition=1 frees=6; deleting path: root=1 frees=7. The member-only negative control is detected. The full Phase 7 gate passed at 1721/1721. See evidence/phase7-npscene-secondary-destructor-000412-000414.md.",
+      "notes": "complete NpScene destructor; the secondary polymorphic subobject begins at this+8.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "??1NpScene@@UAE@XZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??1NpScene@@UAE@XZ",
+        "address": "0x10040d50",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000415",

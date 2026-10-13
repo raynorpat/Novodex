@@ -15,9 +15,9 @@
 // The forwarding slots are the point of this class. phys_fn_000293 (0x0000c490)
 // is the shape of all of them, and it is transcribed:
 //
-//     uVar3 = tryLock(scene->mWriteLock);          // +0xc
+//     uVar3 = tryLock(scene->mPointer04);          // +0xc
 //     if (uVar3) {
-//         piVar1 = scene->mWriteLock;
+//         piVar1 = scene->mPointer04;
 //         piVar5 = FUN_10011730(param_1);           // the Scene-side call
 //         if (piVar5 != 0) { iVar4 = *piVar5; unlock(piVar1); return iVar4; }
 //         unlock(piVar1);
@@ -76,13 +76,11 @@ NpScene::NpScene(NxSceneInternal* scene)
 	{
 #if !NX_PHYSICS_USE_X87
 	static_assert(alignof(NpScene)==4,"actual Scene wrapper alignment");
-	static_assert(offsetof(NpScene,mWriteLock)==0x0c,"original write link placement");
-	static_assert(offsetof(NpScene,mReadLock)==0x10,"original read link placement");
+	static_assert(offsetof(NpScene,mPointer04)==0x0c,"original write link placement");
+	static_assert(offsetof(NpScene,mPointer08)==0x10,"original read link placement");
 	static_assert(offsetof(NpScene,mLockA)==0x14 && offsetof(NpScene,mLockB)==0x18,"original event placement");
 	static_assert(offsetof(NpScene,mCondition)==0x1c && offsetof(NpScene,mScene)==0x24,"original condition/owner placement");
 #endif
-	mWriteLock = 0;
-	mReadLock = 0;
 	mCondition = 0;
 	mFlag = 0;
 	mScene = scene;
@@ -99,18 +97,18 @@ NpScene::NpScene(NxSceneInternal* scene)
 	// allocation size wrong.
 	static const NxU32 kNpSceneLockBlock = 0x20;
 
-	mWriteLock = nxFoundationSDKAllocator->malloc(4, NX_MEMORY_PERSISTENT);
-	if(mWriteLock)
+	mPointer04 = nxFoundationSDKAllocator->malloc(4, NX_MEMORY_PERSISTENT);
+	if(mPointer04)
 		{
 		void* block = nxFoundationSDKAllocator->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
-		*static_cast<void**>(mWriteLock) = block ? nxLockConstruct(block) : 0;
+		*static_cast<void**>(mPointer04) = block ? nxLockConstruct(block) : 0;
 		}
 
-	mReadLock = nxFoundationSDKAllocator->malloc(4, NX_MEMORY_PERSISTENT);
-	if(mReadLock)
+	mPointer08 = nxFoundationSDKAllocator->malloc(4, NX_MEMORY_PERSISTENT);
+	if(mPointer08)
 		{
 		void* block = nxFoundationSDKAllocator->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
-		*static_cast<void**>(mReadLock) = block ? nxLockConstruct(block) : 0;
+		*static_cast<void**>(mPointer08) = block ? nxLockConstruct(block) : 0;
 		}
 
 	mLockA[0] = mLockA[1] = mLockA[2] = mLockA[3] = 0;
@@ -121,8 +119,8 @@ NpScene::NpScene(NxSceneInternal* scene)
 	// Original C310 constructs events14/18 before the real write/read links.
 	*reinterpret_cast<HANDLE*>(mLockA) = ::CreateEventA(0, TRUE, FALSE, 0);
 	*reinterpret_cast<HANDLE*>(mLockB) = ::CreateEventA(0, TRUE, FALSE, 0);
-	mWriteLock = nxSceneLockCreate();
-	mReadLock = nxSceneLockCreate();
+	mPointer04 = nxSceneLockCreate();
+	mPointer08 = nxSceneLockCreate();
 #endif
 
 	mCondition = nxGetSdkAllocator()->malloc(0x18, NX_MEMORY_PERSISTENT);
@@ -134,6 +132,9 @@ NpScene::NpScene(NxSceneInternal* scene)
 		}
 	}
 
+// phys_fn_000414 (oracle RVA 0xd970) is the complete wrapper destructor.
+// MSVC emits phys_fn_000412's secondary-base deleting adjustor thunk for the
+// EmbeddedHookBase subobject; the candidate map records ??_ENpScene@@W7AEPAXI@Z.
 NpScene::~NpScene()
 	{
 	if(mCondition)
@@ -148,26 +149,26 @@ NpScene::~NpScene()
 		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockA));
 	if(*reinterpret_cast<HANDLE*>(mLockB))
 		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockB));
-	if(mReadLock)
+	if(mPointer08)
 		{
-		if(*static_cast<void**>(mReadLock))
+		if(*static_cast<void**>(mPointer08))
 			::DeleteCriticalSection(static_cast<CRITICAL_SECTION*>(
-				*static_cast<void**>(mReadLock)));
-		nxFoundationSDKAllocator->free(*static_cast<void**>(mReadLock));
-		nxFoundationSDKAllocator->free(mReadLock);
+				*static_cast<void**>(mPointer08)));
+		nxFoundationSDKAllocator->free(*static_cast<void**>(mPointer08));
+		nxFoundationSDKAllocator->free(mPointer08);
 		}
-	if(mWriteLock)
+	if(mPointer04)
 		{
-		if(*static_cast<void**>(mWriteLock))
+		if(*static_cast<void**>(mPointer04))
 			::DeleteCriticalSection(static_cast<CRITICAL_SECTION*>(
-				*static_cast<void**>(mWriteLock)));
-		nxFoundationSDKAllocator->free(*static_cast<void**>(mWriteLock));
-		nxFoundationSDKAllocator->free(mWriteLock);
+				*static_cast<void**>(mPointer04)));
+		nxFoundationSDKAllocator->free(*static_cast<void**>(mPointer04));
+		nxFoundationSDKAllocator->free(mPointer04);
 		}
 #else
 	// Original D970: condition ends first, write then read, events18 then14.
-	nxSceneLockDestroy(mWriteLock);
-	nxSceneLockDestroy(mReadLock);
+	nxSceneLockDestroy(mPointer04);
+	nxSceneLockDestroy(mPointer08);
 	if(*reinterpret_cast<HANDLE*>(mLockB))
 		::CloseHandle(*reinterpret_cast<HANDLE*>(mLockB));
 	if(*reinterpret_cast<HANDLE*>(mLockA))
@@ -176,10 +177,10 @@ NpScene::~NpScene()
 	}
 
 // phys_fn_000293 (0x0000c490): the forwarding shape every slot in this class has.
-// The oracle's `this + 0xc` is mWriteLock, and its `this + 0x24` is mScene.
+// The oracle's `this + 0xc` is mPointer04, and its `this + 0x24` is mScene.
 NxActor* NpScene::createActor(const NxActorDescBase& desc)
 	{
-	if(!mWriteLock || !nxLockTryLock(mWriteLock))
+	if(!mPointer04 || !nxLockTryLock(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x69, 0,
@@ -189,14 +190,14 @@ NxActor* NpScene::createActor(const NxActorDescBase& desc)
 
 	NxActor* actor = mScene->createActor(desc);
 
-	nxLockUnlock(mWriteLock);
+	nxLockUnlock(mPointer04);
 	return actor;
 	}
 
 // phys_fn_000295 at 0x0000c500: the same lock, then Scene::releaseActor.
 void NpScene::releaseActor(NxActor& actor)
 	{
-	if(!mWriteLock || !nxLockTryLock(mWriteLock))
+	if(!mPointer04 || !nxLockTryLock(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x70, 0,
@@ -208,7 +209,7 @@ void NpScene::releaseActor(NxActor& actor)
 		reinterpret_cast<unsigned char*>(&actor) + 0x14);
 	if(body)
 		mScene->releaseActor(body);
-	nxLockUnlock(mWriteLock);
+	nxLockUnlock(mPointer04);
 	}
 
 void NpScene::release()
@@ -344,7 +345,7 @@ static void nxConditionStop(void* condition)
 // phys_fn_000291 (0x0000c460, 39 B): read-lock the Scene gravity copy.
 void NpScene::getGravity(NxVec3& gravity)
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	mScene->getGravity(gravity);
 	nxNpSceneGuardLeave(link);
@@ -358,14 +359,14 @@ void NpScene::getGravity(NxVec3& gravity)
 // value loaded before the call.
 void NpScene::releaseJoint(NxJoint& joint)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x7f, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	mScene->releaseJoint(static_cast<Joint*>(joint.appData));
 	nxNpSceneGuardLeave(link);
 	}
@@ -382,22 +383,22 @@ void NpScene::releaseJoint(NxJoint& joint)
 // on the link value loaded before the call.
 NxSpringAndDamperEffector* NpScene::createSpringAndDamperEffector(const NxSpringAndDamperEffectorDesc& desc)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x87, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return 0;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	SpringAndDamperEffector* effector = mScene->createSpringAndDamperEffector(desc);
 	if(effector)
 		{
 		NpSpringAndDamperEffector* np = effector->mPublicObject;
 		if(np)
 			{
-			np->mWord08 = reinterpret_cast<NxU32>(mReadLock);
-			np->mWord04 = reinterpret_cast<NxU32>(mWriteLock);
+			np->mWord08 = reinterpret_cast<NxU32>(mPointer08);
+			np->mWord04 = reinterpret_cast<NxU32>(mPointer04);
 			nxNpSceneGuardLeave(link);
 			return np;
 			}
@@ -415,14 +416,14 @@ NxSpringAndDamperEffector* NpScene::createSpringAndDamperEffector(const NxSpring
 // (phys_fn_000594), then the unlock on the link value loaded before it.
 void NpScene::releaseEffector(NxEffector& effector)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x9a, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	mScene->releaseEffector(static_cast<NpSpringAndDamperEffector&>(effector).getInternal());
 	nxNpSceneGuardLeave(link);
 	}
@@ -444,14 +445,14 @@ void NpScene::releaseController(NxController& controller)
 // phys_fn_000309 (0x0000c740): guarded forward to Scene::setActorPairFlags.
 void NpScene::setActorPairFlags(NxActor& actor0, NxActor& actor1, NxU32 nxContactPairFlag)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0xab, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	NxU8* body0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor0) + 0x14);
 	NxU8* body1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&actor1) + 0x14);
 	NxU8* shape0 = body0 ? *reinterpret_cast<NxU8**>(body0 + 0x10) : 0;
@@ -470,14 +471,14 @@ NxU32 NpScene::getActorPairFlags(NxActor& actor0, NxActor& actor1) const
 // phys_fn_000313 (0x0000c7f0): write-locked forward to Scene::setShapePairFlags.
 void NpScene::setShapePairFlags(NxShape& shape0, NxShape& shape1, NxU32 nxContactPairFlag)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0xb8, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	NxU8* const internalShape0 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape0) + 8);
 	NxU8* const internalShape1 = *reinterpret_cast<NxU8**>(reinterpret_cast<NxU8*>(&shape1) + 8);
 	if(mScene)
@@ -497,7 +498,7 @@ NxU32 NpScene::getShapePairFlags(NxShape& shape0, NxShape& shape1) const
 // Read-lock while forwarding the active contact-pair count from Scene.
 NxU32 NpScene::getNbPairs() const
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const NxU32 count = mScene->getNbPairs();
 	nxNpSceneGuardLeave(link);
@@ -507,7 +508,7 @@ NxU32 NpScene::getNbPairs() const
 // Read-lock while forwarding the active pair flags from Scene.
 bool NpScene::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const bool result = mScene->getPairFlagArray(userArray, numPairs);
 	nxNpSceneGuardLeave(link);
@@ -534,7 +535,7 @@ NxActor** NpScene::getActors()
 // once) around Scene::getNbJoints (phys_fn_000559).
 NxU32 NpScene::getNbJoints() const
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const NxU32 count = mScene->getNbJoints();
 	nxNpSceneGuardLeave(link);
@@ -546,7 +547,7 @@ NxU32 NpScene::getNbJoints() const
 // unlock is a tail jump.
 void NpScene::resetJointIterator()
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	mScene->resetJointIterator();
 	nxNpSceneGuardLeave(link);
@@ -557,7 +558,7 @@ void NpScene::resetJointIterator()
 // as its public object ([internal+0x48], 0xc97a), the end as 0.
 NxJoint * NpScene::getNextJoint()
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	Joint* joint = mScene->getNextJoint();
 	NxJoint* result = joint ? static_cast<NxJoint*>(joint->mPublicObject) : 0;
@@ -570,7 +571,7 @@ NxJoint * NpScene::getNextJoint()
 // once) around Scene::getNbEffectors (phys_fn_000561).
 NxU32 NpScene::getNbEffectors() const
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const NxU32 count = mScene->getNbEffectors();
 	nxNpSceneGuardLeave(link);
@@ -582,7 +583,7 @@ NxU32 NpScene::getNbEffectors() const
 // unlock is a tail jump.
 void NpScene::resetEffectorIterator()
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	mScene->resetEffectorIterator();
 	nxNpSceneGuardLeave(link);
@@ -593,7 +594,7 @@ void NpScene::resetEffectorIterator()
 // returned as its public object ([internal+0x20], 0xca0a), the end as 0.
 NxEffector * NpScene::getNextEffector()
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	Effector* effector = mScene->getNextEffector();
 	NxEffector* result = effector ? effector->mPublicObject : 0;
@@ -638,14 +639,14 @@ void NpScene::finishRun()
 // phys_fn_000338 (0x0000cae0): write-lock, then forward the timing triplet.
 void NpScene::setTiming(NxReal maxTimestep, NxU32 maxIter, NxTimeStepMethod method)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x120, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	mScene->setTiming(maxTimestep, maxIter, static_cast<NxU32>(method));
 	nxNpSceneGuardLeave(link);
 	}
@@ -653,7 +654,7 @@ void NpScene::setTiming(NxReal maxTimestep, NxU32 maxIter, NxTimeStepMethod meth
 // phys_fn_000340 (0x0000cb50): read-lock, then copy the timing triplet out.
 void NpScene::getTiming(NxReal & maxTimestep, NxU32 & maxIter, NxTimeStepMethod & method) const
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	NxU32 methodValue;
 	mScene->getTiming(maxTimestep, maxIter, methodValue);
@@ -686,14 +687,14 @@ void NpScene::runFor(NxReal elapsedTime, NxReal maxTimestep, NxU32 maxIter, NxTi
 // jump in the image) is on the kept link. Scene-raycast block Task 4.
 void NpScene::visualize()
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x13c, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	mScene->visualize();
 	nxNpSceneGuardLeave(link);
 	}
@@ -701,7 +702,7 @@ void NpScene::visualize()
 // phys_fn_000346 (0x0000cc60): read-lock around Scene::getSceneStats.
 NxSceneStats* NpScene::getSceneStats()
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	NxSceneStats* const stats = mScene->getSceneStats();
 	nxNpSceneGuardLeave(link);
@@ -711,7 +712,7 @@ NxSceneStats* NpScene::getSceneStats()
 // phys_fn_000348 (0x0000cc90): read-lock around Scene::getLimits.
 void NpScene::getLimits(NxSceneLimits& limits) const
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	mScene->getLimits(limits);
 	nxNpSceneGuardLeave(link);
@@ -746,12 +747,12 @@ NxUserTriggerReport* NpScene::getUserTriggerReport() const
 // phys_fn_000358 (0x0000cde0): Scene+0x6b4 stores the callback pointer.
 void NpScene::setUserContactReport(NxUserContactReport* callback)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		nxSceneDeadlockReport();
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(mScene) mScene->at<void*>(0x6b4) = callback;
 	nxNpSceneGuardLeave(link);
 	}
@@ -759,7 +760,7 @@ void NpScene::setUserContactReport(NxUserContactReport* callback)
 // phys_fn_000360 (0x0000ce40): Scene+0x6b4 getter.
 NxUserContactReport* NpScene::getUserContactReport() const
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	NxUserContactReport* report = mScene ? mScene->at<NxUserContactReport*>(0x6b4) : 0;
 	nxNpSceneGuardLeave(link);
@@ -804,12 +805,12 @@ static inline void nxNpSceneRaycastError(NxErrorCode code, int line, const char*
 // phys_fn_000366 (0x0000ced0, 181 B)
 bool NpScene::raycastAnyBounds(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist) const
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x18b, kNpSceneDeadlock);
 		return false;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(!(maxDist > 0.0f))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x18c,
@@ -825,12 +826,12 @@ bool NpScene::raycastAnyBounds(const NxRay& worldRay, NxShapesType shapesType, N
 // phys_fn_000368 (0x0000cf90, 181 B)
 bool NpScene::raycastAnyShape(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist) const
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x197, kNpSceneDeadlock);
 		return false;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(!(maxDist > 0.0f))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x198,
@@ -846,12 +847,12 @@ bool NpScene::raycastAnyShape(const NxRay& worldRay, NxShapesType shapesType, Nx
 // phys_fn_000370 (0x0000d050, 189 B)
 NxU32 NpScene::raycastAllBounds(const NxRay& worldRay, NxUserRaycastReport& report, NxShapesType shapesType, NxU32 groups, NxReal maxDist, NxU32 hintFlags) const
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1a2, kNpSceneDeadlock);
 		return 0;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(!(maxDist > 0.0f))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1a3,
@@ -867,12 +868,12 @@ NxU32 NpScene::raycastAllBounds(const NxRay& worldRay, NxUserRaycastReport& repo
 // phys_fn_000372 (0x0000d110, 189 B)
 NxU32 NpScene::raycastAllShapes(const NxRay& worldRay, NxUserRaycastReport& report, NxShapesType shapesType, NxU32 groups, NxReal maxDist, NxU32 hintFlags) const
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1ad, kNpSceneDeadlock);
 		return 0;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(!(maxDist > 0.0f))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1ae,
@@ -891,12 +892,12 @@ NxU32 NpScene::raycastAllShapes(const NxRay& worldRay, NxUserRaycastReport& repo
 // shape's public object (+0x9c).
 NxShape* NpScene::raycastClosestBounds(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit, NxU32 groups, NxReal maxDist, NxU32 /*hintFlags*/) const
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1b9, kNpSceneDeadlock);
 		return 0;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(!(maxDist > 0.0f))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1ba,
@@ -915,12 +916,12 @@ NxShape* NpScene::raycastClosestBounds(const NxRay& worldRay, NxShapesType shape
 // phys_fn_000376 (0x0000d2b0, 213 B)
 NxShape* NpScene::raycastClosestShape(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit, NxU32 groups, NxReal maxDist, NxU32 hintFlags) const
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_OPERATION, 0x1c6, kNpSceneDeadlock);
 		return 0;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(!(maxDist > 0.0f))
 		{
 		nxNpSceneRaycastError(NXE_INVALID_PARAMETER, 0x1c7,
@@ -939,7 +940,7 @@ NxShape* NpScene::raycastClosestShape(const NxRay& worldRay, NxShapesType shapeT
 // phys_fn_000378 (0x0000d390): read-lock around the Scene's sphere overlap collection.
 NxU32 NpScene::overlapSphereShapes(const NxSphere& worldSphere, NxShapesType shapeType, NxU32 nbShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const NxU32 result = mScene->overlapSphereShapes(worldSphere, shapeType, nbShapes, shapes, callback);
 	nxNpSceneGuardLeave(link);
@@ -949,7 +950,7 @@ NxU32 NpScene::overlapSphereShapes(const NxSphere& worldSphere, NxShapesType sha
 // phys_fn_000380 (0x0000d400): read-lock around the Scene's AABB overlap collection.
 NxU32 NpScene::overlapAABBShapes(const NxBounds3& worldBounds, NxShapesType shapeType, NxU32 nbShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const NxU32 result = mScene->overlapAABBShapes(worldBounds, shapeType, nbShapes, shapes, callback);
 	nxNpSceneGuardLeave(link);
@@ -959,7 +960,7 @@ NxU32 NpScene::overlapAABBShapes(const NxBounds3& worldBounds, NxShapesType shap
 // phys_fn_000382 (0x0000d480): read-lock around the Scene's plane culling query.
 NxU32 NpScene::cullShapes(NxU32 nbPlanes, const NxPlane* worldPlanes, NxShapesType shapeType, NxU32 nbShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const NxU32 result = mScene->cullShapes(nbPlanes, worldPlanes, shapeType, nbShapes, shapes, callback);
 	nxNpSceneGuardLeave(link);
@@ -970,7 +971,7 @@ NxU32 NpScene::cullShapes(NxU32 nbPlanes, const NxPlane* worldPlanes, NxShapesTy
 // release the lock.
 bool NpScene::checkOverlapSphere(const NxSphere& worldSphere, NxShapesType shapeType)
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const bool result = mScene->checkOverlapSphere(worldSphere, shapeType);
 	nxNpSceneGuardLeave(link);
@@ -981,7 +982,7 @@ bool NpScene::checkOverlapSphere(const NxSphere& worldSphere, NxShapesType shape
 // and release the same read lock on the way out.
 bool NpScene::checkOverlapAABB(const NxBounds3& worldBounds, NxShapesType shapeType)
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const bool result = mScene->checkOverlapAABB(worldBounds, shapeType);
 	nxNpSceneGuardLeave(link);
@@ -991,7 +992,7 @@ bool NpScene::checkOverlapAABB(const NxBounds3& worldBounds, NxShapesType shapeT
 // phys_fn_000388 (0x0000d5c0): read-lock around the Scene-side AABB triangle query.
 NxU32 NpScene::overlapAABBTriangles(const NxBounds3& worldBounds, NxArraySDK<NxTriangle>& worldTriangles)
 	{
-	void* link = mReadLock;
+	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
 	const NxU32 result = mScene->overlapAABBTriangles(worldBounds, worldTriangles);
 	nxNpSceneGuardLeave(link);
@@ -1003,20 +1004,20 @@ NxU32 NpScene::overlapAABBTriangles(const NxBounds3& worldBounds, NxArraySDK<NxT
 // the shipped build's fluid backend is disabled).
 NxFluid* NpScene::createFluid(const NxFluidDesc& desc)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x266, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return 0;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	NxFluid* fluid = mScene->createFluid(desc);
 	if(fluid)
 		{
 		unsigned char* const fluidBytes = reinterpret_cast<unsigned char*>(fluid);
-		*reinterpret_cast<void**>(fluidBytes + 0x0c) = mWriteLock;
-		*reinterpret_cast<void**>(fluidBytes + 0x10) = mReadLock;
+		*reinterpret_cast<void**>(fluidBytes + 0x0c) = mPointer04;
+		*reinterpret_cast<void**>(fluidBytes + 0x10) = mPointer08;
 		void* const internal = *reinterpret_cast<void**>(fluidBytes + 0x14);
 		unsigned char* const internalBytes = static_cast<unsigned char*>(internal);
 		unsigned first = *reinterpret_cast<unsigned*>(internalBytes + 4);
@@ -1032,9 +1033,9 @@ NxFluid* NpScene::createFluid(const NxFluidDesc& desc)
 			if(wrapper)
 				{
 				*reinterpret_cast<void**>(static_cast<unsigned char*>(wrapper) + 0x0c) =
-					mWriteLock;
+					mPointer04;
 				*reinterpret_cast<void**>(static_cast<unsigned char*>(wrapper) + 0x10) =
-					mReadLock;
+					mPointer08;
 				}
 			}
 		}
@@ -1046,14 +1047,14 @@ NxFluid* NpScene::createFluid(const NxFluidDesc& desc)
 // internal pointer at +0x14, under the scene write lock.
 void NpScene::releaseFluid(NxFluid& fluid)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x26d, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	void* fluidInternal = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(&fluid) + 0x14);
 	if(mScene)
 		mScene->releaseFluid(fluidInternal);
@@ -1142,7 +1143,7 @@ bool NpScene::wait(NxStandardFences, bool block)
 // released; failure reports the scene as non-writable.
 bool NpScene::isWritable()
 	{
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	if(!nxNpSceneGuardWriteTry(link))
 		return false;
 	nxNpSceneGuardLeave(link);
@@ -1162,7 +1163,7 @@ void NpScene::simulate(NxReal elapsedTime)
 	// phys_fn_000394 probes +0x10 under the scene lock, releases it before
 	// writing Scene+0x544 through phys_fn_000538, then reacquires it to mark the
 	// run pending and signal the work event through phys_fn_002373.
-	void* readLink = mReadLock;
+	void* readLink = mPointer08;
 	nxNpSceneGuardEnter(readLink);
 	const bool alreadyRunning = mFlag != 0;
 	nxNpSceneGuardLeave(readLink);
@@ -1196,10 +1197,10 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 		return false;
 	if(mScene)
 		{
-		nxNpSceneGuardEnter(mReadLock);
+		nxNpSceneGuardEnter(mPointer08);
 		mScene->processSimulationCallbacks();
 		mScene->finishSimulation();
-		nxNpSceneGuardLeave(mReadLock);
+		nxNpSceneGuardLeave(mPointer08);
 		}
 	if(mFlag)
 		{
@@ -1215,14 +1216,14 @@ bool NpScene::fetchResults(NxSimulationStatus status, bool block )
 // gravity words to Scene+0x520, then release the same lock link.
 void NpScene::setGravity(const NxVec3& gravity)
 	{
-	if(!nxNpSceneGuardWriteTry(mWriteLock))
+	if(!nxNpSceneGuardWriteTry(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x5b, 0,
 			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 		return;
 		}
-	void* link = mWriteLock;
+	void* link = mPointer04;
 	mScene->setGravity(gravity);
 	nxNpSceneGuardLeave(link);
 	}
@@ -1230,7 +1231,7 @@ void NpScene::setGravity(const NxVec3& gravity)
 // phys_fn_000297's shape: the write lock, the forward, the release.
 NxJoint* NpScene::createJoint(const NxJointDesc& desc)
 	{
-	if(!mWriteLock || !nxLockTryLock(mWriteLock))
+	if(!mPointer04 || !nxLockTryLock(mPointer04))
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x78, 0,
@@ -1240,7 +1241,7 @@ NxJoint* NpScene::createJoint(const NxJointDesc& desc)
 
 	NxJoint* joint = mScene->createJoint(desc);
 
-	nxLockUnlock(mWriteLock);
+	nxLockUnlock(mPointer04);
 	return joint;
 	}
 

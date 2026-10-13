@@ -482,7 +482,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsEmptySceneTests bcrypt)
 	add_executable(NxPhysicsSceneConstructorTests tests/PhysicsSceneConstructorTests.cpp)
 	target_include_directories(NxPhysicsSceneConstructorTests PRIVATE
-		Foundation/include Physics/include)
+		Foundation/include Foundation/src/include
+		Physics/include Physics/src/include)
 	target_link_libraries(NxPhysicsSceneConstructorTests bcrypt)
 	add_executable(NxPhysicsControllerSweepFaceTests tests/PhysicsControllerSweepFaceTests.cpp)
 	target_include_directories(NxPhysicsControllerSweepFaceTests PRIVATE

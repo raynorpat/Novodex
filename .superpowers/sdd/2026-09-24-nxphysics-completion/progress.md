@@ -306,3 +306,11 @@ The existing public plane/sphere contact visualization fixture reaches the rende
 ### M7.13 — spring-patch material classifier row closure (`phys_fn_000871`)
 
 The registered public simulation contact/friction fixture detects forcing `cpmPatchSpring0871` to classify all patches as spring contact: the transcript changes by 116 bytes with both exits zero and exact stderr. Restoring the two-material flag OR matches exactly. Phase 7 remains at 1,711/1,711 and records 204 closed / 356 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-contact-spring-patch-classification-000871.md.
+
+### M5 follow-up — approved five-family destructor model revalidated (2026-10-13)
+
+The approved layout, five final shape-family types, oracle destructor differential, and registered member-only negative control were already present on `main`; no implementation diff was needed. Fresh absolute-path `NxPhysicsShapeVtableTests` differential: all five secondary destructor cases and deleting variants match, all five primary deleting destructor cases match, and the member-only mutation yields five mismatches. Fresh full Phase 5 gate rebuilt Release and passed at 2,685/2,685 coverage assertions. Current candidate DLL SHA-256: `ce977bc9988c0af5209f6b7020e15fa81d98f2875dab887def2d2e1996bdb3b7`. Public headers and unrelated dirty paths were left untouched.
+
+### M7.14 — NpScene secondary destructor reconstruction (`phys_fn_000412`, `phys_fn_000414`)
+
+Reconstructed `NpScene` with `EmbeddedHookBase` at `this + 8`, so MSVC emits the oracle's secondary deleting adjustor and the lock links remain at `+0xc/+0x10`. The constructor test directly invokes both secondary-vtable destructor variants on scratch scenes, checks root adjustment, both vptr transitions, and frees (6 nondeleting, 7 deleting), with a member-only negative control. A no-op destructor mutation is rejected (`candidate_exit=1`, `stdout_delta=6`). Inventory and Phase 7 closure ledger now record both rows; Phase 7 closes 214 rows and defers 346. Fresh Win32 Release Phase 7 gate passes at 1,721/1,721. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-secondary-destructor-000412-000414.md`.
