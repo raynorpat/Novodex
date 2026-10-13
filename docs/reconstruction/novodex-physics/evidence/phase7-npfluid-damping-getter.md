@@ -10,4 +10,4 @@ A no-forward mutant that returns `0.0f` instead is rejected: candidate exit 1, `
 
 Fresh Phase 5 and Phase 7 gates pass at 2,681/2,681 and 1,714/1,714 assertions. The compressed red, restored, mutation, and gate transcripts are in [the raw evidence directory](raw/phase7-npfluid-damping-getter-20261013/).
 
-No public header changed. Fluid damping setters, the other scalar property setters/getters, particle data, the remaining public `NxFluid` methods, and full-DLL closure remain open.
+No public header changed. Fluid damping and collision scalar setters, particle data, the remaining public `NxFluid` methods, and full-DLL closure remain open. Static and dynamic collision getters are covered separately in [their evidence](phase7-npfluid-collision-getters.md).

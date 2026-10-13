@@ -16,4 +16,4 @@ Phase 5 passes at 2,680/2,680 coverage assertions and Phase 7 at 1,713/1,713. Ra
 
 ## Remaining work
 
-This exercises the current host's unlicensed stiffness/viscosity feature path. A positive FluidKey and those live getter callbacks still need an enabled-license differential. The damping getter is covered separately in [its evidence](phase7-npfluid-damping-getter.md); scalar setters, collision properties, particle data, and the remaining `NxFluid` virtuals are open. The full vtable and DLL audit remain incomplete. No public headers changed.
+This exercises the current host's unlicensed stiffness/viscosity feature path. A positive FluidKey and those live getter callbacks still need an enabled-license differential. The damping getter is covered separately in [its evidence](phase7-npfluid-damping-getter.md), as are the collision getters in [their evidence](phase7-npfluid-collision-getters.md). Scalar setters, particle data, and the remaining `NxFluid` virtuals are open. The full vtable and DLL audit remain incomplete. No public headers changed.

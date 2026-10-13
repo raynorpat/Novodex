@@ -3508,6 +3508,9 @@ $NxRequiredCoverageLines = [ordered] @{
 		'simulation fluid public-api scalars stiffness=00000000.1 viscosity=00000000.1 diagnostics=1.1'
 		# Damping remains callback-backed and returns the FluidModel's exact scalar.
 		'simulation fluid public-api damping value=3ec00000 calls=1'
+		# Static collision scalars forward; unavailable dynamic properties warn exactly.
+		'simulation fluid public-api static-collision restitution=3e000000 calls=1 adhesion=3f200000 calls=1'
+		'simulation fluid public-api dynamic-collision restitution=00000000.1.1 adhesion=00000000.1.1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
@@ -5867,7 +5870,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2681  # adds public NxFluid damping getter
+	'5' = 2683  # adds public NxFluid static/dynamic collision scalar getters
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions
 				# includes distinct dirty-manager replacement-buffer coverage
@@ -5931,7 +5934,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1714  # adds public NxFluid damping getter
+	'7' = 1716  # adds public NxFluid static/dynamic collision scalar getters
 				# adds the dirty-refresh callback argument differential
 				# adds the attached-body fluid substep to the current mainline floor
 				# includes the legacy NpScene run trajectory assertions

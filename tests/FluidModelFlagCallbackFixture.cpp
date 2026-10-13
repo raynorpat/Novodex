@@ -46,6 +46,8 @@ struct NxFluidManagerCallbackSummary
 	unsigned emitterSetGlobalPose;
 	unsigned emitterGetGlobalPose;
 	unsigned emitterCreateArguments[4];
+	unsigned fluidGetStaticCollisionRestitution;
+	unsigned fluidGetStaticCollisionAdhesion;
 	};
 
 struct NxFluidManagerCallbackRecord
@@ -60,6 +62,8 @@ static unsigned gFluidManagerRecordCount;
 static unsigned gFluidManagerGetCallCount;
 static bool gFluidManagerCallbackProbe;
 static unsigned gFluidGetDampingCalls;
+static unsigned gFluidGetStaticCollisionRestitutionCalls;
+static unsigned gFluidGetStaticCollisionAdhesionCalls;
 static unsigned char gFluidStaticCollision[0x200];
 static void* gFluidManagerOldStaticCollision = gFluidStaticCollision;
 static void* gFluidManagerReplacementStaticCollision = gFluidStaticCollision;
@@ -246,6 +250,8 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidManagerGetCallCount = 0;
 	gFluidManagerCallbackProbe = false;
 	gFluidGetDampingCalls = 0;
+	gFluidGetStaticCollisionRestitutionCalls = 0;
+	gFluidGetStaticCollisionAdhesionCalls = 0;
 	gFluidEmitterCreateNullIndex = ~0u;
 	ZeroMemory(gFluidStaticCollision, sizeof(gFluidStaticCollision));
 	gFluidManagerStaticCollisionGetIndex = 0;
@@ -392,6 +398,48 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetDamping(
 extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidDampingCalls()
 	{
 	return gFluidGetDampingCalls;
+	}
+
+static bool nxFluidFixtureHasBackendFluid(void* manager, void* fluid)
+	{
+	if(manager != &gFluidManagerBackend || !fluid)
+		return false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) / sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			return true;
+	return false;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetStaticCollisionRestitution(
+	void* manager, void* fluid)
+	{
+	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
+		return -1.0f;
+	++gFluidManagerCallbackSummary.fluidGetStaticCollisionRestitution;
+	++gFluidGetStaticCollisionRestitutionCalls;
+	return 0.125f;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidStaticCollisionRestitutionCalls()
+	{
+	return gFluidGetStaticCollisionRestitutionCalls;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl FluidGetStaticCollisionAdhesion(
+	void* manager, void* fluid)
+	{
+	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
+		return -1.0f;
+	++gFluidManagerCallbackSummary.fluidGetStaticCollisionAdhesion;
+	++gFluidGetStaticCollisionAdhesionCalls;
+	return 0.625f;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidStaticCollisionAdhesionCalls()
+	{
+	return gFluidGetStaticCollisionAdhesionCalls;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetRestParticleDistance(

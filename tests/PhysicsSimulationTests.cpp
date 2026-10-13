@@ -3228,15 +3228,24 @@ int wmain(int argc, wchar_t** argv)
 		unsigned emitterSetGlobalPose;
 		unsigned emitterGetGlobalPose;
 		unsigned emitterCreateArguments[4];
+		unsigned fluidGetStaticCollisionRestitution;
+		unsigned fluidGetStaticCollisionAdhesion;
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
+	typedef unsigned (__cdecl *GetFluidScalarCallsFn)();
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
 		ResetFluidManagerCallbacksFn>(GetProcAddress(fluidModel,
 			"NxResetFluidManagerCallbacks"));
 	GetFluidDampingCallsFn getFluidDampingCalls = reinterpret_cast<
 		GetFluidDampingCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidDampingCalls"));
+	GetFluidScalarCallsFn getFluidStaticRestitutionCalls = reinterpret_cast<
+		GetFluidScalarCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidStaticCollisionRestitutionCalls"));
+	GetFluidScalarCallsFn getFluidStaticAdhesionCalls = reinterpret_cast<
+		GetFluidScalarCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidStaticCollisionAdhesionCalls"));
 	GetFluidManagerCallbackSummaryFn getFluidManagerCallbackSummary = reinterpret_cast<
 		GetFluidManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
 			"NxGetFluidManagerCallbackSummary"));
@@ -3244,6 +3253,7 @@ int wmain(int argc, wchar_t** argv)
 		SetFluidEmitterCreateNullIndexFn>(GetProcAddress(fluidModel,
 			"NxSetFluidEmitterCreateNullIndex"));
 	if(!resetFluidManagerCallbacks || !getFluidDampingCalls ||
+		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex)
 		return nxFail("fluid model manager callback controls are missing");
@@ -3460,6 +3470,53 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<const unsigned*>(&enabledPublicDamping);
 	const unsigned enabledFluidDampingCalls =
 		getFluidDampingCalls() - enabledFluidDampingCallsBefore;
+	const unsigned enabledFluidStaticRestitutionCallsBefore =
+		getFluidStaticRestitutionCalls();
+	const NxReal enabledPublicStaticRestitution = enabledFluid
+		? enabledFluid->getStaticCollisionRestitution() : -1.0f;
+	const unsigned enabledPublicStaticRestitutionBits =
+		*reinterpret_cast<const unsigned*>(&enabledPublicStaticRestitution);
+	const unsigned enabledFluidStaticRestitutionCalls =
+		getFluidStaticRestitutionCalls() -
+		enabledFluidStaticRestitutionCallsBefore;
+	const unsigned enabledFluidStaticAdhesionCallsBefore =
+		getFluidStaticAdhesionCalls();
+	const NxReal enabledPublicStaticAdhesion = enabledFluid
+		? enabledFluid->getStaticCollisionAdhesion() : -1.0f;
+	const unsigned enabledPublicStaticAdhesionBits =
+		*reinterpret_cast<const unsigned*>(&enabledPublicStaticAdhesion);
+	const unsigned enabledFluidStaticAdhesionCalls =
+		getFluidStaticAdhesionCalls() - enabledFluidStaticAdhesionCallsBefore;
+	simulationOutput.resetLast();
+	const unsigned enabledDynamicRestitutionErrorsBefore = simulationOutput.errors;
+	const NxReal enabledPublicDynamicRestitution = enabledFluid
+		? enabledFluid->getDynamicCollisionRestitution() : -1.0f;
+	const unsigned enabledPublicDynamicRestitutionBits =
+		*reinterpret_cast<const unsigned*>(&enabledPublicDynamicRestitution);
+	const unsigned enabledDynamicRestitutionErrors =
+		simulationOutput.errors - enabledDynamicRestitutionErrorsBefore;
+	const bool enabledDynamicRestitutionDiagnosticExact =
+		enabledDynamicRestitutionErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 188 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::getDynamicCollisionRestitution(): Feature not available!") == 0;
+	simulationOutput.resetLast();
+	const unsigned enabledDynamicAdhesionErrorsBefore = simulationOutput.errors;
+	const NxReal enabledPublicDynamicAdhesion = enabledFluid
+		? enabledFluid->getDynamicCollisionAdhesion() : -1.0f;
+	const unsigned enabledPublicDynamicAdhesionBits =
+		*reinterpret_cast<const unsigned*>(&enabledPublicDynamicAdhesion);
+	const unsigned enabledDynamicAdhesionErrors =
+		simulationOutput.errors - enabledDynamicAdhesionErrorsBefore;
+	const bool enabledDynamicAdhesionDiagnosticExact =
+		enabledDynamicAdhesionErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 203 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::getDynamicCollisionAdhesion(): Feature not available!") == 0;
 	NxSimulationFailSizeAllocator fluidFailAllocator(*savedFluidAllocator, 0x84);
 	*fluidFoundationAllocatorSlot = &fluidFailAllocator;
 	simulationOutput.resetLast();
@@ -3560,6 +3617,14 @@ int wmain(int argc, wchar_t** argv)
 		enabledPublicViscosityDiagnosticExact ? 1u : 0u);
 	printf("simulation fluid public-api damping value=%08x calls=%u\n",
 		enabledPublicDampingBits, enabledFluidDampingCalls);
+	printf("simulation fluid public-api static-collision restitution=%08x calls=%u adhesion=%08x calls=%u\n",
+		enabledPublicStaticRestitutionBits, enabledFluidStaticRestitutionCalls,
+		enabledPublicStaticAdhesionBits, enabledFluidStaticAdhesionCalls);
+	printf("simulation fluid public-api dynamic-collision restitution=%08x.%u.%u adhesion=%08x.%u.%u\n",
+		enabledPublicDynamicRestitutionBits, enabledDynamicRestitutionErrors,
+		enabledDynamicRestitutionDiagnosticExact ? 1u : 0u,
+		enabledPublicDynamicAdhesionBits, enabledDynamicAdhesionErrors,
+		enabledDynamicAdhesionDiagnosticExact ? 1u : 0u);
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
@@ -3603,7 +3668,8 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<void**>(enabledFluidSceneInternal + 0x61c) == 0;
 	const unsigned enabledFluidErrors = simulationOutput.errors -
 		enabledFluidErrorsBefore - enabledPublicStiffnessErrors -
-		enabledPublicViscosityErrors;
+		enabledPublicViscosityErrors - enabledDynamicRestitutionErrors -
+		enabledDynamicAdhesionErrors;
 	const bool enabledFluidCallbacks = fluidManagerCallbacks.managerCreate == 1 &&
 		fluidManagerCallbacks.managerDestroy == 1 &&
 		fluidManagerCallbacks.fluidCreate == 1 &&
@@ -3666,6 +3732,14 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
 		enabledPublicDampingBits != 0x3ec00000u ||
 		enabledFluidDampingCalls != 1 ||
+		enabledPublicStaticRestitutionBits != 0x3e000000u ||
+		enabledFluidStaticRestitutionCalls != 1 ||
+		enabledPublicStaticAdhesionBits != 0x3f200000u ||
+		enabledFluidStaticAdhesionCalls != 1 ||
+		enabledPublicDynamicRestitutionBits != 0 ||
+		!enabledDynamicRestitutionDiagnosticExact ||
+		enabledPublicDynamicAdhesionBits != 0 ||
+		!enabledDynamicAdhesionDiagnosticExact ||
 		!fluidDynamicAddClean || !fluidDynamicRemoveClean ||
 		!fluidStaticRemoveDirty ||
 		enabledFluidErrors != 0)

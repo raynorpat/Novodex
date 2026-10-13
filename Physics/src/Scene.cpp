@@ -827,6 +827,8 @@ static NxFluidEmitterGetGlobalPoseCallback gNxFluidEmitterGetGlobalPoseCallback 
 static NxFluidScalarGetCallback gNxFluidGetStiffnessCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetViscosityCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetDampingCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetStaticCollisionRestitutionCallback = 0;
+static NxFluidScalarGetCallback gNxFluidGetStaticCollisionAdhesionCallback = 0;
 static unsigned gNxFluidLicensedFeatureFlags = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
@@ -879,6 +881,12 @@ static bool nxFluidManagerResolveModel()
 		GetProcAddress(module, "FluidGetViscosity"));
 	gNxFluidGetDampingCallback = reinterpret_cast<NxFluidScalarGetCallback>(
 		GetProcAddress(module, "FluidGetDamping"));
+	gNxFluidGetStaticCollisionRestitutionCallback = reinterpret_cast<
+		NxFluidScalarGetCallback>(GetProcAddress(module,
+			"FluidGetStaticCollisionRestitution"));
+	gNxFluidGetStaticCollisionAdhesionCallback = reinterpret_cast<
+		NxFluidScalarGetCallback>(GetProcAddress(module,
+			"FluidGetStaticCollisionAdhesion"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
@@ -992,16 +1000,20 @@ static NxReal nxFluidCallBackendScalarGetter(void* wrapper,
 	return result;
 	}
 
+static NxReal nxFluidReportUnavailableScalar(int unavailableLine,
+	const char* message)
+	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+		unavailableLine, 0, message);
+	return 0.0f;
+	}
+
 static NxReal nxFluidCallScalarGetter(void* wrapper,
 	NxFluidScalarGetCallback callback, int unavailableLine, const char* message)
 	{
 	if((gNxFluidLicensedFeatureFlags & 1) == 0)
-		{
-		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
-			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
-			unavailableLine, 0, message);
-		return 0.0f;
-		}
+		return nxFluidReportUnavailableScalar(unavailableLine, message);
 	return nxFluidCallBackendScalarGetter(wrapper, callback);
 	}
 
@@ -1020,6 +1032,30 @@ static NxReal __fastcall nxFluidGetViscosity(void* wrapper, void*)
 static NxReal __fastcall nxFluidGetDamping(void* wrapper, void*)
 	{
 	return nxFluidCallBackendScalarGetter(wrapper, gNxFluidGetDampingCallback);
+	}
+
+static NxReal __fastcall nxFluidGetStaticCollisionRestitution(void* wrapper, void*)
+	{
+	return nxFluidCallBackendScalarGetter(wrapper,
+		gNxFluidGetStaticCollisionRestitutionCallback);
+	}
+
+static NxReal __fastcall nxFluidGetStaticCollisionAdhesion(void* wrapper, void*)
+	{
+	return nxFluidCallBackendScalarGetter(wrapper,
+		gNxFluidGetStaticCollisionAdhesionCallback);
+	}
+
+static NxReal __fastcall nxFluidGetDynamicCollisionRestitution(void*, void*)
+	{
+	return nxFluidReportUnavailableScalar(188,
+		"NxFluid::getDynamicCollisionRestitution(): Feature not available!");
+	}
+
+static NxReal __fastcall nxFluidGetDynamicCollisionAdhesion(void*, void*)
+	{
+	return nxFluidReportUnavailableScalar(203,
+		"NxFluid::getDynamicCollisionAdhesion(): Feature not available!");
 	}
 
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
@@ -1049,7 +1085,15 @@ static void* gNxFluidSolverVtable[] = {
 	0,
 	reinterpret_cast<void*>(nxFluidGetViscosity),
 	0,
-	reinterpret_cast<void*>(nxFluidGetDamping)
+	reinterpret_cast<void*>(nxFluidGetDamping),
+	0,
+	reinterpret_cast<void*>(nxFluidGetStaticCollisionRestitution),
+	0,
+	reinterpret_cast<void*>(nxFluidGetStaticCollisionAdhesion),
+	0,
+	reinterpret_cast<void*>(nxFluidGetDynamicCollisionRestitution),
+	0,
+	reinterpret_cast<void*>(nxFluidGetDynamicCollisionAdhesion)
 	};
 static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)
