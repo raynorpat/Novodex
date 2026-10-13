@@ -1012,6 +1012,32 @@ NxFluid* NpScene::createFluid(const NxFluidDesc& desc)
 		}
 	void* link = mWriteLock;
 	NxFluid* fluid = mScene->createFluid(desc);
+	if(fluid)
+		{
+		unsigned char* const fluidBytes = reinterpret_cast<unsigned char*>(fluid);
+		*reinterpret_cast<void**>(fluidBytes + 0x0c) = mWriteLock;
+		*reinterpret_cast<void**>(fluidBytes + 0x10) = mReadLock;
+		void* const internal = *reinterpret_cast<void**>(fluidBytes + 0x14);
+		unsigned char* const internalBytes = static_cast<unsigned char*>(internal);
+		unsigned first = *reinterpret_cast<unsigned*>(internalBytes + 4);
+		unsigned last = *reinterpret_cast<unsigned*>(internalBytes + 8);
+		for(unsigned cursor = first; cursor < last; cursor += sizeof(void*))
+			{
+			void* const emitter = reinterpret_cast<void*>(
+				*reinterpret_cast<unsigned*>(cursor));
+			if(!emitter)
+				continue;
+			void* const wrapper = *reinterpret_cast<void**>(
+				static_cast<unsigned char*>(emitter) + 0x0c);
+			if(wrapper)
+				{
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(wrapper) + 0x0c) =
+					mWriteLock;
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(wrapper) + 0x10) =
+					mReadLock;
+				}
+			}
+		}
 	nxNpSceneGuardLeave(link);
 	return fluid;
 	}
@@ -1054,7 +1080,7 @@ NxFluid** NpScene::getFluids()
 	const unsigned char* const scene = reinterpret_cast<const unsigned char*>(mScene);
 	const unsigned char* const manager = *reinterpret_cast<unsigned char* const*>(scene + 0x61c);
 	return manager ? reinterpret_cast<NxFluid**>(
-		*reinterpret_cast<const unsigned*>(manager + 4)) : 0;
+		*reinterpret_cast<const unsigned*>(manager + 0x14)) : 0;
 	}
 
 // phys_fn_000404 (0x0000d8a0). Implicit meshes are unavailable in the pinned

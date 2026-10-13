@@ -4,7 +4,7 @@ This evidence covers a tested slice of the oracle's fluid-manager create path. I
 
 ## Oracle path
 
-The pinned `sub_1008A000` validates `NxFluidDesc`, constructs a `Fluid`, copies descriptor state, calls the optional `FluidModel.DLL` `FluidCreate` callback, and appends the resulting object to the manager's primary and secondary arrays. `NpScene::getNbFluids` and `getFluids` expose the primary array. Release dispatches the fluid deleting destructor and the backend `FluidDestroy` callback; manager teardown calls `FluidManagerDestroy` when the extension is initialized.
+The pinned `sub_1008A000` validates `NxFluidDesc`, constructs a `Fluid`, copies descriptor state, calls the optional `FluidModel.DLL` `FluidCreate` callback, and appends the internal fluid and its public wrapper to the manager's primary and secondary arrays. `NpScene::getNbFluids` counts the primary internal-fluid array, while `getFluids` exposes the secondary public-wrapper array. Release recovers the internal object through the public wrapper's `+0x14` owner field, dispatches the internal deleting destructor, and calls the backend `FluidDestroy` callback; manager teardown calls `FluidManagerDestroy` when the extension is initialized.
 
 The manager is initialized from the extension's exported callbacks. The test uses an explicit, minimal `FluidModel.dll` fixture staged beside each pair, so it exercises the enabled branch without depending on a local optional plugin install.
 
@@ -29,4 +29,4 @@ Mutation checks: suppressing the candidate's `FluidCreate` dispatch produces cal
 
 ## Remaining work for this inventory row
 
-The initial manager dirty flag and first static-collision build are now exercised through public `createFluid`. The shape-change dirty refresh in `phys_fn_003630` (destroy/re-fetch/rebuild during stepping), broader callback resolution and dispatch, allocation failures, descriptor validation cases, emitter interactions, and teardown combinations still need reconstruction and oracle coverage. `phys_fn_003649` therefore remains `discovered`.
+The initial manager dirty flag and first static-collision build are now exercised through public `createFluid`. The descriptor-emitter construction path is covered separately in `phase7-fluid-emitter-create-003649.md`. The shape-change dirty refresh in `phys_fn_003630` (destroy/re-fetch/rebuild during stepping), broader callback resolution and dispatch, allocation failures, additional descriptor validation cases, public emitter operations, and teardown combinations still need reconstruction and oracle coverage. `phys_fn_003649` therefore remains open.

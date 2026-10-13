@@ -3185,6 +3185,12 @@ int wmain(int argc, wchar_t** argv)
 		unsigned fluidGetCellSize;
 		unsigned staticCollisionDestroy;
 		unsigned fluidCreateArguments[15];
+		unsigned fluidGetRestParticleDistance;
+		unsigned emitterCreate;
+		unsigned emitterDestroy;
+		unsigned emitterSetGlobalPose;
+		unsigned emitterGetGlobalPose;
+		unsigned emitterCreateArguments[4];
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
@@ -3221,6 +3227,12 @@ int wmain(int argc, wchar_t** argv)
 	enabledFluidManager[0x28] = 0;
 	NxFluidDesc enabledFluidDesc;
 	enabledFluidDesc.setToDefault();
+	NxFluidEmitterDesc enabledEmitterDesc;
+	enabledEmitterDesc.setToDefault();
+	enabledEmitterDesc.relPose.t.set(0.25f, -0.5f, 0.75f);
+	enabledEmitterDesc.dimensionX = 0.375f;
+	enabledEmitterDesc.dimensionY = 0.625f;
+	enabledFluidDesc.emitters.pushBack(enabledEmitterDesc);
 	simulationOutput.resetLast();
 	const unsigned enabledFluidErrorsBefore = simulationOutput.errors;
 	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
@@ -3228,6 +3240,15 @@ int wmain(int argc, wchar_t** argv)
 	NxFluid** const enabledFluidList = enabledFluidScene->getFluids();
 	const bool enabledFluidListed = enabledFluidCount == 1 && enabledFluidList &&
 		enabledFluidList[0] == enabledFluid;
+	void** const enabledFluidPrimaryArray = *reinterpret_cast<void***>(
+		enabledFluidManager + 4);
+	void** const enabledFluidSecondaryArray = *reinterpret_cast<void***>(
+		enabledFluidManager + 0x14);
+	void* const enabledFluidInternal = enabledFluid ? *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(enabledFluid) + 0x14) : 0;
+	const bool enabledFluidManagerArraysMatch = enabledFluidPrimaryArray &&
+		enabledFluidSecondaryArray && enabledFluidPrimaryArray[0] == enabledFluidInternal &&
+		enabledFluidSecondaryArray[0] == enabledFluid;
 	const bool enabledFluidDirtyFlagsCleared = enabledFluidManager[0x28] == 0 &&
 		enabledFluidManager[0x29] == 0;
 	const bool enabledFluidCellSizeStored =
@@ -3279,24 +3300,38 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.staticCollisionGet == 1 &&
 		fluidManagerCallbacks.fluidGetCellSize == 1 &&
 		fluidManagerCallbacks.staticCollisionDestroy == 0;
-	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u dirty-cleared=%u cell-size=%u errors=%u\n",
+	const bool enabledFluidEmitterCallbacks =
+		fluidManagerCallbacks.fluidGetRestParticleDistance == 1 &&
+		fluidManagerCallbacks.emitterCreate == 1 &&
+		fluidManagerCallbacks.emitterDestroy == 0 &&
+		fluidManagerCallbacks.emitterSetGlobalPose == 1 &&
+		fluidManagerCallbacks.emitterGetGlobalPose == 1;
+	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
 		enabledFluidManagerFlags ? 1u : 0u, enabledFluidListed ? 1u : 0u,
-		enabledFluidCount, enabledFluidManagerCleared ? 1u : 0u,
+		enabledFluidCount, enabledFluidManagerArraysMatch ? 1u : 0u,
+		enabledFluidManagerCleared ? 1u : 0u,
 		fluidManagerCallbacks.managerCreate, fluidManagerCallbacks.fluidCreate,
 		fluidManagerCallbacks.fluidDestroy, fluidManagerCallbacks.managerDestroy,
 		fluidManagerCallbacks.fluidGetCellSize,
 		fluidManagerCallbacks.staticCollisionGet,
 		fluidManagerCallbacks.staticCollisionDestroy,
 		fluidManagerCallbacks.staticCollisionCreate,
+		fluidManagerCallbacks.fluidGetRestParticleDistance,
+		fluidManagerCallbacks.emitterCreate,
+		fluidManagerCallbacks.emitterDestroy,
+		fluidManagerCallbacks.emitterSetGlobalPose,
+		fluidManagerCallbacks.emitterGetGlobalPose,
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
 	if(!enabledInvalidRejected || !enabledFluidManagerFlags || !enabledFluid ||
 		enabledInvalidCode != NXE_INVALID_PARAMETER || enabledInvalidLine != 0x8c ||
-		!enabledFluidListed || !enabledFluidManagerCleared || !enabledFluidCallbacks ||
+		!enabledFluidListed || !enabledFluidManagerArraysMatch ||
+		!enabledFluidManagerCleared || !enabledFluidCallbacks ||
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
+		!enabledFluidEmitterCallbacks ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
 		!fluidDynamicAddClean || !fluidDynamicRemoveClean ||
 		!fluidStaticRemoveDirty ||
