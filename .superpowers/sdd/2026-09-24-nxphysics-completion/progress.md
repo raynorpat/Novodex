@@ -286,3 +286,8 @@ Task M7.8 progress: changing the six-face loop limit to five in a throwaway sour
 Task M7.9 ruling: close `phys_fn_000907` by extending the existing registered visualization differential with a fetched simulation contact pair; this directly reaches the 8-byte contact-pair thunk. Cost if wrong: it proves only current-stamp pair visitation and contact-point rendering for this fixture, not all contact channels or manager lifecycle behavior.
 
 Task M7.9 progress: the plane/sphere contact fixture emits three lines on oracle and restored candidate with exact staged output. A no-op `row000907` mutant emits zero and is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=9`, `stderr_exact=False` on the candidate failure path). Phase 7 passes at 1,711/1,711; ledger now records 200 closed / 360 deferred. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-contact-pair-000907.md`.
+
+
+Task M7.10 ruling: falsify `phys_fn_000863` with the newly registered live contact visualization fixture, which reaches the per-step pair refresh and reads back the contact stream. Cost if wrong: proves reset behavior only for this reported plane/sphere pair path; other narrow-phase stream layouts remain open.
+
+Task M7.10 progress: a no-op cpmActorPairResetStream0863 mutation preserves stale stream records and increases rendered contact lines from 3 to 78 (`both exits=0`, `stdout_delta=87`, exact stderr). Restoring the row returns exact output. Phase 7 remains 1,711/1,711; ledger now records 201 closed / 359 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-contact-stream-reset-000863.md`.

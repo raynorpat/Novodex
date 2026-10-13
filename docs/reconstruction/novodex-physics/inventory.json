@@ -16298,13 +16298,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/357",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2629",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d0b0-0x1d0b7) in scene-raycast Task 4 (contact-pair manager): fastcall(pair): `add ecx,0x10; jmp 0x1005b620`; 002354 on pair + 0x10. Candidate cpmActorPairResetStream0863 (__fastcall) (Physics/src/ContactPairManager.cpp). Open callee: 002354 is not in the candidate (the no-op stand-in cpmOpen002354, no stable-ID line). Reachable only from the simulation step (000905 <- 000909 <- 001976); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "static_proof": "Capstone at RVA 0x0001d0b0 gives the fastcall tail thunk `add ecx,0x10; jmp 0x1005b620`, passing actor-pair stream subobject pair+0x10 to row 002354 (`NxContactSinkResetState`). `NxPairNode::row000905` reaches this reset when the actor-pair body-record pointers change before narrow-phase re-registration.",
+      "dynamic_proof": "The registered NxPhysicsSceneVisualizeTests fixture creates a contact pair, simulates/fetches 60 steps, and renders its contact stream. Oracle and restored candidate emit 3 contact lines and match exactly (stdout_delta=0, exact stderr). A no-op mutation of cpmActorPairResetStream0863 leaves stale stream contents: the candidate emits 78 contact lines versus the oracle 3, and the paired target rejects it (both exits zero, stdout_delta=87, exact stderr). Fresh Phase 7 gate passes at 1,711/1,711 assertions. Evidence: evidence/phase7-scene-contact-stream-reset-000863.md.",
+      "notes": "Actor-pair contact stream reset thunk; reached by the per-step pair refresh when body records change. The live contact visualization fixture falsifies omission of its row 002354 reset forward.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {

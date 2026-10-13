@@ -10619,3 +10619,6 @@ Correction (2026-10-12): phys_fn_000501 is now mutation-falsified; a five-face n
 
 
 Phase 7 scene contact-pair thunk `phys_fn_000907` is mutation-falsified by NxPhysicsSceneVisualizeTests: a no-op forward removes all three contact-point lines (`stdout_delta=9`); the restored control is exact. The full Phase 7 gate passes at 1,711/1,711, with 200 closed / 360 deferred. See evidence/phase7-scene-contact-pair-000907.md.
+
+
+Phase 7 actor-pair stream reset `phys_fn_000863` is mutation-falsified by NxPhysicsSceneVisualizeTests: omitting its row 002354 forward retains stale contact-stream contents and renders 78 rather than 3 lines (`stdout_delta=87`, both exits zero, exact stderr). The restored control is exact; Phase 7 remains 1,711/1,711, with 201 closed / 359 deferred. See evidence/phase7-scene-contact-stream-reset-000863.md.
