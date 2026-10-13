@@ -835,6 +835,8 @@ static NxFluidScalarSetCallback gNxFluidSetViscosityCallback = 0;
 static NxFluidScalarSetCallback gNxFluidSetDampingCallback = 0;
 static NxFluidScalarSetCallback gNxFluidSetStaticCollisionRestitutionCallback = 0;
 static NxFluidScalarSetCallback gNxFluidSetStaticCollisionAdhesionCallback = 0;
+static NxFluidScalarSetCallback gNxFluidSetDynamicCollisionRestitutionCallback = 0;
+static NxFluidScalarSetCallback gNxFluidSetDynamicCollisionAdhesionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionRestitutionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetStaticCollisionAdhesionCallback = 0;
 static NxFluidScalarGetCallback gNxFluidGetKernelRadiusMultiplierCallback = 0;
@@ -907,6 +909,12 @@ static bool nxFluidManagerResolveModel()
 	gNxFluidSetStaticCollisionAdhesionCallback = reinterpret_cast<
 		NxFluidScalarSetCallback>(GetProcAddress(module,
 			"FluidSetStaticCollisionAdhesion"));
+	gNxFluidSetDynamicCollisionRestitutionCallback = reinterpret_cast<
+		NxFluidScalarSetCallback>(GetProcAddress(module,
+			"FluidSetDynamicCollisionRestitution"));
+	gNxFluidSetDynamicCollisionAdhesionCallback = reinterpret_cast<
+		NxFluidScalarSetCallback>(GetProcAddress(module,
+			"FluidSetDynamicCollisionAdhesion"));
 	gNxFluidGetStaticCollisionRestitutionCallback = reinterpret_cast<
 		NxFluidScalarGetCallback>(GetProcAddress(module,
 			"FluidGetStaticCollisionRestitution"));
@@ -1286,6 +1294,90 @@ static void __fastcall nxFluidSetStaticCollisionAdhesion(
 	nxNpSceneGuardLeave(writeLock);
 	}
 
+// phys_fn_003738 (0x0008bb90): always report dynamic restitution as
+// unavailable, then retain the oracle's write-lock, reentry, and callback path.
+static void __fastcall nxFluidSetDynamicCollisionRestitution(
+	void* wrapper, void*, NxReal value)
+	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+		195, 0,
+		"NxFluid::setDynamicCollisionRestitution(): Feature not available!");
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			196, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			197, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* const internal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	void* const manager = *reinterpret_cast<void**>(internal + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(internal + 0x80);
+	if(gNxFluidSetDynamicCollisionRestitutionCallback)
+		gNxFluidSetDynamicCollisionRestitutionCallback(
+			backendManager, backendFluid, value);
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+// phys_fn_003742 (0x0008bcb0): always report dynamic adhesion as unavailable,
+// then retain the oracle's write-lock, reentry, and callback path.
+static void __fastcall nxFluidSetDynamicCollisionAdhesion(
+	void* wrapper, void*, NxReal value)
+	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+		210, 0,
+		"NxFluid::setDynamicCollisionAdhesion(): Feature not available!");
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			211, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			212, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* const internal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	void* const manager = *reinterpret_cast<void**>(internal + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(internal + 0x80);
+	if(gNxFluidSetDynamicCollisionAdhesionCallback)
+		gNxFluidSetDynamicCollisionAdhesionCallback(
+			backendManager, backendFluid, value);
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	}
+
 static NxReal __fastcall nxFluidGetStaticCollisionRestitution(void* wrapper, void*)
 	{
 	return nxFluidCallBackendScalarGetter(wrapper,
@@ -1404,9 +1496,9 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidGetStaticCollisionAdhesion),
 	reinterpret_cast<void*>(nxFluidSetStaticCollisionAdhesion),
 	reinterpret_cast<void*>(nxFluidGetDynamicCollisionRestitution),
-	0,
+	reinterpret_cast<void*>(nxFluidSetDynamicCollisionRestitution),
 	reinterpret_cast<void*>(nxFluidGetDynamicCollisionAdhesion),
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	reinterpret_cast<void*>(nxFluidSetDynamicCollisionAdhesion), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	reinterpret_cast<void*>(nxFluidGetMaxParticles),
 	reinterpret_cast<void*>(nxFluidGetKernelRadiusMultiplier),
 	reinterpret_cast<void*>(nxFluidGetRestParticlesPerMeter),

@@ -10665,3 +10665,6 @@ Phase 7 public NxFluid viscosity setter phys_fn_003722: no-forward mutation reje
 Phase 7 public NxFluid damping setter phys_fn_003726: no-forward callback mutation rejected at stdout_delta=52; restored differential exact. Evidence: evidence/phase7-npfluid-set-damping-003726.md.
 Phase 7 static-collision restitution setter phys_fn_003730: no-forward callback mutant rejected at stdout_delta=52; restored differential exact. Evidence: evidence/phase7-npfluid-static-rest-restitution-003730.md.
 Phase 7 static-collision adhesion setter phys_fn_003734: no-forward callback mutant rejected at stdout_delta=52; restored differential exact. Evidence: evidence/phase7-npfluid-static-adhesion-003734.md.
+# Phase 7 continuation: NxFluid dynamic-collision setters
+
+Rows `phys_fn_003738` and `phys_fn_003742` are now closed by registered `NxPhysicsSimulationTests` public differentials. Their independent no-forward mutants each fail with `candidate_exit=1`, `stdout_delta=52`; restored output is exact. The full Phase 5/6/7 gates pass at 2,692/1,626/1,734 assertions. See [phase7-npfluid-dynamic-setters-003738-003742.md](phase7-npfluid-dynamic-setters-003738-003742.md).

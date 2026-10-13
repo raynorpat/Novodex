@@ -3292,6 +3292,10 @@ int wmain(int argc, wchar_t** argv)
 		unsigned*, unsigned*, unsigned*);
 	typedef void (__cdecl *GetFluidSetStaticCollisionAdhesionObservationFn)(
 		unsigned*, unsigned*, unsigned*);
+	typedef void (__cdecl *GetFluidSetDynamicCollisionRestitutionObservationFn)(
+		unsigned*, unsigned*, unsigned*);
+	typedef void (__cdecl *GetFluidSetDynamicCollisionAdhesionObservationFn)(
+		unsigned*, unsigned*, unsigned*);
 	struct FluidManagerCallbackSummary
 		{
 		unsigned managerCreate;
@@ -3341,6 +3345,12 @@ int wmain(int argc, wchar_t** argv)
 	GetFluidSetStaticCollisionAdhesionObservationFn getFluidSetStaticCollisionAdhesionObservation =
 		reinterpret_cast<GetFluidSetStaticCollisionAdhesionObservationFn>(GetProcAddress(
 			fluidModel, "NxGetFluidSetStaticCollisionAdhesionObservation"));
+	GetFluidSetDynamicCollisionRestitutionObservationFn getFluidSetDynamicCollisionRestitutionObservation =
+		reinterpret_cast<GetFluidSetDynamicCollisionRestitutionObservationFn>(GetProcAddress(
+			fluidModel, "NxGetFluidSetDynamicCollisionRestitutionObservation"));
+	GetFluidSetDynamicCollisionAdhesionObservationFn getFluidSetDynamicCollisionAdhesionObservation =
+		reinterpret_cast<GetFluidSetDynamicCollisionAdhesionObservationFn>(GetProcAddress(
+			fluidModel, "NxGetFluidSetDynamicCollisionAdhesionObservation"));
 	GetFluidScalarCallsFn getFluidStaticRestitutionCalls = reinterpret_cast<
 		GetFluidScalarCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidStaticCollisionRestitutionCalls"));
@@ -3358,6 +3368,8 @@ int wmain(int argc, wchar_t** argv)
 		!getFluidSetDampingObservation ||
 		!getFluidSetStaticCollisionRestitutionObservation ||
 		!getFluidSetStaticCollisionAdhesionObservation ||
+		!getFluidSetDynamicCollisionRestitutionObservation ||
+		!getFluidSetDynamicCollisionAdhesionObservation ||
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex)
@@ -3941,6 +3953,8 @@ int wmain(int argc, wchar_t** argv)
 	bool licensedDampingSetter = false;
 	bool licensedStaticCollisionRestitutionSetter = false;
 	bool licensedStaticCollisionAdhesionSetter = false;
+	bool licensedDynamicCollisionRestitutionSetter = false;
+	bool licensedDynamicCollisionAdhesionSetter = false;
 	{
 	NxSimulationFluidLicenseOverride licenseOverride;
 	NxScene* const licensedFluidScene = licenseOverride.ready
@@ -3968,13 +3982,15 @@ int wmain(int argc, wchar_t** argv)
 	const NxReal licensedKernelRadius = licensedFluid
 		? licensedFluid->getKernelRadiusMultiplier() : 0.0f;
 	const unsigned licensedKernelBits = nxFloatBits(licensedKernelRadius);
+	const unsigned licensedKernelErrors = simulationOutput.errors -
+		licensedKernelErrorsBefore;
 	FluidManagerCallbackSummary licensedCallbacksAfter = {};
 	getFluidManagerCallbackSummary(&licensedCallbacksAfter);
 	enabledLicensedKernelGetter = licenseOverride.ready && licensedFluid &&
 		licensedKernelBits == 0x3fe00000u &&
 		licensedCallbacksAfter.fluidGetKernelRadiusMultiplier ==
 			licensedCallbacksBefore.fluidGetKernelRadiusMultiplier + 1 &&
-		simulationOutput.errors == licensedKernelErrorsBefore;
+		licensedKernelErrors == 0;
 	licensedStiffnessSetter = licenseOverride.ready && licensedFluid &&
 		licensedSetStiffnessErrors == 0 &&
 		stiffnessCallsAfter == stiffnessCallsBefore + 1 &&
@@ -4065,6 +4081,70 @@ int wmain(int argc, wchar_t** argv)
 		staticAdhesionSetBitsAfter,
 		staticAdhesionSetCallsAfter - staticAdhesionSetCallsBefore,
 		staticAdhesionSetArgumentsAfter, licensedSetStaticAdhesionErrors);
+	unsigned dynamicRestitutionSetCallsBefore = 0,
+		dynamicRestitutionSetBitsBefore = 0,
+		dynamicRestitutionSetArgumentsBefore = 0;
+	getFluidSetDynamicCollisionRestitutionObservation(
+		&dynamicRestitutionSetCallsBefore, &dynamicRestitutionSetBitsBefore,
+		&dynamicRestitutionSetArgumentsBefore);
+	const unsigned licensedSetDynamicRestitutionErrorsBefore = simulationOutput.errors;
+	if(licensedFluid)
+		licensedFluid->setDynamicCollisionRestitution(0.75f);
+	const unsigned licensedSetDynamicRestitutionErrors = simulationOutput.errors -
+		licensedSetDynamicRestitutionErrorsBefore;
+	const bool licensedSetDynamicRestitutionDiagnosticExact =
+		licensedSetDynamicRestitutionErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 195 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::setDynamicCollisionRestitution(): Feature not available!") == 0;
+	unsigned dynamicRestitutionSetCallsAfter = 0,
+		dynamicRestitutionSetBitsAfter = 0,
+		dynamicRestitutionSetArgumentsAfter = 0;
+	getFluidSetDynamicCollisionRestitutionObservation(
+		&dynamicRestitutionSetCallsAfter, &dynamicRestitutionSetBitsAfter,
+		&dynamicRestitutionSetArgumentsAfter);
+	licensedDynamicCollisionRestitutionSetter = licenseOverride.ready && licensedFluid &&
+		licensedSetDynamicRestitutionDiagnosticExact &&
+		dynamicRestitutionSetCallsAfter == dynamicRestitutionSetCallsBefore + 1 &&
+		dynamicRestitutionSetBitsAfter == 0x3f400000u &&
+		dynamicRestitutionSetArgumentsAfter == 1;
+	printf("simulation fluid public-api configuration licensed-set-dynamic-restitution value=%08x calls=%u args=%u errors=%u diagnostic=%u\n",
+		dynamicRestitutionSetBitsAfter,
+		dynamicRestitutionSetCallsAfter - dynamicRestitutionSetCallsBefore,
+		dynamicRestitutionSetArgumentsAfter, licensedSetDynamicRestitutionErrors,
+		licensedSetDynamicRestitutionDiagnosticExact ? 1u : 0u);
+	unsigned dynamicAdhesionSetCallsBefore = 0, dynamicAdhesionSetBitsBefore = 0,
+		dynamicAdhesionSetArgumentsBefore = 0;
+	getFluidSetDynamicCollisionAdhesionObservation(&dynamicAdhesionSetCallsBefore,
+		&dynamicAdhesionSetBitsBefore, &dynamicAdhesionSetArgumentsBefore);
+	const unsigned licensedSetDynamicAdhesionErrorsBefore = simulationOutput.errors;
+	if(licensedFluid)
+		licensedFluid->setDynamicCollisionAdhesion(0.125f);
+	const unsigned licensedSetDynamicAdhesionErrors = simulationOutput.errors -
+		licensedSetDynamicAdhesionErrorsBefore;
+	const bool licensedSetDynamicAdhesionDiagnosticExact =
+		licensedSetDynamicAdhesionErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 210 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"NxFluid::setDynamicCollisionAdhesion(): Feature not available!") == 0;
+	unsigned dynamicAdhesionSetCallsAfter = 0, dynamicAdhesionSetBitsAfter = 0,
+		dynamicAdhesionSetArgumentsAfter = 0;
+	getFluidSetDynamicCollisionAdhesionObservation(&dynamicAdhesionSetCallsAfter,
+		&dynamicAdhesionSetBitsAfter, &dynamicAdhesionSetArgumentsAfter);
+	licensedDynamicCollisionAdhesionSetter = licenseOverride.ready && licensedFluid &&
+		licensedSetDynamicAdhesionDiagnosticExact &&
+		dynamicAdhesionSetCallsAfter == dynamicAdhesionSetCallsBefore + 1 &&
+		dynamicAdhesionSetBitsAfter == 0x3e000000u &&
+		dynamicAdhesionSetArgumentsAfter == 1;
+	printf("simulation fluid public-api configuration licensed-set-dynamic-adhesion value=%08x calls=%u args=%u errors=%u diagnostic=%u\n",
+		dynamicAdhesionSetBitsAfter,
+		dynamicAdhesionSetCallsAfter - dynamicAdhesionSetCallsBefore,
+		dynamicAdhesionSetArgumentsAfter, licensedSetDynamicAdhesionErrors,
+		licensedSetDynamicAdhesionDiagnosticExact ? 1u : 0u);
 	printf("simulation fluid public-api configuration licensed-set-stiffness value=%08x calls=%u args=%u errors=%u\n",
 		stiffnessBitsAfter, stiffnessCallsAfter - stiffnessCallsBefore,
 		stiffnessArgumentsAfter, licensedSetStiffnessErrors);
@@ -4072,7 +4152,7 @@ int wmain(int argc, wchar_t** argv)
 		licensedKernelBits,
 		licensedCallbacksAfter.fluidGetKernelRadiusMultiplier -
 			licensedCallbacksBefore.fluidGetKernelRadiusMultiplier,
-		simulationOutput.errors - licensedKernelErrorsBefore,
+		licensedKernelErrors,
 		licenseOverride.ready ? 1u : 0u, licensedFluid ? 1u : 0u);
 	if(licensedFluid)
 		licensedFluidScene->releaseFluid(*licensedFluid);
@@ -4082,7 +4162,9 @@ int wmain(int argc, wchar_t** argv)
 	if(!enabledLicensedKernelGetter || !licensedStiffnessSetter ||
 		!licensedViscositySetter || !licensedDampingSetter ||
 		!licensedStaticCollisionRestitutionSetter ||
-		!licensedStaticCollisionAdhesionSetter)
+		!licensedStaticCollisionAdhesionSetter ||
+		!licensedDynamicCollisionRestitutionSetter ||
+		!licensedDynamicCollisionAdhesionSetter)
 		return nxFail("licensed NxFluid scalar setter or kernel-radius getter did not forward through FluidModel");
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK

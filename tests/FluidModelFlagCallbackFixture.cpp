@@ -82,6 +82,12 @@ static unsigned gFluidSetStaticCollisionRestitutionArgumentsValid;
 static unsigned gFluidSetStaticCollisionAdhesionCalls;
 static unsigned gFluidSetStaticCollisionAdhesionBits;
 static unsigned gFluidSetStaticCollisionAdhesionArgumentsValid;
+static unsigned gFluidSetDynamicCollisionRestitutionCalls;
+static unsigned gFluidSetDynamicCollisionRestitutionBits;
+static unsigned gFluidSetDynamicCollisionRestitutionArgumentsValid;
+static unsigned gFluidSetDynamicCollisionAdhesionCalls;
+static unsigned gFluidSetDynamicCollisionAdhesionBits;
+static unsigned gFluidSetDynamicCollisionAdhesionArgumentsValid;
 static unsigned gFluidGetStaticCollisionRestitutionCalls;
 static unsigned gFluidGetStaticCollisionAdhesionCalls;
 static unsigned char gFluidStaticCollision[0x200];
@@ -285,6 +291,12 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidSetStaticCollisionAdhesionCalls = 0;
 	gFluidSetStaticCollisionAdhesionBits = 0;
 	gFluidSetStaticCollisionAdhesionArgumentsValid = 0;
+	gFluidSetDynamicCollisionRestitutionCalls = 0;
+	gFluidSetDynamicCollisionRestitutionBits = 0;
+	gFluidSetDynamicCollisionRestitutionArgumentsValid = 0;
+	gFluidSetDynamicCollisionAdhesionCalls = 0;
+	gFluidSetDynamicCollisionAdhesionBits = 0;
+	gFluidSetDynamicCollisionAdhesionArgumentsValid = 0;
 	gFluidGetStaticCollisionRestitutionCalls = 0;
 	gFluidGetStaticCollisionAdhesionCalls = 0;
 	gFluidEmitterCreateNullIndex = ~0u;
@@ -543,6 +555,50 @@ extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetStaticCollisionAdhesi
 	if(calls) *calls = gFluidSetStaticCollisionAdhesionCalls;
 	if(valueBits) *valueBits = gFluidSetStaticCollisionAdhesionBits;
 	if(argumentsValid) *argumentsValid = gFluidSetStaticCollisionAdhesionArgumentsValid;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidSetDynamicCollisionRestitution(
+	void* manager, void* fluid, float value)
+	{
+	++gFluidSetDynamicCollisionRestitutionCalls;
+	memcpy(&gFluidSetDynamicCollisionRestitutionBits, &value, sizeof(value));
+	bool fluidFound = false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) /
+		sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			fluidFound = true;
+	gFluidSetDynamicCollisionRestitutionArgumentsValid =
+		manager == &gFluidManagerBackend && fluidFound;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetDynamicCollisionRestitutionObservation(
+	unsigned* calls, unsigned* valueBits, unsigned* argumentsValid)
+	{
+	if(calls) *calls = gFluidSetDynamicCollisionRestitutionCalls;
+	if(valueBits) *valueBits = gFluidSetDynamicCollisionRestitutionBits;
+	if(argumentsValid) *argumentsValid = gFluidSetDynamicCollisionRestitutionArgumentsValid;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl FluidSetDynamicCollisionAdhesion(
+	void* manager, void* fluid, float value)
+	{
+	++gFluidSetDynamicCollisionAdhesionCalls;
+	memcpy(&gFluidSetDynamicCollisionAdhesionBits, &value, sizeof(value));
+	bool fluidFound = false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) /
+		sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			fluidFound = true;
+	gFluidSetDynamicCollisionAdhesionArgumentsValid =
+		manager == &gFluidManagerBackend && fluidFound;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxGetFluidSetDynamicCollisionAdhesionObservation(
+	unsigned* calls, unsigned* valueBits, unsigned* argumentsValid)
+	{
+	if(calls) *calls = gFluidSetDynamicCollisionAdhesionCalls;
+	if(valueBits) *valueBits = gFluidSetDynamicCollisionAdhesionBits;
+	if(argumentsValid) *argumentsValid = gFluidSetDynamicCollisionAdhesionArgumentsValid;
 	}
 
 static bool nxFluidFixtureHasBackendFluid(void* manager, void* fluid)

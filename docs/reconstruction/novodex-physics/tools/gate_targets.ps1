@@ -3523,6 +3523,8 @@ $NxRequiredCoverageLines = [ordered] @{
 		'simulation fluid public-api configuration licensed-set-damping value=3e800000 calls=1 args=1 errors=0'
 		'simulation fluid public-api configuration licensed-set-static-restitution value=3f000000 calls=1 args=1 errors=0'
 		'simulation fluid public-api configuration licensed-set-static-adhesion value=3e800000 calls=1 args=1 errors=0'
+		'simulation fluid public-api configuration licensed-set-dynamic-restitution value=3f400000 calls=1 args=1 errors=1 diagnostic=1'
+		'simulation fluid public-api configuration licensed-set-dynamic-adhesion value=3e000000 calls=1 args=1 errors=1 diagnostic=1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.
@@ -5888,7 +5890,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2690  # adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
+	'5' = 2692  # adds both dynamic-collision fluid setter callback paths
+				# adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
 				# adds the licensed NxFluid setStaticCollisionRestitution callback dispatch
 				# adds the licensed NxFluid setDamping callback dispatch
 				# adds the licensed NxFluid setViscosity callback dispatch
@@ -5934,7 +5937,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1624  # adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
+	'6' = 1626  # adds both dynamic-collision fluid setter callback paths
+				# adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
 				# adds the licensed NxFluid setStaticCollisionRestitution callback dispatch
 				# adds the licensed NxFluid setDamping callback dispatch
 				# adds the licensed NxFluid setViscosity callback dispatch
@@ -5962,7 +5966,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1732  # adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
+	'7' = 1734  # adds both dynamic-collision fluid setter callback paths
+				# adds the licensed NxFluid setStaticCollisionAdhesion callback dispatch
 				# adds the licensed NxFluid setStaticCollisionRestitution callback dispatch
 				# adds the licensed NxFluid setDamping callback dispatch
 				# adds the licensed NxFluid setViscosity callback dispatch

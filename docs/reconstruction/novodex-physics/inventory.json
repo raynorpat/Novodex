@@ -69949,12 +69949,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1805",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12814",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "Public NxFluid setter differential through NxPhysicsSimulationTests. The oracle warnings and callback arguments are asserted for the dynamic-collision setter; a no-forward mutant for this row exits 1 with stdout_delta=52, and the restored candidate matches (stdout_delta=0, stderr_exact=True).",
       "notes": ""
     },
     {
@@ -70021,12 +70021,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1807",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12822",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "Public NxFluid setter differential through NxPhysicsSimulationTests. The oracle warnings and callback arguments are asserted for the dynamic-collision setter; a no-forward mutant for this row exits 1 with stdout_delta=52, and the restored candidate matches (stdout_delta=0, stderr_exact=True).",
       "notes": ""
     },
     {
