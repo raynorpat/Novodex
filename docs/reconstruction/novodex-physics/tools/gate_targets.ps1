@@ -3499,7 +3499,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid manager-vtable deleting-destructor=1'
         # The optional manager's enabled create path validates, builds and
         # lists one fluid and three emitters, then dispatches teardown.
-        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=12.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=3 emitter=3.0.3.3 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
+        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=14.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=3 emitter=3.0.3.3 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.

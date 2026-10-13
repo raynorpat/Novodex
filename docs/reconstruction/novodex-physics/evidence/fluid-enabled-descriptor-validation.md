@@ -8,12 +8,13 @@ the extension-backed creation path. An invalid descriptor reports
 `Supplied NxFluidDesc is not valid. createFluid returns NULL.`
 
 The simulation fixture seeds that manager flag and calls the public API with
-`restDensity=0`. It now also checks twelve additional invalid descriptors:
+`restDensity=0`. It now also checks fourteen additional invalid descriptors:
 kernel radius below one, zero particle spacing, zero stiffness, zero viscosity,
 damping above one, negative dynamic restitution, an empty simulation-method
 mask, `maxParticles` above `0x7d00`, invalid initial-particle pointer pairing,
 missing initial-position stride, missing write-flags stride, and an invalid
-surface-mesh descriptor. Each must return null and emit exactly one
+surface-mesh descriptor, an invalid embedded emitter descriptor, and 21
+emitters (the limit is 20). Each must return null and emit exactly one
 `NXE_INVALID_PARAMETER` diagnostic at `FluidManager.cpp:140`. The implementation
 uses the existing descriptor validation method; no public header changed. A
 size-targeted allocator injection fails the lazy `0x34`-byte manager
@@ -30,7 +31,7 @@ encompassing `phys_fn_003649` row remains open.
 The original rest-density test was first run against the unmodified
 implementation and diverged from the oracle (`stdout_delta=2`); after the
 implementation, the staged-pair differential matched exactly. The expanded
-twelve-case validation and all three targeted allocation-failure differentials
+fourteen-case validation and all three targeted allocation-failure differentials
 match exactly (`stdout_delta=0`, both processes exit 0, exact stderr). Fresh
 Phase 5 and Phase 7 gates pass at 2,678/2,678 and 1,711/1,711 assertions, and
 both require the descriptor and allocator coverage markers.

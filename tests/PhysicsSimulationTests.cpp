@@ -3303,7 +3303,7 @@ int wmain(int argc, wchar_t** argv)
 	NxImplicitMeshDesc invalidSurfaceMesh;
 	invalidSurfaceMesh.setToDefault();
 	invalidSurfaceMesh.singleRadius = 0.0f;
-	for(unsigned invalidCase = 0; invalidCase != 12; ++invalidCase)
+	for(unsigned invalidCase = 0; invalidCase != 14; ++invalidCase)
 		{
 		NxFluidDesc invalidDesc;
 		invalidDesc.setToDefault();
@@ -3328,7 +3328,23 @@ int wmain(int argc, wchar_t** argv)
 				invalidDesc.particlesWriteData.numParticlesPtr = &invalidParticleCount;
 				invalidDesc.particlesWriteData.bufferFlags = &invalidParticleFlags;
 				break;
-			default: invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh; break;
+			case 11: invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh; break;
+			case 12:
+				{
+				NxFluidEmitterDesc invalidEmitter;
+				invalidEmitter.setToDefault();
+				invalidEmitter.dimensionX = -0.25f;
+				invalidDesc.emitters.pushBack(invalidEmitter);
+				break;
+				}
+			default:
+				{
+				NxFluidEmitterDesc validEmitter;
+				validEmitter.setToDefault();
+				for(unsigned i = 0; i != 21; ++i)
+					invalidDesc.emitters.pushBack(validEmitter);
+				break;
+				}
 			}
 		const unsigned errorsBefore = simulationOutput.errors;
 		simulationOutput.resetLast();
@@ -3521,7 +3537,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
-	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 12 ||
+	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 14 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
 		!managerAllocationFailure ||
 		!enabledFluidAllocationFailure ||
