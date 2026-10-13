@@ -3544,6 +3544,36 @@ int wmain(int argc, wchar_t** argv)
 	*fluidFoundationAllocatorSlot = &emitterFailAllocator;
 	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
 	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	unsigned fluidBoundsExpected[6] = {
+		0x3f000001u, 0xbf000002u, 0x3f800003u,
+		0x40000004u, 0xc0000005u, 0x40400006u
+	};
+	unsigned fluidBoundsActual[6] = {
+		0xdead0000u, 0xdead0001u, 0xdead0002u,
+		0xdead0003u, 0xdead0004u, 0xdead0005u
+	};
+	unsigned fluidBoundsSaved[6] = {};
+	void* const enabledFluidInternalForBounds = enabledFluid
+		? *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
+			enabledFluid) + 0x14) : 0;
+	if(enabledFluidInternalForBounds)
+		{
+		unsigned char* const fluidBytes = static_cast<unsigned char*>(
+			enabledFluidInternalForBounds);
+		memcpy(fluidBoundsSaved, fluidBytes + 0x5c, sizeof(fluidBoundsSaved));
+		memcpy(fluidBytes + 0x5c, fluidBoundsExpected,
+			sizeof(fluidBoundsExpected));
+		enabledFluid->getWorldBounds(*reinterpret_cast<NxBounds3*>(
+			fluidBoundsActual));
+		memcpy(fluidBytes + 0x5c, fluidBoundsSaved, sizeof(fluidBoundsSaved));
+		}
+	const bool enabledFluidWorldBoundsMatch = enabledFluidInternalForBounds &&
+		memcmp(fluidBoundsActual, fluidBoundsExpected,
+			sizeof(fluidBoundsExpected)) == 0;
+	printf("simulation fluid public-api world-bounds matched=%u output=%08x.%08x.%08x.%08x.%08x.%08x\n",
+		enabledFluidWorldBoundsMatch ? 1u : 0u,
+		fluidBoundsActual[0], fluidBoundsActual[1], fluidBoundsActual[2],
+		fluidBoundsActual[3], fluidBoundsActual[4], fluidBoundsActual[5]);
 	const bool enabledEmitterAllocationFailure =
 		emitterFailAllocator.mFailCount == 1;
 	const NxU32 enabledPublicEmitterCount = enabledFluid
@@ -3923,6 +3953,7 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidManagerCleared || !enabledFluidCallbacks ||
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
 		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
+		!enabledFluidWorldBoundsMatch ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
 		!enabledFluidConfigCallbacks || enabledPublicMaxParticles != 0x1234u ||
 		nxFloatBits(enabledPublicRestParticlesPerMeter) != 0x42480000u ||

@@ -10668,3 +10668,6 @@ Phase 7 static-collision adhesion setter phys_fn_003734: no-forward callback mut
 # Phase 7 continuation: NxFluid dynamic-collision setters
 
 Rows `phys_fn_003738` and `phys_fn_003742` are now closed by registered `NxPhysicsSimulationTests` public differentials. Their independent no-forward mutants each fail with `candidate_exit=1`, `stdout_delta=52`; restored output is exact. The full Phase 5/6/7 gates pass at 2,692/1,626/1,734 assertions. See [phase7-npfluid-dynamic-setters-003738-003742.md](phase7-npfluid-dynamic-setters-003738-003742.md).
+# Phase 7 continuation: public NxFluid world bounds
+
+`phys_fn_003784` is mutation-falsified through the registered `NxPhysicsSimulationTests` public vtable call. A +0x60 bounds-offset mutant fails with `candidate_exit=1`, `stdout_delta=60`; the restored +0x5c implementation matches exactly. The Phase 5/6/7 gates now pass at 2,693/1,627/1,735 assertions. See [phase7-npfluid-world-bounds-003784.md](phase7-npfluid-world-bounds-003784.md).

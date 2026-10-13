@@ -70777,15 +70777,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked copy accessor, 6 dwords from +0x5c (0x8c210, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1414",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12865",
       "static_proof": "locks [self+0x10], calls the copy helper 003483 on [self+0x14] to write six dwords from [field+0x5c] into the out argument, then unlocks; ret 4",
-      "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
+      "dynamic_proof": "NxPhysicsSimulationTests calls the public NxFluid::getWorldBounds vtable slot under its Scene read lock after seeding six distinct words at internal-fluid +0x5c. The wrong-offset +0x60 mutation is rejected (candidate_exit=1, stdout_delta=60); restored candidate matches exactly (stdout_delta=0, stderr_exact=True).",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "phys_fn_003784 (harness dispatch table)"
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidGetWorldBounds"
     },
     {
       "id": "phys_fn_003785",

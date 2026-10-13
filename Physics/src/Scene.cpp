@@ -1462,6 +1462,19 @@ static NxU32 __fastcall nxFluidGetCollisionMethod(void*, void*)
 		"NxFluid::getCollisionMethod(): Feature not available!");
 	}
 
+// phys_fn_003784 (0x0008c210): take the Scene read lock and copy the six
+// world-bounds words maintained by the internal Fluid record at +0x5c.
+static void __fastcall nxFluidGetWorldBounds(void* wrapper, void*, NxBounds3& bounds)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
+	nxNpSceneGuardEnter(readLock);
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	memcpy(&bounds, static_cast<unsigned char*>(internal) + 0x5c,
+		6 * sizeof(unsigned));
+	nxNpSceneGuardLeave(readLock);
+	}
+
 static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
 	{
 	if((deleteObject & 1) != 0)
@@ -1507,7 +1520,7 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidGetParticleMass),
 	reinterpret_cast<void*>(nxFluidGetSimulationMethod),
 	reinterpret_cast<void*>(nxFluidGetCollisionMethod),
-	0, 0, 0
+	reinterpret_cast<void*>(nxFluidGetWorldBounds), 0, 0
 	};
 static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)
