@@ -10622,3 +10622,6 @@ Phase 7 scene contact-pair thunk `phys_fn_000907` is mutation-falsified by NxPhy
 
 
 Phase 7 actor-pair stream reset `phys_fn_000863` is mutation-falsified by NxPhysicsSceneVisualizeTests: omitting its row 002354 forward retains stale contact-stream contents and renders 78 rather than 3 lines (`stdout_delta=87`, both exits zero, exact stderr). The restored control is exact; Phase 7 remains 1,711/1,711, with 201 closed / 359 deferred. See evidence/phase7-scene-contact-stream-reset-000863.md.
+
+
+Phase 7 contact-anchor row `phys_fn_000865` is mutation-falsified through the registered `NxPhysicsSimulationTests` public multi-step contact scenarios. Omitting the stored count and local anchors changes the transcript by 120 bytes (both exits zero, exact stderr); restored output is exact. Phase 7 now records 202 closed / 358 deferred. See `evidence/phase7-contact-anchor-store-000865.md`.

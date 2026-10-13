@@ -291,3 +291,8 @@ Task M7.9 progress: the plane/sphere contact fixture emits three lines on oracle
 Task M7.10 ruling: falsify `phys_fn_000863` with the newly registered live contact visualization fixture, which reaches the per-step pair refresh and reads back the contact stream. Cost if wrong: proves reset behavior only for this reported plane/sphere pair path; other narrow-phase stream layouts remain open.
 
 Task M7.10 progress: a no-op cpmActorPairResetStream0863 mutation preserves stale stream records and increases rendered contact lines from 3 to 78 (`both exits=0`, `stdout_delta=87`, exact stderr). Restoring the row returns exact output. Phase 7 remains 1,711/1,711; ledger now records 201 closed / 359 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-contact-stream-reset-000863.md`.
+
+
+### M7.11 — contact-anchor storage row closure (`phys_fn_000865`)
+
+The registered public NxPhysicsSimulationTests multi-step contact scenarios exercise the friction-patch anchor store. A row-specific early-return mutation changes the staged transcript by 120 bytes (both exits zero, exact stderr); the restored control matches exactly. Phase 7 remains at 1,711/1,711 and records 202 closed / 358 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-contact-anchor-store-000865.md.

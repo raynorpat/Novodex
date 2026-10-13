@@ -16335,13 +16335,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/358",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2630",
-      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d0c0-0x1d256) in scene-raycast Task 4 (contact-pair manager): thiscall(patch, points, count byte), `ret 0xc`; the count stored to +0x74 and the loop bound reloaded; each world point made body-local (dy stored, dz `fst` so the unrounded dz feeds y only; the raw copy for a null body); +0x75 = 0. Candidate NxActorPair::row000865 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "static_proof": "Capstone at RVA 0x0001d0c0 gives thiscall(patch, points, count byte), ret 0xc. The routine stores count at patch+0x74, transforms each input world point into body 0 and body 1 local frames at anchor slots +0x04/+0x10 (copying raw coordinates for a null body), reloads the stored count as the loop bound, and clears patch+0x75. Candidate implementation: NxActorPair::row000865 (Physics/src/ContactPairManager.cpp).",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests public-SDK contact, box-contact, sphere-pair, and friction scenarios reach the anchor-store path. Oracle and restored candidate match exactly (stdout_delta=0, both exits zero, exact stderr). A row-specific early-return mutation that omits all 000865 stores changes the candidate transcript by 120 bytes (both exits zero, exact stderr); the paired differential rejects it. Fresh Phase 7 gate passes at 1,711/1,711 assertions. Evidence: evidence/phase7-contact-anchor-store-000865.md.",
+      "notes": "Actor-pair friction-patch contact anchors are stored in each participating body local frame, with the oracle null-body copy path preserved. Public multi-step contact scenarios detect omission of the row.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
