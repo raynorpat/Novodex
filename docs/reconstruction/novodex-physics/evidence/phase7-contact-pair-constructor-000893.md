@@ -26,3 +26,5 @@ Raw mutant and restored differential logs, plus the exact source mutation, are
 in `evidence/raw/phase7-contact-pair-constructor-000893-20261013/`.
 
 Fresh Win32 Release Phase 7 revalidation passes at 1,744/1,744 coverage assertions. The gate also validates the inventory and both 80-file public-header manifests. Restored candidate DLL SHA-256: `e8480ccdf94c2ff5fbcf75bf7f25fc831e5baef3a97f7feea099f03fb907834f`. Full gate transcript: `evidence/raw/phase7-contact-pair-constructor-000893-20261013/phase7-gate.log.gz`.
+
+Post-merge verification on `main` also passes at 1,744/1,744, with both public-header manifests and inventory validation passing. Mainline-built candidate DLL SHA-256: `b80a1ad8feb6f1036217d9f06b006db30a3680ee26481b388ec8676edd22e2bb`. Transcript: `evidence/raw/phase7-contact-pair-constructor-000893-20261013/phase7-postmerge-gate.log.gz`.
