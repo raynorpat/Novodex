@@ -3590,6 +3590,36 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidWorldBoundsMatch ? 1u : 0u,
 		fluidBoundsActual[0], fluidBoundsActual[1], fluidBoundsActual[2],
 		fluidBoundsActual[3], fluidBoundsActual[4], fluidBoundsActual[5]);
+	unsigned fluidFlagsSaved = 0;
+	if(enabledFluidInternalForBounds)
+		{
+		unsigned char* const fluidBytes = static_cast<unsigned char*>(
+			enabledFluidInternalForBounds);
+		unsigned* const fluidFlags = reinterpret_cast<unsigned*>(fluidBytes + 0x58);
+		fluidFlagsSaved = *fluidFlags;
+		*fluidFlags = NX_FF_MESH_INCLUDE_SEPARATED;
+		}
+	const NxU32 enabledFluidFlagInitial = enabledFluid
+		? enabledFluid->getFlag(NX_FF_MESH_INCLUDE_SEPARATED) : 0;
+	if(enabledFluid)
+		enabledFluid->setFlag(NX_FF_MESH_INCLUDE_SEPARATED, false);
+	const NxU32 enabledFluidFlagCleared = enabledFluid
+		? enabledFluid->getFlag(NX_FF_MESH_INCLUDE_SEPARATED) : 0;
+	if(enabledFluid)
+		enabledFluid->setFlag(NX_FF_MESH_INCLUDE_SEPARATED, true);
+	const NxU32 enabledFluidFlagSet = enabledFluid
+		? enabledFluid->getFlag(NX_FF_MESH_INCLUDE_SEPARATED) : 0;
+	if(enabledFluidInternalForBounds)
+		*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(
+			enabledFluidInternalForBounds) + 0x58) = fluidFlagsSaved;
+	const bool enabledFluidPublicFlagsMatch = enabledFluidInternalForBounds &&
+		enabledFluidFlagInitial == NX_FF_MESH_INCLUDE_SEPARATED &&
+		enabledFluidFlagCleared == 0 &&
+		enabledFluidFlagSet == NX_FF_MESH_INCLUDE_SEPARATED;
+	printf("simulation fluid public-api flags initial=%u cleared=%u set=%u\n",
+		enabledFluidFlagInitial == NX_FF_MESH_INCLUDE_SEPARATED ? 1u : 0u,
+		enabledFluidFlagCleared == 0 ? 1u : 0u,
+		enabledFluidFlagSet == NX_FF_MESH_INCLUDE_SEPARATED ? 1u : 0u);
 	static const char enabledFluidName[] = "simulation-fluid-name";
 	if(enabledFluid)
 		enabledFluid->setName(enabledFluidName);
@@ -3984,6 +4014,7 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidRefreshCallbacks || !enabledFluidDirtyFlagsCleared ||
 		!enabledFluidEmitterCallbacks || !enabledNullBackendEmitterRetained ||
 		!enabledFluidWorldBoundsMatch ||
+		!enabledFluidPublicFlagsMatch ||
 		!enabledFluidNameStored || !enabledFluidNameCleared ||
 		!enabledFluidCellSizeStored || !fluidStaticAddDirty ||
 		!enabledFluidConfigCallbacks || enabledPublicMaxParticles != 0x1234u ||

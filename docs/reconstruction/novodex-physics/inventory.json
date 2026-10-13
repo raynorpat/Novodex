@@ -70060,12 +70060,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "Physics/src/fluids/NpFluid.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1410",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12828",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
+      "static_proof": "Takes the Scene write lock at wrapper+0x0c, checks the shared callback reentry guard, and sets or clears the requested mask at internal-fluid+0x58 before unlocking; lock failure and reentry diagnostics match the shipped row.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests fixture seeds NX_FF_MESH_INCLUDE_SEPARATED, calls public getFlag/setFlag to verify initial, clear, and set states, then restores the internal word. A no-op mask-update mutant is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=61); restored control is exact. See evidence/phase7-npfluid-flags-003744-003746.md.",
       "notes": ""
     },
     {
@@ -70096,12 +70096,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked mask accessor (0x8be40, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1411",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12833",
-      "static_proof": "locks [self+0x10], calls helper 003455 on [self+0x14] which returns [field+0x58] & arg, then unlocks and returns it; ret 4",
-      "dynamic_proof": "confirmed via lockacc3 differential (3z143): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "static_proof": "Takes the Scene read lock at wrapper+0x10, reads the requested mask at internal-fluid+0x58, and unlocks before returning the result.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests fixture seeds NX_FF_MESH_INCLUDE_SEPARATED, calls public getFlag/setFlag to verify initial, clear, and set states, then restores the internal word. A zero-return getter mutant is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=61); restored control is exact. See evidence/phase7-npfluid-flags-003744-003746.md.",
       "notes": ""
     },
     {

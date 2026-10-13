@@ -10679,3 +10679,8 @@ Rows `phys_fn_003738` and `phys_fn_003742` are now closed by registered `NxPhysi
 # Phase 7 continuation: public NxFluid surface-mesh accessors
 
 Rows `phys_fn_003706` and `phys_fn_003708` are mutation-falsified through the registered `NxPhysicsSimulationTests` licensed and unavailable-feature paths. Independent no-op getter and release mutants each fail with `stdout_delta=60`; the restored differential is exact. See [phase7-npfluid-surface-mesh-003706-003708.md](phase7-npfluid-surface-mesh-003706-003708.md).
+
+
+# Phase 7 continuation: public NxFluid flags
+
+Rows `phys_fn_003744` and `phys_fn_003746` are mutation-falsified through the registered `NxPhysicsSimulationTests` flag round-trip. The setter no-op and zero-return getter mutants are each rejected with `stdout_delta=61`; the restored control is exact. See [phase7-npfluid-flags-003744-003746.md](phase7-npfluid-flags-003744-003746.md).

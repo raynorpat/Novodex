@@ -1447,6 +1447,58 @@ static void __fastcall nxFluidSetDynamicCollisionAdhesion(
 	nxNpSceneGuardLeave(writeLock);
 	}
 
+// phys_fn_003744 (0x0008bd90): change the internal particle-action flags under
+// the Scene write lock and the shared fluid API reentry guard.
+static void __fastcall nxFluidSetFlag(void* wrapper, void*, NxFluidFlag flag,
+	bool enabled)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			221, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			222, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	unsigned char* const internal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	unsigned* const flags = reinterpret_cast<unsigned*>(internal + 0x58);
+	if(enabled)
+		*flags |= static_cast<unsigned>(flag);
+	else
+		*flags &= ~static_cast<unsigned>(flag);
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+// phys_fn_003746 (0x0008be40): return the requested flag bits from
+// internal-fluid+0x58 under the Scene read lock.
+static NX_BOOL __fastcall nxFluidGetFlag(void* wrapper, void*, NxFluidFlag flag)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
+	nxNpSceneGuardEnter(readLock);
+	unsigned char* const internal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	const unsigned flags = *reinterpret_cast<unsigned*>(internal + 0x58);
+	const NX_BOOL result = static_cast<NX_BOOL>(
+		flags & static_cast<unsigned>(flag));
+	nxNpSceneGuardLeave(readLock);
+	return result;
+	}
+
 static NxReal __fastcall nxFluidGetStaticCollisionRestitution(void* wrapper, void*)
 	{
 	return nxFluidCallBackendScalarGetter(wrapper,
@@ -1616,7 +1668,10 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidGetDynamicCollisionRestitution),
 	reinterpret_cast<void*>(nxFluidSetDynamicCollisionRestitution),
 	reinterpret_cast<void*>(nxFluidGetDynamicCollisionAdhesion),
-	reinterpret_cast<void*>(nxFluidSetDynamicCollisionAdhesion), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	reinterpret_cast<void*>(nxFluidSetDynamicCollisionAdhesion),
+	reinterpret_cast<void*>(nxFluidSetFlag),
+	reinterpret_cast<void*>(nxFluidGetFlag),
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	reinterpret_cast<void*>(nxFluidGetMaxParticles),
 	reinterpret_cast<void*>(nxFluidGetKernelRadiusMultiplier),
 	reinterpret_cast<void*>(nxFluidGetRestParticlesPerMeter),
