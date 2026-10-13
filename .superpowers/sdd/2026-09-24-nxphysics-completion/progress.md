@@ -255,3 +255,13 @@ OPCODE-tree branches remain open. Evidence: `docs/reconstruction/novodex-physics
 ### M5 continuation — five-family destructor gate repair (2026-10-12)
 
 The approved private layout uses five final collision-object families with `EmbeddedHookBase` as the secondary base. The implementation and mutation probe already existed; the red gate came from `run_differential.ps1` omitting the expected staged hash and launching the oracle-relative harness a second time against the candidate image. The runner now passes the expected hash, validates the loaded oracle Physics identity, and runs this in-process source-vs-oracle probe once. Focused differential: five secondary destructors, five scalar deleting destructors, and five primary deleting destructors all match with zero mismatches; member-only mutation reports five mismatches. Full Phase 5 gate passes at 2,670/2,670 assertions. Oracle proof manifest now pins the normalized fixture source hash. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-five-family-destructor-model-2026-10-12.md`.
+### M7 continuation — bodyless joint-list insertion
+
+Closed `phys_fn_000557` (`NxSceneInternal::pushJointWithoutBodies`). The
+standalone staged-pair fixture observes the detached joint as the sole member
+of Scene+0x5a0 through the public `setDynamic` path. An immediate-return
+mutation omits the insertion and is rejected (candidate exit 1,
+`stdout_delta=2`); the restored differential is exact. The fresh full Phase 7
+gate passes at 1,710/1,710 assertions. Phase 7 ledger: 197 closed / 363
+deferred. Public Physics headers are unchanged. Evidence:
+`docs/reconstruction/novodex-physics/evidence/phase7-joint-bodyless-list-000557.md`.

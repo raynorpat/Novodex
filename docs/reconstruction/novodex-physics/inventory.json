@@ -10624,13 +10624,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "link-insert: [arg+0x10]=old head, [this+0x5a0]=arg (0x10840, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/210",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1457",
       "static_proof": "mov edx,[ecx+0x5a0]; mov eax,[esp+4]; mov [eax+0x10],edx; mov [ecx+0x5a0],eax; ret 4; product row since npactor-completion Task 5: NxSceneInternal::pushJointWithoutBodies in Physics/src/Scene.cpp, the same four instructions (units/npactor-contract.md ## Task 5)",
-      "dynamic_proof": "confirmed via zmix2 drive (3z55): failures=0; npactor-completion Task 6: a cdb breakpoint at the product row (NxSceneInternal::pushJointWithoutBodies), reached from 004103 when setDynamic breaks a joint, was hit 1 times (ActorShapeMutation 1) in the Phase 5 actor staged-pair targets against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee), with all twelve transcripts byte-identical to the oracle (stdout_delta=0, coverage 1862/1862); evidence/npactor-trace-final.txt (re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?pushJointWithoutBodies@NxSceneInternal@@QAEXPAVJoint@@@Z hit 15 times (SMut 1, JSP 2, Dump 12); equal to the oracle row's count on every target.",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointWithoutBodiesTests drives two SDK-created dynamic actors and a fixed joint, then calls setDynamic to exercise the 004103 detach path. Oracle and restored candidate both report joint bodyless list member=1 nodes=1 next_null=1. A throwaway no-op mutation of NxSceneInternal::pushJointWithoutBodies is caught (oracle_exit=0, candidate_exit=1, stdout_delta=2; candidate reports member=0 nodes=0). The restored staged-pair differential has stdout_delta=0 and exact stderr. Fresh Phase 7 gate passes at 1710/1710. See evidence/phase7-joint-bodyless-list-000557.md.",
+      "notes": "Registered public-path mutation proof for the Scene +0x5a0 bodyless-joint list insertion; see evidence/phase7-joint-bodyless-list-000557.md.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {

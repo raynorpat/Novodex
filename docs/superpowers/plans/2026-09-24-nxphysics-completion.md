@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-12 after `phys_fn_000289` mutation closure:** Full-DLL semantic and ABI reconstruction remains open; the Phase 8 full-image audit is pending, and all 80 public Physics headers remain unchanged. Phase 5 passes at 2,676/2,676 registered assertions; Phase 6 has 156 closed / 277 deferred functions and passes at 1,607/1,607; Phase 7 has 195 closed / 365 deferred code functions and passes at 1,707/1,707. The 31-byte `NxScene` base scalar-deleting destructor at `phys_fn_000283` is classified as a compiler artifact. `NpScene::setGravity` (`phys_fn_000289`) now has a row-specific staged-pair mutation proof: suppressing its Scene forward changes the public simulation transcript by two bytes. The Viewer suite passes 48/48 selected CTests across all 39 available scene entrypoints, with five verified asset-dependent skips. The completion census still has 2,786 code rows open for terminal full-image closure.
+**Status, updated 2026-10-12 after `phys_fn_000557` mutation closure:** Full-DLL semantic and ABI reconstruction remains open; the Phase 8 full-image audit is pending, and all 80 public Physics headers remain unchanged. Phase 5 passes at 2,670/2,670 registered assertions; Phase 6 records 157 closed / 276 deferred functions; Phase 7 records 197 closed / 363 deferred functions and its fresh gate passes at 1,710/1,710 assertions. The bodyless-joint list insertion at `phys_fn_000557` now has a row-specific staged-pair mutation proof. The Viewer suite remains at 48/48 selected CTests across all 39 available scene entrypoints, with five verified asset-dependent skips. The completion census still has 2,786 code rows open for terminal full-image closure.
 
 ### Continuation — `NpScene::setGravity` row falsification (2026-10-12)
 
@@ -588,3 +588,10 @@ Closed `phys_fn_004469` using the existing staged-pair lifecycle fixture. A null
 **Phase 7 fluid collision shape-array router, 2026-10-12:** Reconstructed `phys_fn_003553` (`0x87a40`) with its excluded/owner-managed early returns and typed descriptor routing. The 13-case direct oracle fixture passes with `oracle_contract=1`, balanced stack, and zero mismatches; changing the ordinary box descriptor offset from `+0x3c` to `+0x30` is rejected (`mismatches=1`). The Phase 7 ledger now records 121 closed / 440 remaining rows. Next backlog slice: scene shape collector `phys_fn_003555`.
 
 **Mainline verification refresh, 2026-10-12:** The shape-array router is committed on `main`. Fresh Phase 5 and Phase 7 gates pass at 2,659/2,659 and 1,686/1,686 assertions; all 810 reconstruction-tooling tests pass; inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained entries; and the 80-file public Physics header manifest passes. The five-family collision-object destructor gate remains green, with all five scratch/heap secondary-vtable calls and all five primary deleting-destructor calls matching the oracle and the member-only negative control reporting five mismatches. Candidate SHA-256: `20cf41661aa185fbe24ed8478d260a00921b75a85b8daea5026d90a14cdfa2cc`. Next backlog slice: scene shape collector `phys_fn_003555`.
+# Continuation — bodyless joint-list insertion (2026-10-12)
+
+Closed Phase 7 row `phys_fn_000557` (`NxSceneInternal::pushJointWithoutBodies`)
+with a registered standalone staged-pair fixture and a no-op mutation that the
+oracle differential rejects. The full Phase 7 gate passes at 1,710/1,710
+assertions. This is a single row closure; Phase 7 and full-DLL reconstruction
+remain open. See `docs/reconstruction/novodex-physics/evidence/phase7-joint-bodyless-list-000557.md`.

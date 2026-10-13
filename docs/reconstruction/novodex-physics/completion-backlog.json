@@ -104,11 +104,11 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 196,
-        "deferred_rows": 364,
+        "closed_rows": 197,
+        "deferred_rows": 363,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 154,
-          "reconstructed_not_falsified": 210
+          "reconstructed_not_falsified": 209
         }
       }
     },
@@ -183,8 +183,8 @@
         "by_state": {
           "decompiled": 1,
           "discovered": 147,
-          "dynamically_gated": 195,
-          "reconstructed": 216,
+          "dynamically_gated": 196,
+          "reconstructed": 215,
           "statically_reviewed": 1
         }
       }
@@ -24461,7 +24461,7 @@
       "size": 22,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000557",
       "implementation": {
         "path": "Physics/src/Scene.cpp",
@@ -24476,7 +24476,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsJointWithoutBodiesTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -24499,22 +24499,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsJointWithoutBodiesTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000557",
         "rva": "0x00010840",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -174187,7 +174187,7 @@
           {
             "id": "phys_fn_000557",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_000633",
@@ -174268,7 +174268,7 @@
           {
             "id": "phys_fn_000557",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_000633",
@@ -230976,7 +230976,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "b5306f9a23499593e07e7b369bd9aa6f1a378d978e92410eb9cda69c7bbc93e1",
+    "inventory_sha256": "f373f37e7c029326e6b3991e8955ae9ee130f75f43cf1f6aac0f482a10f7ad21",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -230986,7 +230986,7 @@
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "3e47856bfe8ccf054e530adc03616d67f26990ca739981f3da4f9b904587fc67",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "b2c0cefc69765ce650ae18add732f20fc97f13ee29351213735aedd770c2a52f",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "2cb7d6c4b5e65503c54a5ca0e345e606a7aa736239322ead25d6d8148651cac9"
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "9b40ffb823e2f1e6668881df9879460c2ba468552042d73d6bb500333929eff2"
     }
   }
 }

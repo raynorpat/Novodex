@@ -40,7 +40,7 @@ PHASE_TARGETS = {
     # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
     "6": "NxPhysicsActorShapeMutationTests,NxPhysicsJointStagedPairTests,NxFoundationTangentTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsMeshSimulationTests,NxPhysicsSimulationTests,NxPhysicsCcdSimulationTests,NxPhysicsAllocatorReleaseTests",
     # Phase 7 also runs scene simulation, mesh, and trigger targets end to end.
-    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsSceneConstructorTests,NxPhysicsSceneBoundsPlanesTests,NxPhysicsControllerSweepFaceTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsPairFlagTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsFluidEmitterBodyRepulsionTests,NxPhysicsPopulatedSceneTeardownTests,NxPhysicsAllocatorReleaseTests",
+    "7": "NxPhysicsJointStagedPairTests,NxPhysicsJointAllocatorTests,NxPhysicsJointSlotTests,NxPhysicsJointWithoutBodiesTests,NxPhysicsSceneConstructorTests,NxPhysicsSceneBoundsPlanesTests,NxPhysicsControllerSweepFaceTests,NxPhysicsSceneRaycastTests,NxPhysicsSceneVisualizeTests,NxPhysicsSimulationTests,NxPhysicsPairFlagTests,NxPhysicsMeshSimulationTests,NxPhysicsTriggerSimulationTests,NxPhysicsEffectorTests,NxPhysicsCoreDumpTests,NxPhysicsFluidEmitterBodyRepulsionTests,NxPhysicsPopulatedSceneTeardownTests,NxPhysicsAllocatorReleaseTests",
 }
 # Phases 6 and 7 moved out of this set when NxPhysicsJointStagedPairTests was
 # registered on them.

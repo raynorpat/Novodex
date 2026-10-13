@@ -1,0 +1,6 @@
+joint bodyless list member=1 nodes=1 next_null=1
+joint bodyless list member=1 nodes=1 next_null=1
+differential target=NxPhysicsJointWithoutBodiesTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
+pass: NxPhysicsJointWithoutBodiesTests reported its recorded coverage on both pairs (2 occurrences): joint bodyless list member=1 nodes=1 next_null=1
+coverage_assertions_evaluated=1710 floor=1710
+phase_gate=7 status=pass

@@ -10606,3 +10606,7 @@ The row-specific mutation cleared `appData` in `NpRevoluteJoint::~NpRevoluteJoin
 Mutation evidence for phys_fn_004729: the appData-clear mutant is caught with stdout_delta=2; the restored differential is exact.
 Mutation evidence for phys_fn_003630: suppressing the direct dirty-refresh callback sequence is caught by the callback-record differential with mismatches=1; the restored oracle/candidate sequence matches.
 Mutation evidence for phys_fn_003630: rebuilding the old collision in place is caught by the replacement-target differential (data mismatch); the restored control preserves the old buffer and builds the replacement.
+
+## Phase 7 bodyless joint-list insertion row `phys_fn_000557` — `stdout_delta=2`
+
+An immediate-return mutation of `NxSceneInternal::pushJointWithoutBodies` omits the detached joint from Scene+0x5a0; the oracle sees one member and the mutant sees none. The focused differential rejects the mutant (`stdout_delta=2`), and the restored candidate is exact. Full fixture and gate evidence: `evidence/phase7-joint-bodyless-list-000557.md`.

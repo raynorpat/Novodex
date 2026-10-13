@@ -456,6 +456,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# that loads the rebuilt module, and an oracle differential runs only against the
 	# pinned DLL (evidence 11l). Same source, distinct target name and class.
 	add_executable(NxPhysicsJointStagedPairTests tests/PhysicsJointTests.cpp)
+	add_executable(NxPhysicsJointWithoutBodiesTests tests/PhysicsJointWithoutBodiesTests.cpp)
+	target_include_directories(NxPhysicsJointWithoutBodiesTests PRIVATE
+		Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsJointWithoutBodiesTests bcrypt)
 	add_executable(NxPhysicsActorLifecycleTests tests/PhysicsActorLifecycleTests.cpp)
 	target_include_directories(NxPhysicsActorLifecycleTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
