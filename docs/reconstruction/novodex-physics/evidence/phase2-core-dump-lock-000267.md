@@ -1,0 +1,7 @@
+# SDK core-dump Scene-lock wrapper — `phys_fn_000267` — 2026-10-14
+
+`NpPhysicsSDK::coreDump` already transcribes the oracle's per-Scene writer protocol, but its Phase 2 ledger had only an entry trace and no row-specific behavioral mutation. The existing `NxPhysicsCoreDumpTests` fixture creates two live Scenes and marks Scene B as held by another thread. On the pinned oracle, the public call reports `NXE_INVALID_OPERATION` at `NpPhysicsSDK.cpp:225`, does not create the requested dump file, and releases Scene A's acquired write lock.
+
+Replacing the entire wrapper with an immediate `false` return removes the lock/refusal and forwarding path. The staged-pair target rejects it with `stdout_delta=2266` while both processes exit zero and stderr matches. The baseline and restored candidate match exactly (`stdout_delta=0`, `stderr_exact=True`).
+
+Registered `NxPhysicsCoreDumpTests` in Phase 3, a passing phase, so the Phase 2 row is discharged by an executed gate instead of relying on the still-pending Phase 6/7 gates. The fresh Phase 3 gate passes at 945/945 coverage assertions; the Phase 2 gate passes at 14/14 after validating the discharge. Phase 2 now records 74 closed / 69 deferred rows. The 378 core-dump coverage assertions were already registered for Phases 6 and 7; this change also makes them mandatory in Phase 3. Public headers and implementation code are unchanged. Raw compressed build, mutation, control, and gate transcripts are in `evidence/raw/phase2-core-dump-lock-000267-20261014/`.

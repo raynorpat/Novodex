@@ -96,6 +96,11 @@
       "name": "shared_sdk_purge_inspector_lock_rerun",
       "command": "run_phase_gate.ps1 -Phase 3 -RepoRoot <fresh archive> -BuildRoot <Win32 Release build> -PairsRoot <isolated pairs root>",
       "result": "Fresh Phase 3 passes at 567/567 assertions. NxPhysicsSDKTests verifies the two-Scene purge refusal/unwind and successful purge, plus inspector refusal/unwind and successful forwarding; restored output is exact. Evidence: evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md and its raw transcript directory."
+    },
+    {
+      "name": "phase2_core_dump_lock_discharge_000267",
+      "command": "run_phase_gate.ps1 -Phase 3 -RepoRoot <fresh archive> -BuildRoot <Win32 Release build> -PairsRoot <isolated pairs root>",
+      "result": "Registered NxPhysicsCoreDumpTests as a Phase 3 staged-pair target. The row-specific no-op coreDump mutant is rejected (stdout_delta=2266); restored oracle/candidate control is exact. Fresh Phase 3 passes at 945/945 assertions and discharges Phase 2 row phys_fn_000267. Evidence: evidence/phase2-core-dump-lock-000267.md and its raw transcript directory."
     }
   ],
   "excluded_from_comparison": [
