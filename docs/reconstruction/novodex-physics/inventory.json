@@ -13803,13 +13803,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/291",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2050",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x161b0-0x1625c: thiscall ret 8; the +0x25c increments, the 000713 finds, root+0x1f0 increment, the +0x11c (jb) owner choice for the +0x208/+0x100 push and the 000718 call are reproduced by Island.cpp Row000724Fixture::row000724. Reachable only from the simulation step (000608); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: a clean Win32 Release archive with Row000724Fixture::row000724 replaced by an immediate return changes the registered simulation transcript (oracle_exit=0, candidate_exit=0, stdout_delta=6606, stderr_exact=True), including triangle-mesh box-contact and broadphase/stack outputs. Restoring Island.cpp byte-for-byte and rebuilding returns an exact control (stdout_delta=0, stderr_exact=True). See evidence/phase7-island-pair-link-000724.md and evidence/raw/phase7-island-pair-link-000724-20261014/.",
+      "notes": "Existing public simulation exercises the pair-link path; the no-op mutation is rejected by the registered Phase 7 staged-pair differential.",
       "implementation": "Physics/src/Island.cpp"
     },
     {

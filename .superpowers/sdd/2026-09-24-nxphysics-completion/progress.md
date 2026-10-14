@@ -413,3 +413,9 @@ Ruling for M6.23: close `phys_fn_000720` with a direct private-row DLL probe aft
 ### M6.23 — Dirty island rebuild dispatch (`phys_fn_000720`)
 
 The row-specific immediate-return mutation is rejected by the registered `NxPhysicsSimulationTests` differential (`candidate_exit=1`, `stdout_delta=4000`). Baseline and restored output are exact; the direct oracle and candidate probes both report `dirty_cleared=1 traversed=1 island=1 mallocs=4 frees=1 live_delta=3`. Phase 7 moves to 310 closed / 250 deferred. The full gate passes at 1,798/1,798 assertions before and after merge to main (`b7fff5fb`). The public Scene transition fixture remains supplementary because a later body update can mask this row's work. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-dirty-rebuild-000720.md`.
+
+Ruling for M6.24: select `phys_fn_000724`, the reconstructed sleep-group contact-pair linker called by the now-active simulation step. The existing friction/scene simulation exercises the row; an immediate-return mutation determines whether the resulting contact and trajectory state is observable.
+
+### M6.24 — Sleep-group island pair linking (`phys_fn_000724`)
+
+The registered Phase 7 simulation rejects an immediate-return mutation (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=6606`, exact stderr); restored source and DLL output are exact. The changed output includes triangle-mesh box-contact response and broadphase/stack trajectories. Phase 7 now records 311 closed / 249 deferred rows. The latest full Phase 7 gate on the same source and test tree passed at 1,798/1,798 after the fast-forward to main. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-pair-link-000724.md`.

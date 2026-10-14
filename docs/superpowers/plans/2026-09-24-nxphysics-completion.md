@@ -875,3 +875,7 @@ An immediate-return mutation suppressing the sleep-group chain traversal is reje
 ### M6.23 — Dirty island rebuild dispatch (`phys_fn_000720`)
 
 The public articulated transition fixture is insensitive to an immediate-return mutation, so use a direct DLL probe for this private row. Resolve the oracle at pinned RVA `0x16100` and the candidate from the staged link map; seed a scratch root with its dirty bit set and check that the row clears it, marks traversal, and installs a rebuilt island. The no-op mutation is rejected (`candidate_exit=1`, `stdout_delta=4000`); the restored differential is exact. Full Phase 7 passes at 1,798/1,798 assertions. The public Scene fixture remains supplemental because a later body update can mask this dispatch. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-dirty-rebuild-000720.md`.
+
+### M6.24 — Sleep-group island pair linking (`phys_fn_000724`)
+
+The existing registered simulation fixture exercises the pair-link path: an immediate-return mutation changes the staged transcript by 6,606 bytes (both exits zero, exact stderr), including contact response and body trajectories. Restoring and rebuilding returns an exact differential. The full Phase 7 gate remains at 1,798/1,798; this task changes no public headers or production source. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-pair-link-000724.md`.
