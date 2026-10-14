@@ -9080,14 +9080,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/PhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/170",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1240",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "IDA RVA 0x0000e130: scans the SDK-owned triangle-mesh array; an empty array or absent mesh reports NXE_INVALID_OPERATION at PhysicsSDK.cpp:569, while a registered mesh follows the release/removal path.",
+      "dynamic_proof": "NxPhysicsTriangleMeshApiTests Phase 4 staged-pair differential covers an empty registry and a foreign handle with a registered mesh present; the no-op missing-entry diagnostic mutant is detected (stdout_delta=27). Restored oracle/candidate output matches exactly. Evidence: evidence/phase2-triangle-mesh-release-000470.md.",
+      "notes": "SDK release registry-miss diagnostic and the existing release/refusal paths are exercised through the public API; frozen public headers unchanged.",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000471",

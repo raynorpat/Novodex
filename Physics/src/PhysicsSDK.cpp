@@ -27,6 +27,7 @@
 // 0x0000dc25. They are the __LINE__ values of the build tree the shipped DLL was
 // compiled from, so they cannot be produced by __LINE__ here.
 static const int gCreateTriangleMeshDescriptorErrorLine = 498;
+static const int gReleaseTriangleMeshMissingErrorLine = 569;
 // The two collision-group error sites, from the immediates pushed at 0x0000df71
 // and 0x0000dc9b. Both push an error code of 1, NXE_INVALID_PARAMETER.
 static const int gSetGroupCollisionFlagErrorLine = 576;
@@ -152,9 +153,10 @@ TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	return mesh;
 	}
 
+// phys_fn_000470 (0x0000e130): a nonmember or already-removed mesh reports the
+// SDK's double-deletion diagnostic; a live registered mesh follows release().
 void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
 	{
-	if(!mesh) return;
 	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
 		if(mTriangleMeshes[i] == mesh)
 			{
@@ -163,6 +165,9 @@ void PhysicsSDK::releaseTriangleMesh(TriangleMesh* mesh)
 			mTriangleMeshes.erase(mTriangleMeshes.begin() + i, mTriangleMeshes.begin() + i + 1);
 			return;
 			}
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+		NX_PHYSICS_SDK_CPP, gReleaseTriangleMeshMissingErrorLine, 0,
+		"PhysicsSDK::releaseTriangleMesh: double deletion detected!");
 	}
 
 void PhysicsSDK::release()

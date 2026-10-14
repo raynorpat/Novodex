@@ -169,6 +169,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid substep attached-live-body actor=1 emitter_callbacks=4 run_callbacks=1 repulsion_callbacks=3 state_clear=1 body_changed=1 stack=1 mismatches=0'
     )
     'NxPhysicsTriangleMeshApiTests' = @(
+        'triangle_mesh release_foreign rejected=1 errors=1 code=2 line=569',
+        'triangle_mesh release_foreign_registered rejected=1 errors=1 code=2 line=569',
         'pmap_compute density=32 created=1 size=10444 hash=9a70de00aaf0edd4',
         'triangle_mesh case=descriptor16 created=1',
         'triangle_mesh case=implicit_indices created=1',
@@ -5986,7 +5988,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 527  # adds seven PMap query cases and their oracle digest
+    '4' = 529  # adds seven PMap query cases, their oracle digest and two mesh-release cases
                # all registered asset, PMap export, and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics

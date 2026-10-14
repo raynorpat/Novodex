@@ -350,3 +350,9 @@ Phase 2 actor-group pair-flag wrappers `phys_fn_000269` and `000271`: moved the 
 ### M6 follow-up — actor-group pair hash rows (`phys_fn_004153`, `phys_fn_004155`)
 
 The registered `NxPhysicsSDKTests` differential now runs in Phase 6 with two live Scenes, exercising pair insertion, forward/reverse lookup, zero replacement, and lookup after releasing one Scene. Independent no-op mutations are rejected at `stdout_delta=2` and `6`; the restored control is exact. Phase 6 closure is 159 closed / 274 deferred. The full Phase 6 gate passes at 1,619/1,619; the fresh Phase 5 gate also passes at 2,685/2,685 with all five destructor families and the five-failure member-only control. Inventory validation passes with 6,338 functions, 5,138 data objects, and zero unexplained rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-actor-group-hash-004153-004155.md`.
+
+### M2 continuation — triangle-mesh release registry miss (phys_fn_000470, 2026-10-14)
+
+Added empty and populated-registry foreign-handle cases to NxPhysicsTriangleMeshApiTests. Oracle reports NXE_INVALID_OPERATION at PhysicsSDK.cpp:569; the previous candidate silently returned. A missing-diagnostic no-op mutant is rejected (stdout_delta=27), restored staged pair is exact. Phase 4 passes at 529/529 assertions; Phase 2 passes at 7/7; inventory passes with Phase 2 at 66 closed / 77 deferred and 6,338 code rows / 5,138 data objects / zero unexplained. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-000470.md and evidence/raw/phase2-triangle-mesh-release-000470-20261014/.
+
+Task M2.6: complete (`phys_fn_000470`; red foreign-handle differential; no-op mutation caught at stdout_delta=27; restored control exact; Phase 2 gate 7/7; Phase 4 gate 529/529; inventory pass; public headers unchanged).

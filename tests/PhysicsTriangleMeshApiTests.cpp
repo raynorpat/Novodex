@@ -144,6 +144,28 @@ class TriangleMeshApiOutputStream : public NxUserOutputStream
 
 static TriangleMeshApiOutputStream gOutputStream;
 
+// This object is deliberately not owned by the SDK. releaseTriangleMesh only
+// compares the public address against its registered handles before routing a
+// miss into PhysicsSDK::releaseTriangleMesh; none of these interface methods is
+// called for this case.
+class ForeignTriangleMesh : public NxTriangleMesh
+	{
+	public:
+	virtual bool loadFromDesc(const NxTriangleMeshDesc&) { return false; }
+	virtual bool saveToDesc(NxTriangleMeshDesc&) const { return false; }
+	virtual NxU32 getSubmeshCount() const { return 0; }
+	virtual NxU32 getCount(NxSubmeshIndex, NxInternalArray) const { return 0; }
+	virtual NxInternalFormat getFormat(NxSubmeshIndex, NxInternalArray) const
+		{ return NX_FORMAT_NODATA; }
+	virtual const void* getBase(NxSubmeshIndex, NxInternalArray) const { return 0; }
+	virtual NxU32 getStride(NxSubmeshIndex, NxInternalArray) const { return 0; }
+	virtual bool loadPMap(const NxPMap&) { return false; }
+	virtual bool hasPMap() const { return false; }
+	virtual NxU32 getPMapSize() const { return 0; }
+	virtual bool getPMapData(NxPMap&) const { return false; }
+	virtual NxU32 getPMapDensity() const { return 0; }
+	};
+
 static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 density)
 	{
 	CreatePMapFn createPMap = reinterpret_cast<CreatePMapFn>(
@@ -169,6 +191,24 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 dens
 	NxTriangleMesh* mesh = sdk->createTriangleMesh(desc);
 	if(!mesh)
 		return nxFail("authored PMap fixture mesh creation failed");
+	ForeignTriangleMesh foreignMesh;
+	gOutputStream.reset();
+	sdk->releaseTriangleMesh(foreignMesh);
+	const bool foreignReleaseRejected = gOutputStream.errors == 1 &&
+		gOutputStream.lastCode == NXE_INVALID_OPERATION && gOutputStream.lastLine == 569 &&
+		strcmp(gOutputStream.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\PhysicsSDK.cpp") == 0 &&
+		strcmp(gOutputStream.message,
+			"PhysicsSDK::releaseTriangleMesh: double deletion detected!") == 0;
+	printf("triangle_mesh release_foreign_registered rejected=%u errors=%u code=%u line=%d\n",
+		foreignReleaseRejected ? 1u : 0u, gOutputStream.errors,
+		static_cast<unsigned>(gOutputStream.lastCode), gOutputStream.lastLine);
+	gOutputStream.reset();
+	if(!foreignReleaseRejected)
+		{
+		sdk->releaseTriangleMesh(*mesh);
+		return nxFail("triangle-mesh release did not reject a foreign handle with registered meshes");
+		}
 	if(mesh->getCount(0, NX_ARRAY_VERTICES) != 4 ||
 		mesh->getCount(0, NX_ARRAY_TRIANGLES) != 4 ||
 		mesh->getStride(0, NX_ARRAY_VERTICES) != sizeof(NxVec3) ||
@@ -714,6 +754,24 @@ int wmain(int argc, wchar_t** argv)
 	if(!createSDK) return nxFail("NxCreatePhysicsSDK is missing");
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &gAllocator, &gOutputStream);
 	if(!sdk) return nxFail("SDK creation failed");
+	ForeignTriangleMesh foreignMesh;
+	gOutputStream.reset();
+	sdk->releaseTriangleMesh(foreignMesh);
+	const bool foreignReleaseRejected = gOutputStream.errors == 1 &&
+		gOutputStream.lastCode == NXE_INVALID_OPERATION && gOutputStream.lastLine == 569 &&
+		strcmp(gOutputStream.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\PhysicsSDK.cpp") == 0 &&
+		strcmp(gOutputStream.message,
+			"PhysicsSDK::releaseTriangleMesh: double deletion detected!") == 0;
+	printf("triangle_mesh release_foreign rejected=%u errors=%u code=%u line=%d\n",
+		foreignReleaseRejected ? 1u : 0u, gOutputStream.errors,
+		static_cast<unsigned>(gOutputStream.lastCode), gOutputStream.lastLine);
+	if(!foreignReleaseRejected)
+		{
+		sdk->release();
+		return nxFail("triangle-mesh release did not reject a foreign handle");
+		}
+	gOutputStream.reset();
 	const bool disconnectedPMap = isolatedPMap && wcscmp(argv[2], L"disconnected32") == 0;
 	status = disconnectedPMap ? nxTestDisconnectedPMap(physics, sdk) :
 		nxTestPMapComputeFirst(physics, sdk, density);
