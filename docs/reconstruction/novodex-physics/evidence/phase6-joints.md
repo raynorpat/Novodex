@@ -10787,3 +10787,8 @@ These split census rows are one all-shapes raycast loop. Suppressing `report.onH
 ## Phase 7 continuation: Scene timing store `phys_fn_000540`
 
 `phys_fn_000540` no-op store mutation is rejected by `NxPhysicsSimulationTests` (`stdout_delta=3990`, oracle exit 0, candidate exit 1); restored output is exact. Fresh Phase 7 passes at 1,770/1,770 assertions. See [phase7-scene-timing-helper-000540-20261013.md](phase7-scene-timing-helper-000540-20261013.md) and archived raw logs.
+
+
+## Phase 7 continuation: Scene timing copy-out `phys_fn_000542`
+
+`phys_fn_000542` no-op copy-out mutation is rejected by `NxPhysicsSimulationTests` (`stdout_delta=4`, both exits zero, exact stderr); restored output is exact. Fresh Phase 7 passes at 1,770/1,770 assertions. See [phase7-scene-timing-helper-000542-20261013.md](phase7-scene-timing-helper-000542-20261013.md) and archived raw logs.

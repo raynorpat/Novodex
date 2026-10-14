@@ -1764,3 +1764,8 @@ The existing all-shapes raycast loop now has a row-specific differential mutatio
 ### Continuation — Scene timing store (`phys_fn_000540`, 2026-10-13)
 
 The internal Scene timing setter now has a row-specific mutation proof: suppressing its three stores is rejected by `NxPhysicsSimulationTests` (oracle exit 0, candidate exit 1, `stdout_delta=3990`); restored output is exact. The fresh Phase 7 gate passes at 1,770/1,770. Phase 7 closes 266 functions and defers 294. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-timing-helper-000540-20261013.md`.
+
+
+### Continuation — Scene timing copy-out (`phys_fn_000542`, 2026-10-13)
+
+The internal Scene timing getter now has a row-specific mutation proof: suppressing its three output copies changes the registered simulation transcript by four bytes (both exits zero, exact stderr); restored output is exact. Fresh Phase 7 passes at 1,770/1,770. Phase 7 closes 267 functions and defers 293. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-timing-helper-000542-20261013.md`.

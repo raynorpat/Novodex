@@ -10413,13 +10413,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "copy [this+0x52c..0x534] to 3 out args (0x10720, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/202",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1446",
       "static_proof": "3 dword moves to 3 out pointers; ret 0xc",
-      "dynamic_proof": "confirmed via multicopy drive (3z60): failures=0",
-      "notes": ""
+      "dynamic_proof": "confirmed via multicopy drive (3z60): failures=0; Phase 7: suppressing the three NxSceneInternal::getTiming output copies is caught by NxPhysicsSimulationTests (stdout_delta=4, both exits zero, exact stderr); restored differential is exact. See evidence/phase7-scene-timing-helper-000542-20261013.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000543",

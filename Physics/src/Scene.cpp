@@ -6932,8 +6932,8 @@ void NxSceneInternal::setGravity(const NxVec3& gravity)
 	at<NxU32>(0x528) = in[2];
 	}
 
-// phys_fn_000540/000542 (0x000106f0/0x00010720): copy the timing triplet
-// between the caller's values and Scene+0x52c/+0x530/+0x534.
+// phys_fn_000540 stores the timing triplet at Scene+0x52c/+0x530/+0x534;
+// phys_fn_000542 copies those values to the caller's three output pointers.
 void NxSceneInternal::setTiming(NxReal maxTimestep, NxU32 maxIter, NxU32 method)
 	{
 	at<NxReal>(0x52c) = maxTimestep;
