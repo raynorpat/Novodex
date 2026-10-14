@@ -102,7 +102,6 @@ PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
 	nxReleaseSdkPointerBindings();
-	cpmResetActorGroupPairFlags();
 	for(NxU32 i = 0; i < mScenes.size(); ++i)
 		reinterpret_cast<NxSceneInternal*>(mScenes[i])->scalarDeletingDestructor(1);
 	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
@@ -114,8 +113,6 @@ PhysicsSDK::~PhysicsSDK()
 			nxFoundationSDKAllocator->free(mesh);
 			}
 		}
-	nxReleaseNovodexBoxPruningCaches004828();
-
 	// phys_fn_001275 deletes each remaining Scene while the PhysicsSDK and its
 	// Foundation allocator are still alive. Scene deletion does not remove the
 	// pointer from mScenes; the array storage is released by its member dtor.
@@ -129,6 +126,8 @@ PhysicsSDK::~PhysicsSDK()
 		}
 	NX_DELETE_SINGLE(gShapePairFunctionTable);
 	nxOpcodeReleasePool();
+	nxReleaseNovodexBoxPruningCaches004828();
+	cpmResetActorGroupPairFlags();
 	}
 
 TriangleMesh* PhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)

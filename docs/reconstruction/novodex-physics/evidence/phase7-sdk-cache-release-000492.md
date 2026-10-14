@@ -14,3 +14,8 @@ Compressed raw transcripts: `evidence/raw/phase7-sdk-cache-release-000492-202610
 ## Scene and mesh destruction order
 
 A live triangle-mesh actor was added to an SDK-owned Scene. The old mesh-first order failed the differential (`sdk_scene_before_mesh=0`, `stdout_delta=2`); oracle order is Scene first, mesh second. The restored control matches exactly, and the fresh Phase 7 gate still passes at 1,980/1,980. See [the ordering evidence](phase7-sdk-scene-before-mesh-000492.md).
+
+
+## Process-wide cache release order
+
+The actor-group-pair cache now frees after the registered Scenes and triangle meshes, matching the pinned destructor. Its old early-reset order was rejected; restored output is exact, with zero outstanding allocations. See [the ordering evidence](phase7-sdk-cache-order-000492.md).

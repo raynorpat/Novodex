@@ -62,6 +62,9 @@ class TrackingAllocator : public NxUserAllocator
 		}
 
 	unsigned outstanding() const { return mOutstanding; }
+	unsigned allocationCount() const { return mAllocationCount; }
+	void* allocationAt(unsigned index) const
+		{ return index < mAllocationCount ? mFreedPointers[index] : 0; }
 	unsigned freedSequence(const void* memory) const
 		{
 		for(unsigned i = mAllocationCount; i > 0; --i)
@@ -688,6 +691,17 @@ int wmain(int argc, wchar_t** argv)
 	const size_t sdkOwnedSceneBytes = allocator.allocationSize(sdkOwnedScene);
 	if(sdkOwnedSceneBytes != 0x28)
 		return nxFail("SDK-owned scene wrapper allocation was not 40 bytes");
+	const unsigned actorGroupPairFirstAllocation = allocator.allocationCount();
+	sdk->setActorGroupPairFlags(17, 29, 0x40);
+	const unsigned actorGroupPairLastAllocation = allocator.allocationCount();
+	const unsigned actorGroupPairAllocationCount = actorGroupPairLastAllocation -
+		actorGroupPairFirstAllocation;
+	if(actorGroupPairAllocationCount != 3)
+		return nxFail("SDK-owned teardown did not initialize the actor-group-pair cache");
+	void* actorGroupPairAllocations[3];
+	for(unsigned i = 0; i < 3; ++i)
+		actorGroupPairAllocations[i] = allocator.allocationAt(
+			actorGroupPairFirstAllocation + i);
 	const NxPoint sdkOwnedMeshPoints[] = {
 		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, -2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
 		NxPoint(2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, 2.0f), NxPoint(-2.0f, 0.0f, 2.0f)};
@@ -717,6 +731,13 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned sdkOwnedMeshFreeSequence = allocator.freedSequence(sdkOwnedMesh);
 	const bool sdkOwnedSceneFreedBeforeMesh = sdkOwnedSceneFreeSequence &&
 		sdkOwnedMeshFreeSequence && sdkOwnedSceneFreeSequence < sdkOwnedMeshFreeSequence;
+	bool actorGroupPairCacheFreedAfterMesh = true;
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		const unsigned freeSequence = allocator.freedSequence(actorGroupPairAllocations[i]);
+		if(!freeSequence || freeSequence <= sdkOwnedMeshFreeSequence)
+			actorGroupPairCacheFreedAfterMesh = false;
+		}
 	const unsigned radixBufferLeaks = allocator.liveAllocationsOfSize(12);
 	const unsigned sdkReleaseOutstanding = allocator.outstanding();
 	printf("teardown sdk_owned_scene bytes=%u freed=%u\n",
@@ -725,6 +746,8 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<unsigned>(sdkOwnedMeshBytes), sdkOwnedMeshFreed ? 1u : 0u);
 	printf("teardown sdk_scene_before_mesh=%u\n",
 		sdkOwnedSceneFreedBeforeMesh ? 1u : 0u);
+	printf("teardown actor_group_pair_cache_after_mesh=%u\n",
+		actorGroupPairCacheFreedAfterMesh ? 1u : 0u);
 	printf("teardown sdk_cache radix_sort_buffers bytes=12 remaining=%u\n",
 		radixBufferLeaks);
 	printf("teardown sdk_release outstanding=%u\n", sdkReleaseOutstanding);
@@ -734,6 +757,8 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("PhysicsSDK destructor did not release its registered triangle mesh");
 	if(!sdkOwnedSceneFreedBeforeMesh)
 		return nxFail("PhysicsSDK destructor released a triangle mesh before its Scene");
+	if(!actorGroupPairCacheFreedAfterMesh)
+		return nxFail("PhysicsSDK destructor released actor-group-pair cache before its Scenes and meshes");
 	if(radixBufferLeaks != 0)
 		return nxFail("PhysicsSDK destructor did not release cached radix-sort buffers");
 	if(sdkReleaseOutstanding != 0)

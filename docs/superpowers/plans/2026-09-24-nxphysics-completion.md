@@ -982,3 +982,8 @@ Closed the seven-block teardown discrepancy by freeing Scene shape-pair hashes a
 ### Continuation — SDK Scene-before-mesh teardown (`phys_fn_000492`, 2026-10-14)
 
 A staged fixture with a live triangle-mesh actor falsified the candidate's mesh-before-Scene order. The oracle frees the registered Scene first; moving mesh destruction after the Scene loop restores an exact differential. Fresh Phase 7 passes at 1,980/1,980. The SDK destructor row and scalar deleting thunk remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-scene-before-mesh-000492.md`.
+
+
+### Continuation — SDK process-wide cache release order (`phys_fn_000492`, 2026-10-14)
+
+A staged actor-group-pair cache fixture caught that the candidate freed this global cache before its registered Scenes and meshes. Moving the reset after Scene, mesh, OPCODE-pool, and BoxPruning-cache teardown restores an exact differential. Fresh Phase 7 passes at 1,980/1,980. The destructor row and deleting thunk remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-cache-order-000492.md`.

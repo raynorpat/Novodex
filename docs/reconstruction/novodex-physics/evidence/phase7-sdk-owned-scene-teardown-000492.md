@@ -15,3 +15,8 @@ The seven retained blocks from the initial increment have since been traced and 
 
 
 The SDK teardown follow-up also now matches the oracle's Scene-before-triangle-mesh release order; see [the ordering fixture and transcripts](phase7-sdk-scene-before-mesh-000492.md).
+
+
+## Process-wide cache release order
+
+The actor-group-pair cache now frees after the registered Scenes and triangle meshes, matching the pinned destructor. Its old early-reset order was rejected; restored output is exact, with zero outstanding allocations. See [the ordering evidence](phase7-sdk-cache-order-000492.md).
