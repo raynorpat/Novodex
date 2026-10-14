@@ -633,10 +633,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "reconstructed": 10
+    "dynamically_gated": 1,
+    "reconstructed": 9
    },
    "bytes": {
-    "reconstructed": 2082
+    "dynamically_gated": 29,
+    "reconstructed": 2053
    },
    "phases": {
     "7": 10
