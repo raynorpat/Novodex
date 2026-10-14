@@ -13951,13 +13951,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/295",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2083",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16860-0x169ec: thiscall ret 8; the 000714 call, the integer test of the +0x4c bits, the saved-velocity zeroing/saving rule on +0x1e4 bit 5 and +0x10c bit 7, the per-axis NX_BF_FROZEN_* handling of the live copy and the saved words (angular z through the FPU) and the final kinematic zeroing are reproduced by BodyStep.cpp Row000732Fixture::row000732. Reachable only from the simulation step (000636); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "A throwaway immediate-return mutation of Row000732Fixture::row000732 was rebuilt from a clean Win32 Release archive and rejected by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential: oracle_exit=0, candidate_exit=1, stdout_delta=6720. The existing sleep fixture observed automatic sleeping=1 on the oracle and sleeping=0 on the mutant; the wake scenario follows. Restoring Physics/src/BodyStep.cpp byte-for-byte (SHA-256 23cbd7af9238220ec8db661d68ef69fb088f28314ece7643aedb6cfb87da42ca) rebuilt NxPhysics.dll to the baseline SHA-256 18bbd63d1ad8691eaca5694bb361585c04889c04615ff03784a4600e95392724 and the differential returned oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Raw logs and mutation patch: evidence/raw/phase7-body-sleep-wake-000732-20261014/.",
+      "notes": "Row-specific mutation proof uses the existing public automatic sleep and wake simulation cases; this closes only the exercised row 000732 behavior, not its caller 000714 or the remaining simulation pipeline.",
       "implementation": "Physics/src/BodyStep.cpp"
     },
     {

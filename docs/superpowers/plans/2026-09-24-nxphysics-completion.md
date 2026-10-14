@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-14 after the SDK locking and AABB helper slices:** Full-DLL semantic and ABI reconstruction remains open, with 2,786 open code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 74 closed / 69 deferred; Phase 3 77 / 315; Phase 4 34 / 1,019; Phase 5 205 / 0; Phase 6 159 / 274; Phase 7 306 / 254. The Phase 2/3/6 SDK fixture covers addMaterial, purgeMaterials, and setPerformanceInspector Scene-lock refusal, reverse unlock, and unlocked success; fresh gates pass at 14/14, 567/567, and 1,646/1,646 assertions. The Phase 4 scene-raycast differential now falsifies the inlined AABB center/extents helper; its restored control is exact. Public Physics headers remain unchanged. M0, M1, and full-image M8 audit work remain open.
+**Status, updated 2026-10-14 after the SDK locking, AABB helper, and sleep/wake slices:** Full-DLL semantic and ABI reconstruction remains open, with 2,786 open code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 76 closed / 67 deferred; Phase 3 77 / 315; Phase 4 34 / 1,019; Phase 5 205 / 0; Phase 6 159 / 274; Phase 7 307 / 253. The Phase 2/3/6 SDK fixture covers addMaterial, purgeMaterials, and setPerformanceInspector Scene-lock refusal, reverse unlock, and unlocked success. A fresh full Phase 7 gate passes at 1,793/1,793 coverage assertions. The Phase 4 scene-raycast differential now falsifies the inlined AABB center/extents helper; its restored control is exact. Public Physics headers remain unchanged. M0, M1, and full-image M8 audit work remain open.
 
 ### Continuation — buffered contact-report rows (`phys_fn_000917`, `000919`, `000921`, 2026-10-13)
 
@@ -852,3 +852,8 @@ The existing `NxPhysicsCoreDumpTests` target exercises the wrapper's two-Scene r
 ### Continuation — Actor-group pair insertion and lookup (`phys_fn_000433`, `phys_fn_000435`, 2026-10-14)
 
 Suppressing `cpmSetActorGroupPairFlags` is rejected by `NxPhysicsSDKTests` (`stdout_delta=6`); forcing `PhysicsSDK::getActorGroupPairFlags` to return zero is rejected at `stdout_delta=2`. The restored staged differential is exact. Fresh Phase 2 and Phase 3 gates pass at 14/14 and 945/945 coverage assertions; the later Phase 3 gate discharges both Phase 2 rows. Phase 2 now records 76 closed / 67 deferred rows. Public headers and CMake are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-actor-group-pair-core-000433-000435.md` and its raw transcripts. Full-DLL reconstruction remains open.
+
+
+## M6.19 — Island sleep/wake body-state update (`phys_fn_000732`)
+
+The existing public simulation sleep fixture distinguishes this row: an immediate-return mutant changes automatic sleeping from 1 to 0 and the registered differential rejects it (`candidate_exit=1`, `stdout_delta=6720`). The restored source is byte-identical to the pinned mainline source, the rebuilt DLL hash matches the baseline, and the restored differential is exact. Phase 7 now records 307 closed / 253 deferred rows; this packet does not close caller `000714` or the rest of the simulation pipeline. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-sleep-wake-000732.md`.

@@ -379,3 +379,11 @@ Task M2.9: complete (`phys_fn_000246`; two-Scene unwind mutation caught; restore
 Reconstructed the addMaterial write-lock protocol from the pinned oracle. A two-live-Scene test holds Scene 2's lock and verifies error line 173, index 0, unchanged material count, and a separate probe acquiring Scene 1 after the wrapper unwinds. The no-forward mutant is rejected (`stdout_delta=18`); the no-op reverse-unlock mutant is independently rejected (`stdout_delta=19`); restored control is exact. Phase 2/3/6 gates pass at 10/10, 563/563, and 1,642/1,642. Inventory validates with Phase 2 at 70 closed / 73 deferred; headers unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-sdk-add-material-lock-000254-000256.md`.
 
 Task M2.10: complete (rows 000254/000256; both row-specific mutants caught; Phase 2, 3, and 6 gates pass; 39 gate-target tests pass; inventory has zero unexplained rows).
+Ruling: select phys_fn_000732 after the shared simulation helper and Scene lifecycle packets already present in current main — the plan requires sleep/wake behavior through deterministic public simulation, and NxPhysicsSimulationTests already has a sleep scenario, so row-specific mutation can test whether that fixture exercises the saved-velocity branch without adding synthetic layouts. Cost if wrong: an insensitive fixture means we must add a public sleep-then-wake case before closure; do not demote the row on a zero delta.
+
+
+### M6.19 — Island sleep/wake body-state update (`phys_fn_000732`)
+
+The registered public sleep/wake differential rejects an immediate-return row mutation (candidate_exit=1, stdout_delta=6720; automatic sleeping changes from 1 to 0). The restored source bytes and rebuilt DLL hash match the baseline; restored output is exact. Phase 7 ledger moves to 307 closed / 253 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-body-sleep-wake-000732.md.
+
+Task M6.19: complete (`phys_fn_000732`; mutant rejected at stdout_delta=6720; restored exact; full Phase 7 gate passes at 1,793/1,793; 831 tool tests and 742 subtests pass; public headers unchanged; inventory/backlog validate).

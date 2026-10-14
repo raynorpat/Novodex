@@ -10901,3 +10901,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000754`: an immediate-return mutation of the body pose update is rejected by `NxPhysicsJointSlotTests` across 14 body-moving projections (both exits 0, `stdout_delta=2804`, stderr exact); restored output matches exactly. See [phase7-joint-support-row-000754.md](phase7-joint-support-row-000754.md).
+
+`phys_fn_000732`: an immediate-return mutation of `Row000732Fixture::row000732` changes automatic sleeping from 1 to 0 and is rejected by `NxPhysicsSimulationTests` (`stdout_delta=6720`, candidate exit 1); restoring the source byte-for-byte rebuilds the baseline DLL and produces exact output. See [phase7-body-sleep-wake-000732.md](phase7-body-sleep-wake-000732.md).
