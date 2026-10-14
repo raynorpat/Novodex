@@ -90867,12 +90867,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "masked four-slot loop (0xb53c0u, ret 0x14)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1853",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15780",
       "static_proof": "static review of the recorded shape: masked four-slot loop (0xb53c0u, ret 0x14); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the masked4866 differential (3z220): failures=0 over three consecutive runs, covering all sixteen live-pointer by mask combinations for EACH row (32 cases total), comparing the return value, the hit count, the ordered sequence of elements visited, all four slot arguments and the whole object",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; skipping the four selected-pruner slot calls while preserving nxMaskedFourSlotLoop4866 return value 1 is rejected (both exits 0, stdout_delta=5465, stderr_exact=True); restored output is exact. See evidence/phase7-sphere-pruner-loop-004866.md.",
       "notes": ""
     },
     {
