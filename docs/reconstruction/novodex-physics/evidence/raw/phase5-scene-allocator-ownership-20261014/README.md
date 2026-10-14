@@ -9,4 +9,4 @@ Base revision: `5baf63fa`. The four implementation changes and target registrati
 - `phase5-gate.log.gz`: full Phase 5 gate, `2720/2720`.
 - `phase7-gate.log.gz`: full downstream Scene/simulation gate with allocator ownership coverage, `1791/1791`.
 
-Commands used the worktree's `build/scene-raycast-row700-red` Win32 Release build, `run_differential.ps1` with isolated temporary pair roots, and `run_phase_gate.ps1` for Phases 5 and 7. The evidence markdown records the result and the completion backlog limit.
+The `postmerge-*` transcripts rerun both full gates from mainline at commit `fc841fe1`; Phase 5 passes 2,720/2,720 and Phase 7 passes 1,791/1,791. Earlier mutation and focused runs used the worktree's `build/scene-raycast-row700-red` Win32 Release build, `run_differential.ps1` with isolated temporary pair roots, and `run_phase_gate.ps1` for Phases 5 and 7. The evidence markdown records the result and the completion backlog limit.
