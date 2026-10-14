@@ -96,6 +96,17 @@
       "final_coverage_line": "thirdparty coverage driven=116 divergent=26 words=2615055 layout_checks=47",
       "oracle_digest_fnv32": "e2a266c1",
       "selected_lines_sha256": "3ef73804be71434ccda7ee3b4755135b2a923634c686428702224c2fee36fa9a"
+    },
+    "NxPhysicsCollisionTests": {
+      "format": "collision_oracle_digest",
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_source": "tests/PhysicsCollisionTests.cpp",
+      "fixture_source_sha256": "483370b0982381d71115ee8121986b10ae500f383df221c2b3b5a7950b733e74",
+      "seed_line": "collision seeds pair=c0ffee11 aimed=5eed10ad",
+      "input_line_count": 108,
+      "coverage_line_count": 125,
+      "oracle_output_line_count": 136,
+      "selected_lines_sha256": "2955bba8c16d2d63f0b3130a41f467ccca8420b70df0da5148197f558d0a5390"
     }
   }
 }

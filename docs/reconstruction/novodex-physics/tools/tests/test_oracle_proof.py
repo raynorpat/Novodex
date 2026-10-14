@@ -332,6 +332,76 @@ class OracleProofTests(unittest.TestCase):
             ORACLE_SHA, self.root)
         self.assertTrue(any("oracle digest" in failure for failure in failures), failures)
 
+    def test_collision_oracle_proof_pins_inputs_coverage_and_oracle_outputs(self):
+        source_name = "tests/PhysicsCollisionTests.cpp"
+        source = self.root / source_name
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(b"fixed collision differential fixture")
+        input_lines = [
+            "collision input name=box.random words=12 input=0123456789abcdef",
+            "collision input name=ray.aimed words=24 input=fedcba9876543210",
+        ]
+        coverage_lines = [
+            "collision coverage name=box.random true=2 false=0 default_mismatches=0",
+            "collision coverage name=ray.aimed hits=1 candidate_contacts=1 mismatches=0",
+        ]
+        output_lines = [
+            "collision name=box index=0 checks=2 oracle=1111222233334444 candidate=ffffffffffffffff mismatches=0",
+            "collision name=ray index=1 checks=1 oracle_true=1 candidate_contacts=1 mismatches=0",
+        ]
+        seeds = "collision seeds pair=c0ffee11 aimed=5eed10ad"
+        selected = [
+            seeds,
+            *input_lines,
+            "collision coverage name=box.random",
+            "collision coverage name=ray.aimed",
+            "collision name=box index=0 checks=2 oracle=1111222233334444",
+            "collision name=ray index=1 checks=1 oracle_true=1",
+        ]
+        expected = {
+            "format": "collision_oracle_digest",
+            "oracle_sha256": ORACLE_SHA,
+            "fixture_source": source_name,
+            "fixture_source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            "seed_line": seeds,
+            "input_line_count": len(input_lines),
+            "coverage_line_count": len(coverage_lines),
+            "oracle_output_line_count": len(output_lines),
+            "selected_lines_sha256": hashlib.sha256(
+                ("\n".join(selected) + "\n").encode("ascii")).hexdigest(),
+        }
+        manifest = {"schema_version": 1,
+                    "targets": {"NxPhysicsCollisionTests": expected}}
+        transcript = [seeds, *input_lines, *coverage_lines, *output_lines]
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsCollisionTests", transcript, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["input_line_count"], 2)
+        self.assertEqual(proof["coverage_line_count"], 2)
+        self.assertEqual(proof["oracle_output_line_count"], 2)
+
+        candidate_changed = [line.replace("candidate=ffffffffffffffff", "candidate=0000000000000000")
+                                  .replace("candidate_contacts=1", "candidate_contacts=99")
+                                  .replace("mismatches=0", "mismatches=99")
+                             for line in transcript]
+        failures, candidate_proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsCollisionTests", candidate_changed, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(candidate_proof["proof_sha256"], proof["proof_sha256"])
+
+        changed_oracle = list(transcript)
+        changed_oracle[-2] = changed_oracle[-2].replace(
+            "1111222233334444", "0000222233334444")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsCollisionTests", changed_oracle, ORACLE_SHA, self.root)
+        self.assertTrue(any("selected oracle" in failure for failure in failures), failures)
+
+        missing_coverage = list(transcript)
+        missing_coverage.remove(coverage_lines[1])
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsCollisionTests", missing_coverage, ORACLE_SHA, self.root)
+        self.assertTrue(any("coverage line count" in failure for failure in failures), failures)
+
     def test_rejects_changed_input_digest(self):
         lines = list(self.transcript)
         lines[1] = lines[1].replace(INPUT_DIGEST, "0000000000000000")
@@ -591,6 +661,8 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(phases, ["4"], "asset oracle proof belongs to Phase 4")
             elif target == "NxPhysicsThirdPartyTests":
                 self.assertEqual(phases, ["4"], "third-party oracle proof belongs to Phase 4")
+            elif target == "NxPhysicsCollisionTests":
+                self.assertEqual(phases, ["3"], "collision oracle proof belongs to Phase 3")
             else:
                 self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
@@ -646,6 +718,14 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(expected["final_coverage_line"],
                                  "thirdparty coverage driven=116 divergent=26 words=2615055 layout_checks=47")
                 self.assertEqual(expected["oracle_digest_fnv32"], "e2a266c1")
+                self.assertEqual(len(expected["selected_lines_sha256"]), 64)
+            elif expected["format"] == "collision_oracle_digest":
+                self.assertEqual(expected["fixture_source"], "tests/PhysicsCollisionTests.cpp")
+                self.assertEqual(expected["input_line_count"], 108)
+                self.assertEqual(expected["coverage_line_count"], 125)
+                self.assertEqual(expected["oracle_output_line_count"], 136)
+                self.assertEqual(expected["seed_line"],
+                                 "collision seeds pair=c0ffee11 aimed=5eed10ad")
                 self.assertEqual(len(expected["selected_lines_sha256"]), 64)
             else:
                 self.assertEqual(expected["format"], "joint_matrix")
@@ -719,6 +799,13 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                                      expected["final_coverage_line"])
                     self.assertEqual(proof["oracle_digest_fnv32"],
                                      expected["oracle_digest_fnv32"])
+                    self.assertEqual(proof["selected_lines_sha256"],
+                                     expected["selected_lines_sha256"])
+                elif proof["format"] == "collision_oracle_digest":
+                    self.assertEqual(proof["input_line_count"], expected["input_line_count"])
+                    self.assertEqual(proof["coverage_line_count"], expected["coverage_line_count"])
+                    self.assertEqual(proof["oracle_output_line_count"],
+                                     expected["oracle_output_line_count"])
                     self.assertEqual(proof["selected_lines_sha256"],
                                      expected["selected_lines_sha256"])
                 else:

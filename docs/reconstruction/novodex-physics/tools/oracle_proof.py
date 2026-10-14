@@ -30,6 +30,11 @@ ASSET_ORACLE_DIGEST = re.compile(
 ASSET_COVERAGE = re.compile(
     r"^asset coverage driven=(\d+) accepted=(\d+) rejected=(\d+) errors=(\d+)$")
 THIRDPARTY_ORACLE_DIGEST = re.compile(r"^thirdparty oracle digest=([0-9a-f]{8})$")
+COLLISION_INPUT_LINE = re.compile(
+    r"^collision input name=\S+ words=\d+ input=[0-9a-f]{16}$")
+COLLISION_ORACLE_OUTPUT_FIELDS = frozenset((
+    "name", "index", "checks", "oracle", "oracle_contacts", "oracle_stream",
+    "oracle_true", "oracle_frees"))
 FLUID_ORACLE_CONTEXT_FIELDS = frozenset((
     "cases", "records", "buckets", "cells", "indices", "fluids", "emitters",
     "live-fluids"))
@@ -408,6 +413,64 @@ def _verify_thirdparty_oracle_digest(expected, lines):
     }
 
 
+def _verify_collision_oracle_digest(expected, lines):
+    failures = []
+    seed_lines = [line for line in lines if line.startswith("collision seeds ")]
+    if seed_lines != [expected.get("seed_line")]:
+        failures.append("collision generator seed line differs from the pinned baseline")
+
+    input_lines = [line for line in lines if line.startswith("collision input ")]
+    if any(COLLISION_INPUT_LINE.fullmatch(line) is None for line in input_lines):
+        failures.append("collision input proof line is malformed")
+    if len(input_lines) != expected.get("input_line_count"):
+        failures.append("collision input line count differs from the pinned baseline")
+
+    coverage_lines = [line for line in lines if line.startswith("collision coverage ")]
+    coverage_names = []
+    for line in coverage_lines:
+        match = re.search(r"(?:^|\s)name=([^\s]+)", line)
+        if match is None:
+            failures.append("collision coverage proof line has no case name")
+        else:
+            coverage_names.append("collision coverage name=" + match.group(1))
+    if len(coverage_lines) != expected.get("coverage_line_count"):
+        failures.append("collision coverage line count differs from the pinned baseline")
+
+    output_lines = [line for line in lines if line.startswith("collision name=")]
+    selected_outputs = []
+    for line in output_lines:
+        fields = re.findall(r"(?<!\S)([A-Za-z_]+)=([^\s]+)", line)
+        selected_fields = [(key, value) for key, value in fields
+                           if key in COLLISION_ORACLE_OUTPUT_FIELDS]
+        selected = "collision " + " ".join(
+            "%s=%s" % item for item in selected_fields)
+        keys = {key for key, _ in selected_fields}
+        if "name" not in keys or "checks" not in keys or not any(
+                key.startswith("oracle") for key in keys):
+            failures.append("collision output proof line lacks an oracle result")
+        selected_outputs.append(selected)
+    if len(output_lines) != expected.get("oracle_output_line_count"):
+        failures.append("collision oracle output line count differs from the pinned baseline")
+
+    selected_lines = [seed_lines[0]] if len(seed_lines) == 1 else []
+    selected_lines.extend(input_lines)
+    selected_lines.extend(coverage_names)
+    selected_lines.extend(selected_outputs)
+    selected_text = "\n".join(selected_lines) + ("\n" if selected_lines else "")
+    selected_digest = sha256(selected_text.encode("ascii")) if selected_lines else None
+    if selected_digest != expected.get("selected_lines_sha256"):
+        failures.append("selected oracle inputs/coverage/outputs digest differs from the pinned baseline")
+    if failures:
+        return failures, None
+    return failures, {
+        "input_line_count": len(input_lines),
+        "coverage_line_count": len(coverage_lines),
+        "oracle_output_line_count": len(output_lines),
+        "selected_lines_sha256": selected_digest,
+        "selected_lines": selected_lines,
+    }
+
+
 def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
                              repo_root):
     """Return (failures, proof); candidate-only values are intentionally ignored."""
@@ -456,6 +519,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
         failures_for_format, measurements = _verify_asset_oracle_digest(expected, lines)
     elif proof_format == "thirdparty_oracle_digest":
         failures_for_format, measurements = _verify_thirdparty_oracle_digest(expected, lines)
+    elif proof_format == "collision_oracle_digest":
+        failures_for_format, measurements = _verify_collision_oracle_digest(expected, lines)
     else:
         failures_for_format, measurements = ["unsupported oracle proof format: %s"
                                                % proof_format], None
@@ -517,6 +582,7 @@ def main(argv=None):
                                         proof.get("oracle_output_digest_sha256")))
     cases = " cases=%d" % proof["cases"] if "cases" in proof else ""
     output_digest = output_digest or proof.get("oracle_digest_fnv32")
+    output_digest = output_digest or proof.get("selected_lines_sha256")
     input_digest_text = (" input_digest=%s" % input_digest
                          if input_digest is not None else "")
     sys.stdout.write("oracle proof pass target=%s%s%s "
