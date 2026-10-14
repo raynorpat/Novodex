@@ -9590,8 +9590,10 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/244",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1384",
       "static_proof": "zero +0xc/0x10/0x14/0x1c/0x20/0x24 and +0x40/0x44; set +0x8/0x18/0x28=1.0f; +0x38=8; words +0x3c/0x3e=0; ret",
-      "dynamic_proof": "confirmed via tmplinit drive (3z65): failures=0",
-      "notes": ""
+      "dynamic_proof": "Oracle-side template-init drive 3z65 matches the recorded field values (failures=0); this does not yet exercise the candidate method. Candidate mapping is the CMake-emitted inline NxShapeDesc::setToDefault method; see evidence/phase7-shape-desc-default-000496.md.",
+      "notes": "",
+      "implementation": "Physics/include/NxShapeDesc.h",
+      "implementation_symbol": "?setToDefault@NxShapeDesc@@UAEXXZ"
     },
     {
       "id": "phys_fn_000497",

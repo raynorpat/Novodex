@@ -1869,3 +1869,7 @@ The populated Scene teardown fixture now invokes the `PhysicsSDK` scalar deletin
 ### Continuation — PhysicsSDK destructor closure (`phys_fn_000492`, 2026-10-14)
 
 The whole destructor now has a row-specific staged mutation: replacing its CMake-generated entry with `ret` leaves the registered Scene, SDK caches, and allocator blocks live. `NxPhysicsPopulatedSceneTeardownTests` rejects the mutant (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=15`); the restored control is exact. The fresh Phase 7 gate passes at 1,989/1,989, and Phase 7 now records 335 closed / 225 deferred functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-destructor-000492.md` and its raw evidence folder. Full DLL reconstruction remains active.
+
+### Continuation — shape-descriptor initializer mapping (`phys_fn_000496`, 2026-10-14)
+
+Mapped the 65-byte oracle initializer at RVA `0x0000fd10` to the inline `NxShapeDesc::setToDefault` method in the unchanged public header. Its identity pose, visualization flag, and cleared metadata match the oracle's recorded stores; the CMake Release map emits `?setToDefault@NxShapeDesc@@UAEXXZ` from `Scene.obj` at RVA `0x0006d4d0`. The existing fixture only calls the oracle address, so the row stays open until a candidate-side differential exercises the method. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-shape-desc-default-000496.md`.
