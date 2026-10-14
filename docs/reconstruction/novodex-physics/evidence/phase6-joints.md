@@ -10844,3 +10844,6 @@ Fresh full Phase 7 gate after the `phys_fn_000706` closure: 1,779/1,779 coverage
 
 `phys_fn_000708`: omitted support copy-back rejected (`stdout_delta=6986`); restored simulation differential exact. See [phase7-island-support-copy-back-000708.md](phase7-island-support-copy-back-000708.md).
 Fresh full Phase 7 gate after `phys_fn_000708`: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-island-support-copy-back-000708-20261014/phase7-gate.log.gz.
+
+`phys_fn_000710`: omitted gravity initialization rejected (`stdout_delta=6870`); restored simulation differential exact. See [phase7-body-gravity-initialization-000710.md](phase7-body-gravity-initialization-000710.md).
+Fresh full Phase 7 gate after `phys_fn_000710`: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-body-gravity-initialization-000710-20261014/phase7-gate.log.gz.

@@ -787,3 +787,7 @@ Replacing the closest-shape wrapper’s final square-root distance store with ze
 ### Continuation — Island support-body copy-back (`phys_fn_000708`, `2026-10-14`)
 
 Returning before `Row000708Fixture::row000708` copies the completed support vectors and saved velocities back to the island body record is rejected by `NxPhysicsSimulationTests` (`stdout_delta=6986`, both exits zero, exact stderr); restored output is exact. Fresh Phase 7 passes at 1,779/1,779 coverage assertions. Phase 7 closes 280 functions and defers 280. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-support-copy-back-000708.md` and archived transcripts. Full DLL reconstruction remains active.
+
+### Continuation — Body-step gravity initialization (`phys_fn_000710`, `2026-10-14`)
+
+Returning before the body-step helper stores gravity and clears auxiliary acceleration words is rejected by `NxPhysicsSimulationTests` (`stdout_delta=6870`, candidate exit 1); the restored candidate is exact. Fresh Phase 7 passes at 1,779/1,779 coverage assertions. Phase 7 closes 281 functions and defers 279. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-gravity-initialization-000710.md` and archived transcripts. Full DLL reconstruction remains active.

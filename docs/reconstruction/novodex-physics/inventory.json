@@ -13527,13 +13527,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/283",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2017",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15cb0-0x15d27: thiscall ret 4, no floating point; the NX_BF_DISABLE_GRAVITY (+0x10c bit 0) choice between *gravity and zero for +0x88..+0x90 and the nine zeroed words +0x94..+0xb4 are reproduced by BodyStep.cpp Row000710Fixture::row000710. Its only caller is 000619, reached from NxScene::fetchResults (000398); the candidate's fetchResults is a stub, so there is no public path. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair mutation falsification: returning before Row000710Fixture::row000710 stores gravity and clears auxiliary acceleration words is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=6870). Restoring and rebuilding yields oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase7-body-gravity-initialization-000710.md; raw logs: evidence/raw/phase7-body-gravity-initialization-000710-20261014/.",
+      "notes": "Per-body gravity initialization and auxiliary acceleration clears are mutation-falsified through the registered Phase 7 simulation differential.",
       "implementation": "Physics/src/BodyStep.cpp"
     },
     {
