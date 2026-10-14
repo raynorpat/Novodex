@@ -4389,6 +4389,7 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("enabled fluid creation lifecycle did not match the fixture contract");
 	bool unlicensedSurfaceMeshGetterExact = false;
 	bool unlicensedSurfaceMeshReleaseExact = false;
+	bool unlicensedSurfaceMeshCreateWarningExact = false;
 	bool partialSurfaceMeshCreateFlagsMatch = false;
 	{
 	NxSimulationFluidLicenseOverride partialSurfaceMeshLicenseOverride(465);
@@ -4396,12 +4397,25 @@ int wmain(int argc, wchar_t** argv)
 		? sdk->createScene(fluidSceneDesc) : 0;
 	NxFluidDesc partialSurfaceMeshFluidDesc;
 	partialSurfaceMeshFluidDesc.setToDefault();
+	NxImplicitMeshDesc unlicensedSurfaceMeshDesc;
+	unlicensedSurfaceMeshDesc.setToDefault();
+	partialSurfaceMeshFluidDesc.surfaceMeshDesc = &unlicensedSurfaceMeshDesc;
+	simulationOutput.resetLast();
+	const unsigned unlicensedSurfaceMeshCreateErrorsBefore =
+		simulationOutput.errors;
 	NxFluid* const partialSurfaceMeshFluid = partialSurfaceMeshScene
 		? partialSurfaceMeshScene->createFluid(partialSurfaceMeshFluidDesc) : 0;
+	unlicensedSurfaceMeshCreateWarningExact =
+		partialSurfaceMeshLicenseOverride.ready && partialSurfaceMeshFluid &&
+		simulationOutput.errors == unlicensedSurfaceMeshCreateErrorsBefore + 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 280 &&
+		strstr(simulationOutput.message,
+			"NxFluid::createSurfaceMesh: Feature not available!") != 0;
 	FluidManagerCallbackSummary partialSurfaceMeshCreateCallbacks = {};
 	getFluidManagerCallbackSummary(&partialSurfaceMeshCreateCallbacks);
 	partialSurfaceMeshCreateFlagsMatch = partialSurfaceMeshFluid &&
 		partialSurfaceMeshLicenseOverride.ready &&
+		unlicensedSurfaceMeshCreateWarningExact &&
 		partialSurfaceMeshCreateCallbacks.fluidCreateArguments[13] == 1 &&
 		partialSurfaceMeshCreateCallbacks.fluidCreateArguments[14] == 0;
 	printf("simulation fluid create license=465 sparse=%u hardware=%u matched=%u\n",
@@ -4491,13 +4505,14 @@ int wmain(int argc, wchar_t** argv)
 		gSimulationSurfaceMeshDeleteFlags == 1 && surfaceMeshErrors == 0 &&
 		unlicensedSurfaceMeshGetterExact && unlicensedSurfaceMeshReleaseExact &&
 		partialSurfaceMeshCreateFlagsMatch && surfaceMeshCreateFlagsMatch;
-	printf("simulation fluid public-api surface-mesh get=%u released=%u calls=%u flags=%u errors=%u unlicensed=%u.%u\n",
+	printf("simulation fluid public-api surface-mesh get=%u released=%u calls=%u flags=%u errors=%u unlicensed=%u.%u create-warning=%u\n",
 		returnedSurfaceMesh == reinterpret_cast<NxImplicitMesh*>(
 			&returnedSurfaceMeshMarker) ? 1u : 0u,
 		surfaceMeshReleased ? 1u : 0u,
 		gSimulationSurfaceMeshDeletingCalls, gSimulationSurfaceMeshDeleteFlags,
 		surfaceMeshErrors, unlicensedSurfaceMeshGetterExact ? 1u : 0u,
-		unlicensedSurfaceMeshReleaseExact ? 1u : 0u);
+		unlicensedSurfaceMeshReleaseExact ? 1u : 0u,
+		unlicensedSurfaceMeshCreateWarningExact ? 1u : 0u);
 	if(surfaceMeshFluid)
 		surfaceMeshScene->releaseFluid(*surfaceMeshFluid);
 	if(surfaceMeshScene)

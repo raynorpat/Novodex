@@ -3563,7 +3563,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'simulation fluid public-api flags initial=1 cleared=1 set=1'
 		'simulation fluid public-api particle-write-data initial=1 stored=1 roundtrip=1'
 		'simulation fluid public-api name stored=1 cleared=1'
-		'simulation fluid public-api surface-mesh get=1 released=1 calls=1 flags=1 errors=0 unlicensed=1.1'
+		'simulation fluid public-api surface-mesh get=1 released=1 calls=1 flags=1 errors=0 unlicensed=1.1 create-warning=1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
         # A populated internal fixture pins per-fluid deleting dispatch and
         # both allocator-owned array headers being cleared by manager teardown.

@@ -2188,6 +2188,21 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 	array->count = count;
 	}
 
+// phys_fn_003503's optional constructor surface-mesh branch validates through
+// NxFluidDesc::isValid before reaching this warning. The mesh backend is not
+// present in the default build, so an unlicensed descriptor reports the same
+// warning as NxFluid::createSurfaceMesh while fluid construction continues.
+static void nxFluidInitializeSurfaceMesh(void* fluid,
+	const NxImplicitMeshDesc* desc)
+	{
+	if(!desc)
+		return;
+	if((gNxFluidLicensedFeatureFlags & 2u) == 0)
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
+			280, 0, "NxFluid::createSurfaceMesh: Feature not available!");
+	}
+
 static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(fluid);
@@ -2513,6 +2528,7 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		(gNxFluidLicensedFeatureFlags & 1u) != 0 && descriptorWords[26] == 2u,
 		(gNxFluidLicensedFeatureFlags & 2u) != 0);
 	*reinterpret_cast<void**>(fluid + 0x80) = backendFluid;
+	nxFluidInitializeSurfaceMesh(fluid, desc.surfaceMeshDesc);
 	nxFluidInitializeParticles(fluid, desc.initialParticleData);
 	for(unsigned emitterIndex = 0; emitterIndex != desc.emitters.size(); ++emitterIndex)
 		nxFluidCreateEmitter(fluid, desc.emitters[emitterIndex]);
