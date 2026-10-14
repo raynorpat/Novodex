@@ -10888,3 +10888,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_000696`: an immediate-return mutation of `NxSceneInternal::raycastClosestBounds()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=2819, stderr exact); restored output is exact. See [phase7-raycast-closest-bounds-public-000696.md](phase7-raycast-closest-bounds-public-000696.md).
 
 `phys_fn_000698`: replacing `nxRaycastAnyShapeLoop` with `return false` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=288, stderr exact); restored output is exact. See [phase7-raycast-any-shape-000698.md](phase7-raycast-any-shape-000698.md).
+
+`phys_fn_004868`: skipping the four selected-pruner slot calls while preserving `nxMaskedFourSlotLoop4868`’s return value 1 is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5545, stderr exact); restored output is exact. RVA 0xB5410 is row 004868; row 004865 is padding at 0xB53B1. See [phase7-aabb-pruner-loop-004868.md](phase7-aabb-pruner-loop-004868.md).
