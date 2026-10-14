@@ -10984,3 +10984,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000521`: the actor cleanup wrapper removes a root-owned pair-map record and preserves the map when the actor has no root. The registered `NxPhysicsSimulationTests` direct probe matches both cases; disabling the root branch is caught with candidate_exit=1 and stdout_delta=4007, while the byte-exact restored control is exact. See [phase7-actor-owner-pair-cleanup-000521.md](phase7-actor-owner-pair-cleanup-000521.md).
+
+Phase 7 row `phys_fn_000423` (NpScene scalar deleting destructor) is now mutation-falsified by `NxPhysicsPopulatedSceneTeardownTests`: the candidate no-op retains its 40-byte scene wrapper and is rejected (`stdout_delta=28`, candidate exit 1); restored controls match exactly. See `phase7-npscene-scalar-delete-000423.md`.

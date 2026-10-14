@@ -1,0 +1,7 @@
+pair_directory=C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\pairs\candidate
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\pairs\candidate\NxPhysics.dll sha256=2a012e54120d92a06c2d4cf152e8dde1ab9a02a5bd2ff0cc0118f30df375e7f5
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\pairs\candidate\NxFoundation.dll sha256=408dd84f94d41409632a7bf9975580ace11f9e120eecda909b16e764b24f3092
+FAIL NpScene scalar deleting destructor did not free its wrapper
+teardown recycled_id_scene_wrapper bytes=40 freed=0
+teardown recycled_id_buffers shape_bytes=8 shape_freed=1 actor_bytes=8 actor_freed=1 body_bytes=8 body_freed=1

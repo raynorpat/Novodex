@@ -183,20 +183,29 @@ int wmain(int argc, wchar_t** argv)
 	void* recycledShapeIds = *reinterpret_cast<void**>(recycledIdInternal + 0x6e8);
 	void* recycledActorIds = *reinterpret_cast<void**>(recycledIdInternal + 0x6d4);
 	void* recycledBodyIds = *reinterpret_cast<void**>(recycledIdInternal + 0x6fc);
+	const size_t recycledSceneWrapperBytes = allocator.allocationSize(recycledIdScene);
 	const size_t recycledShapeBytes = allocator.allocationSize(recycledShapeIds);
 	const size_t recycledActorBytes = allocator.allocationSize(recycledActorIds);
 	const size_t recycledBodyBytes = allocator.allocationSize(recycledBodyIds);
+	if(recycledSceneWrapperBytes != 0x28)
+		return nxFail("recycled-ID scene wrapper allocation was not 40 bytes");
 	if(!recycledShapeBytes || !recycledActorBytes || !recycledBodyBytes)
 		return nxFail("released actor did not retain all three recycled-ID arrays");
 	sdk->releaseScene(*recycledIdScene);
+	const bool recycledSceneWrapperFreed = allocator.allocationSize(recycledIdScene) == 0;
 	const bool recycledShapeFreed = allocator.allocationSize(recycledShapeIds) == 0;
 	const bool recycledActorFreed = allocator.allocationSize(recycledActorIds) == 0;
 	const bool recycledBodyFreed = allocator.allocationSize(recycledBodyIds) == 0;
+	printf("teardown recycled_id_scene_wrapper bytes=%u freed=%u\n",
+		static_cast<unsigned>(recycledSceneWrapperBytes),
+		recycledSceneWrapperFreed ? 1u : 0u);
 	printf("teardown recycled_id_buffers shape_bytes=%u shape_freed=%u "
 		"actor_bytes=%u actor_freed=%u body_bytes=%u body_freed=%u\n",
 		static_cast<unsigned>(recycledShapeBytes), recycledShapeFreed ? 1u : 0u,
 		static_cast<unsigned>(recycledActorBytes), recycledActorFreed ? 1u : 0u,
 		static_cast<unsigned>(recycledBodyBytes), recycledBodyFreed ? 1u : 0u);
+	if(!recycledSceneWrapperFreed)
+		return nxFail("NpScene scalar deleting destructor did not free its wrapper");
 	if(!recycledShapeFreed || !recycledActorFreed || !recycledBodyFreed)
 		return nxFail("scene teardown did not free its recycled-ID arrays");
 
@@ -251,15 +260,21 @@ int wmain(int argc, wchar_t** argv)
 	const size_t trackedShapeArrayBytes = allocator.allocationSize(trackedShapeArray);
 	if(!trackedShapeArray || !trackedShapeArrayBytes)
 		return nxFail("static-first scene did not retain its tracked-shape array");
+	const size_t sceneWrapperBytes = allocator.allocationSize(scene);
+	if(sceneWrapperBytes != 0x28)
+		return nxFail("scene wrapper allocation was not the oracle's 40-byte object");
 
 	const unsigned beforeScene = allocator.outstanding();
 	sdk->releaseScene(*scene);
 	const unsigned afterScene = allocator.outstanding();
 	const bool trackedShapeArrayFreed = allocator.allocationSize(trackedShapeArray) == 0;
+	const bool sceneWrapperFreed = allocator.allocationSize(scene) == 0;
 	const int releaseDelta = static_cast<int>(afterScene) - static_cast<int>(beforeScene);
 	printf("teardown static_first release_delta=%d\n", releaseDelta);
 	printf("teardown tracked_shape_array bytes=%u freed=%u\n",
 		static_cast<unsigned>(trackedShapeArrayBytes), trackedShapeArrayFreed ? 1u : 0u);
+	printf("teardown scene_wrapper bytes=%u freed=%u\n",
+		static_cast<unsigned>(sceneWrapperBytes), sceneWrapperFreed ? 1u : 0u);
 
 	if(releaseDelta != -39)
 		return nxFail("scene teardown did not release the oracle's 39 scene-owned blocks");

@@ -473,3 +473,7 @@ The existing kinematic actor release case detects an empty-body mutation of `Dyn
 ### M6.34 — Contact friction parameters (`phys_fn_000861`)
 
 An empty-body row mutation preserves the normal force but zeros the registered simulation friction force (`stdout_delta=266`, both exits zero); the restored differential is exact. Full Phase 7 passes at 1,975/1,975. Phase 7 moves to 322 closed / 238 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-friction-params-000861.md`.
+
+### M7.7 — NpScene scalar deleting destructor (`phys_fn_000423`)
+
+The populated-scene teardown target now asserts that `NpScene` is allocated as 40 bytes and freed on release. The registered no-op mutation replaces the candidate's generated deleting thunk with `mov eax, ecx; ret 4`; it is rejected at the wrapper-free assertion (`candidate_exit=1`, `stdout_delta=28`). The restored staged pair is exact. Inventory passes with Phase 7 at 333 closed / 227 deferred and zero unexplained bytes. A fresh full Phase 7 gate passes at 1,980/1,980. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-scalar-delete-000423.md` and its raw packet.
