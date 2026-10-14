@@ -2101,8 +2101,6 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 		!gNxParticleArrayAllocCallback || !gNxParticleArrayGrowCallback)
 		return;
 	unsigned count = *data.numParticlesPtr;
-	if(!count)
-		return;
 	unsigned char* const bytes = static_cast<unsigned char*>(fluid);
 	void* const manager = *reinterpret_cast<void**>(bytes + 0x7c);
 	void* const backendManager = *reinterpret_cast<void**>(
