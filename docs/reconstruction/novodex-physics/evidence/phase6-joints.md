@@ -10954,3 +10954,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000632`: no-op body removal mutations are rejected by simulation and joint staged-pair targets (`stdout_delta=3991` and `2459`, candidate access violations); both restored controls are exact. See [phase7-scene-remove-body-000632.md](phase7-scene-remove-body-000632.md).
+
+
+`phys_fn_000633`: a no-op Scene joint-removal mutation is rejected by the registered joint staged-pair differential (`candidate_exit=-1073741819`, `stdout_delta=3520`, exact stderr); the forced-rebuild restored control is exact. The formal Phase 7 gate passes at 1,975/1,975. See [phase7-scene-remove-joint-000633.md](phase7-scene-remove-joint-000633.md).

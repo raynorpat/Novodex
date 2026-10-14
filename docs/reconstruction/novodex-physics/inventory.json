@@ -12115,13 +12115,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/247",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1661",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointStagedPairTests staged-pair differential: replacing only NxSceneInternal::removeJoint (phys_fn_000633) with an immediate no-op causes a candidate access violation (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=3520, stderr_exact=True). Restoring Scene.cpp byte-for-byte and forcing a fresh CMake rebuild returns exact output (both exits=0, stdout_delta=0, stderr_exact=True). The formal Phase 7 gate passes at 1975/1975 coverage assertions. See evidence/phase7-scene-remove-joint-000633.md and evidence/raw/phase7-scene-remove-joint-000633-20261014/.",
+      "notes": "The registered joint staged-pair fixture exercises Scene joint removal and rejects the row-scoped no-op.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
