@@ -2124,8 +2124,6 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 	else
 		array = static_cast<NxFluidParticleArrayHeader*>(
 			gNxParticleArrayAllocCallback(count));
-	if(!array || !array->records)
-		return;
 	const float cellSize = gNxFluidGetCellSizeCallback(backendManager, backendFluid);
 	unsigned char* records = static_cast<unsigned char*>(array->records);
 	const unsigned existingArrayCount = array->count;

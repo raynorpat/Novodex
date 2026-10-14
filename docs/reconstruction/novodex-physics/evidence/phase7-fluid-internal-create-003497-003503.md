@@ -1,12 +1,12 @@
 # Phase 7: internal fluid construction and initialization (`phys_fn_003497`, `phys_fn_003503`)
 
-This evidence records the constructor/default-state slice of the enabled fluid creation path. It does not close either row or claim complete initial-particle support.
+This evidence records the constructor/default-state and initial-particle slices of the enabled fluid creation path. It does not close either row or claim full callback-table reconstruction.
 
 ## Oracle behavior
 
 IDA decompilation of `0x00085b00` (`phys_fn_003497`, 175 bytes) shows the internal `Fluid` constructor installing its primary vtable, zeroing the empty emitter and particle-related members, initializing its six world-bound words to `(+FLT_MAX,+FLT_MAX,+FLT_MAX,-FLT_MAX,-FLT_MAX,-FLT_MAX)`, storing the manager link, allocating the `FluidSolver` helper, then setting the helper's read-lock/base vtable and back-pointer. The constructor finishes with the `+0x74` word zero and `+0x80` backend handle sentinel `-1`; the initialization method later replaces the latter with `FluidCreate`'s result.
 
-IDA decompilation of `0x00086080` (`phys_fn_003503`, 303 bytes) shows `Fluid` initialization copying descriptor properties and write-data fields, forwarding the licensed feature flags and descriptor values to `FluidCreate`, creating descriptor emitters, processing initial particle input through `ParticleArray`, resetting the manager refresh byte, and invoking initial particle/state setup. The current candidate implementation in `Physics/src/Scene.cpp` forwards the descriptor, creates emitters, and initializes the enabled backend path. Its initial-particle `ParticleArray` processing and complete callback-table behavior remain open.
+IDA decompilation of `0x00086080` (`phys_fn_003503`, 303 bytes) shows `Fluid` initialization copying descriptor properties and write-data fields, forwarding the licensed feature flags and descriptor values to `FluidCreate`, creating descriptor emitters, processing initial particle input through `ParticleArray`, resetting the manager refresh byte, and invoking initial particle/state setup. The candidate now copies strided position, velocity, and lifetime records into the 92-byte callback-owned array and reproduces the null-allocation path: the oracle dereferences the failed `ParticleArrayAlloc` result while writing the first record, before appending either manager array entry.
 
 ## Differential evidence
 
@@ -20,4 +20,6 @@ A temporary candidate mutation setting the constructor-initialized word at `flui
 
 Fresh Phase 5, 6, and 7 gates pass at 2,707/2,707, 1,640/1,640, and 1,769/1,769 required coverage assertions. The reconstruction tooling suite passes all 814 tests. The six compressed candidate, mutation, restored-control, and phase-gate transcripts are archived in the same raw-evidence directory.
 
-The test proves the enumerated constructor/default-state slice, not every instruction in either row. In particular, `phys_fn_003503` still lacks candidate support and differential coverage for initial particles, allocator failure inside particle-array growth, and the full callback table. Keep both rows open pending those cases and row-specific mutation evidence.
+The initial-particle allocation-failure fixture makes `ParticleArrayAlloc` return null for a valid two-particle descriptor. A caught oracle/candidate differential confirms both DLLs raise `EXCEPTION_ACCESS_VIOLATION` (`c0000005`) before either manager array changes (`internal=0 public=0`); a pre-fix candidate returned a fluid and published both arrays with a null particle-array pointer. The normal strided-particle copy differential still matches exactly. Phase 7 now passes at 1,773/1,773, and all 39 gate-target unit tests pass. Raw differential and Phase 7 transcripts are archived under `evidence/raw/phase7-fluid-particle-array-003503-20261013/`.
+
+The tests prove the enumerated constructor/default-state, initial-particle copying, and null-allocation slices, not every instruction in either row. `phys_fn_003503` still needs a branch-by-branch audit of callback ordering, particle-array growth failure, and the full callback table. Keep both rows open pending those cases and row-specific mutation evidence.

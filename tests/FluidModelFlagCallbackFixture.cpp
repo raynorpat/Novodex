@@ -68,6 +68,8 @@ static unsigned gFluidManagerGetCallCount;
 static bool gFluidManagerCallbackProbe;
 static unsigned gFluidGetDampingCalls;
 static unsigned gFluidSetStiffnessCalls;
+static unsigned gFluidParticleArrayAllocCalls;
+static unsigned gFluidParticleArrayAllocFailure;
 static unsigned gFluidSetStiffnessBits;
 static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidSetViscosityCalls;
@@ -724,9 +726,24 @@ struct NxFluidParticleArrayFixture
 	unsigned capacity;
 	};
 
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidParticleArrayAllocFailure(unsigned enabled)
+	{
+	gFluidParticleArrayAllocFailure = enabled != 0;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidParticleArrayAllocCalls()
+	{
+	return gFluidParticleArrayAllocCalls;
+	}
+
 extern "C" __declspec(dllexport) NxFluidParticleArrayFixture* __cdecl
 ParticleArrayAlloc(unsigned count)
 	{
+	++gFluidParticleArrayAllocCalls;
+	if(gFluidParticleArrayAllocFailure)
+		return 0;
 	NxFluidParticleArrayFixture* const array = static_cast<
 		NxFluidParticleArrayFixture*>(calloc(1, sizeof(NxFluidParticleArrayFixture)));
 	if(!array)

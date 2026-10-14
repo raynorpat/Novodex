@@ -677,6 +677,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_compile_definitions(NxPhysicsFluidInitialParticlesTests PRIVATE
 		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1)
 	target_link_libraries(NxPhysicsFluidInitialParticlesTests bcrypt)
+	add_executable(NxPhysicsFluidParticleArrayFailureTests tests/PhysicsFluidInitialParticlesTests.cpp)
+	target_include_directories(NxPhysicsFluidParticleArrayFailureTests PRIVATE Foundation/include Physics/include)
+	target_compile_definitions(NxPhysicsFluidParticleArrayFailureTests PRIVATE
+		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1 NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE=1)
+	target_link_libraries(NxPhysicsFluidParticleArrayFailureTests bcrypt)
 	add_executable(NxPhysicsFluidManagerGrowthFailureTests tests/PhysicsFluidManagerGrowthFailureTests.cpp)
 	target_include_directories(NxPhysicsFluidManagerGrowthFailureTests PRIVATE Foundation/include Physics/include)
 	target_compile_definitions(NxPhysicsFluidManagerGrowthFailureTests PRIVATE
@@ -940,6 +945,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_target_properties(NxPhysicsFluidModelCallbackFixture PROPERTIES
 		OUTPUT_NAME FluidModel PREFIX "")
 	add_dependencies(NxPhysicsFluidInitialParticlesTests NxPhysics NxPhysicsFluidModelCallbackFixture)
+	add_dependencies(NxPhysicsFluidParticleArrayFailureTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	add_dependencies(NxPhysicsFluidManagerGrowthFailureTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	add_dependencies(NxPhysicsFluidManagerGrowthSecondFailureTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	# The simulation differential loads this staged companion only for its
