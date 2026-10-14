@@ -10948,3 +10948,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000598`: the registered joint-slot fixture rejects a joint-record growth no-op (`candidate_exit=-1073741819`, `stdout_delta=1427`, exact stderr); restored output is exact. See [phase7-joint-record-growth-000598.md](phase7-joint-record-growth-000598.md).
+
+
+`phys_fn_000630`: the registered simulation rejects a Scene body-insertion no-op (`candidate_exit=1`, `stdout_delta=6906`); restored output is exact. See [phase7-scene-add-body-000630.md](phase7-scene-add-body-000630.md).
