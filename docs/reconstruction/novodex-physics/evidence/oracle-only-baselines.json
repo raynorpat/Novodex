@@ -5,7 +5,7 @@
       "format": "layout_digest",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
-      "fixture_source_sha256": "f8fc393e748da1caea2c2a341bbd91b69495e8cf8f7d7e3c3051d976366d35ff",
+      "fixture_source_sha256": "a8e7b90ccb86a750294cdfa526b59981cc848c02459c93b75cb0b93b53902f5a",
       "oracle_digest_fnv32": "774d629d",
       "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1"
     },
