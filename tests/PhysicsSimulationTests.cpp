@@ -4564,39 +4564,25 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshInitialName;
 	const NxReal initialSurfaceRadius = explicitSurfaceMesh->getSurfaceRadius();
 	explicitSurfaceMesh->setSurfaceRadius(0.05f);
-	printf("simulation licensed-surface-stage=after-set-surface-radius\n"); fflush(stdout);
 	const NxReal setSurfaceRadius = explicitSurfaceMesh->getSurfaceRadius();
-	printf("simulation licensed-surface-stage=after-get-surface-radius-2\n"); fflush(stdout);
 	const NxReal initialSingleRadius = explicitSurfaceMesh->getSingleRadius();
-	printf("simulation licensed-surface-stage=after-get-single-radius\n"); fflush(stdout);
 	explicitSurfaceMesh->setSingleRadius(0.012f);
-	printf("simulation licensed-surface-stage=after-set-single-radius\n"); fflush(stdout);
 	const NxReal setSingleRadius = explicitSurfaceMesh->getSingleRadius();
-	printf("simulation licensed-surface-stage=after-get-single-radius-2\n"); fflush(stdout);
 	explicitSurfaceMesh->setBlend(0.03f);
-	printf("simulation licensed-surface-stage=after-set-blend\n"); fflush(stdout);
 	const NxReal blend = explicitSurfaceMesh->getBlend();
-	printf("simulation licensed-surface-stage=after-get-blend\n"); fflush(stdout);
 	const NxReal initialTriangleSize = explicitSurfaceMesh->getTriangleSize();
-	printf("simulation licensed-surface-stage=after-get-triangle-size\n"); fflush(stdout);
 	explicitSurfaceMesh->setTriangleSize(0.006f);
-	printf("simulation licensed-surface-stage=after-set-triangle-size\n"); fflush(stdout);
 	const NxReal setTriangleSize = explicitSurfaceMesh->getTriangleSize();
-	printf("simulation licensed-surface-stage=after-get-triangle-size-2\n"); fflush(stdout);
 	const NxU32 initialSmoothingIterations =
 		explicitSurfaceMesh->getSmoothingIterations();
-	printf("simulation licensed-surface-stage=after-get-smoothing\n"); fflush(stdout);
 	explicitSurfaceMesh->setSmoothingIterations(8);
-	printf("simulation licensed-surface-stage=after-set-smoothing\n"); fflush(stdout);
 	const NxU32 setSmoothingIterations =
 		explicitSurfaceMesh->getSmoothingIterations();
-	printf("simulation licensed-surface-stage=after-get-smoothing-2\n"); fflush(stdout);
 	static const char licensedSurfaceMeshUpdatedName[] = "licensed-mesh-renamed";
 	explicitSurfaceMesh->setName(licensedSurfaceMeshUpdatedName);
 	const bool updatedNameMatches = explicitSurfaceMesh->getName() ==
 		licensedSurfaceMeshUpdatedName;
 	const NxMeshData copiedMeshData = explicitSurfaceMesh->getMeshData();
-	printf("simulation licensed-surface-stage=after-get-mesh-data\n"); fflush(stdout);
 	const bool meshDataMatches = memcmp(&copiedMeshData,
 		&licensedSurfaceMeshDesc.meshData, sizeof(copiedMeshData)) == 0;
 	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
