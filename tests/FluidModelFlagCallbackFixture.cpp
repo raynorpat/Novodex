@@ -72,6 +72,7 @@ static unsigned gFluidParticleArrayAllocCalls;
 static unsigned gFluidParticleArrayAllocFailure;
 static unsigned gFluidGetParticlesCalls;
 static unsigned gFluidGetParticlesReturnNull;
+static unsigned gFluidMaxParticles = 0x1234u;
 static unsigned gFluidSetStiffnessBits;
 static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidSetViscosityCalls;
@@ -647,7 +648,7 @@ extern "C" __declspec(dllexport) unsigned __cdecl FluidGetMaxParticles(
 	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
 		return 0;
 	++gFluidManagerCallbackSummary.fluidGetMaxParticles;
-	return 0x1234u;
+	return gFluidMaxParticles;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetKernelRadiusMultiplier(
@@ -750,6 +751,12 @@ extern "C" __declspec(dllexport) unsigned __cdecl
 NxGetFluidGetParticlesCalls()
 	{
 	return gFluidGetParticlesCalls;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidMaxParticles(unsigned count)
+	{
+	gFluidMaxParticles = count;
 	}
 
 extern "C" __declspec(dllexport) NxFluidParticleArrayFixture* __cdecl
