@@ -24,6 +24,7 @@ typedef NxFoundationSDK* (NX_CALL_CONV *CreateFoundationSDKFn)(NxU32,
 	NxUserOutputStream*, NxUserAllocator*);
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32,
 	NxUserAllocator*, NxUserOutputStream*);
+typedef void* (__thiscall *PhysicsSdkScalarDeletingDestructorFn)(void*, unsigned);
 
 class TrackingAllocator : public NxUserAllocator
 	{
@@ -763,6 +764,32 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("PhysicsSDK destructor did not release cached radix-sort buffers");
 	if(sdkReleaseOutstanding != 0)
 		return nxFail("SDK teardown left tracked allocator blocks outstanding");
+
+	// phys_fn_000494 is the C++ scalar deleting destructor. With flag zero it
+	// must run the same destructor body while leaving the PhysicsSDK allocation
+	// for the caller to free. Exercise the vtable slot directly on a fresh SDK.
+	NxPhysicsSDK* const flagZeroSdk = createSDK(NX_PHYSICS_SDK_VERSION, &allocator, 0);
+	if(!flagZeroSdk) return nxFail("flag-zero scalar-delete SDK creation failed");
+	void* const internalSdk = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(flagZeroSdk) + sizeof(void*));
+	const size_t internalSdkBytes = allocator.allocationSize(internalSdk);
+	void** const internalSdkVtable = *reinterpret_cast<void***>(internalSdk);
+	if(internalSdkBytes != 0x38 || !internalSdkVtable || !internalSdkVtable[0])
+		return nxFail("PhysicsSDK scalar deleting destructor fixture has an invalid object");
+	PhysicsSdkScalarDeletingDestructorFn deletingDestructor =
+		reinterpret_cast<PhysicsSdkScalarDeletingDestructorFn>(internalSdkVtable[0]);
+	void* const deletingDestructorResult = deletingDestructor(internalSdk, 0);
+	const bool flagZeroPreservedObject =
+		deletingDestructorResult == internalSdk &&
+		allocator.allocationSize(internalSdk) == internalSdkBytes;
+	printf("teardown sdk_scalar_delete flag=0 bytes=%u preserved=%u result_self=%u\n",
+		static_cast<unsigned>(internalSdkBytes), flagZeroPreservedObject ? 1u : 0u,
+		deletingDestructorResult == internalSdk ? 1u : 0u);
+	if(!flagZeroPreservedObject)
+		return nxFail("PhysicsSDK scalar deleting destructor freed storage for flag zero");
+	allocator.free(internalSdk);
+	if(allocator.outstanding() != 0)
+		return nxFail("flag-zero scalar deleting destructor fixture leaked allocator blocks");
 
 	foundationSDK->release();
 	return nxReportPairIdentity(pairDirectory);

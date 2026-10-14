@@ -1861,3 +1861,7 @@ Returning before the island-root and member-list merge is rejected by `NxPhysics
 ### Continuation — Sleep-group union (`phys_fn_000718`, `2026-10-14`)
 
 Returning before the sleep-group root and member-list merge is rejected by `NxPhysicsSimulationTests` (`stdout_delta=4158`, both exits zero, exact stderr); the restored control is exact. The fresh full Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 now records 284 closed functions and 276 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sleep-group-union-000718.md` and archived transcripts.
+
+### Continuation — PhysicsSDK scalar deleting destructor (`phys_fn_000494`, 2026-10-14)
+
+The populated Scene teardown fixture now invokes the `PhysicsSDK` scalar deleting destructor with flag zero and verifies the returned pointer and live 56-byte allocation. The oracle and candidate match exactly. Changing the generated thunk's `test al, 1` to `or al, 1` forces an invalid free and is rejected by the candidate-only fixture (`preserved=0`, exit 1). Nine SDK teardown assertions, including this row and the previously reconstructed cache/ordering behavior, are now explicitly registered. Fresh Phase 3 and Phase 7 gates pass at 954/954 and 1,989/1,989; the gate registry tests pass 39/39. This closes the thunk only; `phys_fn_000492` and full DLL reconstruction remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-scalar-delete-000494.md` and its raw evidence folder.

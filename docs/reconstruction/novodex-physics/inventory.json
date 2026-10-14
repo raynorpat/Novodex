@@ -9545,13 +9545,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/181",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1382",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsPopulatedSceneTeardownTests calls the PhysicsSDK scalar deleting destructor with flag zero and verifies that the 56-byte allocation remains live and the thunk returns self. A staged candidate mutation that forces the flag-zero free branch is rejected; see evidence/phase7-sdk-scalar-delete-000494.md.",
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp",
+      "implementation_symbol": "??_GPhysicsSDK@@UAEPAXI@Z"
     },
     {
       "id": "phys_fn_000495",

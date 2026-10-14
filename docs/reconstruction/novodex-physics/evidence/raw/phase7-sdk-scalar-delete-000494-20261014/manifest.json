@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_000494",
+  "gate": "NxPhysicsPopulatedSceneTeardownTests",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "089bc262987fa599810c88c45ef3620b49943c415c8b78d7897a6884fb9cbe46",
+  "mutant_candidate_sha256": "931744b5e0e0b36bf9c8f5ea4af9b0ef16b6f8eaeb55ad436b61615292ee0b97",
+  "mutation": {
+    "candidate_rva": "0x000541c0",
+    "raw_file_offset": "0x000535ed",
+    "original": "a80174",
+    "replacement": "0c0174",
+    "meaning": "replace test al, 1 with or al, 1 to force the free branch when flag is zero"
+  },
+  "mutant_result": {
+    "exit": 1,
+    "preserved": 0,
+    "result_self": 1,
+    "failure": "PhysicsSDK scalar deleting destructor freed storage for flag zero",
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 2,
+    "stderr_exact": false
+  },
+  "restored_differential": {
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true
+  },
+  "phase3_gate": {
+    "status": "pass",
+    "coverage_assertions": 954,
+    "floor": 954
+  },
+  "phase7_gate": {
+    "status": "pass",
+    "coverage_assertions": 1989,
+    "floor": 1989
+  },
+  "files": {
+    "baseline-differential.log": {
+      "bytes": 11387,
+      "sha256": "14889f32afc8aa6d94a867ca4945a8250f0e018db3d41085ed55255e8670d8d5"
+    },
+    "mutant-candidate-sha256.txt": {
+      "bytes": 66,
+      "sha256": "35b8ca6129430af45b747543aa5b18a4161d0a03fa7e29d66b29f7302288802b"
+    },
+    "mutant-candidate.log": {
+      "bytes": 2555,
+      "sha256": "3c7e3b90b722e074e84f76f64464d5a3a840ad4eb5090abf0bdf1f9750587d42"
+    },
+    "mutant-differential.log": {
+      "bytes": 10964,
+      "sha256": "d959779aa70c7bd80db3f7760120a4a1b1a2cc671bd04f13a41aad44399378d5"
+    },
+    "phase3-gate.log": {
+      "bytes": 842778,
+      "sha256": "d24485ea3d55c97586bb3b65995698ca676a4ec6103df92025a7f9653a6a87eb"
+    },
+    "phase3-gate.log.gz": {
+      "bytes": 90128,
+      "sha256": "0b83804fc567d52e31487537fb8c6a616f51544f17a9ca4532d89688679dad51"
+    },
+    "phase7-gate.log.gz": {
+      "bytes": 292740,
+      "sha256": "92f31077068ec39b6109e9a69d923a58ae31c3eb37add469236618bb21da3ba3"
+    },
+    "restored-differential.log": {
+      "bytes": 11387,
+      "sha256": "14889f32afc8aa6d94a867ca4945a8250f0e018db3d41085ed55255e8670d8d5"
+    }
+  }
+}

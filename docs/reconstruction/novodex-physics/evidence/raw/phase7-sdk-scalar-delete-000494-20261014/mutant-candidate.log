@@ -1,0 +1,40 @@
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\candidate
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=931744b5e0e0b36bf9c8f5ea4af9b0ef16b6f8eaeb55ad436b61615292ee0b97
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=a434b0e7630964940b260a66ef9bb6d1baf53a3492363502b6ed4dd15a7796a3
+FAIL PhysicsSDK scalar deleting destructor freed storage for flag zero
+teardown recycled_id_scene_wrapper bytes=40 freed=1
+teardown recycled_id_buffers shape_bytes=8 shape_freed=1 actor_bytes=8 actor_freed=1 body_bytes=8 body_freed=1
+teardown joint_support_body_buffer bytes=100 freed=1
+teardown joint_metadata_buffers records_bytes=640 records_freed=1 joint_refs_bytes=8 refs_freed=1
+teardown static_first release_delta=-39
+teardown tracked_shape_array bytes=8 freed=1
+teardown scene_wrapper bytes=40 freed=1
+teardown debug_renderable bytes=52 freed=1
+teardown contact_pair hash_storage buckets=8 links=8 entries=16
+teardown contact_pair pairs_before=1 release_delta=-54 root_bytes=8 root_freed=1
+teardown pruner_owner static_calls=1 dynamic_calls=1 flags=1/1 selected=2 release_delta=-33
+teardown controller_owner actors_before=1 release_delta=-34
+teardown contact_report callback=1 events=0000000a
+teardown contact_report callback=2 events=00000008
+teardown contact_report callback=3 events=00000008
+teardown contact_report callback=4 events=00000008
+teardown contact_report callback=5 events=00000008
+teardown contact_report callback=6 events=00000008
+teardown contact_report callback=7 events=00000004
+teardown contact_report before_release=6 after_release=7 events=0000000e
+teardown contact_report_buffer bytes=264 freed=1
+teardown shape_pair_hash buckets=8/1 links=8/1 entries=16/1
+teardown trigger_buffer bytes=72 freed=1 callbacks=20
+teardown trigger_pair_arrays previous_bytes=16 previous_freed=1 current_bytes=16 current_freed=1
+teardown active_root_buffer bytes=8 freed=1
+teardown joint_owner joint_created=1 release_delta=-35
+teardown retained_body_record bytes=608 freed=1
+teardown coherent_cache bytes=44 freed=1
+teardown sdk_owned_scene bytes=40 freed=1
+teardown sdk_owned_mesh bytes=8 freed=1 scene_actor=1
+teardown sdk_scene_before_mesh=1
+teardown actor_group_pair_cache_after_mesh=1
+teardown sdk_cache radix_sort_buffers bytes=12 remaining=0
+teardown sdk_release outstanding=0
+teardown sdk_scalar_delete flag=0 bytes=56 preserved=0 result_self=1

@@ -222,7 +222,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'teardown joint_support_body_buffer bytes=100 freed=1',
         'teardown joint_metadata_buffers records_bytes=640 records_freed=1 joint_refs_bytes=8 refs_freed=1',
         'teardown joint_owner joint_created=1 release_delta=-35', # phys_fn_000606 destroys retained joint list entries
-        'teardown retained_body_record bytes=608 freed=1' # phys_fn_000602 destroys orphaned body records
+        'teardown retained_body_record bytes=608 freed=1', # phys_fn_000602 destroys orphaned body records
+        'teardown shape_pair_hash buckets=8/1 links=8/1 entries=16/1',
+        'teardown trigger_pair_arrays previous_bytes=16 previous_freed=1 current_bytes=16 current_freed=1',
+        'teardown sdk_owned_scene bytes=40 freed=1',
+        'teardown sdk_owned_mesh bytes=8 freed=1 scene_actor=1',
+        'teardown sdk_scene_before_mesh=1',
+        'teardown actor_group_pair_cache_after_mesh=1',
+        'teardown sdk_cache radix_sort_buffers bytes=12 remaining=0',
+        'teardown sdk_release outstanding=0',
+        'teardown sdk_scalar_delete flag=0 bytes=56 preserved=1 result_self=1'
     )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
@@ -6011,7 +6020,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 14  # adds the material, purge and inspector Scene-lock refusal/unwind cases
-    '3' = 945  # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
+    '3' = 954  # adds nine registered populated-SDK teardown assertions
+               # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
                # plus the two-live-scene actor-group flag wrapper case
                # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
                # includes controller-owned proxy cleanup during Scene destruction
@@ -6133,7 +6143,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1980  # adds direct row 000521 owner-pair cleanup probe and row 000867 accumulator probe
+	'7' = 1989  # adds nine registered populated-SDK teardown assertions
+				# adds direct row 000521 owner-pair cleanup probe and row 000867 accumulator probe
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds the two empty-pruner visualization assertions
 				# includes the CCD test target (two existing and one row 000740 assertion)
