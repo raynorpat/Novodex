@@ -108,3 +108,7 @@ python docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reco
 Expected: all Phase 2 rows closed; SDK/core differential modes exact; header drift zero; later-phase rows remain explicitly open; earlier census gate remains pass.
 
 Commit: `docs: close Physics SDK core gates`.
+
+### Continuation — Phase 2 shared island root lookup (`phys_fn_000712`, `2026-10-14`)
+
+The Phase 2-owned root/path-compression helper is discharged by Phase 5. Returning null instead of the compressed root is rejected by `NxPhysicsSimulationTests` (`stdout_delta=771`, candidate access violation); the restored differential is exact. The full Phase 5 gate passes at 2,708/2,708 coverage assertions. Phase 2 closes 64 functions and defers 79; Phase 7 counts are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-island-root-return-000712.md` and archived transcripts.

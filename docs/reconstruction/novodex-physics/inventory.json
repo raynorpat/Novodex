@@ -13564,13 +13564,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/284",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2020",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsSimulationTests Phase 5 staged-pair mutation falsification: returning null instead of Row000712Fixture::row000712 compressed root is rejected (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=771, stderr_exact=True). Restoring and rebuilding yields oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase5-island-root-return-000712.md; raw logs: evidence/raw/phase5-island-root-return-000712-20261014/.",
+      "notes": "Island root lookup and path-compression return are mutation-falsified through the registered Phase 5 simulation differential.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
