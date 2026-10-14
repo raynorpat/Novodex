@@ -5415,6 +5415,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'vt name=mesh slots=12 digest=cef7ce84',
         'colobj ctor=phys_fn_001193 size=28 digest=e1df25e5 vptr_final=10107218 zero04=00000000 arg_at_8=a5a5a5a5 vptr_member=101072a0 arg_at_18=a5a5a5a5',
         'owner accessor=phys_fn_001281 mark=13579bdf returned=13579bdf',
+        'tmplinit row=phys_fn_000496 candidate_vs_oracle bytes=64 mismatches=0',
         'sceneaux row=phys_fn_000649 arrays=10 oracle_frees=10 candidate_frees=10 mismatches=0',
         'hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10',
         'hull static tables digest=f835c8c3',
@@ -6040,7 +6041,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2733  # adds direct rows 000521 and 000867 probes via shared simulation target
+	'5' = 2734  # adds candidate-vs-oracle shape-descriptor initialization
+				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
 				# adds Scene base-allocation failure handling via the Foundation allocator
@@ -6102,7 +6104,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1658  # adds direct rows 000521 and 000867 probes via shared simulation target
+	'6' = 1659  # adds candidate-vs-oracle shape-descriptor initialization
+				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
 				# adds SDK material, purge and inspector lock refusal/unwind assertions
@@ -6143,7 +6146,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1989  # adds nine registered populated-SDK teardown assertions
+	'7' = 1990  # adds candidate-vs-oracle shape-descriptor initialization
+				# adds nine registered populated-SDK teardown assertions
 				# adds direct row 000521 owner-pair cleanup probe and row 000867 accumulator probe
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds the two empty-pruner visualization assertions
