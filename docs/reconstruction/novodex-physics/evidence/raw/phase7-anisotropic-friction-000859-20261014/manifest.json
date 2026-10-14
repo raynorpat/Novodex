@@ -52,5 +52,36 @@
       "source_bytes": 4050272,
       "compressed_bytes": 291668
     }
-  ]
+  ],
+  "post_merge_phase_gates": {
+    "5": "2731/2731 pass",
+    "6": "1656/1656 pass",
+    "7": "1978/1978 pass",
+    "transcripts": [
+      {
+        "path": "post-merge-phase5-gate.log.gz",
+        "source": "D:\\Novodex-row859-postmerge-phase5-20261014.log",
+        "source_sha256": "d2cf7b18bafd800408230a2b293dbe2c49c4931e17ee8eefe39a3175b492c8d5",
+        "compressed_sha256": "0546f40e2ebaa2aee907e7119639c84c827d6d38c095ce6990caf3e831a7d80a",
+        "source_bytes": 2779585,
+        "compressed_bytes": 204147
+      },
+      {
+        "path": "post-merge-phase6-gate.log.gz",
+        "source": "D:\\Novodex-row859-postmerge-phase6-20261014.log",
+        "source_sha256": "bf2c2a0f78479bc23b79a80ab37e809d52978c9bd3b846a288f09db94d647294",
+        "compressed_sha256": "13597aba6e0899428fb100247797c03ced8f30f8d862dc90e97dd35227d4f5f6",
+        "source_bytes": 3076094,
+        "compressed_bytes": 250534
+      },
+      {
+        "path": "post-merge-phase7-gate.log.gz",
+        "source": "D:\\Novodex-row859-postmerge-phase7-20261014.log",
+        "source_sha256": "3607c6449623473d55378205137a6a7d50d59e67f0816a433a73eb5cfca6a5d0",
+        "compressed_sha256": "f160975cf8e665d9531b3fafc25c9d750946037b5704772c2f008b0c6bf4c8ed",
+        "source_bytes": 4053595,
+        "compressed_bytes": 291680
+      }
+    ]
+  }
 }

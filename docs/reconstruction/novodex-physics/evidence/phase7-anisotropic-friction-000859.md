@@ -5,3 +5,6 @@ The direct simulation fixture calls `cpmAnisotropicFriction0859` by its decorate
 A row-only immediate-return mutation is rejected by the registered `NxPhysicsSimulationTests` differential: oracle exit 0, candidate exit 1, stdout delta 4,002 bytes. Restoring `Physics/src/ContactPairManager.cpp` byte-for-byte returns exact output. The restored implementation passes Phases 5, 6, and 7 at 2,731/2,731, 1,656/1,656, and 1,978/1,978 coverage assertions.
 
 The fixture adds no public-header changes. Mutation patch, source and DLL hashes, focused differential transcripts, and full gate transcripts are in `evidence/raw/phase7-anisotropic-friction-000859-20261014/`.
+
+
+After commit `9f7f9478` was fast-forwarded to local `main`, the Phase 5, 6, and 7 gates passed again at 2,731/2,731, 1,656/1,656, and 1,978/1,978. The post-merge transcripts and checksums are in `evidence/raw/phase7-anisotropic-friction-000859-20261014/`.
