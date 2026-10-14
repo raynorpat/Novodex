@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 159 rows are closed (4 oracle differentials, 155 mutation-falsified); 274 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. The allocator release rows 004149/004151 are directly map-resolved and mutation-falsified by NxPhysicsAllocatorReleaseTests. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. Current closure totals are 159 closed and 274 open. See evidence/phase6-actor-group-hash-004153-004155.md. Fresh full Phase 6 gate rerun after extending its shared NxPhysicsSDKTests target: 1,642/1,642 coverage assertions pass, including the two-Scene addMaterial refusal, reverse-unlock and unlocked-add markers; staged differential is exact. Evidence: evidence/phase2-sdk-add-material-lock-000254-000256.md.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 160 rows are closed (4 oracle differentials, 156 mutation-falsified); 273 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. The allocator release rows 004149/004151 are directly map-resolved and mutation-falsified by NxPhysicsAllocatorReleaseTests. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. Current closure totals are 160 closed and 273 open. See evidence/phase6-actor-group-hash-004153-004155.md. Fresh full Phase 6 gate rerun after extending its shared NxPhysicsSDKTests target: 1,642/1,642 coverage assertions pass, including the two-Scene addMaterial refusal, reverse-unlock and unlocked-add markers; staged differential is exact. Evidence: evidence/phase2-sdk-add-material-lock-000254-000256.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 155,
+    "differential_falsified": 156,
     "oracle_differential_falsified": 4,
-    "deferred_reconstructed_not_falsified": 257,
+    "deferred_reconstructed_not_falsified": 256,
     "deferred_not_reconstructed_in_phase": 17
   },
   "closed": [
@@ -368,6 +368,16 @@
       "falsification": {
         "mutation": "In the same fresh CMake Win32 Release archive of c304c1b8, changed sceneDumpToken binary formatting in Physics/src/core/SceneDump.cpp from \"%.4f$%x\" to \"%.3f$%x\". The registered core-dump staged-pair differential exercises the formatter across numeric dump fields.",
         "detected": "stdout_delta=542"
+      }
+    },
+    {
+      "id": "phys_fn_003997",
+      "rva": "0x0008ffa0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsCoreDumpTests",
+      "falsification": {
+        "mutation": "Temporarily inserted an unconditional false return at entry to SceneDumpSetting::store, rebuilt the candidate NxPhysics.dll, and ran the registered NxPhysicsCoreDumpTests staged-pair differential. Oracle and candidate both exited 0 with exact stderr, but the serialized core-dump transcript changed. Restoring SceneDump.cpp byte-for-byte returned an exact differential control.",
+        "detected": "stdout_delta=3776"
       }
     },
     {
@@ -1743,15 +1753,6 @@
       "id": "phys_fn_003992",
       "rva": "0x0008fde0",
       "size": 77,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003997",
-      "rva": "0x0008ffa0",
-      "size": 1757,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],

@@ -10972,3 +10972,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000867`: the direct staged simulation fixture compares 15 seeded accumulator results between the candidate DLL and pinned oracle (`digest=337db078`); an immediate-return mutation changes the digest to `3695bd32` and is rejected (`stdout_delta=138`). The byte-identical restored control is exact. See [phase7-accumulator-000867.md](phase7-accumulator-000867.md).
+
+
+`phys_fn_003997`: an entry no-op mutation of `SceneDumpSetting::store` is rejected by the registered `NxPhysicsCoreDumpTests` staged-pair transcript (`stdout_delta=3776`, both exit 0, exact stderr); byte-for-byte restoration returns `stdout_delta=0`. The row is closed in Phase 6. See [phase6-scene-dump-setting-003997.md](phase6-scene-dump-setting-003997.md).

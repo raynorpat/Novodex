@@ -1,0 +1,1 @@
+Mutation recipe: insert `return false;` as the first statement of `SceneDumpSetting::store` in `Physics/src/core/SceneDump.cpp`, rebuild NxPhysics.dll and NxPhysicsCoreDumpTests, then run the registered staged-pair differential. Restore the source byte-for-byte and rebuild for the exact control.

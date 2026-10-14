@@ -952,3 +952,8 @@ Added an empty-scene public visualization stage with collision AABBs enabled. Th
 ### M6.39 — Kind-selected accumulator (`phys_fn_000867`)
 
 The previous object-layout cases compared the oracle function with a test-local formula and did not reach the built candidate DLL. Added a 15-case direct staged-pair fixture for the candidate map symbol and oracle RVA. A row-only immediate-return mutation changes the full-object digest (`337db078` to `3695bd32`, `stdout_delta=138`); restored control is exact. This row is now dynamically gated and closed in the Phase 7 ledger. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-accumulator-000867.md`.
+
+
+### M6.40 — Scene dump setting serialization (`phys_fn_003997`)
+
+A row-only early-false mutation in `SceneDumpSetting::store` is detected by the registered `NxPhysicsCoreDumpTests` staged-pair differential (`stdout_delta=3776`, exact stderr). Restoring the source byte-for-byte yields an exact control. The row is now dynamically gated and closed in the Phase 6 ledger. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-scene-dump-setting-003997.md`.
