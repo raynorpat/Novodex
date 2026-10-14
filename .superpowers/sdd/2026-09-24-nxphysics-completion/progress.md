@@ -454,3 +454,8 @@ The immediate-return mutant is rejected by both the registered simulation (`stdo
 ### M6.30 — Joint island dissolve (`phys_fn_000778`)
 
 The registered simulation rejects a row-only immediate return (`stdout_delta=4`, both exits 0, exact stderr); joint staged-pair and allocator tests are exact under the mutation. Restored controls match all three targets. Phase 7 moves to 318 closed / 242 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-dissolve-000778.md`.
+
+
+### M6.31 — Joint island continuation array push (`phys_fn_000780`)
+
+The direct DLL probe checks the joint-array continuation independently; suppressing only the push changes `queued=1` to `queued=0` and fails the registered differential (`candidate_exit=1`, `stdout_delta=4000`). Restored source is exact. Phase 7 moves to 319 closed / 241 deferred. The shared simulation target adds one required line in Phases 5, 6 and 7, bringing their floors to 2,729, 1,654 and 1,803. Evidence: the row 000780 report and raw packet.

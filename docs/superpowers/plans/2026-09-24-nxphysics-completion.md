@@ -908,3 +908,8 @@ A row-only no-op is rejected by both the registered public simulation (`stdout_d
 ### M6.30 — Joint island dissolve (`phys_fn_000778`)
 
 The registered public simulation rejects a row-only no-op (`stdout_delta=4`, both exits 0, exact stderr); joint staged-pair and allocator targets are exact under the mutation and are not the detector. Restored controls match across all targets. Phase 7 moves to 318 closed / 242 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-dissolve-000778.md`.
+
+
+### M6.31 — Joint island continuation array push (`phys_fn_000780`)
+
+The simulation test now directly probes the row's continuation using a seeded joint chain and spare-capacity joint array. Suppressing only the array push changes `queued=1` to `queued=0` while preserving link clearing and body reset; the staged differential rejects it (`stdout_delta=4000`). Restoring the source is exact. Phase 7 moves to 319 closed / 241 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-array-push-000780.md`.

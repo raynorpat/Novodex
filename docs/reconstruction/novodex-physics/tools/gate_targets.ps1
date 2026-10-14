@@ -3494,6 +3494,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # Directly exercise both joint-list scans in the private contact filter
         # with scratch body and joint records from each staged DLL.
         'simulation row750 joint-contact owner_scan=1.0 fallback_scan=1.0'
+        # Check that row 000780 queues the other joint and clears both links
+        # while resetting the seeded root record.
+        'simulation row780 direct queued=1 linked_cleared=1 body_reset=1'
         # Kinematic transitions after a multi-joint island has been built
         # exercise the public dirty marking and rebuild path in both directions.
         'simulation articulation-chain island-dirty transition=kinematic flag=1'
@@ -6015,7 +6018,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2728  # adds direct row 000750 joint-contact list probes
+	'5' = 2729  # adds direct row 000780 joint-array continuation probe
 				# adds Scene base-allocation failure handling via the Foundation allocator
 				# prior 2720 includes Foundation, SDK, Scene, actor and shape allocator ownership
 				# adds focused initial Fluid ParticleData channel and stride coverage
@@ -6075,7 +6078,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1653  # adds direct row 000750 owner/fallback joint-contact scans
+	'6' = 1654  # adds direct row 000780 joint-array continuation probe
 				# adds SDK material, purge and inspector lock refusal/unwind assertions
 	           # plus Fluid constructor state and default-layout coverage
 				# adds a mutation-falsified contact-pair force aggregate
@@ -6114,7 +6117,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1802  # adds direct row 000750 owner/fallback joint-contact scans
+	'7' = 1803  # adds direct row 000780 joint-array continuation probe
 				# includes the CCD test target (two existing and one row 000740 assertion)
 				# adds direct dirty-island row probe and public articulated kinematic transitions
 				# adds ParticleArrayGrow allocation-failure ordering coverage

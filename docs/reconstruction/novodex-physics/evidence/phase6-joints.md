@@ -10928,3 +10928,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000778`: the registered simulation rejects an immediate-return mutation (`stdout_delta=4`, both exits 0, exact stderr); the joint staged-pair and allocator targets do not detect this dissolve path. Restored controls are exact across all three targets. See [phase7-joint-dissolve-000778.md](phase7-joint-dissolve-000778.md).
+
+
+`phys_fn_000780`: the direct row 000780 probe verifies the other joint is queued separately from link clearing/body reset. Suppressing only the array push flips `queued=1` to `queued=0` and is rejected (`candidate_exit=1`, `stdout_delta=4000`); restored output is exact. See [phase7-joint-array-push-000780.md](phase7-joint-array-push-000780.md).

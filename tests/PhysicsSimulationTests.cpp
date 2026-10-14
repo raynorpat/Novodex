@@ -783,6 +783,37 @@ static bool nxSimulationTestJointContactRow750(HMODULE physics,
 		otherListContactsEnabled == 1 && otherListContactsDisabled == 0;
 	}
 
+static bool nxSimulationTestJointArrayPushRow780(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* row778Address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?row000778@Row000778Fixture@@QAEXPAXPAPAX@Z", 0x000185f0, &row778Address))
+		return false;
+	alignas(16) unsigned char body[0x240] = {};
+	alignas(16) unsigned char linkedJoint[0x40] = {};
+	alignas(16) unsigned char excludedJoint[0x40] = {};
+	void* storage[4] = {};
+	void* jointArray[3] = { storage, storage, storage + 4 };
+	*reinterpret_cast<void**>(body + 0x1bc) = body;
+	*reinterpret_cast<void**>(body + 0x1d8) = linkedJoint;
+	*reinterpret_cast<NxU32*>(body + 0x114) = 0x100;
+	*reinterpret_cast<void**>(linkedJoint + 0x34) = excludedJoint;
+	typedef void (__thiscall *JointDissolveFn)(void*, void*, void**);
+	reinterpret_cast<JointDissolveFn>(row778Address)(body, excludedJoint, jointArray);
+	void** const arrayBegin = static_cast<void**>(jointArray[0]);
+	void** const arrayEnd = static_cast<void**>(jointArray[1]);
+	const NxU32 queued = static_cast<NxU32>(arrayEnd - arrayBegin);
+	const bool onlyOtherJointQueued = queued == 1 && arrayBegin[0] == linkedJoint;
+	const bool linksCleared = *reinterpret_cast<void**>(linkedJoint + 0x34) == 0 &&
+		*reinterpret_cast<void**>(excludedJoint + 0x34) == 0;
+	const bool bodyReset = *reinterpret_cast<void**>(body + 0x1bc) == body &&
+		*reinterpret_cast<void**>(body + 0x1d8) == 0;
+	printf("simulation row780 direct queued=%u linked_cleared=%u body_reset=%u\n",
+		onlyOtherJointQueued, linksCleared, bodyReset);
+	return onlyOtherJointQueued && linksCleared && bodyReset;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -823,6 +854,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 000750 failed the pinned direct joint-contact probe");
+		}
+	if(!nxSimulationTestJointArrayPushRow780(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 000780 failed the pinned direct joint-array probe");
 		}
 	// Exercise trigger-pair generation, enter/stay/leave reconciliation, and
 	// fetch-time callback delivery through the public scene API.

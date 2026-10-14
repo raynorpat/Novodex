@@ -14839,13 +14839,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/317",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2196",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the joint staged-pair transcript: no breakpoint was set at this row's own address; the entry breakpoint of phys_fn_000778 (the candidate function Row000778Fixture::row000778, which contains this continuation) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), and the breakpoint on phys_fn_000760, which is reached only through this continuation's loop (0x1870a), was hit 25 times, with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "continuation of the entry at 0x000185f0; written with it as Row000778Fixture::row000778",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: the direct DLL probe seeds a two-joint island list and checks continuation row 000780 queues the non-removed joint. Suppressing only the array push changes queued=1 to queued=0 while link clearing and body reset still pass; candidate_exit=1 and stdout_delta=4000. Restoring JointSupport.cpp byte-for-byte returns exact output. See evidence/phase7-joint-array-push-000780.md and evidence/raw/phase7-joint-array-push-000780-20261014/.",
+      "notes": "A direct map/RVA-resolved DLL probe checks the joint-array continuation independently from the body-link clearing and reset; a row-scoped push mutation is rejected.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
