@@ -1,0 +1,4 @@
+diff --git a/Physics/src/NpScene.cpp b/Physics/src/NpScene.cpp
+@@
+-		nxFoundationSDKAllocator->free(*reinterpret_cast<void**>(
++		nxGetSdkAllocator()->free(*reinterpret_cast<void**>(

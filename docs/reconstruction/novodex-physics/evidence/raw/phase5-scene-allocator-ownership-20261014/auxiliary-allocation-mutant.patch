@@ -1,0 +1,4 @@
+diff --git a/Physics/src/Scene.cpp b/Physics/src/Scene.cpp
+@@
+-	void* aux = nxFoundationSDKAllocator->malloc(0xa8, NX_MEMORY_PERSISTENT);
++	void* aux = nxGetSdkAllocator()->malloc(0xa8, NX_MEMORY_PERSISTENT);

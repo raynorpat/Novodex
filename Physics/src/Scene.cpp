@@ -787,7 +787,7 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x6cc) = reinterpret_cast<unsigned>(wrapper);
 
 	// phys_fn_002415, allocated 0xa8 bytes (0x12fbe).
-	void* aux = nxGetSdkAllocator()->malloc(0xa8, NX_MEMORY_PERSISTENT);
+	void* aux = nxFoundationSDKAllocator->malloc(0xa8, NX_MEMORY_PERSISTENT);
 	nxDword(p, 0x048) = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
 	}
 
@@ -5585,7 +5585,7 @@ void nxActorDestroy(unsigned char* body)
 	void*& actor = *reinterpret_cast<void**>(body);
 	if(actor)
 		{
-		nxGetSdkAllocator()->free(actor);
+		nxFoundationSDKAllocator->free(actor);
 		actor = 0;
 		}
 	nxShapeSetName(body, 0);

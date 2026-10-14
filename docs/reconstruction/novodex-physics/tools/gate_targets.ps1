@@ -13,9 +13,9 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests', 'NxPhysicsTriangleMeshReleaseLockTests')
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests', 'NxPhysicsSDKTests', 'NxPhysicsPopulatedSceneTeardownTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneAllocatorTests')
     '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSDKTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidParticleArrayFailureTests', 'NxPhysicsFluidGetParticlesNullTests', 'NxPhysicsFluidZeroInitialParticlesTests', 'NxPhysicsFluidInitialParticleCapacityClipTests', 'NxPhysicsFluidAddParticlesTests', 'NxPhysicsFluidAddParticlesGrowFailureTests', 'NxPhysicsFluidAddParticlesAppendTests', 'NxPhysicsFluidManagerGrowthFailureTests', 'NxPhysicsFluidManagerGrowthSecondFailureTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidParticleArrayFailureTests', 'NxPhysicsFluidGetParticlesNullTests', 'NxPhysicsFluidZeroInitialParticlesTests', 'NxPhysicsFluidInitialParticleCapacityClipTests', 'NxPhysicsFluidAddParticlesTests', 'NxPhysicsFluidAddParticlesGrowFailureTests', 'NxPhysicsFluidAddParticlesAppendTests', 'NxPhysicsFluidManagerGrowthFailureTests', 'NxPhysicsFluidManagerGrowthSecondFailureTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSceneAllocatorTests')
     '8' = @()
 }
 
@@ -86,6 +86,20 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+	'NxPhysicsSceneAllocatorTests' = @(
+		'alloc phase=foundation_create a_allocs='
+		'alloc phase=sdk_create a_allocs='
+		'alloc phase=scene_create a_allocs='
+		'alloc phase=static_create a_allocs='
+		'alloc phase=dynamic_create a_allocs='
+		'alloc phase=multi_create a_allocs='
+		'alloc phase=multi_release a_allocs='
+		'alloc phase=dynamic_release a_allocs='
+		'alloc phase=static_release a_allocs='
+		'alloc phase=scene_release a_allocs='
+		'alloc phase=sdk_release a_allocs='
+		'alloc total a_allocs='
+	)
 	'NxPhysicsJointWithoutBodiesTests' = @(
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
@@ -5965,7 +5979,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2708  # adds focused initial Fluid ParticleData channel and stride coverage
+	'5' = 2720  # adds scene allocator ownership coverage for Foundation, SDK, Scene, actor and shape lifecycle
+				# adds focused initial Fluid ParticleData channel and stride coverage
 				# adds Fluid constructor state and default-layout coverage
 				# previous 2703 plus two product-code-specific FluidCreate assertions
 				# adds a mutation-falsified contact-pair force aggregate
@@ -6059,7 +6074,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1779  # adds ParticleArray append ordering and count coverage
+	'7' = 1791  # adds the Scene condition, auxiliary, and worker-state allocator differential
 				# adds ParticleArrayGrow allocation-failure ordering coverage
 				# adds enabled NxFluid::addParticles and ParticleArrayGrow coverage
 				# adds Fluid constructor state and default-layout coverage
@@ -6146,6 +6161,7 @@ $NxPhaseCoverageFloor = [ordered] @{
 # the list of names this programme knows. A typo in either one fails.
 $NxRegisteredTestTargets = @(
     'NxPhysicsActorLifecycleTests',
+    'NxPhysicsSceneAllocatorTests',
     'NxPhysicsActorNameTests',
     'NxPhysicsActorMetadataTests',
     'NxPhysicsActorBodyFlagTests',

@@ -123,7 +123,7 @@ NpScene::NpScene(NxSceneInternal* scene)
 	mPointer08 = nxSceneLockCreate();
 #endif
 
-	mCondition = nxGetSdkAllocator()->malloc(0x18, NX_MEMORY_PERSISTENT);
+	mCondition = nxFoundationSDKAllocator->malloc(0x18, NX_MEMORY_PERSISTENT);
 	if(mCondition)
 		{
 		mCondition = nxConditionConstruct(mCondition, mLockB, mLockA, mScene);
@@ -140,7 +140,7 @@ NpScene::~NpScene()
 	if(mCondition)
 		{
 		nxConditionStop(mCondition);
-		nxGetSdkAllocator()->free(*reinterpret_cast<void**>(
+		nxFoundationSDKAllocator->free(*reinterpret_cast<void**>(
 			static_cast<unsigned char*>(mCondition) + 4));
 		nxFoundationSDKAllocator->free(mCondition);
 		}

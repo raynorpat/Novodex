@@ -1,0 +1,11 @@
+# Scene and actor allocator ownership
+
+`NxPhysicsSceneAllocatorTests` existed as a CMake target but was not registered in any staged-pair gate. Adding it to Phase 5 exposed allocator mismatches that the existing Scene and actor lifecycle tests did not measure. The fixture creates Foundation with allocator A and the Physics SDK with allocator B, then records allocation sizes and owner-tagged frees through SDK, Scene, static actor, dynamic actor, multi-shape actor, and teardown.
+
+The pinned oracle allocated and released 61 blocks through Foundation and 13 through the SDK, with `cross_frees=0`. The candidate allocated 59 Foundation blocks and 15 SDK blocks, then ended at 57/17 frees with six cross-frees. The allocation transcript showed that the 0x18-byte `NpScene` condition and 0xa8-byte Scene auxiliary object were allocated through the SDK although the destructor freed them through Foundation. The 0x14-byte condition worker state was allocated through Foundation but freed through the SDK. Each actor’s 0x18-byte public wrapper was allocated through Foundation but freed through the SDK.
+
+The implementation now routes the condition object, worker state, auxiliary object, and public actor wrapper through Foundation for both allocation and release. The restored candidate matches the oracle transcript exactly: 61/61 Foundation blocks, 13/13 SDK blocks, `cross_frees=0`, `stdout_delta=0`, and exact stderr. Four row-specific wrong-allocator mutants are rejected by the target while both processes exit zero: condition-object allocation (`stdout_delta=10`, `cross_frees=1`), worker-state free (`stdout_delta=8`, `cross_frees=1`), auxiliary-object allocation (`stdout_delta=10`, `cross_frees=1`), and actor-wrapper free (`stdout_delta=20`, `cross_frees=3`).
+
+The target is registered in the Phase 5 and Phase 7 staged-pair gates with 12 distinct lifecycle coverage markers. The full Phase 5 and Phase 7 gates pass at 2,720/2,720 and 1,791/1,791 assertions. The completion census remains 2,786 open code rows; this lifecycle packet advances M1 and does not claim full-DLL completion.
+
+The raw directory contains the before-fix discrepancy, mutation differential and build log, restored focused differential, five-target lifecycle run, and full Phase 5 gate transcript. The mutation patch and source revision are recorded alongside them.
