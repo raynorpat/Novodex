@@ -6948,6 +6948,13 @@ void NxSceneInternal::getTiming(NxReal& maxTimestep, NxU32& maxIter, NxU32& meth
 	method = at<NxU32>(0x534);
 	}
 
+// phys_fn_000545 (0x000107e0): store and return the joint-break notifier.
+NxUserNotify* NxSceneInternal::setUserNotify(NxUserNotify* callback)
+	{
+	at<NxUserNotify*>(0x6ac) = callback;
+	return callback;
+	}
+
 namespace
 	{
 struct NxSceneTriggerPairs

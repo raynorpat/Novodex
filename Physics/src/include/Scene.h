@@ -43,6 +43,7 @@ class Scene;
 class NxSceneDesc;
 class NxSceneStats;
 class NxSceneLimits;
+class NxUserNotify;
 class NxActor;
 class NxActorDescBase;
 class NxController;
@@ -198,6 +199,8 @@ class NxSceneInternal
 	// phys_fn_000538/000539 (0x000106f0/0x00010720), timing accessors.
 	void setTiming(NxReal maxTimestep, NxU32 maxIter, NxU32 method);
 	void getTiming(NxReal& maxTimestep, NxU32& maxIter, NxU32& method) const;
+	// phys_fn_000545 (0x000107e0): store and return the joint-break notifier.
+	__declspec(noinline) NxUserNotify* setUserNotify(NxUserNotify* callback);
 	// phys_fn_000659's fixed/variable timestep scheduler. Called by NpScene's
 	// worker after simulate() stores the elapsed time at +0x544.
 	void simulateFrame();

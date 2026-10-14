@@ -1774,3 +1774,8 @@ The internal Scene timing getter now has a row-specific mutation proof: suppress
 ### Continuation — NpScene elapsed-time store (`phys_fn_000538`, 2026-10-13)
 
 Suppressing the elapsed-time write at Scene+0x544 in `NpScene::simulate` is rejected by the registered simulation differential (oracle exit 0, candidate exit 1, `stdout_delta=6891`); restored output is exact. Fresh Phase 7 passes at 1,770/1,770. Phase 7 closes 268 functions and defers 292. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-elapsed-time-store-000538-20261013.md`.
+
+
+### Continuation — NpScene notifier store (`phys_fn_000545`, 2026-10-13)
+
+Extracted the private Scene+0x6ac notifier setter to match `phys_fn_000545`; its helper-specific no-op mutation is rejected by the registered joint-break fixture (`stdout_delta=831`), and the restored differential is exact. Fresh Phase 7 passes at 1,770/1,770. Phase 7 closes 269 functions and defers 291. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-set-user-notify-helper-000545-20261013.md`.

@@ -10469,13 +10469,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "setter [this+0x6ac]=[esp+4] (0x107e0, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/204",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1451",
-      "static_proof": "mov eax,[esp+4]; mov [ecx+0x6ac],eax; ret 4",
-      "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0",
-      "notes": ""
+      "static_proof": "MSVC thiscall helper stores the callback at Scene+0x6ac, returns the callback in EAX, and uses ret 4; implementation is NxSceneInternal::setUserNotify.",
+      "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0; Phase 7: suppressing the store in NxSceneInternal::setUserNotify is caught by the joint-break notifier fixture in NxPhysicsSimulationTests (oracle_exit=0, candidate_exit=1, stdout_delta=831); restored differential is exact. See evidence/phase7-npscene-set-user-notify-helper-000545-20261013.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000546",

@@ -735,7 +735,7 @@ void NpScene::getLimits(NxSceneLimits& limits) const
 void NpScene::setUserNotify(NxUserNotify* callback)
 	{
 	if(mScene)
-		mScene->at<NxUserNotify*>(0x6ac) = callback;
+		(void)mScene->setUserNotify(callback);
 	}
 
 // phys_fn_000352: read the callback stored at Scene+0x6ac.
