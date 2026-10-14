@@ -3527,6 +3527,26 @@ unsigned char nxMaskedFourSlotLoop4868(void* self, unsigned a1, unsigned a2,
 	return 1u;
 	}
 
+// phys_fn_004862 (0xb52d0): the plane-query four-slot loop dispatches slot 5.
+unsigned char nxMaskedFourSlotLoop4862(void* self, unsigned result,
+	unsigned planes, unsigned nbPlanes, unsigned selectedMask, unsigned queryMask,
+	NxSlotMfp5 slot)
+	{
+	if(!nbPlanes)
+		return 0u;
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	for(unsigned k = 0; k < 4u; ++k)
+		{
+		unsigned elem;
+		memcpy(&elem, p + 0x1c + 4u * k, 4);
+		if(elem == 0u || (selectedMask & (1u << k)) == 0u)
+			continue;
+		(reinterpret_cast<NxSlotCtx*>(static_cast<size_t>(elem))->*slot)(
+			result, planes, nbPlanes, 1u, queryMask);
+		}
+	return 1u;
+	}
+
 // phys_fn_004864 (0xb5360): the masked four-slot loop with a sixth argument.
 unsigned char nxMaskedFourSlotLoop4864(void* self, unsigned a1, unsigned a2,
 	unsigned a3, unsigned a4, unsigned a5, unsigned a6, NxSlotMfp5 slot)

@@ -18,8 +18,8 @@ OPCODE 1.3 tree has a pruner. It uses OPCODE for its static world-box tree,
 which the ray, AABB, and sphere colliders query.
 
 Written by the scene-raycast block, Task 3, for the scene queries: raycasts
-walk the engine's pruners through slot 6 (phys_fn_004864), AABB queries use
-slot 7, and sphere queries use slot 8. The
+walk the engine's pruners through slot 6 (phys_fn_004864), plane culling uses
+slot 5, AABB queries use slot 7, and sphere queries use slot 8. The
 pool the pruners keep is what the Scene's shape registration fills. Only the
 rows the raycasts and the registration reach are here; see IcePruner.cpp (the
 pool and the pruners) and IcePruningEngine.cpp (the engine) for the row map and
@@ -44,6 +44,8 @@ class StaticPruner : public Pruner
 	virtual	void				SetExternalBuffer(udword max_nb, udword* entries);
 	virtual	bool				Raycast(Container& objects, const Ray& world_ray, float max_dist,
 									bool first_contact, udword mask);
+	virtual	bool				NovodeXPrunerSlot5(udword result, udword planes,
+								udword nbPlanes, udword flags, udword mask);
 	virtual	bool				NovodeXPrunerSlot7(udword result, udword bounds,
 								udword first_contact, udword mask);
 	virtual	bool				NovodeXPrunerSlot8(udword result, udword bounds,
@@ -73,6 +75,8 @@ class DynamicPruner : public Pruner
 	virtual						~DynamicPruner();
 	virtual	bool				Raycast(Container& objects, const Ray& world_ray, float max_dist,
 									bool first_contact, udword mask);
+	virtual	bool				NovodeXPrunerSlot5(udword result, udword planes,
+								udword nbPlanes, udword flags, udword mask);
 	virtual	bool				NovodeXPrunerSlot7(udword result, udword bounds,
 								udword first_contact, udword mask);
 	virtual	bool				NovodeXPrunerSlot8(udword result, udword bounds,
@@ -89,6 +93,8 @@ class BoundedDynamicPruner : public DynamicPruner
 								~BoundedDynamicPruner();
 	virtual	bool				NovodeXPrunerSlot8(udword result, udword bounds,
 								udword first_contact, udword mask);
+	virtual	bool				NovodeXPrunerSlot5(udword result, udword planes,
+								udword nbPlanes, udword flags, udword mask);
 	virtual	bool				NovodeXPrunerSlot7(udword result, udword bounds,
 								udword first_contact, udword mask);
 			bool				OverlapAABB(Container& objects, const Point& min, const Point& max,
@@ -97,7 +103,8 @@ class BoundedDynamicPruner : public DynamicPruner
 								udword mask);
 			bool				OverlapQuery(Container& objects, const Point& min, const Point& max,
 								udword mask, bool sphereQuery, const Point& sphereCenter,
-								float sphereRadius);
+								float sphereRadius, const float* planes = 0,
+								udword nbPlanes = 0);
 
 		void*					mTree;				//!< +0x3c
 };

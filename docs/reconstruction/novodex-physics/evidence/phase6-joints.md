@@ -10861,17 +10861,17 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 `phys_fn_000657`: an immediate-return mutation of `NxSceneInternal::visualize()` is rejected by `NxPhysicsSceneVisualizeTests` (`stdout_delta=1962`); restored visualization output is exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-scene-visualize-000657.md](phase7-scene-visualize-000657.md).
 
-`phys_fn_000670`: an immediate-return mutation of `NxSceneInternal::overlapAABBShapes()` is rejected by the Phase 7 raycast and simulation differentials (`stdout_delta=5473` and `stdout_delta=42`, respectively); both restored differentials are exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-overlap-aabb-shapes-000670.md](phase7-overlap-aabb-shapes-000670.md).
+`phys_fn_000671`: an immediate-return mutation of `NxSceneInternal::overlapAABBShapes()` is rejected by the Phase 7 raycast and simulation differentials (`stdout_delta=5473` and `stdout_delta=42`, respectively); both restored differentials are exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-overlap-aabb-shapes-000671.md](phase7-overlap-aabb-shapes-000671.md).
 
 `phys_fn_000676`: returning false from `NxSceneInternal::checkOverlapAABB()` changes the overlapping static-and-dynamic result and is rejected by `NxPhysicsSceneRaycastTests` (`stdout_delta=14`); restored output is exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-check-overlap-aabb-000676.md](phase7-check-overlap-aabb-000676.md).
 
 `phys_fn_000674`: an immediate-return mutation of `NxSceneInternal::checkOverlapSphere()` is rejected by `NxPhysicsSceneRaycastTests` (`stdout_delta=66`); restored primitive and rotated-mesh overlap outputs are exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-check-overlap-sphere-000674.md](phase7-check-overlap-sphere-000674.md).
 
-`phys_fn_000672`: an immediate-return mutation of `NxSceneInternal::overlapSphereShapes()` changes caller-buffer and callback collection from two shapes to zero (`stdout_delta=5465`); restored output is exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-overlap-sphere-shapes-000672.md](phase7-overlap-sphere-shapes-000672.md).
+`phys_fn_000670`: an immediate-return mutation of `NxSceneInternal::overlapSphereShapes()` changes caller-buffer and callback collection from two shapes to zero (`stdout_delta=5465`); restored output is exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-overlap-sphere-shapes-000670.md](phase7-overlap-sphere-shapes-000670.md).
 
 `phys_fn_000678`: an immediate-return mutation of `NxSceneInternal::overlapAABBTriangles()` removes the three hit triangles and two translated-mesh triangles (`stdout_delta=6`); restored output is exact and the full Phase 7 gate passes at 1,793/1,793. Selected-pruner traversal and broader edge/order behavior remain open. See [phase7-overlap-aabb-triangles-000678.md](phase7-overlap-aabb-triangles-000678.md).
 
-`phys_fn_000671`: an immediate-return mutation of `NxSceneInternal::cullShapes()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5459, stderr exact); restored output is exact. The fixture covers both one-plane half-spaces, caller-buffer output, and callbacks. See [phase7-cull-shapes-000671.md](phase7-cull-shapes-000671.md).
+`phys_fn_000672`: an immediate-return mutation of `NxSceneInternal::cullShapes()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5459, stderr exact); restored output is exact. The fixture covers both one-plane half-spaces, caller-buffer output, and callbacks. See [phase7-cull-shapes-000672.md](phase7-cull-shapes-000672.md).
 
 `phys_fn_000680`: replacing `nxRaycastAnyBoundsLoop` with `return false` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=356, stderr exact); restored output is exact. See [phase7-raycast-any-bounds-000680.md](phase7-raycast-any-bounds-000680.md).
 
@@ -10894,3 +10894,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_004866`: skipping the four selected-pruner slot calls while preserving `nxMaskedFourSlotLoop4866`’s return value 1 is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5465, stderr exact); restored output is exact. See [phase7-sphere-pruner-loop-004866.md](phase7-sphere-pruner-loop-004866.md).
 
 `phys_fn_004864`: skipping the four selected-pruner slot calls while preserving `nxMaskedFourSlotLoop4864`’s return value 1 is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=4828, stderr exact); restored output is exact. See [phase7-ray-pruner-loop-004864.md](phase7-ray-pruner-loop-004864.md).
+
+`phys_fn_004862`: a no-dispatch mutation of `nxMaskedFourSlotLoop4862` drops all selected pruner slot-5 calls and is rejected by the registered cull differential (`stdout_delta=5465`, both exits 0, exact stderr). The restored output matches the permuted 12-object static and bounded-dynamic cull orders exactly. See [phase7-masked-four-slot-plane-loop-004862.md](phase7-masked-four-slot-plane-loop-004862.md).

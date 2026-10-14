@@ -12784,11 +12784,11 @@
       "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/264",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1855",
-      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000670; selected-pruner AABB candidate collection, stale-bound refresh, and buffer/callback reporting.",
-      "dynamic_proof": "A throwaway source mutation inserted an immediate return from NxSceneInternal::overlapAABBShapes(). NxPhysicsSceneRaycastTests rejected the candidate output (both exits 0, stdout_delta=5473, stderr_exact=True); NxPhysicsSimulationTests rejected it (oracle_exit=0, candidate_exit=1, stdout_delta=42, stderr_exact=True). Restoring the row made both differentials exact and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. See evidence/phase7-overlap-aabb-shapes-000670.md.",
-      "notes": "",
+      "static_proof": "Oracle row phys_fn_000670 at 0x145f0 collects sphere-pruner candidates, then batches public shapes through the caller buffer or a 64-entry stack buffer. Candidate implementation: NxSceneInternal::overlapSphereShapes in Physics/src/SceneRaycast.cpp.",
+      "dynamic_proof": "A throwaway source mutation inserted an immediate return from NxSceneInternal::overlapSphereShapes(). The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected it (both exits 0, stdout_delta=5465, stderr_exact=True); caller-buffer and callback output changed from two shapes (s_box.s_plane) to zero. Restored output matched exactly, and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. See evidence/phase7-overlap-sphere-shapes-000670.md.",
+      "notes": "Mesh sphere overlap uses transformed world bounds as observed by the corner case. Broader pruning behavior remains open.",
       "implementation": "Physics/src/SceneRaycast.cpp",
-      "implementation_symbol": "NxSceneInternal::overlapAABBShapes"
+      "implementation_symbol": "NxSceneInternal::overlapSphereShapes"
     },
     {
       "id": "phys_fn_000671",
@@ -12804,11 +12804,11 @@
       "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/265",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1869",
-      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000671; selected-pruner collection against plane half-spaces with unbounded planes preserved.",
-      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; selected-pruner collection against plane half-spaces with unbounded planes preserved; row-specific immediate-return mutation rejected (both exits 0, stdout_delta=5459, stderr_exact=True), restored output exact. See evidence/phase7-cull-shapes-000671.md.",
-      "notes": "Current differential covers a single plane on each half-space and callback output; multi-plane frusta and capacity truncation remain open.",
+      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000671; selected-pruner AABB candidate collection, stale-bound refresh, and buffer/callback reporting.",
+      "dynamic_proof": "A throwaway source mutation inserted an immediate return from NxSceneInternal::overlapAABBShapes(). NxPhysicsSceneRaycastTests rejected the candidate output (both exits 0, stdout_delta=5473, stderr_exact=True); NxPhysicsSimulationTests rejected it (oracle_exit=0, candidate_exit=1, stdout_delta=42, stderr_exact=True). Restoring the row made both differentials exact and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. See evidence/phase7-overlap-aabb-shapes-000671.md.",
+      "notes": "",
       "implementation": "Physics/src/SceneRaycast.cpp",
-      "implementation_symbol": "NxSceneInternal::cullShapes"
+      "implementation_symbol": "NxSceneInternal::overlapAABBShapes"
     },
     {
       "id": "phys_fn_000672",
@@ -12824,11 +12824,11 @@
       "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/266",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1883",
-      "static_proof": "Oracle row phys_fn_000672 at 0x147d0 performs sphere-pruner collection, then batches collected public shapes through the caller buffer or a 64-entry stack buffer. It copies each prunable owner's public shape at +0x9c, reports batches through callback vtable slot 0, and returns the oracle's accumulated/early-stop count. Candidate implementation: NxSceneInternal::overlapSphereShapes in Physics/src/SceneRaycast.cpp.",
-      "dynamic_proof": "A throwaway source mutation inserted an immediate return from NxSceneInternal::overlapSphereShapes(). The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected it (both exits 0, stdout_delta=5465, stderr_exact=True); caller-buffer and callback output changed from two shapes (s_box.s_plane) to zero. Restored output matched exactly, and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. See evidence/phase7-overlap-sphere-shapes-000672.md.",
-      "notes": "Mesh sphere overlap uses transformed world bounds as observed by the corner case. Row-specific mutation falsification and broader pruning behavior remain open.",
+      "static_proof": "Oracle row phys_fn_000672 at 0x147d0 is the plane-volume culling path: dispatches selected pruners with plane count and plane array, then batches public shape pointers to caller storage or a 64-entry stack buffer.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; plane-volume culling and buffer/callback reporting; row-specific immediate-return mutation rejected (both exits 0, stdout_delta=5459, stderr_exact=True), restored output exact. See evidence/phase7-cull-shapes-000672.md.",
+      "notes": "The current differential covers one-plane culling on both half-spaces, caller-buffer output, callback output, and a broad dynamic query. Multi-plane culling and capacity truncation remain open.",
       "implementation": "Physics/src/SceneRaycast.cpp",
-      "implementation_symbol": "NxSceneInternal::overlapSphereShapes"
+      "implementation_symbol": "NxSceneInternal::cullShapes"
     },
     {
       "id": "phys_fn_000673",
@@ -90795,12 +90795,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1851",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15769",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "Oracle row phys_fn_004862 at RVA 0x000b52d0 reads four pruning-engine slots at +0x1c, filters them with the selected-pruner mask, and dispatches the plane set through slot 5. Candidate helper: nxMaskedFourSlotLoop4862.",
+      "dynamic_proof": "A throwaway no-dispatch mutation of nxMaskedFourSlotLoop4862 was rejected by the registered NxPhysicsSceneRaycastTests differential (oracle_exit=0, candidate_exit=0, stdout_delta=5465, stderr_exact=True). The restored output matches the permuted 12-object static and bounded-dynamic cull orders exactly. See evidence/phase7-masked-four-slot-plane-loop-004862.md.",
       "notes": ""
     },
     {

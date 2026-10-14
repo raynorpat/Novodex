@@ -846,6 +846,17 @@ static void nxSpatialOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
 		&cullReport);
 	printf("scene_cull callback_count=%u calls=%u entities=%u\n", static_cast<unsigned>(reportedCullCount),
 		cullReport.mCalls, cullReport.mEntities);
+	// Exercise the selected dynamic pruner through the public culling API. A
+	// broad half-space keeps all four dynamic shapes so the transcript exposes
+	// the pruner's traversal order as well as the slot-5 dispatch.
+	const NxPlane dynamicCullPlane(1.0f, 0.0f, 0.0f, -100.0f);
+	NxShape* dynamicCulled[8] = { 0 };
+	const NxU32 dynamicCulledCount = scene->cullShapes(1, &dynamicCullPlane,
+		NX_DYNAMIC_SHAPES, 8, dynamicCulled, 0);
+	printf("scene_cull dynamic count=%u shapes=", static_cast<unsigned>(dynamicCulledCount));
+	for(NxU32 i = 0; i < dynamicCulledCount && i < 8; i++)
+		printf("%s%s", i ? "." : "", nxShapeName(dynamicCulled[i]));
+	printf("\n");
 	const char* const queryTreeNames[] =
 		{ "tree_11", "tree_00", "tree_08", "tree_03", "tree_09", "tree_01",
 		  "tree_07", "tree_04", "tree_10", "tree_02", "tree_06", "tree_05" };
@@ -987,6 +998,43 @@ static void nxBoundedPrunerQueryChecks(NxPhysicsSDK* sdk)
 	NxBounds3 queryBounds;
 	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(12.0f, 12.0f, 12.0f));
 	printQuery("all", queryBounds, true);
+	const NxPlane allDynamicPlane(1.0f, 0.0f, 0.0f, -100.0f);
+	NxShape* culledDynamic[16] = { 0 };
+	const NxU32 culledDynamicCount = scene->cullShapes(1, &allDynamicPlane,
+		NX_DYNAMIC_SHAPES, 16, culledDynamic, 0);
+	printf("scene_overlap bounded_tree cull count=%u order=", static_cast<unsigned>(culledDynamicCount));
+	for(NxU32 i = 0; i < culledDynamicCount && i < 16; ++i)
+		{
+		const char* name = "unknown";
+		for(unsigned j = 0; j < sizeof(actors) / sizeof(actors[0]); ++j)
+			if(actors[j] && actors[j]->getShapes()[0] == culledDynamic[i])
+				name = names[j];
+		printf("%s%s", i ? "." : "", name);
+		}
+	printf("\n");
+	NxActor* staticActors[sizeof(positions) / sizeof(positions[0])] = { 0 };
+	for(unsigned i = 0; i < sizeof(positions) / sizeof(positions[0]); ++i)
+		{
+		NxBoxShapeDesc box;
+		box.dimensions = NxVec3(0.4f, 0.4f, 0.4f);
+		NxActorDesc actorDesc;
+		actorDesc.shapes.pushBack(&box);
+		actorDesc.globalPose.t = positions[i];
+		staticActors[i] = scene->createActor(actorDesc);
+		}
+	NxShape* culledStatic[16] = { 0 };
+	const NxU32 culledStaticCount = scene->cullShapes(1, &allDynamicPlane,
+		NX_STATIC_SHAPES, 16, culledStatic, 0);
+	printf("scene_overlap static_tree cull count=%u order=", static_cast<unsigned>(culledStaticCount));
+	for(NxU32 i = 0; i < culledStaticCount && i < 16; ++i)
+		{
+		const char* name = "unknown";
+		for(unsigned j = 0; j < sizeof(staticActors) / sizeof(staticActors[0]); ++j)
+			if(staticActors[j] && staticActors[j]->getShapes()[0] == culledStatic[i])
+			name = names[j];
+		printf("%s%s", i ? "." : "", name);
+		}
+	printf("\n");
 	queryBounds.set(NxVec3(-12.0f, -12.0f, -12.0f), NxVec3(0.0f, 0.0f, 0.0f));
 	printQuery("negative_octant", queryBounds, true);
 	actors[1]->setGlobalPosition(NxVec3(9.0f, 9.0f, 9.0f));
@@ -1017,6 +1065,9 @@ static void nxBoundedPrunerQueryChecks(NxPhysicsSDK* sdk)
 	for(unsigned i = 0; i < sizeof(actors) / sizeof(actors[0]); ++i)
 		if(actors[i])
 			scene->releaseActor(*actors[i]);
+	for(unsigned i = 0; i < sizeof(staticActors) / sizeof(staticActors[0]); ++i)
+		if(staticActors[i])
+			scene->releaseActor(*staticActors[i]);
 	sdk->releaseScene(*scene);
 	}
 

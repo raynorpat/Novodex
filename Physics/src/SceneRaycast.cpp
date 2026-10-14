@@ -61,6 +61,13 @@
 // The pruner table slot the engine loop dispatches through (opcode/IcePruner.cpp).
 NxSlotMfp5 nxPrunerRaycastSlot();
 
+static NxSlotMfp5 nxPrunerSlot5Query()
+	{
+	typedef bool (Pruner::*Slot)(udword, udword, udword, udword, udword);
+	Slot slot = &Pruner::NovodeXPrunerSlot5;
+	return reinterpret_cast<NxSlotMfp5&>(slot);
+	}
+
 // Slot 7 is the four-argument AABB query used by phys_fn_004868. The source
 // signature is expressed through the common slot receiver because the helper
 // dispatches an encoded member-function pointer onto each Pruner instance.
@@ -636,7 +643,7 @@ NxU32 NxSceneInternal::overlapAABBTriangles(const NxBounds3& worldBounds,
 	return worldTriangles.size();
 	}
 
-// phys_fn_000670 (0x000145f0). Collects the prunables whose cached world boxes
+// phys_fn_000671 (0x000146e0). Collects the prunables whose cached world boxes
 // intersect the query, then reports public shapes through either the caller's
 // buffer or the NxUserEntityReport batching contract.
 NxU32 NxSceneInternal::overlapAABBShapes(const NxBounds3& worldBounds, NxShapesType shapesType,
@@ -676,7 +683,7 @@ NxU32 NxSceneInternal::overlapAABBShapes(const NxBounds3& worldBounds, NxShapesT
 	return count;
 	}
 
-// phys_fn_000671 (0x000146e0). Report AABBs which remain inside every plane's
+// phys_fn_000672 (0x000147d0). Report AABBs which remain inside every plane's
 // non-positive half-space, preserving selected-pruner order and batching.
 NxU32 NxSceneInternal::cullShapes(NxU32 nbPlanes, const NxPlane* worldPlanes, NxShapesType shapesType,
 	NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
@@ -688,60 +695,32 @@ NxU32 NxSceneInternal::cullShapes(NxU32 nbPlanes, const NxPlane* worldPlanes, Nx
 		return 0;
 	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
 		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
-	Pruner** const pruners = reinterpret_cast<Pruner**>(bytes() + 0x624 + 0x1c);
+	SdkContainer& collector = at<SdkContainer>(0x500);
+	collector.mCount = 0;
+	nxMaskedFourSlotLoop4862(&at<unsigned char>(0x624), reinterpret_cast<unsigned>(&collector),
+		reinterpret_cast<unsigned>(const_cast<NxPlane*>(worldPlanes)), nbPlanes, mask,
+		0xffffffffu, nxPrunerSlot5Query());
 	NxU32 count = 0;
 	NxU32 buffered = 0;
-	for(NxU32 type = 0; type < 4; type++)
+	const NxU32* entry = collector.mEntries;
+	for(NxU32 i = 0; i < collector.mCount; ++i, ++entry)
 		{
-		if(!(mask & (1u << type)) || !pruners[type])
+		Prunable* const prunable = reinterpret_cast<Prunable*>(*entry);
+		unsigned char* const shapeBase = static_cast<unsigned char*>(prunable->mOwner);
+		if(!shapeBase)
 			continue;
-		PruningPool& pool = pruners[type]->mPool;
-		for(NxU32 i = 0; i < pool.mNbTotal; i++)
+		NxShape* const publicShape = *reinterpret_cast<NxShape**>(shapeBase + 0x9c);
+		if(!publicShape)
+			continue;
+		buffer[buffered++] = publicShape;
+		count++;
+		if(buffered == capacity)
 			{
-			Prunable* const prunable = pool.mObjects[i];
-			if(!prunable || prunable->mHandle == PRUNABLE_INVALID_HANDLE)
-				continue;
-			unsigned char* const shapeBase = static_cast<unsigned char*>(prunable->mOwner);
-			if(!shapeBase)
-				continue;
-			bool culled = false;
-			if(*reinterpret_cast<NxU32*>(shapeBase + 0xd0) != NX_SHAPE_PLANE)
-				{
-				if(!(prunable->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
-					prunable->UpdateWorldAABB(&pool.mWorldBoxes[i]);
-				const NxBounds3& bounds = *reinterpret_cast<NxBounds3*>(&pool.mWorldBoxes[i]);
-				for(NxU32 p = 0; p < nbPlanes; p++)
-					{
-					const NxPlane& plane = worldPlanes[p];
-					const NxVec3& normal = plane.normal;
-					const NxVec3& mins = bounds.getMin();
-					const NxVec3& maxs = bounds.getMax();
-					const NxVec3 minimumSupport(
-						normal.x < 0.0f ? maxs.x : mins.x,
-						normal.y < 0.0f ? maxs.y : mins.y,
-						normal.z < 0.0f ? maxs.z : mins.z);
-					if(normal.dot(minimumSupport) + plane.d > 0.0f)
-						{
-						culled = true;
-						break;
-						}
-					}
-			}
-			if(culled)
-				continue;
-			NxShape* const publicShape = *reinterpret_cast<NxShape**>(shapeBase + 0x9c);
-			if(!publicShape)
-				continue;
-			buffer[buffered++] = publicShape;
-			count++;
-			if(buffered == capacity)
-				{
-				if(callback && !callback->onEvent(buffered, buffer))
-					return count;
-				buffered = 0;
-				if(!callback)
-					return count;
-				}
+			if(callback && !callback->onEvent(buffered, buffer))
+				return count;
+			buffered = 0;
+			if(!callback)
+				return count;
 			}
 		}
 	if(callback && buffered && !callback->onEvent(buffered, buffer))
@@ -818,7 +797,7 @@ static bool nxSceneSphereOverlapsShape(const NxSphere& sphere, NxShape* shape)
 		}
 	}
 
-// phys_fn_000672 (0x000147d0). Collects broadphase candidates for a sphere and
+// phys_fn_000670 (0x000145f0). Collects broadphase candidates for a sphere and
 // reports public shapes in pruner order.
 NxU32 NxSceneInternal::overlapSphereShapes(const NxSphere& worldSphere, NxShapesType shapesType,
 	NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)

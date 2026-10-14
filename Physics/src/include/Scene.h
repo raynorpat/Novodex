@@ -157,13 +157,13 @@ class NxSceneInternal
 	bool checkOverlapSphere(const NxSphere& worldSphere, NxShapesType shapeType);
 	// phys_fn_000676 (0x00014930), the Scene-side AABB triangle collection.
 	NxU32 overlapAABBTriangles(const NxBounds3& worldBounds, NxArraySDK<NxTriangle>& worldTriangles);
-	// phys_fn_000670 (0x000145f0). AABB overlap collection for public NxScene.
+	// phys_fn_000671 (0x000146e0). AABB overlap collection for public NxScene.
 	NxU32 overlapAABBShapes(const NxBounds3& worldBounds, NxShapesType shapeType,
 		NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback);
-	// phys_fn_000678 (0x00014990). Sphere overlap collection for public NxScene.
+	// phys_fn_000670 (0x000145f0). Sphere overlap collection for public NxScene.
 	NxU32 overlapSphereShapes(const NxSphere& worldSphere, NxShapesType shapeType,
 		NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback);
-	// phys_fn_000671 (0x000146e0). Plane-volume culling for public NxScene.
+	// phys_fn_000672 (0x000147d0). Plane-volume culling for public NxScene.
 	NxU32 cullShapes(NxU32 nbPlanes, const NxPlane* worldPlanes, NxShapesType shapeType,
 		NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback);
 

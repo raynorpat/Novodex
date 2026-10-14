@@ -121,8 +121,7 @@ class PruningPool
 //!   6  Raycast(Container&, const Ray&, float, bool, udword)  base 0x000f1580
 //!   7, 8  four-argument queries           base 0x000f1590: false
 //!
-//! Slots 5, 7 and 8 are declared for their table positions only; nothing in
-//! this reconstruction calls them.
+//! Slots 5, 7 and 8 provide plane, AABB and sphere scene-query adapters.
 class Pruner
 {
 	public:

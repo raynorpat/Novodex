@@ -517,6 +517,79 @@ bool StaticPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	return true;
 }
 
+static int nxPlaneVolumeClassify(const float* planes, udword nbPlanes,
+	const Point& min, const Point& max);
+
+struct NxStaticPlaneQuery
+	{
+	StaticPruner* pruner;
+	void* result;
+	const float* planes;
+	udword nbPlanes;
+	udword mask;
+	};
+
+static void nxStaticPlaneTreeNode(const AABBTreeNode* node, NxStaticPlaneQuery& query)
+	{
+	Point nodeMin, nodeMax;
+	node->GetAABB()->GetMin(nodeMin);
+	node->GetAABB()->GetMax(nodeMax);
+	if(nxPlaneVolumeClassify(query.planes, query.nbPlanes, nodeMin, nodeMax) < 0)
+		return;
+	if(!node->IsLeaf())
+		{
+		nxStaticPlaneTreeNode(node->GetPos(), query);
+		nxStaticPlaneTreeNode(node->GetNeg(), query);
+		return;
+		}
+	const udword* primitives = node->GetPrimitives();
+	for(udword i = 0; i < node->GetNbPrimitives(); ++i)
+		{
+		Prunable* const object = query.pruner->mPool.mObjects[primitives[i]];
+		if(!(query.mask & object->mPrunable24) || object->mHandle == PRUNABLE_INVALID_HANDLE)
+			continue;
+		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+			object->UpdateWorldAABB(&query.pruner->mPool.mWorldBoxes[object->mHandle]);
+		Point min, max;
+		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMin(min);
+		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMax(max);
+		if(nxPlaneVolumeClassify(query.planes, query.nbPlanes, min, max) >= 0)
+			nxSdkContainerAppend(query.result, udword(object));
+		}
+	}
+
+// Static-pruner slot 5 plane-volume query. Preserve OPCODE's positive-child,
+// negative-child traversal and test candidate boxes at the leaves.
+bool StaticPruner::NovodeXPrunerSlot5(udword result, udword planes,
+	udword nbPlanes, udword /*flags*/, udword mask)
+{
+	const udword nb = mPool.mNbObjects[0] + mPool.mNbObjects[1];
+	if(!nb)
+		return true;
+	if(!mTree)
+		{
+		BuildTree();
+		if(!mTree)
+			return false;
+		}
+	NxStaticPlaneQuery query;
+	query.pruner = this;
+	query.result = reinterpret_cast<void*>(result);
+	query.planes = reinterpret_cast<const float*>(planes);
+	query.nbPlanes = nbPlanes;
+	query.mask = mask;
+	nxStaticPlaneTreeNode(mTree, query);
+	// Objects without a world-box handle are kept outside the OPCODE tree. The
+	// oracle reports these unbounded candidates after bounded tree traversal.
+	for(udword i = 0; i < nb; ++i)
+		{
+		Prunable* const object = mPool.mObjects[i];
+		if(object->mHandle == PRUNABLE_INVALID_HANDLE && (mask & object->mPrunable24))
+			nxSdkContainerAppend(query.result, udword(object));
+		}
+	return true;
+}
+
 // Bounded-shape AABB collection is slot 7 in the pruning-engine loop.
 bool StaticPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
 	udword first_contact, udword mask)
@@ -610,6 +683,8 @@ struct BoundedTreeQuery
 	bool sphereQuery;
 	const Point* sphereCenter;
 	float sphereRadius2;
+	const float* planes;
+	udword nbPlanes;
 	udword mask;
 	Container* partialObjects;
 	Container* containedObjects;
@@ -659,6 +734,31 @@ static bool nxSphereContainsAABB(const Point& center, float radius2,
 			return false;
 		}
 	return true;
+}
+
+// Return -1 when an AABB lies outside the intersection of the non-positive
+// plane half-spaces, 0 when it crosses the volume, and 1 when fully contained.
+static int nxPlaneVolumeClassify(const float* planes, udword nbPlanes,
+	const Point& min, const Point& max)
+{
+	const Point center((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f,
+		(max.z + min.z) * 0.5f);
+	const Point extents((max.x - min.x) * 0.5f, (max.y - min.y) * 0.5f,
+		(max.z - min.z) * 0.5f);
+	bool fullyInside = true;
+	for(udword i = 0; i < nbPlanes; ++i)
+		{
+		const float* const plane = planes + 4u * i;
+		const float distance = plane[0] * center.x + plane[1] * center.y
+			+ plane[2] * center.z + plane[3];
+		const float radius = fabsf(plane[0]) * extents.x
+			+ fabsf(plane[1]) * extents.y + fabsf(plane[2]) * extents.z;
+		if(radius < distance)
+			return -1;
+		if(-radius < distance)
+			fullyInside = false;
+		}
+	return fullyInside ? 1 : 0;
 }
 
 static void nxBoundedTreeNodeBounds(udword node, const Point& rootMin,
@@ -712,12 +812,14 @@ static void nxBoundedTreeChildBounds(const Point& nodeMin, const Point& nodeMax,
 static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,
 	const Point& nodeMin, const Point& nodeMax)
 {
-	const bool overlapsNode = query.sphereQuery
+	const int planeClass = query.planes
+		? nxPlaneVolumeClassify(query.planes, query.nbPlanes, nodeMin, nodeMax) : 0;
+	const bool overlapsNode = query.planes ? planeClass >= 0 : query.sphereQuery
 		? nxSphereAABBOverlaps(*query.sphereCenter, query.sphereRadius2, nodeMin, nodeMax)
 		: nxAABBOverlaps(nodeMin, nodeMax, *query.queryMin, *query.queryMax);
 	if(!query.subtreeCounts[node] || !overlapsNode)
 		return;
-	const bool containsNode = query.sphereQuery
+	const bool containsNode = query.planes ? planeClass > 0 : query.sphereQuery
 		? nxSphereContainsAABB(*query.sphereCenter, query.sphereRadius2, nodeMin, nodeMax)
 		: nxAABBContains(*query.queryMin, *query.queryMax, nodeMin, nodeMax);
 	if(containsNode)
@@ -752,7 +854,9 @@ static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,
 		Point objectMin, objectMax;
 		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMin(objectMin);
 		query.pruner->mPool.mWorldBoxes[object->mHandle].GetMax(objectMax);
-		const bool overlapsObject = query.sphereQuery
+		const bool overlapsObject = query.planes
+			? nxPlaneVolumeClassify(query.planes, query.nbPlanes, objectMin, objectMax) >= 0
+			: query.sphereQuery
 			? nxSphereAABBOverlaps(*query.sphereCenter, query.sphereRadius2, objectMin, objectMax)
 			: nxAABBOverlaps(objectMin, objectMax, *query.queryMin, *query.queryMax);
 		if(overlapsObject)
@@ -774,7 +878,8 @@ static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,
 // each object to its recovered center/radius cell, then follow the oracle's
 // node-first, child-slots-1-through-8 traversal.
 bool BoundedDynamicPruner::OverlapQuery(Container& objects, const Point& min, const Point& max,
-	udword mask, bool sphereQuery, const Point& sphereCenter, float sphereRadius)
+	udword mask, bool sphereQuery, const Point& sphereCenter, float sphereRadius,
+	const float* planes, udword nbPlanes)
 {
 	const udword nb = mPool.mNbObjects[0] + mPool.mNbObjects[1];
 	if(!nb)
@@ -842,6 +947,8 @@ bool BoundedDynamicPruner::OverlapQuery(Container& objects, const Point& min, co
 	query.sphereQuery = sphereQuery;
 	query.sphereCenter = &sphereCenter;
 	query.sphereRadius2 = sphereRadius * sphereRadius;
+	query.planes = planes;
+	query.nbPlanes = nbPlanes;
 	query.mask = mask;
 	Container partialObjects;
 	Container containedObjects;
@@ -932,6 +1039,21 @@ bool BoundedDynamicPruner::OverlapAABB(Container& objects, const Point& min,
 	return OverlapQuery(objects, min, max, mask, false, Point(0.0f, 0.0f, 0.0f), 0.0f);
 }
 
+// Bounded-pruner slot 5 plane-volume query through its fixed-depth tree.
+bool BoundedDynamicPruner::NovodeXPrunerSlot5(udword result, udword planes,
+	udword nbPlanes, udword /*flags*/, udword mask)
+{
+	Container touched;
+	const float* const values = reinterpret_cast<const float*>(planes);
+	if(!OverlapQuery(touched, Point(0.0f, 0.0f, 0.0f), Point(0.0f, 0.0f, 0.0f),
+		mask, false, Point(0.0f, 0.0f, 0.0f), 0.0f, values, nbPlanes))
+		return false;
+	const udword* entries = touched.GetEntries();
+	for(udword i = 0; i < touched.GetNbEntries(); ++i)
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), entries[i]);
+	return true;
+}
+
 // Bounded-pruner slot 8 sphere ABI.
 bool BoundedDynamicPruner::NovodeXPrunerSlot8(udword result, udword queryBounds,
 	udword /*first_contact*/, udword mask)
@@ -971,6 +1093,50 @@ bool BoundedDynamicPruner::NovodeXPrunerSlot7(udword result, udword queryBounds,
 // 0x000efe80 (not claimed): the base only.
 DynamicPruner::~DynamicPruner()
 {
+}
+
+// Unbounded-pruner slot 8 sphere pool walk.
+bool DynamicPruner::NovodeXPrunerSlot5(udword result, udword planes,
+	udword nbPlanes, udword /*flags*/, udword mask)
+{
+	const float* const values = reinterpret_cast<const float*>(planes);
+	bool found = false;
+	for(udword i = 0; i < mPool.mNbTotal; ++i)
+		{
+		Prunable* const object = mPool.mObjects[i];
+		if(!(mask & object->mPrunable24))
+			continue;
+		if(object->mHandle == PRUNABLE_INVALID_HANDLE)
+			{
+			nxSdkContainerAppend(reinterpret_cast<void*>(result), udword(object));
+			found = true;
+			continue;
+			}
+		if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+			object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
+		Point min, max;
+		mPool.mWorldBoxes[object->mHandle].GetMin(min);
+		mPool.mWorldBoxes[object->mHandle].GetMax(max);
+		bool inside = true;
+		for(udword p = 0; p < nbPlanes; ++p)
+			{
+			const float* const plane = values + 4u * p;
+			const Point minimumSupport(plane[0] < 0.0f ? max.x : min.x,
+				plane[1] < 0.0f ? max.y : min.y,
+				plane[2] < 0.0f ? max.z : min.z);
+			if(plane[0] * minimumSupport.x + plane[1] * minimumSupport.y
+				+ plane[2] * minimumSupport.z + plane[3] > 0.0f)
+				{
+				inside = false;
+				break;
+				}
+			}
+		if(!inside)
+			continue;
+		nxSdkContainerAppend(reinterpret_cast<void*>(result), udword(object));
+		found = true;
+		}
+	return found;
 }
 
 // Unbounded-pruner slot 8 sphere pool walk.

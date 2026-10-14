@@ -1,7 +1,7 @@
 # `NxSceneInternal::overlapAABBShapes` mutation proof
 
 Date: 2026-10-14
-Row: `phys_fn_000670` at RVA `0x000145f0`
+Row: `phys_fn_000671` at RVA `0x000146e0`
 Gates: registered `NxPhysicsSceneRaycastTests` and `NxPhysicsSimulationTests` staged-pair differentials (Phase 7)
 Source: isolated `codex/scene-raycast-row-000700` worktree at `44d9a47e`.
 
@@ -9,4 +9,4 @@ For the mutation, inserted an immediate `return 0` at the start of `NxSceneInter
 
 Restored `Physics/src/SceneRaycast.cpp` byte-for-byte and rebuilt. Both registered differentials then matched exactly (`stdout_delta=0`, `stderr_exact=True`), and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. The restored candidate DLL SHA-256 was `7d8b2cb1810c69097e64ee899ca7082d7dd4827a98b0dcf345dd386824c55bc7`.
 
-Raw mutant and restored gate logs are compressed under `evidence/raw/phase7-overlap-aabb-000670-20261014/`. Rotated mesh-bound and near-boundary overlap cases tracked on neighboring rows remain open.
+Raw mutant and restored gate logs are compressed under `evidence/raw/phase7-overlap-aabb-shapes-000671-20261014/`. Rotated mesh-bound and near-boundary overlap cases tracked on neighboring rows remain open.
