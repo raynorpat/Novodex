@@ -25,12 +25,36 @@ now compile `ImplicitMesh.cpp` as well. Both targets build successfully.
 After commit `5a679638` was fast-forwarded to `main`, the integrated Phase 5
 gate also passed at 2,708/2,708 coverage assertions.
 
+The follow-up public `NxFluid::createSurfaceMesh` entry (`phys_fn_003705`, IDA
+`0x0008b250`) is now in the fluid vtable. It checks the feature license, then
+takes the Scene write lock and reentry guard, validates the descriptor,
+replaces an existing mesh, and attaches the owning fluid's read/write lock
+links to the returned wrapper. Those links are needed by the public mesh methods; the
+constructor-created wrapper intentionally has no Scene lock links. The
+registered differential calls the public entry, then checks initial and
+updated radii, triangle size, smoothing count, blend warning/return, name
+pointer round trips, and `NxMeshData` copy-out. Every callback receives valid
+backend manager/fluid handles. The baseline with the vtable slot missing is
+rejected (oracle exit 0, candidate access violation, `stdout_delta=77`); after
+the implementation, oracle and candidate match exactly (`stdout_delta=0`,
+exact stderr).
+
+On integrated mainline commit `d8d66901`, Phase 5 passes at 2,708/2,708 and
+Phase 7 at 1,779/1,779. The Viewer sweep passes all 43 registered selections:
+38 pass and five known baseline skips (CowPile, PMapTest 8/10/12, TruckDemo).
+The internal and collision CMake targets that compile `Scene.cpp` directly
+both build. The tooling suite remains green at 829 tests and 740 subtests.
+
 Raw differential, mutation, Phase 7, post-merge Phase 5, and initial
 integration-failure logs are archived under
 `evidence/raw/phase7-fluid-licensed-surface-mesh-003503-20261014/`.
+The public-entry red baseline, exact differential, gates, Viewer sweep, and
+direct-target build are archived under
+`evidence/raw/phase7-fluid-explicit-surface-create-003705-20261014/`.
 
-This validates the constructor, callback arguments, `userData`, and destruction
-branch. The public `NxImplicitMesh` property and particle methods still need
-their own oracle differentials, including lock/reentry behavior. Therefore
-`phys_fn_003503` remains open and the full DLL reconstruction remains active.
-No public Physics headers were changed.
+This validates the constructor/destruction paths and the valid-descriptor
+public creation plus property getter/setter paths. Invalid-descriptor and
+callback-reentry branches, allocation failures, `setParticles`, and
+`setMeshData` still need row-specific differentials. Keep `phys_fn_003503` and
+`phys_fn_003705` open; the full DLL reconstruction remains active. No public
+Physics headers were changed.
