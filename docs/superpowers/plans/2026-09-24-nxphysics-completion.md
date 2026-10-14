@@ -816,3 +816,7 @@ Registered the existing `NxPhysicsSceneAllocatorTests` target in Phases 5 and 7 
 ### M2 continuation — triangle-mesh release registry miss (`phys_fn_000470`, `2026-10-14`)
 
 `PhysicsSDK::releaseTriangleMesh` now reproduces the pinned `NXE_INVALID_OPERATION` report (`PhysicsSDK.cpp:569`) for an empty mesh registry and for a foreign mesh when a registered mesh exists. A public NxTriangleMeshApi fixture catches a no-op diagnostic mutant (`stdout_delta=27`); the restored staged pair is exact. Phase 4 passes at 529/529 coverage assertions. Phase 2 advances to 66 closed / 77 deferred rows; full-DLL semantic and ABI closure remains open at 2,786 code rows. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-000470.md`.
+
+### M2 continuation — public triangle-mesh creation wrapper (phys_fn_000242, 2026-10-14)
+
+The public NpPhysicsSDK::createTriangleMesh wrapper now has a row-specific mutation proof: forcing its successful path to return null makes the API differential fail (stdout_delta=26); the restored candidate matches exactly. The existing simulation fixture still covers Scene-lock contention and reverse unlock. Phase 2 advances to 67 closed / 76 deferred; the public headers and internal mesh-factory boundary are unchanged. Phase 4 remains green at 529/529. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-create-000242.md.

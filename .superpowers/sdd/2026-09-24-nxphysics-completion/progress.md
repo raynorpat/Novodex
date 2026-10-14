@@ -356,3 +356,8 @@ The registered `NxPhysicsSDKTests` differential now runs in Phase 6 with two liv
 Added empty and populated-registry foreign-handle cases to NxPhysicsTriangleMeshApiTests. Oracle reports NXE_INVALID_OPERATION at PhysicsSDK.cpp:569; the previous candidate silently returned. A missing-diagnostic no-op mutant is rejected (stdout_delta=27), restored staged pair is exact. Phase 4 passes at 529/529 assertions; Phase 2 passes at 7/7; inventory passes with Phase 2 at 66 closed / 77 deferred and 6,338 code rows / 5,138 data objects / zero unexplained. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-000470.md and evidence/raw/phase2-triangle-mesh-release-000470-20261014/.
 
 Task M2.6: complete (`phys_fn_000470`; red foreign-handle differential; no-op mutation caught at stdout_delta=27; restored control exact; Phase 2 gate 7/7; Phase 4 gate 529/529; inventory pass; public headers unchanged).
+
+
+### M2 continuation — public triangle-mesh creation wrapper (phys_fn_000242, 2026-10-14)
+
+The public API fixture rejects a null-return mutant (stdout_delta=26); restored staged-pair control is exact. Existing NxPhysicsSimulationTests exercises Scene lock contention. Phase 4 full gate remains 529/529; Phase 2 now records 67 closed / 76 deferred. Internal mesh creation remains open. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-create-000242.md.\nTask M2.7: complete (phys_fn_000242; mutation caught at stdout_delta=26; restored exact; report and inventory validation pass; public headers unchanged).

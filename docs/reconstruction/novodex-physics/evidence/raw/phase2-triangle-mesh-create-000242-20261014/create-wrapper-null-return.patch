@@ -1,0 +1,5 @@
+--- a/Physics/src/NpPhysicsSDK.cpp
++++ b/Physics/src/NpPhysicsSDK.cpp
+@@
+-	return mesh ? mesh->publicHandle() : 0;
++	return 0;
