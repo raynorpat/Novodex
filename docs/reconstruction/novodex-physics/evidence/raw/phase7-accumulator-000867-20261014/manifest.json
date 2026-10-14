@@ -31,5 +31,54 @@
       "source_bytes": 837684,
       "compressed_bytes": 54298
     }
-  ]
+  ],
+  "post_merge_phase_gates": {
+    "5": "2732/2732 pass",
+    "6": "1657/1657 pass",
+    "7": "1979/1979 pass on fresh staged-pair retry",
+    "first_phase7_attempt": "oracle access violation (-1073741819); candidate completed; retry was exact",
+    "main_checkout_attempt": "oracle proof rejected main working-copy source bytes (40d2a639...) against pinned fixture bytes (54a97e79...); no source file modified",
+    "transcripts": [
+      {
+        "path": "post-merge-phase5-gate.log.gz",
+        "source": "D:\\Novodex-row867-postmerge-worktree-phase5-20261014.log",
+        "source_sha256": "2dd80522a9c4f98ded6744db25aeb7f4173a02f2432952de61f972210d031d0e",
+        "compressed_sha256": "f2d04514be870498e6c15173911460d0a4e78c12aa7bc1fdb66635e7665eeff8",
+        "source_bytes": 2786770,
+        "compressed_bytes": 204412
+      },
+      {
+        "path": "post-merge-phase6-gate.log.gz",
+        "source": "D:\\Novodex-row867-postmerge-worktree-phase6-20261014.log",
+        "source_sha256": "cee838df2dcff38ff285061cd054315145cb565c52d6d6bbc8dd07b75291b1ab",
+        "compressed_sha256": "2f8611393b4006adb91a0a65a2dac404d67dd3b303f1a898f30cd8fae73381a2",
+        "source_bytes": 3079699,
+        "compressed_bytes": 250710
+      },
+      {
+        "path": "post-merge-phase7-first-attempt.log.gz",
+        "source": "D:\\Novodex-row867-postmerge-worktree-phase7-20261014.log",
+        "source_sha256": "d5199c10a4ff8c1647eb5d8215500f25dee76330d402006979f5eebbc15d331e",
+        "compressed_sha256": "cfdf7ea623a3fd0cc230e5ede1d13ef9426c2c4eaeb98b026655a57672a5b8ee",
+        "source_bytes": 3565529,
+        "compressed_bytes": 255534
+      },
+      {
+        "path": "post-merge-phase7-retry-gate.log.gz",
+        "source": "D:\\Novodex-row867-postmerge-worktree-phase7-retry-20261014.log",
+        "source_sha256": "890f94df59b36910a99daa12bbfbceee115f513c8b5c17ec6a5f7d44292c8ebb",
+        "compressed_sha256": "4d0e8f99854cc8cfb284a08ef06793cf8c65ed25d1bd1da199dabb9c478920e4",
+        "source_bytes": 4059738,
+        "compressed_bytes": 292049
+      },
+      {
+        "path": "main-checkout-phase5-source-pin-diagnostic.log.gz",
+        "source": "D:\\Novodex-row867-postmerge-phase5-20261014.log",
+        "source_sha256": "1a55420de1eee4fbe26c766c65eb6e387da28403fab7b86018c9001a98887002",
+        "compressed_sha256": "c75695517541478147ebe22c457dd114991cd37f8de49e7c7dcfd77ca5e013a6",
+        "source_bytes": 60884,
+        "compressed_bytes": 10870
+      }
+    ]
+  }
 }
