@@ -11472,13 +11472,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/230",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1516",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsJointSlotTests staged-pair differential: creating enough joints reaches NxSceneInternal::growJointRecords. Replacing only row 000598 with an empty body causes an access violation (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=1427, stderr_exact=True). Restoring Scene.cpp byte-for-byte returns exact output. See evidence/phase7-joint-record-growth-000598.md and evidence/raw/phase7-joint-record-growth-000598-20261014/.",
+      "notes": "The registered joint-slot fixture exercises the joint record capacity growth path; a row-scoped no-op mutation is rejected.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
