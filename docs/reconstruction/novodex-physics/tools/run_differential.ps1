@@ -252,6 +252,7 @@ $stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets -or
 	'NxPhysicsSimulationTests' -cin $Targets -or
 	'NxPhysicsFluidInitialParticlesTests' -cin $Targets -or
 	'NxPhysicsFluidParticleArrayFailureTests' -cin $Targets -or
+	'NxPhysicsFluidGetParticlesNullTests' -cin $Targets -or
 	'NxPhysicsFluidManagerGrowthFailureTests' -cin $Targets -or
 	'NxPhysicsFluidManagerGrowthSecondFailureTests' -cin $Targets
 $oraclePair = New-Pair 'oracle' $oraclePhysics $oracleFoundation -StageFluidModel:$stageFluidModel

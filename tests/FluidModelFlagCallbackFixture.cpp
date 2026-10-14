@@ -70,6 +70,8 @@ static unsigned gFluidGetDampingCalls;
 static unsigned gFluidSetStiffnessCalls;
 static unsigned gFluidParticleArrayAllocCalls;
 static unsigned gFluidParticleArrayAllocFailure;
+static unsigned gFluidGetParticlesCalls;
+static unsigned gFluidGetParticlesReturnNull;
 static unsigned gFluidSetStiffnessBits;
 static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidSetViscosityCalls;
@@ -738,6 +740,18 @@ NxGetFluidParticleArrayAllocCalls()
 	return gFluidParticleArrayAllocCalls;
 	}
 
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidGetParticlesNull(unsigned enabled)
+	{
+	gFluidGetParticlesReturnNull = enabled != 0;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidGetParticlesCalls()
+	{
+	return gFluidGetParticlesCalls;
+	}
+
 extern "C" __declspec(dllexport) NxFluidParticleArrayFixture* __cdecl
 ParticleArrayAlloc(unsigned count)
 	{
@@ -1119,7 +1133,10 @@ extern "C" __declspec(dllexport) void __cdecl FluidGetBounds(
 extern "C" __declspec(dllexport) NxFluidPostStepParticleStream* __cdecl FluidGetParticles(
 	unsigned system, unsigned handle)
 	{
+	++gFluidGetParticlesCalls;
 	nxRecordPostStepCallback(8192, system, handle, 0, 0);
+	if(gFluidGetParticlesReturnNull)
+		return 0;
 	return &gPostStepStreams[system & 1u];
 	}
 

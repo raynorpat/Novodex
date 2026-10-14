@@ -2110,9 +2110,8 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 	void* const backendFluid = *reinterpret_cast<void**>(bytes + 0x80);
 	void* const backendParticles = gNxFluidGetParticlesCallback(
 		backendManager, backendFluid);
-	const unsigned existingCount = backendParticles
-		? *reinterpret_cast<unsigned*>(static_cast<unsigned char*>(backendParticles) + 4)
-		: 0;
+	const unsigned existingCount = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backendParticles) + 4);
 	const unsigned maximum = gNxFluidGetMaxParticlesCallback(
 		backendManager, backendFluid);
 	if(existingCount + count > maximum)

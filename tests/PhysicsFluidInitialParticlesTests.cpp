@@ -16,6 +16,9 @@
 #ifndef NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE
 #define NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE 0
 #endif
+#ifndef NX_FLUID_GET_PARTICLES_NULL_FAILURE
+#define NX_FLUID_GET_PARTICLES_NULL_FAILURE 0
+#endif
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32,
 	NxUserAllocator*, NxUserOutputStream*);
@@ -131,6 +134,8 @@ int wmain(int argc, wchar_t** argv)
 	HMODULE physics = 0;
 	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE
 	const char* const testName = "NxPhysicsFluidParticleArrayFailureTests";
+	#elif NX_FLUID_GET_PARTICLES_NULL_FAILURE
+	const char* const testName = "NxPhysicsFluidGetParticlesNullTests";
 	#else
 	const char* const testName = "NxPhysicsFluidInitialParticlesTests";
 	#endif
@@ -186,6 +191,26 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("fluid particle-array allocation controls are missing");
 		}
 	setParticleArrayAllocFailure(1);
+	#elif NX_FLUID_GET_PARTICLES_NULL_FAILURE
+	typedef void (__cdecl *SetFluidGetParticlesNullFn)(unsigned);
+	typedef unsigned (__cdecl *GetFluidGetParticlesCallsFn)();
+	typedef unsigned (__cdecl *GetParticleArrayAllocCallsFn)();
+	SetFluidGetParticlesNullFn setFluidGetParticlesNull =
+		reinterpret_cast<SetFluidGetParticlesNullFn>(GetProcAddress(fluidModel,
+			"NxSetFluidGetParticlesNull"));
+	GetFluidGetParticlesCallsFn getFluidGetParticlesCalls =
+		reinterpret_cast<GetFluidGetParticlesCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidGetParticlesCalls"));
+	GetParticleArrayAllocCallsFn getParticleArrayAllocCalls =
+		reinterpret_cast<GetParticleArrayAllocCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidParticleArrayAllocCalls"));
+	if(!setFluidGetParticlesNull || !getFluidGetParticlesCalls ||
+		!getParticleArrayAllocCalls)
+		{
+		sdk->release();
+		return nxFail("FluidGetParticles-null controls are missing");
+		}
+	setFluidGetParticlesNull(1);
 	#endif
 	NxFluidInitialParticleLicense license;
 	if(!license.ready())
@@ -219,7 +244,7 @@ int wmain(int argc, wchar_t** argv)
 	desc.initialParticleData.bufferLifeByteStride = 2 * sizeof(NxF32);
 	const bool descValid = desc.isValid();
 	unsigned exceptionCode = 0;
-	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE
+	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE || NX_FLUID_GET_PARTICLES_NULL_FAILURE
 	NxFluid* fluid = nxCreateFluidWithSeh(scene, &desc, &exceptionCode);
 	#else
 	NxFluid* fluid = scene->createFluid(desc);
@@ -230,7 +255,7 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<void**>(internal + 0x78)) : 0;
 	unsigned char* records = array ? static_cast<unsigned char*>(
 		*reinterpret_cast<void**>(array)) : 0;
-	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE
+	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE || NX_FLUID_GET_PARTICLES_NULL_FAILURE
 	unsigned char* sceneInternal = *reinterpret_cast<unsigned char**>(
 		reinterpret_cast<unsigned char*>(scene) + 0x24);
 	unsigned char* manager = sceneInternal ? static_cast<unsigned char*>(
@@ -239,7 +264,8 @@ int wmain(int argc, wchar_t** argv)
 		? nxFluidInitialParticleArrayCount(manager, 4) : 0;
 	const unsigned publicCount = manager
 		? nxFluidInitialParticleArrayCount(manager, 0x14) : 0;
-	const bool allocationFailureMatch = !fluid &&
+	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE
+	const bool failureContract = !fluid &&
 		exceptionCode == EXCEPTION_ACCESS_VIOLATION && manager &&
 		internalCount == 0 && publicCount == 0 &&
 		getParticleArrayAllocCalls() == 1;
@@ -249,8 +275,18 @@ int wmain(int argc, wchar_t** argv)
 		internalCount, publicCount, getParticleArrayAllocCalls());
 	// The oracle faults in ParticleArray record initialization before either
 	// manager array is updated; do not tear down partial constructor state.
-	if(!descValid || !allocationFailureMatch)
-		return nxFail("initial ParticleArray allocation failure differs from the oracle");
+	#else
+	const bool failureContract = !fluid &&
+		exceptionCode == EXCEPTION_ACCESS_VIOLATION && manager &&
+		internalCount == 0 && publicCount == 0 &&
+		getFluidGetParticlesCalls() == 1 && getParticleArrayAllocCalls() == 0;
+	printf("fluid initial-particles get-particles-null caught=%u exception=%08x returned=%u internal=%u public=%u callbacks=%u array-allocs=%u\n",
+		exceptionCode == EXCEPTION_ACCESS_VIOLATION ? 1u : 0u,
+		exceptionCode, fluid ? 1u : 0u, internalCount, publicCount,
+		getFluidGetParticlesCalls(), getParticleArrayAllocCalls());
+	#endif
+	if(!descValid || !failureContract)
+		return nxFail("initial-particle failure behavior differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#else
 	const bool countMatch = array &&
