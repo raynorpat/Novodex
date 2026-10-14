@@ -57,13 +57,13 @@
     "intermediate_closure_ledgers": {
       "2": {
         "phase": 2,
-        "closed_rows": 74,
-        "deferred_rows": 69,
+        "closed_rows": 76,
+        "deferred_rows": 67,
         "deferred_reasons": {
           "blocked_on_later_phase": 6,
           "homeless_shared_code": 21,
           "not_independently_falsifiable": 1,
-          "reconstructed_not_falsified": 35,
+          "reconstructed_not_falsified": 33,
           "unreachable_in_phase_2": 6
         }
       },
@@ -122,8 +122,8 @@
         "rows_with_unresolved_indirect_calls": 69,
         "by_state": {
           "discovered": 2,
-          "dynamically_gated": 68,
-          "reconstructed": 67,
+          "dynamically_gated": 70,
+          "reconstructed": 65,
           "statically_reviewed": 6
         }
       },
@@ -12711,7 +12711,7 @@
           {
             "id": "phys_fn_000433",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_000448",
@@ -12815,7 +12815,7 @@
           {
             "id": "phys_fn_000435",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_000448",
@@ -19737,7 +19737,7 @@
       "size": 81,
       "phase": 2,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000433",
       "implementation": {
         "path": "Physics/src/PhysicsSDK.cpp",
@@ -19752,7 +19752,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsSDKTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -19770,9 +19770,7 @@
         "indirect_call_sites": [
           "0x0000dd25"
         ],
-        "schedule_blockers": [
-          6
-        ],
+        "schedule_blockers": [],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -19783,23 +19781,24 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 2,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsSDKTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 2,
+        "owner_phase": 8,
         "row_id": "phys_fn_000433",
         "rva": "0x0000dce0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [
+          3,
           6
         ],
         "requires_dependency_review": true
@@ -19811,7 +19810,7 @@
       "size": 87,
       "phase": 2,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000435",
       "implementation": {
         "path": "Physics/src/PhysicsSDK.cpp",
@@ -19826,7 +19825,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsSDKTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -19854,9 +19853,7 @@
         "indirect_call_sites": [
           "0x0000dd89"
         ],
-        "schedule_blockers": [
-          6
-        ],
+        "schedule_blockers": [],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -19867,23 +19864,24 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 2,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsSDKTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 2,
+        "owner_phase": 8,
         "row_id": "phys_fn_000435",
         "rva": "0x0000dd40",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [
+          3,
           6
         ],
         "requires_dependency_review": true
@@ -231013,12 +231011,12 @@
     }
   ],
   "source": {
-    "inventory_sha256": "133d73d54f825166af06da16316784aaa10ca62ff4b306e423e4f378b4e7e5de",
+    "inventory_sha256": "81eef7ed7f8fd8166b5c3d0ad3fc2f323ff1ac48668a76ccbf81696bc84c4e73",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
-      "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "cbef49bec8aaeac32ba8eb6c4fb3b508a4374ef62f71acba1fc05730eb190de3",
+      "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "19162292a658d0bc78957d0e364ad82a28d94c1834420dca9ce586c24ed52c94",
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "fe87ac670c07b62361f905c6385f97b1adf63af386f7d50368ef3e345cba33ec",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "3e47856bfe8ccf054e530adc03616d67f26990ca739981f3da4f9b904587fc67",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",

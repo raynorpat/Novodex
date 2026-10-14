@@ -847,3 +847,8 @@ The row's implementation is the inline `IceMaths::AABB::SetCenterExtents` in `Ex
 ### Continuation — SDK core-dump Scene-lock wrapper (`phys_fn_000267`, 2026-10-14)
 
 The existing `NxPhysicsCoreDumpTests` target exercises the wrapper's two-Scene refusal path: Scene B is marked as held by another thread, the oracle reports `NpPhysicsSDK.cpp:225`, creates no dump file, and releases Scene A. Replacing `NpPhysicsSDK::coreDump` with an immediate `false` return changes the staged transcript (`stdout_delta=2266`, both processes exit 0); restoring the function returns an exact control. Registered the target in Phase 3 so this Phase 2 row is discharged by a passed phase rather than a pending Phase 6/7 gate. Phase 3's coverage floor is now 945; Phase 2 records 74 closed / 69 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-core-dump-lock-000267.md` and its `evidence/raw/` directory. Full-DLL reconstruction remains open.
+
+
+### Continuation — Actor-group pair insertion and lookup (`phys_fn_000433`, `phys_fn_000435`, 2026-10-14)
+
+Suppressing `cpmSetActorGroupPairFlags` is rejected by `NxPhysicsSDKTests` (`stdout_delta=6`); forcing `PhysicsSDK::getActorGroupPairFlags` to return zero is rejected at `stdout_delta=2`. The restored staged differential is exact. Fresh Phase 2 and Phase 3 gates pass at 14/14 and 945/945 coverage assertions; the later Phase 3 gate discharges both Phase 2 rows. Phase 2 now records 76 closed / 67 deferred rows. Public headers and CMake are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-actor-group-pair-core-000433-000435.md` and its raw transcripts. Full-DLL reconstruction remains open.
