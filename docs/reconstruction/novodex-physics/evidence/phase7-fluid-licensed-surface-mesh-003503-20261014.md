@@ -22,9 +22,12 @@ reconstruction tooling suite passes 829 tests and 740 subtests. Adding the new
 wrapper implementation also exposed that `NxPhysicsInternalTests` and
 `NxPhysicsCollisionTests` compile `Scene.cpp` directly; both CMake source lists
 now compile `ImplicitMesh.cpp` as well. Both targets build successfully.
+After commit `5a679638` was fast-forwarded to `main`, the integrated Phase 5
+gate also passed at 2,708/2,708 coverage assertions.
 
-Raw differential, mutation, Phase 7, and initial integration-failure logs are
-archived under `evidence/raw/phase7-fluid-licensed-surface-mesh-003503-20261014/`.
+Raw differential, mutation, Phase 7, post-merge Phase 5, and initial
+integration-failure logs are archived under
+`evidence/raw/phase7-fluid-licensed-surface-mesh-003503-20261014/`.
 
 This validates the constructor, callback arguments, `userData`, and destruction
 branch. The public `NxImplicitMesh` property and particle methods still need
