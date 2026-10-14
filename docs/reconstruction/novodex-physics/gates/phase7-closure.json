@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 224,
+    "differential_falsified": 225,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 135,
-    "deferred_reconstructed_not_falsified": 121
+    "deferred_reconstructed_not_falsified": 120
   },
   "closed": [
     {
@@ -3286,6 +3286,16 @@
         "mutation": "A no-dispatch mutation of nxMaskedFourSlotLoop4862 omitted all selected pruner slot-5 calls. The registered differential rejected the candidate with both exits 0, stdout_delta=5465, and exact stderr. The fixture contains permuted 12-object static and bounded-dynamic trees. The restored output matches both oracle traversal orders exactly. See evidence/phase7-masked-four-slot-plane-loop-004862.md.",
         "detected": "stdout_delta=5465"
       }
+    },
+    {
+      "id": "phys_fn_000766",
+      "rva": "0x000179a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneVisualizeTests",
+      "falsification": {
+        "mutation": "A throwaway immediate-return mutation of NxBodyVisualRecord::visualize() omitted body visualization and was rejected by the registered Phase 7 differential (both exits 0, stdout_delta=2768, stderr_exact=True). The restored control matched exactly. See evidence/phase7-body-visualization-000766.md.",
+        "detected": "stdout_delta=2768"
+      }
     }
   ],
   "deferred": [
@@ -3609,15 +3619,6 @@
       "id": "phys_fn_000764",
       "rva": "0x00017930",
       "size": 100,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000766",
-      "rva": "0x000179a0",
-      "size": 1377,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
