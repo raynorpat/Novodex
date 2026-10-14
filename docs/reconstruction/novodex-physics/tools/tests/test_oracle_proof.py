@@ -261,6 +261,77 @@ class OracleProofTests(unittest.TestCase):
             manifest, "NxPhysicsAssetTests", lines, ORACLE_SHA, self.root)
         self.assertTrue(any("fixture source SHA-256" in failure for failure in failures), failures)
 
+    def test_thirdparty_oracle_proof_pins_generator_coverage_and_oracle_digest(self):
+        source_bytes = b"fixed third-party generator and oracle call sequence"
+        source_name = "tests/PhysicsThirdPartyTests.cpp"
+        source = self.root / source_name
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(source_bytes)
+        source_hash = hashlib.sha256(source_bytes).hexdigest()
+        library_line = "thirdparty libraries qhull=2003.1 opcode=1.3-standalone"
+        generator_line = "thirdparty generator=xorshift32 mode=self"
+        coverage_lines = [
+            "thirdparty coverage name=fixture cases=2 accepted=1 rejected=1",
+            "thirdparty coverage driven=2 divergent=0 words=12 layout_checks=1",
+        ]
+        oracle_digest_line = "thirdparty oracle digest=1a2b3c4d"
+        selected = "\n".join(
+            [library_line, generator_line, *coverage_lines, oracle_digest_line]) + "\n"
+        manifest = {
+            "schema_version": 1,
+            "targets": {
+                "NxPhysicsThirdPartyTests": {
+                    "format": "thirdparty_oracle_digest",
+                    "oracle_sha256": ORACLE_SHA,
+                    "fixture_source": source_name,
+                    "fixture_source_sha256": source_hash,
+                    "library_line": library_line,
+                    "generator_line": generator_line,
+                    "coverage_line_count": len(coverage_lines),
+                    "final_coverage_line": coverage_lines[-1],
+                    "oracle_digest_fnv32": "1a2b3c4d",
+                    "selected_lines_sha256": hashlib.sha256(
+                        selected.encode("ascii")).hexdigest(),
+                }
+            },
+        }
+        transcript = [
+            "oracle module path=C:\\oracle\\NxPhysics.dll sha256=" + ORACLE_SHA,
+            library_line,
+            generator_line,
+            *coverage_lines,
+            oracle_digest_line,
+            "thirdparty candidate digest=ffffffff",
+        ]
+
+        failures, proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsThirdPartyTests", transcript, ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(proof["coverage_line_count"], 2)
+        self.assertEqual(proof["oracle_digest_fnv32"], "1a2b3c4d")
+
+        changed_candidate = list(transcript)
+        changed_candidate[-1] = "thirdparty candidate digest=00000000"
+        failures, changed_proof = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsThirdPartyTests", changed_candidate,
+            ORACLE_SHA, self.root)
+        self.assertEqual(failures, [])
+        self.assertEqual(changed_proof["proof_sha256"], proof["proof_sha256"])
+
+        changed_coverage = list(transcript)
+        changed_coverage[3] = changed_coverage[3].replace("cases=2", "cases=3")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsThirdPartyTests", changed_coverage,
+            ORACLE_SHA, self.root)
+        self.assertTrue(any("coverage" in failure for failure in failures), failures)
+
+        changed_oracle = list(transcript)
+        changed_oracle[5] = "thirdparty oracle digest=00000000"
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsThirdPartyTests", changed_oracle,
+            ORACLE_SHA, self.root)
+        self.assertTrue(any("oracle digest" in failure for failure in failures), failures)
+
     def test_rejects_changed_input_digest(self):
         lines = list(self.transcript)
         lines[1] = lines[1].replace(INPUT_DIGEST, "0000000000000000")
@@ -518,6 +589,8 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                     "the fluid-emitter ABI oracle differential is shared by Phases 5 and 7")
             elif target == "NxPhysicsAssetTests":
                 self.assertEqual(phases, ["4"], "asset oracle proof belongs to Phase 4")
+            elif target == "NxPhysicsThirdPartyTests":
+                self.assertEqual(phases, ["4"], "third-party oracle proof belongs to Phase 4")
             else:
                 self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)
@@ -565,6 +638,15 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(expected["cases"], 32)
                 self.assertEqual(expected["oracle_output_digest_fnv32"], "1daa095e")
                 self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
+            elif expected["format"] == "thirdparty_oracle_digest":
+                self.assertEqual(expected["fixture_source"], "tests/PhysicsThirdPartyTests.cpp")
+                self.assertEqual(expected["generator_line"],
+                                 "thirdparty generator=xorshift32 mode=differential")
+                self.assertEqual(expected["coverage_line_count"], 27)
+                self.assertEqual(expected["final_coverage_line"],
+                                 "thirdparty coverage driven=116 divergent=26 words=2615055 layout_checks=47")
+                self.assertEqual(expected["oracle_digest_fnv32"], "e2a266c1")
+                self.assertEqual(len(expected["selected_lines_sha256"]), 64)
             else:
                 self.assertEqual(expected["format"], "joint_matrix")
                 self.assertEqual(expected["cases"], 122)
@@ -630,6 +712,15 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                                      expected["oracle_output_digest_fnv32"])
                     self.assertEqual(proof["oracle_output_digest_sha256"],
                                      expected["oracle_output_digest_sha256"])
+                elif proof["format"] == "thirdparty_oracle_digest":
+                    self.assertEqual(proof["coverage_line_count"],
+                                     expected["coverage_line_count"])
+                    self.assertEqual(proof["final_coverage_line"],
+                                     expected["final_coverage_line"])
+                    self.assertEqual(proof["oracle_digest_fnv32"],
+                                     expected["oracle_digest_fnv32"])
+                    self.assertEqual(proof["selected_lines_sha256"],
+                                     expected["selected_lines_sha256"])
                 else:
                     self.assertEqual(proof["input_lines"], expected["input_lines"])
                     self.assertEqual(proof["case_family_counts"], expected["case_family_counts"])

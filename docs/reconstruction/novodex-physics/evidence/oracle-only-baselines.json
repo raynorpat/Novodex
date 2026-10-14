@@ -84,6 +84,18 @@
       "oracle_output_digest_fnv32": "1daa095e",
       "coverage_line": "asset coverage driven=32 accepted=15 rejected=16 errors=10",
       "oracle_output_digest_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f"
+    },
+    "NxPhysicsThirdPartyTests": {
+      "format": "thirdparty_oracle_digest",
+      "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+      "fixture_source": "tests/PhysicsThirdPartyTests.cpp",
+      "fixture_source_sha256": "e38b3c88010c9d93f3bcb94871c1ec1300f009c3def53897d748e3be8f85a389",
+      "library_line": "thirdparty libraries qhull=2003.1 opcode=1.3-standalone",
+      "generator_line": "thirdparty generator=xorshift32 mode=differential",
+      "coverage_line_count": 27,
+      "final_coverage_line": "thirdparty coverage driven=116 divergent=26 words=2615055 layout_checks=47",
+      "oracle_digest_fnv32": "e2a266c1",
+      "selected_lines_sha256": "3ef73804be71434ccda7ee3b4755135b2a923634c686428702224c2fee36fa9a"
     }
   }
 }

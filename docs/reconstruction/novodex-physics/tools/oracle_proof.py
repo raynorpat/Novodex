@@ -29,6 +29,7 @@ ASSET_ORACLE_DIGEST = re.compile(
     r"^asset oracle digest=([0-9a-f]{8}) expect_mismatches=(\d+)$")
 ASSET_COVERAGE = re.compile(
     r"^asset coverage driven=(\d+) accepted=(\d+) rejected=(\d+) errors=(\d+)$")
+THIRDPARTY_ORACLE_DIGEST = re.compile(r"^thirdparty oracle digest=([0-9a-f]{8})$")
 FLUID_ORACLE_CONTEXT_FIELDS = frozenset((
     "cases", "records", "buckets", "cells", "indices", "fluids", "emitters",
     "live-fluids"))
@@ -361,6 +362,52 @@ def _verify_asset_oracle_digest(expected, lines):
     }
 
 
+def _verify_thirdparty_oracle_digest(expected, lines):
+    failures = []
+    library_lines = [line for line in lines if line.startswith("thirdparty libraries ")]
+    generator_lines = [line for line in lines if line.startswith("thirdparty generator=")]
+    coverage_lines = [line for line in lines if line.startswith("thirdparty coverage ")]
+    digest_lines = [line for line in lines if line.startswith("thirdparty oracle digest=")]
+
+    if len(library_lines) != 1:
+        failures.append("expected exactly one third-party library identity line; found %d"
+                        % len(library_lines))
+    elif library_lines[0] != expected.get("library_line"):
+        failures.append("third-party library identity differs from the pinned baseline")
+    if len(generator_lines) != 1:
+        failures.append("expected exactly one third-party generator line; found %d"
+                        % len(generator_lines))
+    elif generator_lines[0] != expected.get("generator_line"):
+        failures.append("third-party input generator differs from the pinned baseline")
+    if len(coverage_lines) != expected.get("coverage_line_count"):
+        failures.append("third-party coverage line count differs from the pinned baseline")
+    if not coverage_lines or coverage_lines[-1] != expected.get("final_coverage_line"):
+        failures.append("final third-party coverage differs from the pinned baseline")
+    if not digest_lines:
+        failures.append("expected a final third-party oracle digest line")
+
+    digest_match = THIRDPARTY_ORACLE_DIGEST.fullmatch(digest_lines[-1]) if digest_lines else None
+    if digest_lines and digest_match is None:
+        failures.append("final third-party oracle digest line is malformed")
+    if digest_match and digest_match.group(1) != expected.get("oracle_digest_fnv32"):
+        failures.append("third-party oracle digest differs from the pinned baseline")
+
+    if failures or not library_lines or not generator_lines or not coverage_lines or not digest_match:
+        return failures, None
+
+    selected_lines = [library_lines[0], generator_lines[0], *coverage_lines, digest_lines[-1]]
+    selected_digest = sha256(("\n".join(selected_lines) + "\n").encode("ascii"))
+    if selected_digest != expected.get("selected_lines_sha256"):
+        return ["third-party coverage/output lines differ from the pinned baseline"], None
+    return failures, {
+        "coverage_line_count": len(coverage_lines),
+        "final_coverage_line": coverage_lines[-1],
+        "oracle_digest_fnv32": digest_match.group(1),
+        "selected_lines_sha256": selected_digest,
+        "selected_lines": selected_lines,
+    }
+
+
 def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
                              repo_root):
     """Return (failures, proof); candidate-only values are intentionally ignored."""
@@ -407,6 +454,8 @@ def verify_oracle_transcript(manifest, target, transcript_lines, oracle_sha256,
         failures_for_format, measurements = _verify_fluid_oracle_lines(expected, lines)
     elif proof_format == "asset_oracle_digest":
         failures_for_format, measurements = _verify_asset_oracle_digest(expected, lines)
+    elif proof_format == "thirdparty_oracle_digest":
+        failures_for_format, measurements = _verify_thirdparty_oracle_digest(expected, lines)
     else:
         failures_for_format, measurements = ["unsupported oracle proof format: %s"
                                                % proof_format], None
