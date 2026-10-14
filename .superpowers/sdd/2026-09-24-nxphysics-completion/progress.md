@@ -487,3 +487,8 @@ The row was mis-mapped to the triangle-mesh initializer; IDA's vtable at 0x10108
 ### M7.9 — Scene owner-pair entry (phys_fn_000517)
 
 The registered Phase 7 simulation reaches the owner-pair helper through row 000521. Changing only 000517's owner load is caught: the candidate retains the root record (stdout_delta=4007). Restoring the source byte-for-byte and rebuilding returns the exact differential. The candidate function also contains continuation 000519; that row remains open. Phase 7 moves to 340 closed / 220 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-owner-pair-record-remove-000517.md.
+
+
+### M7.10 — Scene owner-pair loop continuation (phys_fn_000519)
+
+Suppressing only the matching-record removal in the row 000519 continuation is caught through the registered Phase 7 simulation (stdout_delta=4007). Restoring and rebuilding returns the exact differential. The candidate helper combines 000517 and 000519, now independently falsified. Phase 7 moves to 341 closed / 219 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-owner-pair-record-remove-000519.md.
