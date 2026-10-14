@@ -62,5 +62,22 @@
       "compressed_bytes": 365
     }
   ],
-  "note": "After restoring source from backup, it was touched to force MSBuild to recompile; source SHA-256 matches the original."
+  "note": "After restoring source from backup, it was touched to force MSBuild to recompile; source SHA-256 matches the original.",
+  "post_merge_gate": {
+    "commit": "9ef2605b",
+    "target": "NxPhysicsCoreDumpTests",
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "candidate_nxphysics_sha256": "9381f683423e55b658342400c01ec04b81215ceea95e07e3a47b3558f1e89d55",
+    "transcript": {
+      "path": "post-merge-core-dump-differential.gz",
+      "source": "D:\\Novodex-row3992-postmerge-differential-20261014.log",
+      "source_sha256": "0a70d7ab842b1a3a249d5fc010dcca1cd21223aab9eea8f48f7d67c946b69f32",
+      "compressed_sha256": "91cde6dfd7eab1f550628963f5b19c238d08ee88605205ad1062470a2df6de1e",
+      "source_bytes": 386151,
+      "compressed_bytes": 41042
+    }
+  }
 }
