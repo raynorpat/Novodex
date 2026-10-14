@@ -1754,3 +1754,8 @@ logs are in
 This closes only the tested constructor slice. `phys_fn_003503` still lacks
 initial-particle `ParticleArray` support, allocator-failure ordering, and full
 callback-table coverage; full DLL reconstruction remains active.
+
+
+### Continuation — all-shapes raycast report loop (`phys_fn_000684` / `phys_fn_000686`, 2026-10-13)
+
+The existing all-shapes raycast loop now has a row-specific differential mutation: suppressing `report.onHit` changes the transcript by 5,140 bytes, while the restored staged differential is exact. Both census rows map to one machine function split at an alignment boundary. The fresh Phase 7 gate passes at 1,770/1,770 coverage assertions; the Phase 7 ledger now closes 265 functions and defers 295. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-raycast-all-shapes-000684-000686-20261013.md`. Full DLL reconstruction remains in progress.

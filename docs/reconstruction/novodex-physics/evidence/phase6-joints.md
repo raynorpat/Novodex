@@ -10773,3 +10773,12 @@ The shared `cpmBufferContactReports0917` loop-count mutation suppresses the publ
 ## Phase 7 continuation: pruning visualization `phys_fn_001978`
 
 `phys_fn_001978` is mutation-falsified through the registered `NxPhysicsSceneVisualizeTests` public DLL differential: replacing the collision-pruner visualization body with a no-op is rejected (`stdout_delta=1963`); the restored oracle/candidate output is exact. See [phase7-visualize-pruners-001978.md](phase7-visualize-pruners-001978.md).
+
+
+## Phase 7 continuation: all-shapes raycast report loop `phys_fn_000684` / `phys_fn_000686`
+
+These split census rows are one all-shapes raycast loop. Suppressing `report.onHit` is caught by the registered `NxPhysicsSceneRaycastTests` differential (`stdout_delta=5140`, both processes exit zero, stderr exact); the restored control is exact. The fresh full Phase 7 gate passes at 1,770/1,770 registered coverage assertions. See [phase7-raycast-all-shapes-000684-000686-20261013.md](phase7-raycast-all-shapes-000684-000686-20261013.md) and the archived raw transcripts.
+
+`phys_fn_000684`: callback-suppression mutation rejected (`stdout_delta=5140`); restored differential exact.
+
+`phys_fn_000686`: callback-suppression mutation rejected (`stdout_delta=5140`); restored differential exact.
