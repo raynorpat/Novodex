@@ -14,6 +14,9 @@
 #include "NxBoxShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxSphereShapeDesc.h"
+#include "NxSimpleTriangleMesh.h"
+#include "NxTriangleMeshDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
 #include "NxUserContactReport.h"
 #include "NxUserAllocator.h"
 
@@ -25,7 +28,7 @@ typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32,
 class TrackingAllocator : public NxUserAllocator
 	{
 	public:
-	TrackingAllocator() : mOutstanding(0), mAllocationCount(0) {}
+	TrackingAllocator() : mOutstanding(0), mAllocationCount(0), mFreeCount(0) {}
 
 	virtual void* malloc(size_t size) { return allocate(size); }
 	virtual void* malloc(size_t size, NxMemoryType) { return allocate(size); }
@@ -51,6 +54,7 @@ class TrackingAllocator : public NxUserAllocator
 			if(mPointers[i - 1] == memory)
 				{
 				mPointers[i - 1] = 0;
+				mFreedSequence[i - 1] = ++mFreeCount;
 				break;
 				}
 		::free(static_cast<unsigned*>(memory) - 2);
@@ -58,6 +62,14 @@ class TrackingAllocator : public NxUserAllocator
 		}
 
 	unsigned outstanding() const { return mOutstanding; }
+	unsigned freedSequence(const void* memory) const
+		{
+		for(unsigned i = mAllocationCount; i > 0; --i)
+			if(mPointers[i - 1] == memory ||
+				(mFreedSequence[i - 1] && mFreedPointers[i - 1] == memory))
+				return mFreedSequence[i - 1];
+		return 0;
+		}
 	unsigned liveAllocationsOfSize(size_t size) const
 		{
 		unsigned count = 0;
@@ -83,6 +95,8 @@ class TrackingAllocator : public NxUserAllocator
 		if(mAllocationCount < sizeof(mPointers) / sizeof(mPointers[0]))
 			{
 			mPointers[mAllocationCount] = header + 2;
+			mFreedPointers[mAllocationCount] = header + 2;
+			mFreedSequence[mAllocationCount] = 0;
 			mSizes[mAllocationCount] = size;
 			++mAllocationCount;
 			}
@@ -92,7 +106,10 @@ class TrackingAllocator : public NxUserAllocator
 
 	unsigned mOutstanding;
 	unsigned mAllocationCount;
+	unsigned mFreeCount;
 	void* mPointers[8192];
+	void* mFreedPointers[8192];
+	unsigned mFreedSequence[8192];
 	size_t mSizes[8192];
 	};
 
@@ -671,17 +688,52 @@ int wmain(int argc, wchar_t** argv)
 	const size_t sdkOwnedSceneBytes = allocator.allocationSize(sdkOwnedScene);
 	if(sdkOwnedSceneBytes != 0x28)
 		return nxFail("SDK-owned scene wrapper allocation was not 40 bytes");
+	const NxPoint sdkOwnedMeshPoints[] = {
+		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, -2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
+		NxPoint(2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, 2.0f), NxPoint(-2.0f, 0.0f, 2.0f)};
+	const NxU32 sdkOwnedMeshTriangles[] = {0, 2, 1, 3, 5, 4};
+	NxTriangleMeshDesc sdkOwnedMeshDesc;
+	sdkOwnedMeshDesc.numVertices = sizeof(sdkOwnedMeshPoints) / sizeof(sdkOwnedMeshPoints[0]);
+	sdkOwnedMeshDesc.numTriangles = 2;
+	sdkOwnedMeshDesc.pointStrideBytes = sizeof(NxPoint);
+	sdkOwnedMeshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	sdkOwnedMeshDesc.points = sdkOwnedMeshPoints;
+	sdkOwnedMeshDesc.triangles = sdkOwnedMeshTriangles;
+	NxTriangleMesh* const sdkOwnedMesh = sdk->createTriangleMesh(sdkOwnedMeshDesc);
+	if(!sdkOwnedMesh) return nxFail("SDK-owned teardown triangle mesh creation failed");
+	const size_t sdkOwnedMeshBytes = allocator.allocationSize(sdkOwnedMesh);
+	if(!sdkOwnedMeshBytes)
+		return nxFail("SDK-owned teardown triangle mesh was not tracked");
+	NxTriangleMeshShapeDesc sdkOwnedMeshShape;
+	sdkOwnedMeshShape.meshData = sdkOwnedMesh;
+	NxActorDesc sdkOwnedMeshActorDesc;
+	sdkOwnedMeshActorDesc.shapes.pushBack(&sdkOwnedMeshShape);
+	if(!sdkOwnedScene->createActor(sdkOwnedMeshActorDesc))
+		return nxFail("SDK-owned teardown mesh actor creation failed");
 	sdk->release();
 	const bool sdkOwnedSceneFreed = allocator.allocationSize(sdkOwnedScene) == 0;
+	const bool sdkOwnedMeshFreed = allocator.allocationSize(sdkOwnedMesh) == 0;
+	const unsigned sdkOwnedSceneFreeSequence = allocator.freedSequence(sdkOwnedScene);
+	const unsigned sdkOwnedMeshFreeSequence = allocator.freedSequence(sdkOwnedMesh);
+	const bool sdkOwnedSceneFreedBeforeMesh = sdkOwnedSceneFreeSequence &&
+		sdkOwnedMeshFreeSequence && sdkOwnedSceneFreeSequence < sdkOwnedMeshFreeSequence;
 	const unsigned radixBufferLeaks = allocator.liveAllocationsOfSize(12);
 	const unsigned sdkReleaseOutstanding = allocator.outstanding();
 	printf("teardown sdk_owned_scene bytes=%u freed=%u\n",
 		static_cast<unsigned>(sdkOwnedSceneBytes), sdkOwnedSceneFreed ? 1u : 0u);
+	printf("teardown sdk_owned_mesh bytes=%u freed=%u scene_actor=1\n",
+		static_cast<unsigned>(sdkOwnedMeshBytes), sdkOwnedMeshFreed ? 1u : 0u);
+	printf("teardown sdk_scene_before_mesh=%u\n",
+		sdkOwnedSceneFreedBeforeMesh ? 1u : 0u);
 	printf("teardown sdk_cache radix_sort_buffers bytes=12 remaining=%u\n",
 		radixBufferLeaks);
 	printf("teardown sdk_release outstanding=%u\n", sdkReleaseOutstanding);
 	if(!sdkOwnedSceneFreed)
 		return nxFail("PhysicsSDK destructor did not release a registered Scene");
+	if(!sdkOwnedMeshFreed)
+		return nxFail("PhysicsSDK destructor did not release its registered triangle mesh");
+	if(!sdkOwnedSceneFreedBeforeMesh)
+		return nxFail("PhysicsSDK destructor released a triangle mesh before its Scene");
 	if(radixBufferLeaks != 0)
 		return nxFail("PhysicsSDK destructor did not release cached radix-sort buffers");
 	if(sdkReleaseOutstanding != 0)

@@ -12,3 +12,6 @@ The raw red, restored, and mutation differential transcripts and their SHA-256 m
 ## 2026-10-14 cache-release follow-up
 
 The seven retained blocks from the initial increment have since been traced and released. The OPCODE pool release already existed as `nxOpcodeReleasePool`; a mutation confirmed it is reached by SDK teardown. This continuation adds Scene shape-pair hash and trigger-pair storage cleanup and explicit release of the three BoxPruning radix-sort caches. The populated teardown differential now ends with zero tracked allocator blocks on both oracle and candidate. See [the cache-release evidence](phase7-sdk-cache-release-000492.md). The SDK destructor row remains open pending full row closure and scalar-deleting-thunk evidence.
+
+
+The SDK teardown follow-up also now matches the oracle's Scene-before-triangle-mesh release order; see [the ordering fixture and transcripts](phase7-sdk-scene-before-mesh-000492.md).

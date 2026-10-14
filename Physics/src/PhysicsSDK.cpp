@@ -101,6 +101,10 @@ void nxReleaseNovodexBoxPruningCaches004828();
 PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
+	nxReleaseSdkPointerBindings();
+	cpmResetActorGroupPairFlags();
+	for(NxU32 i = 0; i < mScenes.size(); ++i)
+		reinterpret_cast<NxSceneInternal*>(mScenes[i])->scalarDeletingDestructor(1);
 	for(NxU32 i = 0; i < mTriangleMeshes.size(); ++i)
 		{
 		TriangleMesh* mesh = mTriangleMeshes[i];
@@ -110,10 +114,6 @@ PhysicsSDK::~PhysicsSDK()
 			nxFoundationSDKAllocator->free(mesh);
 			}
 		}
-	nxReleaseSdkPointerBindings();
-	cpmResetActorGroupPairFlags();
-	for(NxU32 i = 0; i < mScenes.size(); ++i)
-		reinterpret_cast<NxSceneInternal*>(mScenes[i])->scalarDeletingDestructor(1);
 	nxReleaseNovodexBoxPruningCaches004828();
 
 	// phys_fn_001275 deletes each remaining Scene while the PhysicsSDK and its

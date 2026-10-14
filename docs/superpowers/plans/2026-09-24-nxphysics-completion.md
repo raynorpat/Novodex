@@ -977,3 +977,8 @@ Reconstructed the Scene member helper that removes owner-pair records for an act
 ### Continuation — SDK cache release (`phys_fn_000492`, 2026-10-14)
 
 Closed the seven-block teardown discrepancy by freeing Scene shape-pair hashes and trigger-pair vectors, releasing cached BoxPruning radix sorters, and validating the existing OPCODE pool cleanup. Each path is mutation-tested; the restored populated-scene differential is exact and reports zero outstanding allocator blocks. Fresh Phase 7 passes at 1,980/1,980 with the pinned oracle pair. `phys_fn_000492` and thunk `phys_fn_000494` remain open pending full destructor-row closure. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-cache-release-000492.md`.
+
+
+### Continuation — SDK Scene-before-mesh teardown (`phys_fn_000492`, 2026-10-14)
+
+A staged fixture with a live triangle-mesh actor falsified the candidate's mesh-before-Scene order. The oracle frees the registered Scene first; moving mesh destruction after the Scene loop restores an exact differential. Fresh Phase 7 passes at 1,980/1,980. The SDK destructor row and scalar deleting thunk remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-scene-before-mesh-000492.md`.

@@ -9,3 +9,8 @@ The fresh Phase 7 gate passes at 1,980/1,980 assertions with the pinned oracle p
 This completes the cache-release portion of the SDK destructor reconstruction but does not close `phys_fn_000492` or its scalar deleting thunk `phys_fn_000494`; remaining destructor behavior and row-specific closure evidence are still required. No public Physics headers changed.
 
 Compressed raw transcripts: `evidence/raw/phase7-sdk-cache-release-000492-20261014/`.
+
+
+## Scene and mesh destruction order
+
+A live triangle-mesh actor was added to an SDK-owned Scene. The old mesh-first order failed the differential (`sdk_scene_before_mesh=0`, `stdout_delta=2`); oracle order is Scene first, mesh second. The restored control matches exactly, and the fresh Phase 7 gate still passes at 1,980/1,980. See [the ordering evidence](phase7-sdk-scene-before-mesh-000492.md).
