@@ -10892,3 +10892,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_004868`: skipping the four selected-pruner slot calls while preserving `nxMaskedFourSlotLoop4868`’s return value 1 is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5545, stderr exact); restored output is exact. RVA 0xB5410 is row 004868; row 004865 is padding at 0xB53B1. See [phase7-aabb-pruner-loop-004868.md](phase7-aabb-pruner-loop-004868.md).
 
 `phys_fn_004866`: skipping the four selected-pruner slot calls while preserving `nxMaskedFourSlotLoop4866`’s return value 1 is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5465, stderr exact); restored output is exact. See [phase7-sphere-pruner-loop-004866.md](phase7-sphere-pruner-loop-004866.md).
+
+`phys_fn_004864`: skipping the four selected-pruner slot calls while preserving `nxMaskedFourSlotLoop4864`’s return value 1 is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=4828, stderr exact); restored output is exact. See [phase7-ray-pruner-loop-004864.md](phase7-ray-pruner-loop-004864.md).
