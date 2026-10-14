@@ -5609,9 +5609,22 @@ void nxActorDestroy(unsigned char* body)
 #else
 	nxSceneActorIds(*scene).returnId(*reinterpret_cast<unsigned*>(body + 0xc));
 #endif
+	scene->removeActorOwnerPairRecords(body);
 	unsigned char* root = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(root)
 		nxRuntimeShapeDeleteRoot(root);
+	}
+
+// phys_fn_000521 (0x000103e0): if the actor has a root shape, remove that
+// root's records from the Scene owner-pair map before its deleting destructor
+// runs. The shape-base destructor performs its own per-shape cleanup later.
+__declspec(noinline) void NxSceneInternal::removeActorOwnerPairRecords(
+	const void* actorBody)
+	{
+	const unsigned char* const body = static_cast<const unsigned char*>(actorBody);
+	const void* const root = *reinterpret_cast<void* const*>(body + 0x10);
+	if(root)
+		NxSceneRemoveOwnerPairRecords(this, root);
 	}
 
 // A static actor's shape goes to the engine's static pruner (type 0), created

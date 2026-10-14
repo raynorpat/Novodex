@@ -718,6 +718,107 @@ static bool nxSimulationResolvePrivateRow(HMODULE physics, const wchar_t* pairDi
 	return true;
 	}
 
+struct NxSimulationActorPairCleanupFixture
+	{
+	NxU8 scene[0x48];
+	NxI32 buckets[4];
+	NxI32 links[1];
+	NxU8 entries[8];
+	NxU8 body[0x14];
+	NxU8 root[0xd8];
+	};
+
+static NxU32 nxSimulationPairBucket(NxU16 owner0, NxU16 owner1)
+	{
+	if(owner1 < owner0)
+		{
+		const NxU16 swap = owner0;
+		owner0 = owner1;
+		owner1 = swap;
+		}
+	NxU32 hash = ((NxU32) owner1 << 16) | owner0;
+	hash += ~(hash << 15);
+	hash = (((NxU32) ((NxI32) hash >> 10) ^ hash) * 9);
+	hash ^= (NxU32) ((NxI32) hash >> 6);
+	hash += ~(hash << 11);
+	return (((NxU32) ((NxI32) hash >> 16) ^ hash) & 3u);
+	}
+
+static void nxSimulationInitActorPairCleanupFixture(
+	NxSimulationActorPairCleanupFixture& fixture, bool hasRoot)
+	{
+	memset(&fixture, 0, sizeof(fixture));
+	NxU8* const map = fixture.scene + 0x2c;
+	*reinterpret_cast<NxU32*>(map + 4) = 3;
+	*reinterpret_cast<NxI32**>(map + 8) = fixture.buckets;
+	*reinterpret_cast<NxI32**>(map + 0x0c) = fixture.links;
+	*reinterpret_cast<NxU32*>(map + 0x10) = 1;
+	*reinterpret_cast<NxU8**>(map + 0x14) = fixture.entries;
+	*reinterpret_cast<NxU32*>(map + 0x18) = 0xffffffffu;
+	for(unsigned i = 0; i < 4; ++i)
+		fixture.buckets[i] = -1;
+	fixture.buckets[nxSimulationPairBucket(0x1234, 0x5678)] = 0;
+	fixture.links[0] = -1;
+	*reinterpret_cast<NxU16*>(fixture.entries) = 0x1234;
+	*reinterpret_cast<NxU16*>(fixture.entries + 2) = 0x5678;
+	*reinterpret_cast<NxU32*>(fixture.entries + 4) = 1; // tagged payload: no allocator call
+	*reinterpret_cast<void**>(fixture.body + 0x10) = hasRoot ? fixture.root : 0;
+	*reinterpret_cast<NxU32*>(fixture.root + 0xd4) = 0x5678;
+	}
+
+static bool nxSimulationSameActorPairCleanupState(
+	const NxSimulationActorPairCleanupFixture& a,
+	const NxSimulationActorPairCleanupFixture& b)
+	{
+	const NxU8* const mapA = a.scene + 0x2c;
+	const NxU8* const mapB = b.scene + 0x2c;
+	return memcmp(mapA + 4, mapB + 4, 4) == 0 &&
+		memcmp(mapA + 0x10, mapB + 0x10, 4) == 0 &&
+		memcmp(mapA + 0x18, mapB + 0x18, 4) == 0 &&
+		memcmp(a.buckets, b.buckets, sizeof(a.buckets)) == 0 &&
+		memcmp(a.links, b.links, sizeof(a.links)) == 0 &&
+		memcmp(a.entries, b.entries, sizeof(a.entries)) == 0;
+	}
+
+static bool nxSimulationTestActorOwnerPairCleanupRow521(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* row521Address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?removeActorOwnerPairRecords@NxSceneInternal@@QAEXPBX@Z",
+		0x000103e0, &row521Address))
+		return false;
+	typedef void (__thiscall *ActorPairCleanupFn)(void*, const void*);
+	ActorPairCleanupFn const row521 = reinterpret_cast<ActorPairCleanupFn>(row521Address);
+	NxSimulationActorPairCleanupFixture oracleRoot, candidateRoot;
+	nxSimulationInitActorPairCleanupFixture(oracleRoot, true);
+	nxSimulationInitActorPairCleanupFixture(candidateRoot, true);
+	row521(oracleRoot.scene, oracleRoot.body);
+	row521(candidateRoot.scene, candidateRoot.body);
+	const NxU32 oracleRootCount = *reinterpret_cast<NxU32*>(oracleRoot.scene + 0x3c);
+	const NxU32 candidateRootCount = *reinterpret_cast<NxU32*>(candidateRoot.scene + 0x3c);
+	const bool rootRecordRemoved = oracleRootCount == 0 && candidateRootCount == 0 &&
+		*reinterpret_cast<NxU16*>(oracleRoot.entries) == 0xffff &&
+		*reinterpret_cast<NxU16*>(candidateRoot.entries) == 0xffff &&
+		oracleRoot.buckets[nxSimulationPairBucket(0x1234, 0x5678)] == -1 &&
+		candidateRoot.buckets[nxSimulationPairBucket(0x1234, 0x5678)] == -1 &&
+		nxSimulationSameActorPairCleanupState(oracleRoot, candidateRoot);
+	NxSimulationActorPairCleanupFixture oracleNoRoot, candidateNoRoot;
+	nxSimulationInitActorPairCleanupFixture(oracleNoRoot, false);
+	nxSimulationInitActorPairCleanupFixture(candidateNoRoot, false);
+ row521(oracleNoRoot.scene, oracleNoRoot.body);
+	row521(candidateNoRoot.scene, candidateNoRoot.body);
+	const bool noRootPreserved =
+		*reinterpret_cast<NxU32*>(oracleNoRoot.scene + 0x3c) == 1 &&
+		*reinterpret_cast<NxU32*>(candidateNoRoot.scene + 0x3c) == 1 &&
+		*reinterpret_cast<NxU16*>(oracleNoRoot.entries) == 0x1234 &&
+		*reinterpret_cast<NxU16*>(candidateNoRoot.entries) == 0x1234 &&
+		nxSimulationSameActorPairCleanupState(oracleNoRoot, candidateNoRoot);
+	printf("simulation row521 direct root_removed=%u no_root_preserved=%u\n",
+		rootRecordRemoved, noRootPreserved);
+	return rootRecordRemoved && noRootPreserved;
+	}
+
 static bool nxSimulationTestDirtyIslandRow720(HMODULE physics,
 	const wchar_t* pairDirectory, NxSimulationCountingAllocator& allocator)
 	{
@@ -998,6 +1099,12 @@ int wmain(int argc, wchar_t** argv)
 		{
 		FreeLibrary(physics);
 		return nxFail("SDK creation failed");
+		}
+	if(!nxSimulationTestActorOwnerPairCleanupRow521(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 000521 failed the direct actor owner-pair cleanup probe");
 		}
 	if(!nxSimulationTestDirtyIslandRow720(physics, pairDirectory, simulationAllocator))
 		{

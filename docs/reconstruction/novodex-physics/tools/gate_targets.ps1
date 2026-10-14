@@ -3494,6 +3494,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # and the candidate through the staged linker map, then checks the
         # dirty bit, traversal mark, and installed articulation object.
         'simulation island-row720 direct dirty_cleared=1 traversed=1 island=1'
+        # Actor teardown removes pair-map entries owned by its root, while the
+        # no-root branch leaves the map untouched.
+        'simulation row521 direct root_removed=1 no_root_preserved=1'
         # Directly exercise both joint-list scans in the private contact filter
         # with scratch body and joint records from each staged DLL.
         'simulation row750 joint-contact owner_scan=1.0 fallback_scan=1.0'
@@ -6027,7 +6030,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2732  # adds direct row 000867 accumulator probe
+	'5' = 2733  # adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
 				# adds Scene base-allocation failure handling via the Foundation allocator
@@ -6089,7 +6092,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1657  # adds direct row 000867 accumulator probe
+	'6' = 1658  # adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
 				# adds SDK material, purge and inspector lock refusal/unwind assertions
@@ -6130,7 +6133,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1979  # adds direct row 000867 accumulator probe
+	'7' = 1980  # adds direct row 000521 owner-pair cleanup probe and row 000867 accumulator probe
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds the two empty-pruner visualization assertions
 				# includes the CCD test target (two existing and one row 000740 assertion)

@@ -10046,13 +10046,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp#NxSceneInternal::removeActorOwnerPairRecords",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/192",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1418",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Oracle RVA 0x103e0 checks actor+0x10; when non-null, forwards (scene, root) to phys_fn_000517 at 0x10370.",
+      "dynamic_proof": "NxPhysicsSimulationTests direct candidate/oracle probe: seeded root-owner pair is removed; absent-root branch preserves the map. Candidate and oracle transcript exact (stdout_delta=0, stderr_exact=True). A no-op root branch is rejected (candidate_exit=1; stdout_delta=4007); restored control exact. Evidence: evidence/phase7-actor-owner-pair-cleanup-000521.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?removeActorOwnerPairRecords@NxSceneInternal@@QAEXPBX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?removeActorOwnerPairRecords@NxSceneInternal@@QAEXPBX@Z",
+        "address": "0x1006c8f0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000522",

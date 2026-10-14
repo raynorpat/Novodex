@@ -89,6 +89,9 @@ class NxSceneInternal
 	// because the ground plane is made by calling this.
 	NxActor* createActor(const NxActorDescBase& desc);
 	void releaseActor(void* body);
+	// phys_fn_000521 (0x000103e0). Before deleting an actor's root shape,
+	// remove pair-map records owned by that root when one is present.
+	void removeActorOwnerPairRecords(const void* body);
 	// phys_fn_000305/000307 (0x0000c720/0x0000c730): controller factory and
 	// release forwarded by NpScene. Controller storage remains private because
 	// the public SDK exposes only an incomplete NxController declaration.
