@@ -30,6 +30,7 @@ static_assert(offsetof(NpPhysicsSDK, mLock) == 8, "the lock follows the SDK poin
 static const int gSetFluidGroupPairFlagsWarningLine = 257;
 static const int gGetFluidGroupPairFlagsWarningLine = 265;
 static const int gActorGroupPairFlagsWriteLockErrorLine = 236;
+static const int gAddMaterialWriteLockErrorLine = 173;
 static const int gCreateTriangleMeshWriteLockErrorLine = 111;
 static const int gReleaseTriangleMeshWriteLockErrorLine = 127;
 static void* nxSdkSceneWriteLink(PhysicsSDK* sdk, NxU32 index);
@@ -248,12 +249,26 @@ NxU32 NpPhysicsSDK::getFluidGroupPairFlags(NxActorGroup, NxFluidGroup) const
 	}
 #endif
 
-// phys_fn_000254, with phys_fn_000256 as the outlined unwind MSVC produced for
-// its deadlock path. Slot 17 is a writer slot: 0x0000bbb4 tries each scene's
-// lock at +0xc and reports NpPhysicsSDK.cpp:173 if one is held.
+// phys_fn_000254 (0x0000bb90), with phys_fn_000256 (0x0000bbf0) as the
+// outlined reverse-unwind continuation. Acquire every Scene write lock before
+// adding the material; contention releases earlier locks and reports line 173.
 NxMaterialIndex NpPhysicsSDK::addMaterial(const NxMaterial& material)
 	{
-	return mSdk->addMaterial(material);
+	NxU32 locked = 0;
+	for(; locked < mSdk->getNbScenes(); ++locked)
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, locked)))
+			{
+			while(locked)
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, --locked));
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, gAddMaterialWriteLockErrorLine, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return 0;
+			}
+	const NxMaterialIndex index = mSdk->addMaterial(material);
+	for(NxU32 scene = 0; scene < locked; ++scene)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, scene));
+	return index;
 	}
 
 // phys_fn_000258, a writer slot; its deadlock report is NpPhysicsSDK.cpp:182,

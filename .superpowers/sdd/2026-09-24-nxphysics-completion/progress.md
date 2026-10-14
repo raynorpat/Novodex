@@ -372,3 +372,10 @@ NxPhysicsTriangleMeshReleaseLockTests verifies a real locked release refusal and
 Expanded the release-lock fixture to two live Scenes. A held lock in Scene 2 forces the wrapper to enter the outlined unwind for Scene 1; an external worker verifies Scene 1 is writable afterward. Replacing the reverse-unlock body with a counter decrement is caught (`stdout_delta=5`, oracle `unwind_first=1`, candidate `unwind_first=0`). Restored oracle/candidate control is exact. Phase 2 passes at 8/8 coverage assertions; inventory records 69 closed / 74 deferred, and public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-unwind-000246.md`.
 
 Task M2.9: complete (`phys_fn_000246`; two-Scene unwind mutation caught; restored exact; Phase 2 gate passes at 8/8; 39 gate-target tests pass; inventory validates; public headers unchanged).
+
+
+### M2.10 — SDK material wrapper and reverse-unlock continuation (`phys_fn_000254`, `phys_fn_000256`)
+
+Reconstructed the addMaterial write-lock protocol from the pinned oracle. A two-live-Scene test holds Scene 2's lock and verifies error line 173, index 0, unchanged material count, and a separate probe acquiring Scene 1 after the wrapper unwinds. The no-forward mutant is rejected (`stdout_delta=18`); the no-op reverse-unlock mutant is independently rejected (`stdout_delta=19`); restored control is exact. Phase 2/3/6 gates pass at 10/10, 563/563, and 1,642/1,642. Inventory validates with Phase 2 at 70 closed / 73 deferred; headers unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-sdk-add-material-lock-000254-000256.md`.
+
+Task M2.10: complete (rows 000254/000256; both row-specific mutants caught; Phase 2, 3, and 6 gates pass; 39 gate-target tests pass; inventory has zero unexplained rows).

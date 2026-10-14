@@ -1,0 +1,5 @@
+--- a/Physics/src/NpPhysicsSDK.cpp
++++ b/Physics/src/NpPhysicsSDK.cpp
+@@ NpPhysicsSDK::addMaterial lock-failure unwind @@
+- nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, --locked));
++ --locked; // deliberate no-op reverse-unlock mutant

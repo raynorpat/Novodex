@@ -1,0 +1,5 @@
+--- a/Physics/src/NpPhysicsSDK.cpp
++++ b/Physics/src/NpPhysicsSDK.cpp
+@@ NpPhysicsSDK::addMaterial successful dispatch @@
+- const NxMaterialIndex index = mSdk->addMaterial(material);
++ const NxMaterialIndex index = 0; // deliberate no-forward mutant

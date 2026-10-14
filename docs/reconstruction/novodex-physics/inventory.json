@@ -5012,9 +5012,15 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/87",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/921",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "dynamic_proof": {
+        "gate": "NxPhysicsSDKTests",
+        "mutation": "In a throwaway build, replaced the addMaterial dispatch result with zero while retaining the wrapper lock and error paths.",
+        "detected": "stdout_delta=18",
+        "control": "restored staged-pair SDK differential: both exits 0, stdout_delta=0, stderr_exact=True"
+      },
+      "notes": "Material addition locks all live Scenes; the lock-refusal, reverse-unwind and unlocked-add paths are covered by NxPhysicsSDKTests.",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::addMaterial"
     },
     {
       "id": "phys_fn_000255",
@@ -5044,13 +5050,18 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/87",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/924",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000bb90",
+      "dynamic_proof": {
+        "gate": "NxPhysicsSDKTests",
+        "mutation": "In a throwaway build, replaced the outlined reverse-unlock loop body in NpPhysicsSDK::addMaterial with a counter decrement.",
+        "detected": "stdout_delta=19",
+        "control": "restored staged-pair SDK differential: both exits 0, stdout_delta=0, stderr_exact=True; both sides report unwind_first=1"
+      },
+      "notes": "Compiler-outlined reverse unlock for phys_fn_000254; two live Scenes force entry and a separate worker confirms the first Scene lock is released.",
       "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {

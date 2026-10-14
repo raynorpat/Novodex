@@ -1,11 +1,17 @@
 #include "PhysicsPairLoader.h"
 
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
+#include "NxMaterial.h"
 #include "NxSceneDesc.h"
 #include "NxUserAllocator.h"
 #include "NxUserOutputStream.h"
+#include "../Physics/src/include/NpSceneGuard.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -92,6 +98,16 @@ class RecordingOutputStream : public NxUserOutputStream
 		{
 		++prints;
 		}
+	void reset()
+		{
+		errors = 0;
+		asserts = 0;
+		prints = 0;
+		code = NXE_NO_ERROR;
+		line = 0;
+		message[0] = 0;
+		file[0] = 0;
+		}
 
 	unsigned errors;
 	unsigned asserts;
@@ -112,6 +128,40 @@ class RecordingOutputStream : public NxUserOutputStream
 		strncpy_s(destination, capacity, source, _TRUNCATE);
 		}
 	};
+
+struct NxSdkHeldSceneWriteLock
+	{
+	void* link;
+	HANDLE ready;
+	HANDLE release;
+	};
+
+static DWORD WINAPI nxSdkHoldSceneWriteLock(void* context)
+	{
+	NxSdkHeldSceneWriteLock* held = static_cast<NxSdkHeldSceneWriteLock*>(context);
+	nxNpSceneGuardEnter(held->link);
+	SetEvent(held->ready);
+	WaitForSingleObject(held->release, 1500);
+	nxNpSceneGuardLeave(held->link);
+	return 0;
+	}
+
+struct NxSdkProbeSceneWriteLock
+	{
+	void* link;
+	HANDLE completed;
+	bool acquired;
+	};
+
+static DWORD WINAPI nxSdkProbeSceneWriteLock(void* context)
+	{
+	NxSdkProbeSceneWriteLock* probe = static_cast<NxSdkProbeSceneWriteLock*>(context);
+	probe->acquired = nxNpSceneGuardWriteTry(probe->link);
+	if(probe->acquired)
+		nxNpSceneGuardLeave(probe->link);
+	SetEvent(probe->completed);
+	return 0;
+	}
 
 static void reportAllocator(const char* step, const RecordingAllocator& allocator)
 	{
@@ -248,6 +298,67 @@ int wmain(int argc, wchar_t** argv)
 	const NxU32 clearedPairFlags = first->getActorGroupPairFlags(groupA, groupB);
 	printf("step=actor_group_pair_flags initial=%u forward=%u reverse=%u cleared=%u\n",
 		initialPairFlags, forwardPairFlags, reversePairFlags, clearedPairFlags);
+
+	// addMaterial is a write-locked SDK wrapper. Contending on the second live
+	// Scene drives its reverse-unlock continuation after Scene A was acquired.
+	NxMaterial* sourceMaterial = first->getMaterial(0);
+	if(!sourceMaterial)
+		return nxFail("default material is missing");
+	NxMaterial addedMaterial = *sourceMaterial;
+	addedMaterial.dynamicFriction = 0.31f;
+	addedMaterial.staticFriction = 0.47f;
+	const NxU32 materialsBefore = first->getNbMaterials();
+	void* firstSceneWriteLink = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(sceneA) + 0x0c);
+	NxSdkHeldSceneWriteLock held = {
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(sceneB) + 0x0c),
+		CreateEventW(0, TRUE, FALSE, 0), CreateEventW(0, TRUE, FALSE, 0) };
+	if(!firstSceneWriteLink || !held.link || !held.ready || !held.release)
+		return nxFail("material Scene-lock fixture setup failed");
+	HANDLE holdThread = CreateThread(0, 0, nxSdkHoldSceneWriteLock, &held, 0, 0);
+	if(!holdThread || WaitForSingleObject(held.ready, 5000) != WAIT_OBJECT_0)
+		return nxFail("material fixture did not acquire the second Scene lock");
+	streamFirst.reset();
+	const DWORD materialStart = GetTickCount();
+	const NxMaterialIndex lockedMaterial = first->addMaterial(addedMaterial);
+	const DWORD materialElapsed = GetTickCount() - materialStart;
+	SetEvent(held.release);
+	const bool holdJoined = WaitForSingleObject(holdThread, 5000) == WAIT_OBJECT_0;
+	CloseHandle(holdThread);
+	CloseHandle(held.ready);
+	CloseHandle(held.release);
+	NxSdkProbeSceneWriteLock probe = { firstSceneWriteLink, CreateEventW(0, TRUE, FALSE, 0), false };
+	HANDLE probeThread = probe.completed ? CreateThread(0, 0, nxSdkProbeSceneWriteLock, &probe, 0, 0) : 0;
+	const bool probeCompleted = probeThread &&
+		WaitForSingleObject(probe.completed, 5000) == WAIT_OBJECT_0 &&
+		WaitForSingleObject(probeThread, 5000) == WAIT_OBJECT_0;
+	if(probeThread) CloseHandle(probeThread);
+	if(probe.completed) CloseHandle(probe.completed);
+	const bool firstSceneLockUnwound = probeCompleted && probe.acquired;
+	if(probeCompleted && !probe.acquired)
+		// A no-op-unwind mutant leaked this lock on the calling thread.
+		nxNpSceneGuardLeave(firstSceneWriteLink);
+	const unsigned materialLockErrors = streamFirst.errors;
+	const bool materialRefused = materialLockErrors == 1 &&
+		streamFirst.code == NXE_INVALID_OPERATION && streamFirst.line == 173 &&
+		strstr(streamFirst.message, "WriteLock is still aquired") != 0;
+	const bool materialCountUnchanged = first->getNbMaterials() == materialsBefore;
+	const bool materialReturnedPromptly = materialElapsed < 500;
+	printf("step=material_lock returned_while_locked=%u index=%u errors=%u code=%u line=%d unwind_first=%u count_unchanged=%u\n",
+		materialReturnedPromptly ? 1 : 0, static_cast<unsigned>(lockedMaterial),
+		materialLockErrors, static_cast<unsigned>(streamFirst.code), streamFirst.line,
+		firstSceneLockUnwound ? 1u : 0u, materialCountUnchanged ? 1u : 0u);
+	if(!holdJoined || !materialReturnedPromptly || !materialRefused || !firstSceneLockUnwound ||
+		!materialCountUnchanged)
+		return nxFail("addMaterial did not refuse the contended Scene write lock");
+
+	streamFirst.reset();
+	const NxMaterialIndex unlockedMaterial = first->addMaterial(addedMaterial);
+	const NxU32 materialsAfterAdd = first->getNbMaterials();
+	printf("step=material_unlocked index=%u count=%u errors=%u\n",
+		static_cast<unsigned>(unlockedMaterial), materialsAfterAdd, streamFirst.errors);
+	if(unlockedMaterial != materialsBefore || materialsAfterAdd != materialsBefore + 1 || streamFirst.errors)
+		return nxFail("addMaterial failed after the Scene locks were released");
 
 	printf("step=scenes_created count=%u both=%d first_lookup=%d second_lookup=%d\n",
 		first->getNbScenes(), sceneA && sceneB ? 1 : 0,

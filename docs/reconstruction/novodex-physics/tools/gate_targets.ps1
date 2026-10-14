@@ -189,6 +189,8 @@ $NxRequiredCoverageLines = [ordered] @{
         # Public SDK-side sparse actor-group flag hash, queried in both key orders and cleared.
         'step=actor_group_pair_flags initial=0 forward=10 reverse=10 cleared=0'
         'step=actor_group_pair_flags_scenes count=2'
+        'step=material_lock returned_while_locked=1 index=0 errors=1 code=2 line=173 unwind_first=1 count_unchanged=1'
+        'step=material_unlocked index=1 count=2 errors=0'
         # Public createScene/releaseScene wrapper rows 000234/000236: two
         # returned wrappers are indexed in order, then the first release
         # swap-removes it while preserving lookup of the surviving scene.
@@ -5975,8 +5977,9 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 8  # adds the two-scene triangle-mesh release reverse-unlock case
-    '3' = 561  # adds the two-live-scene actor-group flag wrapper case
+    '2' = 10  # adds the material Scene-lock refusal and two-scene reverse-unlock case
+    '3' = 563  # adds the two-scene SDK material lock and reverse-unlock case
+               # plus the two-live-scene actor-group flag wrapper case
                # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
                # includes controller-owned proxy cleanup during Scene destruction
                # plus the three retained event/root buffer release assertions
@@ -6053,7 +6056,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1640  # adds Fluid constructor state and default-layout coverage
+	'6' = 1642  # adds SDK material lock refusal and reverse-unlock assertions
+	           # plus Fluid constructor state and default-layout coverage
 				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
 				# adds public NxFluid set/getParticlesWriteData round-trip
