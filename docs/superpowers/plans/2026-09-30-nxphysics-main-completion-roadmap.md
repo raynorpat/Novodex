@@ -1779,3 +1779,9 @@ Suppressing the elapsed-time write at Scene+0x544 in `NpScene::simulate` is reje
 ### Continuation — NpScene notifier store (`phys_fn_000545`, 2026-10-13)
 
 Extracted the private Scene+0x6ac notifier setter to match `phys_fn_000545`; its helper-specific no-op mutation is rejected by the registered joint-break fixture (`stdout_delta=831`), and the restored differential is exact. Fresh Phase 7 passes at 1,770/1,770. Phase 7 closes 269 functions and defers 291. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-set-user-notify-helper-000545-20261013.md`.
+
+### Continuation — integrate box/mesh dispatch and fluid reconstruction (`2026-10-14`)
+
+Integrated the reviewed `codex/phase5-box-mesh-dispatch` branch on the current main baseline. It adds box/triangle-mesh contact and overlap dispatch, public fluid `addParticles` behavior, manager-growth allocation-failure handling, and registered standalone fixtures. Inventory and closure artifacts were reconciled by work-unit ID; only `phys_fn_003710` was newly closed by the branch's mutation-falsified public differential, while incomplete internal fluid rows remain open. No public Physics headers changed.
+
+Validation on the integration branch: reconstruction tooling suite passed (829 tests and 740 subtests); focused fluid targets and `NxPhysicsSimulationTests` passed exact oracle/candidate differentials; fresh Phase 7 passed at 1,777/1,777 coverage assertions; fresh Phase 5 passed at 2,708/2,708. Full DLL reconstruction remains active.

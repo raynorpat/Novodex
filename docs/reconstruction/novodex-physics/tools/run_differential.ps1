@@ -250,7 +250,14 @@ if (-not (Test-Path -LiteralPath $pairsRoot)) {
 
 $stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets -or
 	'NxPhysicsSimulationTests' -cin $Targets -or
-	'NxPhysicsFluidInitialParticlesTests' -cin $Targets
+	'NxPhysicsFluidInitialParticlesTests' -cin $Targets -or
+	'NxPhysicsFluidParticleArrayFailureTests' -cin $Targets -or
+	'NxPhysicsFluidGetParticlesNullTests' -cin $Targets -or
+	'NxPhysicsFluidZeroInitialParticlesTests' -cin $Targets -or
+	'NxPhysicsFluidInitialParticleCapacityClipTests' -cin $Targets -or
+	'NxPhysicsFluidAddParticlesTests' -cin $Targets -or
+	'NxPhysicsFluidManagerGrowthFailureTests' -cin $Targets -or
+	'NxPhysicsFluidManagerGrowthSecondFailureTests' -cin $Targets
 $oraclePair = New-Pair 'oracle' $oraclePhysics $oracleFoundation -StageFluidModel:$stageFluidModel
 $candidatePair = New-Pair 'candidate' (Join-Path $releaseRoot 'NxPhysics.dll') (Join-Path $releaseRoot 'NxFoundation.dll') -StageFluidModel:$stageFluidModel
 Assert-True ($candidatePair.PhysicsSha256 -cne $oraclePair.PhysicsSha256) 'candidate NxPhysics.dll is not the shipped oracle file'

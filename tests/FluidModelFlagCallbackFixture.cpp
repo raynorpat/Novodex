@@ -68,6 +68,12 @@ static unsigned gFluidManagerGetCallCount;
 static bool gFluidManagerCallbackProbe;
 static unsigned gFluidGetDampingCalls;
 static unsigned gFluidSetStiffnessCalls;
+static unsigned gFluidParticleArrayAllocCalls;
+static unsigned gFluidParticleArrayAllocFailure;
+static unsigned gFluidParticleArrayGrowCalls;
+static unsigned gFluidGetParticlesCalls;
+static unsigned gFluidGetParticlesReturnNull;
+static unsigned gFluidMaxParticles = 0x1234u;
 static unsigned gFluidSetStiffnessBits;
 static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidSetViscosityCalls;
@@ -643,7 +649,7 @@ extern "C" __declspec(dllexport) unsigned __cdecl FluidGetMaxParticles(
 	if(!nxFluidFixtureHasBackendFluid(manager, fluid))
 		return 0;
 	++gFluidManagerCallbackSummary.fluidGetMaxParticles;
-	return 0x1234u;
+	return gFluidMaxParticles;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetKernelRadiusMultiplier(
@@ -724,9 +730,48 @@ struct NxFluidParticleArrayFixture
 	unsigned capacity;
 	};
 
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidParticleArrayAllocFailure(unsigned enabled)
+	{
+	gFluidParticleArrayAllocFailure = enabled != 0;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidParticleArrayAllocCalls()
+	{
+	return gFluidParticleArrayAllocCalls;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidParticleArrayGrowCalls()
+	{
+	return gFluidParticleArrayGrowCalls;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidGetParticlesNull(unsigned enabled)
+	{
+	gFluidGetParticlesReturnNull = enabled != 0;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidGetParticlesCalls()
+	{
+	return gFluidGetParticlesCalls;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidMaxParticles(unsigned count)
+	{
+	gFluidMaxParticles = count;
+	}
+
 extern "C" __declspec(dllexport) NxFluidParticleArrayFixture* __cdecl
 ParticleArrayAlloc(unsigned count)
 	{
+	++gFluidParticleArrayAllocCalls;
+	if(gFluidParticleArrayAllocFailure)
+		return 0;
 	NxFluidParticleArrayFixture* const array = static_cast<
 		NxFluidParticleArrayFixture*>(calloc(1, sizeof(NxFluidParticleArrayFixture)));
 	if(!array)
@@ -747,6 +792,7 @@ ParticleArrayAlloc(unsigned count)
 extern "C" __declspec(dllexport) unsigned __cdecl ParticleArrayGrow(
 	NxFluidParticleArrayFixture* array, unsigned count, unsigned fill)
 	{
+	++gFluidParticleArrayGrowCalls;
 	if(!array)
 		return 0;
 	if(count > array->capacity)
@@ -1102,7 +1148,10 @@ extern "C" __declspec(dllexport) void __cdecl FluidGetBounds(
 extern "C" __declspec(dllexport) NxFluidPostStepParticleStream* __cdecl FluidGetParticles(
 	unsigned system, unsigned handle)
 	{
+	++gFluidGetParticlesCalls;
 	nxRecordPostStepCallback(8192, system, handle, 0, 0);
+	if(gFluidGetParticlesReturnNull)
+		return 0;
 	return &gPostStepStreams[system & 1u];
 	}
 

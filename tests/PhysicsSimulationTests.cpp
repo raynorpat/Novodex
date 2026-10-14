@@ -898,6 +898,55 @@ int wmain(int argc, wchar_t** argv)
 		}
 	if(publicMesh)
 		sdk->releaseTriangleMesh(*publicMesh);
+	// A triangle mesh in actual simulation must carry its per-triangle convex
+	// and flat-part maps before the convex/mesh narrow phase reads them. This
+	// overlapping box exercises the same contact path that was faulting in the
+	// staged DemoGame PhysTest run.
+	NxSceneDesc meshContactSceneDesc;
+	meshContactSceneDesc.setToDefault();
+	NxScene* const meshContactScene = sdk->createScene(meshContactSceneDesc);
+	if(!meshContactScene)
+		return nxFail("triangle-mesh contact scene creation failed");
+	const NxU32 contactMeshTriangles[] = { 0, 2, 1, 3, 5, 4 };
+	NxTriangleMeshDesc contactMeshDesc = meshDesc;
+	contactMeshDesc.triangles = contactMeshTriangles;
+	NxTriangleMesh* const contactMesh = sdk->createTriangleMesh(contactMeshDesc);
+	if(!contactMesh)
+		return nxFail("triangle-mesh contact asset creation failed");
+	NxTriangleMeshShapeDesc contactMeshShapeDesc;
+	contactMeshShapeDesc.meshData = contactMesh;
+	NxActorDesc contactMeshActorDesc;
+	contactMeshActorDesc.shapes.pushBack(&contactMeshShapeDesc);
+	NxActor* const contactMeshActor = meshContactScene->createActor(contactMeshActorDesc);
+	NxBoxShapeDesc contactBoxShapeDesc;
+	contactBoxShapeDesc.dimensions = NxVec3(0.5f, 0.5f, 0.5f);
+	NxBodyDesc contactBoxBodyDesc;
+	NxActorDesc contactBoxActorDesc;
+	contactBoxActorDesc.body = &contactBoxBodyDesc;
+	contactBoxActorDesc.density = 1.0f;
+	contactBoxActorDesc.globalPose.t = NxVec3(0.0f, 0.25f, 0.0f);
+	contactBoxActorDesc.shapes.pushBack(&contactBoxShapeDesc);
+	NxActor* const contactBoxActor = meshContactScene->createActor(contactBoxActorDesc);
+	if(!contactMeshActor || !contactBoxActor)
+		return nxFail("triangle-mesh contact actors failed");
+	bool meshContactStep = true;
+	for(unsigned step = 0; step != 4 && meshContactStep; ++step)
+		{
+		meshContactScene->simulate(0.01f);
+		meshContactStep = meshContactScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+		}
+	const NxVec3 meshContactPosition = contactBoxActor->getGlobalPosition();
+	const NxVec3 meshContactVelocity = contactBoxActor->getLinearVelocity();
+	printf("simulation triangle-mesh box_contact fetched=%u position=%08x.%08x.%08x velocity=%08x.%08x.%08x\n",
+		meshContactStep, nxFloatBits(meshContactPosition.x), nxFloatBits(meshContactPosition.y),
+		nxFloatBits(meshContactPosition.z), nxFloatBits(meshContactVelocity.x),
+		nxFloatBits(meshContactVelocity.y), nxFloatBits(meshContactVelocity.z));
+	meshContactScene->releaseActor(*contactBoxActor);
+	meshContactScene->releaseActor(*contactMeshActor);
+	sdk->releaseTriangleMesh(*contactMesh);
+	sdk->releaseScene(*meshContactScene);
+	if(!meshContactStep)
+		return nxFail("triangle-mesh box contact step failed");
 	// 16-bit input indices are part of the public descriptor contract. The
 	// triangle-mesh implementation must normalize them into the same public
 	// indexed representation while preserving the caller's vertex ordering.

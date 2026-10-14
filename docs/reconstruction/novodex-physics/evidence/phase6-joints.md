@@ -10820,3 +10820,8 @@ restored differential exact.
 ## Phase 7 Scene callback field helpers `phys_fn_000549`–`000555`
 
 The public trigger/contact callback fixture exercises four private Scene helpers at +0x6b0 and +0x6b4. Independent no-op/return-null mutations were all caught: `phys_fn_000549` (`stdout_delta=3990`, candidate exit 1), `phys_fn_000551` (`stdout_delta=2`, both exits zero), `phys_fn_000553` (`stdout_delta=3990`, candidate exit 1), and `phys_fn_000555` (`stdout_delta=3990`, candidate exit 1). The restored staged differential is exact (`stdout_delta=0`, stderr exact). Detailed transcripts and hashes: [phase7-scene-callback-accessors-000549-000555-20261014.md](phase7-scene-callback-accessors-000549-000555-20261014.md).
+
+
+## Phase 7 fluid public insertion continuation `phys_fn_003710`
+
+`phys_fn_003710` adds the missing public `NxFluid::addParticles` dispatch. A null-slot mutation is caught (`stdout_delta=2`, candidate exit 1); restored output matches the oracle with two particle records, two callbacks, and one growth call. Full Phase 7 gate stability remains under verification because one archived oracle simulation process intermittently access-violated. Detailed implementation, mutations, and archived transcripts: [phase7-fluid-internal-create-003497-003503.md](phase7-fluid-internal-create-003497-003503.md).

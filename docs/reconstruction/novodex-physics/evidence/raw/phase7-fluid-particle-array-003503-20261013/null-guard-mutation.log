@@ -1,0 +1,65 @@
+phase=none resolved_targets=NxPhysicsFluidParticleArrayFailureTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsFluidParticleArrayFailureTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: FluidModel callback fixture exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\FluidModel.dll
+pass: staged oracle/FluidModel.dll byte-matches its source
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysics.dll source_sha256=ed477c1295bc58c1d1d8ee57f55cf4a6f3839ae75e6652d58950e8cb3ce7d30a staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll staged_sha256=ed477c1295bc58c1d1d8ee57f55cf4a6f3839ae75e6652d58950e8cb3ce7d30a
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxFoundation.dll source_sha256=8649e0e235864bca8f05c64bd89116762cfb322c7039f1807f265bb68b52e5da staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll staged_sha256=8649e0e235864bca8f05c64bd89116762cfb322c7039f1807f265bb68b52e5da
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysics.map staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.map
+pass: FluidModel callback fixture exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\FluidModel.dll
+pass: staged candidate/FluidModel.dll byte-matches its source
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysicsFluidParticleArrayFailureTests.exe
+child target=NxPhysicsFluidParticleArrayFailureTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysicsFluidParticleArrayFailureTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+fluid initial-particles oom caught=1 exception=c0000005 returned=0 array=0 internal=0 public=0 allocs=1
+modules pair=3 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsFluidParticleArrayFailureTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsFluidParticleArrayFailureTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysicsFluidParticleArrayFailureTests.exe
+child target=NxPhysicsFluidParticleArrayFailureTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-simulation-next\Novodex\build\simulation-next-vs\Release\NxPhysicsFluidParticleArrayFailureTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\candidate" exit=1
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\candidate
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ed477c1295bc58c1d1d8ee57f55cf4a6f3839ae75e6652d58950e8cb3ce7d30a
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=8649e0e235864bca8f05c64bd89116762cfb322c7039f1807f265bb68b52e5da
+fluid initial-particles oom caught=0 exception=00000000 returned=1 array=0 internal=1 public=1 allocs=1
+
+child_stdout_end
+child_stderr_begin
+FAIL initial ParticleArray allocation failure differs from the oracle
+
+child_stderr_end
+pass: NxPhysicsFluidParticleArrayFailureTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ed477c1295bc58c1d1d8ee57f55cf4a6f3839ae75e6652d58950e8cb3ce7d30a
+pass: NxPhysicsFluidParticleArrayFailureTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=8649e0e235864bca8f05c64bd89116762cfb322c7039f1807f265bb68b52e5da
+differential target=NxPhysicsFluidParticleArrayFailureTests oracle_exit=0 candidate_exit=1 both_exit_zero=False stdout_delta=2 stderr_exact=False
+differential_targets=NxPhysicsFluidParticleArrayFailureTests
+differential_pairs=D:\FlamingEnt__\novodex-analysis\pairs\oracle,D:\FlamingEnt__\novodex-analysis\pairs\candidate

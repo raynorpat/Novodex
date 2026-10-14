@@ -791,6 +791,7 @@ NxSceneInternal::NxSceneInternal()
 
 static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, unsigned char deleteObject);
 static bool gNxApiReentry = false;
+static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data);
 
 typedef void* (__cdecl *NxFluidManagerCreateCallback)();
 typedef void (__cdecl *NxFluidManagerDestroyCallback)(void*);
@@ -1062,6 +1063,37 @@ static NxParticleData* __fastcall nxFluidGetParticlesWriteData(void* wrapper,
 		sizeof(*result));
 	nxNpSceneGuardLeave(readLock);
 	return result;
+	}
+
+// phys_fn_003710 (0x0008b480): append the supplied particles to the internal
+// ParticleArray under the Scene write lock and shared fluid API reentry guard.
+static void __fastcall nxFluidAddParticles(void* wrapper, void*,
+	const NxParticleData& data)
+	{
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!writeLock || !nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			86, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			87, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return;
+		}
+	gNxApiReentry = true;
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	nxFluidInitializeParticles(internal, data);
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 // phys_fn_003714 (0x0008b560): update the internal particle write-data record
@@ -1721,7 +1753,7 @@ static void* gNxFluidSolverVtable[] = {
 	0,
 	reinterpret_cast<void*>(nxFluidReleaseSurfaceMesh),
 	reinterpret_cast<void*>(nxFluidGetSurfaceMesh),
-	0,
+	reinterpret_cast<void*>(nxFluidAddParticles),
 	reinterpret_cast<void*>(nxFluidSetParticlesWriteData),
 	reinterpret_cast<void*>(nxFluidGetParticlesWriteData),
 	reinterpret_cast<void*>(nxFluidGetStiffness),
@@ -1781,8 +1813,6 @@ static void nxFluidManagerArrayPush(void* arrayHeader, unsigned value)
 		const unsigned capacity = count * 2 + 2;
 		unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
 			capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
-		if(!grown)
-			return;
 		for(unsigned i = 0; i != count; ++i)
 			grown[i] = reinterpret_cast<unsigned*>(first)[i];
 		if(first)
@@ -2103,8 +2133,6 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 		!gNxParticleArrayAllocCallback || !gNxParticleArrayGrowCallback)
 		return;
 	unsigned count = *data.numParticlesPtr;
-	if(!count)
-		return;
 	unsigned char* const bytes = static_cast<unsigned char*>(fluid);
 	void* const manager = *reinterpret_cast<void**>(bytes + 0x7c);
 	void* const backendManager = *reinterpret_cast<void**>(
@@ -2112,9 +2140,8 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 	void* const backendFluid = *reinterpret_cast<void**>(bytes + 0x80);
 	void* const backendParticles = gNxFluidGetParticlesCallback(
 		backendManager, backendFluid);
-	const unsigned existingCount = backendParticles
-		? *reinterpret_cast<unsigned*>(static_cast<unsigned char*>(backendParticles) + 4)
-		: 0;
+	const unsigned existingCount = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backendParticles) + 4);
 	const unsigned maximum = gNxFluidGetMaxParticlesCallback(
 		backendManager, backendFluid);
 	if(existingCount + count > maximum)
@@ -2126,8 +2153,6 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 	else
 		array = static_cast<NxFluidParticleArrayHeader*>(
 			gNxParticleArrayAllocCallback(count));
-	if(!array || !array->records)
-		return;
 	const float cellSize = gNxFluidGetCellSizeCallback(backendManager, backendFluid);
 	unsigned char* records = static_cast<unsigned char*>(array->records);
 	const unsigned existingArrayCount = array->count;

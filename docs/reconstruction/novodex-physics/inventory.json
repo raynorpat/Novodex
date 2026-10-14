@@ -65634,9 +65634,9 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1307",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12348",
-      "static_proof": "IDA at oracle RVA 0x00086080 shows descriptor copies into internal-fluid state, license-gated FluidCreate arguments, descriptor-emitter construction, initial-particle array population, and manager refresh clearing followed by initial particle/state setup. The candidate implements descriptor properties/write-data, license flags, emitters, and the enabled-manager path inline in NxSceneInternal::createFluid; initial-particle ParticleArray population is not implemented.",
-      "dynamic_proof": "The enabled NxPhysicsSimulationTests fixture differentially exercises descriptor/write-data state, licensed callback arguments, descriptor emitters, and the manager dirty refresh through NxSceneInternal::createFluid. This is partial path coverage only. Constructor state and no-op mutation evidence for the adjacent 003497 row are recorded separately in evidence/phase7-fluid-internal-create-003497-003503.md.",
-      "notes": "Partial implementation/proof: the candidate inline method does not reproduce the oracle initialParticleData/ParticleArray path, its allocator and callback ordering, or the complete function body. The prior SceneRaycast source attribution was incorrect and has been replaced with the actual Scene.cpp implementation location. Keep this row open.",
+      "static_proof": "IDA at oracle RVA 0x00086080 shows descriptor copies into internal-fluid state, license-gated FluidCreate arguments, descriptor-emitter construction, initial-particle array population with capacity clipping, and manager refresh clearing followed by initial particle/state setup. The candidate implements descriptor properties/write-data, license flags, emitters, strided initial-particle copying, and the observed null ParticleArray allocation fault before manager-array publication inline in NxSceneInternal::createFluid. Full callback-table behavior remains open.",
+      "dynamic_proof": "The enabled NxPhysicsSimulationTests fixture differentially exercises descriptor/write-data state, licensed callback arguments, descriptor emitters, manager dirty refresh, and constructor state. NxPhysicsFluidInitialParticlesTests compares strided position/velocity/lifetime copies; NxPhysicsFluidParticleArrayFailureTests confirms both DLLs fault with c0000005 before either manager array is updated when ParticleArrayAlloc returns null; NxPhysicsFluidGetParticlesNullTests confirms both fault immediately after a null FluidGetParticles return and before any ParticleArray allocation or manager publication; NxPhysicsFluidZeroInitialParticlesTests confirms the zero-count descriptor still calls FluidGetParticles and ParticleArrayAlloc and publishes an empty array; NxPhysicsFluidInitialParticleCapacityClipTests confirms a two-particle request is clipped to the backend's one-particle capacity. Mutations restoring the null-as-empty fallback, zero-count early return, or disabling capacity clipping are rejected. These are partial path proofs only. Constructor-state and no-op mutation evidence for adjacent row 003497 are recorded separately in evidence/phase7-fluid-internal-create-003497-003503.md.",
+      "notes": "Partial implementation/proof: normal initialParticleData copying, backend-capacity clipping, zero-count handling, the ParticleArrayAlloc-null failure branch, and the FluidGetParticles-null dereference are covered, but ParticleArrayGrow failures, the complete callback ordering/table, and the full function body are not. The prior SceneRaycast source attribution was incorrect and has been replaced with the actual Scene.cpp implementation location. Keep this row open.",
       "implementation": "Physics/src/Scene.cpp",
       "implementation_symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
       "candidate_map_reference": {
@@ -69504,13 +69504,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1404",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12763",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at 0x0008b480 shows the NxFluid::addParticles wrapper taking the Scene write lock at wrapper+0x0c, returning an NpFluid.cpp line-86 error when locking fails, rejecting reentry at line 87, setting the shared reentry flag, calling phys_fn_003503 with the internal fluid at wrapper+0x14 and the caller's NxParticleData, clearing reentry, and releasing the lock.",
+      "dynamic_proof": "NxPhysicsFluidAddParticlesTests creates a fluid with an empty ParticleArray, adds two strided particles through the public NxFluid::addParticles vtable slot, and differentially confirms array-count=2, both positions, two FluidGetParticles calls, one initial allocation, and one ParticleArrayGrow call. The oracle/candidate stdout and stderr match exactly; restoring a null slot mutation is rejected. Evidence is recorded in evidence/phase7-fluid-internal-create-003497-003503.md.",
+      "notes": "The public addParticles entry point and its write-lock/reentry wrapper are reconstructed and gated. The shared phys_fn_003503 still has other open branches and is not closed. Keep this row dynamically gated."
     },
     {
       "id": "phys_fn_003711",
