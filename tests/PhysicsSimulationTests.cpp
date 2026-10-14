@@ -4582,9 +4582,42 @@ int wmain(int argc, wchar_t** argv)
 	explicitSurfaceMesh->setName(licensedSurfaceMeshUpdatedName);
 	const bool updatedNameMatches = explicitSurfaceMesh->getName() ==
 		licensedSurfaceMeshUpdatedName;
-	const NxMeshData copiedMeshData = explicitSurfaceMesh->getMeshData();
-	const bool meshDataMatches = memcmp(&copiedMeshData,
-		&licensedSurfaceMeshDesc.meshData, sizeof(copiedMeshData)) == 0;
+	const NxMeshData initialMeshData = explicitSurfaceMesh->getMeshData();
+	const bool initialMeshDataMatches = memcmp(&initialMeshData,
+		&licensedSurfaceMeshDesc.meshData, sizeof(initialMeshData)) == 0;
+	static float implicitMeshPositions[9] = {};
+	static float implicitMeshNormals[9] = {};
+	static NxU32 implicitMeshIndices[3] = { 0, 1, 2 };
+	static NxU32 implicitMeshVertexCount = 3;
+	static NxU32 implicitMeshTriangleCount = 1;
+	NxMeshData replacementMeshData;
+	replacementMeshData.setToDefault();
+	replacementMeshData.verticesPosBegin = implicitMeshPositions;
+	replacementMeshData.verticesNormalBegin = implicitMeshNormals;
+	replacementMeshData.verticesPosByteStride = sizeof(float) * 3;
+	replacementMeshData.verticesNormalByteStride = sizeof(float) * 3;
+	replacementMeshData.maxVertices = 3;
+	replacementMeshData.numVerticesPtr = &implicitMeshVertexCount;
+	replacementMeshData.indicesBegin = implicitMeshIndices;
+	replacementMeshData.indicesByteStride = sizeof(NxU32);
+	replacementMeshData.maxIndices = 3;
+	replacementMeshData.numTrianglesPtr = &implicitMeshTriangleCount;
+	replacementMeshData.flags = NX_MDF_INDEXED_MESH;
+	static const char replacementMeshDataName[] = "replacement-mesh-data";
+	replacementMeshData.name = replacementMeshDataName;
+	explicitSurfaceMesh->setMeshData(replacementMeshData);
+	const NxMeshData replacedMeshData = explicitSurfaceMesh->getMeshData();
+	const bool validMeshDataSetMatches = memcmp(&replacedMeshData,
+		&replacementMeshData, sizeof(replacedMeshData)) == 0;
+	NxMeshData invalidMeshData = replacementMeshData;
+	invalidMeshData.verticesNormalBegin = 0;
+	explicitSurfaceMesh->setMeshData(invalidMeshData);
+	const NxMeshData afterInvalidMeshData = explicitSurfaceMesh->getMeshData();
+	const bool invalidMeshDataPreserved = memcmp(&afterInvalidMeshData,
+		&replacementMeshData, sizeof(afterInvalidMeshData)) == 0;
+	NxParticleData ignoredParticleData;
+	ignoredParticleData.setToDefault();
+	explicitSurfaceMesh->setParticles(ignoredParticleData);
 	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
 	licensedSurfaceMeshPropertiesMatch =
 		initialSurfaceRadius == 0.04f && setSurfaceRadius == 0.05f &&
@@ -4592,7 +4625,8 @@ int wmain(int argc, wchar_t** argv)
 		blend == 0.0f && initialTriangleSize == 0.005f &&
 		setTriangleSize == 0.006f && initialSmoothingIterations == 6 &&
 		setSmoothingIterations == 8 && initialNameMatches &&
-		updatedNameMatches && meshDataMatches &&
+		updatedNameMatches && initialMeshDataMatches &&
+		validMeshDataSetMatches && invalidMeshDataPreserved &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius == 2 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius == 1 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius == 2 &&
