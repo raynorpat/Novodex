@@ -4551,41 +4551,51 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[4] == 0x3ca3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[5] == 0x3ba3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[6] == 6;
+	resetFluidManagerCallbacks();
+	NxImplicitMesh* const explicitSurfaceMesh = licensedSurfaceMeshFluid
+		? licensedSurfaceMeshFluid->createSurfaceMesh(licensedSurfaceMeshDesc) : 0;
+	const bool explicitSurfaceMeshUserDataMatches = explicitSurfaceMesh &&
+		explicitSurfaceMesh->userData == &licensedSurfaceMeshUserData;
+	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
 	bool licensedSurfaceMeshPropertiesMatch = false;
-	if(constructedSurfaceMesh)
+	if(explicitSurfaceMesh)
 		{
-	printf("simulation licensed-surface-stage=before-surface-radius\n"); fflush(stdout);
-	const NxReal initialSurfaceRadius = constructedSurfaceMesh->getSurfaceRadius();
-	printf("simulation licensed-surface-stage=after-get-surface-radius\n"); fflush(stdout);
-	constructedSurfaceMesh->setSurfaceRadius(0.05f);
+	const bool initialNameMatches = explicitSurfaceMesh->getName() ==
+		licensedSurfaceMeshInitialName;
+	const NxReal initialSurfaceRadius = explicitSurfaceMesh->getSurfaceRadius();
+	explicitSurfaceMesh->setSurfaceRadius(0.05f);
 	printf("simulation licensed-surface-stage=after-set-surface-radius\n"); fflush(stdout);
-	const NxReal setSurfaceRadius = constructedSurfaceMesh->getSurfaceRadius();
+	const NxReal setSurfaceRadius = explicitSurfaceMesh->getSurfaceRadius();
 	printf("simulation licensed-surface-stage=after-get-surface-radius-2\n"); fflush(stdout);
-	const NxReal initialSingleRadius = constructedSurfaceMesh->getSingleRadius();
+	const NxReal initialSingleRadius = explicitSurfaceMesh->getSingleRadius();
 	printf("simulation licensed-surface-stage=after-get-single-radius\n"); fflush(stdout);
-	constructedSurfaceMesh->setSingleRadius(0.012f);
+	explicitSurfaceMesh->setSingleRadius(0.012f);
 	printf("simulation licensed-surface-stage=after-set-single-radius\n"); fflush(stdout);
-	const NxReal setSingleRadius = constructedSurfaceMesh->getSingleRadius();
+	const NxReal setSingleRadius = explicitSurfaceMesh->getSingleRadius();
 	printf("simulation licensed-surface-stage=after-get-single-radius-2\n"); fflush(stdout);
-	constructedSurfaceMesh->setBlend(0.03f);
+	explicitSurfaceMesh->setBlend(0.03f);
 	printf("simulation licensed-surface-stage=after-set-blend\n"); fflush(stdout);
-	const NxReal blend = constructedSurfaceMesh->getBlend();
+	const NxReal blend = explicitSurfaceMesh->getBlend();
 	printf("simulation licensed-surface-stage=after-get-blend\n"); fflush(stdout);
-	const NxReal initialTriangleSize = constructedSurfaceMesh->getTriangleSize();
+	const NxReal initialTriangleSize = explicitSurfaceMesh->getTriangleSize();
 	printf("simulation licensed-surface-stage=after-get-triangle-size\n"); fflush(stdout);
-	constructedSurfaceMesh->setTriangleSize(0.006f);
+	explicitSurfaceMesh->setTriangleSize(0.006f);
 	printf("simulation licensed-surface-stage=after-set-triangle-size\n"); fflush(stdout);
-	const NxReal setTriangleSize = constructedSurfaceMesh->getTriangleSize();
+	const NxReal setTriangleSize = explicitSurfaceMesh->getTriangleSize();
 	printf("simulation licensed-surface-stage=after-get-triangle-size-2\n"); fflush(stdout);
 	const NxU32 initialSmoothingIterations =
-		constructedSurfaceMesh->getSmoothingIterations();
+		explicitSurfaceMesh->getSmoothingIterations();
 	printf("simulation licensed-surface-stage=after-get-smoothing\n"); fflush(stdout);
-	constructedSurfaceMesh->setSmoothingIterations(8);
+	explicitSurfaceMesh->setSmoothingIterations(8);
 	printf("simulation licensed-surface-stage=after-set-smoothing\n"); fflush(stdout);
 	const NxU32 setSmoothingIterations =
-		constructedSurfaceMesh->getSmoothingIterations();
+		explicitSurfaceMesh->getSmoothingIterations();
 	printf("simulation licensed-surface-stage=after-get-smoothing-2\n"); fflush(stdout);
-	const NxMeshData copiedMeshData = constructedSurfaceMesh->getMeshData();
+	static const char licensedSurfaceMeshUpdatedName[] = "licensed-mesh-renamed";
+	explicitSurfaceMesh->setName(licensedSurfaceMeshUpdatedName);
+	const bool updatedNameMatches = explicitSurfaceMesh->getName() ==
+		licensedSurfaceMeshUpdatedName;
+	const NxMeshData copiedMeshData = explicitSurfaceMesh->getMeshData();
 	printf("simulation licensed-surface-stage=after-get-mesh-data\n"); fflush(stdout);
 	const bool meshDataMatches = memcmp(&copiedMeshData,
 		&licensedSurfaceMeshDesc.meshData, sizeof(copiedMeshData)) == 0;
@@ -4595,7 +4605,8 @@ int wmain(int argc, wchar_t** argv)
 		initialSingleRadius == 0.01f && setSingleRadius == 0.012f &&
 		blend == 0.0f && initialTriangleSize == 0.005f &&
 		setTriangleSize == 0.006f && initialSmoothingIterations == 6 &&
-		setSmoothingIterations == 8 && meshDataMatches &&
+		setSmoothingIterations == 8 && initialNameMatches &&
+		updatedNameMatches && meshDataMatches &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius == 2 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius == 1 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius == 2 &&
@@ -4611,7 +4622,8 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshFluid->releaseSurfaceMesh();
 	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
 	const bool licensedSurfaceMeshDestroyMatches =
-		licensedSurfaceMeshCallbacks.implicitFluidMeshDestroy == 1;
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreate == 1 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshDestroy == 2;
 	if(licensedSurfaceMeshFluid)
 		surfaceMeshScene->releaseFluid(*licensedSurfaceMeshFluid);
 	printf("simulation fluid licensed-surface-mesh created=%u callback=%u userdata=%u destroy=%u matched=%u\n",
@@ -4621,7 +4633,7 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshDestroyMatches ? 1u : 0u,
 		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
 	printf("simulation fluid licensed-surface-mesh properties matched=%u calls=%u.%u.%u.%u.%u.%u.%u.%u.%u errors=%u\n",
-		licensedSurfaceMeshPropertiesMatch ? 1u : 0u,
+		licensedSurfaceMeshPropertiesMatch && explicitSurfaceMeshUserDataMatches ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius,
