@@ -1512,7 +1512,7 @@ unsigned char			nxMaskedFourSlotLoop4866(void* self, unsigned a1,
 							unsigned a2, unsigned a3, unsigned a4, unsigned a5,
 							NxSlotMfp4 slot);
 
-unsigned char			nxMaskedFourSlotLoop4865(void* self, unsigned a1,
+unsigned char			nxMaskedFourSlotLoop4868(void* self, unsigned a1,
 							unsigned a2, unsigned a3, unsigned a4, unsigned a5,
 							NxSlotMfp4 slot);
 

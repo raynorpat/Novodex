@@ -90909,7 +90909,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15783",
       "static_proof": "static review of the recorded shape: masked four-slot loop (0xb5410u, ret 0x14); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the masked4866 differential (3z220): failures=0 over three consecutive runs, covering all sixteen live-pointer by mask combinations for EACH row (32 cases total), comparing the return value, the hit count, the ordered sequence of elements visited, all four slot arguments and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxMaskedFourSlotLoop4868"
     },
     {
       "id": "phys_fn_004869",

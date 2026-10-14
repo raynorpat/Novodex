@@ -3509,8 +3509,8 @@ unsigned char nxMaskedFourSlotLoop4866(void* self, unsigned a1, unsigned a2,
 	return 1u;
 	}
 
-// phys_fn_004865 (0xb5410): the AABB/cull four-slot loop dispatches slot 7.
-unsigned char nxMaskedFourSlotLoop4865(void* self, unsigned a1, unsigned a2,
+// phys_fn_004868 (0xb5410): the AABB/cull four-slot loop dispatches slot 7.
+unsigned char nxMaskedFourSlotLoop4868(void* self, unsigned a1, unsigned a2,
 	unsigned a3, unsigned a4, unsigned a5, NxSlotMfp4 slot)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);

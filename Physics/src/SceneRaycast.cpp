@@ -61,7 +61,7 @@
 // The pruner table slot the engine loop dispatches through (opcode/IcePruner.cpp).
 NxSlotMfp5 nxPrunerRaycastSlot();
 
-// Slot 7 is the four-argument AABB query used by phys_fn_004865. The source
+// Slot 7 is the four-argument AABB query used by phys_fn_004868. The source
 // signature is expressed through the common slot receiver because the helper
 // dispatches an encoded member-function pointer onto each Pruner instance.
 static NxSlotMfp4 nxPrunerAABBQuerySlot()
@@ -156,7 +156,7 @@ static inline SdkContainer& nxAABBCollect(NxSceneInternal* scene, const NxBounds
 	collector.mCount = 0;
 	const NxU32 mask = ((shapesType & NX_STATIC_SHAPES) ? 1u : 0u) |
 		((shapesType & NX_DYNAMIC_SHAPES) ? 0xeu : 0u);
-	nxMaskedFourSlotLoop4865(&scene->at<unsigned char>(0x624), reinterpret_cast<unsigned>(&collector),
+	nxMaskedFourSlotLoop4868(&scene->at<unsigned char>(0x624), reinterpret_cast<unsigned>(&collector),
 		reinterpret_cast<unsigned>(const_cast<NxBounds3*>(&worldBounds)), mask, 0, 0xffffffffu,
 		nxPrunerAABBQuerySlot());
 	return collector;
