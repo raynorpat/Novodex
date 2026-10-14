@@ -44,6 +44,8 @@ class NxSceneDesc;
 class NxSceneStats;
 class NxSceneLimits;
 class NxUserNotify;
+class NxUserTriggerReport;
+class NxUserContactReport;
 class NxActor;
 class NxActorDescBase;
 class NxController;
@@ -203,6 +205,12 @@ class NxSceneInternal
 	__declspec(noinline) NxUserNotify* setUserNotify(NxUserNotify* callback);
 	// phys_fn_000547 (0x000107f0): read the joint-break notifier at +0x6ac.
 	__declspec(noinline) NxUserNotify* getUserNotify() const;
+	// phys_fn_000549/000551: trigger-report accessors at +0x6b0.
+	__declspec(noinline) void setUserTriggerReport(NxUserTriggerReport* callback);
+	__declspec(noinline) NxUserTriggerReport* getUserTriggerReport() const;
+	// phys_fn_000553/000555: contact-report accessors at +0x6b4.
+	__declspec(noinline) void setUserContactReport(NxUserContactReport* callback);
+	__declspec(noinline) NxUserContactReport* getUserContactReport() const;
 	// phys_fn_000659's fixed/variable timestep scheduler. Called by NpScene's
 	// worker after simulate() stores the elapsed time at +0x544.
 	void simulateFrame();

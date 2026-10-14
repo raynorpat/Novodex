@@ -10815,3 +10815,8 @@ and the archived raw logs.
 
 `phys_fn_000547`: return-null helper mutation rejected (`stdout_delta=831`);
 restored differential exact.
+
+
+## Phase 7 Scene callback field helpers `phys_fn_000549`–`000555`
+
+The public trigger/contact callback fixture exercises four private Scene helpers at +0x6b0 and +0x6b4. Independent no-op/return-null mutations were all caught: `phys_fn_000549` (`stdout_delta=3990`, candidate exit 1), `phys_fn_000551` (`stdout_delta=2`, both exits zero), `phys_fn_000553` (`stdout_delta=3990`, candidate exit 1), and `phys_fn_000555` (`stdout_delta=3990`, candidate exit 1). The restored staged differential is exact (`stdout_delta=0`, stderr exact). Detailed transcripts and hashes: [phase7-scene-callback-accessors-000549-000555-20261014.md](phase7-scene-callback-accessors-000549-000555-20261014.md).

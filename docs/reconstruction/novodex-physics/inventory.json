@@ -10544,13 +10544,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "setter [this+0x6b0]=[esp+4] (0x10800, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/206",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1453",
       "static_proof": "mov eax,[esp+4]; mov [ecx+0x6b0],eax; ret 4",
-      "dynamic_proof": "confirmed via setget3 drive (3z50): failures=0",
-      "notes": ""
+      "dynamic_proof": "Scene trigger-report setter stores callback at +0x6b0; no-op mutation is rejected by NxPhysicsSimulationTests (oracle_exit=0, candidate_exit=1, stdout_delta=3990). Restored candidate matches exactly; see evidence/phase7-scene-callback-accessors-000549-000555-20261014.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?setUserTriggerReport@NxSceneInternal@@QAEXPAVNxUserTriggerReport@@@Z"
     },
     {
       "id": "phys_fn_000550",
@@ -10580,13 +10582,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "field getter [this+0x6b0] (0x10810)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/207",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1454",
       "static_proof": "mov eax,[ecx+0x6b0]; ret",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
-      "notes": ""
+      "dynamic_proof": "Scene trigger-report getter reads +0x6b0; return-null mutation changes NxPhysicsSimulationTests output (oracle_exit=0, candidate_exit=0, stdout_delta=2). Restored candidate matches exactly; see evidence/phase7-scene-callback-accessors-000549-000555-20261014.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?getUserTriggerReport@NxSceneInternal@@QBEPAVNxUserTriggerReport@@XZ"
     },
     {
       "id": "phys_fn_000552",
@@ -10616,13 +10620,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "setter [this+0x6b4]=[esp+4] (0x10820, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/208",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1455",
       "static_proof": "mov eax,[esp+4]; mov [ecx+0x6b4],eax; ret 4",
-      "dynamic_proof": "confirmed via setget3 drive (3z50): failures=0",
-      "notes": ""
+      "dynamic_proof": "Scene contact-report setter stores callback at +0x6b4; no-op mutation is rejected by NxPhysicsSimulationTests (oracle_exit=0, candidate_exit=1, stdout_delta=3990). Restored candidate matches exactly; see evidence/phase7-scene-callback-accessors-000549-000555-20261014.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?setUserContactReport@NxSceneInternal@@QAEXPAVNxUserContactReport@@@Z"
     },
     {
       "id": "phys_fn_000554",
@@ -10652,13 +10658,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "field getter [this+0x6b4] (0x10830)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/209",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1456",
       "static_proof": "mov eax,[ecx+0x6b4]; ret",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
-      "notes": ""
+      "dynamic_proof": "Scene contact-report getter reads +0x6b4; return-null mutation is rejected by NxPhysicsSimulationTests (oracle_exit=0, candidate_exit=1, stdout_delta=3990). Restored candidate matches exactly; see evidence/phase7-scene-callback-accessors-000549-000555-20261014.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?getUserContactReport@NxSceneInternal@@QBEPAVNxUserContactReport@@XZ"
     },
     {
       "id": "phys_fn_000556",

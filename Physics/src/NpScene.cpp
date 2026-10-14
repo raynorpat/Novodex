@@ -751,14 +751,26 @@ NxUserNotify* NpScene::getUserNotify() const
 // phys_fn_000354: store the trigger callback consumed by phys_fn_000640.
 void NpScene::setUserTriggerReport(NxUserTriggerReport* callback)
 	{
-	if(mScene)
-		mScene->at<NxUserTriggerReport*>(0x6b0) = callback;
+	if(!nxNpSceneGuardWriteTry(mPointer04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x15d, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mPointer04;
+	if(mScene) mScene->setUserTriggerReport(callback);
+	nxNpSceneGuardLeave(link);
 	}
 
 // phys_fn_000356: read the callback stored at Scene+0x6b0.
 NxUserTriggerReport* NpScene::getUserTriggerReport() const
 	{
-	return mScene ? mScene->at<NxUserTriggerReport*>(0x6b0) : 0;
+	void* link = mPointer08;
+	nxNpSceneGuardEnter(link);
+	NxUserTriggerReport* const report = mScene ? mScene->getUserTriggerReport() : 0;
+	nxNpSceneGuardLeave(link);
+	return report;
 	}
 
 // phys_fn_000358 (0x0000cde0): Scene+0x6b4 stores the callback pointer.
@@ -770,7 +782,7 @@ void NpScene::setUserContactReport(NxUserContactReport* callback)
 		return;
 		}
 	void* link = mPointer04;
-	if(mScene) mScene->at<void*>(0x6b4) = callback;
+	if(mScene) mScene->setUserContactReport(callback);
 	nxNpSceneGuardLeave(link);
 	}
 
@@ -779,7 +791,7 @@ NxUserContactReport* NpScene::getUserContactReport() const
 	{
 	void* link = mPointer08;
 	nxNpSceneGuardEnter(link);
-	NxUserContactReport* report = mScene ? mScene->at<NxUserContactReport*>(0x6b4) : 0;
+	NxUserContactReport* report = mScene ? mScene->getUserContactReport() : 0;
 	nxNpSceneGuardLeave(link);
 	return report;
 	}

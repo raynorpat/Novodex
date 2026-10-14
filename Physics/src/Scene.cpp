@@ -6961,6 +6961,30 @@ __declspec(noinline) NxUserNotify* NxSceneInternal::getUserNotify() const
 	return at<NxUserNotify*>(0x6ac);
 	}
 
+// phys_fn_000549 (0x00010800): store the trigger callback at Scene+0x6b0.
+__declspec(noinline) void NxSceneInternal::setUserTriggerReport(NxUserTriggerReport* callback)
+	{
+	at<NxUserTriggerReport*>(0x6b0) = callback;
+	}
+
+// phys_fn_000551 (0x00010810): read the trigger callback at Scene+0x6b0.
+__declspec(noinline) NxUserTriggerReport* NxSceneInternal::getUserTriggerReport() const
+	{
+	return at<NxUserTriggerReport*>(0x6b0);
+	}
+
+// phys_fn_000553 (0x00010820): store the contact callback at Scene+0x6b4.
+__declspec(noinline) void NxSceneInternal::setUserContactReport(NxUserContactReport* callback)
+	{
+	at<NxUserContactReport*>(0x6b4) = callback;
+	}
+
+// phys_fn_000555 (0x00010830): read the contact callback at Scene+0x6b4.
+__declspec(noinline) NxUserContactReport* NxSceneInternal::getUserContactReport() const
+	{
+	return at<NxUserContactReport*>(0x6b4);
+	}
+
 namespace
 	{
 struct NxSceneTriggerPairs

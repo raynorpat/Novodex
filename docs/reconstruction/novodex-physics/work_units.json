@@ -571,14 +571,14 @@
    "ambiguous_rows": [],
    "rows": {
     "discovered": 9,
-    "dynamically_gated": 55,
-    "reconstructed": 18,
+    "dynamically_gated": 59,
+    "reconstructed": 14,
     "statically_reviewed": 1
    },
    "bytes": {
     "discovered": 1696,
-    "dynamically_gated": 11977,
-    "reconstructed": 3038,
+    "dynamically_gated": 12017,
+    "reconstructed": 2998,
     "statically_reviewed": 57
    },
    "phases": {
