@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-14 after the SDK locking, AABB helper, and sleep/wake slices:** Full-DLL semantic and ABI reconstruction remains open, with 2,786 open code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 76 closed / 67 deferred; Phase 3 77 / 315; Phase 4 34 / 1,019; Phase 5 205 / 0; Phase 6 159 / 274; Phase 7 307 / 253. The Phase 2/3/6 SDK fixture covers addMaterial, purgeMaterials, and setPerformanceInspector Scene-lock refusal, reverse unlock, and unlocked success. Fresh full Phase 7 gates pass at 1,793/1,793 coverage assertions before and after the packet fast-forward to main. The Phase 4 scene-raycast differential now falsifies the inlined AABB center/extents helper; its restored control is exact. Public Physics headers remain unchanged. M0, M1, and full-image M8 audit work remain open.
+**Status, updated 2026-10-14 after the SDK locking, AABB helper, sleep/wake, and island-solver slices:** Full-DLL semantic and ABI reconstruction remains open, with 2,786 open code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 76 closed / 67 deferred; Phase 3 77 / 315; Phase 4 34 / 1,019; Phase 5 205 / 0; Phase 6 159 / 274; Phase 7 308 / 252. The Phase 2/3/6 SDK fixture covers addMaterial, purgeMaterials, and setPerformanceInspector Scene-lock refusal, reverse unlock, and unlocked success. Fresh full Phase 7 gates pass at 1,793/1,793 coverage assertions before and after the packet fast-forward to main. The Phase 4 scene-raycast differential now falsifies the inlined AABB center/extents helper; its restored control is exact. Public Physics headers remain unchanged. M0, M1, and full-image M8 audit work remain open.
 
 ### Continuation — buffered contact-report rows (`phys_fn_000917`, `000919`, `000921`, 2026-10-13)
 
@@ -857,3 +857,12 @@ Suppressing `cpmSetActorGroupPairFlags` is rejected by `NxPhysicsSDKTests` (`std
 ## M6.19 — Island sleep/wake body-state update (`phys_fn_000732`)
 
 The existing public simulation sleep fixture distinguishes this row: an immediate-return mutant changes automatic sleeping from 1 to 0 and the registered differential rejects it (`candidate_exit=1`, `stdout_delta=6720`). The restored source is byte-identical to the pinned mainline source, the rebuilt DLL hash matches the baseline, and the restored differential is exact. Phase 7 now records 307 closed / 253 deferred rows; this packet does not close caller `000714` or the rest of the simulation pipeline. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-sleep-wake-000732.md`.
+
+
+### M6.20 investigation — Dirty island rebuild dispatch (`phys_fn_000720`)
+
+An immediate-return mutation produced an exact simulation transcript (`stdout_delta=0`), so the existing fixture does not exercise its dirty-island rebuild branch. The source was restored byte-for-byte and no closure was claimed; row 000720 remains open for a fixture that marks the island dirty.
+
+### M6.21 — Island joint/contact solver dispatch (`phys_fn_000728`)
+
+Suppressing the row’s joint and contact-pair solve loops is rejected by `NxPhysicsSimulationTests` (`candidate_exit=1`, `stdout_delta=6874`); restoring the source returns an exact differential. Phase 7 now records 308 closed / 252 deferred rows; row 000720 and the rest of the simulation step remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-constraint-contact-solve-000728.md`.

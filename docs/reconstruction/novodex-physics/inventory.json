@@ -13877,13 +13877,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/293",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2075",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x167c0-0x16829: thiscall ret 8; the +0x1d8 joint walk (+0x160=-1, +0x164=0, direct call of 004133 = Joint::row_slot6 with the first argument) and the +0x208 pair walk calling 000897 on pair+0x14 with ([[+0x19c]+4], a1, a2) are reproduced by Island.cpp Row000728Fixture::row000728; 000897 is ContactPairManager.cpp NxActorPair::row000897 (reconstructed in the same integration; the call's ecx = pair node + 0x14 and its three stack arguments were checked against 0x16809-0x16816, `ret 0xc`). Reachable only from the simulation step (000611 -> 000730 -> row); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "A throwaway immediate-return mutation of Row000728Fixture::row000728 was rebuilt from a clean Win32 Release archive and rejected by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential: oracle_exit=0, candidate_exit=1, stdout_delta=6874, stderr_exact=False. The mutation suppresses the per-island joint-constraint and contact-pair solver loops exercised by the friction simulation. Restoring the archive source byte-for-byte and rebuilding returns the differential to oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Raw builds, differentials, and the exact row mutation patch: evidence/raw/phase7-island-constraint-contact-solve-000728-20261014/.",
+      "notes": "Per-island joint and contact-pair solve dispatch is mutation-falsified through the registered public friction simulation. This closes row 000728 only; row 000720 remains open because the existing fixture did not detect its dirty-island rebuild branch.",
       "implementation": "Physics/src/Island.cpp"
     },
     {

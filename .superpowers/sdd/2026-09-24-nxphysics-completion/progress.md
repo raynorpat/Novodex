@@ -387,3 +387,15 @@ Ruling: select phys_fn_000732 after the shared simulation helper and Scene lifec
 The registered public sleep/wake differential rejects an immediate-return row mutation (candidate_exit=1, stdout_delta=6720; automatic sleeping changes from 1 to 0). The restored source bytes and rebuilt DLL hash match the baseline; restored output is exact. Phase 7 ledger moves to 307 closed / 253 deferred. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-body-sleep-wake-000732.md.
 
 Task M6.19: complete (`phys_fn_000732`; mutant rejected at stdout_delta=6720; restored exact; full Phase 7 gate passes at 1,793/1,793; 831 tool tests and 742 subtests pass; public headers unchanged; inventory/backlog validate).
+
+
+Ruling for M6.20: `phys_fn_000714` was already mutation-falsified in current main (stdout_delta=5918), so select the adjacent open dirty-island rebuild dispatch `phys_fn_000720`. The public simulation fixture is registered, the row is called by the simulation step, and its rebuild callee has dynamic proof; a row-specific no-op differential will determine whether existing cases actually exercise this branch.
+
+
+### M6.20 result — Dirty island rebuild dispatch (`phys_fn_000720`)
+
+The immediate-return mutant passed with stdout_delta=0 and exact stderr. The archive source was restored byte-for-byte; the fixture does not hit a dirty-island rebuild, so the row remains open.
+
+### M6.21 — Island joint/contact solver dispatch (`phys_fn_000728`)
+
+The registered friction simulation rejects an immediate-return mutant (oracle_exit=0, candidate_exit=1, stdout_delta=6874); restored exact control is recorded at D:\Novodex-m6-21-728-restored-gate-20261014.log. Phase 7 ledger moves to 308 closed / 252 deferred. Awaiting post-merge full Phase 7 gate and final checks.
