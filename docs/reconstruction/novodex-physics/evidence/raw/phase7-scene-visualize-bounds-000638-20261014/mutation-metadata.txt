@@ -11,3 +11,8 @@ phase7_formal_gate=pass coverage_assertions_evaluated=1975 floor=1975
 post_merge_commit=3f4bbdfc
 post_merge_phase7_gate=pass coverage_assertions_evaluated=1975 floor=1975
 post_merge_phase7_log_sha256=9c7a426311283f8f4183eb28d1b4ee50a413e7980bf5271cfd10d8ff0d1ca855
+
+empty_pruner_oracle_result=collision-AABB visualization with null static and selected dynamic pruners emits an empty renderable; exit=0
+empty_pruner_red_candidate_exit=-1073741819 stdout_delta=1703 stderr_exact=True
+empty_pruner_guard_control=both exits=0 stdout_delta=0 stderr_exact=True
+phase7_null_pruner_gate=pass coverage_assertions_evaluated=1977 floor=1977

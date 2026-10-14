@@ -446,6 +446,13 @@ int wmain(int argc, wchar_t** argv)
 		printf("visualize empty renderables=%u\n", renderer.mCalls);
 		nxStage = "";
 	}
+	// Exercise the collision-AABB pass before either pruner exists. The oracle's
+	// pruner-count helpers return zero for null static and selected dynamic
+	// pruners; the Scene should still create an empty debug renderable.
+	const NxStage emptyCollisionAabbs =
+		{ "collision_aabbs", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f } };
+	nxRunStage(sdk, scene, emptyCollisionAabbs, "empty_no_pruners");
 
 	for(unsigned i = 0; i < kActorCaseCount; i++)
 		nxActors[i] = nxCreateCase(scene, i);

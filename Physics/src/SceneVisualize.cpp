@@ -697,6 +697,8 @@ void nxSceneVisualizeCollisionBounds(void* engine, NxDebugRenderable* renderable
 	// helper's void interface.
 	const auto visualizePruner = [renderable, colour, compounds](Pruner* pruner)
 		{
+		if(!pruner)
+			return;
 		const PruningPool& pool = pruner->mPool;
 		const unsigned count = pool.mNbObjects[1] + pool.mNbObjects[2];
 		for(unsigned index = 0; index < count; ++index)

@@ -3100,6 +3100,8 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsSceneVisualizeTests' = @(
         'visualize contacts stage=after_step contact_lines=observed'
         'visualize empty renderables=0'
+        'visualize empty_no_pruners stage=collision_aabbs renderable=1 points=0 lines=0 triangles=0'
+        'visualize empty_no_pruners stage=collision_aabbs renderables=1'
         'visualize create s_box created=1'
         'visualize create s_rotated created=1'
         'visualize create d_box created=1'
@@ -3108,7 +3110,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize create d_capsule created=1'
         'visualize create d_hidden created=1'
         'visualize bounds_cache_warm hit=0'
-        'visualize created stage=scale_zero renderables=0'
+        'visualize created stage=scale_zero renderables=1'
         'visualize created stage=scale_only renderable=1 points=0 lines=0 triangles=0'
         'visualize created stage=scale_only renderables=1'
         'visualize created stage=collision_shapes renderable=1 points=0 lines=60 triangles=0'
@@ -6120,7 +6122,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1975  # adds row 000799 body-creation differential to Phase 7
+	'7' = 1977  # adds the two empty-pruner visualization assertions
 				# includes the CCD test target (two existing and one row 000740 assertion)
 				# adds direct dirty-island row probe and public articulated kinematic transitions
 				# adds ParticleArrayGrow allocation-failure ordering coverage

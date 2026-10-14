@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-14 after the SDK locking, AABB helper, sleep/wake, and island-solver slices:** Full-DLL semantic and ABI reconstruction remains open, with 2,786 open code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 76 closed / 67 deferred; Phase 3 77 / 315; Phase 4 34 / 1,019; Phase 5 205 / 0; Phase 6 159 / 274; Phase 7 309 / 251. The Phase 2/3/6 SDK fixture covers addMaterial, purgeMaterials, and setPerformanceInspector Scene-lock refusal, reverse unlock, and unlocked success. The row 000732 packet and the current row 000728 packet both pass fresh full Phase 7 gates after merge to main, at 1,793/1,793 coverage assertions. The Phase 4 scene-raycast differential now falsifies the inlined AABB center/extents helper; its restored control is exact. Public Physics headers remain unchanged. M0, M1, and full-image M8 audit work remain open.
+**Status, updated 2026-10-14:** Full-DLL semantic and ABI reconstruction remains open, with 2,786 open code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 76 closed / 67 deferred; Phase 3 77 / 315; Phase 4 34 / 1,019; Phase 5 205 / 0; Phase 6 159 / 274; Phase 7 329 / 231. The latest Phase 7 closures are Scene joint removal (`phys_fn_000633`) and collision-bounds visualization (`phys_fn_000638`); both pass fresh pre- and post-merge Phase 7 gates at 1,975/1,975 coverage assertions. The null-pruner visualization regression then raised the current Phase 7 gate to 1,977/1,977. Public Physics headers remain unchanged and the CMake Win32 Release build remains the verification path. M0, M1, and full-image M8 audit work remain open; the 2,786-row backlog is still the controlling completion measure.
 
 ### Continuation — buffered contact-report rows (`phys_fn_000917`, `000919`, `000921`, 2026-10-13)
 
@@ -927,3 +927,23 @@ An empty-body mutation of `DynamicBodyBase::destruct` drops the kinematic-releas
 ### M6.34 — Contact friction parameters (`phys_fn_000861`)
 
 Replacing only the friction-parameter calculation with an empty body preserves normal force but changes friction force from `3d5ae33a` to zero. The registered simulation differential rejects the mutation (`stdout_delta=266`, both exits zero), and the restored control is exact. Phase 7 records 322 closed / 238 deferred; its full gate passes at 1,975/1,975. See `docs/reconstruction/novodex-physics/evidence/phase7-friction-params-000861.md`.
+
+
+### M6.35 — Scene joint removal (`phys_fn_000633`)
+
+A no-op `NxSceneInternal::removeJoint` mutation is rejected by the registered joint staged-pair differential (`candidate_exit=-1073741819`, `stdout_delta=3520`, exact stderr); forcing a fresh CMake rebuild after restoring the source returns exact output. Phase 7 records 328 closed / 232 deferred, then passes after merge at 1,975/1,975. Commits `c0ee0045` and `463e979d` are on local main. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-remove-joint-000633.md`.
+
+
+### M6.36 — Scene collision-bounds visualization (`phys_fn_000638`)
+
+IDA decompilation confirms that the existing helper walks sections 1 and 2 of the static and selected dynamic pruners, filters shape visualization bit 3, applies the compound type-5 filter, resolves each current world AABB, and submits it with the requested color. A row-only no-op changes `NxPhysicsSceneVisualizeTests` by 2,744 bytes; the restored control is exact. Phase 7 records 329 closed / 231 deferred and passes after merge at 1,975/1,975. Commits `3f4bbdfc` and `1bcd8f35` are on local main. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-visualize-bounds-000638.md`.
+
+
+### M6 continuation — anisotropic friction fixture gap (`phys_fn_000859`)
+
+An immediate no-op mutation is insensitive to the existing `NxPhysicsSimulationTests` corpus (`stdout_delta=0`); the source was restored and a forced CMake rebuild returned an exact control. A dedicated rotated-shape, unequal-U/V oracle/candidate fixture is needed before this row can be falsified. The implementation remains open pending fixture approval.
+
+
+### M6.37 — Null-pruner collision-bounds visualization
+
+Added an empty-scene public visualization stage with collision AABBs enabled. The oracle returns an empty renderable for null static and selected dynamic pruners; before the guard, the candidate access-violates (`stdout_delta=1703`, exact stderr). Adding the null-pruner early return restores exact output. The two new coverage assertions raise the Phase 7 floor to 1,977, and the formal gate passes at that count. This refines row `phys_fn_000638`; it does not add another closed function row.
