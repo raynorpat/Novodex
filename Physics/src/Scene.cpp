@@ -1794,6 +1794,8 @@ static void* __fastcall nxFluidSolverReadLockDeletingDestructor(void* base,
 static NxFluidEmitter* __fastcall nxFluidCreateEmitterPublic(void*, void*,
 	const NxFluidEmitterDesc&);
 static void __fastcall nxFluidReleaseEmitterPublic(void*, void*, NxFluidEmitter&);
+static NxImplicitMesh* __fastcall nxFluidCreateSurfaceMeshPublic(void*, void*,
+	const NxImplicitMeshDesc&);
 
 static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverDeletingDestructor),
@@ -1801,7 +1803,7 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidReleaseEmitterPublic),
 	reinterpret_cast<void*>(nxFluidGetNbEmitters),
 	reinterpret_cast<void*>(nxFluidGetEmitters),
-	0,
+	reinterpret_cast<void*>(nxFluidCreateSurfaceMeshPublic),
 	reinterpret_cast<void*>(nxFluidReleaseSurfaceMesh),
 	reinterpret_cast<void*>(nxFluidGetSurfaceMesh),
 	reinterpret_cast<void*>(nxFluidAddParticles),
@@ -2357,24 +2359,24 @@ extern "C" const char* __cdecl nxImplicitMeshGetName(void* record)
 	return name == gNxImplicitFluidMeshNames.end() ? 0 : name->second;
 	}
 
-static void nxFluidInitializeSurfaceMesh(void* fluid,
+static void* nxFluidInitializeSurfaceMesh(void* fluid,
 	const NxImplicitMeshDesc* desc)
 	{
 	if(!desc)
-		return;
+		return 0;
 	if((gNxFluidLicensedFeatureFlags & 2u) == 0)
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
 			280, 0, "NxFluid::createSurfaceMesh: Feature not available!");
-		return;
+		return 0;
 		}
 	if(!gNxImplicitFluidMeshCreateCallback || !gNxImplicitFluidMeshDestroyCallback)
-		return;
+		return 0;
 	void* const manager = nxFoundationSDKAllocator->malloc(0x3c,
 		NX_MEMORY_PERSISTENT);
 	if(!manager)
-		return;
+		return 0;
 	memset(manager, 0, 0x3c);
 	*reinterpret_cast<void***>(manager) = gNxFluidSurfaceMeshVtable;
 	unsigned char* const bytes = static_cast<unsigned char*>(manager);
@@ -2399,6 +2401,80 @@ static void nxFluidInitializeSurfaceMesh(void* fluid,
 		}
 	nxImplicitMeshSetName(manager, desc->name);
 	*reinterpret_cast<void**>(fluidBytes + 0x24) = manager;
+	return manager;
+	}
+
+// phys_fn_003705 (0x0008b250): public, Scene-write-locked surface-mesh
+// creation. The constructor path creates the same manager, but only this public
+// wrapper attaches the Scene lock links to the returned NxImplicitMesh object.
+static NxImplicitMesh* __fastcall nxFluidCreateSurfaceMeshPublic(void* wrapper,
+	void*, const NxImplicitMeshDesc& desc)
+	{
+	if((gNxFluidLicensedFeatureFlags & 2u) == 0)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			51, 0, "NxFluid::createSurfaceMesh(): Feature not available!");
+		return 0;
+		}
+	unsigned char* const wrapperBytes = static_cast<unsigned char*>(wrapper);
+	void* const writeLock = *reinterpret_cast<void**>(wrapperBytes + 0x0c);
+	if(!nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			53, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return 0;
+		}
+	if(gNxApiReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+			54, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		nxNpSceneGuardLeave(writeLock);
+		return 0;
+		}
+	gNxApiReentry = true;
+	NxImplicitMesh* result = 0;
+	if(!desc.isValid())
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
+			278, 0,
+			"Supplied NxImplicitMeshDesc is not valid. createSurfaceMesh returns NULL.");
+	else
+		{
+		unsigned char* const fluid = static_cast<unsigned char*>(
+			*reinterpret_cast<void**>(wrapperBytes + 0x14));
+		void** const surfaceMeshSlot = reinterpret_cast<void**>(fluid + 0x24);
+		if(*surfaceMeshSlot)
+			{
+			void* const oldSurfaceMesh = *surfaceMeshSlot;
+			void** const vtable = *reinterpret_cast<void***>(oldSurfaceMesh);
+			typedef void* (__fastcall *DeletingDestructor)(void*, void*, unsigned char);
+			reinterpret_cast<DeletingDestructor>(vtable[0])(
+				oldSurfaceMesh, 0, 1);
+			*surfaceMeshSlot = 0;
+			}
+		nxFluidInitializeSurfaceMesh(fluid, &desc);
+		void* const surfaceManager = *surfaceMeshSlot;
+		if(surfaceManager)
+			{
+			result = *reinterpret_cast<NxImplicitMesh**>(
+				static_cast<unsigned char*>(surfaceManager) + 0x38);
+			if(result)
+				{
+				unsigned char* const meshBytes = reinterpret_cast<unsigned char*>(result);
+				*reinterpret_cast<void**>(meshBytes + 0x10) =
+					*reinterpret_cast<void**>(wrapperBytes + 0x10);
+				*reinterpret_cast<void**>(meshBytes + 0x0c) = writeLock;
+				}
+			}
+		}
+	gNxApiReentry = false;
+	nxNpSceneGuardLeave(writeLock);
+	return result;
 	}
 
 static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void* manager,
