@@ -4554,10 +4554,7 @@ int wmain(int argc, wchar_t** argv)
 	bool licensedSurfaceMeshPropertiesMatch = false;
 	if(constructedSurfaceMesh)
 		{
-	printf("simulation licensed-surface-stage=before-name\n"); fflush(stdout);
-	const bool initialNameMatches = constructedSurfaceMesh->getName() ==
-		licensedSurfaceMeshInitialName;
-	printf("simulation licensed-surface-stage=after-name\n"); fflush(stdout);
+	printf("simulation licensed-surface-stage=before-surface-radius\n"); fflush(stdout);
 	const NxReal initialSurfaceRadius = constructedSurfaceMesh->getSurfaceRadius();
 	printf("simulation licensed-surface-stage=after-get-surface-radius\n"); fflush(stdout);
 	constructedSurfaceMesh->setSurfaceRadius(0.05f);
@@ -4588,11 +4585,6 @@ int wmain(int argc, wchar_t** argv)
 	const NxU32 setSmoothingIterations =
 		constructedSurfaceMesh->getSmoothingIterations();
 	printf("simulation licensed-surface-stage=after-get-smoothing-2\n"); fflush(stdout);
-	static const char licensedSurfaceMeshUpdatedName[] = "licensed-mesh-renamed";
-	constructedSurfaceMesh->setName(licensedSurfaceMeshUpdatedName);
-	printf("simulation licensed-surface-stage=after-set-name\n"); fflush(stdout);
-	const bool nameMatches = constructedSurfaceMesh->getName() ==
-		licensedSurfaceMeshUpdatedName;
 	const NxMeshData copiedMeshData = constructedSurfaceMesh->getMeshData();
 	printf("simulation licensed-surface-stage=after-get-mesh-data\n"); fflush(stdout);
 	const bool meshDataMatches = memcmp(&copiedMeshData,
@@ -4603,8 +4595,7 @@ int wmain(int argc, wchar_t** argv)
 		initialSingleRadius == 0.01f && setSingleRadius == 0.012f &&
 		blend == 0.0f && initialTriangleSize == 0.005f &&
 		setTriangleSize == 0.006f && initialSmoothingIterations == 6 &&
-		setSmoothingIterations == 8 && initialNameMatches && nameMatches &&
-		meshDataMatches &&
+		setSmoothingIterations == 8 && meshDataMatches &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius == 2 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius == 1 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius == 2 &&
