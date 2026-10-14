@@ -10856,3 +10856,5 @@ Fresh full Phase 7 gate after `phys_fn_000716`: 1,779/1,779 coverage assertions 
 
 `phys_fn_000718`: omitted sleep-group union rejected (`stdout_delta=4158`); restored simulation differential exact. See [phase7-sleep-group-union-000718.md](phase7-sleep-group-union-000718.md).
 Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-sleep-group-union-000718-20261014/phase7-gate.log.gz.
+
+`phys_fn_000647`: cleared the Scene constructor's `+0x6cc` wrapper store; `NxPhysicsSceneConstructorTests` rejected scene creation (`stdout_delta=6`). Restored constructor reports `internal_link=1` and the full Phase 7 gate passes at 1,793/1,793. See [phase7-scene-constructor-000647.md](phase7-scene-constructor-000647.md).
