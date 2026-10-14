@@ -10896,3 +10896,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_004864`: skipping the four selected-pruner slot calls while preserving `nxMaskedFourSlotLoop4864`’s return value 1 is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=4828, stderr exact); restored output is exact. See [phase7-ray-pruner-loop-004864.md](phase7-ray-pruner-loop-004864.md).
 
 `phys_fn_004862`: a no-dispatch mutation of `nxMaskedFourSlotLoop4862` drops all selected pruner slot-5 calls and is rejected by the registered cull differential (`stdout_delta=5465`, both exits 0, exact stderr). The restored output matches the permuted 12-object static and bounded-dynamic cull orders exactly. See [phase7-masked-four-slot-plane-loop-004862.md](phase7-masked-four-slot-plane-loop-004862.md).
+
+`phys_fn_000766`: an immediate-return mutation of `NxBodyVisualRecord::visualize()` is rejected by `NxPhysicsSceneVisualizeTests` (both exits 0, `stdout_delta=2768`, exact stderr); restored output matches exactly. See [phase7-body-visualization-000766.md](phase7-body-visualization-000766.md).
