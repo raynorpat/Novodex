@@ -444,3 +444,8 @@ Ruling for M6.28: select the next falsifiable row from the current Phase 7 ledge
 ### M6.28 — Joint contact suppression scans (`phys_fn_000750`, `000752`)
 
 A direct `NxPhysicsSimulationTests` probe seeds joints in one body's list at a time and reports `owner_scan` and `fallback_scan`. Independent scan-only mutations flip the corresponding result and fail the staged differential (`candidate_exit=1`, `stdout_delta=4000`); restored controls match exactly. Phase 7 moves to 316 closed / 244 deferred rows. The shared target adds one required assertion in Phases 5, 6 and 7, bringing their floors to 2,728, 1,653 and 1,802. Evidence: the two joint-contact filter reports.
+
+
+### M6.29 — Body CCD step update (`phys_fn_000770`)
+
+The immediate-return mutant is rejected by both the registered simulation (`stdout_delta=7134`) and CCD (`stdout_delta=5`, candidate response velocity is out of range); restoring the source returns exact controls. Phase 7 moves to 317 closed / 243 deferred. Evidence: the row 000770 report and raw mutation packet.

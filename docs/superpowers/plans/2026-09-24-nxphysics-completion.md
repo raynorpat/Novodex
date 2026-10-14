@@ -898,3 +898,8 @@ The registered joint-break simulation exercises the row's joint-island link: an 
 ### M6.28 — Joint contact suppression scans (`phys_fn_000750`, `000752`)
 
 The public simulation did not expose each body-list scan independently, so `NxPhysicsSimulationTests` now probes the pinned oracle and staged candidate directly using scratch records. Independent scan-only mutants flip `owner_scan` and `fallback_scan` respectively and are rejected; restored output is exact. The shared target is registered for Phases 5, 6 and 7, whose coverage floors increase by one to 2,728, 1,653 and 1,802. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-contact-filter-000750.md` and `000752.md`.
+
+
+### M6.29 — Body CCD step update (`phys_fn_000770`)
+
+A row-only no-op is rejected by both the registered public simulation (`stdout_delta=7134`) and CCD (`stdout_delta=5`, response velocity outside range); restored controls are exact. Phase 7 moves to 317 closed / 243 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-ccd-update-000770.md`.

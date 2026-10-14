@@ -10922,3 +10922,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000750` and `phys_fn_000752`: the direct staged-DLL probe isolates each direction of joint-list lookup used to suppress body contacts. Independent scan-only mutants fail the expected owner/fallback result (`stdout_delta=4000`); restoring `ContactPairManager.cpp` returns exact output. See [phase7-joint-contact-filter-000750.md](phase7-joint-contact-filter-000750.md) and [phase7-joint-contact-filter-000752.md](phase7-joint-contact-filter-000752.md).
+
+
+`phys_fn_000770`: an immediate-return mutation is rejected by both registered simulation and CCD staged-pair tests (`stdout_delta=7134` and `5` respectively); the restored source passes both exactly. See [phase7-body-ccd-update-000770.md](phase7-body-ccd-update-000770.md).

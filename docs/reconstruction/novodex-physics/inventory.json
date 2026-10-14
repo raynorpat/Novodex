@@ -14654,13 +14654,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/313",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2183",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x183a0-0x1846a: thiscall ret 8 (second argument unread); the CCD start-pose save, the integer wake test, the 000734/000736/000758/000746 advance and the NX_CONTINUOUS_CD (000429) test choosing 000740 or the +0x1e4 bit-9 clear are reproduced by BodyStep.cpp Row000770Fixture::row000770. Reachable only from the simulation step (000615); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests and NxPhysicsCcdSimulationTests staged-pair differentials: replacing only Row000770Fixture::row000770 with an immediate return changes simulation state (candidate_exit=1, stdout_delta=7134) and leaves the CCD response velocity outside its expected range (candidate_exit=1, stdout_delta=5). Restoring BodyStep.cpp byte-for-byte returns exact controls for both targets. See evidence/phase7-body-ccd-update-000770.md and evidence/raw/phase7-body-ccd-update-000770-20261014/.",
+      "notes": "The row is reached by the public simulation and CCD paths; a row-only immediate-return mutation is rejected by both registered differentials.",
       "implementation": "Physics/src/BodyStep.cpp"
     },
     {
