@@ -9,3 +9,6 @@ The same formal Phase 7 gate passed after commit `3f4bbdfc` was fast-forwarded t
 
 
 The empty-scene collision-AABB regression now covers the oracle helper’s null-pruner behavior. The new case is red before the guard (`oracle_exit=0`, `candidate_exit=-1073741819`, `stdout_delta=1703`, exact stderr); with the guard, both sides emit the same empty renderable and the focused differential is exact. The full Phase 7 gate passes at 1,977/1,977 assertions.
+
+
+After merge commit `fa169984`, the fresh main-checkout Phase 7 gate also passes at 1,977/1,977 assertions. The transcript is `evidence/raw/phase7-scene-visualize-bounds-000638-20261014/post-merge-null-pruner-phase7-gate.log.gz`.

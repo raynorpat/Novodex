@@ -10963,3 +10963,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000638` null-pruner continuation: the empty-scene collision-AABB fixture exposes the oracle’s null-safe pruner count path. Before the guard the candidate access-violates (`stdout_delta=1703`); after it, the exact empty-renderable transcript matches. Phase 7 passes at 1,977/1,977.
+
+
+`phys_fn_000638` null-pruner continuation is merged as `fa169984`; the post-merge Phase 7 gate passes at 1,977/1,977. See `phase7-scene-visualize-bounds-000638.md`.

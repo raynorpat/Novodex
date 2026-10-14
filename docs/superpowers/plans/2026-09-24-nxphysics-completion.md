@@ -946,4 +946,4 @@ An immediate no-op mutation is insensitive to the existing `NxPhysicsSimulationT
 
 ### M6.37 — Null-pruner collision-bounds visualization
 
-Added an empty-scene public visualization stage with collision AABBs enabled. The oracle returns an empty renderable for null static and selected dynamic pruners; before the guard, the candidate access-violates (`stdout_delta=1703`, exact stderr). Adding the null-pruner early return restores exact output. The two new coverage assertions raise the Phase 7 floor to 1,977, and the formal gate passes at that count. This refines row `phys_fn_000638`; it does not add another closed function row.
+Added an empty-scene public visualization stage with collision AABBs enabled. The oracle returns an empty renderable for null static and selected dynamic pruners; before the guard, the candidate access-violates (`stdout_delta=1703`, exact stderr). Adding the null-pruner early return restores exact output. The two new coverage assertions raise the Phase 7 floor to 1,977, and the formal gate passes at that count both before and after merge commit fa169984. This refines row `phys_fn_000638`; it does not add another closed function row.
