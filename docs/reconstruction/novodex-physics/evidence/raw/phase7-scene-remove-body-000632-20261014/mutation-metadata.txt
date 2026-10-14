@@ -9,3 +9,6 @@ mutant_result=NxPhysicsSimulationTests candidate_exit=-1073741819 stdout_delta=3
 mutant_second_target=NxPhysicsJointStagedPairTests candidate_exit=-1073741819 stdout_delta=2459 stderr_exact=True
 restored_result=both targets oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True
 phase7_premerge=pass coverage_assertions_evaluated=1975 floor=1975
+post_merge_commit=ebe978b1
+post_merge_phase7_gate=pass
+post_merge_phase7_log_sha256=59f61ecac76bb559bf5c57493fa4cbb7a9dcf620c7c66d525bb4bbe268d4fc11
