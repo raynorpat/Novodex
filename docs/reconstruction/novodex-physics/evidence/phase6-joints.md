@@ -10942,3 +10942,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000857`: the registered simulation contact rejects a no-op restitution-helper mutation with `stdout_delta=3954` (oracle exit 0, candidate access violation, exact stderr); restoring the source returns exact output. See [phase7-material-restitution-000857.md](phase7-material-restitution-000857.md).
+
+
+`phys_fn_000533`: a static-shape removal no-op is rejected by the registered Phase 7 simulation (`candidate_exit=-1073741819`, `stdout_delta=3953`, exact stderr); restored output is exact. See [phase7-scene-remove-static-shape-000533.md](phase7-scene-remove-static-shape-000533.md).

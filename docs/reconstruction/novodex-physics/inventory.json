@@ -10264,13 +10264,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/197",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1439",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): nxSceneRemoveStaticShape: 001279, then 003628 with false with a fluid manager (## Task 4). Staged-pair cases: the targets named in the dynamic proof.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxSceneRemoveStaticShape) in the candidate build (build/Release/NxPhysics.map) was hit 10 times (ActorShapeMutation 10) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?nxSceneRemoveStaticShape@@YA_NPAVNxSceneInternal@@PAE@Z hit 10 times (SMut 10); equal to the oracle's except Life 1/0, Name 1/0, Meta 1/0, DSet 12/0, Mom 1/0, CMass 2/0, SMut 19/10, SRay 9/0, SVis 2/0, Dump 10/0: only the out-of-line copy NpActor.cpp calls is hit (SMut 10, as recorded); the oracle also runs it on every static actor release.",
-      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp; Scene +0x61c (the fluid manager) is only ever zeroed in the candidate, so that arm is unreachable in the product today (the 003628 call)",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: the registered scene and actor lifecycle reaches row 000533. Replacing nxSceneRemoveStaticShape with a no-op returning true causes an access violation (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=3953, stderr_exact=True). Restoring Scene.cpp byte-for-byte returns exact output. See evidence/phase7-scene-remove-static-shape-000533.md and evidence/raw/phase7-scene-remove-static-shape-000533-20261014/.",
+      "notes": "The Phase 7 simulation fixture observes static shape removal; a row-scoped no-op mutation is rejected by the staged differential.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
