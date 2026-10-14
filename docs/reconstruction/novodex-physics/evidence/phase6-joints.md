@@ -10782,3 +10782,8 @@ These split census rows are one all-shapes raycast loop. Suppressing `report.onH
 `phys_fn_000684`: callback-suppression mutation rejected (`stdout_delta=5140`); restored differential exact.
 
 `phys_fn_000686`: callback-suppression mutation rejected (`stdout_delta=5140`); restored differential exact.
+
+
+## Phase 7 continuation: Scene timing store `phys_fn_000540`
+
+`phys_fn_000540` no-op store mutation is rejected by `NxPhysicsSimulationTests` (`stdout_delta=3990`, oracle exit 0, candidate exit 1); restored output is exact. Fresh Phase 7 passes at 1,770/1,770 assertions. See [phase7-scene-timing-helper-000540-20261013.md](phase7-scene-timing-helper-000540-20261013.md) and archived raw logs.

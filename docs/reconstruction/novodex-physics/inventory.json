@@ -10376,13 +10376,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "store 3 args to [this+0x52c/530/534] (0x106f0, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/201",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1445",
       "static_proof": "3 dword stores from stack args; ret 0xc",
-      "dynamic_proof": "confirmed via triplecopy drive (3z58): failures=0",
-      "notes": ""
+      "dynamic_proof": "confirmed via triplecopy drive (3z58): failures=0; Phase 7: suppressing the three NxSceneInternal::setTiming stores is rejected by NxPhysicsSimulationTests (oracle_exit=0, candidate_exit=1, stdout_delta=3990); restored differential is exact. See evidence/phase7-scene-timing-helper-000540-20261013.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000541",

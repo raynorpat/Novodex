@@ -1759,3 +1759,8 @@ callback-table coverage; full DLL reconstruction remains active.
 ### Continuation — all-shapes raycast report loop (`phys_fn_000684` / `phys_fn_000686`, 2026-10-13)
 
 The existing all-shapes raycast loop now has a row-specific differential mutation: suppressing `report.onHit` changes the transcript by 5,140 bytes, while the restored staged differential is exact. Both census rows map to one machine function split at an alignment boundary. The fresh Phase 7 gate passes at 1,770/1,770 coverage assertions; the Phase 7 ledger now closes 265 functions and defers 295. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-raycast-all-shapes-000684-000686-20261013.md`. Full DLL reconstruction remains in progress.
+
+
+### Continuation — Scene timing store (`phys_fn_000540`, 2026-10-13)
+
+The internal Scene timing setter now has a row-specific mutation proof: suppressing its three stores is rejected by `NxPhysicsSimulationTests` (oracle exit 0, candidate exit 1, `stdout_delta=3990`); restored output is exact. The fresh Phase 7 gate passes at 1,770/1,770. Phase 7 closes 266 functions and defers 294. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-timing-helper-000540-20261013.md`.
