@@ -10835,3 +10835,6 @@ Fresh full Phase 7 gate after this closure: 1,779/1,779 coverage assertions pass
 
 `phys_fn_000702`: inverted closest-hit comparison rejected (`stdout_delta=288`); restored differential exact. See [phase7-scene-raycast-000702-closest-hit.md](phase7-scene-raycast-000702-closest-hit.md).
 Fresh full Phase 7 gate after the `phys_fn_000702` closure: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-scene-raycast-000702-20261014/phase7-gate.log.gz.
+
+`phys_fn_000704`: suppressing any-shape loop forwarding is rejected (`stdout_delta=288`); restored differential exact. See [phase7-scene-raycast-000704-any-shape.md](phase7-scene-raycast-000704-any-shape.md).
+Fresh full Phase 7 gate after the `phys_fn_000704` closure: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-scene-raycast-000704-20261014/phase7-gate.log.gz.

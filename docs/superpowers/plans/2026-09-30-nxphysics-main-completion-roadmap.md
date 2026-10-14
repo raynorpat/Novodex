@@ -1829,3 +1829,7 @@ The count guard at the entry to `nxRaycastClosestShapeLoop` is now mutation-fals
 ### Continuation — Scene raycast closest-hit body (`phys_fn_000702`, `2026-10-14`)
 
 The closest-hit selection body in `nxRaycastClosestShapeLoop` is mutation-falsified through `NxPhysicsSceneRaycastTests`: reversing `key < hit.distance` changes the transcript by 288 bytes (both sides exit 0, exact stderr); the restored source is exact. The fresh full Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 now records 277 closed functions and 283 deferred; the empty-collector entry row `phys_fn_000700` is closed separately. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-raycast-000702-closest-hit.md` and archived transcripts. Full DLL reconstruction remains active.
+
+### Continuation — Scene any-shape raycast wrapper (`phys_fn_000704`, `2026-10-14`)
+
+Suppressing `NxSceneInternal::raycastAnyShape`'s loop forward is rejected by `NxPhysicsSceneRaycastTests` (`stdout_delta=288`, both exits zero, exact stderr); the restored differential is exact. The fresh full Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 now records 278 closed functions and 282 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-raycast-000704-any-shape.md` and archived transcripts. Full DLL reconstruction remains active.

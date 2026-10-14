@@ -775,3 +775,7 @@ The `nxRaycastClosestShapeLoop` count guard was falsified through `NxPhysicsScen
 ### Continuation — Scene raycast closest-hit body (`phys_fn_000702`, `2026-10-14`)
 
 The closest-hit condition in `nxRaycastClosestShapeLoop` was mutation-falsified through `NxPhysicsSceneRaycastTests`: reversing the comparison produces `stdout_delta=288` (both exits zero, exact stderr), and the restored candidate matches the oracle exactly. The fresh Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 closes 277 functions and defers 283. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-raycast-000702-closest-hit.md` and archived transcripts. Full DLL reconstruction remains active.
+
+### Continuation — Scene any-shape raycast wrapper (`phys_fn_000704`, `2026-10-14`)
+
+Suppressing the `NxSceneInternal::raycastAnyShape` loop forward is rejected through `NxPhysicsSceneRaycastTests` (`stdout_delta=288`, both exits zero, exact stderr); the restored control is exact. Fresh Phase 7 passes at 1,779/1,779 coverage assertions. Phase 7 closes 278 functions and defers 282. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-raycast-000704-any-shape.md` and archived transcripts. Full DLL reconstruction remains active.
