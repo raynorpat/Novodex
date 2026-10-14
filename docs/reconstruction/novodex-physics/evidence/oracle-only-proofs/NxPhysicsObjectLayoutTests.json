@@ -3,11 +3,11 @@
   "target": "NxPhysicsObjectLayoutTests",
   "format": "layout_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "3575827337ec861ac6dc21061278de7da01afb424c50e7dd129277dbc7806a67",
+  "fixture_source_sha256": "9f35553903e384f10909e031c588931e920e40c3c32ece7b9dd66af2b849bda7",
   "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
   "proof_lines_sha256": "937ccba4afe02ec07d3224d55eb0022922e7bac170058e3dc704d7db874a8718",
-  "baseline_sha256": "65cc28e8f582b7bb6ef28b2dee758c2cec03e4372caa7d3fcd439cd61733a3f4",
+  "baseline_sha256": "502ed89317938eceb7f3e37f2f24f3e7c23ce38df40cf1bd4ae2f71519507b49",
   "oracle_digest_fnv32": "774d629d",
   "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1",
-  "proof_sha256": "ce01441c39c82b592e75d3d3eb0bc60903be177b75f562c4594339f87fad9774"
+  "proof_sha256": "25435aa5c4409a1e9dd98446a132aeb3bd9a4f50c73d3af39e44052c83651597"
 }

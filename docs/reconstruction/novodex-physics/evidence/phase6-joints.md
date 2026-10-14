@@ -10994,3 +10994,5 @@ Phase 7 teardown continuation: `phys_fn_000492` (PhysicsSDK destructor) is mutat
 Phase 7 continuation: phys_fn_000496 (NxShapeDesc::setToDefault) is mutation-falsified by NxPhysicsObjectLayoutTests. The CMake map-resolved candidate DLL method matches the oracle on bytes +8..+0x47; replacing its first instruction with ret is caught as mismatches=64. See the row evidence in phase7-shape-desc-default-000496.md.
 
 Phase 7 continuation: phys_fn_000499 (NxPlaneShapeDesc::setToDefault) is mutation-falsified by NxPhysicsObjectLayoutTests through the CMake-built candidate DLL. The map-resolved method matches the oracle on its 84-byte descriptor window; replacing its entry with ret is rejected with 80 initialized-byte mismatches, while the untouched name pointer remains poison. See phase7-shape-desc-default-000499.md.
+
+Phase 7 continuation: phys_fn_000498 (NxShapeDesc::isValid) is mutation-falsified by NxPhysicsObjectLayoutTests through the map-resolved candidate DLL method. The candidate and oracle agree on eight descriptor inputs; a forced-false candidate mutation is detected (`mismatches=3`). See phase7-shape-desc-valid-000498.md.

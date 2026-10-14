@@ -9623,13 +9623,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "template validity (0xfd60)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/182",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1385",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The oracle row 0xfd60 and CMake-built candidate DLL method ?isValid@NxShapeDesc@@UBE_NXZ agree on eight identical descriptor inputs: valid defaults, NaN pose, ignored NaN plane normal, ignored infinite plane distance, group limit, high flags, invalid material, and invalid type. Patching the candidate entry to xor eax,eax; ret is caught in three valid cases. Restored control reports mismatches=0. See evidence/phase7-shape-desc-valid-000498.md.",
+      "notes": "",
+      "implementation": "Physics/include/NxShapeDesc.h",
+      "implementation_symbol": "?isValid@NxShapeDesc@@UBE_NXZ"
     },
     {
       "id": "phys_fn_000499",
