@@ -89,6 +89,8 @@ $NxRequiredCoverageLines = [ordered] @{
 	'NxPhysicsSceneAllocatorTests' = @(
 		'alloc phase=foundation_create a_allocs='
 		'alloc phase=sdk_create a_allocs='
+		'alloc phase=scene_create_oom status=null scenes=0 fail_hits=1'
+		'alloc phase=scene_create_oom a_allocs='
 		'alloc phase=scene_create a_allocs='
 		'alloc phase=static_create a_allocs='
 		'alloc phase=dynamic_create a_allocs='
@@ -5979,7 +5981,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2720  # adds scene allocator ownership coverage for Foundation, SDK, Scene, actor and shape lifecycle
+	'5' = 2722  # adds Scene base-allocation failure handling via the Foundation allocator
+				# prior 2720 includes Foundation, SDK, Scene, actor and shape allocator ownership
 				# adds focused initial Fluid ParticleData channel and stride coverage
 				# adds Fluid constructor state and default-layout coverage
 				# previous 2703 plus two product-code-specific FluidCreate assertions
@@ -6074,7 +6077,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1791  # adds the Scene condition, auxiliary, and worker-state allocator differential
+	'7' = 1793  # adds Scene base-allocation failure handling and allocator ownership differential
 				# adds ParticleArrayGrow allocation-failure ordering coverage
 				# adds enabled NxFluid::addParticles and ParticleArrayGrow coverage
 				# adds Fluid constructor state and default-layout coverage

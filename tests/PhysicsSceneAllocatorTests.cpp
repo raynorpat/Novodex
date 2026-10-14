@@ -40,8 +40,12 @@ class NxCountingAllocator : public NxUserAllocator
 	{
 	public:
 	enum { HISTORY = 256 };
-	explicit NxCountingAllocator(unsigned tag) : mTag(tag), mAllocations(0), mFrees(0)
+	explicit NxCountingAllocator(unsigned tag) : mTag(tag), mAllocations(0), mFrees(0),
+		mFailSize(0), mFailHits(0)
 		{ memset(mAllocSizes, 0, sizeof(mAllocSizes)); memset(mFreedSizes, 0, sizeof(mFreedSizes)); }
+
+	void failNextAllocationOfSize(unsigned size) { mFailSize = size; }
+	unsigned failHits() const { return mFailHits; }
 
 	virtual void* malloc(size_t size) { return allocate(size); }
 	virtual void* malloc(size_t size, NxMemoryType) { return allocate(size); }
@@ -83,6 +87,12 @@ class NxCountingAllocator : public NxUserAllocator
 
 	void* allocate(size_t size)
 		{
+		if(mFailSize == size)
+			{
+			mFailSize = 0;
+			++mFailHits;
+			return 0;
+			}
 		unsigned* h = static_cast<unsigned*>(::malloc(size + 8));
 		if(!h)
 			return 0;
@@ -97,6 +107,8 @@ class NxCountingAllocator : public NxUserAllocator
 	unsigned mTag;
 	unsigned mAllocations;
 	unsigned mFrees;
+	unsigned mFailSize;
+	unsigned mFailHits;
 	unsigned mAllocSizes[HISTORY];
 	unsigned mFreedSizes[HISTORY];
 	};
@@ -172,7 +184,17 @@ int wmain(int argc, wchar_t** argv)
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();
 	sceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	gFoundationAllocator.failNextAllocationOfSize(0x710);
 	mark = nxMark();
+	NxScene* failedScene = sdk->createScene(sceneDesc);
+	const bool sceneAllocationFailureExact = failedScene == 0
+		&& sdk->getNbScenes() == 0
+		&& gFoundationAllocator.failHits() == 1;
+	printf("alloc phase=scene_create_oom status=%s scenes=%u fail_hits=%u\n",
+		failedScene ? "created" : "null", sdk->getNbScenes(), gFoundationAllocator.failHits());
+	nxReport("scene_create_oom", mark);
+	if(!sceneAllocationFailureExact)
+		return nxFail("Scene allocation failure changed public result or left an SDK Scene");
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene) return nxFail("scene creation failed");
 	nxReport("scene_create", mark);
