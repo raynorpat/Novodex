@@ -398,4 +398,4 @@ The immediate-return mutant passed with stdout_delta=0 and exact stderr. The arc
 
 ### M6.21 — Island joint/contact solver dispatch (`phys_fn_000728`)
 
-The registered friction simulation rejects an immediate-return mutant (oracle_exit=0, candidate_exit=1, stdout_delta=6874); restored exact control is recorded at D:\Novodex-m6-21-728-restored-gate-20261014.log. Phase 7 ledger moves to 308 closed / 252 deferred. Awaiting post-merge full Phase 7 gate and final checks.
+The registered friction simulation rejects an immediate-return mutant (oracle_exit=0, candidate_exit=1, stdout_delta=6874); restored exact control is recorded at D:\Novodex-m6-21-728-restored-gate-20261014.log. Phase 7 ledger moves to 308 closed / 252 deferred. Post-merge full Phase 7 passes at 1,793/1,793; 831 tool tests and 742 subtests pass; inventory/backlog and both header manifests pass. Mainline commit d5122e4d contains the packet; row 000720 remains open.

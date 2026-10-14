@@ -13,4 +13,4 @@ An immediate-return mutation is rejected by the friction simulation (`oracle_exi
 
 ## Remaining checks
 
-Run tool tests, inventory/backlog/header checks, and full Phase 7 gate on main after merge. Retain raw build/differential logs and mutation patch. Row 000720 remains open.
+Complete: 831 tool tests and 742 subtests pass; inventory/backlog validate; both public-header manifests pass; post-merge full Phase 7 gate on main passes at 1,793/1,793. Raw build/differential logs, post-merge gate transcript, and mutation patch are retained. Row 000720 remains open.

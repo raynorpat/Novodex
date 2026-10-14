@@ -10,4 +10,4 @@ A clean Win32 Release archive produced an exact baseline (`oracle_exit=0`, `cand
 
 The extracted archive source was restored byte-for-byte (SHA-256 `4c02a1a7e5d7321d9bbead4b5c4b7e7cd5efdb4a1956d28d490891395734995a`). MSBuild recompiled `Island.cpp`; the restored staged-pair differential is exact (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`).
 
-Raw configure/build/differential logs and the exact mutation patch are under `evidence/raw/phase7-island-constraint-contact-solve-000728-20261014/`. Row 000720 remains open: its no-op mutation had zero transcript delta, so current public scenarios did not exercise its dirty-island rebuild branch.
+The fresh full Phase 7 gate also passes after commit `d5122e4d` was fast-forwarded to `main` (1,793/1,793 coverage assertions); its transcript is included with the configure/build/differential logs and exact mutation patch under `evidence/raw/phase7-island-constraint-contact-solve-000728-20261014/`. Row 000720 remains open: its no-op mutation had zero transcript delta, so current public scenarios did not exercise its dirty-island rebuild branch.
