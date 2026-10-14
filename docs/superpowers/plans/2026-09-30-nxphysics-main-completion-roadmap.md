@@ -1849,3 +1849,7 @@ Returning before the body-step helper stores gravity and clears auxiliary accele
 ### Continuation — Phase 2 shared island root lookup (`phys_fn_000712`, `2026-10-14`)
 
 The Phase 2-owned root/path-compression helper is now discharged by Phase 5. Returning null instead of the compressed root is rejected by `NxPhysicsSimulationTests` (`stdout_delta=771`, candidate access violation); the restored differential is exact. The full Phase 5 gate passes at 2,708/2,708 coverage assertions. Phase 2 now records 64 closed functions and 79 deferred; Phase 7 ownership counts are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase5-island-root-return-000712.md` and archived transcripts.
+
+### Continuation — Island sleep/wake update (`phys_fn_000714`, `2026-10-14`)
+
+Returning before the sleep-group version, velocity thresholds, sleep timer, and awake-flag update is rejected by `NxPhysicsSimulationTests` (`stdout_delta=5918`, both exits zero, exact stderr); the restored differential is exact. The fresh full Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 now records 282 closed functions and 278 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-sleep-wake-update-000714.md` and archived transcripts. Full DLL reconstruction remains active.

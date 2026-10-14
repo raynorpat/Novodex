@@ -13602,13 +13602,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/286",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2024",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15d70-0x15eb5 (x87): thiscall ret 4; the +0x1b8/G+0x1f4 check and 0.4f wake raise (test ah,5; jp: ordered below 0x101053d4), the saved/live velocity choice on +0x1e4 bit 5, |v|^2 kept and |w|^2 spilled to float as the listing does, both ordered below +0xd0/+0xd4, the wake decrement (fst, then the register value against 0) and the final +0x114 bit-8 clear are reproduced by Island.cpp Row000714Fixture::row000714. Reachable only from the simulation step (000636 -> 000732 -> row); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair mutation falsification: returning before Row000714Fixture::row000714 sleep/wake updates is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=5918, stderr_exact=True). Restoring and rebuilding yields oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase7-island-sleep-wake-update-000714.md; raw logs: evidence/raw/phase7-island-sleep-wake-update-000714-20261014/.",
+      "notes": "Island sleep/wake group version, velocity thresholds, sleep timer, and awake-flag updates are mutation-falsified through the registered Phase 7 simulation differential.",
       "implementation": "Physics/src/Island.cpp"
     },
     {
