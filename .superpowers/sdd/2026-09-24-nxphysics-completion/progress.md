@@ -406,4 +406,4 @@ Ruling for M6.22: select `phys_fn_000730`, the 42-byte null-safe traversal that 
 
 ### M6.22 — Island body-chain solver traversal (`phys_fn_000730`)
 
-The registered public friction simulation rejects an immediate-return mutation (oracle_exit=0, candidate_exit=1, stdout_delta=6874); the byte-restored and recompiled control is exact. Phase 7 ledger moves to 309 closed / 251 deferred. Awaiting post-merge full Phase 7 gate. Row 000720 remains open.
+The registered public friction simulation rejects an immediate-return mutation (oracle_exit=0, candidate_exit=1, stdout_delta=6874); the byte-restored and recompiled control is exact. Phase 7 ledger moves to 309 closed / 251 deferred. Mainline commit 7f5a0d6b contains the packet; the post-merge full Phase 7 gate passes at 1,793/1,793 and its compressed transcript is preserved with the raw evidence. Row 000720 remains open.
