@@ -482,3 +482,8 @@ The populated-scene teardown target now asserts that `NpScene` is allocated as 4
 ### M7.8 — Box shape descriptor default (phys_fn_002314)
 
 The row was mis-mapped to the triangle-mesh initializer; IDA's vtable at 0x10108818 identifies NxBoxShapeDesc::setToDefault. The CMake candidate DLL matches all 80 initialized bytes against the oracle. Patching the map-resolved candidate method to ret is caught with 76 mismatches; the restored full layout differential passes. Phase 7 moves to 339 closed / 221 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-shape-desc-default-002314.md.
+
+
+### M7.9 — Scene owner-pair entry (phys_fn_000517)
+
+The registered Phase 7 simulation reaches the owner-pair helper through row 000521. Changing only 000517's owner load is caught: the candidate retains the root record (stdout_delta=4007). Restoring the source byte-for-byte and rebuilding returns the exact differential. The candidate function also contains continuation 000519; that row remains open. Phase 7 moves to 340 closed / 220 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-owner-pair-record-remove-000517.md.

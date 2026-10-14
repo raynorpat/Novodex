@@ -9984,13 +9984,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/191",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1412",
-      "static_proof": "Ghidra manifest #/functions/191 contains extents 0x00010370..0x00010388 (24 B) and 0x00010390..0x000103de (78 B, inventory continuation row 000519). The entry loads the scene pair count and record pointer; its continuation reads Shape+0xd4, frees a nonzero even payload through nxFoundationSDKAllocator, removes a matching owner-pair via 004157, and advances the record cursor only when the compacted current record is retained.",
-      "dynamic_proof": "Direct oracle/candidate differential at RVA 0x00010370: four fixtures cover removal with an unrelated compacted tail, absent owners, allocator-backed payload release, and a match through the second owner key. All 352 compared state bytes match (digest 70c14cd0779b5bf3; input digest 9ef095ee83495ec3). Oracle SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 FDD8F52F1470F80269D6AE84FA1BCE30B557029669E2B644D88D88ED7717A929.",
-      "notes": "reconstructed_not_falsified: differential covers compacted-tail cursor behavior, no match, allocator-backed payload release, and either owner-key position."
+      "static_proof": "The Ghidra extent at 0x10370..0x10388 is the 24-byte entry that loads the scene pair-map count and record pointer. The neighboring row 000519 is the loop continuation. Candidate symbol ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z in NxPhysics.map (VA 0x1005da80) implements the combined entry and loop.",
+      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests actor-owner-pair fixture drives row 000521 through this candidate helper. Mutating only the row 000517 owner load to zero changes root_removed=1 to root_removed=0 and fails (oracle_exit=0, candidate_exit=1, stdout_delta=4007); the restored pair is exact (stdout_delta=0, exact stderr). The four-case direct candidate/oracle map differential also matches all 352 state bytes. See evidence/phase7-scene-owner-pair-record-remove-000517.md.",
+      "notes": "The candidate C++ implementation combines oracle entry 000517 with loop continuation 000519. The registered mutation changes only the owner value loaded by 000517; row 000519 remains separately open."
     },
     {
       "id": "phys_fn_000518",

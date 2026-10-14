@@ -10999,3 +10999,6 @@ Phase 7 continuation: phys_fn_000498 (NxShapeDesc::isValid) is mutation-falsifie
 
 
 Phase 7 continuation: phys_fn_002314 (NxBoxShapeDesc::setToDefault) is mutation-falsified through NxPhysicsObjectLayoutTests and the map-resolved CMake candidate DLL method. The restored candidate matches all 80 descriptor bytes; replacing the method entry with ret is caught with 76 mismatches. See phase7-shape-desc-default-002314.md.
+
+
+Phase 7 continuation: phys_fn_000517 (scene owner-pair entry) is mutation-falsified through NxPhysicsSimulationTests. Changing only the owner load causes the row 000521 fixture to retain the root record (stdout_delta=4007); the restored candidate passes exactly. The candidate combines 000517 with neighboring continuation 000519, which remains open. See phase7-scene-owner-pair-record-remove-000517.md.
