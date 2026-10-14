@@ -917,3 +917,8 @@ The simulation test now directly probes the row's continuation using a seeded jo
 ### M6.32 — Material combine selector (`phys_fn_000855`)
 
 A direct `NxPhysicsSimulationTests` DLL probe checks average, minimum, multiply, maximum, and unknown-mode maximum. Replacing only the row with an immediate return of its first argument is rejected (`candidate_exit=1`, `stdout_delta=4000`); restored output is exact. Phase 7 now records 320 closed / 240 deferred. Phase 5/6/7 coverage floors advance to 2,730/1,655/1,804. See `docs/reconstruction/novodex-physics/evidence/phase7-material-combine-000855.md`.
+
+
+### M6.33 — Body-base kinematic destructor (`phys_fn_000799`)
+
+An empty-body mutation of `DynamicBodyBase::destruct` drops the kinematic-release free from six to five and is rejected by `NxPhysicsBodyCreationTests` (`stdout_delta=8`, both exits zero). Restored output is exact. The fixture is registered in Phase 7, whose gate passes at 1,975/1,975 coverage assertions. Phase 7 records 321 closed / 239 deferred. See `docs/reconstruction/novodex-physics/evidence/phase7-body-base-dtor-000799.md`.

@@ -463,3 +463,8 @@ The direct DLL probe checks the joint-array continuation independently; suppress
 ### M6.32 — Material combine selector (`phys_fn_000855`)
 
 A direct `NxPhysicsSimulationTests` DLL probe checks all five relevant selector results: average, minimum, multiply, maximum, and unknown-mode maximum. Replacing only the row with an immediate return of the first argument is rejected (`candidate_exit=1`, `stdout_delta=4000`); the restored oracle/candidate differential is exact. Phase 7 moves to 320 closed / 240 deferred. Full Phase 5/6/7 gates pass at 2,730/2,730, 1,655/1,655 and 1,804/1,804. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-material-combine-000855.md` and its raw packet.
+
+
+### M6.33 — Body-base kinematic destructor (`phys_fn_000799`)
+
+The existing kinematic actor release case detects an empty-body mutation of `DynamicBodyBase::destruct`: allocator traffic drops from six frees to five (`stdout_delta=8`, both exits zero). Restored output is exact. The body-creation differential is now registered to Phase 7; the raised full Phase 7 gate passes at 1,975/1,975. Phase 7 moves to 321 closed / 239 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-base-dtor-000799.md`.
