@@ -10905,3 +10905,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_000732`: an immediate-return mutation of `Row000732Fixture::row000732` changes automatic sleeping from 1 to 0 and is rejected by `NxPhysicsSimulationTests` (`stdout_delta=6720`, candidate exit 1); restoring the source byte-for-byte rebuilds the baseline DLL and produces exact output. See [phase7-body-sleep-wake-000732.md](phase7-body-sleep-wake-000732.md).
 
 `phys_fn_000728`: an immediate-return mutation suppressing the per-island joint and contact-pair solve loops is rejected by the public friction simulation (`candidate_exit=1`, `stdout_delta=6874`); the byte-restored source and rebuilt control are exact. See [phase7-island-constraint-contact-solve-000728.md](phase7-island-constraint-contact-solve-000728.md).
+
+`phys_fn_000730`: a no-op suppressing island body-chain traversal is rejected by the public friction simulation (`candidate_exit=1`, `stdout_delta=6874`); restoring the source and rebuilding returns exact output. See [phase7-island-body-chain-solver-000730.md](phase7-island-body-chain-solver-000730.md).
