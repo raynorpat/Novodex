@@ -10340,13 +10340,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "setter [this+0x544]=[esp+4] (0x106e0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/200",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1444",
       "static_proof": "mov eax,[esp+4]; mov [ecx+0x544],eax; ret 4",
-      "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0",
-      "notes": ""
+      "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0; Phase 7: suppressing NpScene::simulate elapsed-time storage at Scene+0x544 is caught by NxPhysicsSimulationTests (oracle_exit=0, candidate_exit=1, stdout_delta=6891); restored differential is exact. See evidence/phase7-npscene-elapsed-time-store-000538-20261013.md.",
+      "notes": "",
+      "implementation": "Physics/src/NpScene.cpp"
     },
     {
       "id": "phys_fn_000539",

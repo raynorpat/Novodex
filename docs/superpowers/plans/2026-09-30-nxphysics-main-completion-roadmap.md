@@ -1769,3 +1769,8 @@ The internal Scene timing setter now has a row-specific mutation proof: suppress
 ### Continuation — Scene timing copy-out (`phys_fn_000542`, 2026-10-13)
 
 The internal Scene timing getter now has a row-specific mutation proof: suppressing its three output copies changes the registered simulation transcript by four bytes (both exits zero, exact stderr); restored output is exact. Fresh Phase 7 passes at 1,770/1,770. Phase 7 closes 267 functions and defers 293. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-timing-helper-000542-20261013.md`.
+
+
+### Continuation — NpScene elapsed-time store (`phys_fn_000538`, 2026-10-13)
+
+Suppressing the elapsed-time write at Scene+0x544 in `NpScene::simulate` is rejected by the registered simulation differential (oracle exit 0, candidate exit 1, `stdout_delta=6891`); restored output is exact. Fresh Phase 7 passes at 1,770/1,770. Phase 7 closes 268 functions and defers 292. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-elapsed-time-store-000538-20261013.md`.
