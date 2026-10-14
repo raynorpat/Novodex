@@ -888,3 +888,8 @@ The public CCD scene is insensitive to an immediate-return mutation, so the regi
 ### M6.26 — Dirty island record reset (`phys_fn_000764`)
 
 The registered simulation exercises the per-body post-joint island reset. An immediate-return mutation causes the candidate to access-violate while the oracle exits cleanly (`stdout_delta=3898`, exact stderr); restoring the source gives an exact staged-pair control. The row is closed through the existing Phase 7 `NxPhysicsSimulationTests` target; no public headers or production code changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-record-reset-000764.md`.
+
+
+### M6.27 — Joint island linking (`phys_fn_000762`)
+
+The registered joint-break simulation exercises the row's joint-island link: an immediate-return mutation suppresses the expected notification and is rejected (`candidate_exit=1`, `stdout_delta=876`). Restoring `Island.cpp` byte-for-byte returns an exact differential. Phase 7 now records 314 closed / 246 deferred rows. No public headers or production source changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-island-link-000762.md`.

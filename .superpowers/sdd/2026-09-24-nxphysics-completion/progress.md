@@ -432,3 +432,10 @@ The direct `NxPhysicsCcdSimulationTests` probe verifies the row's valid bit and 
 The registered Phase 7 simulation rejects a row-only immediate return: the oracle exits 0, the candidate access-violates, the transcript differs by 3,898 bytes, and stderr is exact. The byte-restored rebuild matches exactly. Phase 7 moves to 313 closed / 247 deferred rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-record-reset-000764.md`.
 
 Ruling for M6.27: test `phys_fn_000762`, the joint-island linker, by a row-only mutation against the existing registered simulation first; add a direct DLL probe only if that public path does not detect it.
+
+
+### M6.27 — Joint island linking (`phys_fn_000762`)
+
+The registered Phase 7 simulation rejects a row-only immediate return because the joint-break notification is no longer reported (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=876`). The byte-restored rebuild is exact. Phase 7 moves to 314 closed / 246 deferred rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-island-link-000762.md`.
+
+Ruling for M6.28: select the next falsifiable row from the current Phase 7 ledger.

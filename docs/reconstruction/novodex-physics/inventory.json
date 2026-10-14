@@ -14506,13 +14506,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/309",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2144",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x177c0-0x17922: thiscall ret 4; the joint+8 test with the wake raise on the record itself (twice on the two-body path, both reading esi), the 000712 finds, the island-object release through 004167 and the Foundation allocator's free, root+0x1c4 increment, the +0x11c (jae) choice of the +0x1d8/+0x34 and +0x1dc/+0x38 lists, the 000716 merge and the single-body +0x1e4 |= 2 are reproduced by Island.cpp Row000762Fixture::row000762 (004167 is reconstructed in core/JointSupport.cpp and directly differentially tested). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. Integration review: 0x177d1-0x177ec and 0x17856-0x17871 both read esi, so the record itself is woken twice on the two-body path (the contract row's 'wakes body1' is corrected). units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: replacing only Row000762Fixture::row000762 with an immediate return causes the joint-break notification count check to fail (oracle_exit=0, candidate_exit=1, stdout_delta=876, stderr_exact=False). Restoring Island.cpp byte-for-byte and rebuilding returns an exact differential (stdout_delta=0, stderr_exact=True). See evidence/phase7-joint-island-link-000762.md and evidence/raw/phase7-joint-island-link-000762-20261014/.",
+      "notes": "The registered public simulation exercises joint-to-island linking; a row-only immediate-return mutation is rejected when the joint-break notification callback count changes.",
       "implementation": "Physics/src/Island.cpp"
     },
     {
