@@ -25,6 +25,9 @@
 #ifndef NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP
 #define NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP 0
 #endif
+#ifndef NX_FLUID_ADD_PARTICLES_TEST
+#define NX_FLUID_ADD_PARTICLES_TEST 0
+#endif
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32,
 	NxUserAllocator*, NxUserOutputStream*);
@@ -126,6 +129,20 @@ static NxFluid* nxCreateFluidWithSeh(NxScene* scene, const NxFluidDesc* desc,
 		}
 	}
 
+static void nxAddFluidParticlesWithSeh(NxFluid* fluid, const NxParticleData* data,
+	unsigned* exceptionCode)
+	{
+	*exceptionCode = 0;
+	__try
+		{
+		fluid->addParticles(*data);
+		}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+		{
+		*exceptionCode = GetExceptionCode();
+		}
+	}
+
 static unsigned nxFluidInitialParticleArrayCount(const unsigned char* manager,
 	unsigned offset)
 	{
@@ -146,6 +163,8 @@ int wmain(int argc, wchar_t** argv)
 	const char* const testName = "NxPhysicsFluidZeroInitialParticlesTests";
 	#elif NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP
 	const char* const testName = "NxPhysicsFluidInitialParticleCapacityClipTests";
+	#elif NX_FLUID_ADD_PARTICLES_TEST
+	const char* const testName = "NxPhysicsFluidAddParticlesTests";
 	#else
 	const char* const testName = "NxPhysicsFluidInitialParticlesTests";
 	#endif
@@ -241,6 +260,24 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("particle-capacity controls are missing");
 		}
 	setFluidMaxParticles(1);
+	#elif NX_FLUID_ADD_PARTICLES_TEST
+	typedef unsigned (__cdecl *GetFluidCallbackCallsFn)();
+	typedef unsigned (__cdecl *GetParticleArrayCallsFn)();
+	GetFluidCallbackCallsFn getFluidGetParticlesCalls =
+		reinterpret_cast<GetFluidCallbackCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidGetParticlesCalls"));
+	GetParticleArrayCallsFn getParticleArrayAllocCalls =
+		reinterpret_cast<GetParticleArrayCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidParticleArrayAllocCalls"));
+	GetParticleArrayCallsFn getParticleArrayGrowCalls =
+		reinterpret_cast<GetParticleArrayCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidParticleArrayGrowCalls"));
+	if(!getFluidGetParticlesCalls || !getParticleArrayAllocCalls ||
+		!getParticleArrayGrowCalls)
+		{
+		sdk->release();
+		return nxFail("addParticles callback counters are missing");
+		}
 	#elif NX_FLUID_ZERO_INITIAL_PARTICLES
 	typedef unsigned (__cdecl *GetFluidGetParticlesCallsFn)();
 	typedef unsigned (__cdecl *GetParticleArrayAllocCallsFn)();
@@ -271,7 +308,8 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("fluid scene creation failed");
 		}
 
-	NxU32 particleCount = NX_FLUID_ZERO_INITIAL_PARTICLES ? 0 : 2;
+	NxU32 particleCount = NX_FLUID_ZERO_INITIAL_PARTICLES ||
+		NX_FLUID_ADD_PARTICLES_TEST ? 0 : 2;
 	NxF32 positions[8] = { 1.0f, -2.5f, 3.5f, 91.0f,
 		-1.5f, 2.0f, 4.0f, 92.0f };
 	NxF32 velocities[8] = { -4.5f, 5.25f, -6.75f, 93.0f,
@@ -299,7 +337,20 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<void**>(internal + 0x78)) : 0;
 	unsigned char* records = array ? static_cast<unsigned char*>(
 		*reinterpret_cast<void**>(array)) : 0;
-	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE || NX_FLUID_GET_PARTICLES_NULL_FAILURE || NX_FLUID_ZERO_INITIAL_PARTICLES || NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP
+	#if NX_FLUID_ADD_PARTICLES_TEST
+	particleCount = 2;
+	unsigned addParticlesException = 0;
+	if(fluid)
+		nxAddFluidParticlesWithSeh(fluid, &desc.initialParticleData,
+			&addParticlesException);
+	internal = fluid ? static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(fluid) + 0x14)) : 0;
+	array = internal ? static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(internal + 0x78)) : 0;
+	records = array ? static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(array)) : 0;
+	#endif
+	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE || NX_FLUID_GET_PARTICLES_NULL_FAILURE || NX_FLUID_ZERO_INITIAL_PARTICLES || NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP || NX_FLUID_ADD_PARTICLES_TEST
 	unsigned char* sceneInternal = *reinterpret_cast<unsigned char**>(
 		reinterpret_cast<unsigned char*>(scene) + 0x24);
 	unsigned char* manager = sceneInternal ? static_cast<unsigned char*>(
@@ -351,7 +402,40 @@ int wmain(int argc, wchar_t** argv)
 	if(!descValid || !zeroParticleContract)
 		return nxFail("zero-count initial-particle behavior differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
-	#else
+	#elif NX_FLUID_ADD_PARTICLES_TEST
+	const unsigned addedCount = array
+		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
+	const bool addedPositionsMatch = records &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 4)) ==
+			0x3f800000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 8)) ==
+			0xc0200000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 12)) ==
+			0x40600000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 96)) ==
+			0xbfc00000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 100)) ==
+			0x40000000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 104)) ==
+			0x40800000u;
+	const bool addParticlesContract = fluid && !addParticlesException &&
+		addedCount == 2 && addedPositionsMatch &&
+		manager && internalCount == 1 && publicCount == 1 &&
+		getFluidGetParticlesCalls() == 2 &&
+		getParticleArrayAllocCalls() == 1 &&
+		getParticleArrayGrowCalls() == 1;
+	printf("fluid add-particles caught=%u array-count=%u positions=%u callbacks=%u allocations=%u grows=%u\n",
+		addParticlesException ? 1u : 0u, addedCount,
+		addedPositionsMatch ? 1u : 0u, getFluidGetParticlesCalls(),
+		getParticleArrayAllocCalls(), getParticleArrayGrowCalls());
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !addParticlesContract)
+		return nxFail("NxFluid::addParticles differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
+	#elif NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP
 	const unsigned clippedCount = array
 		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
 	const bool clippedPositionMatch = records &&

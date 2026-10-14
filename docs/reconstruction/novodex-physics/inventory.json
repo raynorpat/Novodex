@@ -69494,13 +69494,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1404",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12763",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at 0x0008b480 shows the NxFluid::addParticles wrapper taking the Scene write lock at wrapper+0x0c, returning an NpFluid.cpp line-86 error when locking fails, rejecting reentry at line 87, setting the shared reentry flag, calling phys_fn_003503 with the internal fluid at wrapper+0x14 and the caller's NxParticleData, clearing reentry, and releasing the lock.",
+      "dynamic_proof": "NxPhysicsFluidAddParticlesTests creates a fluid with an empty ParticleArray, adds two strided particles through the public NxFluid::addParticles vtable slot, and differentially confirms array-count=2, both positions, two FluidGetParticles calls, one initial allocation, and one ParticleArrayGrow call. The oracle/candidate stdout and stderr match exactly; restoring a null slot mutation is rejected. Evidence is recorded in evidence/phase7-fluid-internal-create-003497-003503.md.",
+      "notes": "The public addParticles entry point and its write-lock/reentry wrapper are reconstructed and gated. The shared phys_fn_003503 still has other open branches and is not closed. Keep this row dynamically gated."
     },
     {
       "id": "phys_fn_003711",

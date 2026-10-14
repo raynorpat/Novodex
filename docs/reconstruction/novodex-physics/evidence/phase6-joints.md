@@ -10802,3 +10802,8 @@ These split census rows are one all-shapes raycast loop. Suppressing `report.onH
 ## Phase 7 continuation: NpScene joint-break notifier store `phys_fn_000545`
 
 `phys_fn_000545` helper no-op mutation is rejected by the joint-break notifier fixture in `NxPhysicsSimulationTests` (`stdout_delta=831`, oracle exit 0, candidate exit 1); restored output is exact. Fresh Phase 7 passes at 1,770/1,770 assertions. See [phase7-npscene-set-user-notify-helper-000545-20261013.md](phase7-npscene-set-user-notify-helper-000545-20261013.md) and archived raw logs.
+
+
+## Phase 7 continuation: fluid particle insertion `phys_fn_003710`
+
+`phys_fn_003710` null-slot mutation is rejected by `NxPhysicsFluidAddParticlesTests` (`stdout_delta=2`, candidate exit 1); the restored wrapper matches the oracle at `caught=0 array-count=2 positions=1 callbacks=2 allocations=1 grows=1`. The full Phase 7 runner reached its 1,777-assertion contract but failed because the separate `NxPhysicsSimulationTests` oracle process intermittently access-violates; see [phase7-fluid-internal-create-003497-003503.md](phase7-fluid-internal-create-003497-003503.md) and archived raw logs.

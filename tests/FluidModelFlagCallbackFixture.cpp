@@ -70,6 +70,7 @@ static unsigned gFluidGetDampingCalls;
 static unsigned gFluidSetStiffnessCalls;
 static unsigned gFluidParticleArrayAllocCalls;
 static unsigned gFluidParticleArrayAllocFailure;
+static unsigned gFluidParticleArrayGrowCalls;
 static unsigned gFluidGetParticlesCalls;
 static unsigned gFluidGetParticlesReturnNull;
 static unsigned gFluidMaxParticles = 0x1234u;
@@ -741,6 +742,12 @@ NxGetFluidParticleArrayAllocCalls()
 	return gFluidParticleArrayAllocCalls;
 	}
 
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidParticleArrayGrowCalls()
+	{
+	return gFluidParticleArrayGrowCalls;
+	}
+
 extern "C" __declspec(dllexport) void __cdecl
 NxSetFluidGetParticlesNull(unsigned enabled)
 	{
@@ -785,6 +792,7 @@ ParticleArrayAlloc(unsigned count)
 extern "C" __declspec(dllexport) unsigned __cdecl ParticleArrayGrow(
 	NxFluidParticleArrayFixture* array, unsigned count, unsigned fill)
 	{
+	++gFluidParticleArrayGrowCalls;
 	if(!array)
 		return 0;
 	if(count > array->capacity)
