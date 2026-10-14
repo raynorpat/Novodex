@@ -73,7 +73,17 @@ direct-target build are archived under
 
 This validates the constructor/destruction paths, valid-descriptor public
 creation, property getters/setters, `setParticles`, valid/invalid
-`setMeshData`, and callback reentry. Invalid create descriptors, lock
-contention, and allocation failures still need row-specific differentials. Keep
+`setMeshData`, and callback reentry. A registered constructor test now fails the
+measured 0x3c-byte surface-mesh manager allocation while creating a licensed
+fluid. Both DLLs still create and release the fluid, report no error, and make
+no implicit-mesh backend callbacks; the focused differential is exact. A
+mutation removing the allocation-null guard faults only the candidate and is
+rejected. The focused test and fresh Phase 7 gate pass at 1,779/1,779; archived
+transcripts are in `evidence/raw/phase7-fluid-licensed-surface-mesh-003503-20261014/`.
+
+IDA shows that `phys_fn_003705` indexes the manager returned by the internal
+constructor without a null check. Invalid descriptors therefore remain open
+for further oracle validation, as do lock contention and later wrapper
+allocation failure. Keep
 `phys_fn_003503` and `phys_fn_003705` open; the full DLL reconstruction remains
 active. No public Physics headers were changed.

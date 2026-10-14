@@ -4686,11 +4686,49 @@ int wmain(int argc, wchar_t** argv)
 		unlicensedSurfaceMeshCreateWarningExact ? 1u : 0u);
 	if(surfaceMeshFluid)
 		surfaceMeshScene->releaseFluid(*surfaceMeshFluid);
+	resetFluidManagerCallbacks();
+	NxFluidDesc surfaceMeshConstructorAllocationFailureDesc;
+	surfaceMeshConstructorAllocationFailureDesc.setToDefault();
+	surfaceMeshConstructorAllocationFailureDesc.surfaceMeshDesc =
+		&licensedSurfaceMeshDesc;
+	NxSimulationFailSizeAllocator surfaceMeshConstructorFailAllocator(
+		*savedFluidAllocator, 0x3c);
+	*fluidFoundationAllocatorSlot = &surfaceMeshConstructorFailAllocator;
+	simulationOutput.resetLast();
+	const unsigned surfaceMeshConstructorAllocationErrorsBefore =
+		simulationOutput.errors;
+	NxFluid* const surfaceMeshConstructorAllocationFailureFluid =
+		surfaceMeshScene ? surfaceMeshScene->createFluid(
+			surfaceMeshConstructorAllocationFailureDesc) : 0;
+	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	FluidManagerCallbackSummary surfaceMeshConstructorFailureCallbacks = {};
+	getFluidManagerCallbackSummary(&surfaceMeshConstructorFailureCallbacks);
+	const bool surfaceMeshConstructorAllocationFailureAccepted =
+		surfaceMeshConstructorAllocationFailureFluid &&
+		surfaceMeshConstructorFailAllocator.mFailCount == 1 &&
+		simulationOutput.errors == surfaceMeshConstructorAllocationErrorsBefore &&
+		simulationOutput.code == NXE_NO_ERROR &&
+		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshCreate == 0 &&
+		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshDestroy == 0;
+	if(surfaceMeshConstructorAllocationFailureFluid)
+		surfaceMeshScene->releaseFluid(
+			*surfaceMeshConstructorAllocationFailureFluid);
+	getFluidManagerCallbackSummary(&surfaceMeshConstructorFailureCallbacks);
+	const bool surfaceMeshConstructorAllocationFailureMatches =
+		surfaceMeshConstructorAllocationFailureAccepted &&
+		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshCreate == 0 &&
+		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshDestroy == 0;
+	printf("simulation fluid constructor surface-mesh allocation-failure matched=%u attempts=%u callbacks=%u.%u\n",
+		surfaceMeshConstructorAllocationFailureMatches ? 1u : 0u,
+		surfaceMeshConstructorFailAllocator.mFailCount,
+		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshCreate,
+		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshDestroy);
 	if(surfaceMeshScene)
 		sdk->releaseScene(*surfaceMeshScene);
 	if(!surfaceMeshPublicApiMatches || !licensedSurfaceMeshConstructorMatches ||
 		!licensedSurfaceMeshPropertiesMatch ||
-		!licensedSurfaceMeshDestroyMatches)
+		!licensedSurfaceMeshDestroyMatches ||
+		!surfaceMeshConstructorAllocationFailureMatches)
 		return nxFail("licensed NxFluid implicit-mesh API did not match the fixture contract");
 	}
 	bool fluidManagerArrayGrowthMatches = false;
