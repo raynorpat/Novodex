@@ -677,6 +677,16 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_compile_definitions(NxPhysicsFluidInitialParticlesTests PRIVATE
 		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1)
 	target_link_libraries(NxPhysicsFluidInitialParticlesTests bcrypt)
+	add_executable(NxPhysicsFluidManagerGrowthFailureTests tests/PhysicsFluidManagerGrowthFailureTests.cpp)
+	target_include_directories(NxPhysicsFluidManagerGrowthFailureTests PRIVATE Foundation/include Physics/include)
+	target_compile_definitions(NxPhysicsFluidManagerGrowthFailureTests PRIVATE
+		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1)
+	target_link_libraries(NxPhysicsFluidManagerGrowthFailureTests bcrypt)
+	add_executable(NxPhysicsFluidManagerGrowthSecondFailureTests tests/PhysicsFluidManagerGrowthFailureTests.cpp)
+	target_include_directories(NxPhysicsFluidManagerGrowthSecondFailureTests PRIVATE Foundation/include Physics/include)
+	target_compile_definitions(NxPhysicsFluidManagerGrowthSecondFailureTests PRIVATE
+		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1 NX_FLUID_MANAGER_FAIL_ORDINAL=2)
+	target_link_libraries(NxPhysicsFluidManagerGrowthSecondFailureTests bcrypt)
 	add_executable(NxPhysicsTriangleMeshReleaseLockTests tests/PhysicsTriangleMeshReleaseLockTests.cpp)
 	target_include_directories(NxPhysicsTriangleMeshReleaseLockTests PRIVATE
 		Foundation/include Physics/include Physics/src/include)
@@ -930,6 +940,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_target_properties(NxPhysicsFluidModelCallbackFixture PROPERTIES
 		OUTPUT_NAME FluidModel PREFIX "")
 	add_dependencies(NxPhysicsFluidInitialParticlesTests NxPhysics NxPhysicsFluidModelCallbackFixture)
+	add_dependencies(NxPhysicsFluidManagerGrowthFailureTests NxPhysics NxPhysicsFluidModelCallbackFixture)
+	add_dependencies(NxPhysicsFluidManagerGrowthSecondFailureTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	# The simulation differential loads this staged companion only for its
 	# extension-enabled fluid lifecycle case; all earlier cases retain the
 	# missing-backend behavior.

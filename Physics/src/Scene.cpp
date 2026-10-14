@@ -1781,8 +1781,6 @@ static void nxFluidManagerArrayPush(void* arrayHeader, unsigned value)
 		const unsigned capacity = count * 2 + 2;
 		unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
 			capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
-		if(!grown)
-			return;
 		for(unsigned i = 0; i != count; ++i)
 			grown[i] = reinterpret_cast<unsigned*>(first)[i];
 		if(first)
