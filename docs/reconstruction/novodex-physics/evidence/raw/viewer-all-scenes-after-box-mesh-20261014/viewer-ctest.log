@@ -1,0 +1,98 @@
+Test project C:/Users/raynorpat/.codex/worktrees/phase6-joint-base-dtor/Novodex/build/phase7-notify-getter
+      Start 14: ViewerSceneSmokePrepareAssets
+ 1/43 Test #14: ViewerSceneSmokePrepareAssets ...............   Passed   12.22 sec
+      Start 15: ViewerSceneTests
+ 2/43 Test #15: ViewerSceneTests ............................   Passed    6.49 sec
+      Start 16: ViewerSmokeScene_AnisoSki_demo
+ 3/43 Test #16: ViewerSmokeScene_AnisoSki_demo ..............   Passed    1.35 sec
+      Start 17: ViewerSmokeScene_BoxBoxTest00c_demo
+ 4/43 Test #17: ViewerSmokeScene_BoxBoxTest00c_demo .........   Passed    1.10 sec
+      Start 18: ViewerSmokeScene_BoxBoxTest00d_demo
+ 5/43 Test #18: ViewerSmokeScene_BoxBoxTest00d_demo .........   Passed    1.06 sec
+      Start 19: ViewerSmokeScene_BoxMeshTest01_demo
+ 6/43 Test #19: ViewerSmokeScene_BoxMeshTest01_demo .........   Passed    1.03 sec
+      Start 20: ViewerSmokeScene_CapsuleStack_demo
+ 7/43 Test #20: ViewerSmokeScene_CapsuleStack_demo ..........   Passed    1.22 sec
+      Start 21: ViewerSmokeScene_Character_demo
+ 8/43 Test #21: ViewerSmokeScene_Character_demo .............   Passed    1.15 sec
+      Start 22: ViewerSmokeScene_CompoundFall_demo
+ 9/43 Test #22: ViewerSmokeScene_CompoundFall_demo ..........   Passed    1.06 sec
+      Start 23: ViewerSmokeScene_Compounds_demo
+10/43 Test #23: ViewerSmokeScene_Compounds_demo .............   Passed    1.05 sec
+      Start 24: ViewerSmokeScene_ConvexTest16_demo
+11/43 Test #24: ViewerSmokeScene_ConvexTest16_demo ..........   Passed    1.17 sec
+      Start 25: ViewerSmokeScene_CowPile_demo
+12/43 Test #25: ViewerSmokeScene_CowPile_demo ...............***Skipped   1.16 sec
+      Start 26: ViewerSmokeScene_Domino_demo
+13/43 Test #26: ViewerSmokeScene_Domino_demo ................   Passed    1.07 sec
+      Start 27: ViewerSmokeScene_FrictionRamp_demo
+14/43 Test #27: ViewerSmokeScene_FrictionRamp_demo ..........   Passed    0.99 sec
+      Start 28: ViewerSmokeScene_Funnel_demo
+15/43 Test #28: ViewerSmokeScene_Funnel_demo ................   Passed    1.09 sec
+      Start 29: ViewerSmokeScene_Gears_demo
+16/43 Test #29: ViewerSmokeScene_Gears_demo .................   Passed    1.24 sec
+      Start 30: ViewerSmokeScene_NewLimits_demo
+17/43 Test #30: ViewerSmokeScene_NewLimits_demo .............   Passed    1.16 sec
+      Start 31: ViewerSmokeScene_PMapTest10_demo
+18/43 Test #31: ViewerSmokeScene_PMapTest10_demo ............***Skipped   1.03 sec
+      Start 32: ViewerSmokeScene_PMapTest12_demo
+19/43 Test #32: ViewerSmokeScene_PMapTest12_demo ............***Skipped   0.99 sec
+      Start 33: ViewerSmokeScene_PMapTest8_demo
+20/43 Test #33: ViewerSmokeScene_PMapTest8_demo .............***Skipped   1.02 sec
+      Start 34: ViewerSmokeScene_Penetration_Bip01
+21/43 Test #34: ViewerSmokeScene_Penetration_Bip01 ..........   Passed    1.06 sec
+      Start 35: ViewerSmokeScene_Penetration_demo
+22/43 Test #35: ViewerSmokeScene_Penetration_demo ...........   Passed    1.01 sec
+      Start 36: ViewerSmokeScene_PhysicsContactSmoke_demo
+23/43 Test #36: ViewerSmokeScene_PhysicsContactSmoke_demo ...   Passed    0.99 sec
+      Start 37: ViewerSmokeScene_PhysicsStepSmoke_demo
+24/43 Test #37: ViewerSmokeScene_PhysicsStepSmoke_demo ......   Passed    1.02 sec
+      Start 38: ViewerSmokeScene_PrisonMassive_demo
+25/43 Test #38: ViewerSmokeScene_PrisonMassive_demo .........   Passed    1.50 sec
+      Start 39: ViewerSmokeScene_Pyramid_demo
+26/43 Test #39: ViewerSmokeScene_Pyramid_demo ...............   Passed    1.10 sec
+      Start 40: ViewerSmokeScene_PyramidWithDude_demo
+27/43 Test #40: ViewerSmokeScene_PyramidWithDude_demo .......   Passed    1.07 sec
+      Start 41: ViewerSmokeScene_SimpleDemos_Demo
+28/43 Test #41: ViewerSmokeScene_SimpleDemos_Demo ...........   Passed    1.22 sec
+      Start 42: ViewerSmokeScene_SphereKnotCapsule_demo
+29/43 Test #42: ViewerSmokeScene_SphereKnotCapsule_demo .....   Passed    1.22 sec
+      Start 43: ViewerSmokeScene_SphereMeshTest00_demo
+30/43 Test #43: ViewerSmokeScene_SphereMeshTest00_demo ......   Passed    1.24 sec
+      Start 44: ViewerSmokeScene_SpinningTops_demo
+31/43 Test #44: ViewerSmokeScene_SpinningTops_demo ..........   Passed    1.31 sec
+      Start 45: ViewerSmokeScene_StackStress_demo
+32/43 Test #45: ViewerSmokeScene_StackStress_demo ...........   Passed    1.15 sec
+      Start 46: ViewerSmokeScene_StressSphereFall_demo
+33/43 Test #46: ViewerSmokeScene_StressSphereFall_demo ......   Passed    1.71 sec
+      Start 47: ViewerSmokeScene_StressTest08_demo
+34/43 Test #47: ViewerSmokeScene_StressTest08_demo ..........   Passed    1.26 sec
+      Start 48: ViewerSmokeScene_StressTest6d_demo
+35/43 Test #48: ViewerSmokeScene_StressTest6d_demo ..........   Passed    1.07 sec
+      Start 49: ViewerSmokeScene_TerrainBoxes_demo
+36/43 Test #49: ViewerSmokeScene_TerrainBoxes_demo ..........   Passed    1.21 sec
+      Start 50: ViewerSmokeScene_TriggerTest_demo
+37/43 Test #50: ViewerSmokeScene_TriggerTest_demo ...........   Passed    1.16 sec
+      Start 51: ViewerSmokeScene_TruckDemo_demo
+38/43 Test #51: ViewerSmokeScene_TruckDemo_demo .............***Skipped   1.10 sec
+      Start 52: ViewerSmokeScene_TruckTerrain_demo
+39/43 Test #52: ViewerSmokeScene_TruckTerrain_demo ..........   Passed    1.88 sec
+      Start 53: ViewerSmokeScene_TruckTrack_demo
+40/43 Test #53: ViewerSmokeScene_TruckTrack_demo ............   Passed    2.72 sec
+      Start 54: ViewerSmokeScene_TypesBreakable_demo
+41/43 Test #54: ViewerSmokeScene_TypesBreakable_demo ........   Passed    1.13 sec
+      Start 56: ViewerPhysicsStep
+42/43 Test #56: ViewerPhysicsStep ...........................   Passed    1.05 sec
+      Start 57: ViewerPhysicsContact
+43/43 Test #57: ViewerPhysicsContact ........................   Passed    1.13 sec
+
+100% tests passed out of 43
+
+Total Test time (real) =  68.16 sec
+
+The following tests did not run:
+	 25 - ViewerSmokeScene_CowPile_demo (Skipped)
+	 31 - ViewerSmokeScene_PMapTest10_demo (Skipped)
+	 32 - ViewerSmokeScene_PMapTest12_demo (Skipped)
+	 33 - ViewerSmokeScene_PMapTest8_demo (Skipped)
+	 51 - ViewerSmokeScene_TruckDemo_demo (Skipped)
