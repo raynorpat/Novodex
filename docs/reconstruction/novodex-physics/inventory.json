@@ -13729,13 +13729,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/289",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2040",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16100-0x1612d: thiscall, plain ret; the inlined 000712 find and the +0x1e4 bit-1 test calling 004172 cdecl on the root are reproduced by Island.cpp Row000720Fixture::row000720; 004172 is implemented in core/Articulation.cpp and its no-op mutation is rejected by the registered NxPhysicsSimulationTests differential (stdout_delta=226); see evidence/phase6-island-rebuild-004172.md. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 island helper; its call to 004172 is now reached by the registered deterministic simulation path and the callee is mutation-falsified.",
+      "dynamic_proof": "NxPhysicsSimulationTests direct DLL differential: resolve oracle Row000720Fixture::row000720 at pinned RVA 0x00016100 and candidate by the staged NxPhysics.map; seed an aligned dirty island root and assert dirty-bit clearing, traversal marking, and rebuilt island allocation. Oracle and candidate baseline lines both report dirty_cleared=1 traversed=1 island=1 mallocs=4 frees=1 live_delta=3. An immediate-return candidate mutation reports all three state checks false and is rejected (candidate_exit=1, stdout_delta=4000); restored control is exact. evidence/phase7-island-dirty-rebuild-000720.md and evidence/raw/phase7-island-dirty-rebuild-000720-20261014/.",
+      "notes": "Direct row-specific mutation is falsified by the staged-pair test. Public Scene kinematic transitions are supplementary; a later body update can mask this rebuild dispatch.",
       "implementation": "Physics/src/Island.cpp"
     },
     {

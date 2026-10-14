@@ -871,3 +871,7 @@ Suppressing the row’s joint and contact-pair solve loops is rejected by `NxPhy
 ### M6.22 — Island body-chain solver traversal (`phys_fn_000730`)
 
 An immediate-return mutation suppressing the sleep-group chain traversal is rejected by `NxPhysicsSimulationTests` (`candidate_exit=1`, `stdout_delta=6874`); restoring the source returns exact output. Phase 7 now records 309 closed / 251 deferred rows. Row 000720 remains open because the current fixture does not expose its dirty-island rebuild branch. The post-merge full Phase 7 gate passes at 1,793/1,793; its compressed transcript is recorded in the row raw-evidence folder. Mainline commit: `7f5a0d6b`. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-body-chain-solver-000730.md`.
+
+### M6.23 — Dirty island rebuild dispatch (`phys_fn_000720`)
+
+The public articulated transition fixture is insensitive to an immediate-return mutation, so use a direct DLL probe for this private row. Resolve the oracle at pinned RVA `0x16100` and the candidate from the staged link map; seed a scratch root with its dirty bit set and check that the row clears it, marks traversal, and installs a rebuilt island. The no-op mutation is rejected (`candidate_exit=1`, `stdout_delta=4000`); the restored differential is exact. Full Phase 7 passes at 1,798/1,798 assertions. The public Scene fixture remains supplemental because a later body update can mask this dispatch. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-dirty-rebuild-000720.md`.

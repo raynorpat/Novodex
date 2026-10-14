@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "NxBitField.h"
@@ -65,6 +66,46 @@ class NxControllerProbe
 static unsigned gNxSimulationFluidDestructorCalls = 0;
 static unsigned gNxSimulationFluidDestructorFlags = 0;
 static void* gNxSimulationFluidDestructorObject = 0;
+
+class NxSimulationCountingAllocator : public NxUserAllocator
+	{
+	public:
+	NxSimulationCountingAllocator(): mallocCalls(0), freeCalls(0), liveAllocations(0) {}
+	void* mallocDEBUG(size_t size, const char*, int) override { return malloc(size); }
+	void* malloc(size_t size) override
+		{
+		void* const memory = ::malloc(size);
+		if(memory)
+			{
+			++mallocCalls;
+			++liveAllocations;
+			}
+		return memory;
+		}
+	void* realloc(void* memory, size_t size) override
+		{
+		void* const replacement = ::realloc(memory, size);
+		if(replacement && !memory)
+			{
+			++mallocCalls;
+			++liveAllocations;
+			}
+		return replacement;
+		}
+	void free(void* memory) override
+		{
+		if(memory)
+			{
+			++freeCalls;
+			if(liveAllocations)
+				--liveAllocations;
+			::free(memory);
+			}
+		}
+	unsigned mallocCalls;
+	unsigned freeCalls;
+	unsigned liveAllocations;
+	};
 
 static void* __fastcall nxSimulationFluidDeletingDestructor(
 	void* fluid, void*, unsigned char deleteObject)
@@ -632,6 +673,85 @@ struct NxSimulationContactStreamReport : NxUserContactReport
 		}
 	};
 
+static bool nxSimulationResolvePrivateRow(HMODULE physics, const wchar_t* pairDirectory,
+	const char* decoratedSymbol, NxU32 oracleRva, void** function)
+	{
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	if(GetFileAttributesW(mapPath) == INVALID_FILE_ATTRIBUTES)
+		{
+		*function = reinterpret_cast<unsigned char*>(physics) + oracleRva;
+		return true;
+		}
+	FILE* map = 0;
+	if(_wfopen_s(&map, mapPath, L"rt") != 0 || !map)
+		return false;
+	NxU32 preferredBase = 0;
+	NxU32 symbolAddress = 0;
+	char line[1024];
+	while(fgets(line, sizeof(line), map))
+		{
+		unsigned long parsedBase = 0;
+		if(sscanf_s(line, " Preferred load address is %lx", &parsedBase) == 1)
+			preferredBase = static_cast<NxU32>(parsedBase);
+		char* symbol = strstr(line, decoratedSymbol);
+		if(symbol)
+			{
+			char* address = symbol + strlen(decoratedSymbol);
+			while(*address == ' ' || *address == '\t') ++address;
+			char* end = 0;
+			const unsigned long parsedAddress = strtoul(address, &end, 16);
+			if(end == address)
+				{
+				fclose(map);
+				return false;
+				}
+			symbolAddress = static_cast<NxU32>(parsedAddress);
+			break;
+			}
+		}
+	fclose(map);
+	if(!preferredBase || symbolAddress < preferredBase)
+		return false;
+	*function = reinterpret_cast<unsigned char*>(physics) + (symbolAddress - preferredBase);
+	return true;
+	}
+
+static bool nxSimulationTestDirtyIslandRow720(HMODULE physics,
+	const wchar_t* pairDirectory, NxSimulationCountingAllocator& allocator)
+	{
+	void* row720Address = 0;
+	void* row4167Address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?row000720@Row000720Fixture@@QAEXXZ", 0x00016100, &row720Address) ||
+		!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?row004167@Row004167Fixture@@QAEXXZ", 0x0009ad10, &row4167Address))
+		return false;
+	alignas(16) unsigned char root[0x260] = {};
+	*reinterpret_cast<void**>(root + 0x1bc) = root;
+	*reinterpret_cast<NxU32*>(root + 0x1e4) = 2;
+	const unsigned mallocsBefore = allocator.mallocCalls;
+	const unsigned freesBefore = allocator.freeCalls;
+	const unsigned liveBefore = allocator.liveAllocations;
+	typedef void (__thiscall *IslandRowFn)(void*);
+	reinterpret_cast<IslandRowFn>(row720Address)(root);
+	const NxU32 flags = *reinterpret_cast<NxU32*>(root + 0x1e4);
+	void* const island = *reinterpret_cast<void**>(root + 0x1e0);
+	printf("simulation island-row720 direct dirty_cleared=%u traversed=%u island=%u mallocs=%u frees=%u live_delta=%d\n",
+		(flags & 2u) == 0, (flags & 8u) != 0, island != 0,
+		allocator.mallocCalls - mallocsBefore, allocator.freeCalls - freesBefore,
+		static_cast<int>(allocator.liveAllocations) - static_cast<int>(liveBefore));
+	const bool rebuilt = (flags & 2u) == 0 && (flags & 8u) != 0 && island != 0;
+	if(island)
+		{
+		reinterpret_cast<IslandRowFn>(row4167Address)(island);
+		allocator.free(island);
+		*reinterpret_cast<void**>(root + 0x1e0) = 0;
+		}
+	return rebuilt;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -651,14 +771,21 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	NxSimulationOutputStream simulationOutput;
+	NxSimulationCountingAllocator simulationAllocator;
 	bool deferredContactFailed = false;
 	bool controllerCreateFailed = false;
 	bool shapeUserDataFailed = false;
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &simulationOutput);
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &simulationAllocator, &simulationOutput);
 	if(!sdk)
 		{
 		FreeLibrary(physics);
 		return nxFail("SDK creation failed");
+		}
+	if(!nxSimulationTestDirtyIslandRow720(physics, pairDirectory, simulationAllocator))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 000720 failed the pinned direct dirty-island root probe");
 		}
 	// Exercise trigger-pair generation, enter/stay/leave reconciliation, and
 	// fetch-time callback delivery through the public scene API.
@@ -2248,6 +2375,41 @@ int wmain(int argc, wchar_t** argv)
 				jointIndex, nxFloatBits(articulatedJoints[jointIndex]->getAngle()),
 				nxFloatBits(articulatedJoints[jointIndex]->getVelocity()));
 		}
+	// Transition a member after the articulated island and its object have been
+	// built. The body flag setter marks the root dirty; verify the public step's
+	// rebuild ordering through the allocator balance as well as the trajectory.
+	const unsigned islandLiveBeforeKinematic = simulationAllocator.liveAllocations;
+	const unsigned islandMallocsBeforeKinematic = simulationAllocator.mallocCalls;
+	const unsigned islandFreesBeforeKinematic = simulationAllocator.freeCalls;
+	articulatedActors[1]->raiseBodyFlag(NX_BF_KINEMATIC);
+	printf("simulation articulation-chain island-dirty transition=kinematic flag=%u\n",
+		articulatedActors[1]->readBodyFlag(NX_BF_KINEMATIC) ? 1u : 0u);
+	articulatedScene->simulate(0.02f);
+	bool articulatedReady = articulatedScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	bool articulatedFetched = articulatedScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!articulatedReady || !articulatedFetched)
+		return nxFail("articulated-chain kinematic island rebuild was not ready and fetched");
+	nxPrintActorState("artchain_dirty_kinematic", *articulatedActors[1]);
+	printf("simulation articulation-chain island-dirty allocations transition=kinematic mallocs=%u frees=%u live_delta=%d\n",
+		simulationAllocator.mallocCalls - islandMallocsBeforeKinematic,
+		simulationAllocator.freeCalls - islandFreesBeforeKinematic,
+		static_cast<int>(simulationAllocator.liveAllocations) - static_cast<int>(islandLiveBeforeKinematic));
+	const unsigned islandLiveBeforeDynamic = simulationAllocator.liveAllocations;
+	const unsigned islandMallocsBeforeDynamic = simulationAllocator.mallocCalls;
+	const unsigned islandFreesBeforeDynamic = simulationAllocator.freeCalls;
+	articulatedActors[1]->clearBodyFlag(NX_BF_KINEMATIC);
+	printf("simulation articulation-chain island-dirty transition=dynamic flag=%u\n",
+		articulatedActors[1]->readBodyFlag(NX_BF_KINEMATIC) ? 1u : 0u);
+	articulatedScene->simulate(0.02f);
+	articulatedReady = articulatedScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	articulatedFetched = articulatedScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!articulatedReady || !articulatedFetched)
+		return nxFail("articulated-chain dynamic island rebuild was not ready and fetched");
+	nxPrintActorState("artchain_dirty_dynamic", *articulatedActors[1]);
+	printf("simulation articulation-chain island-dirty allocations transition=dynamic mallocs=%u frees=%u live_delta=%d\n",
+		simulationAllocator.mallocCalls - islandMallocsBeforeDynamic,
+		simulationAllocator.freeCalls - islandFreesBeforeDynamic,
+		static_cast<int>(simulationAllocator.liveAllocations) - static_cast<int>(islandLiveBeforeDynamic));
 	printf("simulation articulation-chain actors=3 revolute_motors=2 steps=16 ready=1 fetched=1\n");
 	sdk->releaseScene(*articulatedScene);
 

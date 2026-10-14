@@ -407,3 +407,9 @@ Ruling for M6.22: select `phys_fn_000730`, the 42-byte null-safe traversal that 
 ### M6.22 — Island body-chain solver traversal (`phys_fn_000730`)
 
 The registered public friction simulation rejects an immediate-return mutation (oracle_exit=0, candidate_exit=1, stdout_delta=6874); the byte-restored and recompiled control is exact. Phase 7 ledger moves to 309 closed / 251 deferred. Mainline commit 7f5a0d6b contains the packet; the post-merge full Phase 7 gate passes at 1,793/1,793 and its compressed transcript is preserved with the raw evidence. Row 000720 remains open.
+
+Ruling for M6.23: close `phys_fn_000720` with a direct private-row DLL probe after the public Scene transition produced no no-op delta. The test resolves the oracle at its pinned RVA and the candidate via `NxPhysics.map`, then checks dirty-bit clearing, traversal marking, and the rebuilt object. Keep the Scene transition as secondary coverage and do not describe it as the detecting path.
+
+### M6.23 — Dirty island rebuild dispatch (`phys_fn_000720`)
+
+The row-specific immediate-return mutation is rejected by the registered `NxPhysicsSimulationTests` differential (`candidate_exit=1`, `stdout_delta=4000`). Baseline and restored output are exact; the direct oracle and candidate probes both report `dirty_cleared=1 traversed=1 island=1 mallocs=4 frees=1 live_delta=3`. Phase 7 moves to 310 closed / 250 deferred. The full gate passes at 1,798/1,798 assertions. The public Scene transition fixture remains supplementary because a later body update can mask this row's work. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-dirty-rebuild-000720.md`.
