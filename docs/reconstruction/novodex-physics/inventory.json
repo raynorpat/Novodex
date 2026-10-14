@@ -16461,13 +16461,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/StepOnlyRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/422",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2637",
       "static_proof": "static review of the recorded shape: kind-selected accumulator (0x1d260, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)  Scene-raycast Task 4 (shape), defect fixed and re-walked at integration: walked 0x1001d260-0x1001d2c4 (thiscall `ret 0xc` on the accumulator; a, desc, b): v = a / b stays unrounded (fdiv at 0x1001d26b; the candidate rounded it to float); kinds other than 4 and 5 add v to +0x64; kinds 4 and 5 add v*desc[0] and v*desc[1] from the stack and v*desc[2] after its m32 spill (0x1001d299; the candidate did not round that product), then bit 6 of desc+0xc sets the byte +0x75. The candidate nxAccumulateByKind0867 is a cdecl free function taking the accumulator first (the only oracle caller 000893 calls it directly: a code-shape difference). Reachable only from the simulation step; no public path while NpScene::simulate is a stub. (000911 -> 000901 -> 000893.) Built /arch:IA32 (Physics/src/StepOnlyRows.cpp, on the CMakeLists.txt list with its reason) for the step's control word 0x0f7f.",
-      "dynamic_proof": "confirmed via the accum0867 differential (3z194): fifteen combinations -- five descriptor kinds including the 0x24 case that masks down to 4, by three value pairs including a zero numerator -- all failures=0 against the whole 0x100-byte object, with the accumulators seeded so the adds are not all from zero",
-      "notes": "previous source: kind-selected accumulator (0x1d260, ret 0xc) Scene-raycast Task 4 (shape): moved from ObjectModel.cpp to Physics/src/StepOnlyRows.cpp (source and implementation follow). cdb hits oracle/candidate: NxPhysicsObjectLayoutTests 15/15 (accum0867, harness control word); DLL targets 0/0 (evidence/scene-raycast-trace-task4-shape.txt).",
+      "dynamic_proof": "Direct registered NxPhysicsSimulationTests staged-pair differential calls the candidate map symbol and pinned oracle RVA 0x0001d260 over five kind/flag words and three seeded numerator/denominator pairs, comparing the complete 0x100-byte accumulator transcript by digest. The row-only immediate-return mutation changes digest 337db078 to 3695bd32 (both exits 0, stdout_delta=138, stderr_exact=True); restoring StepOnlyRows.cpp byte-for-byte returns exact output (stdout_delta=0, stderr_exact=True). See evidence/phase7-accumulator-000867.md.",
+      "notes": "The candidate DLL row is exercised directly by the staged simulation differential across both descriptor branches, kind masking, bit 6 and seeded accumulators; a row-only no-op is falsified.",
       "implementation": "Physics/src/StepOnlyRows.cpp"
     },
     {

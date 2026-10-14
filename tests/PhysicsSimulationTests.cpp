@@ -892,6 +892,53 @@ static bool nxSimulationTestAnisotropicFrictionRow859(HMODULE physics,
 	return rotated && oneHasUAndV && twoHasUAndV && otherMaterialAveraged;
 	}
 
+static bool nxSimulationTestAccumulatorRow867(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* row867Address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?nxAccumulateByKind0867@@YAXPAXM0M@Z", 0x0001d260, &row867Address))
+		return false;
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	const bool candidate = GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES;
+	typedef void (__thiscall *OracleAccumulatorFn)(void*, NxReal, void*, NxReal);
+	typedef void (__cdecl *CandidateAccumulatorFn)(void*, NxReal, void*, NxReal);
+	OracleAccumulatorFn const oracleRow = reinterpret_cast<OracleAccumulatorFn>(row867Address);
+	CandidateAccumulatorFn const candidateRow = reinterpret_cast<CandidateAccumulatorFn>(row867Address);
+	struct Case { NxU32 kindAndFlags; NxReal c[3]; };
+	static const Case cases[] = {
+		{ 4, { 1.5f, -2.0f, 0.25f } },
+		{ 5 | 0x40, { -0.5f, 3.0f, 1.0f } },
+		{ 5, { 2.0f, 2.0f, 2.0f } },
+		{ 7, { 1.0f, 1.0f, 1.0f } },
+		{ 0x24, { 1.0f, 1.0f, 1.0f } }
+		};
+	NxU32 digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i)
+	for(unsigned value = 0; value < 3; ++value)
+		{
+		NxReal a = 1.0f, b = 2.0f;
+		if(value == 1) { a = -3.0f; b = 4.0f; }
+		if(value == 2) { a = 0.0f; b = 1.0f; }
+		alignas(16) NxU8 desc[0x20] = {};
+		memcpy(desc, cases[i].c, sizeof(cases[i].c));
+		memcpy(desc + 0x0c, &cases[i].kindAndFlags, sizeof(NxU32));
+		alignas(16) NxU8 object[0x100] = {};
+		const NxReal seed[4] = { 0.5f, -0.25f, 1.25f, 0.75f };
+		memcpy(object + 0x58, seed, sizeof(seed));
+		if(candidate)
+			candidateRow(object, a, desc, b);
+		else
+			oracleRow(object, a, desc, b);
+		for(unsigned byte = 0; byte < sizeof(object); ++byte)
+			digest = (digest ^ object[byte]) * 16777619u;
+		}
+	printf("simulation row867 direct cases=15 digest=%08x\n", digest);
+	return true;
+	}
+
 static bool nxSimulationTestJointArrayPushRow780(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -981,6 +1028,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 000859 failed the pinned direct anisotropic-friction probe");
+		}
+	if(!nxSimulationTestAccumulatorRow867(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 000867 failed the pinned direct accumulator probe");
 		}
 	// Exercise trigger-pair generation, enter/stay/leave reconciliation, and
 	// fetch-time callback delivery through the public scene API.

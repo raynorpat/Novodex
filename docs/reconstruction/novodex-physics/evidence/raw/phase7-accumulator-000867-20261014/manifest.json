@@ -1,0 +1,35 @@
+{
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "baseline_source_sha256": "eb95518f8c8dbb27d664e1b9d49abf8930dd6f5e87a5ffae3bdd7c8df6632b64",
+  "restored_source_sha256": "eb95518f8c8dbb27d664e1b9d49abf8930dd6f5e87a5ffae3bdd7c8df6632b64",
+  "candidate_digest": "337db078",
+  "mutant_digest": "3695bd32",
+  "mutation_detection": "both exits=0 stdout_delta=138 stderr_exact=True",
+  "restored_control": "both exits=0 stdout_delta=0 stderr_exact=True",
+  "focused_transcripts": [
+    {
+      "path": "baseline-focused-differential.log.gz",
+      "source": "D:\\Novodex-row867-baseline2-differential-20261014.log",
+      "source_sha256": "d22a5f9ee47619f621a89db2dc473d56893944413b0e25b4c76e6fc683d92fc9",
+      "compressed_sha256": "e316c8207eddb20ccc5e9308357926e39c95175944d3c3f4f7a5e9de5c5c3e50",
+      "source_bytes": 837684,
+      "compressed_bytes": 54298
+    },
+    {
+      "path": "no-op-mutation-differential.log.gz",
+      "source": "D:\\Novodex-row867-noop2-differential-20261014.log",
+      "source_sha256": "7fe2cabffb11197763d9c8bc3b2a4a93d93e1eb003b77d54e3e277e8d0633f54",
+      "compressed_sha256": "ce8b95bc264628f478f6f922f74c798520ebe1fb898467dcfd9ec61d68b796b9",
+      "source_bytes": 837526,
+      "compressed_bytes": 53578
+    },
+    {
+      "path": "restored-focused-differential.log.gz",
+      "source": "D:\\Novodex-row867-restored2-differential-20261014.log",
+      "source_sha256": "6f9dd0c9583082154f2e8f4d9110133e45611a807d7674f449aff6addc3bce8f",
+      "compressed_sha256": "55e261198336de9161382e800e57c4cbb277bfb08b378cf6aa1f0c997ef86ec5",
+      "source_bytes": 837684,
+      "compressed_bytes": 54298
+    }
+  ]
+}

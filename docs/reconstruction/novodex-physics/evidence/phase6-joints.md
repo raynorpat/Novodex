@@ -10969,3 +10969,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000859`: direct rotated-shape anisotropic-friction fixture catches the row-only no-op mutation (`candidate_exit=1`, `stdout_delta=4002`); restored output is exact. Phase 5/6/7 pass at 2731/2731, 1656/1656, and 1978/1978. See [phase7-anisotropic-friction-000859.md](phase7-anisotropic-friction-000859.md).
+
+
+`phys_fn_000867`: the direct staged simulation fixture compares 15 seeded accumulator results between the candidate DLL and pinned oracle (`digest=337db078`); an immediate-return mutation changes the digest to `3695bd32` and is rejected (`stdout_delta=138`). The byte-identical restored control is exact. See [phase7-accumulator-000867.md](phase7-accumulator-000867.md).

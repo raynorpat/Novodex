@@ -947,3 +947,8 @@ Added a direct oracle/candidate fixture for the rotated shape axis, unequal U/V 
 ### M6.37 — Null-pruner collision-bounds visualization
 
 Added an empty-scene public visualization stage with collision AABBs enabled. The oracle returns an empty renderable for null static and selected dynamic pruners; before the guard, the candidate access-violates (`stdout_delta=1703`, exact stderr). Adding the null-pruner early return restores exact output. The two new coverage assertions raise the Phase 7 floor to 1,977, and the formal gate passes at that count both before and after merge commit fa169984. This refines row `phys_fn_000638`; it does not add another closed function row.
+
+
+### M6.39 — Kind-selected accumulator (`phys_fn_000867`)
+
+The previous object-layout cases compared the oracle function with a test-local formula and did not reach the built candidate DLL. Added a 15-case direct staged-pair fixture for the candidate map symbol and oracle RVA. A row-only immediate-return mutation changes the full-object digest (`337db078` to `3695bd32`, `stdout_delta=138`); restored control is exact. This row is now dynamically gated and closed in the Phase 7 ledger. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-accumulator-000867.md`.

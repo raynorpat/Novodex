@@ -3504,6 +3504,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation row855 direct combine=40800000.40000000.41400000.40c00000.40c00000'
         # The anisotropic row rotates the material axis and handles one or two anisotropic materials.
         'simulation row859 direct rotated=1 one_anisotropic=1 two_anisotropic=1 other_average=1'
+        # Direct seeded-object differential covers both accumulator branches and kind/flag masking.
+        'simulation row867 direct cases=15'
         # Kinematic transitions after a multi-joint island has been built
         # exercise the public dirty marking and rebuild path in both directions.
         'simulation articulation-chain island-dirty transition=kinematic flag=1'
@@ -6025,7 +6027,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2731  # adds direct row 000859 rotated anisotropic-friction probe
+	'5' = 2732  # adds direct row 000867 accumulator probe
+				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
 				# adds Scene base-allocation failure handling via the Foundation allocator
 				# prior 2720 includes Foundation, SDK, Scene, actor and shape allocator ownership
@@ -6086,7 +6089,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1656  # adds direct row 000859 rotated anisotropic-friction probe
+	'6' = 1657  # adds direct row 000867 accumulator probe
+				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
 				# adds SDK material, purge and inspector lock refusal/unwind assertions
 	           # plus Fluid constructor state and default-layout coverage
@@ -6126,7 +6130,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1978  # adds direct row 000859 rotated anisotropic-friction probe
+	'7' = 1979  # adds direct row 000867 accumulator probe
+				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds the two empty-pruner visualization assertions
 				# includes the CCD test target (two existing and one row 000740 assertion)
 				# adds direct dirty-island row probe and public articulated kinematic transitions

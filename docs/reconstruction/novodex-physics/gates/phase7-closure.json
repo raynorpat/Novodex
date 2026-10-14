@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 250,
+    "differential_falsified": 251,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 134,
-    "deferred_reconstructed_not_falsified": 96
+    "deferred_reconstructed_not_falsified": 95
   },
   "closed": [
     {
@@ -3547,6 +3547,17 @@
         "detected": "stdout_delta=4002"
       },
       "note": "Direct helper fixture covers rotated shape axis, unequal U/V friction, and one/two anisotropic materials; Phase 5, 6, and 7 gates all pass."
+    },
+    {
+      "id": "phys_fn_000867",
+      "rva": "0x0001d260",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In the Win32 Release candidate, replace only nxAccumulateByKind0867 (row 000867) with an immediate return, rebuild NxPhysics.dll and NxPhysicsSimulationTests, then run the registered staged-pair simulation differential against the pinned oracle. The direct 15-case seeded accumulator fixture changes its full-object digest from 337db078 to 3695bd32; both processes exit 0, stdout_delta=138, stderr_exact=True. Restoring StepOnlyRows.cpp byte-for-byte and rebuilding returns identical digests (stdout_delta=0, stderr_exact=True). See evidence/phase7-accumulator-000867.md and evidence/raw/phase7-accumulator-000867-20261014/.",
+        "detected": "stdout_delta=138"
+      },
+      "note": "Five kind/flag words and three seeded arithmetic pairs cover both accumulator paths, the masked kind and bit 6."
     }
   ],
   "deferred": [
@@ -3722,15 +3733,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000867",
-      "rva": "0x0001d260",
-      "size": 103,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001639",

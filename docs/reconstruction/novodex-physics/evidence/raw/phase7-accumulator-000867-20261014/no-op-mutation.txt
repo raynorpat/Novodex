@@ -1,0 +1,1 @@
+Mutation recipe: in `Physics/src/StepOnlyRows.cpp`, insert an immediate `return;` as the first statement of `nxAccumulateByKind0867`, rebuild NxPhysics.dll and NxPhysicsSimulationTests, then run the registered staged-pair differential. Restore the source byte-for-byte and rebuild for the control.
