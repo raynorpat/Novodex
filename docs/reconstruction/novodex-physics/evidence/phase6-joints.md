@@ -10862,3 +10862,5 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_000657`: an immediate-return mutation of `NxSceneInternal::visualize()` is rejected by `NxPhysicsSceneVisualizeTests` (`stdout_delta=1962`); restored visualization output is exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-scene-visualize-000657.md](phase7-scene-visualize-000657.md).
 
 `phys_fn_000670`: an immediate-return mutation of `NxSceneInternal::overlapAABBShapes()` is rejected by the Phase 7 raycast and simulation differentials (`stdout_delta=5473` and `stdout_delta=42`, respectively); both restored differentials are exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-overlap-aabb-shapes-000670.md](phase7-overlap-aabb-shapes-000670.md).
+
+`phys_fn_000674`: returning false from `NxSceneInternal::checkOverlapAABB()` changes the overlapping static-and-dynamic result and is rejected by `NxPhysicsSceneRaycastTests` (`stdout_delta=14`); restored output is exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-check-overlap-aabb-000674.md](phase7-check-overlap-aabb-000674.md).
