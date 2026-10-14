@@ -1,0 +1,56 @@
+{
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "baseline_source_sha256": "e47b175e645a64215db0f7e4e8f90f69c44fec6c6e2a3979138281650972b0e2",
+  "restored_source_sha256": "e47b175e645a64215db0f7e4e8f90f69c44fec6c6e2a3979138281650972b0e2",
+  "candidate_restored_sha256": "d5cfe7c2ed6f5c3b3b17c0640047e42b21cbf50f1aba8822237de60df02c3773",
+  "candidate_mutant_sha256": "0b1d41d0fb69c3c471e9b51afe56b88819e3b51e75d0095483e6af7fda0e0320",
+  "mutation_detection": "candidate_exit=1 stdout_delta=4002 stderr_exact=False",
+  "restored_control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "phase_gates": {
+    "5": "2731/2731",
+    "6": "1656/1656",
+    "7": "1978/1978"
+  },
+  "transcripts": [
+    {
+      "path": "no-op-mutation-differential.log.gz",
+      "source": "D:\\Novodex-row859-noop-differential-20261014.log",
+      "source_sha256": "8d50f16f06251aa528be75653bce4dab4926b214114c50e455360dd07141d4cd",
+      "compressed_sha256": "f3fc05aa81b2fea3e8c011adaca1df413d145b10379b7c7903299c0ab846a137",
+      "source_bytes": 422705,
+      "compressed_bytes": 28029
+    },
+    {
+      "path": "restored-focused-differential.log.gz",
+      "source": "D:\\Novodex-row859-restored-differential-20261014.log",
+      "source_sha256": "d13bf806c1e7541c809e43cd72dd9ec506c81716a5eedad0a0e1a5705ed6691f",
+      "compressed_sha256": "a728f2cf4756a73a86404d4b50696917505d35388d85ea157b56283757e15382",
+      "source_bytes": 837857,
+      "compressed_bytes": 54272
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "D:\\Novodex-row859-phase5-gate-20261014.log",
+      "source_sha256": "4b1d400b8a38b34efa9b64bbd02a64858d958c9bb80919b7f499b7fca4920444",
+      "compressed_sha256": "c82cf637e1822b563b5528853d817df42d018a8830ffbad41bfe63820d9e0253",
+      "source_bytes": 2788762,
+      "compressed_bytes": 205157
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "source": "D:\\Novodex-row859-phase6-gate-20261014.log",
+      "source_sha256": "2efd9e7cdd80c9cd1b3cade2489f64e40087ea4e35e7b4f8d60cc2f3d4d4109e",
+      "compressed_sha256": "68c473b6210b3fecccb5b258022ad35294c17e5c33d26297d636962c34e32356",
+      "source_bytes": 3076201,
+      "compressed_bytes": 250566
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "D:\\Novodex-row859-phase7-gate-20261014.log",
+      "source_sha256": "e04676d34c2f0c4bf5c9ffc0b9767245970a92eb0b2a92613dca2525117b45e8",
+      "compressed_sha256": "1a7035f1b3f9b0d58d84a9384337abdceb25f2a5383bae5f393d8c2243d56c6d",
+      "source_bytes": 4050272,
+      "compressed_bytes": 291668
+    }
+  ]
+}

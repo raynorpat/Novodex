@@ -804,6 +804,94 @@ static bool nxSimulationTestMaterialCombineRow855(HMODULE physics,
 		unknown == 0x40c00000;
 	}
 
+struct NxSimulationFrictionParamsProbe
+	{
+	NxU32 spring;
+	NxReal staticFrictionV;
+	NxReal staticFriction;
+	NxReal dynamicFriction;
+	NxReal dynamicFrictionV;
+	NxVec3 anisotropyDirection;
+	NxU8 enabled;
+	NxU8 pad[3];
+	};
+
+static_assert(sizeof(NxSimulationFrictionParamsProbe) == 0x24,
+	"the row 000859 probe mirrors the private friction-parameter record");
+
+static bool nxSimulationTestAnisotropicFrictionRow859(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* row859Address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?cpmAnisotropicFriction0859@@YGXPBEPBVNxMaterial@@1MPAUCpmFrictionParams@@@Z",
+		0x0001cb30, &row859Address))
+		return false;
+	alignas(16) NxU8 shape[0x30] = {};
+	const NxReal rotatedZ[9] = { 0.0f, -1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+	memcpy(shape + 0x0c, rotatedZ, sizeof(rotatedZ));
+	NxMaterial anisotropic;
+	anisotropic.setToDefault();
+	anisotropic.flags = NX_MF_ANISOTROPIC;
+	anisotropic.dynamicFriction = 0.25f;
+	anisotropic.staticFriction = 0.5f;
+	anisotropic.dynamicFrictionV = 0.75f;
+	anisotropic.staticFrictionV = 1.0f;
+	anisotropic.dirOfAnisotropy.set(1.0f, 0.0f, 0.0f);
+	NxMaterial isotropic;
+	isotropic.setToDefault();
+	isotropic.dynamicFriction = 0.45f;
+	isotropic.staticFriction = 0.85f;
+	NxMaterial secondAnisotropic;
+	secondAnisotropic.setToDefault();
+	secondAnisotropic.flags = NX_MF_ANISOTROPIC;
+	secondAnisotropic.dynamicFriction = 0.3f;
+	secondAnisotropic.dynamicFrictionV = 0.7f;
+	secondAnisotropic.staticFriction = 0.6f;
+	secondAnisotropic.staticFrictionV = 1.0f;
+	NxSimulationFrictionParamsProbe oneAnisotropic = {};
+	NxSimulationFrictionParamsProbe twoAnisotropic = {};
+	typedef void (__stdcall *AnisotropicFrictionFn)(const NxU8*,
+		const NxMaterial*, const NxMaterial*, NxReal,
+		NxSimulationFrictionParamsProbe*);
+	AnisotropicFrictionFn const row859 =
+		reinterpret_cast<AnisotropicFrictionFn>(row859Address);
+	row859(shape, &anisotropic, &isotropic, 2.0f, &oneAnisotropic);
+	row859(shape, &anisotropic, &secondAnisotropic, 2.0f, &twoAnisotropic);
+	const bool rotated = nxFloatBits(oneAnisotropic.anisotropyDirection.x) == 0 &&
+		nxFloatBits(oneAnisotropic.anisotropyDirection.y) == 0x3f800000 &&
+		nxFloatBits(oneAnisotropic.anisotropyDirection.z) == 0 &&
+		nxFloatBits(twoAnisotropic.anisotropyDirection.x) == 0 &&
+		nxFloatBits(twoAnisotropic.anisotropyDirection.y) == 0x3f800000 &&
+		nxFloatBits(twoAnisotropic.anisotropyDirection.z) == 0;
+	const bool oneHasUAndV = oneAnisotropic.dynamicFriction > 0.0f &&
+		oneAnisotropic.dynamicFrictionV > 0.0f &&
+		oneAnisotropic.staticFriction > oneAnisotropic.dynamicFriction &&
+		oneAnisotropic.staticFrictionV > oneAnisotropic.dynamicFrictionV;
+	const bool twoHasUAndV = twoAnisotropic.dynamicFriction > 0.0f &&
+		twoAnisotropic.dynamicFrictionV > 0.0f &&
+		twoAnisotropic.staticFriction > twoAnisotropic.dynamicFriction &&
+		twoAnisotropic.staticFrictionV > twoAnisotropic.dynamicFrictionV;
+	const bool otherMaterialAveraged =
+		nxFloatBits(oneAnisotropic.dynamicFriction) !=
+			nxFloatBits(twoAnisotropic.dynamicFriction) &&
+		nxFloatBits(oneAnisotropic.dynamicFrictionV) !=
+			nxFloatBits(twoAnisotropic.dynamicFrictionV);
+	printf("simulation row859 direct rotated=%u one_anisotropic=%u two_anisotropic=%u other_average=%u\n",
+		rotated, oneHasUAndV, twoHasUAndV, otherMaterialAveraged);
+	printf("simulation row859 coefficients one=%08x.%08x.%08x.%08x two=%08x.%08x.%08x.%08x\n",
+		nxFloatBits(oneAnisotropic.staticFriction),
+		nxFloatBits(oneAnisotropic.staticFrictionV),
+		nxFloatBits(oneAnisotropic.dynamicFriction),
+		nxFloatBits(oneAnisotropic.dynamicFrictionV),
+		nxFloatBits(twoAnisotropic.staticFriction),
+		nxFloatBits(twoAnisotropic.staticFrictionV),
+		nxFloatBits(twoAnisotropic.dynamicFriction),
+		nxFloatBits(twoAnisotropic.dynamicFrictionV));
+	return rotated && oneHasUAndV && twoHasUAndV && otherMaterialAveraged;
+	}
+
 static bool nxSimulationTestJointArrayPushRow780(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -887,6 +975,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 000855 failed the pinned direct material-combine probe");
+		}
+	if(!nxSimulationTestAnisotropicFrictionRow859(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 000859 failed the pinned direct anisotropic-friction probe");
 		}
 	// Exercise trigger-pair generation, enter/stay/leave reconciliation, and
 	// fetch-time callback delivery through the public scene API.

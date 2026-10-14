@@ -10966,3 +10966,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000638` null-pruner continuation is merged as `fa169984`; the post-merge Phase 7 gate passes at 1,977/1,977. See `phase7-scene-visualize-bounds-000638.md`.
+
+
+`phys_fn_000859`: direct rotated-shape anisotropic-friction fixture catches the row-only no-op mutation (`candidate_exit=1`, `stdout_delta=4002`); restored output is exact. Phase 5/6/7 pass at 2731/2731, 1656/1656, and 1978/1978. See [phase7-anisotropic-friction-000859.md](phase7-anisotropic-friction-000859.md).

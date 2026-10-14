@@ -939,9 +939,9 @@ A no-op `NxSceneInternal::removeJoint` mutation is rejected by the registered jo
 IDA decompilation confirms that the existing helper walks sections 1 and 2 of the static and selected dynamic pruners, filters shape visualization bit 3, applies the compound type-5 filter, resolves each current world AABB, and submits it with the requested color. A row-only no-op changes `NxPhysicsSceneVisualizeTests` by 2,744 bytes; the restored control is exact. Phase 7 records 329 closed / 231 deferred and passes after merge at 1,975/1,975. Commits `3f4bbdfc` and `1bcd8f35` are on local main. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-visualize-bounds-000638.md`.
 
 
-### M6 continuation — anisotropic friction fixture gap (`phys_fn_000859`)
+### M6.38 — Anisotropic friction helper (`phys_fn_000859`)
 
-An immediate no-op mutation is insensitive to the existing `NxPhysicsSimulationTests` corpus (`stdout_delta=0`); the source was restored and a forced CMake rebuild returned an exact control. A dedicated rotated-shape, unequal-U/V oracle/candidate fixture is needed before this row can be falsified. The implementation remains open pending fixture approval.
+Added a direct oracle/candidate fixture for the rotated shape axis, unequal U/V coefficients, and one versus two anisotropic materials. The row-only immediate-return mutation is caught (`candidate_exit=1`, `stdout_delta=4002`); restoring `ContactPairManager.cpp` byte-for-byte returns an exact control. Phases 5, 6, and 7 pass at 2731/2731, 1656/1656, and 1978/1978. The row is dynamically gated and closed in the Phase 7 ledger. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-anisotropic-friction-000859.md`.
 
 
 ### M6.37 — Null-pruner collision-bounds visualization

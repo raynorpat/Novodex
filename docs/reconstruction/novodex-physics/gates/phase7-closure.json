@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 249,
+    "differential_falsified": 250,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 79,
     "deferred_not_reconstructed_in_phase": 134,
-    "deferred_reconstructed_not_falsified": 97
+    "deferred_reconstructed_not_falsified": 96
   },
   "closed": [
     {
@@ -3536,6 +3536,17 @@
         "mutation": "In the Win32 Release candidate, replace only nxSceneVisualizeCollisionBounds (row 000638) with an immediate no-op. The registered scene-visualization differential rejects the candidate (oracle_exit=0, candidate_exit=0, stdout_delta=2744, stderr_exact=True). Restoring SceneVisualize.cpp byte-for-byte and forcing a fresh CMake rebuild returns exact output (both exits zero, stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-visualize-bounds-000638.md and evidence/raw/phase7-scene-visualize-bounds-000638-20261014/.",
         "detected": "stdout_delta=2744"
       }
+    },
+    {
+      "id": "phys_fn_000859",
+      "rva": "0x0001cb30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In the Win32 Release candidate, replace only cpmAnisotropicFriction0859 (row 000859) with an immediate no-op, rebuild NxPhysics.dll, and run the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The rotated-axis and one/two-anisotropic-material probe rejects the candidate (oracle_exit=0, candidate_exit=1, stdout_delta=4002). Restoring ContactPairManager.cpp byte-for-byte and rebuilding returns exact output (both exits=0, stdout_delta=0, stderr_exact=True). See evidence/phase7-anisotropic-friction-000859.md and evidence/raw/phase7-anisotropic-friction-000859-20261014/.",
+        "detected": "stdout_delta=4002"
+      },
+      "note": "Direct helper fixture covers rotated shape axis, unequal U/V friction, and one/two anisotropic materials; Phase 5, 6, and 7 gates all pass."
     }
   ],
   "deferred": [
@@ -3711,15 +3722,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000859",
-      "rva": "0x0001cb30",
-      "size": 607,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000867",

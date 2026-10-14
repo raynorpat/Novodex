@@ -16313,13 +16313,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/355",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2585",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1cb30-0x1cd8f) in scene-raycast Task 4 (contact-pair manager): stdcall(shape, material, other, normalForce, out), `ret 0x14`; the other material's averages when anisotropic (dynamic kept in a register, static spilled), the world anisotropy direction in the listing's (y, z, x) grouping, the combined coefficients scaled by NX_DYN_FRICT_SCALING (clamped) and NX_STA_FRICT_SCALING (raised to the dynamic ones), times the normal force; the parameters read through nxPhysicsSDKParameters() (the same live array as .data 0x10123b18). Candidate cpmAnisotropicFriction0859 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000861 <- 000879 <- 000897); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "Direct registered NxPhysicsSimulationTests staged-pair differential calls cpmAnisotropicFriction0859 at oracle RVA 0x0001cb30 and candidate map address. Fixture rotates the shape-local X anisotropy axis 90 degrees about Z, checks unequal U/V coefficients, and compares one-anisotropic against two-anisotropic material averaging. A row-only immediate-return mutation is caught (oracle_exit=0, candidate_exit=1, stdout_delta=4002); restoring ContactPairManager.cpp byte-for-byte gives oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Phase 5/6/7 gates pass at 2731/2731, 1656/1656, and 1978/1978. See evidence/phase7-anisotropic-friction-000859.md.",
+      "notes": "Scene-raycast Task 4 implementation, now dynamically falsified by direct rotated-shape anisotropic-friction oracle differential; see evidence/phase7-anisotropic-friction-000859.md.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
