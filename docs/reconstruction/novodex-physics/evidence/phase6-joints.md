@@ -10853,3 +10853,6 @@ Fresh full Phase 7 gate after `phys_fn_000714`: 1,779/1,779 coverage assertions 
 
 `phys_fn_000716`: omitted island-root union rejected (`stdout_delta=782`); restored simulation and joint differentials exact. See [phase7-island-root-union-000716.md](phase7-island-root-union-000716.md).
 Fresh full Phase 7 gate after `phys_fn_000716`: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-island-root-union-000716-20261014/phase7-gate.log.gz.
+
+`phys_fn_000718`: omitted sleep-group union rejected (`stdout_delta=4158`); restored simulation differential exact. See [phase7-sleep-group-union-000718.md](phase7-sleep-group-union-000718.md).
+Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-sleep-group-union-000718-20261014/phase7-gate.log.gz.

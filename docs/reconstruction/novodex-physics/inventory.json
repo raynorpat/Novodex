@@ -13676,13 +13676,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/288",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2035",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15fe0-0x160fa: thiscall ret 4; the two sleep-group finds (000713 on each parent, other first), unsigned rank compare on +0x1ec, the +0x200/+0x1fc splice, the +0x1f0/+0x1f4 word sums and the +0x1f8 float sum in the listing's operand order, and the unconditional else-arm rank increment are reproduced by Island.cpp Row000718Fixture::row000718 (000713 is called through the cdecl nxBodyRecordFixRoot, a recorded code-shape difference). Reachable only from the simulation step (000608 -> 000724 -> row); no public path while NpScene::simulate is a stub. Integration review: 0x16095-0x160a1, the same unconditional else-arm rank increment as 000716. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair mutation falsification: returning before Row000718Fixture::row000718 sleep-group root and member-list merge is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=4158, stderr_exact=True). Restoring and rebuilding yields oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase7-sleep-group-union-000718.md; raw logs: evidence/raw/phase7-sleep-group-union-000718-20261014/.",
+      "notes": "Sleep-group root union, member lists, ranks and accumulated sleep parameters are mutation-falsified through the registered Phase 7 simulation differential.",
       "implementation": "Physics/src/Island.cpp"
     },
     {
