@@ -459,3 +459,7 @@ The registered simulation rejects a row-only immediate return (`stdout_delta=4`,
 ### M6.31 — Joint island continuation array push (`phys_fn_000780`)
 
 The direct DLL probe checks the joint-array continuation independently; suppressing only the push changes `queued=1` to `queued=0` and fails the registered differential (`candidate_exit=1`, `stdout_delta=4000`). Restored source is exact. Phase 7 moves to 319 closed / 241 deferred. The shared simulation target adds one required line in Phases 5, 6 and 7, bringing their floors to 2,729, 1,654 and 1,803. Evidence: the row 000780 report and raw packet.
+
+### M6.32 — Material combine selector (`phys_fn_000855`)
+
+A direct `NxPhysicsSimulationTests` DLL probe checks all five relevant selector results: average, minimum, multiply, maximum, and unknown-mode maximum. Replacing only the row with an immediate return of the first argument is rejected (`candidate_exit=1`, `stdout_delta=4000`); the restored oracle/candidate differential is exact. Phase 7 moves to 320 closed / 240 deferred. Full Phase 5/6/7 gates pass at 2,730/2,730, 1,655/1,655 and 1,804/1,804. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-material-combine-000855.md` and its raw packet.

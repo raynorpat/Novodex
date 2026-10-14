@@ -783,6 +783,27 @@ static bool nxSimulationTestJointContactRow750(HMODULE physics,
 		otherListContactsEnabled == 1 && otherListContactsDisabled == 0;
 	}
 
+static bool nxSimulationTestMaterialCombineRow855(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* row855Address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?cpmCombine0855@@YGNMMI@Z", 0x0001ca00, &row855Address))
+		return false;
+	typedef double (__stdcall *MaterialCombineFn)(NxReal, NxReal, NxU32);
+	MaterialCombineFn const combine = reinterpret_cast<MaterialCombineFn>(row855Address);
+	const NxU32 average = nxFloatBits(static_cast<NxReal>(combine(2.0f, 6.0f, 0)));
+	const NxU32 minimum = nxFloatBits(static_cast<NxReal>(combine(2.0f, 6.0f, 1)));
+	const NxU32 multiply = nxFloatBits(static_cast<NxReal>(combine(2.0f, 6.0f, 2)));
+	const NxU32 maximum = nxFloatBits(static_cast<NxReal>(combine(2.0f, 6.0f, 3)));
+	const NxU32 unknown = nxFloatBits(static_cast<NxReal>(combine(2.0f, 6.0f, 9)));
+	printf("simulation row855 direct combine=%08x.%08x.%08x.%08x.%08x\n",
+		average, minimum, multiply, maximum, unknown);
+	return average == 0x40800000 && minimum == 0x40000000 &&
+		multiply == 0x41400000 && maximum == 0x40c00000 &&
+		unknown == 0x40c00000;
+	}
+
 static bool nxSimulationTestJointArrayPushRow780(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -860,6 +881,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 000780 failed the pinned direct joint-array probe");
+		}
+	if(!nxSimulationTestMaterialCombineRow855(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 000855 failed the pinned direct material-combine probe");
 		}
 	// Exercise trigger-pair generation, enter/stay/leave reconciliation, and
 	// fetch-time callback delivery through the public scene API.

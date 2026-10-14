@@ -784,12 +784,12 @@
     "phys_fn_000985"
    ],
    "rows": {
-    "dynamically_gated": 102,
-    "reconstructed": 39
+    "dynamically_gated": 103,
+    "reconstructed": 38
    },
    "bytes": {
-    "dynamically_gated": 35462,
-    "reconstructed": 12132
+    "dynamically_gated": 35537,
+    "reconstructed": 12057
    },
    "phases": {
     "2": 20,

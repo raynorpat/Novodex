@@ -16238,13 +16238,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/353",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2570",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1ca00-0x1ca4b) in scene-raycast Task 4 (contact-pair manager): stdcall(a, b, mode), `ret 0xc`, the result left unrounded in st(0); NxCombineMode average ((a + b) * 0.5f) / min / multiply / max with the `fcomp; test ah,5; jp` NaN picks (min keeps b, max keeps a); integration review: every arm re-walked against the compiled object, equal in value. Candidate cpmCombine0855 (__stdcall returning double) (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000861 <- 000879 <- 000897 <- 000728); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: a direct DLL probe checks row 000855 for average, minimum, multiply, maximum, and unknown-mode maximum; the oracle and restored candidate return bits 40800000, 40000000, 41400000, 40c00000, 40c00000. Replacing only cpmCombine0855 with return a is rejected (candidate_exit=1, stdout_delta=4000). The restored staged differential is exact. See evidence/phase7-material-combine-000855.md and evidence/raw/phase7-material-combine-000855-20261014/.",
+      "notes": "Direct map/RVA-resolved DLL probe covers each combine mode and the fallback; a row-scoped immediate-return mutation is rejected.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {

@@ -913,3 +913,7 @@ The registered public simulation rejects a row-only no-op (`stdout_delta=4`, bot
 ### M6.31 — Joint island continuation array push (`phys_fn_000780`)
 
 The simulation test now directly probes the row's continuation using a seeded joint chain and spare-capacity joint array. Suppressing only the array push changes `queued=1` to `queued=0` while preserving link clearing and body reset; the staged differential rejects it (`stdout_delta=4000`). Restoring the source is exact. Phase 7 moves to 319 closed / 241 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-array-push-000780.md`.
+
+### M6.32 — Material combine selector (`phys_fn_000855`)
+
+A direct `NxPhysicsSimulationTests` DLL probe checks average, minimum, multiply, maximum, and unknown-mode maximum. Replacing only the row with an immediate return of its first argument is rejected (`candidate_exit=1`, `stdout_delta=4000`); restored output is exact. Phase 7 now records 320 closed / 240 deferred. Phase 5/6/7 coverage floors advance to 2,730/1,655/1,804. See `docs/reconstruction/novodex-physics/evidence/phase7-material-combine-000855.md`.
