@@ -799,3 +799,7 @@ The Phase 2-owned root/path-compression helper is discharged by Phase 5. Returni
 ### Continuation — Island sleep/wake update (`phys_fn_000714`, `2026-10-14`)
 
 Returning before the sleep-group version, velocity thresholds, sleep timer, and awake-flag update is rejected by `NxPhysicsSimulationTests` (`stdout_delta=5918`, both exits zero, exact stderr); the restored differential is exact. The fresh full Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 closes 282 functions and defers 278. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-sleep-wake-update-000714.md` and archived transcripts. Full DLL reconstruction remains active.
+
+### Continuation — Island-root union (`phys_fn_000716`, `2026-10-14`)
+
+Returning before the island-root and member-list merge is rejected by `NxPhysicsSimulationTests` (`stdout_delta=782`, candidate access violation); restored simulation and joint controls are exact. The fresh full Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 closes 283 functions and defers 277. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-root-union-000716.md` and archived transcripts.

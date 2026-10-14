@@ -13639,13 +13639,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/287",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2030",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15ec0-0x15fd2: thiscall ret 4; both finds as the inlined 000712 pattern (other first, its root read before this record's find), the unsigned rank comparison (jbe), the absorbed root's parent, the +0x1d4/+0x1d0 list splice, the +0x1c4/+0x1c8 sums, the +0x1e4 bit-1 transfer and the unconditional rank increment of the else arm are reproduced by Island.cpp Row000716Fixture::row000716. Reachable only from the simulation step (000635 -> 000762 -> row); no public path while NpScene::simulate is a stub. Integration review: 0x15f79-0x15f85 increments the surviving (other) root's rank on every else-arm merge; there is no tie test (the contract row's 'bumps rank on a tie' is corrected). units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair mutation falsification: returning before Row000716Fixture::row000716 island-root union and member-list merge is rejected (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=782, stderr_exact=True). Restoring and rebuilding yields exact NxPhysicsSimulationTests and NxPhysicsJointStagedPairTests controls. Evidence: evidence/phase7-island-root-union-000716.md; raw logs: evidence/raw/phase7-island-root-union-000716-20261014/.",
+      "notes": "Island-root union, member lists, ranks, counts and flags are mutation-falsified through the registered Phase 7 simulation differential.",
       "implementation": "Physics/src/Island.cpp"
     },
     {
