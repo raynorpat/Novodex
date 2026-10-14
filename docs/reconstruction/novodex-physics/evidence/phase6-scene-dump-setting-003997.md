@@ -7,3 +7,5 @@ For the falsification run, an unconditional `return false;` was inserted at the 
 The original source was restored byte-for-byte (`76b271743d0b5b6dc29a682f0e804528a48fd6774ada92cc98ea3efec651ea19`). Rebuilt candidate and oracle both exited 0, stderr was identical, and `stdout_delta=0`. The oracle DLL hash is `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`. Compressed baseline, mutant, and restored transcripts plus source hashes are in `evidence/raw/phase6-scene-dump-setting-003997-20261014/manifest.json`.
 
 This closes one Phase 6 reconstructed row through a detected staged-pair mutation.
+
+After the row was merged to main at `9f71e45b`, the registered `NxPhysicsCoreDumpTests` differential was rerun against the shipped oracle and rebuilt candidate. Both exited 0, stderr matched exactly, and `stdout_delta=0`; the candidate DLL hash was `93e88de6813f69df1b5a8dd5af3235a0bc1ea00590431856de55e6e7b274a0ce`. The post-merge transcript is stored beside the mutation evidence.

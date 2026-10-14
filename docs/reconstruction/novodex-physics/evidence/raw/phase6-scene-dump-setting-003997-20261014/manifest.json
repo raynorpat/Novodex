@@ -30,5 +30,22 @@
       "source_bytes": 386469,
       "compressed_bytes": 41131
     }
-  ]
+  ],
+  "post_merge_gate": {
+    "commit": "9f71e45b",
+    "target": "NxPhysicsCoreDumpTests",
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "candidate_nxphysics_sha256": "93e88de6813f69df1b5a8dd5af3235a0bc1ea00590431856de55e6e7b274a0ce",
+    "transcript": {
+      "path": "post-merge-core-dump-differential.log.gz",
+      "source": "D:\\Novodex-row3997-postmerge-differential-20261014.log",
+      "source_sha256": "7d4e42531295a1bed729efee90b070d4fb2550639cc09ceeda21524abd37ca13",
+      "compressed_sha256": "7059cfebb689d481979b2c59d9073443ac5fac869f54cbd4bdd4647a4755abb0",
+      "source_bytes": 386151,
+      "compressed_bytes": 41053
+    }
+  }
 }
