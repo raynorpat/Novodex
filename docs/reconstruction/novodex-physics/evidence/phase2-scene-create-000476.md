@@ -1,0 +1,9 @@
+# PhysicsSDK::createScene: phys_fn_000476
+
+`phys_fn_000476` (`0x0000ea80`, 344 bytes) is the `PhysicsSDK::createScene` implementation in `Physics/src/PhysicsSDK.cpp`. It validates the descriptor, allocates a `0x710`-byte `NxSceneInternal` through the Foundation allocator, constructs and initializes it, releases a failed construction, and registers a successful scene in the SDK's indexed array. The existing two-scene SDK differential exercises that public path and checks the scene count, returned order, and lookup after swap-removal. The scene allocator differential separately covers allocation failure and confirms that failure leaves the SDK with zero scenes.
+
+For the row mutation, the `mScenes.pushBack(reinterpret_cast<Scene*>(scene))` registration was omitted. A fresh Phase 2 gate rejected the candidate: the oracle passed `NxPhysicsSDKTests`, while the mutated candidate exited with access violation `0xc0000005` (`stdout_delta=41`). The restored Phase 2 baseline passed all four registered differentials with zero stdout delta and exact stderr. This makes the row observable through its product entry point rather than relying on the source mapping alone.
+
+After restoring the source, the full Phase 3 gate passed all registered targets at `coverage_assertions_evaluated=561 floor=561`, which discharges this Phase 2 row's `blocked_on_later_phase` deferral. Phase 2 closure counts are now 65 closed and 78 deferred. The full Phase 2 and Phase 3 transcripts are retained in `evidence/raw/phase2-scene-create-000476-20261014/`.
+
+The row-level mutation proves successful scene registration and its public consequences. It does not claim that every scene-construction failure branch or all Scene internals are complete; those remain covered by their own rows and phase gates. No public headers were changed.

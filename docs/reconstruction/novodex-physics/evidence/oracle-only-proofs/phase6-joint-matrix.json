@@ -6,7 +6,7 @@
   "fixture_source": "tests/PhysicsJointTests.cpp",
   "fixture_source_sha256": "6faa6e85c2ab249dce1baab4f9ba4428c8ccb8eda5d95bbf81cfb1cc49ffd5c8",
   "proof_lines_sha256": "a992576423f09a30d4115347338f2059d2834dc61c6f7ec219fa370a43ca2a12",
-  "baseline_sha256": "12096194cd1995b3b789efd6ec3a9e9b2378260e89d3e0f568b7ce5f89f15e39",
+  "baseline_sha256": "c80e09b2779935b602c9a9074cf96440431ee8a8f4fd16058f2f4770578cb19d",
   "cases": 122,
   "input_lines": 284,
   "case_family_counts": {
@@ -24,5 +24,5 @@
   "oracle_output_lines": 3234,
   "input_digest_sha256": "a35c701865c1044c912493ee63ffc759ceb70457ca779e086fd300b1da5f953e",
   "oracle_output_digest_sha256": "d73476e792b3ef2df8789d59a918b312b5d4e33e51f11e0f1273901e52b18b83",
-  "proof_sha256": "33ee9eefca51712c08249002e78d797aec83686820a7c6bfa16f38307c6de105"
+  "proof_sha256": "e40236cd3a396d9fd066d0426550004688c8bd5502877d7dfb83fc4616392f25"
 }

@@ -9191,14 +9191,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/PhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/173",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1258",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "IDA RVA 0x0000ea80: validates NxSceneDesc, allocates and constructs a 0x710-byte NxSceneInternal, initializes it, then appends the successful Scene to PhysicsSDK::mScenes; failed initialization destroys and frees it.",
+      "dynamic_proof": "NxPhysicsSDKTests Phase 2 differential: omitting the successful mScenes.pushBack registration is rejected (oracle_exit=0, candidate_exit=-1073741819 / 0xc0000005, stdout_delta=41). Restored Phase 2 passes all four differentials exactly; restored Phase 3 passes at 561/561 assertions and discharges the Phase 2 deferral. Evidence: evidence/phase2-scene-create-000476.md; raw logs: evidence/raw/phase2-scene-create-000476-20261014/.",
+      "notes": "PhysicsSDK::createScene public allocation, initialization, registration and failure cleanup path is mutation-falsified; the former Scene dependency deferral is discharged by Phase 3.",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000477",
