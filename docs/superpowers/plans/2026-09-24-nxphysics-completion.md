@@ -783,3 +783,7 @@ Suppressing the `NxSceneInternal::raycastAnyShape` loop forward is rejected thro
 ### Continuation — Scene closest-shape distance finalization (`phys_fn_000706`, `2026-10-14`)
 
 Replacing the closest-shape wrapper’s final square-root distance store with zero is rejected by `NxPhysicsSceneRaycastTests` (`stdout_delta=288`, both exits zero, exact stderr); the restored differential is exact. The fresh full Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 closes 279 functions and defers 281. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-raycast-000706-distance-finalization.md` and archived transcripts. Full DLL reconstruction remains active.
+
+### Continuation — Island support-body copy-back (`phys_fn_000708`, `2026-10-14`)
+
+Returning before `Row000708Fixture::row000708` copies the completed support vectors and saved velocities back to the island body record is rejected by `NxPhysicsSimulationTests` (`stdout_delta=6986`, both exits zero, exact stderr); restored output is exact. Fresh Phase 7 passes at 1,779/1,779 coverage assertions. Phase 7 closes 280 functions and defers 280. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-support-copy-back-000708.md` and archived transcripts. Full DLL reconstruction remains active.

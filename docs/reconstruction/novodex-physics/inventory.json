@@ -13490,13 +13490,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/282",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2016",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15c20-0x15ca1: thiscall on the body record, plain ret; the four dword triples from the +0x204 JointSupportBody (+0x00/+0x10/+0x44/+0x50) to +0x34/+0x40/+0x1a0/+0x1ac with +0x1e4 |= 0x20 after the second, +0x204 re-read per group, all reproduced by Island.cpp Row000708Fixture::row000708. Reachable only from the simulation step (000613); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair mutation falsification: returning before Row000708Fixture::row000708 support-vector and saved-velocity copy-back stores is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=6986, stderr_exact=True). Restoring and rebuilding yields oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase7-island-support-copy-back-000708.md; raw logs: evidence/raw/phase7-island-support-copy-back-000708-20261014/.",
+      "notes": "Island support-body copy-back is mutation-falsified through the registered Phase 7 simulation differential.",
       "implementation": "Physics/src/Island.cpp"
     },
     {

@@ -10841,3 +10841,6 @@ Fresh full Phase 7 gate after the `phys_fn_000704` closure: 1,779/1,779 coverage
 
 `phys_fn_000706`: zero-distance finalization mutation rejected (`stdout_delta=288`); restored differential exact. See [phase7-scene-raycast-000706-distance-finalization.md](phase7-scene-raycast-000706-distance-finalization.md).
 Fresh full Phase 7 gate after the `phys_fn_000706` closure: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-scene-raycast-000706-20261014/phase7-gate.log.gz.
+
+`phys_fn_000708`: omitted support copy-back rejected (`stdout_delta=6986`); restored simulation differential exact. See [phase7-island-support-copy-back-000708.md](phase7-island-support-copy-back-000708.md).
+Fresh full Phase 7 gate after `phys_fn_000708`: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-island-support-copy-back-000708-20261014/phase7-gate.log.gz.
