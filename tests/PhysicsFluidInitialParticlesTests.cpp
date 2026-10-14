@@ -31,7 +31,14 @@
 #ifndef NX_FLUID_ADD_PARTICLES_GROW_FAILURE
 #define NX_FLUID_ADD_PARTICLES_GROW_FAILURE 0
 #endif
+#ifndef NX_FLUID_ADD_PARTICLES_APPEND_TEST
+#define NX_FLUID_ADD_PARTICLES_APPEND_TEST 0
+#endif
 #if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
+#undef NX_FLUID_ADD_PARTICLES_TEST
+#define NX_FLUID_ADD_PARTICLES_TEST 1
+#endif
+#if NX_FLUID_ADD_PARTICLES_APPEND_TEST && !NX_FLUID_ADD_PARTICLES_TEST
 #undef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 1
 #endif
@@ -329,7 +336,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	NxU32 particleCount = NX_FLUID_ZERO_INITIAL_PARTICLES ||
-		NX_FLUID_ADD_PARTICLES_TEST ? 0 : 2;
+		(NX_FLUID_ADD_PARTICLES_TEST && !NX_FLUID_ADD_PARTICLES_APPEND_TEST) ? 0 : 2;
 	NxF32 positions[8] = { 1.0f, -2.5f, 3.5f, 91.0f,
 		-1.5f, 2.0f, 4.0f, 92.0f };
 	NxF32 velocities[8] = { -4.5f, 5.25f, -6.75f, 93.0f,
@@ -362,6 +369,10 @@ int wmain(int argc, wchar_t** argv)
 	unsigned addParticlesException = 0;
 	#if NX_FLUID_ADD_PARTICLES_GROW_FAILURE
 	setParticleArrayGrowFailure(1);
+	#endif
+	#if NX_FLUID_ADD_PARTICLES_APPEND_TEST
+	const unsigned existingParticleWords[46] = {};
+	setFluidPostStepParticle(0, existingParticleWords, 2);
 	#endif
 	if(fluid)
 		nxAddFluidParticlesWithSeh(fluid, &desc.initialParticleData,
@@ -446,6 +457,47 @@ int wmain(int argc, wchar_t** argv)
 	// separate reentry path and add unrelated output to this failure probe.
 	if(!descValid || !growFailureContract)
 		return nxFail("ParticleArrayGrow failure behavior differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
+	#elif NX_FLUID_ADD_PARTICLES_APPEND_TEST
+	const unsigned appendedCount = array
+		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
+	const unsigned char* const appended = records ? records + 184 : 0;
+	const bool originalPreserved = records &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(records + 4)) ==
+			0x3f800000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(records + 96)) ==
+			0xbfc00000u;
+	const bool appendedPositionsMatch = appended &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(appended + 4)) ==
+			0x3f800000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(appended + 8)) ==
+			0xc0200000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(appended + 12)) ==
+			0x40600000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(appended + 96)) ==
+			0xbfc00000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(appended + 100)) ==
+			0x40000000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<const float*>(appended + 104)) ==
+			0x40800000u;
+	const bool appendContract = fluid && !addParticlesException &&
+		appendedCount == 2 && originalPreserved && appendedPositionsMatch &&
+		manager && internalCount == 1 && publicCount == 1 &&
+		getFluidGetParticlesCalls() == 2 &&
+		getParticleArrayAllocCalls() == 1 &&
+		getParticleArrayGrowCalls() == 1;
+	printf("fluid add-particles append caught=%u array-count=%u original-preserved=%u "
+		"appended-positions=%u callbacks=%u allocations=%u grows=%u\n",
+		addParticlesException ? 1u : 0u, appendedCount,
+		originalPreserved ? 1u : 0u, appendedPositionsMatch ? 1u : 0u,
+		getFluidGetParticlesCalls(), getParticleArrayAllocCalls(),
+		getParticleArrayGrowCalls());
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !appendContract)
+		return nxFail("NxFluid::addParticles append behavior differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#else
 	const unsigned addedCount = array
