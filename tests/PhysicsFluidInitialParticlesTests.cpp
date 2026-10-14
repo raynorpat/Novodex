@@ -28,6 +28,13 @@
 #ifndef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 0
 #endif
+#ifndef NX_FLUID_ADD_PARTICLES_GROW_FAILURE
+#define NX_FLUID_ADD_PARTICLES_GROW_FAILURE 0
+#endif
+#if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
+#undef NX_FLUID_ADD_PARTICLES_TEST
+#define NX_FLUID_ADD_PARTICLES_TEST 1
+#endif
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32,
 	NxUserAllocator*, NxUserOutputStream*);
@@ -272,6 +279,19 @@ int wmain(int argc, wchar_t** argv)
 	GetParticleArrayCallsFn getParticleArrayGrowCalls =
 		reinterpret_cast<GetParticleArrayCallsFn>(GetProcAddress(fluidModel,
 			"NxGetFluidParticleArrayGrowCalls"));
+	#if NX_FLUID_ADD_PARTICLES_GROW_FAILURE
+	typedef void (__cdecl *SetParticleArrayGrowFailureFn)(unsigned);
+	SetParticleArrayGrowFailureFn setParticleArrayGrowFailure =
+		reinterpret_cast<SetParticleArrayGrowFailureFn>(GetProcAddress(fluidModel,
+			"NxSetFluidParticleArrayGrowFailure"));
+	if(!setParticleArrayGrowFailure)
+		{
+		sdk->release();
+		return nxFail("ParticleArrayGrow failure control is missing");
+		}
+	#else
+	void (__cdecl *setParticleArrayGrowFailure)(unsigned) = 0;
+	#endif
 	if(!getFluidGetParticlesCalls || !getParticleArrayAllocCalls ||
 		!getParticleArrayGrowCalls)
 		{
@@ -340,6 +360,9 @@ int wmain(int argc, wchar_t** argv)
 	#if NX_FLUID_ADD_PARTICLES_TEST
 	particleCount = 2;
 	unsigned addParticlesException = 0;
+	#if NX_FLUID_ADD_PARTICLES_GROW_FAILURE
+	setParticleArrayGrowFailure(1);
+	#endif
 	if(fluid)
 		nxAddFluidParticlesWithSeh(fluid, &desc.initialParticleData,
 			&addParticlesException);
@@ -403,6 +426,28 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("zero-count initial-particle behavior differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#elif NX_FLUID_ADD_PARTICLES_TEST
+	#if NX_FLUID_ADD_PARTICLES_GROW_FAILURE
+	const unsigned particleArrayCount = array
+		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
+	const bool growFailureContract = fluid && addParticlesException ==
+		EXCEPTION_ACCESS_VIOLATION && array && particleArrayCount == 0 &&
+		manager && internalCount == 1 && publicCount == 1 &&
+		getFluidGetParticlesCalls() == 2 &&
+		getParticleArrayAllocCalls() == 1 &&
+		getParticleArrayGrowCalls() == 1;
+	printf("fluid add-particles grow-failure caught=%u exception=%08x count=%u "
+		"callbacks=%u allocations=%u grows=%u manager=%u/%u\n",
+		addParticlesException == EXCEPTION_ACCESS_VIOLATION ? 1u : 0u,
+		addParticlesException, particleArrayCount,
+		getFluidGetParticlesCalls(), getParticleArrayAllocCalls(),
+		getParticleArrayGrowCalls(), internalCount, publicCount);
+	// The oracle's access violation leaves its API reentry flag set. Process
+	// exit is the faithful cleanup boundary; a teardown call would test a
+	// separate reentry path and add unrelated output to this failure probe.
+	if(!descValid || !growFailureContract)
+		return nxFail("ParticleArrayGrow failure behavior differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
+	#else
 	const unsigned addedCount = array
 		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
 	const bool addedPositionsMatch = records &&
@@ -435,6 +480,7 @@ int wmain(int argc, wchar_t** argv)
 	if(!descValid || !addParticlesContract)
 		return nxFail("NxFluid::addParticles differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
+	#endif
 	#elif NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP
 	const unsigned clippedCount = array
 		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
