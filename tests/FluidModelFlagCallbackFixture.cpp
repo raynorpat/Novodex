@@ -66,6 +66,7 @@ struct NxFluidManagerCallbackSummary
 	unsigned implicitFluidMeshGetSmoothingIterations;
 	unsigned implicitFluidMeshSetSmoothingIterations;
 	unsigned implicitFluidMeshCallbackArgumentErrors;
+	unsigned implicitFluidMeshReentryAttempts;
 	};
 
 struct NxFluidManagerCallbackRecord
@@ -122,6 +123,7 @@ static float gImplicitFluidMeshSurfaceRadius = 0.04f;
 static float gImplicitFluidMeshSingleRadius = 0.01f;
 static float gImplicitFluidMeshTriangleSize = 0.005f;
 static unsigned gImplicitFluidMeshSmoothingIterations = 6;
+static void* gImplicitFluidMeshReentryTarget;
 
 static bool nxImplicitFluidMeshCallbackArgumentsValid(void* manager,
 	void* fluid)
@@ -342,6 +344,7 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gImplicitFluidMeshSingleRadius = 0.01f;
 	gImplicitFluidMeshTriangleSize = 0.005f;
 	gImplicitFluidMeshSmoothingIterations = 6;
+	gImplicitFluidMeshReentryTarget = 0;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxSetFluidManagerStaticCollisions(
@@ -512,6 +515,21 @@ ImplicitFluidMeshSetSurfaceRadius(void* manager, void* fluid, float value)
 		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
 	else
 		gImplicitFluidMeshSurfaceRadius = value;
+	if(gImplicitFluidMeshReentryTarget)
+		{
+		void* const target = gImplicitFluidMeshReentryTarget;
+		gImplicitFluidMeshReentryTarget = 0;
+		++gFluidManagerCallbackSummary.implicitFluidMeshReentryAttempts;
+		typedef void (__thiscall *SetSurfaceRadius)(void*, float);
+		void** const vtable = *reinterpret_cast<void***>(target);
+		reinterpret_cast<SetSurfaceRadius>(vtable[5])(target, 0.09f);
+		}
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetImplicitMeshReentryTarget(void* target)
+	{
+	gImplicitFluidMeshReentryTarget = target;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl
