@@ -1,0 +1,3 @@
+71729c1f4b62d210d38ca2566ef744851c0529defea72efcd051d23ba1cbe158  focused-mutant.log
+5586bab19559b5cdf126ff8ac075716c948bf1eeffa0a066d86b7801b2358f6c  focused-red.log
+e107ae5ee92a2dcdcd9ae08c293719d1467f0f423981a3bfa4ab5098d4bddff2  focused-restored.log

@@ -622,7 +622,21 @@ int wmain(int argc, wchar_t** argv)
 	if(coherentCacheBytesAfterRelease != 0)
 		return nxFail("coherent cache teardown did not free the retained SweepAndPrune object");
 
+	// The public SDK release path must tear down Scenes that the caller leaves
+	// registered. This is distinct from releasing each Scene explicitly: the
+	// oracle's PhysicsSDK destructor walks mScenes before freeing the array.
+	NxScene* sdkOwnedScene = sdk->createScene(sceneDesc);
+	if(!sdkOwnedScene) return nxFail("SDK-owned teardown scene creation failed");
+	const size_t sdkOwnedSceneBytes = allocator.allocationSize(sdkOwnedScene);
+	if(sdkOwnedSceneBytes != 0x28)
+		return nxFail("SDK-owned scene wrapper allocation was not 40 bytes");
 	sdk->release();
+	const bool sdkOwnedSceneFreed = allocator.allocationSize(sdkOwnedScene) == 0;
+	printf("teardown sdk_owned_scene bytes=%u freed=%u\n",
+		static_cast<unsigned>(sdkOwnedSceneBytes), sdkOwnedSceneFreed ? 1u : 0u);
+	if(!sdkOwnedSceneFreed)
+		return nxFail("PhysicsSDK destructor did not release a registered Scene");
+
 	foundationSDK->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

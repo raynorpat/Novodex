@@ -111,13 +111,12 @@ PhysicsSDK::~PhysicsSDK()
 		}
 	nxReleaseSdkPointerBindings();
 	cpmResetActorGroupPairFlags();
+	for(NxU32 i = 0; i < mScenes.size(); ++i)
+		reinterpret_cast<NxSceneInternal*>(mScenes[i])->scalarDeletingDestructor(1);
 
-	// The global name map at .data 0x00123c0c is released above, and the
-	// process-wide OPCODE pool below. Other ownership paths remain open:
-	//   - the scene release loop over mScenes (phys_fn_001275), Phase 3;
-	//   - the mesh release loop over mTriangleMeshes (phys_fn_002253), Phase 4;
-	//   - the three cache teardowns phys_fn_004834, phys_fn_004828 and
-	//     phys_fn_004149, each guarded by a pointer that is still null.
+	// phys_fn_001275 deletes each remaining Scene while the PhysicsSDK and its
+	// Foundation allocator are still alive. Scene deletion does not remove the
+	// pointer from mScenes; the array storage is released by its member dtor.
 
 	gFoundation->releaseDebugRenderable(gDebugRenderable);
 	gDebugRenderable = 0;

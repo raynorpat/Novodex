@@ -451,29 +451,33 @@ then, because the flag is 1, `nxFoundationSDKAllocator->free(this)`.
 2. `NX_DELETE_SINGLE(mNp)` — the wrapper's scalar deleting destructor
    (`phys_fn_000281`) destroys the lock (`free` of the 0x20 block) and then
    frees the 0xc object: **two frees**;
-3. *(not reconstructed)* release the array at `0x00123c0c`;
-4. *(not reconstructed)* the scene release loop over `mScenes`;
-5. *(not reconstructed)* the mesh release loop over `mTriangleMeshes`;
+3. release the array at `0x00123c0c` through `nxReleaseSdkPointerBindings`;
+4. release each remaining Scene in `mScenes` through its scalar deleting
+   destructor (added in the Phase 7 continuation);
+5. release each remaining `TriangleMesh` in `mTriangleMeshes` through its
+   destructor and the Foundation allocator;
 6. `gFoundation->releaseDebugRenderable(gDebugRenderable)` — slot +0x20 of
    `NxFoundationSDK`, which is `releaseDebugRenderable` in declaration order;
 7. `gFoundation->release(); gFoundation = 0;` — slot +0 — **one free**, in the
    Foundation, of its own 56-byte instance;
 8. `NX_DELETE_SINGLE(gShapePairFunctionTable)` — **one free**;
-9. *(not reconstructed)* `phys_fn_004834`, `phys_fn_004828`, `phys_fn_004149`;
+9. the cache teardown calls `phys_fn_004834`, `phys_fn_004828`, and
+   `phys_fn_004149`; the `004149` helper is implemented in `ObjectModel.cpp`,
+   but none of these three calls is wired into the SDK destructor yet;
 10. member destructors in reverse declaration order — `mMaterials` (**one
     free**, the 0x90 block), then `mTriangleMeshes`, then `mScenes`, both of
     which have a null `first` and so free nothing.
 
 Then `free(this)` — **one free**. Six allocations, six frees, balanced.
 
-The five omissions at steps 3, 4, 5 and 9 are all guarded by state this
-component cannot reach. `0x00123c0c` is written only by `phys_fn_000454` and
-`phys_fn_000480`; `mScenes` and `mTriangleMeshes` are filled only by
-`createScene` and `createTriangleMesh`; `0x0012846c`, `0x00128468`, `0x00128464`,
-`0x00128460` and the fields of `0x00123c28` are all still null. Every one of them
-is therefore a zero-iteration loop or an untaken branch for the whole of the
-`NxPhysicsSDKTests` transcript, and the free count proves it: the candidate's
-six frees match the oracle's six exactly.
+**Phase 2 snapshot:** the omissions above were outside the states covered by
+`NxPhysicsSDKTests`, so its six-allocation/six-free result did not establish the
+full SDK release contract. The Phase 7 populated teardown fixture later showed
+that the process-wide cache pointers are live after joint and simulation work.
+The `mScenes` destruction loop is now reconstructed and has a row-specific
+staged-pair differential; `mTriangleMeshes` teardown and the three cache cleanup
+rows still need independent closure. See
+`evidence/phase7-sdk-owned-scene-teardown-000492.md`.
 
 ## 8. Parameter get/set, error callbacks, and the reported file name
 

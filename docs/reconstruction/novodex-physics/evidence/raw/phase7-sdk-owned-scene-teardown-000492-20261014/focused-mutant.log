@@ -1,0 +1,113 @@
+phase=none resolved_targets=NxPhysicsPopulatedSceneTeardownTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsPopulatedSceneTeardownTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysics.dll source_sha256=becbb792908db827036b654ea1bfce0c6de00ee1783aae8e2849eb781b9c5091 staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll staged_sha256=becbb792908db827036b654ea1bfce0c6de00ee1783aae8e2849eb781b9c5091
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxFoundation.dll source_sha256=408dd84f94d41409632a7bf9975580ace11f9e120eecda909b16e764b24f3092 staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll staged_sha256=408dd84f94d41409632a7bf9975580ace11f9e120eecda909b16e764b24f3092
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysics.map staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysicsPopulatedSceneTeardownTests.exe
+child target=NxPhysicsPopulatedSceneTeardownTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysicsPopulatedSceneTeardownTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+teardown recycled_id_scene_wrapper bytes=40 freed=1
+teardown recycled_id_buffers shape_bytes=8 shape_freed=1 actor_bytes=8 actor_freed=1 body_bytes=8 body_freed=1
+teardown joint_support_body_buffer bytes=100 freed=1
+teardown joint_metadata_buffers records_bytes=640 records_freed=1 joint_refs_bytes=8 refs_freed=1
+teardown static_first release_delta=-39
+teardown tracked_shape_array bytes=8 freed=1
+teardown scene_wrapper bytes=40 freed=1
+teardown debug_renderable bytes=52 freed=1
+teardown contact_pair hash_storage buckets=8 links=8 entries=16
+teardown contact_pair pairs_before=1 release_delta=-54 root_bytes=8 root_freed=1
+teardown pruner_owner static_calls=1 dynamic_calls=1 flags=1/1 selected=2 release_delta=-33
+teardown controller_owner actors_before=1 release_delta=-34
+teardown contact_report callback=1 events=0000000a
+teardown contact_report callback=2 events=00000008
+teardown contact_report callback=3 events=00000008
+teardown contact_report callback=4 events=00000008
+teardown contact_report callback=5 events=00000008
+teardown contact_report callback=6 events=00000008
+teardown contact_report callback=7 events=00000004
+teardown contact_report before_release=6 after_release=7 events=0000000e
+teardown contact_report_buffer bytes=264 freed=1
+teardown trigger_buffer bytes=72 freed=1 callbacks=20
+teardown active_root_buffer bytes=8 freed=1
+teardown joint_owner joint_created=1 release_delta=-35
+teardown retained_body_record bytes=608 freed=1
+teardown coherent_cache bytes=44 freed=1
+teardown sdk_owned_scene bytes=40 freed=1
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsPopulatedSceneTeardownTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsPopulatedSceneTeardownTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysicsPopulatedSceneTeardownTests.exe
+child target=NxPhysicsPopulatedSceneTeardownTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\completion-next-row\Novodex\build-vs18\Release\NxPhysicsPopulatedSceneTeardownTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\candidate" exit=1
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\candidate
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=becbb792908db827036b654ea1bfce0c6de00ee1783aae8e2849eb781b9c5091
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=408dd84f94d41409632a7bf9975580ace11f9e120eecda909b16e764b24f3092
+teardown recycled_id_scene_wrapper bytes=40 freed=1
+teardown recycled_id_buffers shape_bytes=8 shape_freed=1 actor_bytes=8 actor_freed=1 body_bytes=8 body_freed=1
+teardown joint_support_body_buffer bytes=100 freed=1
+teardown joint_metadata_buffers records_bytes=640 records_freed=1 joint_refs_bytes=8 refs_freed=1
+teardown static_first release_delta=-39
+teardown tracked_shape_array bytes=8 freed=1
+teardown scene_wrapper bytes=40 freed=1
+teardown debug_renderable bytes=52 freed=1
+teardown contact_pair hash_storage buckets=8 links=8 entries=16
+teardown contact_pair pairs_before=1 release_delta=-54 root_bytes=8 root_freed=1
+teardown pruner_owner static_calls=1 dynamic_calls=1 flags=1/1 selected=2 release_delta=-33
+teardown controller_owner actors_before=1 release_delta=-34
+teardown contact_report callback=1 events=0000000a
+teardown contact_report callback=2 events=00000008
+teardown contact_report callback=3 events=00000008
+teardown contact_report callback=4 events=00000008
+teardown contact_report callback=5 events=00000008
+teardown contact_report callback=6 events=00000008
+teardown contact_report callback=7 events=00000004
+teardown contact_report before_release=6 after_release=7 events=0000000e
+teardown contact_report_buffer bytes=264 freed=1
+teardown trigger_buffer bytes=72 freed=1 callbacks=20
+teardown active_root_buffer bytes=8 freed=1
+teardown joint_owner joint_created=1 release_delta=-35
+teardown retained_body_record bytes=608 freed=1
+teardown coherent_cache bytes=44 freed=1
+teardown sdk_owned_scene bytes=40 freed=0
+
+child_stdout_end
+child_stderr_begin
+FAIL PhysicsSDK destructor did not release a registered Scene
+
+child_stderr_end
+pass: NxPhysicsPopulatedSceneTeardownTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=becbb792908db827036b654ea1bfce0c6de00ee1783aae8e2849eb781b9c5091
+pass: NxPhysicsPopulatedSceneTeardownTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=408dd84f94d41409632a7bf9975580ace11f9e120eecda909b16e764b24f3092
+differential target=NxPhysicsPopulatedSceneTeardownTests oracle_exit=0 candidate_exit=1 both_exit_zero=False stdout_delta=2 stderr_exact=False
+differential_targets=NxPhysicsPopulatedSceneTeardownTests
+differential_pairs=D:\FlamingEnt__\novodex-analysis\pairs\oracle,D:\FlamingEnt__\novodex-analysis\pairs\candidate
