@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_000492",
+  "gate": "NxPhysicsPopulatedSceneTeardownTests",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "089bc262987fa599810c88c45ef3620b49943c415c8b78d7897a6884fb9cbe46",
+  "mutant_candidate_sha256": "975afb4fb10d1f987d17c365ff1417aa2688e55c1847c21865cae7722a768b07",
+  "mutation": {
+    "candidate_rva": "0x00053f50",
+    "raw_file_offset": "0x00053350",
+    "original_prefix": "558bec6aff",
+    "replacement_prefix": "c38bec6aff",
+    "meaning": "ret at destructor entry; skip full PhysicsSDK destructor body"
+  },
+  "mutant_result": {
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 15,
+    "stderr_exact": false,
+    "scene_freed": 0,
+    "outstanding_blocks": 53
+  },
+  "restored_differential": {
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true
+  },
+  "files": {
+    "mutant-candidate-sha256.txt": {
+      "bytes": 66,
+      "sha256": "c811fff46d542536cf7e8b05d8fdda53729de62566bb41438b2d06faaef4f027"
+    },
+    "mutant-differential.log": {
+      "bytes": 11314,
+      "sha256": "ca0b79c8120ad9988b6822ff902d9bfc83741d862328fe97bb9385d865f4a9a3"
+    },
+    "phase7-gate.log.gz": {
+      "bytes": 292737,
+      "sha256": "919051c2445e48c3b42eab3071f174c3b122daf3b3081758d931b2d4d5b67abf"
+    },
+    "restored-differential.log": {
+      "bytes": 11387,
+      "sha256": "14889f32afc8aa6d94a867ca4945a8250f0e018db3d41085ed55255e8670d8d5"
+    }
+  },
+  "phase7_gate": {
+    "status": "pass",
+    "coverage_assertions": 1989,
+    "floor": 1989
+  }
+}
