@@ -602,12 +602,12 @@
     "phys_fn_000686"
    ],
    "rows": {
-    "dynamically_gated": 4,
-    "reconstructed": 6
+    "dynamically_gated": 5,
+    "reconstructed": 5
    },
    "bytes": {
-    "dynamically_gated": 549,
-    "reconstructed": 2954
+    "dynamically_gated": 802,
+    "reconstructed": 2701
    },
    "phases": {
     "7": 10
