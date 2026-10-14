@@ -44,5 +44,22 @@
       "compressed_bytes": 365
     }
   ],
-  "note": "The first rebuild after Copy-Item restore reused the newer mutated object because restored file mtime was older. Touching the byte-identical restored source forced recompilation; the subsequent restored control is exact. The source SHA-256 is unchanged."
+  "note": "The first rebuild after Copy-Item restore reused the newer mutated object because restored file mtime was older. Touching the byte-identical restored source forced recompilation; the subsequent restored control is exact. The source SHA-256 is unchanged.",
+  "post_merge_gate": {
+    "commit": "c84874ed",
+    "target": "NxPhysicsCoreDumpTests",
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "candidate_nxphysics_sha256": "d1a886c229eb78052150a86d9941fb1785d3ffd8a61418c3dc46ee4b94906df5",
+    "transcript": {
+      "path": "post-merge-core-dump-differential.gz",
+      "source": "D:\\Novodex-row3999-postmerge-differential-20261014.log",
+      "source_sha256": "e8a5e4d36746884d783751210265a17adbccac94bd323dab88ce3e305bfdf716",
+      "compressed_sha256": "7db5fb8ba170e86eaeab5a590ea1c94ecc10e74f9fc51a095d2393f52e5fa594",
+      "source_bytes": 386151,
+      "compressed_bytes": 41046
+    }
+  }
 }

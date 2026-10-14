@@ -7,3 +7,5 @@ A no-op mutation inserted an unconditional `return false;` at the start of `Scen
 The original source was restored byte-for-byte (SHA-256 `76b271743d0b5b6dc29a682f0e804528a48fd6774ada92cc98ea3efec651ea19`). The first incremental build reused the newer mutated object because the restored file timestamp was older; touching the restored file forced MSBuild to recompile it. The rebuilt candidate then matched the oracle exactly (`stdout_delta=0`, exact stderr; candidate DLL SHA-256 `d1a886c229eb78052150a86d9941fb1785d3ffd8a61418c3dc46ee4b94906df5`). Raw mutation and restored transcripts, build logs, and hashes are in `evidence/raw/phase6-scene-dump-print-003999-20261014/manifest.json`.
 
 This closes one Phase 6 reconstructed row through a detected staged-pair mutation.
+
+After merge at `c84874ed`, the registered `NxPhysicsCoreDumpTests` differential passed on main: both sides exited 0, `stdout_delta=0`, and stderr matched exactly. The post-merge transcript is stored in the raw evidence directory.
