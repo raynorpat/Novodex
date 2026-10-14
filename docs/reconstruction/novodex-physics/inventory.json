@@ -43005,12 +43005,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "template init (0x5a0a0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1128",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7278",
-      "static_proof": "zero +0xc..0x24 and +0x2c..0x54; set +0x8/0x18/0x28=1.0f; +0x38=8; words +0x3c/0x3e=0; ret",
-      "dynamic_proof": "confirmed via tmplinit drive (3z65): failures=0",
+      "static_proof": "IDA vtable at 0x10108818 places this function in NxBoxShapeDesc slot 1. Its writes initialize the common NxShapeDesc fields, clear the three dimensions at +0x4c/+0x50/+0x54, and match the inline NxBoxShapeDesc::setToDefault implementation in Physics/include/NxBoxShapeDesc.h field for field.",
+      "dynamic_proof": "The oracle row 0x5a0a0 and CMake-built candidate DLL method ?setToDefault@NxBoxShapeDesc@@UAEXXZ (NxPhysics.map VA 0x1006d3e0) produce identical bytes +8..+0x57 (80 bytes). The registered row-local in-memory ret mutation is caught with 76 mismatches; restored full layout control exits 0. See evidence/phase7-shape-desc-default-002314.md.",
       "notes": ""
     },
     {

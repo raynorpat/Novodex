@@ -477,3 +477,8 @@ An empty-body row mutation preserves the normal force but zeros the registered s
 ### M7.7 — NpScene scalar deleting destructor (`phys_fn_000423`)
 
 The populated-scene teardown target now asserts that `NpScene` is allocated as 40 bytes and freed on release. The registered no-op mutation replaces the candidate's generated deleting thunk with `mov eax, ecx; ret 4`; it is rejected at the wrapper-free assertion (`candidate_exit=1`, `stdout_delta=28`). The restored staged pair is exact. Inventory passes with Phase 7 at 333 closed / 227 deferred and zero unexplained bytes. A fresh full Phase 7 gate passes at 1,980/1,980. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-scalar-delete-000423.md` and its raw packet.
+
+
+### M7.8 — Box shape descriptor default (phys_fn_002314)
+
+The row was mis-mapped to the triangle-mesh initializer; IDA's vtable at 0x10108818 identifies NxBoxShapeDesc::setToDefault. The CMake candidate DLL matches all 80 initialized bytes against the oracle. Patching the map-resolved candidate method to ret is caught with 76 mismatches; the restored full layout differential passes. Phase 7 moves to 339 closed / 221 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-shape-desc-default-002314.md.
