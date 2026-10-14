@@ -10951,3 +10951,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000630`: the registered simulation rejects a Scene body-insertion no-op (`candidate_exit=1`, `stdout_delta=6906`); restored output is exact. See [phase7-scene-add-body-000630.md](phase7-scene-add-body-000630.md).
+
+
+`phys_fn_000632`: no-op body removal mutations are rejected by simulation and joint staged-pair targets (`stdout_delta=3991` and `2459`, candidate access violations); both restored controls are exact. See [phase7-scene-remove-body-000632.md](phase7-scene-remove-body-000632.md).

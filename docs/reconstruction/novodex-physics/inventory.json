@@ -12096,13 +12096,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/246",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1653",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with the unit bundle's decompile as a hint only; reviewed faithful in units/npactor-contract.md (a chain row of the plan; owning unit Scene.cpp): nxSceneRemoveBody: swap-remove, 000778 into +0x58c, 000760, the 004103 loop over the body's joints (## Task 5). Staged-pair cases: the targets named in the dynamic proof.",
-      "dynamic_proof": "executed under the Phase 5 actor staged-pair transcripts: a cdb breakpoint at the row's candidate function (nxSceneRemoveBody) in the candidate build (build/Release/NxPhysics.map) was hit 3 times (ActorShapeMutation 3) against build/pairs/candidate (NxPhysics.dll sha256 2f9815a105ac1fe5754ce2d69d7d1b2030a336eb8327fadeeb0f5388481c3dee, identical to build/Release/NxPhysics.dll), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle (stdout_delta=0 stderr_exact=True, coverage 1862/1862); trace excerpt committed as evidence/npactor-trace-final.txt (npactor-completion Task 6, re-recorded for its final-review fixes and re-recorded on the merge of main into the NpActor.cpp completion branch) Re-pinned after the second merge of main (482a621) into the scene-raycast block: evidence/scene-raycast-trace-merge2.txt, candidate NxPhysics.dll sha256 79b7950faf904173 (build/pairs/candidate, identical to build/Release/NxPhysics.dll, commit aa1d080, the merge c6d6620 with its 000784 noinline fix), 20 staged targets, both sides; candidate breakpoint ?nxSceneRemoveBody@@YAXPAVNxSceneInternal@@PAE@Z hit 3 times (SMut 3); equal to the oracle's except Life 6/0, DynF 1/0, BFlag 9/0, Dyn 5/0, DSet 8/0, Mom 12/0, Force 31/0, CMass 25/0, SMut 52/3, BodyC 7/0, JSP 8/0, JAll 2/0, JSlot 27/0, SRay 7/0, SVis 5/0, Eff 4/0, Dump 15/0: only the out-of-line copy setDynamic calls is hit (SMut 3, as recorded); the release path's copy is inlined into nxActorDestroy.",
-      "notes": "owning unit Scene.cpp; written by the NpActor.cpp completion plan in Physics/src/Scene.cpp",
+      "dynamic_proof": "NxPhysicsSimulationTests and NxPhysicsJointStagedPairTests staged-pair differentials: replacing nxSceneRemoveBody with a no-op causes candidate access violations (stdout_delta=3991 and 2459, exact stderr). Restoring Scene.cpp byte-for-byte returns exact output on both targets. See evidence/phase7-scene-remove-body-000632.md and evidence/raw/phase7-scene-remove-body-000632-20261014/.",
+      "notes": "Simulation and joint staged-pair fixtures both exercise body removal and reject the row-scoped no-op.",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
