@@ -53,6 +53,9 @@ struct NxFluidManagerCallbackSummary
 	unsigned fluidGetRestDensity;
 	unsigned fluidGetSimulationMethod;
 	unsigned fluidGetParticleMass;
+	unsigned implicitFluidMeshCreate;
+	unsigned implicitFluidMeshCreateArguments[7];
+	unsigned implicitFluidMeshDestroy;
 	};
 
 struct NxFluidManagerCallbackRecord
@@ -435,6 +438,28 @@ extern "C" __declspec(dllexport) void __cdecl FluidDestroy(void* manager, void* 
 	{
 	if(manager == &gFluidManagerBackend && fluid)
 		++gFluidManagerCallbackSummary.fluidDestroy;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl ImplicitFluidMeshCreate(
+	void* manager, void* fluid, float singleRadius, float surfaceRadius,
+	float blend, float triangleSize, unsigned smoothingIterations)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshCreate;
+	const unsigned arguments[7] = {
+		reinterpret_cast<unsigned>(manager), reinterpret_cast<unsigned>(fluid),
+		*reinterpret_cast<unsigned*>(&singleRadius),
+		*reinterpret_cast<unsigned*>(&surfaceRadius),
+		*reinterpret_cast<unsigned*>(&blend),
+		*reinterpret_cast<unsigned*>(&triangleSize), smoothingIterations };
+	memcpy(gFluidManagerCallbackSummary.implicitFluidMeshCreateArguments,
+		arguments, sizeof(arguments));
+	}
+
+extern "C" __declspec(dllexport) void __cdecl ImplicitFluidMeshDestroy(
+	void* manager, void* fluid)
+	{
+	if(manager == &gFluidManagerBackend && fluid)
+		++gFluidManagerCallbackSummary.implicitFluidMeshDestroy;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetDamping(

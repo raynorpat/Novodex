@@ -101,6 +101,7 @@
 #include "fluids/NxFluid.h"
 #include "fluids/NxFluidEmitter.h"
 #include "fluids/NpFluidEmitter.h"
+#include "NpImplicitMesh.h"
 #include "NpSceneGuard.h"
 #include "opcode/IcePruner.h"
 #include "NxDebugRenderable.h"
@@ -111,6 +112,7 @@ void nxContainerAddThunk(void* innerThis);
 #include <string.h>
 #include <stdlib.h>
 #include <new>
+#include <map>
 
 class NxGroupsMask;
 
@@ -817,6 +819,9 @@ typedef float (__cdecl *NxFluidScalarGetCallback)(void*, void*);
 typedef void (__cdecl *NxFluidScalarSetCallback)(void*, void*, float);
 typedef unsigned (__cdecl *NxFluidUnsignedGetCallback)(void*, void*);
 typedef void* (__cdecl *NxFluidParticlesGetCallback)(void*, void*);
+typedef void (__cdecl *NxImplicitFluidMeshCreateCallback)(void*, void*, float,
+	float, float, float, unsigned);
+typedef void (__cdecl *NxImplicitFluidMeshDestroyCallback)(void*, void*);
 typedef void* (__cdecl *NxParticleArrayAllocCallback)(unsigned);
 typedef unsigned (__cdecl *NxParticleArrayGrowCallback)(void*, unsigned, unsigned);
 typedef void (__cdecl *NxParticleArrayReleaseCallback)(void*);
@@ -852,6 +857,19 @@ static NxFluidScalarGetCallback gNxFluidGetParticleMassCallback = 0;
 static NxFluidUnsignedGetCallback gNxFluidGetMaxParticlesCallback = 0;
 static NxFluidUnsignedGetCallback gNxFluidGetSimulationMethodCallback = 0;
 static NxFluidParticlesGetCallback gNxFluidGetParticlesCallback = 0;
+static NxImplicitFluidMeshCreateCallback gNxImplicitFluidMeshCreateCallback = 0;
+static NxImplicitFluidMeshDestroyCallback gNxImplicitFluidMeshDestroyCallback = 0;
+static NxFluidScalarGetCallback gNxImplicitFluidMeshGetSurfaceRadiusCallback = 0;
+static NxFluidScalarSetCallback gNxImplicitFluidMeshSetSurfaceRadiusCallback = 0;
+static NxFluidScalarGetCallback gNxImplicitFluidMeshGetSingleRadiusCallback = 0;
+static NxFluidScalarSetCallback gNxImplicitFluidMeshSetSingleRadiusCallback = 0;
+static NxFluidScalarSetCallback gNxImplicitFluidMeshSetBlendCallback = 0;
+static NxFluidScalarGetCallback gNxImplicitFluidMeshGetTriangleSizeCallback = 0;
+static NxFluidScalarSetCallback gNxImplicitFluidMeshSetTriangleSizeCallback = 0;
+static NxFluidUnsignedGetCallback gNxImplicitFluidMeshGetSmoothingIterationsCallback = 0;
+typedef void (__cdecl *NxImplicitFluidMeshUnsignedSetCallback)(void*, void*, unsigned);
+static NxImplicitFluidMeshUnsignedSetCallback gNxImplicitFluidMeshSetSmoothingIterationsCallback = 0;
+static std::map<void*, const char*> gNxImplicitFluidMeshNames;
 static NxParticleArrayAllocCallback gNxParticleArrayAllocCallback = 0;
 static NxParticleArrayGrowCallback gNxParticleArrayGrowCallback = 0;
 static NxParticleArrayReleaseCallback gNxParticleArrayReleaseCallback = 0;
@@ -954,6 +972,39 @@ static bool nxFluidManagerResolveModel()
 	gNxFluidGetSimulationMethodCallback = reinterpret_cast<
 		NxFluidUnsignedGetCallback>(GetProcAddress(module,
 			"FluidGetSimulationMethod"));
+	gNxImplicitFluidMeshCreateCallback = reinterpret_cast<
+		NxImplicitFluidMeshCreateCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshCreate"));
+	gNxImplicitFluidMeshDestroyCallback = reinterpret_cast<
+		NxImplicitFluidMeshDestroyCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshDestroy"));
+	gNxImplicitFluidMeshGetSurfaceRadiusCallback = reinterpret_cast<
+		NxFluidScalarGetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshGetSurfaceRadius"));
+	gNxImplicitFluidMeshSetSurfaceRadiusCallback = reinterpret_cast<
+		NxFluidScalarSetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshSetSurfaceRadius"));
+	gNxImplicitFluidMeshGetSingleRadiusCallback = reinterpret_cast<
+		NxFluidScalarGetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshGetSingleRadius"));
+	gNxImplicitFluidMeshSetSingleRadiusCallback = reinterpret_cast<
+		NxFluidScalarSetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshSetSingleRadius"));
+	gNxImplicitFluidMeshSetBlendCallback = reinterpret_cast<
+		NxFluidScalarSetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshSetBlend"));
+	gNxImplicitFluidMeshGetTriangleSizeCallback = reinterpret_cast<
+		NxFluidScalarGetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshGetTriangleSize"));
+	gNxImplicitFluidMeshSetTriangleSizeCallback = reinterpret_cast<
+		NxFluidScalarSetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshSetTriangleSize"));
+	gNxImplicitFluidMeshGetSmoothingIterationsCallback = reinterpret_cast<
+		NxFluidUnsignedGetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshGetSmoothingIterations"));
+	gNxImplicitFluidMeshSetSmoothingIterationsCallback = reinterpret_cast<
+		NxImplicitFluidMeshUnsignedSetCallback>(GetProcAddress(module,
+			"ImplicitFluidMeshSetSmoothingIterations"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
@@ -2192,20 +2243,203 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 // NxFluidDesc::isValid before reaching this warning. The mesh backend is not
 // present in the default build, so an unlicensed descriptor reports the same
 // warning as NxFluid::createSurfaceMesh while fluid construction continues.
+static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void*, void*, unsigned char);
+static void* gNxFluidSurfaceMeshVtable[] = {
+	reinterpret_cast<void*>(nxFluidSurfaceMeshDeletingDestructor)
+	};
+
+static void nxImplicitMeshResolveBackend(void* record, void** manager,
+	void** fluid)
+	{
+	unsigned char* const owner = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(static_cast<unsigned char*>(record) + 4));
+	unsigned char* const sceneManager = *reinterpret_cast<unsigned char**>(
+		owner + 0x7c);
+	*manager = sceneManager ? *reinterpret_cast<void**>(sceneManager + 0x30) : 0;
+	*fluid = *reinterpret_cast<void**>(owner + 0x80);
+	}
+
+extern "C" NxReal __cdecl nxImplicitMeshGetSurfaceRadius(void* record)
+	{
+	void* manager; void* fluid;
+	nxImplicitMeshResolveBackend(record, &manager, &fluid);
+	return gNxImplicitFluidMeshGetSurfaceRadiusCallback
+		? gNxImplicitFluidMeshGetSurfaceRadiusCallback(manager, fluid) : 0.0f;
+	}
+
+extern "C" void __cdecl nxImplicitMeshSetSurfaceRadius(void* record, NxReal value)
+	{
+	void* manager; void* fluid;
+	if(gNxImplicitFluidMeshSetSurfaceRadiusCallback)
+		{
+		nxImplicitMeshResolveBackend(record, &manager, &fluid);
+		gNxImplicitFluidMeshSetSurfaceRadiusCallback(manager, fluid, value);
+		}
+	}
+
+extern "C" NxReal __cdecl nxImplicitMeshGetSingleRadius(void* record)
+	{
+	void* manager; void* fluid;
+	nxImplicitMeshResolveBackend(record, &manager, &fluid);
+	return gNxImplicitFluidMeshGetSingleRadiusCallback
+		? gNxImplicitFluidMeshGetSingleRadiusCallback(manager, fluid) : 0.0f;
+	}
+
+extern "C" void __cdecl nxImplicitMeshSetSingleRadius(void* record, NxReal value)
+	{
+	void* manager; void* fluid;
+	if(gNxImplicitFluidMeshSetSingleRadiusCallback)
+		{
+		nxImplicitMeshResolveBackend(record, &manager, &fluid);
+		gNxImplicitFluidMeshSetSingleRadiusCallback(manager, fluid, value);
+		}
+	}
+
+extern "C" void __cdecl nxImplicitMeshSetBlend(void* record, NxReal value)
+	{
+	void* manager; void* fluid;
+	if(gNxImplicitFluidMeshSetBlendCallback)
+		{
+		nxImplicitMeshResolveBackend(record, &manager, &fluid);
+		gNxImplicitFluidMeshSetBlendCallback(manager, fluid, value);
+		}
+	}
+
+extern "C" NxReal __cdecl nxImplicitMeshGetTriangleSize(void* record)
+	{
+	void* manager; void* fluid;
+	nxImplicitMeshResolveBackend(record, &manager, &fluid);
+	return gNxImplicitFluidMeshGetTriangleSizeCallback
+		? gNxImplicitFluidMeshGetTriangleSizeCallback(manager, fluid) : 0.0f;
+	}
+
+extern "C" void __cdecl nxImplicitMeshSetTriangleSize(void* record, NxReal value)
+	{
+	void* manager; void* fluid;
+	if(gNxImplicitFluidMeshSetTriangleSizeCallback)
+		{
+		nxImplicitMeshResolveBackend(record, &manager, &fluid);
+		gNxImplicitFluidMeshSetTriangleSizeCallback(manager, fluid, value);
+		}
+	}
+
+extern "C" NxU32 __cdecl nxImplicitMeshGetSmoothingIterations(void* record)
+	{
+	void* manager; void* fluid;
+	nxImplicitMeshResolveBackend(record, &manager, &fluid);
+	return gNxImplicitFluidMeshGetSmoothingIterationsCallback
+		? gNxImplicitFluidMeshGetSmoothingIterationsCallback(manager, fluid) : 0;
+	}
+
+extern "C" void __cdecl nxImplicitMeshSetSmoothingIterations(void* record,
+	NxU32 value)
+	{
+	void* manager; void* fluid;
+	if(gNxImplicitFluidMeshSetSmoothingIterationsCallback)
+		{
+		nxImplicitMeshResolveBackend(record, &manager, &fluid);
+		gNxImplicitFluidMeshSetSmoothingIterationsCallback(manager, fluid, value);
+		}
+	}
+
+extern "C" void __cdecl nxImplicitMeshSetName(void* record, const char* name)
+	{
+	if(name)
+		gNxImplicitFluidMeshNames[record] = name;
+	else
+		gNxImplicitFluidMeshNames.erase(record);
+	}
+
+extern "C" const char* __cdecl nxImplicitMeshGetName(void* record)
+	{
+	std::map<void*, const char*>::const_iterator const name =
+		gNxImplicitFluidMeshNames.find(record);
+	return name == gNxImplicitFluidMeshNames.end() ? 0 : name->second;
+	}
+
 static void nxFluidInitializeSurfaceMesh(void* fluid,
 	const NxImplicitMeshDesc* desc)
 	{
 	if(!desc)
 		return;
 	if((gNxFluidLicensedFeatureFlags & 2u) == 0)
+		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
 			280, 0, "NxFluid::createSurfaceMesh: Feature not available!");
+		return;
+		}
+	if(!gNxImplicitFluidMeshCreateCallback || !gNxImplicitFluidMeshDestroyCallback)
+		return;
+	void* const manager = nxFoundationSDKAllocator->malloc(0x3c,
+		NX_MEMORY_PERSISTENT);
+	if(!manager)
+		return;
+	memset(manager, 0, 0x3c);
+	*reinterpret_cast<void***>(manager) = gNxFluidSurfaceMeshVtable;
+	unsigned char* const bytes = static_cast<unsigned char*>(manager);
+	*reinterpret_cast<void**>(bytes + 4) = fluid;
+	memcpy(bytes + 8, reinterpret_cast<const unsigned char*>(desc) + 0x14,
+		0x30);
+	unsigned char* const fluidBytes = static_cast<unsigned char*>(fluid);
+	unsigned char* const sceneManager = *reinterpret_cast<unsigned char**>(
+		fluidBytes + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(sceneManager + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(fluidBytes + 0x80);
+	gNxImplicitFluidMeshCreateCallback(backendManager, backendFluid,
+		desc->singleRadius, desc->surfaceRadius, desc->blend,
+		desc->triangleSize, desc->smoothingIterations);
+	void* const meshStorage = nxFoundationSDKAllocator->malloc(0x18,
+		NX_MEMORY_PERSISTENT);
+	if(meshStorage)
+		{
+	NpImplicitMesh* const mesh = ::new (meshStorage) NpImplicitMesh(manager);
+		mesh->userData = desc->userData;
+		*reinterpret_cast<void**>(bytes + 0x38) = mesh;
+		}
+	nxImplicitMeshSetName(manager, desc->name);
+	*reinterpret_cast<void**>(fluidBytes + 0x24) = manager;
+	}
+
+static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void* manager,
+	void*, unsigned char deleteObject)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(manager);
+	void* const owner = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* const ownerBytes = static_cast<unsigned char*>(owner);
+	void* const sceneManager = *reinterpret_cast<void**>(ownerBytes + 0x7c);
+	void* const backendManager = sceneManager
+		? *reinterpret_cast<void**>(static_cast<unsigned char*>(sceneManager) + 0x30)
+		: 0;
+	void* const backendFluid = *reinterpret_cast<void**>(ownerBytes + 0x80);
+	if(gNxImplicitFluidMeshDestroyCallback)
+		gNxImplicitFluidMeshDestroyCallback(backendManager, backendFluid);
+	nxImplicitMeshSetName(manager, 0);
+	void* const publicMesh = *reinterpret_cast<void**>(bytes + 0x38);
+	if(publicMesh)
+		{
+		NpImplicitMesh* const mesh = static_cast<NpImplicitMesh*>(publicMesh);
+		mesh->~NpImplicitMesh();
+		nxFoundationSDKAllocator->free(mesh);
+		*reinterpret_cast<void**>(bytes + 0x38) = 0;
+		}
+	if((deleteObject & 1) != 0)
+		nxFoundationSDKAllocator->free(manager);
+	return manager;
 	}
 
 static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(fluid);
+	void* const surfaceManager = *reinterpret_cast<void**>(bytes + 0x24);
+	if(surfaceManager)
+		{
+		void** const vtable = *reinterpret_cast<void***>(surfaceManager);
+		typedef void* (__fastcall *DeletingDestructor)(void*, void*, unsigned char);
+		reinterpret_cast<DeletingDestructor>(vtable[0])(
+			surfaceManager, 0, 1);
+		*reinterpret_cast<void**>(bytes + 0x24) = 0;
+		}
 	void* const particleArray = *reinterpret_cast<void**>(bytes + 0x78);
 	if(particleArray && gNxParticleArrayReleaseCallback)
 		gNxParticleArrayReleaseCallback(particleArray);

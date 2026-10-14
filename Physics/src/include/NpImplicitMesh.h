@@ -28,6 +28,18 @@ class NpImplicitMeshDataRecord
 	NxMeshData mMeshData;
 	};
 
+extern "C" NxReal __cdecl nxImplicitMeshGetSurfaceRadius(void* record);
+extern "C" void __cdecl nxImplicitMeshSetSurfaceRadius(void* record, NxReal value);
+extern "C" NxReal __cdecl nxImplicitMeshGetSingleRadius(void* record);
+extern "C" void __cdecl nxImplicitMeshSetSingleRadius(void* record, NxReal value);
+extern "C" void __cdecl nxImplicitMeshSetBlend(void* record, NxReal value);
+extern "C" NxReal __cdecl nxImplicitMeshGetTriangleSize(void* record);
+extern "C" void __cdecl nxImplicitMeshSetTriangleSize(void* record, NxReal value);
+extern "C" NxU32 __cdecl nxImplicitMeshGetSmoothingIterations(void* record);
+extern "C" void __cdecl nxImplicitMeshSetSmoothingIterations(void* record, NxU32 value);
+extern "C" void __cdecl nxImplicitMeshSetName(void* record, const char* name);
+extern "C" const char* __cdecl nxImplicitMeshGetName(void* record);
+
 // Public wrapper recovered from the table beginning at 0x101167d8. The
 // NxImplicitMesh interface occupies +0x00..+0x07, the lock base +0x08..+0x13,
 // and the implementation record pointer is at +0x14.
@@ -35,7 +47,22 @@ class NpImplicitMesh : public NxImplicitMesh, public NpImplicitMeshLockBase
 	{
 	public:
 	explicit NpImplicitMesh(void* internalRecord);
+	~NpImplicitMesh();
+	void setParticles(NxParticleData&) const override;
 	void setMeshData(NxMeshData& data) override;
+	NxMeshData getMeshData() override;
+	NxReal getSurfaceRadius() const override;
+	void setSurfaceRadius(NxReal) override;
+	NxReal getSingleRadius() const override;
+	void setSingleRadius(NxReal) override;
+	NxReal getBlend() const override;
+	void setBlend(NxReal) override;
+	NxReal getTriangleSize() const override;
+	void setTriangleSize(NxReal) override;
+	NxU32 getSmoothingIterations() const override;
+	void setSmoothingIterations(NxU32) override;
+	void setName(const char*) override;
+	const char* getName() const override;
 	protected:
 	void* mInternalRecord;
 	};

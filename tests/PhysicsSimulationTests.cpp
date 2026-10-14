@@ -3541,6 +3541,9 @@ int wmain(int argc, wchar_t** argv)
 		unsigned fluidGetRestDensity;
 		unsigned fluidGetSimulationMethod;
 		unsigned fluidGetParticleMass;
+		unsigned implicitFluidMeshCreate;
+		unsigned implicitFluidMeshCreateArguments[7];
+		unsigned implicitFluidMeshDestroy;
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
@@ -4505,6 +4508,50 @@ int wmain(int argc, wchar_t** argv)
 		gSimulationSurfaceMeshDeleteFlags == 1 && surfaceMeshErrors == 0 &&
 		unlicensedSurfaceMeshGetterExact && unlicensedSurfaceMeshReleaseExact &&
 		partialSurfaceMeshCreateFlagsMatch && surfaceMeshCreateFlagsMatch;
+	NxImplicitMeshDesc licensedSurfaceMeshDesc;
+	licensedSurfaceMeshDesc.setToDefault();
+	licensedSurfaceMeshDesc.surfaceRadius = 0.04f;
+	licensedSurfaceMeshDesc.singleRadius = 0.01f;
+	licensedSurfaceMeshDesc.blend = 0.02f;
+	licensedSurfaceMeshDesc.triangleSize = 0.005f;
+	licensedSurfaceMeshDesc.smoothingIterations = 6;
+	static unsigned char licensedSurfaceMeshUserData;
+	licensedSurfaceMeshDesc.userData = &licensedSurfaceMeshUserData;
+	NxFluidDesc licensedSurfaceMeshFluidDesc;
+	licensedSurfaceMeshFluidDesc.setToDefault();
+	licensedSurfaceMeshFluidDesc.surfaceMeshDesc = &licensedSurfaceMeshDesc;
+	NxFluid* const licensedSurfaceMeshFluid = surfaceMeshScene
+		? surfaceMeshScene->createFluid(licensedSurfaceMeshFluidDesc) : 0;
+	NxImplicitMesh* const constructedSurfaceMesh = licensedSurfaceMeshFluid
+		? licensedSurfaceMeshFluid->getSurfaceMesh() : 0;
+	const bool constructedSurfaceMeshUserDataMatches = constructedSurfaceMesh &&
+		constructedSurfaceMesh->userData == &licensedSurfaceMeshUserData;
+	FluidManagerCallbackSummary licensedSurfaceMeshCallbacks = {};
+	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
+	const bool licensedSurfaceMeshConstructorMatches =
+		licensedSurfaceMeshFluid && constructedSurfaceMesh &&
+		constructedSurfaceMeshUserDataMatches &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreate == 1 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[0] != 0 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[1] != 0 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[2] == 0x3c23d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[3] == 0x3d23d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[4] == 0x3ca3d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[5] == 0x3ba3d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[6] == 6;
+	if(licensedSurfaceMeshFluid)
+		licensedSurfaceMeshFluid->releaseSurfaceMesh();
+	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
+	const bool licensedSurfaceMeshDestroyMatches =
+		licensedSurfaceMeshCallbacks.implicitFluidMeshDestroy == 1;
+	if(licensedSurfaceMeshFluid)
+		surfaceMeshScene->releaseFluid(*licensedSurfaceMeshFluid);
+	printf("simulation fluid licensed-surface-mesh created=%u callback=%u userdata=%u destroy=%u matched=%u\n",
+		constructedSurfaceMesh ? 1u : 0u,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreate,
+		constructedSurfaceMeshUserDataMatches ? 1u : 0u,
+		licensedSurfaceMeshDestroyMatches ? 1u : 0u,
+		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
 	printf("simulation fluid public-api surface-mesh get=%u released=%u calls=%u flags=%u errors=%u unlicensed=%u.%u create-warning=%u\n",
 		returnedSurfaceMesh == reinterpret_cast<NxImplicitMesh*>(
 			&returnedSurfaceMeshMarker) ? 1u : 0u,
@@ -4517,7 +4564,8 @@ int wmain(int argc, wchar_t** argv)
 		surfaceMeshScene->releaseFluid(*surfaceMeshFluid);
 	if(surfaceMeshScene)
 		sdk->releaseScene(*surfaceMeshScene);
-	if(!surfaceMeshPublicApiMatches)
+	if(!surfaceMeshPublicApiMatches || !licensedSurfaceMeshConstructorMatches ||
+		!licensedSurfaceMeshDestroyMatches)
 		return nxFail("licensed NxFluid surface-mesh get/release did not match the fixture contract");
 	}
 	bool fluidManagerArrayGrowthMatches = false;
