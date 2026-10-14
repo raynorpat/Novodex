@@ -10939,3 +10939,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000861`: an empty-body mutation preserves normal force but zeros the friction force in the registered simulation case; the differential rejects it (`stdout_delta=266`, both exits zero), and the restored output is exact. See [phase7-friction-params-000861.md](phase7-friction-params-000861.md).
+
+
+`phys_fn_000857`: the registered simulation contact rejects a no-op restitution-helper mutation with `stdout_delta=3954` (oracle exit 0, candidate access violation, exact stderr); restoring the source returns exact output. See [phase7-material-restitution-000857.md](phase7-material-restitution-000857.md).

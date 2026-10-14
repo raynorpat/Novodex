@@ -16275,13 +16275,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/354",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2576",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1ca50-0x1cb21) in scene-raycast Task 4 (contact-pair manager): stdcall(ids, out), `ret 8` (ecx is overwritten at entry, not an argument); materials lo16/hi16 through the inlined getMaterial (count by the 0x38e38e39 reciprocal, out of range -> material 0), their restitutions combined with the larger (signed) restitution combine mode, out[1] = (flagsA | flagsB) & 4. Candidate cpmRestitution0857 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897 <- 000728); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: the registered contact simulation reaches row 000857. Replacing cpmRestitution0857 with a no-op causes an access violation (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=3954, stderr_exact=True). Restoring ContactPairManager.cpp byte-for-byte returns exact output. See evidence/phase7-material-restitution-000857.md and evidence/raw/phase7-material-restitution-000857-20261014/.",
+      "notes": "The registered simulation contact reaches this material-pair restitution helper; a row-scoped no-op mutation is rejected by the staged differential.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
