@@ -883,3 +883,8 @@ The existing registered simulation fixture exercises the pair-link path: an imme
 ### M6.25 — CCD swept bounds (`phys_fn_000740`)
 
 The public CCD scene is insensitive to an immediate-return mutation, so the registered CCD test now directly checks the row's validity flag and all six swept bounds using a controlled shape-sphere result. The mutation is rejected (`candidate_exit=1`, `stdout_delta=6`) and the restored differential is exact. The target and direct assertion are registered in Phase 7; the floor is 1,801. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-ccd-swept-bounds-000740.md`.
+
+
+### M6.26 — Dirty island record reset (`phys_fn_000764`)
+
+The registered simulation exercises the per-body post-joint island reset. An immediate-return mutation causes the candidate to access-violate while the oracle exits cleanly (`stdout_delta=3898`, exact stderr); restoring the source gives an exact staged-pair control. The row is closed through the existing Phase 7 `NxPhysicsSimulationTests` target; no public headers or production code changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-record-reset-000764.md`.

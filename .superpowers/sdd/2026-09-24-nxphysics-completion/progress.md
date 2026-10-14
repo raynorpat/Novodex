@@ -425,3 +425,10 @@ Ruling for M6.25: select `phys_fn_000740`, the reconstructed CCD swept-bounds ca
 ### M6.25 — CCD swept bounds (`phys_fn_000740`)
 
 The direct `NxPhysicsCcdSimulationTests` probe verifies the row's valid bit and bounds min=(-6,-6.5,-4), max=(9,9,10). An immediate-return mutation is rejected (`candidate_exit=1`, `stdout_delta=6`); restored source and DLL output are exact. The public CCD scene alone is insensitive. Phase 7 now records 312 closed / 248 deferred. The new direct line is registered in Phases 6 and 7, and the CCD target is added to Phase 7. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-ccd-swept-bounds-000740.md`.
+
+
+### M6.26 — Dirty island record reset (`phys_fn_000764`)
+
+The registered Phase 7 simulation rejects a row-only immediate return: the oracle exits 0, the candidate access-violates, the transcript differs by 3,898 bytes, and stderr is exact. The byte-restored rebuild matches exactly. Phase 7 moves to 313 closed / 247 deferred rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-record-reset-000764.md`.
+
+Ruling for M6.27: test `phys_fn_000762`, the joint-island linker, by a row-only mutation against the existing registered simulation first; add a direct DLL probe only if that public path does not detect it.

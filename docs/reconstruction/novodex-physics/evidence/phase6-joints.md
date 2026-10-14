@@ -10913,3 +10913,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_000724`: replacing the sleep-group pair-link row with an immediate return is rejected by the registered simulation differential (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=6606`, exact stderr); restoring the source and rebuilding returns an exact control. See [phase7-island-pair-link-000724.md](phase7-island-pair-link-000724.md).
 
 `phys_fn_000740`: the public CCD scene no-op control is transcript-exact, so the registered target uses a direct swept-bounds probe. An immediate-return mutant leaves the validity bit and all six bounds unset and is rejected (`candidate_exit=1`, `stdout_delta=6`); restored output is exact. See [phase7-ccd-swept-bounds-000740.md](phase7-ccd-swept-bounds-000740.md).
+
+
+`phys_fn_000764`: an immediate-return mutation of the per-body dirty-island reset causes the candidate simulation to access-violate while the oracle exits cleanly (`stdout_delta=3898`, exact stderr); restoring `Island.cpp` byte-for-byte returns exact output. See [phase7-island-record-reset-000764.md](phase7-island-record-reset-000764.md).
