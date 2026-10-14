@@ -288,7 +288,20 @@ NxMaterial* NpPhysicsSDK::getMaterial(NxMaterialIndex index)
 // NpPhysicsSDK.cpp:211 from the immediate at 0x0000beff.
 void NpPhysicsSDK::purgeMaterials()
 	{
+	NxU32 locked = 0;
+	for(; locked < mSdk->getNbScenes(); ++locked)
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, locked)))
+			{
+			while(locked)
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, --locked));
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, 0xd3, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return;
+			}
 	mSdk->purgeMaterials();
+	for(NxU32 scene = 0; scene < locked; ++scene)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, scene));
 	}
 
 // The scene write link 000267 tries: 000450(i) -> [+0x6cc] (the NxScene
@@ -334,5 +347,19 @@ bool NpPhysicsSDK::coreDump(const char* fname, bool binary, const char* addendum
 // 0x0000c2a5. A writer slot, so tryLock at 0x0000c1f4.
 bool NpPhysicsSDK::setPerformanceInspector(NxPerformanceInspector* inspector)
 	{
-	return mSdk->setPerformanceInspector(inspector);
+	NxU32 locked = 0;
+	for(; locked < mSdk->getNbScenes(); ++locked)
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, locked)))
+			{
+			while(locked)
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, --locked));
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+				NX_NP_PHYSICS_SDK_CPP, 0x115, 0,
+				"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return false;
+			}
+	const bool result = mSdk->setPerformanceInspector(inspector);
+	for(NxU32 scene = 0; scene < locked; ++scene)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, scene));
+	return result;
 	}

@@ -91,6 +91,11 @@
       "name": "shared_sdk_add_material_lock_rerun",
       "command": "run_phase_gate.ps1 -Phase 3 -RepoRoot <worktree> -BuildRoot <Win32 Release build> -PairsRoot <external pairs root>",
       "result": "Fresh Phase 3 gate passes at 563/563 assertions. NxPhysicsSDKTests oracle and candidate both report material lock refusal at line 173 with index=0, unwind_first=1, count_unchanged=1, followed by unlocked insertion at index=1/count=2; stdout_delta=0 and stderr_exact=True. Evidence: evidence/raw/phase2-sdk-add-material-lock-000254-000256-20261014/phase3-gate.log.gz."
+    },
+    {
+      "name": "shared_sdk_purge_inspector_lock_rerun",
+      "command": "run_phase_gate.ps1 -Phase 3 -RepoRoot <fresh archive> -BuildRoot <Win32 Release build> -PairsRoot <isolated pairs root>",
+      "result": "Fresh Phase 3 passes at 567/567 assertions. NxPhysicsSDKTests verifies the two-Scene purge refusal/unwind and successful purge, plus inspector refusal/unwind and successful forwarding; restored output is exact. Evidence: evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md and its raw transcript directory."
     }
   ],
   "excluded_from_comparison": [

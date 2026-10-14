@@ -360,6 +360,104 @@ int wmain(int argc, wchar_t** argv)
 	if(unlockedMaterial != materialsBefore || materialsAfterAdd != materialsBefore + 1 || streamFirst.errors)
 		return nxFail("addMaterial failed after the Scene locks were released");
 
+	// purgeMaterials uses the same all-Scene writer protocol. Refusing on Scene
+	// B must unwind the write lock acquired on Scene A and preserve the array.
+	NxSdkHeldSceneWriteLock purgeHeld = {
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(sceneB) + 0x0c),
+		CreateEventW(0, TRUE, FALSE, 0), CreateEventW(0, TRUE, FALSE, 0) };
+	if(!purgeHeld.link || !purgeHeld.ready || !purgeHeld.release)
+		return nxFail("purge Scene-lock fixture setup failed");
+	HANDLE purgeHoldThread = CreateThread(0, 0, nxSdkHoldSceneWriteLock, &purgeHeld, 0, 0);
+	if(!purgeHoldThread || WaitForSingleObject(purgeHeld.ready, 5000) != WAIT_OBJECT_0)
+		return nxFail("purge fixture did not acquire the second Scene lock");
+	streamFirst.reset();
+	const DWORD purgeStart = GetTickCount();
+	first->purgeMaterials();
+	const DWORD purgeElapsed = GetTickCount() - purgeStart;
+	SetEvent(purgeHeld.release);
+	const bool purgeHoldJoined = WaitForSingleObject(purgeHoldThread, 5000) == WAIT_OBJECT_0;
+	CloseHandle(purgeHoldThread);
+	CloseHandle(purgeHeld.ready);
+	CloseHandle(purgeHeld.release);
+	NxSdkProbeSceneWriteLock purgeProbe = {
+		firstSceneWriteLink, CreateEventW(0, TRUE, FALSE, 0), false };
+	HANDLE purgeProbeThread = purgeProbe.completed ?
+		CreateThread(0, 0, nxSdkProbeSceneWriteLock, &purgeProbe, 0, 0) : 0;
+	const bool purgeProbeCompleted = purgeProbeThread &&
+		WaitForSingleObject(purgeProbe.completed, 5000) == WAIT_OBJECT_0 &&
+		WaitForSingleObject(purgeProbeThread, 5000) == WAIT_OBJECT_0;
+	if(purgeProbeThread) CloseHandle(purgeProbeThread);
+	if(purgeProbe.completed) CloseHandle(purgeProbe.completed);
+	const bool purgeUnwound = purgeProbeCompleted && purgeProbe.acquired;
+	if(purgeProbeCompleted && !purgeProbe.acquired)
+		nxNpSceneGuardLeave(firstSceneWriteLink);
+	const bool purgeRefused = streamFirst.errors == 1 &&
+		streamFirst.code == NXE_INVALID_OPERATION && streamFirst.line == 211 &&
+		strstr(streamFirst.message, "WriteLock is still aquired") != 0;
+	const bool purgeCountUnchanged = first->getNbMaterials() == materialsAfterAdd;
+	printf("step=purge_materials_locked returned_while_locked=%u errors=%u code=%u line=%d unwind_first=%u count_unchanged=%u\n",
+		purgeElapsed < 500 ? 1u : 0u, streamFirst.errors,
+		static_cast<unsigned>(streamFirst.code), streamFirst.line,
+		purgeUnwound ? 1u : 0u, purgeCountUnchanged ? 1u : 0u);
+	if(!purgeHoldJoined || purgeElapsed >= 500 || !purgeRefused || !purgeUnwound ||
+		!purgeCountUnchanged)
+		return nxFail("purgeMaterials did not refuse the contended Scene write lock");
+	streamFirst.reset();
+	first->purgeMaterials();
+	const NxU32 materialsAfterPurge = first->getNbMaterials();
+	printf("step=purge_materials_unlocked count=%u errors=%u\n",
+		materialsAfterPurge, streamFirst.errors);
+	if(materialsAfterPurge != 1 || streamFirst.errors)
+		return nxFail("purgeMaterials failed after the Scene locks were released");
+
+	// The internal inspector setter returns true for its accepted pointer. Null
+	// keeps the fixture side-effect free while still distinguishing forwarding.
+	NxSdkHeldSceneWriteLock inspectorHeld = {
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(sceneB) + 0x0c),
+		CreateEventW(0, TRUE, FALSE, 0), CreateEventW(0, TRUE, FALSE, 0) };
+	if(!inspectorHeld.link || !inspectorHeld.ready || !inspectorHeld.release)
+		return nxFail("inspector Scene-lock fixture setup failed");
+	HANDLE inspectorHoldThread = CreateThread(0, 0, nxSdkHoldSceneWriteLock, &inspectorHeld, 0, 0);
+	if(!inspectorHoldThread || WaitForSingleObject(inspectorHeld.ready, 5000) != WAIT_OBJECT_0)
+		return nxFail("inspector fixture did not acquire the second Scene lock");
+	streamFirst.reset();
+	const DWORD inspectorStart = GetTickCount();
+	const bool lockedInspector = first->setPerformanceInspector(0);
+	const DWORD inspectorElapsed = GetTickCount() - inspectorStart;
+	SetEvent(inspectorHeld.release);
+	const bool inspectorHoldJoined = WaitForSingleObject(inspectorHoldThread, 5000) == WAIT_OBJECT_0;
+	CloseHandle(inspectorHoldThread);
+	CloseHandle(inspectorHeld.ready);
+	CloseHandle(inspectorHeld.release);
+	NxSdkProbeSceneWriteLock inspectorProbe = {
+		firstSceneWriteLink, CreateEventW(0, TRUE, FALSE, 0), false };
+	HANDLE inspectorProbeThread = inspectorProbe.completed ?
+		CreateThread(0, 0, nxSdkProbeSceneWriteLock, &inspectorProbe, 0, 0) : 0;
+	const bool inspectorProbeCompleted = inspectorProbeThread &&
+		WaitForSingleObject(inspectorProbe.completed, 5000) == WAIT_OBJECT_0 &&
+		WaitForSingleObject(inspectorProbeThread, 5000) == WAIT_OBJECT_0;
+	if(inspectorProbeThread) CloseHandle(inspectorProbeThread);
+	if(inspectorProbe.completed) CloseHandle(inspectorProbe.completed);
+	const bool inspectorUnwound = inspectorProbeCompleted && inspectorProbe.acquired;
+	if(inspectorProbeCompleted && !inspectorProbe.acquired)
+		nxNpSceneGuardLeave(firstSceneWriteLink);
+	const bool inspectorRefused = streamFirst.errors == 1 &&
+		streamFirst.code == NXE_INVALID_OPERATION && streamFirst.line == 277 &&
+		strstr(streamFirst.message, "WriteLock is still aquired") != 0;
+	printf("step=performance_inspector_locked returned_while_locked=%u result=%u errors=%u code=%u line=%d unwind_first=%u\n",
+		inspectorElapsed < 500 ? 1u : 0u, lockedInspector ? 1u : 0u,
+		streamFirst.errors, static_cast<unsigned>(streamFirst.code), streamFirst.line,
+		inspectorUnwound ? 1u : 0u);
+	if(!inspectorHoldJoined || inspectorElapsed >= 500 || lockedInspector ||
+		!inspectorRefused || !inspectorUnwound)
+		return nxFail("setPerformanceInspector did not refuse the contended Scene write lock");
+	streamFirst.reset();
+	const bool unlockedInspector = first->setPerformanceInspector(0);
+	printf("step=performance_inspector_unlocked result=%u errors=%u\n",
+		unlockedInspector ? 1u : 0u, streamFirst.errors);
+	if(!unlockedInspector || streamFirst.errors)
+		return nxFail("setPerformanceInspector failed after the Scene locks were released");
+
 	printf("step=scenes_created count=%u both=%d first_lookup=%d second_lookup=%d\n",
 		first->getNbScenes(), sceneA && sceneB ? 1 : 0,
 		first->getScene(0) == sceneA ? 1 : 0,

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 2,
-  "note": "Phase 2 closes what it can prove and defers the rest explicitly. Every Phase 2 function row in inventory.json appears exactly once below, and validate_inventory.py enforces that, recomputes the counts, checks every gate against the real target registry, and rejects a closure that claims a falsification it does not carry. There is one proof kind per gate and both require a mutation: the proof kinds that rested on a free-text observation were deleted, because a run can name a real step and still never enter the row, and every error review found was one of those rows. The 48 rows they carried were re-measured by a mutation probe; 5 of them could not produce a detection and were demoted here rather than kept. Where the guarantee ends: recomputed counts and a required non-zero mutation delta make the strongest claim the costly one, but they do not make a false one impossible. The probe transcripts are not committed artifacts, so a fabricated mutation string with a plausible delta beside it would pass this validator. What is checked is that a claim of the shape exists and is internally consistent; what is not checked is that the run behind it happened. Two further limits are in the numbers themselves. Most of these deltas come from an entry probe -- a print at the top of the row -- so what they establish is that the gate enters the row, which is what the deleted kind asserted without checking; they do not establish that the gate would notice the row computing the wrong answer. And a static_proof_falsified row has no oracle side at all: it is checked against expectations read out of the disassembly, so it is only as good as that reading. Two rows are closed by later phases: phys_fn_001690 was deferred homeless_shared_code with driving_phases [3, 4] because no Phase 2 entry point reaches it, and Phase 3's capsule/capsule entries are the reachability it lacked; phys_fn_002417 is discharged by Phase 3's body-creation differential after the shared helper was exercised through both body and shape registration. Both stay Phase 2 rows -- ownership is a census fact and the stray rule keeps one row owned by exactly one phase -- and what moved is the proof, so it is recorded here with discharged_by_phase rather than on their driving-phase ledgers. Three more rows were closed that way by the canonical line -- phys_fn_002410, phys_fn_002404 and phys_fn_002406, discharged_by_phase 5 on Phase 5's NxPhysicsObjectLayoutTests -- and all three were RE-DEFERRED at the port of the Phase 4 close: a discharge counts only once the discharging phase has passed, Phase 5 has not, and so no passing gate runs their proofs. They are blocked_on_later_phase with their mutations, counts, source commits and dirty-control readings in their notes, for a Phase 5 close to discharge. phys_fn_001690, discharged by Phase 3, which has passed, are later-phase closes here. P4 Task 1c removed 19 rows from this ledger because the census no longer gives them to Phase 2: 14 qhull rows, phys_fn_004886 of IcePrunable.cpp, and phys_fn_004836/004840/004846/004847, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. The last four were closed here on static proofs; those proofs measured real behaviour and are reproduced in gates/phase2.json as the third_party_container_rows_moved escalation, but the ledger entry that authorised their inventory state left with the row, so the four are back at 'reconstructed' and Phase 4 has to close them again. Every remaining number here is recomputed from the entries below. Scene release continuation (2026-10-07): phys_fn_000236 and phys_fn_000468 were dynamically falsified on NxPhysicsSDKTests and discharged by passing Phase 3, which closed phys_fn_001275. Vector constructor iterator phys_fn_000001 was independently falsified through the hull_leaf oracle differential and discharged by passing Phase 4; see evidence/phase2-vector-constructor-iterator-000001.md. Current ledger totals are 61 closed and 82 deferred function rows. Actor-group pair-flag Scene-lock wrapper rows phys_fn_000269 and phys_fn_000271 are mutation-falsified through NxPhysicsSDKTests with two live Scenes (no-op mutants rejected at stdout_delta=6 and 2); see evidence/phase2-actor-group-pair-flags-000269-000271.md. Shared island root row phys_fn_000712 is now discharged by Phase 5: its null-root return mutant is rejected by NxPhysicsSimulationTests (stdout_delta=771), while the restored control is exact. See evidence/phase5-island-root-return-000712.md. Scene creation row continuation (2026-10-14): phys_fn_000476 is mutation-falsified by omitting SDK registration after successful Scene initialization; NxPhysicsSDKTests rejects the candidate (candidate access violation, stdout_delta=41). Restored Phase 2 passes, and the full Phase 3 gate passes at 561/561, discharging the former blocked_on_later_phase row. Phase 2 totals are 65 closed / 78 deferred. Triangle-mesh release reverse-unlock continuation (2026-10-14): phys_fn_000246 is mutation-falsified through the two-live-Scene release-lock differential; the no-op unwind mutant is caught at stdout_delta=5 and restored control is exact. Phase 2 totals are now 69 closed / 74 deferred. SDK material lock wrapper (2026-10-14): the existing phys_fn_000254 close now carries a public two-Scene lock refusal and successful-add differential; its no-forward mutant is caught at stdout_delta=18. The outlined reverse-unlock continuation phys_fn_000256 is independently falsified at stdout_delta=19. Phase 2 totals are now 70 closed / 73 deferred.",
+  "note": "Phase 2 closes what it can prove and defers the rest explicitly. Every Phase 2 function row in inventory.json appears exactly once below, and validate_inventory.py enforces that, recomputes the counts, checks every gate against the real target registry, and rejects a closure that claims a falsification it does not carry. There is one proof kind per gate and both require a mutation: the proof kinds that rested on a free-text observation were deleted, because a run can name a real step and still never enter the row, and every error review found was one of those rows. The 48 rows they carried were re-measured by a mutation probe; 5 of them could not produce a detection and were demoted here rather than kept. Where the guarantee ends: recomputed counts and a required non-zero mutation delta make the strongest claim the costly one, but they do not make a false one impossible. The probe transcripts are not committed artifacts, so a fabricated mutation string with a plausible delta beside it would pass this validator. What is checked is that a claim of the shape exists and is internally consistent; what is not checked is that the run behind it happened. Two further limits are in the numbers themselves. Most of these deltas come from an entry probe -- a print at the top of the row -- so what they establish is that the gate enters the row, which is what the deleted kind asserted without checking; they do not establish that the gate would notice the row computing the wrong answer. And a static_proof_falsified row has no oracle side at all: it is checked against expectations read out of the disassembly, so it is only as good as that reading. Two rows are closed by later phases: phys_fn_001690 was deferred homeless_shared_code with driving_phases [3, 4] because no Phase 2 entry point reaches it, and Phase 3's capsule/capsule entries are the reachability it lacked; phys_fn_002417 is discharged by Phase 3's body-creation differential after the shared helper was exercised through both body and shape registration. Both stay Phase 2 rows -- ownership is a census fact and the stray rule keeps one row owned by exactly one phase -- and what moved is the proof, so it is recorded here with discharged_by_phase rather than on their driving-phase ledgers. Three more rows were closed that way by the canonical line -- phys_fn_002410, phys_fn_002404 and phys_fn_002406, discharged_by_phase 5 on Phase 5's NxPhysicsObjectLayoutTests -- and all three were RE-DEFERRED at the port of the Phase 4 close: a discharge counts only once the discharging phase has passed, Phase 5 has not, and so no passing gate runs their proofs. They are blocked_on_later_phase with their mutations, counts, source commits and dirty-control readings in their notes, for a Phase 5 close to discharge. phys_fn_001690, discharged by Phase 3, which has passed, are later-phase closes here. P4 Task 1c removed 19 rows from this ledger because the census no longer gives them to Phase 2: 14 qhull rows, phys_fn_004886 of IcePrunable.cpp, and phys_fn_004836/004840/004846/004847, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. The last four were closed here on static proofs; those proofs measured real behaviour and are reproduced in gates/phase2.json as the third_party_container_rows_moved escalation, but the ledger entry that authorised their inventory state left with the row, so the four are back at 'reconstructed' and Phase 4 has to close them again. Every remaining number here is recomputed from the entries below. Scene release continuation (2026-10-07): phys_fn_000236 and phys_fn_000468 were dynamically falsified on NxPhysicsSDKTests and discharged by passing Phase 3, which closed phys_fn_001275. Vector constructor iterator phys_fn_000001 was independently falsified through the hull_leaf oracle differential and discharged by passing Phase 4; see evidence/phase2-vector-constructor-iterator-000001.md. Current ledger totals are 61 closed and 82 deferred function rows. Actor-group pair-flag Scene-lock wrapper rows phys_fn_000269 and phys_fn_000271 are mutation-falsified through NxPhysicsSDKTests with two live Scenes (no-op mutants rejected at stdout_delta=6 and 2); see evidence/phase2-actor-group-pair-flags-000269-000271.md. Shared island root row phys_fn_000712 is now discharged by Phase 5: its null-root return mutant is rejected by NxPhysicsSimulationTests (stdout_delta=771), while the restored control is exact. See evidence/phase5-island-root-return-000712.md. Scene creation row continuation (2026-10-14): phys_fn_000476 is mutation-falsified by omitting SDK registration after successful Scene initialization; NxPhysicsSDKTests rejects the candidate (candidate access violation, stdout_delta=41). Restored Phase 2 passes, and the full Phase 3 gate passes at 561/561, discharging the former blocked_on_later_phase row. Phase 2 totals are 65 closed / 78 deferred. Triangle-mesh release reverse-unlock continuation (2026-10-14): phys_fn_000246 is mutation-falsified through the two-live-Scene release-lock differential; the no-op unwind mutant is caught at stdout_delta=5 and restored control is exact. Phase 2 totals are now 69 closed / 74 deferred. SDK material lock wrapper (2026-10-14): the existing phys_fn_000254 close now carries a public two-Scene lock refusal and successful-add differential; its no-forward mutant is caught at stdout_delta=18. The outlined reverse-unlock continuation phys_fn_000256 is independently falsified at stdout_delta=19. Phase 2 totals are now 70 closed / 73 deferred. SDK purge and performance-inspector Scene-lock continuation (2026-10-14): public two-Scene differentials now close phys_fn_000263/000265 and phys_fn_000277/000279. Dispatch mutants and both outlined unwind mutants are independently rejected (stdout_delta=20/21 and 18/19); restored output is exact. Phase 2 totals are 72 closed / 71 deferred. Evidence: evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway tree, rebuilt, and run through every Phase 2 differential target; the recorded stdout_delta is the largest one produced and the gate is the target that produced it",
     "static_proof_falsified": "a mutation was aimed at this row and the static-proof gate failed the named check; there is no oracle side, so this is weaker than any differential",
@@ -58,12 +58,12 @@
     "rows_reachable_through_any_phase": 499
   },
   "counts": {
-    "differential_falsified": 62,
+    "differential_falsified": 64,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 2,
     "deferred_homeless_shared_code": 22,
     "deferred_reconstructed_not_falsified": 36,
-    "deferred_blocked_on_later_phase": 8,
+    "deferred_blocked_on_later_phase": 6,
     "deferred_unreachable_in_phase_2": 6,
     "deferred_not_independently_falsifiable": 1
   },
@@ -198,6 +198,17 @@
       "note": "The public wrapper lock-refusal and later unlocked release paths both run through the staged DLL. The internal PhysicsSDK release row remains separately tracked. Evidence: evidence/phase2-triangle-mesh-release-lock-000244.md."
     },
     {
+      "id": "phys_fn_000246",
+      "rva": "0x0000b920",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshReleaseLockTests",
+      "falsification": {
+        "mutation": "Replaced the releaseTriangleMesh reverse-unlock loop body with a counter decrement, leaking the first Scene write lock when the second Scene lock is contended.",
+        "detected": "stdout_delta=5"
+      },
+      "note": "Two-live-Scene fixture enters the outlined reverse-unlock continuation; restored oracle/candidate control is exact and both report unwind_first=1. Evidence: evidence/phase2-triangle-mesh-release-unwind-000246.md."
+    },
+    {
       "id": "phys_fn_000248",
       "rva": "0x0000b9a0",
       "proof": "differential_falsified",
@@ -239,6 +250,17 @@
       "note": "The public two-Scene fixture covers lock refusal, reverse unlock and unlocked insertion. The no-forward mutation is rejected at stdout_delta=18; the separate outlined-helper mutation is recorded on phys_fn_000256. Evidence: evidence/phase2-sdk-add-material-lock-000254-000256.md."
     },
     {
+      "id": "phys_fn_000256",
+      "rva": "0x0000bbf0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSDKTests",
+      "falsification": {
+        "mutation": "Replaced the outlined addMaterial reverse-unlock loop body with a counter decrement, leaving Scene 1 write-locked when Scene 2 is contended.",
+        "detected": "stdout_delta=19"
+      },
+      "note": "Two live Scenes drive the outlined continuation; oracle unwind_first=1 and the no-op mutant unwind_first=0. Restored control is exact. Evidence: evidence/phase2-sdk-add-material-lock-000254-000256.md."
+    },
+    {
       "id": "phys_fn_000258",
       "rva": "0x0000bc70",
       "proof": "differential_falsified",
@@ -272,11 +294,23 @@
       "id": "phys_fn_000263",
       "rva": "0x0000be50",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsCoreClusterTests",
+      "gate": "NxPhysicsSDKTests",
       "falsification": {
-        "mutation": "a print at the entry of NpPhysicsSDK::purgeMaterials",
-        "detected": "stdout_delta=28"
-      }
+        "mutation": "Replaced the successful PhysicsSDK::purgeMaterials dispatch with a no-op while retaining lock handling. The unlocked public purge then left two materials instead of the oracle’s one.",
+        "detected": "stdout_delta=20"
+      },
+      "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
+    },
+    {
+      "id": "phys_fn_000265",
+      "rva": "0x0000bed0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSDKTests",
+      "falsification": {
+        "mutation": "Replaced the outlined purgeMaterials reverse-unlock body with a counter decrement. The external probe found Scene A still locked after Scene B contention.",
+        "detected": "stdout_delta=21"
+      },
+      "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
     },
     {
       "id": "phys_fn_000269",
@@ -324,11 +358,23 @@
       "id": "phys_fn_000277",
       "rva": "0x0000c1d0",
       "proof": "differential_falsified",
-      "gate": "NxPhysicsCoreClusterTests",
+      "gate": "NxPhysicsSDKTests",
       "falsification": {
-        "mutation": "a print at the entry of NpPhysicsSDK::setPerformanceInspector",
+        "mutation": "Forced the successful PhysicsSDK::setPerformanceInspector dispatch result to false. The unlocked public call then returned false instead of the oracle’s true.",
         "detected": "stdout_delta=18"
-      }
+      },
+      "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
+    },
+    {
+      "id": "phys_fn_000279",
+      "rva": "0x0000c230",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSDKTests",
+      "falsification": {
+        "mutation": "Replaced the outlined setPerformanceInspector reverse-unlock body with a counter decrement. The external probe found Scene A still locked after Scene B contention.",
+        "detected": "stdout_delta=19"
+      },
+      "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
     },
     {
       "id": "phys_fn_000281",
@@ -803,28 +849,6 @@
         "mutation": "the accessor hands back null instead of installing the built-in default",
         "detected": "check_failed accessor installs a default when nothing is registered"
       }
-    },
-    {
-      "id": "phys_fn_000246",
-      "rva": "0x0000b920",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsTriangleMeshReleaseLockTests",
-      "falsification": {
-        "mutation": "Replaced the releaseTriangleMesh reverse-unlock loop body with a counter decrement, leaking the first Scene write lock when the second Scene lock is contended.",
-        "detected": "stdout_delta=5"
-      },
-      "note": "Two-live-Scene fixture enters the outlined reverse-unlock continuation; restored oracle/candidate control is exact and both report unwind_first=1. Evidence: evidence/phase2-triangle-mesh-release-unwind-000246.md."
-    },
-    {
-      "id": "phys_fn_000256",
-      "rva": "0x0000bbf0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSDKTests",
-      "falsification": {
-        "mutation": "Replaced the outlined addMaterial reverse-unlock loop body with a counter decrement, leaving Scene 1 write-locked when Scene 2 is contended.",
-        "detected": "stdout_delta=19"
-      },
-      "note": "Two live Scenes drive the outlined continuation; oracle unwind_first=1 and the no-op mutant unwind_first=0. Restored control is exact. Evidence: evidence/phase2-sdk-add-material-lock-000254-000256.md."
     }
   ],
   "deferred": [
@@ -902,21 +926,6 @@
       "note": "createScene reaches 2 Phase 4, 51 Phase 5 and 11 Phase 7 rows. The NpPhysicsSDK::createScene wrapper itself is row-specific mutation-falsified by NxPhysicsSDKTests (evidence/phase2-create-scene-wrapper-000234.md); its transitive Scene dependencies remain deferred."
     },
     {
-      "id": "phys_fn_000265",
-      "rva": "0x0000bed0",
-      "size": 71,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "translation_unit_zone": "in NpPhysicsSDK.cpp",
-      "vtable_slot": 21,
-      "blocked_on": [],
-      "blocked_on_type": "Scene",
-      "driving_phases": [
-        3
-      ],
-      "note": "the outlined scene-lock unwind of purgeMaterials"
-    },
-    {
       "id": "phys_fn_000267",
       "rva": "0x0000bf20",
       "size": 221,
@@ -929,21 +938,6 @@
         6
       ],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000279",
-      "rva": "0x0000c230",
-      "size": 123,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "translation_unit_zone": "in NpPhysicsSDK.cpp",
-      "vtable_slot": 23,
-      "blocked_on": [],
-      "blocked_on_type": "Scene",
-      "driving_phases": [
-        3
-      ],
-      "note": "the outlined scene-lock unwind of setPerformanceInspector"
     },
     {
       "id": "phys_fn_000287",
