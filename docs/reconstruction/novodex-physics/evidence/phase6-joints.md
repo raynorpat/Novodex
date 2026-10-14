@@ -10978,3 +10978,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_003999`: a no-op `SceneDumpSetting::print` mutation is rejected by the registered `NxPhysicsCoreDumpTests` staged-pair differential (`stdout_delta=280`, both exit 0, exact stderr). After restoring the source byte-for-byte and forcing MSBuild to recompile, the control is exact (`stdout_delta=0`). See [phase6-scene-dump-print-003999.md](phase6-scene-dump-print-003999.md).
+
+
+`phys_fn_003992`: the existing date-line coverage marker is now conditional on validating weekday, month, day, year, 12-hour time and AM/PM before normalization. An entry-return mutation is rejected by `NxPhysicsCoreDumpTests` (`stdout_delta=40`, both exit 0, exact stderr); restoring the source and forcing recompilation returns `stdout_delta=0`. See [phase6-scene-dump-datetime-003992.md](phase6-scene-dump-datetime-003992.md).

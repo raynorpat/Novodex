@@ -962,3 +962,8 @@ A row-only early-false mutation in `SceneDumpSetting::store` is detected by the 
 ### M6.41 — Scene dump setting print (`phys_fn_003999`)
 
 A row-only no-op at `SceneDumpSetting::print` is detected by the registered `NxPhysicsCoreDumpTests` staged-pair differential (`stdout_delta=280`, exact stderr). Restoring the source and forcing recompilation yields an exact control. The row is dynamically gated and closed in Phase 6. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-scene-dump-print-003999.md`.
+
+
+### M6.42 — Scene dump date/time format (`phys_fn_003992`)
+
+`PhysicsCoreDumpTests` now validates the generated date/time fields before normalizing the wall-clock line. The existing registered date-line marker fails on an entry-return mutation (`stdout_delta=40`); restored source and forced rebuild pass exactly. The row is dynamically gated and closed in Phase 6. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-scene-dump-datetime-003992.md`.

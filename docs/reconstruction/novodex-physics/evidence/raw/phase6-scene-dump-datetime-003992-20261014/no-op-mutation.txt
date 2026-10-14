@@ -1,0 +1,1 @@
+sceneDumpDateTime(char* date, char* clock): inserted `return;` at function entry before CRT time setup and strftime.

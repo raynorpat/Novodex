@@ -230,6 +230,39 @@ static void nxAppend(char* out, size_t size, const char* text, size_t length)
 	out[used + length] = 0;
 	}
 
+// Validate the real strftime fields before the differential normalises the
+// wall-clock text. A no-op sceneDumpDateTime mutation must not hide behind the
+// date-token normalisation below.
+static bool nxValidDateTime(const char* text, size_t length)
+	{
+	if(length >= 128)
+		return false;
+	char value[128];
+	memcpy(value, text, length);
+	value[length] = 0;
+	if(length && value[length - 1] == '\r')
+		value[length - 1] = 0;
+	char weekday[16];
+	char month[16];
+	char meridiem[3];
+	int day = 0, year = 0, hour = 0, minute = 0, consumed = 0;
+	if(sscanf(value, "%15[^,], %15s %2d, %4d at %2d:%2d %2s%n", weekday, month, &day, &year, &hour,
+		&minute, meridiem, &consumed) != 7 || consumed != static_cast<int>(strlen(value)))
+		return false;
+	static const char* const weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+		"Friday", "Saturday"};
+	static const char* const months[] = {"January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December"};
+	bool knownWeekday = false, knownMonth = false;
+	for(unsigned i = 0; i < sizeof(weekdays) / sizeof(weekdays[0]); i++)
+		knownWeekday = knownWeekday || strcmp(weekday, weekdays[i]) == 0;
+	for(unsigned i = 0; i < sizeof(months) / sizeof(months[0]); i++)
+		knownMonth = knownMonth || strcmp(month, months[i]) == 0;
+	return knownWeekday && knownMonth && day >= 1 && day <= 31 && year >= 2000 && year <= 9999
+		&& hour >= 1 && hour <= 12 && minute >= 0 && minute <= 59
+		&& (strcmp(meridiem, "AM") == 0 || strcmp(meridiem, "PM") == 0);
+	}
+
 // One line, normalised as the header describes.
 static void nxNormalise(unsigned index, const char* line, size_t length, char* out, size_t size)
 	{
@@ -238,7 +271,11 @@ static void nxNormalise(unsigned index, const char* line, size_t length, char* o
 	if(index == 2 && length >= sizeof(kDate) - 1 && memcmp(line, kDate, sizeof(kDate) - 1) == 0)
 		{
 		nxAppend(out, size, kDate, sizeof(kDate) - 1);
-		nxAppend(out, size, "<date>", 6);
+		const size_t dateLength = length - (sizeof(kDate) - 1);
+		if(nxValidDateTime(line + sizeof(kDate) - 1, dateLength))
+			nxAppend(out, size, "<date>", 6);
+		else
+			nxAppend(out, size, "<invalid-date-time>", 19);
 		// Keep the line end visible.
 		if(length && line[length - 1] == '\r')
 			nxAppend(out, size, "<CR>", 4);

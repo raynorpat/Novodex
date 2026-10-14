@@ -1,0 +1,66 @@
+{
+  "row": "phys_fn_003992",
+  "rva": "0x0008fde0",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "source_sha256": "76b271743d0b5b6dc29a682f0e804528a48fd6774ada92cc98ea3efec651ea19",
+  "test_source_sha256": "93fbdfea5927c156403b134de63561cf441558e782c086e8b09b6f594cc6112e",
+  "mutation": "Inserted an unconditional return at entry to sceneDumpDateTime, before _tzset, _time32, _localtime32 and the strftime calls.",
+  "mutant_candidate_sha256": "baaa748b78d9d55280baf524bd030b45cade2b89f467ff2151ddc07c5a9edab9",
+  "restored_candidate_sha256": "9381f683423e55b658342400c01ec04b81215ceea95e07e3a47b3558f1e89d55",
+  "mutation_detection": "oracle_exit=0 candidate_exit=0 stdout_delta=40 stderr_exact=True",
+  "restored_control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "coverage_guard": "Existing NxPhysicsCoreDumpTests coverage marker dump text line=2 text=### Core Dump Generated on <date><CR> is now emitted only when weekday, month, date, year, 12-hour time, and AM/PM validate before normalization.",
+  "transcripts": [
+    {
+      "path": "baseline-core-dump-differential.gz",
+      "source": "D:\\Novodex-row3992-test-baseline-differential-20261014.log",
+      "source_sha256": "a80e2a58b5833ec31769bbff51d8ffc15454647bb59f1728a0501f606218a4b9",
+      "compressed_sha256": "7aa3e33aa46a4aa9f43ef92071fac97882dddc8d7bf503a5bfb37390f1ba6a37",
+      "source_bytes": 386151,
+      "compressed_bytes": 41047
+    },
+    {
+      "path": "no-op-mutation-core-dump-differential.gz",
+      "source": "D:\\Novodex-row3992-mutant-differential-20261014.log",
+      "source_sha256": "00dba1d7c0a9a817c22dae1ee1f21000008d15375791f63dc23f78491dd38b51",
+      "compressed_sha256": "36f5bdf3175257beb68066c4247ea10cf651d84bcaa45a9ef429ce5499b8a3e9",
+      "source_bytes": 386789,
+      "compressed_bytes": 41285
+    },
+    {
+      "path": "restored-core-dump-differential.gz",
+      "source": "D:\\Novodex-row3992-restored-differential-forced-20261014.log",
+      "source_sha256": "0a70d7ab842b1a3a249d5fc010dcca1cd21223aab9eea8f48f7d67c946b69f32",
+      "compressed_sha256": "91cde6dfd7eab1f550628963f5b19c238d08ee88605205ad1062470a2df6de1e",
+      "source_bytes": 386151,
+      "compressed_bytes": 41042
+    }
+  ],
+  "build_logs": [
+    {
+      "path": "test-target-build.gz",
+      "source": "D:\\Novodex-row3992-test-build-20261014.log",
+      "source_sha256": "8d9c5f79662e2832dfc62be82e65ba9c77bd11be1b2a27efd48bf9dad0ce9108",
+      "compressed_sha256": "198707c0bae9535abd3cf1f395c270b4a6de4333be395d19b01f6b6cc84e02f9",
+      "source_bytes": 213,
+      "compressed_bytes": 175
+    },
+    {
+      "path": "no-op-mutation-build.gz",
+      "source": "D:\\Novodex-row3992-mutant-build-20261014.log",
+      "source_sha256": "e9ffe82dd2ce3b9b6705145feef27f985d373ae182a5e310df8fe317f46e63a0",
+      "compressed_sha256": "ee7c7d9114af8b30b27162aaead1c4b5d9eb28b1b7937e1ed881dc8447ccfaad",
+      "source_bytes": 823,
+      "compressed_bytes": 365
+    },
+    {
+      "path": "restored-build-forced.gz",
+      "source": "D:\\Novodex-row3992-restored-build-20261014.log",
+      "source_sha256": "e9ffe82dd2ce3b9b6705145feef27f985d373ae182a5e310df8fe317f46e63a0",
+      "compressed_sha256": "ee7c7d9114af8b30b27162aaead1c4b5d9eb28b1b7937e1ed881dc8447ccfaad",
+      "source_bytes": 823,
+      "compressed_bytes": 365
+    }
+  ],
+  "note": "After restoring source from backup, it was touched to force MSBuild to recompile; source SHA-256 matches the original."
+}
