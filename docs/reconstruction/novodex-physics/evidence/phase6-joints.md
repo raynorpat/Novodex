@@ -10919,3 +10919,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000762`: an immediate-return mutation of the joint-island linker changes the joint-break notification path; the registered simulation rejects it (`candidate_exit=1`, `stdout_delta=876`). Restoring `Island.cpp` byte-for-byte returns exact output. See [phase7-joint-island-link-000762.md](phase7-joint-island-link-000762.md).
+
+
+`phys_fn_000750` and `phys_fn_000752`: the direct staged-DLL probe isolates each direction of joint-list lookup used to suppress body contacts. Independent scan-only mutants fail the expected owner/fallback result (`stdout_delta=4000`); restoring `ContactPairManager.cpp` returns exact output. See [phase7-joint-contact-filter-000750.md](phase7-joint-contact-filter-000750.md) and [phase7-joint-contact-filter-000752.md](phase7-joint-contact-filter-000752.md).

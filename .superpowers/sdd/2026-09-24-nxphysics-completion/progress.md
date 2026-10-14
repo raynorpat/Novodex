@@ -439,3 +439,8 @@ Ruling for M6.27: test `phys_fn_000762`, the joint-island linker, by a row-only 
 The registered Phase 7 simulation rejects a row-only immediate return because the joint-break notification is no longer reported (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=876`). The byte-restored rebuild is exact. Phase 7 moves to 314 closed / 246 deferred rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-island-link-000762.md`.
 
 Ruling for M6.28: select the next falsifiable row from the current Phase 7 ledger.
+
+
+### M6.28 — Joint contact suppression scans (`phys_fn_000750`, `000752`)
+
+A direct `NxPhysicsSimulationTests` probe seeds joints in one body's list at a time and reports `owner_scan` and `fallback_scan`. Independent scan-only mutations flip the corresponding result and fail the staged differential (`candidate_exit=1`, `stdout_delta=4000`); restored controls match exactly. Phase 7 moves to 316 closed / 244 deferred rows. The shared target adds one required assertion in Phases 5, 6 and 7, bringing their floors to 2,728, 1,653 and 1,802. Evidence: the two joint-contact filter reports.

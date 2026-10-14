@@ -14284,13 +14284,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/304",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2118",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x16fb0-0x17004, 000752 being the second loop entered by the jmp at 0x10016fdb) in scene-raycast Task 4 (contact-pair manager): thiscall(body, other), `ret 4`, eax 0/1; both joint lists (+0x1d8, link Joint+0x34) searched for a joint naming the other body at +8/+0xc; found: !(joint+0x2c bit 8), none: 0. Candidate CpmJointedBody::row000750 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (000905 <- 000909 <- 001976 <- 000608 <- 000655); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: the direct DLL probe isolates the owner joint-list scan; its row-only immediate-return mutation changes the expected scan result and is rejected (candidate_exit=1, stdout_delta=4000). Restoring ContactPairManager.cpp byte-for-byte returns an exact differential. See evidence/phase7-joint-contact-filter-000750.md and evidence/raw/phase7-joint-contact-filter-000750-20261014/.",
+      "notes": "The registered direct DLL probe exercises this body joint-list direction independently of the reverse scan; a row-only scan mutation is rejected.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
@@ -14321,13 +14321,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/304",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2121",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x16fb0-0x17004, 000752 being the second loop entered by the jmp at 0x10016fdb) in scene-raycast Task 4 (contact-pair manager): thiscall(body, other), `ret 4`, eax 0/1; both joint lists (+0x1d8, link Joint+0x34) searched for a joint naming the other body at +8/+0xc; found: !(joint+0x2c bit 8), none: 0. Candidate CpmJointedBody::row000750 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (000905 <- 000909 <- 001976 <- 000608 <- 000655); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00016fb0 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: the direct DLL probe isolates the fallback joint-list scan; its row-only immediate-return mutation changes the expected scan result and is rejected (candidate_exit=1, stdout_delta=4000). Restoring ContactPairManager.cpp byte-for-byte returns an exact differential. See evidence/phase7-joint-contact-filter-000752.md and evidence/raw/phase7-joint-contact-filter-000752-20261014/.",
+      "notes": "The registered direct DLL probe exercises this body joint-list direction independently of the reverse scan; a row-only scan mutation is rejected.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {

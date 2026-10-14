@@ -752,6 +752,37 @@ static bool nxSimulationTestDirtyIslandRow720(HMODULE physics,
 	return rebuilt;
 	}
 
+static bool nxSimulationTestJointContactRow750(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* row750Address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?row000750@CpmJointedBody@@QBEIPBU1@@Z", 0x00016fb0, &row750Address))
+		return false;
+	alignas(16) unsigned char body[0x220] = {};
+	alignas(16) unsigned char other[0x220] = {};
+	alignas(16) unsigned char joint[0x40] = {};
+	*reinterpret_cast<void**>(body + 0x1d8) = joint;
+	*reinterpret_cast<void**>(joint + 0x08) = body;
+	*reinterpret_cast<void**>(joint + 0x0c) = other;
+	typedef NxU32 (__thiscall *JointContactRowFn)(const void*, const void*);
+	JointContactRowFn const row750 = reinterpret_cast<JointContactRowFn>(row750Address);
+	const NxU32 ownerListContactsEnabled = row750(body, other);
+	*reinterpret_cast<NxU32*>(joint + 0x2c) = 0x100;
+	const NxU32 ownerListContactsDisabled = row750(body, other);
+	*reinterpret_cast<void**>(body + 0x1d8) = 0;
+	*reinterpret_cast<void**>(other + 0x1d8) = joint;
+	*reinterpret_cast<NxU32*>(joint + 0x2c) = 0;
+	const NxU32 otherListContactsEnabled = row750(body, other);
+	*reinterpret_cast<NxU32*>(joint + 0x2c) = 0x100;
+	const NxU32 otherListContactsDisabled = row750(body, other);
+	printf("simulation row750 joint-contact owner_scan=%u.%u fallback_scan=%u.%u\n",
+		ownerListContactsEnabled, ownerListContactsDisabled,
+		otherListContactsEnabled, otherListContactsDisabled);
+	return ownerListContactsEnabled == 1 && ownerListContactsDisabled == 0 &&
+		otherListContactsEnabled == 1 && otherListContactsDisabled == 0;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -786,6 +817,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 000720 failed the pinned direct dirty-island root probe");
+		}
+	if(!nxSimulationTestJointContactRow750(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 000750 failed the pinned direct joint-contact probe");
 		}
 	// Exercise trigger-pair generation, enter/stay/leave reconciliation, and
 	// fetch-time callback delivery through the public scene API.

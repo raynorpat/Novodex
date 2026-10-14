@@ -893,3 +893,8 @@ The registered simulation exercises the per-body post-joint island reset. An imm
 ### M6.27 — Joint island linking (`phys_fn_000762`)
 
 The registered joint-break simulation exercises the row's joint-island link: an immediate-return mutation suppresses the expected notification and is rejected (`candidate_exit=1`, `stdout_delta=876`). Restoring `Island.cpp` byte-for-byte returns an exact differential. Phase 7 now records 314 closed / 246 deferred rows. No public headers or production source changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-island-link-000762.md`.
+
+
+### M6.28 — Joint contact suppression scans (`phys_fn_000750`, `000752`)
+
+The public simulation did not expose each body-list scan independently, so `NxPhysicsSimulationTests` now probes the pinned oracle and staged candidate directly using scratch records. Independent scan-only mutants flip `owner_scan` and `fallback_scan` respectively and are rejected; restored output is exact. The shared target is registered for Phases 5, 6 and 7, whose coverage floors increase by one to 2,728, 1,653 and 1,802. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-contact-filter-000750.md` and `000752.md`.
