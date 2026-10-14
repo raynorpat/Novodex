@@ -10858,3 +10858,5 @@ Fresh full Phase 7 gate after `phys_fn_000716`: 1,779/1,779 coverage assertions 
 Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-sleep-group-union-000718-20261014/phase7-gate.log.gz.
 
 `phys_fn_000647`: cleared the Scene constructor's `+0x6cc` wrapper store; `NxPhysicsSceneConstructorTests` rejected scene creation (`stdout_delta=6`). Restored constructor reports `internal_link=1` and the full Phase 7 gate passes at 1,793/1,793. See [phase7-scene-constructor-000647.md](phase7-scene-constructor-000647.md).
+
+`phys_fn_000657`: an immediate-return mutation of `NxSceneInternal::visualize()` is rejected by `NxPhysicsSceneVisualizeTests` (`stdout_delta=1962`); restored visualization output is exact and the full Phase 7 gate passes at 1,793/1,793. See [phase7-scene-visualize-000657.md](phase7-scene-visualize-000657.md).
