@@ -460,6 +460,114 @@ __declspec(noinline) double __cdecl nxPMapPointTriangleSquareDistance(const NxRe
 	}
 
 
+
+struct PMapMeshSamplingView
+	{
+	unsigned char prefix[0x10];
+	const NxVec3* vertices;
+	const NxU32* triangles;
+	};
+
+static_assert(offsetof(PMapMeshSamplingView, vertices) == 0x10, "PenetrationMap reads vertices at mesh + 0x10");
+static_assert(offsetof(PMapMeshSamplingView, triangles) == 0x14, "PenetrationMap reads indices at mesh + 0x14");
+
+// phys_fn_002029 (0x0004f070). Samples the eight Morton-spread cell corners
+// in the oracle's order, accumulating the high-bit and low-bit classes apart.
+bool PenetrationMap::sampleCell(NxU32 x, NxU32 y, NxU32 z, NxF32* output,
+	const NxF32* point, const NxF32* direction, const NxF32* matrix) const
+	{
+	const NxU32 x0 = mSpread[x], x1 = mSpread[x + 1];
+	const NxU32 y0 = 2 * mSpread[y], y1 = 2 * mSpread[y + 1];
+	const NxU32 z0 = 4 * mSpread[z], z1 = 4 * mSpread[z + 1];
+	NxI32 indices[8] = {
+		static_cast<NxI32>(x0 + y0 + z0), static_cast<NxI32>(x1 + y0 + z0),
+		static_cast<NxI32>(x0 + y1 + z0), static_cast<NxI32>(x0 + y0 + z1),
+		static_cast<NxI32>(x1 + y0 + z1), static_cast<NxI32>(x0 + y1 + z1),
+		static_cast<NxI32>(x1 + y1 + z0), static_cast<NxI32>(x1 + y1 + z1)
+	};
+	if(x == mResolution - 1) { indices[1] = indices[4] = indices[6] = indices[7] = -1; }
+	if(y == mResolution - 1) { indices[2] = indices[5] = indices[6] = indices[7] = -1; }
+	if(z == mResolution - 1) { indices[3] = indices[4] = indices[5] = indices[7] = -1; }
+
+	const NxF32 origin[3] = {
+		static_cast<NxF32>(x) * mUnitsPerCell[0] - mHalfExtents[0] + mCentre[0],
+		static_cast<NxF32>(y) * mUnitsPerCell[1] - mHalfExtents[1] + mCentre[1],
+		static_cast<NxF32>(z) * mUnitsPerCell[2] - mHalfExtents[2] + mCentre[2]
+	};
+	const NxF32 fraction[3] = {
+		(point[0] - origin[0]) * mCellsPerUnit[0],
+		(point[1] - origin[1]) * mCellsPerUnit[1],
+		(point[2] - origin[2]) * mCellsPerUnit[2]
+	};
+	const NxF32 low[3] = { 1.0f - fraction[0], 1.0f - fraction[1], 1.0f - fraction[2] };
+	const NxF32 high[3] = { fraction[0], fraction[1], fraction[2] };
+	const NxF32 cell[3][2] = {
+		{ origin[0], origin[0] + mUnitsPerCell[0] },
+		{ origin[1], origin[1] + mUnitsPerCell[1] },
+		{ origin[2], origin[2] + mUnitsPerCell[2] }
+	};
+	const NxU8 corner[8][3] = {
+		{ 0, 0, 0 }, { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 },
+		{ 1, 0, 1 }, { 0, 1, 1 }, { 1, 1, 0 }, { 1, 1, 1 }
+	};
+	NxF32 lowClass[3] = { 0.0f, 0.0f, 0.0f };
+	output[0] = output[1] = output[2] = 0.0f;
+	const PMapMeshSamplingView* mesh = static_cast<const PMapMeshSamplingView*>(mMesh);
+	for(NxU32 c = 0; c < 8; ++c)
+		{
+		if(indices[c] < 0)
+			continue;
+		const NxU32 value = mGrid[indices[c]];
+		const NxU32 face = value & 0x3fffffffu;
+		const NxVec3& v0 = mesh->vertices[mesh->triangles[face * 3 + 0]];
+		const NxVec3& v1 = mesh->vertices[mesh->triangles[face * 3 + 1]];
+		const NxVec3& v2 = mesh->vertices[mesh->triangles[face * 3 + 2]];
+		const NxF32 samplePoint[3] = {
+			cell[0][corner[c][0]], cell[1][corner[c][1]], cell[2][corner[c][2]]
+		};
+		const NxF32 a[3] = { v0.x, v0.y, v0.z };
+		const NxF32 b[3] = { v1.x, v1.y, v1.z };
+		const NxF32 d[3] = { v2.x, v2.y, v2.z };
+		NxF32 s = 0.0f, t = 0.0f;
+		(void) nxPMapPointTriangleSquareDistance(samplePoint, a, b, d, &s, &t);
+		const NxF32 bary0 = 1.0f - s - t;
+		const NxF32 delta[3] = {
+			t * d[0] + s * b[0] + bary0 * a[0] - samplePoint[0],
+			bary0 * a[1] + s * b[1] + t * d[1] - samplePoint[1],
+			bary0 * a[2] + s * b[2] + t * d[2] - samplePoint[2]
+		};
+		const NxF32 weight = (corner[c][2] ? high[2] : low[2])
+			* (corner[c][1] ? high[1] : low[1])
+			* (corner[c][0] ? high[0] : low[0]);
+		const NxF32 weighted[3] = { delta[0] * weight, delta[1] * weight, delta[2] * weight };
+		NxF32* accum = (value & 0x80000000u) ? output : lowClass;
+		accum[0] += weighted[0];
+		accum[1] += weighted[1];
+		accum[2] += weighted[2];
+		}
+	output[0] = lowClass[0] + output[0];
+	output[1] = lowClass[1] + output[1];
+	output[2] = lowClass[2] + output[2];
+	if(!(output[0] * lowClass[0] + lowClass[1] * output[1] + lowClass[2] * output[2] >= 0.0f))
+		return false;
+	if(!direction)
+		return true;
+	NxF32 transformed[3];
+	if(matrix)
+		{
+		transformed[0] = matrix[2] * direction[2] + matrix[1] * direction[1] + matrix[0] * direction[0];
+		transformed[1] = matrix[3] * direction[0] + matrix[5] * direction[2] + matrix[4] * direction[1];
+		transformed[2] = matrix[6] * direction[0] + matrix[8] * direction[2] + matrix[7] * direction[1];
+		}
+	else
+		{
+		transformed[0] = direction[0];
+		transformed[1] = direction[1];
+		transformed[2] = direction[2];
+		}
+	return transformed[1] * output[1] + transformed[2] * output[2] + transformed[0] * output[0] <= 0.0f;
+	}
+
 static double nxPMapTriangleDistance(const InternalTriangleMesh& mesh,
 	const NxF32 point[3], NxU32 face)
 	{

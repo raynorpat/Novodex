@@ -1,0 +1,436 @@
+oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\scene-raycast-000700\Novodex\build\scene-raycast-row700-red\Release\NxFoundation.dll sha256=f97439c0e961d10163e58aade07873718f9bdcebb21551564c3dc0e04e6ab485
+oracle base=10000000 mode=differential
+oracle pin=matched
+targets bound=11 null=0 mode=differential
+asset fixtures pmap=16 mesh=6 writer=9 release=1
+asset rows pmap_create=phys_fn_002047 pmap_sample=phys_fn_002029 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051
+pmap sample case=outside_cells accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000
+pmap sample case=interior_cells accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000
+pmap sample case=mixed_cells accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000
+pmap sample case=split_class_reject accepted=0 output=bd000000,bd000000,3f000000 candidate=1/bd000000,bd000000,3f000000
+pmap sample case=direction_matrix accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000
+pmap sample case=opposing_direction accepted=0 output=bd000000,bd000000,be800000 candidate=0/bd000000,bd000000,be800000
+pmap sample case=corner_111_boundary accepted=1 output=be580000,be580000,bed80000 candidate=1/be580000,be580000,bed80000
+pmap sample row=phys_fn_002029 cases=7 digest=3416250d mode=differential
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=1 resolution=1 cells=1 grid=present
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=1
+  gap fold3 done grid=e3160fb1
+  gap counters done
+  gap errors done errors=0 total=0
+pmap case=pmap.minimal_valid dimension=minimal_valid bytes=17 accepted=1 errors=0 line=0x000 resolution=1 cells=1 grid=e3160fb1
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.minimal_valid
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=1
+  cand state resolution=1 cells=1 grid=0136EDD8
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=1 resolution=2 cells=8 grid=present
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=8
+  gap fold3 done grid=5b517625
+  gap counters done
+  gap errors done errors=0 total=0
+pmap case=pmap.multi_value dimension=multi_element bytes=30 accepted=1 errors=0 line=0x000 resolution=2 cells=8 grid=5b517625
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.multi_value
+  cand entered length=30
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=1
+  cand state resolution=2 cells=8 grid=01376F90
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=1 resolution=4 cells=64 grid=present
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=64
+  gap fold3 done grid=06a34ac5
+  gap counters done
+  gap errors done errors=0 total=0
+pmap case=pmap.boundary_res4 dimension=boundary bytes=25 accepted=1 errors=0 line=0x000 resolution=4 cells=64 grid=06a34ac5
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.boundary_res4
+  cand entered length=25
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=1
+  cand state resolution=4 cells=64 grid=0137DED8
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=1 resolution=1 cells=1 grid=present
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=1
+  gap fold3 done grid=e3160fb1
+  gap counters done
+  gap errors done errors=0 total=0
+pmap case=pmap.boundary_res1_signclear dimension=boundary bytes=17 accepted=1 errors=0 line=0x000 resolution=1 cells=1 grid=e3160fb1
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.boundary_res1_signclear
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=1
+  cand state resolution=1 cells=1 grid=0136EDD8
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=1
+pmap case=pmap.bad_magic_0 dimension=malformed bytes=17 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_magic_0
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=2
+pmap case=pmap.bad_magic_1 dimension=malformed bytes=17 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_magic_1
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=3
+pmap case=pmap.bad_magic_2 dimension=malformed bytes=17 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_magic_2
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=4
+pmap case=pmap.bad_magic_3 dimension=malformed bytes=17 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_magic_3
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=5
+pmap case=pmap.bad_version_00000000 dimension=malformed bytes=17 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_version_00000000
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=6
+pmap case=pmap.bad_version_00000003 dimension=malformed bytes=17 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_version_00000003
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=7
+pmap case=pmap.bad_version_00000005 dimension=malformed bytes=17 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_version_00000005
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=8
+pmap case=pmap.bad_version_ffffffff dimension=malformed bytes=17 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.bad_version_ffffffff
+  cand entered length=17
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=9
+pmap case=pmap.truncated_after_magic dimension=truncated bytes=84 accepted=0 errors=1 line=0x3da resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.truncated_after_magic
+  cand entered length=84
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=0 resolution=0 cells=0 grid=null
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=0
+  gap fold3 done grid=00000000
+  gap counters done
+  gap errors done errors=1 total=10
+pmap case=pmap.truncated_mid_tag dimension=truncated bytes=83 accepted=0 errors=1 line=0x3d3 resolution=0 cells=0 grid=00000000
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.truncated_mid_tag
+  cand entered length=83
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=0
+  cand state resolution=0 cells=0 grid=00000000
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=1 resolution=32 cells=32768 grid=present
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=32768
+  gap fold3 done grid=118f67a9
+  gap counters done
+  gap errors done errors=0 total=10
+pmap case=pmap.nonempty_absolute dimension=nonempty_cell_run bytes=4123 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=118f67a9
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.nonempty_absolute
+  cand entered length=4123
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=1
+  cand state resolution=32 cells=32768 grid=01382FD0
+  cand digest done
+  step streamCtor done
+  streamCanary before=0 after=0 sizeof=28
+  step streamSeek done
+  step pmapCtor done
+  step pmapCreate done
+  canary before=0 after=0 sizeof(object)=120
+  object accepted=1 resolution=32 cells=32768 grid=present
+  step pmapDtor done
+  step streamDtor done
+  gap fold1 done
+  gap fold2 done cells=32768
+  gap fold3 done grid=cdce6b95
+  gap counters done
+  gap errors done errors=0 total=10
+pmap case=pmap.command_matrix dimension=command_matrix bytes=4149 accepted=1 errors=0 line=0x000 resolution=32 cells=32768 grid=cdce6b95
+  case-line printed
+  comparison about to run
+pmap oracle-done case=pmap.command_matrix
+  cand entered length=4149
+  cand streamCtor done
+  cand streamSeek done
+  cand pmapCtor done
+  cand pmapCreate done accepted=1
+  cand state resolution=32 cells=32768 grid=01382FD0
+  cand digest done
+mesh case=mesh.bad_tag0 dimension=malformed accepted=0 dwords_read=1
+mesh case=mesh.bad_tag0_zero dimension=malformed accepted=0 dwords_read=1
+mesh case=mesh.bad_tag0_byteswapped dimension=malformed accepted=0 dwords_read=1
+mesh case=mesh.bad_tag1 dimension=malformed accepted=0 dwords_read=2
+mesh case=mesh.bad_tag1_zero dimension=malformed accepted=0 dwords_read=2
+mesh case=mesh.truncated_after_tag0 dimension=truncated accepted=0 dwords_read=2
+writer case=writer.full dimension=everything accepted=1 events=19 bytes=334 digest=8ca61415
+writer case=writer.minimal dimension=nothing_optional accepted=1 events=15 bytes=64 digest=3abc793c
+writer case=writer.empty_mesh dimension=zero_counts accepted=1 events=15 bytes=16 digest=8ed70ae9
+writer case=writer.materials_only dimension=single_flag accepted=1 events=16 bytes=82 digest=66ef8a8f
+writer case=writer.remap_only dimension=single_flag accepted=1 events=16 bytes=88 digest=439a7c22
+writer case=writer.array_a_only dimension=single_flag accepted=1 events=16 bytes=88 digest=557261ac
+writer case=writer.array_b_only dimension=single_flag accepted=1 events=16 bytes=88 digest=e5919c82
+writer case=writer.hull_present dimension=hull accepted=1 events=15 bytes=148 digest=e80ef3eb
+writer case=writer.hull_mode_bit dimension=hull accepted=1 events=15 bytes=148 digest=68416241
+release case=null_data returned=1 data_size=5a5a5a5a data=00000000
+asset coverage driven=32 accepted=15 rejected=16 errors=10
+asset oracle digest=1daa095e expect_mismatches=0
+asset candidate mismatches=1 mode=differential
+FAIL the reconstruction does not agree with the pinned oracle

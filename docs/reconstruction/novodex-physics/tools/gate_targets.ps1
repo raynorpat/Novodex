@@ -5279,9 +5279,18 @@ $NxRequiredCoverageLines = [ordered] @{
 
     'NxPhysicsAssetTests' = @(
         'asset fixtures pmap=16 mesh=6 writer=9 release=1',
-        'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051',
+        'asset rows pmap_create=phys_fn_002047 pmap_sample=phys_fn_002029 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051',
         'asset coverage driven=32 accepted=15 rejected=16 errors=10',
         'asset oracle digest=1daa095e',
+
+        'pmap sample case=outside_cells accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000',
+        'pmap sample case=interior_cells accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000',
+        'pmap sample case=mixed_cells accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000',
+        'pmap sample case=split_class_reject accepted=0 output=bd000000,bd000000,3f000000 candidate=0/bd000000,bd000000,3f000000',
+        'pmap sample case=direction_matrix accepted=1 output=bd000000,bd000000,be800000 candidate=1/bd000000,bd000000,be800000',
+        'pmap sample case=opposing_direction accepted=0 output=bd000000,bd000000,be800000 candidate=0/bd000000,bd000000,be800000',
+        'pmap sample case=corner_111_boundary accepted=1 output=be580000,be580000,bed80000 candidate=1/be580000,be580000,bed80000',
+        'pmap sample row=phys_fn_002029 cases=7 digest=3416250d mode=differential',
 
         'pmap case=pmap.minimal_valid dimension=minimal_valid bytes=17 accepted=1 errors=0 line=0x000 resolution=1 cells=1 grid=e3160fb1',
         'pmap case=pmap.multi_value dimension=multi_element bytes=30 accepted=1 errors=0 line=0x000 resolution=2 cells=8 grid=5b517625',
@@ -5977,7 +5986,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 519  # all registered asset, PMap export, and Scene raycast coverage lines
+    '4' = 527  # adds seven PMap query cases and their oracle digest
+               # all registered asset, PMap export, and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions

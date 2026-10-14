@@ -24,15 +24,17 @@ deep-penetration queries have somewhere to look. The file format and every
 offset below are written up in
 docs/reconstruction/novodex-physics/evidence/phase4-formats.md.
 
-The rows, all Phase 4, all in the pmap component 0x0004cae0-0x00051080:
+The Phase 4 asset rows and the Phase 3 query row in the pmap component
+0x0004cae0-0x00051080:
 
 	phys_fn_002045	0x000505f0	 69	PenetrationMap::PenetrationMap
 	phys_fn_001986	0x0004cb20	115	the bit-spreading table the sort uses
 	phys_fn_001984	0x0004cae0	 57	PenetrationMap::~PenetrationMap
 	phys_fn_002047	0x00050640	2340	PenetrationMap::Create
-	phys_fn_002033	0x0004ff80	398	setup from the resolution and the AABB
+	phys_fn_002029	0x0004f070	3751	the eight-corner cell sample and weighted displacement query
 	phys_fn_002035	0x00050110	439	the payload bit stream
 	phys_fn_002008	0x0004dba0	909	the cell-run decoder
+	phys_fn_002033	0x0004ff80	398	setup from the resolution and the AABB
 	phys_fn_002037	0x000502d0	 42	the corner pass and the Morton reorder
 	phys_fn_002039	0x00050300	 10	  "  (the census splits it four ways on
 	phys_fn_002041	0x00050310	429	  "   alignment padding; it is one
@@ -74,6 +76,10 @@ RECONSTRUCTED AND DRIVEN:
   * NxCreatePMap (phys_fn_002049, 0x00050f70) is exported and its wrapper,
     stream collapse, CRT allocation, and output stores are mutation-falsified
     through the same public differential.
+  * phys_fn_002029 (0x0004f070) samples the eight Morton-indexed corners,
+    separates the high-bit cell classes, and applies its optional direction
+    transform and final acceptance tests. Seven direct oracle fixtures match
+    the return and all output words; swapping the class accumulators is caught.
 
 STILL OPEN:
 
@@ -84,6 +90,9 @@ STILL OPEN:
   * Allocation-failure and alternate OPCODE-tree branches in the compute arm
     need dedicated branch fixtures before their exact failure behavior is
     claimed.
+  * The mesh contact caller phys_fn_001878 and its path into this query remain
+    open; this row's direct probe does not claim the caller or end-to-end mesh
+    contact dispatch.
 */
 class PenetrationMap
 	{
@@ -104,6 +113,9 @@ class PenetrationMap
 	bool				create(const void* mesh, NxU32 resolution, const char* filename,
 							MemoryStream* stream, bool load, NxUserOutputStream* outputStream);
 
+	// phys_fn_002029 (0x0004f070), the eight-corner penetration-map query.
+	bool				sampleCell(NxU32 x, NxU32 y, NxU32 z, NxF32* output,
+					const NxF32* point, const NxF32* direction = 0, const NxF32* matrix = 0) const;
 	NxU32				getResolution()	const	{ return mResolution;	}
 	NxU32				getCellCount()	const	{ return mCellCount;	}
 	const NxU32*		getGrid()		const	{ return mGrid;			}
@@ -144,5 +156,7 @@ class PenetrationMap
 	NxU32*				mGrid;
 	const void*			mMesh;
 	};
+
+static_assert(sizeof(PenetrationMap) == 0x78, "pinned PenetrationMap object layout");
 
 #endif

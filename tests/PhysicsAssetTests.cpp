@@ -1,18 +1,17 @@
-// The Phase 4 asset-format gate, and why it is RED.
+// The Phase 4 asset-format and private PMap-query oracle differential.
 //
 // Phase 4 owns the mesh column's data: triangle meshes, their OPCODE
 // acceleration trees, penetration maps, the convex hull builder and the byte
-// formats all four are serialised in. None of it is reconstructed yet. This
-// harness exists so that the formats recovered in Phase 4 Task 1 are DRIVEN
-// against the shipped DLL rather than described, and so the reconstruction
-// Task 2 writes has something that already fails.
+// formats all four are serialised in. This harness drives the recovered asset
+// formats and private PMap query against the shipped DLL, so the reconstructed
+// source is checked at the same internal entry points.
 //
 // It is an oracle differential of the same kind as NxPhysicsCollisionTests: it
 // loads the pinned NxPhysics.dll, re-hashes it, and calls recorded internal
 // addresses directly, because none of what it drives is exported and the public
-// path that would reach it -- an SDK, a mesh factory -- belongs to phases 2, 4
-// and 5 and is not wired up for meshes. The reconstruction side is linked in;
-// today it answers `unreconstructed` and every case is a mismatch.
+// path that would reach most of it -- an SDK, a mesh factory -- is still not
+// wired up for every branch. The reconstruction side is linked in and compared
+// directly, including the private `phys_fn_002029` query.
 //
 // Three properties, and the third is the one that matters.
 //
@@ -20,18 +19,18 @@
 //     docs/reconstruction/novodex-physics/cases/assets/*.json. That check is a
 //     real one: change a byte of a fixture and the oracle's own answer moves
 //     and this harness fails, with no reconstruction involved at all.
-//   * The CANDIDATE side is checked against the oracle side. That is what is
-//     RED now.
+//   * The CANDIDATE side is checked against the oracle side, including all
+//     reconstructed rows currently driven by this target.
 //   * `--self` runs the oracle side alone. It is how "GREEN against the oracle"
 //     is demonstrated without the tautology of comparing the oracle with
 //     itself: the comparison is against the recorded expectations, and the run
 //     prints the oracle-side digests that gate_targets.ps1 registers.
 //
 // A harness that fails because its target does not exist is not a RED gate, it
-// is an absent one. This one builds, runs, calls the oracle 30 times -- fourteen
-// penetration-map fixtures, six mesh-header rejects, nine mesh-writer
-// serialisations and one release probe -- prints every oracle answer, and then
-// reports any part of the reconstruction that disagrees or is missing.
+// is an absent one. This one builds and calls the oracle for 32 asset-format
+// fixtures (16 PMap loads, six mesh-header rejects, nine mesh-writer
+// serialisations and one release probe), plus seven direct PMap-query fixtures.
+// It prints and gates each oracle answer, then reports candidate mismatches.
 //
 // FIXTURES CARRY NO ORACLE PROCESS POINTERS. Every byte below is either a
 // constant of the format or a value this file computes; nothing is copied out
@@ -114,6 +113,7 @@ static bool nxInstallAssetAllocatorInFoundation()
 static const unsigned kPMapCtorRva      = 0x000505f0;	// phys_fn_002045, returns this
 static const unsigned kPMapDtorRva      = 0x0004cae0;	// phys_fn_001984
 static const unsigned kPMapCreateRva    = 0x00050640;	// phys_fn_002047, PenetrationMap::Create
+static const unsigned kPMapSampleRva    = 0x0004f070;	// phys_fn_002029, PenetrationMap cell query
 static const unsigned kStreamCtorRva    = 0x000b3ce0;	// phys_fn_004788, (size, buffer)
 static const unsigned kStreamSeekRva    = 0x000b3b30;	// phys_fn_004780
 static const unsigned kStreamDtorRva    = 0x000b3db0;	// phys_fn_004791, jmp to phys_fn_004784
@@ -141,6 +141,8 @@ typedef void* (__thiscall* NxPMapCtorFn)(void* self);
 typedef void (__thiscall* NxPMapDtorFn)(void* self);
 typedef char (__thiscall* NxPMapCreateFn)(void* self, const void* mesh, unsigned resolution,
 	const char* filename, void* stream, int load, void* outputStream);
+typedef char (__thiscall* NxPMapSampleFn)(void* self, unsigned x, unsigned y, unsigned z,
+	float* output, const float* point, const float* direction, const float* matrix);
 typedef void* (__thiscall* NxStreamCtorFn)(void* self, unsigned size, const void* buffer);
 typedef void* (__thiscall* NxCandidateStreamCtorFn)(void* self, unsigned size,
 	const void* buffer, unsigned fill, unsigned initialOffset);
@@ -657,6 +659,7 @@ struct NxOracle
 	NxPMapCtorFn pmapCtor;
 	NxPMapDtorFn pmapDtor;
 	NxPMapCreateFn pmapCreate;
+	NxPMapSampleFn pmapSample;
 	NxStreamCtorFn streamCtor;
 	NxStreamSeekFn streamSeek;
 	NxStreamDtorFn streamDtor;
@@ -1113,6 +1116,54 @@ static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, N
 	return true;
 	}
 
+static bool nxCandidatePMapSample(void* object, unsigned x, unsigned y, unsigned z,
+	float* output, const float* point, const float* direction, const float* matrix)
+	{
+	return static_cast<PenetrationMap*>(object)->sampleCell(x, y, z, output, point, direction, matrix);
+	}
+
+static void nxSeedPMapSampleObject(unsigned char* object, unsigned* spread, unsigned* grid,
+	const void* mesh, unsigned classification, unsigned faceMask)
+	{
+	memset(object, 0, kPMapObjectSize);
+	spread[0] = 0;
+	spread[1] = 1;
+	*(unsigned**) (object + 4) = spread;
+	*(float*) (object + 0x44) = 1.0f;
+	*(float*) (object + 0x48) = 1.0f;
+	*(float*) (object + 0x4c) = 1.0f;
+	*(float*) (object + 0x50) = 1.0f;
+	*(float*) (object + 0x54) = 1.0f;
+	*(float*) (object + 0x58) = 1.0f;
+	*(unsigned*) (object + kPMapResolution) = 2;
+	*(unsigned*) (object + kPMapCellCount) = 8;
+	*(unsigned**) (object + kPMapGrid) = grid;
+	*(const void**) (object + 0x74) = mesh;
+	for(unsigned i = 0; i < 8; ++i)
+		grid[i] = ((classification & (1u << i)) ? 0x80000000u : 0u)
+			| ((faceMask & (1u << i)) ? 1u : 0u);
+	}
+
+static void nxRunPMapSampleOracle(const NxOracle* oracle, unsigned classification,
+	unsigned faceMask, unsigned x, unsigned y, unsigned z, const float* point, const float* direction,
+	const float* matrix, char* accepted, float* output)
+	{
+	float vertices[18] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f };
+	unsigned triangles[6] = { 0, 1, 2, 3, 4, 5 };
+	unsigned char mesh[0x18];
+	memset(mesh, 0, sizeof(mesh));
+	*(const void**) (mesh + 0x10) = vertices;
+	*(const void**) (mesh + 0x14) = triangles;
+	unsigned char object[kPMapObjectSize];
+	unsigned spread[256];
+	unsigned grid[8];
+	memset(spread, 0, sizeof(spread));
+	nxSeedPMapSampleObject(object, spread, grid, mesh, classification, faceMask);
+	memset(output, 0xcd, sizeof(float) * 3);
+	*accepted = oracle->pmapSample(object, x, y, z, output, point, direction, matrix);
+	}
+
 static bool nxCandidateMeshHeader(const unsigned char* storage, unsigned length, NxMeshResult* result)
 	{
 	NxCandidateStream stream(storage, length);
@@ -1387,6 +1438,8 @@ int wmain(int argc, wchar_t** argv)
 		"phys_fn_001984 PenetrationMap::~PenetrationMap");
 	oracle.pmapCreate = (NxPMapCreateFn) nxOracleTarget(selfOnly, oracle.base, kPMapCreateRva,
 		"phys_fn_002047 PenetrationMap::create");
+	oracle.pmapSample = (NxPMapSampleFn) nxOracleTarget(selfOnly, oracle.base, kPMapSampleRva,
+		"phys_fn_002029 PenetrationMap cell query");
 	oracle.streamCtor = (NxStreamCtorFn) nxOracleTarget(selfOnly, oracle.base, kStreamCtorRva,
 		"phys_fn_004788 MemoryStream::MemoryStream");
 	oracle.streamSeek = (NxStreamSeekFn) nxOracleTarget(selfOnly, oracle.base, kStreamSeekRva,
@@ -1419,6 +1472,7 @@ int wmain(int argc, wchar_t** argv)
 		{ "pmapCtor     phys_fn_002045 PenetrationMap::PenetrationMap", oracle.pmapCtor },
 		{ "pmapDtor     phys_fn_001984 PenetrationMap::~PenetrationMap", oracle.pmapDtor },
 		{ "pmapCreate   phys_fn_002047 PenetrationMap::create", oracle.pmapCreate },
+		{ "pmapSample   phys_fn_002029 PenetrationMap cell query", oracle.pmapSample },
 		{ "streamCtor   phys_fn_004788 MemoryStream::MemoryStream", oracle.streamCtor },
 		{ "streamSeek   phys_fn_004780 MemoryStream::seek", oracle.streamSeek },
 		{ "streamDtor   phys_fn_004791 MemoryStream::~MemoryStream", oracle.streamDtor },
@@ -1444,7 +1498,7 @@ int wmain(int argc, wchar_t** argv)
 
 	printf("asset fixtures pmap=%u mesh=%u writer=%u release=1\n",
 		kPMapFixtureCount, kMeshFixtureCount, kWriterFixtureCount);
-	printf("asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 "
+	printf("asset rows pmap_create=phys_fn_002047 pmap_sample=phys_fn_002029 pmap_load=phys_fn_002035 "
 		"mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051\n");
 
 	unsigned expectMismatch = 0;
@@ -1453,6 +1507,67 @@ int wmain(int argc, wchar_t** argv)
 	unsigned drivenAccepted = 0;
 	unsigned drivenRejected = 0;
 	unsigned drivenErrors = 0;
+
+	// Directly exercise phys_fn_002029 with a private-layout map and one triangle. The two flag
+	// patterns distinguish the map's classification split; the direction and matrix rows cover both
+	// final acceptance arms.
+	{
+	const float point[3] = { 0.25f, 0.25f, 0.25f };
+	const float boundaryPoint[3] = { 1.25f, 1.25f, 1.25f };
+	const float direction[3] = { 1.0f, 0.0f, 0.0f };
+	const float matrix[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+	const float reverseDirection[3] = { -1.0f, 0.0f, 0.0f };
+	struct { const char* name; unsigned classification; unsigned faceMask; unsigned x, y, z; const float* point;
+		const float* direction; const float* matrix; } cases[] = {
+		{ "outside_cells", 0x000000ffu, 0, 0, 0, 0, point, 0, 0 },
+		{ "interior_cells", 0x00000000u, 0, 0, 0, 0, point, 0, 0 },
+		{ "mixed_cells", 0x00000055u, 0, 0, 0, 0, point, 0, 0 },
+		{ "split_class_reject", 0x0000000fu, 0x0000000fu, 0, 0, 0, point, 0, 0 },
+		{ "direction_matrix", 0x000000ffu, 0, 0, 0, 0, point, direction, matrix },
+		{ "opposing_direction", 0x000000ffu, 0, 0, 0, 0, point, reverseDirection, matrix },
+		{ "corner_111_boundary", 0x000000ffu, 0, 1, 1, 1, boundaryPoint, 0, 0 },
+	};
+	unsigned queryDigest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i)
+		{
+	char actualAccepted = 0;
+	float actual[3];
+		nxRunPMapSampleOracle(&oracle, cases[i].classification, cases[i].faceMask,
+			cases[i].x, cases[i].y,
+			cases[i].z, cases[i].point, cases[i].direction, cases[i].matrix, &actualAccepted, actual);
+	unsigned char mesh[0x18];
+	float vertices[18] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f };
+	unsigned triangles[6] = { 0, 1, 2, 3, 4, 5 };
+	*(const void**) (mesh + 0x10) = vertices;
+	*(const void**) (mesh + 0x14) = triangles;
+	unsigned char candidateObject[kPMapObjectSize];
+	unsigned candidateSpread[256];
+	unsigned candidateGrid[8];
+	memset(candidateSpread, 0, sizeof(candidateSpread));
+		nxSeedPMapSampleObject(candidateObject, candidateSpread, candidateGrid, mesh,
+			cases[i].classification, cases[i].faceMask);
+	char candidateAccepted = 0;
+	float candidate[3] = { 0.0f, 0.0f, 0.0f };
+	if(!selfOnly)
+		candidateAccepted = nxCandidatePMapSample(candidateObject, cases[i].x, cases[i].y,
+			cases[i].z, candidate, cases[i].point, cases[i].direction, cases[i].matrix) ? 1 : 0;
+	for(unsigned j = 0; j < 4; ++j)
+		{
+		const unsigned actualWord = j == 0 ? (unsigned char) actualAccepted : ((unsigned*) actual)[j - 1];
+		const unsigned candidateWord = j == 0 ? (unsigned char) candidateAccepted : ((unsigned*) candidate)[j - 1];
+		queryDigest = nxFold(queryDigest, actualWord);
+		if(!selfOnly && actualWord != candidateWord)
+			++candidateMismatch;
+		}
+	printf("pmap sample case=%s accepted=%u output=%08x,%08x,%08x candidate=%u/%08x,%08x,%08x\n",
+		cases[i].name, (unsigned char) actualAccepted, ((unsigned*) actual)[0],
+		((unsigned*) actual)[1], ((unsigned*) actual)[2], (unsigned char) candidateAccepted,
+		((unsigned*) candidate)[0], ((unsigned*) candidate)[1], ((unsigned*) candidate)[2]);
+		}
+	printf("pmap sample row=phys_fn_002029 cases=%u digest=%08x mode=%s\n",
+		(unsigned) (sizeof(cases) / sizeof(cases[0])), queryDigest, selfOnly ? "self" : "differential");
+	}
 
 	// -----------------------------------------------------------------------
 	// The penetration-map byte format.

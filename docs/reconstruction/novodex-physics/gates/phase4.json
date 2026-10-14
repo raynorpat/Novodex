@@ -6,7 +6,7 @@
   "closure_ledger": "gates/phase4-closure.json",
   "implementation_commit": "de565924ad85cba85490c54ebc99db37593833a3",
   "evidence_commit": "ec41abb1b18110d00643dbf784eff4cf694a411f",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 34 closed and 1,019 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Historical Phase 4 closures and vendored correspondence remain recorded below. The exported NxCreatePMap wrapper phys_fn_002049 is now mutation-falsified through NxPhysicsTriangleMeshApiTests, with the density-32 output required by the Phase 4 gate; its compute callee phys_fn_002047 is now independently mutation-falsified on a real mesh; allocation-failure and alternate-tree branches remain open. See evidence/phase4-falsification.md section 17 and evidence/phase4-pmap-export-002049.md. Earlier gate failures and recoveries remain recorded as historical measurements; remaining qhull topology and x87 residuals are explicitly measured and bounded rather than claimed exact. The fresh 2026-10-12 gate result is recorded in gate_sequence",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 34 closed and 1,019 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Historical Phase 4 closures and vendored correspondence remain recorded below. The exported NxCreatePMap wrapper phys_fn_002049 is now mutation-falsified through NxPhysicsTriangleMeshApiTests, with the density-32 output required by the Phase 4 gate; its compute callee phys_fn_002047 is now independently mutation-falsified on a real mesh; allocation-failure and alternate-tree branches remain open. See evidence/phase4-falsification.md section 17 and evidence/phase4-pmap-export-002049.md. Earlier gate failures and recoveries remain recorded as historical measurements; remaining qhull topology and x87 residuals are explicitly measured and bounded rather than claimed exact. The fresh 2026-10-12 gate result is recorded in gate_sequence On 2026-10-14, phys_fn_002029 (PenetrationMap::sampleCell, Phase 3) was reconstructed and directly differentially tested through NxPhysicsAssetTests; seven query cases are registered and exact, and the mixed-class accumulator mutation is caught. Phase 3 records the row discharged by this passing Phase 4 gate.",
   "counts": {
     "closed": 34,
     "deferred": 1019
@@ -111,6 +111,11 @@
       "name": "mutation_differential:phys_fn_002047",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Targets NxPhysicsTriangleMeshApiTests",
       "result": "With the row-specific zero-sample mutation, candidate PMap output changed from 10444 bytes/hash 9a70de00aaf0edd4 to 4120 bytes/hash 387b40b2b1eb1513; oracle exit 0, candidate exit 1, stdout_delta=26. Restoring the loop and rebuilding returned the registered differential to stdout_delta=0 with exact stderr. Full Phase 4 gate separately pins density 32 and density 80."
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 4 -RepoRoot <absolute repo root> -BuildRoot <absolute build root>",
+      "result": "Fresh Win32 Release configure and full NxPhysics CMake build succeeded. NxPhysicsAssetTests and NxPhysicsThirdPartyTests passed against the pinned oracle; all seven phys_fn_002029 query fixtures matched return and output words exactly, with query digest 3416250d. NxPhysicsTriangleMeshApiTests and NxPhysicsPMapResolution80Tests staged-pair differentials passed with stdout_delta=0 and exact stderr. The Phase 4 gate evaluated 527 assertions against floor 527 and ended phase_gate=4 status=pass. The query-row accumulator mutation was separately caught (candidate mismatches=1); restored control returned zero. Transcript: build/scene-raycast-row700-red/phase4-pmap-query-gate.log; direct control and mutant: evidence/raw/phase3-pmap-sample-002029/."
     }
   ],
   "excluded_from_comparison": [

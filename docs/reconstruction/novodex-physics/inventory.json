@@ -37737,13 +37737,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/788",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6379",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Pinned NxPhysicsAssetTests direct-oracle differential at 0x0004f070: seven cell-query fixtures match the return and three output words exactly, including mixed face classes, a rejected classification split, opposing direction, transformed direction, and the (1,1,1) boundary. An isolated candidate mutation that swaps the high-bit class accumulators is detected (candidate mismatches=1); restored control is zero. Evidence: evidence/phase3-pmap-sample-002029.md and evidence/raw/phase3-pmap-sample-002029/.",
+      "notes": "The eight-corner PenetrationMap sampler is directly driven through the Phase 4 asset oracle differential; its phase-3 deferral is discharged by Phase 4."
     },
     {
       "id": "phys_fn_002030",
