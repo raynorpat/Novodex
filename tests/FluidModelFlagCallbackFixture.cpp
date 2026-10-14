@@ -56,6 +56,16 @@ struct NxFluidManagerCallbackSummary
 	unsigned implicitFluidMeshCreate;
 	unsigned implicitFluidMeshCreateArguments[7];
 	unsigned implicitFluidMeshDestroy;
+	unsigned implicitFluidMeshGetSurfaceRadius;
+	unsigned implicitFluidMeshSetSurfaceRadius;
+	unsigned implicitFluidMeshGetSingleRadius;
+	unsigned implicitFluidMeshSetSingleRadius;
+	unsigned implicitFluidMeshSetBlend;
+	unsigned implicitFluidMeshGetTriangleSize;
+	unsigned implicitFluidMeshSetTriangleSize;
+	unsigned implicitFluidMeshGetSmoothingIterations;
+	unsigned implicitFluidMeshSetSmoothingIterations;
+	unsigned implicitFluidMeshCallbackArgumentErrors;
 	};
 
 struct NxFluidManagerCallbackRecord
@@ -108,6 +118,22 @@ static unsigned char gFluidManagerBackend;
 static unsigned char gFluidBackendHandles[16];
 static unsigned char gFluidEmitterBackendHandles[16][16];
 static unsigned gFluidEmitterCreateNullIndex = ~0u;
+static float gImplicitFluidMeshSurfaceRadius = 0.04f;
+static float gImplicitFluidMeshSingleRadius = 0.01f;
+static float gImplicitFluidMeshTriangleSize = 0.005f;
+static unsigned gImplicitFluidMeshSmoothingIterations = 6;
+
+static bool nxImplicitFluidMeshCallbackArgumentsValid(void* manager,
+	void* fluid)
+	{
+	if(manager != &gFluidManagerBackend || !fluid)
+		return false;
+	for(unsigned i = 0; i != sizeof(gFluidBackendHandles) /
+		sizeof(gFluidBackendHandles[0]); ++i)
+		if(fluid == &gFluidBackendHandles[i])
+			return true;
+	return false;
+	}
 
 static void nxRecordFluidManagerCallback(unsigned kind, unsigned argument0,
 	unsigned argument1, unsigned argument2, unsigned argument3)
@@ -312,6 +338,10 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidEmitterCreateNullIndex = ~0u;
 	ZeroMemory(gFluidStaticCollision, sizeof(gFluidStaticCollision));
 	gFluidManagerStaticCollisionGetIndex = 0;
+	gImplicitFluidMeshSurfaceRadius = 0.04f;
+	gImplicitFluidMeshSingleRadius = 0.01f;
+	gImplicitFluidMeshTriangleSize = 0.005f;
+	gImplicitFluidMeshSmoothingIterations = 6;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxSetFluidManagerStaticCollisions(
@@ -460,6 +490,103 @@ extern "C" __declspec(dllexport) void __cdecl ImplicitFluidMeshDestroy(
 	{
 	if(manager == &gFluidManagerBackend && fluid)
 		++gFluidManagerCallbackSummary.implicitFluidMeshDestroy;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl
+ImplicitFluidMeshGetSurfaceRadius(void* manager, void* fluid)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshGetSurfaceRadius;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		{
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+		return -1.0f;
+		}
+	return gImplicitFluidMeshSurfaceRadius;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+ImplicitFluidMeshSetSurfaceRadius(void* manager, void* fluid, float value)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshSetSurfaceRadius;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+	else
+		gImplicitFluidMeshSurfaceRadius = value;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl
+ImplicitFluidMeshGetSingleRadius(void* manager, void* fluid)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshGetSingleRadius;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		{
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+		return -1.0f;
+		}
+	return gImplicitFluidMeshSingleRadius;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+ImplicitFluidMeshSetSingleRadius(void* manager, void* fluid, float value)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshSetSingleRadius;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+	else
+		gImplicitFluidMeshSingleRadius = value;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl ImplicitFluidMeshSetBlend(
+	void* manager, void* fluid, float)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshSetBlend;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+	}
+
+extern "C" __declspec(dllexport) float __cdecl
+ImplicitFluidMeshGetTriangleSize(void* manager, void* fluid)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshGetTriangleSize;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		{
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+		return -1.0f;
+		}
+	return gImplicitFluidMeshTriangleSize;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+ImplicitFluidMeshSetTriangleSize(void* manager, void* fluid, float value)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshSetTriangleSize;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+	else
+		gImplicitFluidMeshTriangleSize = value;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+ImplicitFluidMeshGetSmoothingIterations(void* manager, void* fluid)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshGetSmoothingIterations;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		{
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+		return ~0u;
+		}
+	return gImplicitFluidMeshSmoothingIterations;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+ImplicitFluidMeshSetSmoothingIterations(void* manager, void* fluid,
+	unsigned value)
+	{
+	++gFluidManagerCallbackSummary.implicitFluidMeshSetSmoothingIterations;
+	if(!nxImplicitFluidMeshCallbackArgumentsValid(manager, fluid))
+		++gFluidManagerCallbackSummary.implicitFluidMeshCallbackArgumentErrors;
+	else
+		gImplicitFluidMeshSmoothingIterations = value;
 	}
 
 extern "C" __declspec(dllexport) float __cdecl FluidGetDamping(

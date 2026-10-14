@@ -3544,6 +3544,16 @@ int wmain(int argc, wchar_t** argv)
 		unsigned implicitFluidMeshCreate;
 		unsigned implicitFluidMeshCreateArguments[7];
 		unsigned implicitFluidMeshDestroy;
+		unsigned implicitFluidMeshGetSurfaceRadius;
+		unsigned implicitFluidMeshSetSurfaceRadius;
+		unsigned implicitFluidMeshGetSingleRadius;
+		unsigned implicitFluidMeshSetSingleRadius;
+		unsigned implicitFluidMeshSetBlend;
+		unsigned implicitFluidMeshGetTriangleSize;
+		unsigned implicitFluidMeshSetTriangleSize;
+		unsigned implicitFluidMeshGetSmoothingIterations;
+		unsigned implicitFluidMeshSetSmoothingIterations;
+		unsigned implicitFluidMeshCallbackArgumentErrors;
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
@@ -4515,6 +4525,8 @@ int wmain(int argc, wchar_t** argv)
 	licensedSurfaceMeshDesc.blend = 0.02f;
 	licensedSurfaceMeshDesc.triangleSize = 0.005f;
 	licensedSurfaceMeshDesc.smoothingIterations = 6;
+	static const char licensedSurfaceMeshInitialName[] = "licensed-surface-mesh";
+	licensedSurfaceMeshDesc.name = licensedSurfaceMeshInitialName;
 	static unsigned char licensedSurfaceMeshUserData;
 	licensedSurfaceMeshDesc.userData = &licensedSurfaceMeshUserData;
 	NxFluidDesc licensedSurfaceMeshFluidDesc;
@@ -4539,6 +4551,53 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[4] == 0x3ca3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[5] == 0x3ba3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[6] == 6;
+	bool licensedSurfaceMeshPropertiesMatch = false;
+	if(constructedSurfaceMesh)
+		{
+	const bool initialNameMatches = constructedSurfaceMesh->getName() ==
+		licensedSurfaceMeshInitialName;
+	const NxReal initialSurfaceRadius = constructedSurfaceMesh->getSurfaceRadius();
+	constructedSurfaceMesh->setSurfaceRadius(0.05f);
+	const NxReal setSurfaceRadius = constructedSurfaceMesh->getSurfaceRadius();
+	const NxReal initialSingleRadius = constructedSurfaceMesh->getSingleRadius();
+	constructedSurfaceMesh->setSingleRadius(0.012f);
+	const NxReal setSingleRadius = constructedSurfaceMesh->getSingleRadius();
+	constructedSurfaceMesh->setBlend(0.03f);
+	const NxReal blend = constructedSurfaceMesh->getBlend();
+	const NxReal initialTriangleSize = constructedSurfaceMesh->getTriangleSize();
+	constructedSurfaceMesh->setTriangleSize(0.006f);
+	const NxReal setTriangleSize = constructedSurfaceMesh->getTriangleSize();
+	const NxU32 initialSmoothingIterations =
+		constructedSurfaceMesh->getSmoothingIterations();
+	constructedSurfaceMesh->setSmoothingIterations(8);
+	const NxU32 setSmoothingIterations =
+		constructedSurfaceMesh->getSmoothingIterations();
+	static const char licensedSurfaceMeshUpdatedName[] = "licensed-mesh-renamed";
+	constructedSurfaceMesh->setName(licensedSurfaceMeshUpdatedName);
+	const bool nameMatches = constructedSurfaceMesh->getName() ==
+		licensedSurfaceMeshUpdatedName;
+	const NxMeshData copiedMeshData = constructedSurfaceMesh->getMeshData();
+	const bool meshDataMatches = memcmp(&copiedMeshData,
+		&licensedSurfaceMeshDesc.meshData, sizeof(copiedMeshData)) == 0;
+	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
+	licensedSurfaceMeshPropertiesMatch =
+		initialSurfaceRadius == 0.04f && setSurfaceRadius == 0.05f &&
+		initialSingleRadius == 0.01f && setSingleRadius == 0.012f &&
+		blend == 0.0f && initialTriangleSize == 0.005f &&
+		setTriangleSize == 0.006f && initialSmoothingIterations == 6 &&
+		setSmoothingIterations == 8 && initialNameMatches && nameMatches &&
+		meshDataMatches &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius == 2 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius == 1 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius == 2 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSingleRadius == 1 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetBlend == 1 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetTriangleSize == 2 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize == 1 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSmoothingIterations == 2 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSmoothingIterations == 1 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors == 0;
+	}
 	if(licensedSurfaceMeshFluid)
 		licensedSurfaceMeshFluid->releaseSurfaceMesh();
 	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
@@ -4552,6 +4611,18 @@ int wmain(int argc, wchar_t** argv)
 		constructedSurfaceMeshUserDataMatches ? 1u : 0u,
 		licensedSurfaceMeshDestroyMatches ? 1u : 0u,
 		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
+	printf("simulation fluid licensed-surface-mesh properties matched=%u calls=%u.%u.%u.%u.%u.%u.%u.%u.%u errors=%u\n",
+		licensedSurfaceMeshPropertiesMatch ? 1u : 0u,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSingleRadius,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetBlend,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetTriangleSize,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSmoothingIterations,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSmoothingIterations,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
 	printf("simulation fluid public-api surface-mesh get=%u released=%u calls=%u flags=%u errors=%u unlicensed=%u.%u create-warning=%u\n",
 		returnedSurfaceMesh == reinterpret_cast<NxImplicitMesh*>(
 			&returnedSurfaceMeshMarker) ? 1u : 0u,
@@ -4565,8 +4636,9 @@ int wmain(int argc, wchar_t** argv)
 	if(surfaceMeshScene)
 		sdk->releaseScene(*surfaceMeshScene);
 	if(!surfaceMeshPublicApiMatches || !licensedSurfaceMeshConstructorMatches ||
+		!licensedSurfaceMeshPropertiesMatch ||
 		!licensedSurfaceMeshDestroyMatches)
-		return nxFail("licensed NxFluid surface-mesh get/release did not match the fixture contract");
+		return nxFail("licensed NxFluid implicit-mesh API did not match the fixture contract");
 	}
 	bool fluidManagerArrayGrowthMatches = false;
 	{
