@@ -10957,3 +10957,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000633`: a no-op Scene joint-removal mutation is rejected by the registered joint staged-pair differential (`candidate_exit=-1073741819`, `stdout_delta=3520`, exact stderr); the forced-rebuild restored control is exact. The formal Phase 7 gate passes at 1,975/1,975. See [phase7-scene-remove-joint-000633.md](phase7-scene-remove-joint-000633.md).
+
+
+`phys_fn_000638`: IDA’s decompilation matches the existing collision-bounds helper’s static/dynamic pruner walks and shape filters. A no-op mutation changes the registered visualization transcript (`stdout_delta=2744`, both exits 0, exact stderr); the restored control is exact. See [phase7-scene-visualize-bounds-000638.md](phase7-scene-visualize-bounds-000638.md).

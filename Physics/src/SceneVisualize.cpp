@@ -687,9 +687,14 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 
 void nxSceneVisualizeCollisionBounds(void* engine, NxDebugRenderable* renderable, NxU32 colour, bool compounds)
 	{
-	// phys_fn_000638 draws each visualization-enabled shape's current pruner
-	// AABB. The compounds mode is restricted to the internal compound-group
-	// shape type (5).
+	// phys_fn_000638 (0x000128e0, 428 bytes) walks sections 1 and 2 of the
+	// static pruner at engine+0x1c, then the selected dynamic pruner at
+	// engine+0x1c+selectedType*4. Each pool entry's owner is the shape; flag
+	// bit 3 at shape+0xde gates drawing, and compounds mode restricts type
+	// shape+0xd0 to the internal compound-group type 5. Its world AABB is
+	// resolved from the Prunable handle and submitted with the chosen color.
+	// The caller ignores the draw call's return register, matching the source
+	// helper's void interface.
 	const auto visualizePruner = [renderable, colour, compounds](Pruner* pruner)
 		{
 		const PruningPool& pool = pruner->mPool;
