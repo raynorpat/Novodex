@@ -12824,11 +12824,11 @@
       "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/266",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1883",
-      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000672; sphere/AABB candidate traversal with primitive sphere, box, capsule, plane, and mesh-bounds tests.",
-      "dynamic_proof": "A throwaway source mutation inserted an immediate return false from NxSceneInternal::checkOverlapSphere(). The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected it (both exits 0, stdout_delta=66, stderr_exact=True). The fixture covers primitive shapes and mesh bounds, including a 90-degree rotated mesh-bound hit, tangent, and nearby miss. Restored output matched exactly, and the full Phase 7 gate passed at 1,793/1,793. See evidence/phase7-check-overlap-sphere-000672.md.",
+      "static_proof": "Oracle row phys_fn_000672 at 0x147d0 performs sphere-pruner collection, then batches collected public shapes through the caller buffer or a 64-entry stack buffer. It copies each prunable owner's public shape at +0x9c, reports batches through callback vtable slot 0, and returns the oracle's accumulated/early-stop count. Candidate implementation: NxSceneInternal::overlapSphereShapes in Physics/src/SceneRaycast.cpp.",
+      "dynamic_proof": "A throwaway source mutation inserted an immediate return from NxSceneInternal::overlapSphereShapes(). The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected it (both exits 0, stdout_delta=5465, stderr_exact=True); caller-buffer and callback output changed from two shapes (s_box.s_plane) to zero. Restored output matched exactly, and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. See evidence/phase7-overlap-sphere-shapes-000672.md.",
       "notes": "Mesh sphere overlap uses transformed world bounds as observed by the corner case. Row-specific mutation falsification and broader pruning behavior remain open.",
       "implementation": "Physics/src/SceneRaycast.cpp",
-      "implementation_symbol": "NxSceneInternal::checkOverlapSphere"
+      "implementation_symbol": "NxSceneInternal::overlapSphereShapes"
     },
     {
       "id": "phys_fn_000673",
@@ -12862,11 +12862,11 @@
       "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/267",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1898",
-      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000674; selected-pruner AABB Boolean query and stale-bound refresh.",
-      "dynamic_proof": "A throwaway source mutation made NxSceneInternal::checkOverlapAABB() return false. The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected the candidate (both exits 0, stdout_delta=14, stderr_exact=True); the overlapping static-and-dynamic query changed from result=1 to result=0. Restoring the implementation made the differential exact and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. See evidence/phase7-check-overlap-aabb-000674.md.",
+      "static_proof": "Oracle row phys_fn_000674 at 0x148d0 clears the shared query result, derives the selected pruner mask from NxShapesType, dispatches the sphere query through phys_fn_004866, and returns the query engine's boolean at Scene+0x504. Candidate implementation: NxSceneInternal::checkOverlapSphere in Physics/src/SceneRaycast.cpp.",
+      "dynamic_proof": "A throwaway source mutation inserted an immediate return false at the start of NxSceneInternal::checkOverlapSphere(). The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected it (both exits 0, stdout_delta=66, stderr_exact=True). The fixture covers primitive and normal/rotated mesh-bound overlap, including a tangent hit and nearby miss. Restored output matched exactly and the full Phase 7 gate passed at 1,793/1,793. See evidence/phase7-check-overlap-sphere-000674.md.",
       "notes": "",
       "implementation": "Physics/src/SceneRaycast.cpp",
-      "implementation_symbol": "NxSceneInternal::checkOverlapAABB"
+      "implementation_symbol": "NxSceneInternal::checkOverlapSphere"
     },
     {
       "id": "phys_fn_000675",
@@ -12896,15 +12896,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/268",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1902",
-      "static_proof": null,
-      "dynamic_proof": "NxPhysicsSceneRaycastTests staged-pair differential for hit, misses, full output order across two meshes, prefilled output, and translated mesh; exact oracle/candidate output in build/overlap-tri-diff.log and registered Phase 7 coverage.",
+      "static_proof": "Oracle row phys_fn_000676 at 0x14930 clears the shared query result, maps NxShapesType to selected pruners, calls phys_fn_004868 with the AABB and the Scene query state, and returns whether the query engine set Scene+0x504. Candidate implementation: NxSceneInternal::checkOverlapAABB in Physics/src/SceneRaycast.cpp.",
+      "dynamic_proof": "A throwaway source mutation made NxSceneInternal::checkOverlapAABB() return false. The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected the candidate (both exits 0, stdout_delta=14, stderr_exact=True); the overlapping static-and-dynamic fixture changed from result=1 to result=0. Restored output matched exactly and the full Phase 7 gate passed at 1,793/1,793. See evidence/phase7-check-overlap-aabb-000676.md.",
       "notes": "The public cases are covered; direct actor/mesh traversal approximates the oracle's selected-pruner query and remains subject to broader ordering and narrow-phase falsification.",
       "implementation": "Physics/src/SceneRaycast.cpp",
-      "implementation_symbol": "NxSceneInternal::overlapAABBTriangles"
+      "implementation_symbol": "NxSceneInternal::checkOverlapAABB"
     },
     {
       "id": "phys_fn_000677",
@@ -12934,15 +12934,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/SceneRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/269",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1906",
-      "static_proof": "Capstone source mapping and call sequence verified against oracle row phys_fn_000678; sphere candidate traversal and primitive narrow tests with buffer/callback reporting.",
-      "dynamic_proof": "NxPhysicsSceneRaycastTests Phase 7 staged-pair differential; sphere candidate traversal and primitive narrow tests with buffer/callback reporting; exact oracle/candidate output in build/cull-callback.log and registered Phase 7 gate.",
-      "notes": "Partial shape-family coverage: triangle-mesh overlap remains open.",
+      "static_proof": "Ghidra row phys_fn_000678 at 0x14990 is the mesh-triangle AABB query (two explicit arguments, 1,738 bytes); the candidate extracts triangle data from registered mesh actors, transforms vertices by each shape pose, applies the triangle/AABB separating-axis test, and appends intersections to the caller's SDK array in observed order. Candidate implementation: NxSceneInternal::overlapAABBTriangles in Physics/src/SceneRaycast.cpp; selected-pruner traversal and broader edge/order coverage remain open.",
+      "dynamic_proof": "A throwaway source mutation inserted an immediate return from NxSceneInternal::overlapAABBTriangles(). The registered Phase 7 NxPhysicsSceneRaycastTests differential rejected it (both exits 0, stdout_delta=6, stderr_exact=True); the three-triangle hit and two-triangle translated-mesh results disappeared. Restored output matched exactly and the full Phase 7 gate passed with 1,793/1,793 coverage assertions. Selected-pruner traversal and broader edge/order behavior remain open. See evidence/phase7-overlap-aabb-triangles-000678.md.",
+      "notes": "Selected-pruner traversal and broader edge/order behavior remain open despite row-specific mutation falsification on the recorded hit, miss, order, prefilled-array, and translated-mesh cases.",
       "implementation": "Physics/src/SceneRaycast.cpp",
-      "implementation_symbol": "NxSceneInternal::overlapSphereShapes"
+      "implementation_symbol": "NxSceneInternal::overlapAABBTriangles"
     },
     {
       "id": "phys_fn_000679",

@@ -518,7 +518,7 @@ void* NxSceneInternal::raycastClosestShape(const NxRay& worldRay, NxShapesType s
 	return *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(hit.shape) + 8);
 	}
 
-// phys_fn_000674 (0x000148d0). Send the AABB through pruning-engine slot 8 and
+// phys_fn_000676 (0x00014930). Send the AABB through pruning-engine slot 8 and
 // return whether its shared collector is nonempty.
 bool NxSceneInternal::checkOverlapAABB(const NxBounds3& worldBounds, NxShapesType shapesType)
 	{
@@ -567,8 +567,9 @@ static bool nxSceneTriangleBoundsOverlap(const NxTriangle& triangle, const NxBou
 	return true;
 	}
 
-// The scene query walks its registered actor/shape set and appends cooked mesh
-// triangles in the model's observed right-to-left leaf order.
+// phys_fn_000678 (0x00014990). The scene query walks its registered actor/shape
+// set and appends cooked mesh triangles in the model's observed right-to-left
+// leaf order.
 NxU32 NxSceneInternal::overlapAABBTriangles(const NxBounds3& worldBounds,
 	NxArraySDK<NxTriangle>& worldTriangles)
 	{
@@ -817,8 +818,8 @@ static bool nxSceneSphereOverlapsShape(const NxSphere& sphere, NxShape* shape)
 		}
 	}
 
-// phys_fn_000678 (0x00014990). Collects broadphase candidates for a sphere,
-// applies the shape overlap kernels, then reports public shapes in pruner order.
+// phys_fn_000672 (0x000147d0). Collects broadphase candidates for a sphere and
+// reports public shapes in pruner order.
 NxU32 NxSceneInternal::overlapSphereShapes(const NxSphere& worldSphere, NxShapesType shapesType,
 	NxU32 maxShapes, NxShape** shapes, NxUserEntityReport<NxShape*>* callback)
 	{
@@ -855,7 +856,7 @@ NxU32 NxSceneInternal::overlapSphereShapes(const NxSphere& worldSphere, NxShapes
 	return count;
 	}
 
-// phys_fn_000672 (0x000147d0). The oracle gathers AABB candidates through the
+// phys_fn_000674 (0x000148d0). The oracle gathers AABB candidates through the
 // pruning engine, then runs a shape-specific overlap test. This implementation
 // follows the same selected pool/type path and applies the recovered primitive
 // sphere tests to the candidate shapes.
