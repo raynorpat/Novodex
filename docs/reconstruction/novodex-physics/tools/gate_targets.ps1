@@ -15,7 +15,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneAllocatorTests')
     '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSDKTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidParticleArrayFailureTests', 'NxPhysicsFluidGetParticlesNullTests', 'NxPhysicsFluidZeroInitialParticlesTests', 'NxPhysicsFluidInitialParticleCapacityClipTests', 'NxPhysicsFluidAddParticlesTests', 'NxPhysicsFluidAddParticlesGrowFailureTests', 'NxPhysicsFluidAddParticlesAppendTests', 'NxPhysicsFluidManagerGrowthFailureTests', 'NxPhysicsFluidManagerGrowthSecondFailureTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSceneAllocatorTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidParticleArrayFailureTests', 'NxPhysicsFluidGetParticlesNullTests', 'NxPhysicsFluidZeroInitialParticlesTests', 'NxPhysicsFluidInitialParticleCapacityClipTests', 'NxPhysicsFluidAddParticlesTests', 'NxPhysicsFluidAddParticlesGrowFailureTests', 'NxPhysicsFluidAddParticlesAppendTests', 'NxPhysicsFluidManagerGrowthFailureTests', 'NxPhysicsFluidManagerGrowthSecondFailureTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSceneAllocatorTests')
     '8' = @()
 }
 
@@ -3694,6 +3694,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsCcdSimulationTests' = @(
         'ccd step=0 x=40e00000 vx=100.000 ready=1 fetched=1'
         'ccd step=1 x=be9eb858 vx=0.400 ready=1 fetched=1'
+        'ccd row740 direct valid=1 bounds_min=c0c00000.c0d00000.c0800000 bounds_max=41100000.41100000.41200000'
     )
     'NxPhysicsAllocatorReleaseTests' = @(
         'allocrelease row=004149 cases=8 failures=0'
@@ -6071,7 +6072,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1651  # adds SDK material, purge and inspector lock refusal/unwind assertions
+	'6' = 1652  # adds direct CCD swept-bounds row 000740 assertion
+				# adds SDK material, purge and inspector lock refusal/unwind assertions
 	           # plus Fluid constructor state and default-layout coverage
 				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
@@ -6109,7 +6111,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1798  # adds direct dirty-island row probe and public articulated kinematic transitions
+	'7' = 1801  # adds CCD test target (two existing and one row 000740 assertion)
+				# adds direct dirty-island row probe and public articulated kinematic transitions
 				# adds ParticleArrayGrow allocation-failure ordering coverage
 				# adds enabled NxFluid::addParticles and ParticleArrayGrow coverage
 				# adds Fluid constructor state and default-layout coverage

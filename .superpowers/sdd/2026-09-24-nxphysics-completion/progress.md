@@ -419,3 +419,9 @@ Ruling for M6.24: select `phys_fn_000724`, the reconstructed sleep-group contact
 ### M6.24 — Sleep-group island pair linking (`phys_fn_000724`)
 
 The registered Phase 7 simulation rejects an immediate-return mutation (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=6606`, exact stderr); restored source and DLL output are exact. The changed output includes triangle-mesh box-contact response and broadphase/stack trajectories. Phase 7 now records 311 closed / 249 deferred rows. The latest full Phase 7 gate on the same source and test tree passed at 1,798/1,798; after the fast-forward to main (`a61e6c5d`), every registered Phase 7 differential target passed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-island-pair-link-000724.md`.
+
+Ruling for M6.25: select `phys_fn_000740`, the reconstructed CCD swept-bounds calculation. Its existing public collision fixture does not expose the row-specific no-op, so add a direct DLL probe to the already-registered CCD target with a controlled sphere result and signed sweep.
+
+### M6.25 — CCD swept bounds (`phys_fn_000740`)
+
+The direct `NxPhysicsCcdSimulationTests` probe verifies the row's valid bit and bounds min=(-6,-6.5,-4), max=(9,9,10). An immediate-return mutation is rejected (`candidate_exit=1`, `stdout_delta=6`); restored source and DLL output are exact. The public CCD scene alone is insensitive. Phase 7 now records 312 closed / 248 deferred. The new direct line is registered in Phases 6 and 7, and the CCD target is added to Phase 7. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-ccd-swept-bounds-000740.md`.

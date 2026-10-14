@@ -14099,13 +14099,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/299",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2101",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16c20-0x16dc4 (x87): thiscall ret 4; the +0x1e4 bit-9 set/clear, the dt * +0x1a0 sweep, the owner object's slot-10 bounding sphere, R = |centre - com| + radius in registers, the +0x244..+0x258 box and the per-axis extension by the sweep sign are reproduced by BodyStep.cpp Row000740Fixture::row000740; its reader 000738 is core/JointSupport.cpp Row000738Fixture::row000738. Reachable only from the simulation step (000615 -> 000770 -> row) with NX_CONTINUOUS_CD set; no public path while NpScene::simulate is a stub. /GS gives the candidate a stack cookie the image does not have (the local sphere array; the joint rows' accepted difference). units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsCcdSimulationTests direct DLL differential: resolve the oracle Row000740Fixture::row000740 at pinned RVA 0x00016c20 and the candidate through NxPhysics.map. A controlled body center/velocity and vtable-backed sphere target produce valid swept bounds min=(-6,-6.5,-4), max=(9,9,10) at dt=0.5. An immediate-return mutant leaves zero bounds and is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=6); restoring BodyStep.cpp and rebuilding returns exact output. The public CCD scene alone is insensitive. See evidence/phase7-ccd-swept-bounds-000740.md and evidence/raw/phase7-ccd-swept-bounds-000740-20261014/.",
+      "notes": "Direct row-specific differential is registered in Phase 6 and Phase 7; the existing public CCD scene remains supplementary because its no-op mutation is transcript-exact.",
       "implementation": "Physics/src/BodyStep.cpp"
     },
     {
