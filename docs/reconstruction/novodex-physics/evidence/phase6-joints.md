@@ -10880,3 +10880,11 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_000688`: replacing `nxRaycastClosestBoundsLoop` with an immediate return is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=396, stderr exact); restored output is exact. See [phase7-raycast-closest-bounds-000688.md](phase7-raycast-closest-bounds-000688.md).
 
 `phys_fn_000690`: an immediate-return mutation of `NxSceneInternal::raycastAnyBounds()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=2721, stderr exact); restored output is exact. See [phase7-raycast-any-bounds-public-000690.md](phase7-raycast-any-bounds-public-000690.md).
+
+`phys_fn_000692`: an immediate-return mutation of `NxSceneInternal::raycastAllBounds()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5103, stderr exact); restored output is exact. See [phase7-raycast-all-bounds-public-000692.md](phase7-raycast-all-bounds-public-000692.md).
+
+`phys_fn_000694`: suppressing `nxRaycastAllShapesLoop` dispatch while preserving this row’s return-zero contract is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5140, stderr exact); restored output is exact. See [phase7-raycast-all-shapes-public-000694.md](phase7-raycast-all-shapes-public-000694.md).
+
+`phys_fn_000696`: an immediate-return mutation of `NxSceneInternal::raycastClosestBounds()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=2819, stderr exact); restored output is exact. See [phase7-raycast-closest-bounds-public-000696.md](phase7-raycast-closest-bounds-public-000696.md).
+
+`phys_fn_000698`: replacing `nxRaycastAnyShapeLoop` with `return false` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=288, stderr exact); restored output is exact. See [phase7-raycast-any-shape-000698.md](phase7-raycast-any-shape-000698.md).
