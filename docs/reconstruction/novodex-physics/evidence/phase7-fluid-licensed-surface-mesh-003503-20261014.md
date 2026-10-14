@@ -39,11 +39,30 @@ rejected (oracle exit 0, candidate access violation, `stdout_delta=77`); after
 the implementation, oracle and candidate match exactly (`stdout_delta=0`,
 exact stderr).
 
+The same differential calls `setParticles` with default particle data, copies
+a valid indexed `NxMeshData` into the mesh and reads it back, then passes an
+invalid mesh-data wrapper. Both DLLs report the invalid-parameter error and
+preserve the previous mesh data; the exact differential remains green.
+
 On integrated mainline commit `d8d66901`, Phase 5 passes at 2,708/2,708 and
 Phase 7 at 1,779/1,779. The Viewer sweep passes all 43 registered selections:
 38 pass and five known baseline skips (CowPile, PMapTest 8/10/12, TruckDemo).
 The internal and collision CMake targets that compile `Scene.cpp` directly
 both build. The tooling suite remains green at 829 tests and 740 subtests.
+
+After extending the registered public test with valid/invalid `setMeshData` and
+`setParticles`, the focused differential remains exact and a fresh Phase 7 run
+on mainline commit `a2304cae` passes again at 1,779/1,779. The updated
+differential and gate logs are in
+`evidence/raw/phase7-fluid-explicit-surface-create-003705-20261014/`.
+
+The public setter differential now also reenters the same mesh setter once from
+the backend callback. The oracle emits one reentry error, does not dispatch a
+nested backend callback, and preserves the outer setter's value; the candidate
+matches exactly (`stdout_delta=0`, exact stderr). The focused reentry
+differential and a fresh Phase 7 gate on merged mainline commit `745a9c25`
+pass; Phase 7 remains at 1,779/1,779. Their archived logs are in
+`evidence/raw/phase7-fluid-explicit-surface-create-003705-20261014/`.
 
 Raw differential, mutation, Phase 7, post-merge Phase 5, and initial
 integration-failure logs are archived under
@@ -52,9 +71,9 @@ The public-entry red baseline, exact differential, gates, Viewer sweep, and
 direct-target build are archived under
 `evidence/raw/phase7-fluid-explicit-surface-create-003705-20261014/`.
 
-This validates the constructor/destruction paths and the valid-descriptor
-public creation plus property getter/setter paths. Invalid-descriptor and
-callback-reentry branches, allocation failures, `setParticles`, and
-`setMeshData` still need row-specific differentials. Keep `phys_fn_003503` and
-`phys_fn_003705` open; the full DLL reconstruction remains active. No public
-Physics headers were changed.
+This validates the constructor/destruction paths, valid-descriptor public
+creation, property getters/setters, `setParticles`, valid/invalid
+`setMeshData`, and callback reentry. Invalid create descriptors, lock
+contention, and allocation failures still need row-specific differentials. Keep
+`phys_fn_003503` and `phys_fn_003705` open; the full DLL reconstruction remains
+active. No public Physics headers were changed.
