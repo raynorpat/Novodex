@@ -903,3 +903,8 @@ The public simulation did not expose each body-list scan independently, so `NxPh
 ### M6.29 — Body CCD step update (`phys_fn_000770`)
 
 A row-only no-op is rejected by both the registered public simulation (`stdout_delta=7134`) and CCD (`stdout_delta=5`, response velocity outside range); restored controls are exact. Phase 7 moves to 317 closed / 243 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-ccd-update-000770.md`.
+
+
+### M6.30 — Joint island dissolve (`phys_fn_000778`)
+
+The registered public simulation rejects a row-only no-op (`stdout_delta=4`, both exits 0, exact stderr); joint staged-pair and allocator targets are exact under the mutation and are not the detector. Restored controls match across all targets. Phase 7 moves to 318 closed / 242 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-dissolve-000778.md`.

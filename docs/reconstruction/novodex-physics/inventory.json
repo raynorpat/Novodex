@@ -14802,13 +14802,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/317",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2193",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: replacing only Row000778Fixture::row000778 with an immediate return changes the simulation transcript by 4 bytes (oracle_exit=0, candidate_exit=0, stderr_exact=True). The registered NxPhysicsJointStagedPairTests and NxPhysicsJointAllocatorTests are exact with this mutation and do not independently detect the row. Restoring JointSupport.cpp byte-for-byte returns exact controls for all three. See evidence/phase7-joint-dissolve-000778.md and evidence/raw/phase7-joint-dissolve-000778-20261014/.",
+      "notes": "The public simulation exercises the joint-island dissolve path during scene updates; the staged joint and allocator targets are supplementary but do not expose this row.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {

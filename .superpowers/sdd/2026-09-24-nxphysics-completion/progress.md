@@ -449,3 +449,8 @@ A direct `NxPhysicsSimulationTests` probe seeds joints in one body's list at a t
 ### M6.29 — Body CCD step update (`phys_fn_000770`)
 
 The immediate-return mutant is rejected by both the registered simulation (`stdout_delta=7134`) and CCD (`stdout_delta=5`, candidate response velocity is out of range); restoring the source returns exact controls. Phase 7 moves to 317 closed / 243 deferred. Evidence: the row 000770 report and raw mutation packet.
+
+
+### M6.30 — Joint island dissolve (`phys_fn_000778`)
+
+The registered simulation rejects a row-only immediate return (`stdout_delta=4`, both exits 0, exact stderr); joint staged-pair and allocator tests are exact under the mutation. Restored controls match all three targets. Phase 7 moves to 318 closed / 242 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-joint-dissolve-000778.md`.

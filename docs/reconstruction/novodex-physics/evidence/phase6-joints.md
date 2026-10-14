@@ -10925,3 +10925,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000770`: an immediate-return mutation is rejected by both registered simulation and CCD staged-pair tests (`stdout_delta=7134` and `5` respectively); the restored source passes both exactly. See [phase7-body-ccd-update-000770.md](phase7-body-ccd-update-000770.md).
+
+
+`phys_fn_000778`: the registered simulation rejects an immediate-return mutation (`stdout_delta=4`, both exits 0, exact stderr); the joint staged-pair and allocator targets do not detect this dissolve path. Restored controls are exact across all three targets. See [phase7-joint-dissolve-000778.md](phase7-joint-dissolve-000778.md).
