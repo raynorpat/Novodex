@@ -1791,6 +1791,8 @@ int wmain(int argc, wchar_t** argv)
 		NxScene* notifyScene = sdk->createScene(notifySceneDesc);
 		if(!notifyScene)
 			return nxFail("joint-break notify scene creation failed");
+		if(notifyScene->getUserNotify() != 0)
+			return nxFail("joint-break notify getter did not preserve the null default");
 		notifyScene->setUserNotify(&notify);
 		const bool notifyGetter = notifyScene->getUserNotify() == &notify;
 		if(!notifyGetter)

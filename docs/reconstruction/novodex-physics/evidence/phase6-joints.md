@@ -10802,3 +10802,16 @@ These split census rows are one all-shapes raycast loop. Suppressing `report.onH
 ## Phase 7 continuation: NpScene joint-break notifier store `phys_fn_000545`
 
 `phys_fn_000545` helper no-op mutation is rejected by the joint-break notifier fixture in `NxPhysicsSimulationTests` (`stdout_delta=831`, oracle exit 0, candidate exit 1); restored output is exact. Fresh Phase 7 passes at 1,770/1,770 assertions. See [phase7-npscene-set-user-notify-helper-000545-20261013.md](phase7-npscene-set-user-notify-helper-000545-20261013.md) and archived raw logs.
+
+## Phase 7 continuation: NpScene user-notify getter `phys_fn_000547`
+
+The public getter checks the descriptor's null default and the callback stored
+by the setter. Returning null from the explicit `NxSceneInternal::getUserNotify`
+helper is caught by the registered `NxPhysicsSimulationTests` differential
+(`stdout_delta=831`, oracle exit 0, candidate exit 1); the restored helper and
+read-locked wrapper match exactly. See
+[phase7-npscene-user-notify-getter-000547-20261014.md](phase7-npscene-user-notify-getter-000547-20261014.md)
+and the archived raw logs.
+
+`phys_fn_000547`: return-null helper mutation rejected (`stdout_delta=831`);
+restored differential exact.

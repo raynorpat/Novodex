@@ -6955,6 +6955,12 @@ NxUserNotify* NxSceneInternal::setUserNotify(NxUserNotify* callback)
 	return callback;
 	}
 
+// phys_fn_000547 (0x000107f0): read the joint-break notifier from Scene+0x6ac.
+__declspec(noinline) NxUserNotify* NxSceneInternal::getUserNotify() const
+	{
+	return at<NxUserNotify*>(0x6ac);
+	}
+
 namespace
 	{
 struct NxSceneTriggerPairs

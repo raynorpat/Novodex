@@ -10506,13 +10506,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "field getter [this+0x6ac] (0x107f0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/205",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1452",
       "static_proof": "mov eax,[ecx+0x6ac]; ret",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential: public getUserNotify returns the null default and the exact registered callback. A no-op return-null mutation of NxSceneInternal::getUserNotify is caught (candidate_exit=1, stdout_delta=831); restored control is exact. See evidence/phase7-npscene-user-notify-getter-000547-20261014.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?getUserNotify@NxSceneInternal@@QBEPAVNxUserNotify@@XZ"
     },
     {
       "id": "phys_fn_000548",

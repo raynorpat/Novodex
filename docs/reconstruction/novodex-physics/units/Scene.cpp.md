@@ -852,8 +852,8 @@ void __thiscall FUN_100107e0(void *this,undefined4 param_1)
 ## phys_fn_000547 (0x000107f0, 7 B, reconstructed)
 
 - ambiguous: no
-- source: field getter [this+0x6ac] (0x107f0)
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: Physics/src/Scene.cpp
 - prototype: undefined4 __fastcall FUN_100107f0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000352 (0x0000cd20)
@@ -873,6 +873,10 @@ undefined4 __fastcall FUN_100107f0(int param_1)
 
 
 ```
+
+The candidate implements this row as the noinline private method
+`NxSceneInternal::getUserNotify`, a direct read of `Scene+0x6ac`. The public
+wrapper at `phys_fn_000352` holds its read lock around this call.
 
 ## phys_fn_000549 (0x00010800, 13 B, reconstructed)
 

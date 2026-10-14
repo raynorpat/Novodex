@@ -1282,8 +1282,8 @@ void __thiscall FUN_1000ccc0(void *this,undefined4 param_1)
 ## phys_fn_000352 (0x0000cd20, 36 B, reconstructed)
 
 - ambiguous: no
-- source: locked field accessor over 000547 (0xcd20)
-- implementation: None
+- source: Physics/src/NpScene.cpp
+- implementation: Physics/src/NpScene.cpp
 - prototype: undefined4 __fastcall FUN_1000cd20(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_000285 (0x0000c310)
@@ -1310,6 +1310,12 @@ undefined4 __fastcall FUN_1000cd20(int param_1)
 
 
 ```
+
+Candidate `NpScene::getUserNotify` acquires the read link at `this+0x10`,
+calls the private Scene getter `phys_fn_000547` on the internal Scene at
+`this+0x24`, then releases the same read link before returning the callback.
+The row-level behavior is recorded in
+[`phase7-npscene-user-notify-getter-000547-20261014.md`](../evidence/phase7-npscene-user-notify-getter-000547-20261014.md).
 
 ## phys_fn_000354 (0x0000cd50, 87 B, reconstructed)
 

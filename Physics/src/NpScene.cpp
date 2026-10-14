@@ -741,7 +741,11 @@ void NpScene::setUserNotify(NxUserNotify* callback)
 // phys_fn_000352: read the callback stored at Scene+0x6ac.
 NxUserNotify* NpScene::getUserNotify() const
 	{
-	return mScene ? mScene->at<NxUserNotify*>(0x6ac) : 0;
+	void* link = mPointer08;
+	nxNpSceneGuardEnter(link);
+	NxUserNotify* const callback = mScene->getUserNotify();
+	nxNpSceneGuardLeave(link);
+	return callback;
 	}
 
 // phys_fn_000354: store the trigger callback consumed by phys_fn_000640.
