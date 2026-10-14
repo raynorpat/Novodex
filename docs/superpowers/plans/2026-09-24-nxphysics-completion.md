@@ -771,3 +771,7 @@ Added an enabled-fluid callback fixture that makes `ParticleArrayAlloc` fail for
 ### Continuation — Scene raycast empty-collector guard (`phys_fn_000700`, `2026-10-14`)
 
 The `nxRaycastClosestShapeLoop` count guard was falsified through `NxPhysicsSceneRaycastTests`: reversing the empty-collector condition in a CMake-rebuilt candidate produces an access violation and `stdout_delta=2707`; the restored candidate matches the pinned oracle exactly. The fresh Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 closes 276 functions and defers 284. The loop body `phys_fn_000702` remains separately tracked. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-raycast-000700-empty-collector.md` and archived transcripts. Full DLL reconstruction remains active.
+
+### Continuation — Scene raycast closest-hit body (`phys_fn_000702`, `2026-10-14`)
+
+The closest-hit condition in `nxRaycastClosestShapeLoop` was mutation-falsified through `NxPhysicsSceneRaycastTests`: reversing the comparison produces `stdout_delta=288` (both exits zero, exact stderr), and the restored candidate matches the oracle exactly. The fresh Phase 7 gate passes at 1,779/1,779 coverage assertions. Phase 7 closes 277 functions and defers 283. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-raycast-000702-closest-hit.md` and archived transcripts. Full DLL reconstruction remains active.

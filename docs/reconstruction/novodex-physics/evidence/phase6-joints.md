@@ -10832,3 +10832,6 @@ The public trigger/contact callback fixture exercises four private Scene helpers
 The registered `NxPhysicsSceneRaycastTests` differential rejects the CMake-rebuilt inverted count-guard mutant (`stdout_delta=2707`, oracle exit 0, candidate access violation); restoring the guard produces an exact control. See [phase7-scene-raycast-000700-empty-collector.md](phase7-scene-raycast-000700-empty-collector.md).
 `phys_fn_000700`: inverted count-guard mutation rejected (`stdout_delta=2707`); restored candidate exact.
 Fresh full Phase 7 gate after this closure: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-scene-raycast-000700-20261014/phase7-gate.log.gz.
+
+`phys_fn_000702`: inverted closest-hit comparison rejected (`stdout_delta=288`); restored differential exact. See [phase7-scene-raycast-000702-closest-hit.md](phase7-scene-raycast-000702-closest-hit.md).
+Fresh full Phase 7 gate after the `phys_fn_000702` closure: 1,779/1,779 coverage assertions pass; archived transcript: evidence/raw/phase7-scene-raycast-000702-20261014/phase7-gate.log.gz.
