@@ -815,6 +815,10 @@ typedef const float* (__cdecl *NxFluidEmitterGetGlobalPoseCallback)(unsigned,
 typedef float (__cdecl *NxFluidScalarGetCallback)(void*, void*);
 typedef void (__cdecl *NxFluidScalarSetCallback)(void*, void*, float);
 typedef unsigned (__cdecl *NxFluidUnsignedGetCallback)(void*, void*);
+typedef void* (__cdecl *NxFluidParticlesGetCallback)(void*, void*);
+typedef void* (__cdecl *NxParticleArrayAllocCallback)(unsigned);
+typedef unsigned (__cdecl *NxParticleArrayGrowCallback)(void*, unsigned, unsigned);
+typedef void (__cdecl *NxParticleArrayReleaseCallback)(void*);
 
 static NxFluidManagerCreateCallback gNxFluidManagerCreateCallback = 0;
 static NxFluidManagerDestroyCallback gNxFluidManagerDestroyCallback = 0;
@@ -846,6 +850,10 @@ static NxFluidScalarGetCallback gNxFluidGetRestParticleDistanceScalarCallback = 
 static NxFluidScalarGetCallback gNxFluidGetParticleMassCallback = 0;
 static NxFluidUnsignedGetCallback gNxFluidGetMaxParticlesCallback = 0;
 static NxFluidUnsignedGetCallback gNxFluidGetSimulationMethodCallback = 0;
+static NxFluidParticlesGetCallback gNxFluidGetParticlesCallback = 0;
+static NxParticleArrayAllocCallback gNxParticleArrayAllocCallback = 0;
+static NxParticleArrayGrowCallback gNxParticleArrayGrowCallback = 0;
+static NxParticleArrayReleaseCallback gNxParticleArrayReleaseCallback = 0;
 static unsigned gNxFluidLicensedFeatureFlags = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
@@ -934,6 +942,14 @@ static bool nxFluidManagerResolveModel()
 		GetProcAddress(module, "FluidGetParticleMass"));
 	gNxFluidGetMaxParticlesCallback = reinterpret_cast<NxFluidUnsignedGetCallback>(
 		GetProcAddress(module, "FluidGetMaxParticles"));
+	gNxFluidGetParticlesCallback = reinterpret_cast<NxFluidParticlesGetCallback>(
+		GetProcAddress(module, "FluidGetParticles"));
+	gNxParticleArrayAllocCallback = reinterpret_cast<NxParticleArrayAllocCallback>(
+		GetProcAddress(module, "ParticleArrayAlloc"));
+	gNxParticleArrayGrowCallback = reinterpret_cast<NxParticleArrayGrowCallback>(
+		GetProcAddress(module, "ParticleArrayGrow"));
+	gNxParticleArrayReleaseCallback = reinterpret_cast<NxParticleArrayReleaseCallback>(
+		GetProcAddress(module, "ParticleArrayRelease"));
 	gNxFluidGetSimulationMethodCallback = reinterpret_cast<
 		NxFluidUnsignedGetCallback>(GetProcAddress(module,
 			"FluidGetSimulationMethod"));
@@ -2071,9 +2087,89 @@ static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, u
 	return manager;
 	}
 
+struct NxFluidParticleArrayHeader
+	{
+	void* records;
+	unsigned count;
+	};
+
+// phys_fn_003503's initial-particle branch allocates the FluidModel's
+// 92-byte ParticleArray records, clips to the backend's remaining capacity,
+// and copies the strided public position/velocity/lifetime channels.
+static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
+	{
+	if(!data.numParticlesPtr || !gNxFluidGetParticlesCallback ||
+		!gNxFluidGetMaxParticlesCallback || !gNxFluidGetCellSizeCallback ||
+		!gNxParticleArrayAllocCallback || !gNxParticleArrayGrowCallback)
+		return;
+	unsigned count = *data.numParticlesPtr;
+	if(!count)
+		return;
+	unsigned char* const bytes = static_cast<unsigned char*>(fluid);
+	void* const manager = *reinterpret_cast<void**>(bytes + 0x7c);
+	void* const backendManager = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(manager) + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(bytes + 0x80);
+	void* const backendParticles = gNxFluidGetParticlesCallback(
+		backendManager, backendFluid);
+	const unsigned existingCount = backendParticles
+		? *reinterpret_cast<unsigned*>(static_cast<unsigned char*>(backendParticles) + 4)
+		: 0;
+	const unsigned maximum = gNxFluidGetMaxParticlesCallback(
+		backendManager, backendFluid);
+	if(existingCount + count > maximum)
+		count = maximum - existingCount;
+	NxFluidParticleArrayHeader*& array = *reinterpret_cast<
+		NxFluidParticleArrayHeader**>(bytes + 0x78);
+	if(array)
+		gNxParticleArrayGrowCallback(array, count + array->count, 1);
+	else
+		array = static_cast<NxFluidParticleArrayHeader*>(
+			gNxParticleArrayAllocCallback(count));
+	if(!array || !array->records)
+		return;
+	const float cellSize = gNxFluidGetCellSizeCallback(backendManager, backendFluid);
+	unsigned char* records = static_cast<unsigned char*>(array->records);
+	const unsigned existingArrayCount = array->count;
+	const unsigned positionStride = data.bufferPosByteStride;
+	const unsigned velocityStride = data.bufferVelByteStride;
+	const unsigned lifetimeStride = data.bufferLifeByteStride;
+	for(unsigned index = 0; index != count; ++index)
+		{
+		unsigned char* const record = records + 92 * (existingArrayCount + index);
+		const unsigned char* const position = reinterpret_cast<const unsigned char*>(
+			data.bufferPos) + index * positionStride;
+		memcpy(record + 4, position, 3 * sizeof(unsigned));
+		memset(record + 16, 0, 3 * sizeof(unsigned));
+		if(data.bufferVel && velocityStride)
+			memcpy(record + 16, reinterpret_cast<const unsigned char*>(
+				data.bufferVel) + index * velocityStride, 3 * sizeof(unsigned));
+		if(cellSize != 0.0f)
+			{
+			*reinterpret_cast<short*>(record + 64) = static_cast<short>(
+				*reinterpret_cast<float*>(record + 4) / cellSize);
+			*reinterpret_cast<short*>(record + 66) = static_cast<short>(
+				*reinterpret_cast<float*>(record + 8) / cellSize);
+			*reinterpret_cast<short*>(record + 68) = static_cast<short>(
+				*reinterpret_cast<float*>(record + 12) / cellSize);
+			}
+		*reinterpret_cast<short*>(record + 70) = -1;
+		*reinterpret_cast<short*>(record + 72) = -1;
+		*reinterpret_cast<unsigned*>(record + 88) = 0;
+		if(data.bufferLife && lifetimeStride)
+			memcpy(record + 88, reinterpret_cast<const unsigned char*>(
+				data.bufferLife) + index * lifetimeStride, sizeof(unsigned));
+		}
+	array->count = count;
+	}
+
 static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(fluid);
+	void* const particleArray = *reinterpret_cast<void**>(bytes + 0x78);
+	if(particleArray && gNxParticleArrayReleaseCallback)
+		gNxParticleArrayReleaseCallback(particleArray);
+	*reinterpret_cast<void**>(bytes + 0x78) = 0;
 	unsigned emitterFirst = *reinterpret_cast<unsigned*>(bytes + 4);
 	unsigned emitterLast = *reinterpret_cast<unsigned*>(bytes + 8);
 	const unsigned emitterCount = emitterLast >= emitterFirst
@@ -2392,6 +2488,7 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		(gNxFluidLicensedFeatureFlags & 1u) != 0 && descriptorWords[26] == 2u,
 		(gNxFluidLicensedFeatureFlags & 2u) != 0);
 	*reinterpret_cast<void**>(fluid + 0x80) = backendFluid;
+	nxFluidInitializeParticles(fluid, desc.initialParticleData);
 	for(unsigned emitterIndex = 0; emitterIndex != desc.emitters.size(); ++emitterIndex)
 		nxFluidCreateEmitter(fluid, desc.emitters[emitterIndex]);
 	nxFluidManagerArrayPush(managerBytes + 4,

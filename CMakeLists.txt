@@ -672,6 +672,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsSimulationTests tests/PhysicsSimulationTests.cpp)
 	target_include_directories(NxPhysicsSimulationTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSimulationTests bcrypt)
+	add_executable(NxPhysicsFluidInitialParticlesTests tests/PhysicsFluidInitialParticlesTests.cpp)
+	target_include_directories(NxPhysicsFluidInitialParticlesTests PRIVATE Foundation/include Physics/include)
+	target_compile_definitions(NxPhysicsFluidInitialParticlesTests PRIVATE
+		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1)
+	target_link_libraries(NxPhysicsFluidInitialParticlesTests bcrypt)
 	add_executable(NxPhysicsTriangleMeshReleaseLockTests tests/PhysicsTriangleMeshReleaseLockTests.cpp)
 	target_include_directories(NxPhysicsTriangleMeshReleaseLockTests PRIVATE
 		Foundation/include Physics/include Physics/src/include)
@@ -924,6 +929,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/FluidModelFlagCallbackFixture.cpp)
 	set_target_properties(NxPhysicsFluidModelCallbackFixture PROPERTIES
 		OUTPUT_NAME FluidModel PREFIX "")
+	add_dependencies(NxPhysicsFluidInitialParticlesTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	# The simulation differential loads this staged companion only for its
 	# extension-enabled fluid lifecycle case; all earlier cases retain the
 	# missing-backend behavior.

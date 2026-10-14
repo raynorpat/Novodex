@@ -1230,7 +1230,9 @@ int wmain(int argc, wchar_t** argv)
 		NxActor* late = scene->createActor(actor);
 		printf("raycast create s_late created=%u\n", late ? 1u : 0u);
 		if(late)
-			nxSymbolAdd(late->getShapes()[0], "s_late");
+			// This actor is created after shape releases and can reuse a released
+			// shape address. Replace any stale diagnostic name for that address.
+			nxSymbolSet(late->getShapes()[0], "s_late");
 		const NxRay ray(nxRayCases[0].origin, nxRayCases[0].direction);
 		for(unsigned t = 0; t < 3; t++)
 			nxQueryAll(scene, ray, types[t], 0xffffffffu, NX_MAX_F32, 0xffffffffu, "late ray=x_statics");

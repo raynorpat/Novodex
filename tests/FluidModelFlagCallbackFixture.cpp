@@ -717,6 +717,62 @@ struct NxFluidPostStepParticleStream
 	unsigned count;
 	};
 
+struct NxFluidParticleArrayFixture
+	{
+	unsigned char* data;
+	unsigned count;
+	unsigned capacity;
+	};
+
+extern "C" __declspec(dllexport) NxFluidParticleArrayFixture* __cdecl
+ParticleArrayAlloc(unsigned count)
+	{
+	NxFluidParticleArrayFixture* const array = static_cast<
+		NxFluidParticleArrayFixture*>(calloc(1, sizeof(NxFluidParticleArrayFixture)));
+	if(!array)
+		return 0;
+	if(count)
+		{
+		array->data = static_cast<unsigned char*>(calloc(count, 92));
+		if(!array->data)
+			{
+			free(array);
+			return 0;
+			}
+		}
+	array->capacity = count;
+	return array;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl ParticleArrayGrow(
+	NxFluidParticleArrayFixture* array, unsigned count, unsigned fill)
+	{
+	if(!array)
+		return 0;
+	if(count > array->capacity)
+		{
+		unsigned char* const data = static_cast<unsigned char*>(realloc(
+			array->data, static_cast<size_t>(count) * 92));
+		if(!data)
+			return 0;
+		if(fill)
+			memset(data + static_cast<size_t>(array->capacity) * 92, 0,
+				static_cast<size_t>(count - array->capacity) * 92);
+		array->data = data;
+		array->capacity = count;
+		}
+	return array->capacity;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl ParticleArrayRelease(
+	NxFluidParticleArrayFixture* array)
+	{
+	if(!array)
+		return;
+	free(array->data);
+	free(array);
+	}
+
 struct NxFluidRunCallbackRecord
 	{
 	unsigned system;

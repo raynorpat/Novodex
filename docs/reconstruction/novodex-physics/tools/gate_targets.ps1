@@ -13,9 +13,9 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests', 'NxPhysicsTriangleMeshReleaseLockTests')
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests', 'NxPhysicsSDKTests', 'NxPhysicsPopulatedSceneTeardownTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests')
     '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSDKTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests')
     '8' = @()
 }
 
@@ -3041,13 +3041,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'raycast after_release ray=compound_across type=3 groups=ffffffff max=7f7fffff hint=ffffffff all_shapes result=0 calls=0',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff any_bounds result=1',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff any_shape result=1',
-        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_bounds result=d_box flags=00000013 shape=d_box impact=40000000.00000000.00000000 distance=40e00000',
-        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_shape result=d_box flags=00000017 shape=d_box impact=40000000.00000000.00000000 normal=bf800000.00000000.00000000 distance=40e00000',
+        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_bounds result=s_late flags=00000013 shape=s_late impact=40000000.00000000.00000000 distance=40e00000',
+        'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff closest_shape result=s_late flags=00000017 shape=s_late impact=40000000.00000000.00000000 normal=bf800000.00000000.00000000 distance=40e00000',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=1 flags=00000013 shape=s_rotated impact=4190cccd.00000000.00000000 distance=41b8cccd return=1',
         'raycast late ray=x_statics type=3 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=2 flags=00000013 shape=s_capsule impact=41180000.00000000.00000000 distance=41680000 return=1',
         'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=1 flags=00000013 shape=s_rotated impact=4190cccd.00000000.00000000 distance=41b8cccd return=1',
         'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=2 flags=00000013 shape=s_capsule impact=41180000.00000000.00000000 distance=41680000 return=1',
-        'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=3 flags=00000013 shape=d_box impact=40000000.00000000.00000000 distance=40e00000 return=1'
+        'raycast late ray=x_statics type=1 groups=ffffffff max=7f7fffff hint=ffffffff all_bounds on_hit=3 flags=00000013 shape=s_late impact=40000000.00000000.00000000 distance=40e00000 return=1'
         # Scene-raycast Task 4, box hull: boxes created through the image's path
         # (000981 -> 000973) and resized through setDimensions (000983), their
         # dims, world bounds, hull words, facade slots 9/10 and raycasts. The
@@ -3625,6 +3625,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # Spring-contact callbacks exercise the swept-capsule solver record
         # (`phys_fn_000883` and its continuation `phys_fn_000885`).
         'simulation spring-contact callbacks=4 events=0000000a pairs=4 patches=4 points=4 position=3e7ffff4.c0e729a1.00000000 velocity=3e800000.c18694ef.00000000 normal-force=80000000.00000000.80000000 friction-force=00000000.00000000.00000000'
+    )
+    'NxPhysicsFluidInitialParticlesTests' = @(
+        'fluid initial-particles count=2 positions=1 velocities=1 lifetimes=1 cells=1 strides=1'
     )
     'NxPhysicsCcdSimulationTests' = @(
         'ccd step=0 x=40e00000 vx=100.000 ready=1 fetched=1'
@@ -5935,7 +5938,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2707  # adds Fluid constructor state and default-layout coverage
+	'5' = 2708  # adds focused initial Fluid ParticleData channel and stride coverage
+				# adds Fluid constructor state and default-layout coverage
 				# previous 2703 plus two product-code-specific FluidCreate assertions
 				# adds a mutation-falsified contact-pair force aggregate
 				# adds a mutation-falsified friction solver simulation result
@@ -6028,7 +6032,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 1769  # adds Fluid constructor state and default-layout coverage
+	'7' = 1770  # adds focused initial Fluid ParticleData channel and stride coverage
+				# adds Fluid constructor state and default-layout coverage
 				# adds the scene-release contact report row phys_fn_000913
 				# adds 11 collision-pruner visualization assertions to NxPhysicsSceneVisualizeTests
 				# adds a mutation-falsified contact-pair force aggregate
@@ -6148,6 +6153,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSceneRaycastTests',
     'NxPhysicsSceneVisualizeTests',
     'NxPhysicsSimulationTests',
+    'NxPhysicsFluidInitialParticlesTests',
     'NxPhysicsCcdSimulationTests',
     'NxPhysicsAllocatorReleaseTests',
     'NxPhysicsPairFlagTests',
