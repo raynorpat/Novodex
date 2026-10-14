@@ -468,3 +468,8 @@ A direct `NxPhysicsSimulationTests` DLL probe checks all five relevant selector 
 ### M6.33 — Body-base kinematic destructor (`phys_fn_000799`)
 
 The existing kinematic actor release case detects an empty-body mutation of `DynamicBodyBase::destruct`: allocator traffic drops from six frees to five (`stdout_delta=8`, both exits zero). Restored output is exact. The body-creation differential is now registered to Phase 7; the raised full Phase 7 gate passes at 1,975/1,975. Phase 7 moves to 321 closed / 239 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-body-base-dtor-000799.md`.
+
+
+### M6.34 — Contact friction parameters (`phys_fn_000861`)
+
+An empty-body row mutation preserves the normal force but zeros the registered simulation friction force (`stdout_delta=266`, both exits zero); the restored differential is exact. Full Phase 7 passes at 1,975/1,975. Phase 7 moves to 322 closed / 238 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-friction-params-000861.md`.

@@ -10936,3 +10936,6 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 
 
 `phys_fn_000799`: an empty-body destructor mutation removes one of the six frees in the kinematic record-release case and is rejected (`stdout_delta=8`, both exits zero); restored output is exact. `NxPhysicsBodyCreationTests` is now a Phase 7 target. See [phase7-body-base-dtor-000799.md](phase7-body-base-dtor-000799.md).
+
+
+`phys_fn_000861`: an empty-body mutation preserves normal force but zeros the friction force in the registered simulation case; the differential rejects it (`stdout_delta=266`, both exits zero), and the restored output is exact. See [phase7-friction-params-000861.md](phase7-friction-params-000861.md).

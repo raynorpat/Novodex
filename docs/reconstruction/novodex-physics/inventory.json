@@ -16349,13 +16349,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/356",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2611",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1cd90-0x1d0a4) in scene-raycast Task 4 (contact-pair manager): stdcall(shapes, ids, n, normalForce, out, t1, t2), `ret 0x1c`; the isotropic and anisotropic paths (the choice tests the whole flag words and |dyn - dynV|), t1 = dir x n / |.| when |.| > 0.01f and t2 = n x t1, else NxNormalToTangents and the averages; the root through x87FsqrtDot3. Candidate cpmFrictionParams0861 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000879 <- 000897); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
-      "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "dynamic_proof": "NxPhysicsSimulationTests staged-pair differential: the registered friction contact reaches row 000861. Replacing cpmFrictionParams0861 with an empty body preserves the normal force but changes friction force from 3d5ae33a to zero; the mutant is rejected (both exits 0, stdout_delta=266). Restoring ContactPairManager.cpp byte-for-byte returns exact output. See evidence/phase7-friction-params-000861.md and evidence/raw/phase7-friction-params-000861-20261014/.",
+      "notes": "The existing friction-contact fixture exercises isotropic patch parameters; a row-scoped empty-body mutation zeros the observed friction force.",
       "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {

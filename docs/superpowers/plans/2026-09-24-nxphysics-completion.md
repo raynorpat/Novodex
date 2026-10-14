@@ -922,3 +922,8 @@ A direct `NxPhysicsSimulationTests` DLL probe checks average, minimum, multiply,
 ### M6.33 — Body-base kinematic destructor (`phys_fn_000799`)
 
 An empty-body mutation of `DynamicBodyBase::destruct` drops the kinematic-release free from six to five and is rejected by `NxPhysicsBodyCreationTests` (`stdout_delta=8`, both exits zero). Restored output is exact. The fixture is registered in Phase 7, whose gate passes at 1,975/1,975 coverage assertions. Phase 7 records 321 closed / 239 deferred. See `docs/reconstruction/novodex-physics/evidence/phase7-body-base-dtor-000799.md`.
+
+
+### M6.34 — Contact friction parameters (`phys_fn_000861`)
+
+Replacing only the friction-parameter calculation with an empty body preserves normal force but changes friction force from `3d5ae33a` to zero. The registered simulation differential rejects the mutation (`stdout_delta=266`, both exits zero), and the restored control is exact. Phase 7 records 322 closed / 238 deferred; its full gate passes at 1,975/1,975. See `docs/reconstruction/novodex-physics/evidence/phase7-friction-params-000861.md`.
