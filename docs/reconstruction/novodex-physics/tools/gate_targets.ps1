@@ -181,7 +181,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'triangle_mesh invalid_desc rejected=1'
     )
     'NxPhysicsTriangleMeshReleaseLockTests' = @(
-        'triangle_mesh_release locked returned_while_locked=1'
+        'triangle_mesh_release stage=second_scene'
+        'triangle_mesh_release locked returned_while_locked=1 errors=1 code=2 line=127 file=\Epic\Novodex\SDKs\Physics\src\NpPhysicsSDK.cpp message=PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock! unwind_first=1'
         'triangle_mesh_release unlocked errors=0 released=1'
     )
     'NxPhysicsSDKTests' = @(
@@ -5974,7 +5975,7 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 7  # adds actor-group pair flags with multiple live scene locks
+    '2' = 8  # adds the two-scene triangle-mesh release reverse-unlock case
     '3' = 561  # adds the two-live-scene actor-group flag wrapper case
                # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
                # includes controller-owned proxy cleanup during Scene destruction

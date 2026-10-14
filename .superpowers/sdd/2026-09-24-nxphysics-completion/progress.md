@@ -361,3 +361,14 @@ Task M2.6: complete (`phys_fn_000470`; red foreign-handle differential; no-op mu
 ### M2 continuation — public triangle-mesh creation wrapper (phys_fn_000242, 2026-10-14)
 
 The public API fixture rejects a null-return mutant (stdout_delta=26); restored staged-pair control is exact. Existing NxPhysicsSimulationTests exercises Scene lock contention. Phase 4 full gate remains 529/529; Phase 2 now records 67 closed / 76 deferred. Internal mesh creation remains open. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-create-000242.md.\nTask M2.7: complete (phys_fn_000242; mutation caught at stdout_delta=26; restored exact; report and inventory validation pass; public headers unchanged).
+
+
+### M2 continuation — triangle-mesh release wrapper lock refusal (phys_fn_000244, 2026-10-14)
+
+NxPhysicsTriangleMeshReleaseLockTests verifies a real locked release refusal and successful release after unlock. A no-op diagnostic mutation is caught at stdout_delta=5; restored output matches. Phase 2 advances to 68 closed / 75 deferred; inventory passes, public headers unchanged. Internal mesh release remains open. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-lock-000244.md.\nTask M2.8: complete (phys_fn_000244; mutation caught at stdout_delta=5; restored exact; report/inventory pass).
+
+### M2.9 — Triangle-mesh release reverse-unlock continuation (`phys_fn_000246`)
+
+Expanded the release-lock fixture to two live Scenes. A held lock in Scene 2 forces the wrapper to enter the outlined unwind for Scene 1; an external worker verifies Scene 1 is writable afterward. Replacing the reverse-unlock body with a counter decrement is caught (`stdout_delta=5`, oracle `unwind_first=1`, candidate `unwind_first=0`). Restored oracle/candidate control is exact. Phase 2 passes at 8/8 coverage assertions; inventory records 69 closed / 74 deferred, and public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-unwind-000246.md`.
+
+Task M2.9: complete (`phys_fn_000246`; two-Scene unwind mutation caught; restored exact; Phase 2 gate passes at 8/8; 39 gate-target tests pass; inventory validates; public headers unchanged).

@@ -1,0 +1,5 @@
+--- a/Physics/src/NpPhysicsSDK.cpp
++++ b/Physics/src/NpPhysicsSDK.cpp
+@@
+-			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
++			if(false) NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,

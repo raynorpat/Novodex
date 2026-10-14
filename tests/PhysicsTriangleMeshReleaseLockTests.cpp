@@ -58,6 +58,23 @@ static DWORD WINAPI nxHoldSceneWriteLock(void* context)
 	return 0;
 	}
 
+struct NxProbeSceneWriteLock
+	{
+	void* link;
+	HANDLE completed;
+	bool acquired;
+	};
+
+static DWORD WINAPI nxProbeSceneWriteLock(void* context)
+	{
+	NxProbeSceneWriteLock* probe = static_cast<NxProbeSceneWriteLock*>(context);
+	probe->acquired = nxNpSceneGuardWriteTry(probe->link);
+	if(probe->acquired)
+		nxNpSceneGuardLeave(probe->link);
+	SetEvent(probe->completed);
+	return 0;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -83,6 +100,10 @@ int wmain(int argc, wchar_t** argv)
 	if(!scene)
 		return nxFail("scene creation failed");
 	printf("triangle_mesh_release stage=scene\n");
+	NxScene* secondScene = sdk->createScene(sceneDesc);
+	if(!secondScene)
+		return nxFail("second scene creation failed");
+	printf("triangle_mesh_release stage=second_scene\n");
 	NxVec3 vertices[6] = {
 		NxVec3(-2.0f, 0.0f, -2.0f), NxVec3(2.0f, 0.0f, -2.0f), NxVec3(-2.0f, 0.0f, 2.0f),
 		NxVec3(2.0f, 0.0f, -2.0f), NxVec3(2.0f, 0.0f, 2.0f), NxVec3(-2.0f, 0.0f, 2.0f) };
@@ -100,8 +121,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("triangle_mesh_release stage=mesh\n");
 
 	NxHeldSceneWriteLock held = {
-		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(scene) + 0x0c),
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(secondScene) + 0x0c),
 		CreateEventW(0, TRUE, FALSE, 0), CreateEventW(0, TRUE, FALSE, 0) };
+	void* firstSceneWriteLink =
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(scene) + 0x0c);
 	if(!held.link || !held.ready || !held.release)
 		return nxFail("scene write-lock fixture setup failed");
 	HANDLE thread = CreateThread(0, 0, nxHoldSceneWriteLock, &held, 0, 0);
@@ -118,17 +141,31 @@ int wmain(int argc, wchar_t** argv)
 	CloseHandle(thread);
 	CloseHandle(held.ready);
 	CloseHandle(held.release);
+	NxProbeSceneWriteLock probe = { firstSceneWriteLink, CreateEventW(0, TRUE, FALSE, 0), false };
+	HANDLE probeThread = probe.completed ? CreateThread(0, 0, nxProbeSceneWriteLock, &probe, 0, 0) : 0;
+	const bool probeCompleted = probeThread &&
+		WaitForSingleObject(probe.completed, 5000) == WAIT_OBJECT_0 &&
+		WaitForSingleObject(probeThread, 5000) == WAIT_OBJECT_0;
+	if(probeThread) CloseHandle(probeThread);
+	if(probe.completed) CloseHandle(probe.completed);
+	const bool firstSceneLockUnwound = probeCompleted && probe.acquired;
+	if(probeCompleted && !probe.acquired)
+		// The mutation fixture owns this leaked lock on the current thread;
+		// release it so later failure reporting and process teardown stay safe.
+		nxNpSceneGuardLeave(firstSceneWriteLink);
 	const unsigned lockedErrors = output.errors;
 	const bool rejected = output.errors == 1 && output.code == NXE_INVALID_OPERATION && output.line > 0;
-	printf("triangle_mesh_release locked returned_while_locked=%u errors=%u code=%u line=%d file=%s message=%s\n",
-		returnedWhileLocked, output.errors, static_cast<unsigned>(output.code), output.line, output.file, output.message);
-	if(!threadJoined || !returnedWhileLocked || !rejected)
+	printf("triangle_mesh_release locked returned_while_locked=%u errors=%u code=%u line=%d file=%s message=%s unwind_first=%u\n",
+		returnedWhileLocked, output.errors, static_cast<unsigned>(output.code), output.line,
+		output.file, output.message, firstSceneLockUnwound ? 1u : 0u);
+	if(!threadJoined || !returnedWhileLocked || !rejected || !firstSceneLockUnwound)
 		return nxFail("releaseTriangleMesh did not reject a contended scene lock");
 
 	output.reset();
 	sdk->releaseTriangleMesh(*mesh);
 	const bool releasedAfterUnlock = output.errors == 0;
 	printf("triangle_mesh_release unlocked errors=%u released=%u\n", output.errors, releasedAfterUnlock);
+	sdk->releaseScene(*secondScene);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	status = nxReportPairIdentity(pairDirectory);

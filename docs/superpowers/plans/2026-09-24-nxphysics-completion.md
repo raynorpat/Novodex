@@ -820,3 +820,11 @@ Registered the existing `NxPhysicsSceneAllocatorTests` target in Phases 5 and 7 
 ### M2 continuation — public triangle-mesh creation wrapper (phys_fn_000242, 2026-10-14)
 
 The public NpPhysicsSDK::createTriangleMesh wrapper now has a row-specific mutation proof: forcing its successful path to return null makes the API differential fail (stdout_delta=26); the restored candidate matches exactly. The existing simulation fixture still covers Scene-lock contention and reverse unlock. Phase 2 advances to 67 closed / 76 deferred; the public headers and internal mesh-factory boundary are unchanged. Phase 4 remains green at 529/529. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-create-000242.md.
+
+### M2 continuation — triangle-mesh release wrapper lock refusal (phys_fn_000244, 2026-10-14)
+
+The registered Phase 2 lock fixture confirms that a release call returns promptly while another thread holds the Scene write lock, emits the pinned NXE_INVALID_OPERATION diagnostic, and can release successfully after unlock. A no-op diagnostic mutant is caught (stdout_delta=5); restored output is exact. Phase 2 advances to 68 closed / 75 deferred. Public headers and internal mesh release remain unchanged/open, respectively. Evidence: docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-lock-000244.md.
+
+### M2 continuation — triangle-mesh release reverse unlock (`phys_fn_000246`, 2026-10-14)
+
+Expanded the lock fixture to two live Scenes. Contending on Scene 2 forces the release wrapper to acquire Scene 1 and enter the outlined reverse-unlock path. A no-op loop-body mutant leaks Scene 1's lock and is caught by an external probe (`stdout_delta=5`, oracle `unwind_first=1`, candidate `unwind_first=0`); restored oracle/candidate control is exact. The independent second-Scene and full lock/unwind assertions pass under the Phase 2 coverage floor of 8. Phase 2 records 69 closed / 74 deferred; full-DLL backlog remains 2,786 open code rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-triangle-mesh-release-unwind-000246.md` and archived raw transcripts.

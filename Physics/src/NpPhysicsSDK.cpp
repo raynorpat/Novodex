@@ -130,7 +130,9 @@ NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc& desc)
 	return mesh ? mesh->publicHandle() : 0;
 	}
 
-// phys_fn_000244 (0x0000b8c0): same lock/unwind protocol around release.
+// phys_fn_000244 (0x0000b8c0) and its outlined phys_fn_000246 continuation
+// (0x0000b920): acquire each Scene lock and reverse-unwind earlier locks on
+// contention before reporting failure.
 void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh& mesh)
 	{
 	NxU32 locked = 0;

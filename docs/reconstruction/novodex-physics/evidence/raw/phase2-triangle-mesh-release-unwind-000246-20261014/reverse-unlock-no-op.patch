@@ -1,0 +1,5 @@
+--- a/Physics/src/NpPhysicsSDK.cpp
++++ b/Physics/src/NpPhysicsSDK.cpp
+@@ releaseTriangleMesh unwind on failure @@
+- while(locked) nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, --locked));
++ while(locked) --locked;

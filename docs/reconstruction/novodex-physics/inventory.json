@@ -4813,13 +4813,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/83",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/893",
       "static_proof": null,
-      "dynamic_proof": "NxPhysicsSimulationTests, registered Phase 7 differential: release is exercised through the SDK while a scene is live after a successful mesh creation; oracle and candidate transcripts match. The implementation takes the scene write locks in order, dispatches release, and unlocks in order. The contention arm is separately exercised for the paired factory wrapper; release's own contention arm remains to be mutation-tested before this row can be dynamically_gated.",
-      "notes": "wrapper behavior reconstructed; internal TriangleMesh release remains a separate deferred row",
+      "dynamic_proof": "NxPhysicsTriangleMeshReleaseLockTests Phase 2 staged-pair differential creates a real mesh and Scene, holds the Scene write lock on another thread, verifies the release wrapper returns with the pinned error, then releases successfully after unlock. A no-op lock-error mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=5); restored output matches exactly. Evidence: evidence/phase2-triangle-mesh-release-lock-000244.md.",
+      "notes": "Public wrapper lock refusal and unlocked release are row-specifically mutation-falsified; internal mesh release is a separate row.",
       "implementation": "Physics/src/NpPhysicsSDK.cpp",
       "implementation_symbol": "NpPhysicsSDK::releaseTriangleMesh"
     },
@@ -4851,14 +4851,19 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpPhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/83",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/896",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000b8c0",
-      "implementation": null
+      "dynamic_proof": {
+        "gate": "NxPhysicsTriangleMeshReleaseLockTests",
+        "mutation": "Changed the outlined reverse-unlock loop in NpPhysicsSDK::releaseTriangleMesh from leaving each prior Scene write lock to only decrementing the loop counter.",
+        "detected": "stdout_delta=5",
+        "control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; both report unwind_first=1"
+      },
+      "notes": "Compiler-outlined reverse-unlock continuation for phys_fn_000244; the two-live-Scene differential proves that a held lock in the second Scene unwinds the first Scene lock.",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000247",
