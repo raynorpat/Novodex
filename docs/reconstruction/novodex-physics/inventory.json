@@ -14342,13 +14342,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "layout_adjacency",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/305",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2124",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x17010-0x17412) with oracle/ghidra/manifest.json as a cross-check: R = C M^T over the +0x134 and +0xdc 3x3s, position c - R m into +0x18, unnormalised quaternion of R into +0x24 (joint-open-items Task 6)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 14 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); before the row was written the candidate differed from the oracle on every projection that moved a body, at body +0x18..+0x30; trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Written by joint-open-items Task 6 (was a deferred NX_ASSERT(0) stub, silent in Release). Called first by phys_fn_000022 on every projection that moves a body.",
+      "dynamic_proof": "executed under the registered NxPhysicsJointSlotTests staged-pair differential (Phases 6 and 7): a temporary immediate-return mutation was caught with oracle_exit=0, candidate_exit=0, stdout_delta=2804, stderr_exact=True; the fixture reaches this row in 14 body-moving projections. Restoring the row produced stdout_delta=0 and exact stderr. See evidence/phase7-joint-support-row-000754.md.",
+      "notes": "Written by joint-open-items Task 6 (was a deferred NX_ASSERT(0) stub, silent in Release). Called first by phys_fn_000022 on every projection that moves a body; its Phase 7 mutation proof uses NxPhysicsJointSlotTests.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
