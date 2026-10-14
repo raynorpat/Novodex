@@ -3554,9 +3554,11 @@ int wmain(int argc, wchar_t** argv)
 		unsigned implicitFluidMeshGetSmoothingIterations;
 		unsigned implicitFluidMeshSetSmoothingIterations;
 		unsigned implicitFluidMeshCallbackArgumentErrors;
+		unsigned implicitFluidMeshReentryAttempts;
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
+	typedef void (__cdecl *SetImplicitMeshReentryTargetFn)(void*);
 	typedef unsigned (__cdecl *GetFluidScalarCallsFn)();
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
 		ResetFluidManagerCallbacksFn>(GetProcAddress(fluidModel,
@@ -3597,6 +3599,9 @@ int wmain(int argc, wchar_t** argv)
 	SetFluidEmitterCreateNullIndexFn setFluidEmitterCreateNullIndex = reinterpret_cast<
 		SetFluidEmitterCreateNullIndexFn>(GetProcAddress(fluidModel,
 			"NxSetFluidEmitterCreateNullIndex"));
+	SetImplicitMeshReentryTargetFn setImplicitMeshReentryTarget = reinterpret_cast<
+		SetImplicitMeshReentryTargetFn>(GetProcAddress(fluidModel,
+			"NxSetImplicitMeshReentryTarget"));
 	if(!resetFluidManagerCallbacks || !getFluidDampingCalls ||
 		!getFluidSetStiffnessObservation || !getFluidSetViscosityObservation ||
 		!getFluidSetDampingObservation ||
@@ -3606,7 +3611,7 @@ int wmain(int argc, wchar_t** argv)
 		!getFluidSetDynamicCollisionAdhesionObservation ||
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
-		!setFluidEmitterCreateNullIndex)
+		!setFluidEmitterCreateNullIndex || !setImplicitMeshReentryTarget)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
 	HMODULE const fluidFoundationModule = GetModuleHandleW(L"NxFoundation.dll");
@@ -4563,7 +4568,11 @@ int wmain(int argc, wchar_t** argv)
 	const bool initialNameMatches = explicitSurfaceMesh->getName() ==
 		licensedSurfaceMeshInitialName;
 	const NxReal initialSurfaceRadius = explicitSurfaceMesh->getSurfaceRadius();
+	const unsigned reentryErrorsBefore = simulationOutput.errors;
+	setImplicitMeshReentryTarget(explicitSurfaceMesh);
 	explicitSurfaceMesh->setSurfaceRadius(0.05f);
+	setImplicitMeshReentryTarget(0);
+	const unsigned reentryErrors = simulationOutput.errors - reentryErrorsBefore;
 	const NxReal setSurfaceRadius = explicitSurfaceMesh->getSurfaceRadius();
 	const NxReal initialSingleRadius = explicitSurfaceMesh->getSingleRadius();
 	explicitSurfaceMesh->setSingleRadius(0.012f);
@@ -4636,7 +4645,9 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize == 1 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSmoothingIterations == 2 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSmoothingIterations == 1 &&
-		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors == 0;
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors == 0 &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshReentryAttempts == 1 &&
+		reentryErrors == 1;
 	}
 	if(licensedSurfaceMeshFluid)
 		licensedSurfaceMeshFluid->releaseSurfaceMesh();
@@ -4652,7 +4663,7 @@ int wmain(int argc, wchar_t** argv)
 		constructedSurfaceMeshUserDataMatches ? 1u : 0u,
 		licensedSurfaceMeshDestroyMatches ? 1u : 0u,
 		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
-	printf("simulation fluid licensed-surface-mesh properties matched=%u calls=%u.%u.%u.%u.%u.%u.%u.%u.%u errors=%u\n",
+	printf("simulation fluid licensed-surface-mesh properties matched=%u calls=%u.%u.%u.%u.%u.%u.%u.%u.%u reentry=%u errors=%u\n",
 		licensedSurfaceMeshPropertiesMatch && explicitSurfaceMeshUserDataMatches ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,
@@ -4663,6 +4674,7 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSmoothingIterations,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSmoothingIterations,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshReentryAttempts,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
 	printf("simulation fluid public-api surface-mesh get=%u released=%u calls=%u flags=%u errors=%u unlicensed=%u.%u create-warning=%u\n",
 		returnedSurfaceMesh == reinterpret_cast<NxImplicitMesh*>(
