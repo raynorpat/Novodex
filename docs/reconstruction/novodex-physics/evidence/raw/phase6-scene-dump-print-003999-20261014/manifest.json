@@ -1,0 +1,48 @@
+{
+  "row": "phys_fn_003999",
+  "rva": "0x000906e0",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "source_sha256": "76b271743d0b5b6dc29a682f0e804528a48fd6774ada92cc98ea3efec651ea19",
+  "mutant_source_change": "Inserted return false at SceneDumpSetting::print entry, before the mEmit branch.",
+  "mutant_candidate_sha256": "f0ca8934d3e2b377766db6ce923014f7261f6a768e2187a2746da4ba7e84f706",
+  "restored_candidate_sha256": "d1a886c229eb78052150a86d9941fb1785d3ffd8a61418c3dc46ee4b94906df5",
+  "mutation_detection": "oracle_exit=0 candidate_exit=0 stdout_delta=280 stderr_exact=True",
+  "restored_control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "transcripts": [
+    {
+      "path": "no-op-mutation-core-dump-differential.gz",
+      "source": "D:\\Novodex-row3999-mutant-differential-20261014.log",
+      "source_sha256": "a4b5d574b3466e888823848d9f8e480d7d4b1881b58c02a5f9ef11b6973eefb6",
+      "compressed_sha256": "70210c81b04c23103bfd33d4cc97bf6195dd4efa75ae2445c86e058ed8e7fa27",
+      "source_bytes": 361111,
+      "compressed_bytes": 37758
+    },
+    {
+      "path": "restored-core-dump-differential.gz",
+      "source": "D:\\Novodex-row3999-restored-differential-forced-20261014.log",
+      "source_sha256": "e8a5e4d36746884d783751210265a17adbccac94bd323dab88ce3e305bfdf716",
+      "compressed_sha256": "7db5fb8ba170e86eaeab5a590ea1c94ecc10e74f9fc51a095d2393f52e5fa594",
+      "source_bytes": 386151,
+      "compressed_bytes": 41046
+    }
+  ],
+  "build_logs": [
+    {
+      "path": "no-op-mutation-build.gz",
+      "source": "D:\\Novodex-row3999-mutant-build-20261014.log",
+      "source_sha256": "f3ae1453f00e8e22b0537054ce5c0a65b1393a5b20f471ca817dfdf0608b680d",
+      "compressed_sha256": "0fc18047b33196cdd36c7489ddc7650b8ddf31f751b6fbb47dfb4960e74109f6",
+      "source_bytes": 918,
+      "compressed_bytes": 378
+    },
+    {
+      "path": "restored-build-forced.gz",
+      "source": "D:\\Novodex-row3999-restored-build-forced-20261014.log",
+      "source_sha256": "e9ffe82dd2ce3b9b6705145feef27f985d373ae182a5e310df8fe317f46e63a0",
+      "compressed_sha256": "ee7c7d9114af8b30b27162aaead1c4b5d9eb28b1b7937e1ed881dc8447ccfaad",
+      "source_bytes": 823,
+      "compressed_bytes": 365
+    }
+  ],
+  "note": "The first rebuild after Copy-Item restore reused the newer mutated object because restored file mtime was older. Touching the byte-identical restored source forced recompilation; the subsequent restored control is exact. The source SHA-256 is unchanged."
+}

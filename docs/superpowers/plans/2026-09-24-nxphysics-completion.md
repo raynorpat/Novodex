@@ -957,3 +957,8 @@ The previous object-layout cases compared the oracle function with a test-local 
 ### M6.40 — Scene dump setting serialization (`phys_fn_003997`)
 
 A row-only early-false mutation in `SceneDumpSetting::store` is detected by the registered `NxPhysicsCoreDumpTests` staged-pair differential (`stdout_delta=3776`, exact stderr). Restoring the source byte-for-byte yields an exact control. The row is now dynamically gated and closed in the Phase 6 ledger. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-scene-dump-setting-003997.md`.
+
+
+### M6.41 — Scene dump setting print (`phys_fn_003999`)
+
+A row-only no-op at `SceneDumpSetting::print` is detected by the registered `NxPhysicsCoreDumpTests` staged-pair differential (`stdout_delta=280`, exact stderr). Restoring the source and forcing recompilation yields an exact control. The row is dynamically gated and closed in Phase 6. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-scene-dump-print-003999.md`.
