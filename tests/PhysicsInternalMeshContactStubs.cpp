@@ -8,7 +8,15 @@
 void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*,
 	NxContactSink*, void*) {}
 
+void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*) {}
+
 bool __cdecl NxOverlapSphereMesh(const NxCollisionShape*, const NxCollisionShape*, void*)
+	{
+	return false;
+	}
+
+bool __cdecl NxOverlapBoxMesh(const NxCollisionShape*, const NxCollisionShape*, void*)
 	{
 	return false;
 	}

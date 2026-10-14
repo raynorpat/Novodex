@@ -261,6 +261,156 @@ namespace
 			memcpy(out + i * elementSize, in + i * sourceStride, elementSize);
 		return result;
 		}
+
+	// phys_fn_002247 (oracle RVA 0x55180) stores two triangle-to-part maps on
+	// TriangleMesh. Its 001435 helper cuts shared edges according to the signed
+	// distance of one face's opposite vertex from the adjacent face plane:
+	// map A separates convex edges (> 0.01), while map B separates every
+	// non-coplanar edge (abs(distance) > 0.01). Boundary and non-manifold edges
+	// separate both maps. Connected components of the remaining face graph are
+	// the part IDs consumed by the mesh narrow phase.
+	static bool nxTriangleMeshAssignParts(TriangleMesh* mesh, const NxU8* cuts,
+		NxU32* parts, NxU32* queue, NxU32* partCount)
+		{
+		const NxU32 triangleCount = mesh->mInternal.mTriangleCount;
+		const NxU32* triangles = static_cast<const NxU32*>(mesh->mInternal.mTriangles);
+		const EdgeList* edgeList = mesh->mEdgeList;
+		if(!triangles || !edgeList || !edgeList->mEdgeFaces ||
+			!edgeList->mEdgeToTriangles || !edgeList->mFacesByEdges)
+			return false;
+
+		for(NxU32 i = 0; i < triangleCount; ++i)
+			parts[i] = 0xffffffff;
+		*partCount = 0;
+		for(NxU32 seed = 0; seed < triangleCount; ++seed)
+			{
+			if(parts[seed] != 0xffffffff)
+				continue;
+			const NxU32 part = (*partCount)++;
+			NxU32 head = 0;
+			NxU32 tail = 0;
+			parts[seed] = part;
+			queue[tail++] = seed;
+			while(head != tail)
+				{
+				const NxU32 face = queue[head++];
+				const EdgeTriangle& faceEdges = edgeList->mEdgeFaces[face];
+				for(unsigned side = 0; side < 3; ++side)
+					{
+					const NxU32 edge = faceEdges.mLink[side] & 0x0fffffff;
+					if(cuts[edge])
+						continue;
+					const EdgeDesc& adjacent = edgeList->mEdgeToTriangles[edge];
+					if(adjacent.Count != 2)
+						continue;
+					const NxU32* faceList = edgeList->mFacesByEdges + adjacent.Offset;
+					const NxU32 other = faceList[0] == face ? faceList[1] : faceList[0];
+					if(other < triangleCount && parts[other] == 0xffffffff)
+						{
+						parts[other] = part;
+						queue[tail++] = other;
+						}
+					}
+				}
+			}
+		return true;
+		}
+
+	static NxU32 nxTriangleMeshOppositeVertex(const NxU32* triangle,
+		NxU32 edge0, NxU32 edge1)
+		{
+		for(unsigned i = 0; i < 3; ++i)
+			if(triangle[i] != edge0 && triangle[i] != edge1)
+				return triangle[i];
+		return 0xffffffff;
+		}
+
+	static bool nxTriangleMeshBuildPartMaps(TriangleMesh* mesh)
+		{
+		const NxU32 triangleCount = mesh->mInternal.mTriangleCount;
+		if(!triangleCount || !mesh->mInternal.mTriangles || !mesh->mInternal.mVertices)
+			return false;
+		if(!mesh->mEdgeList)
+			mesh->createEdgeList();
+		EdgeList* edges = mesh->mEdgeList;
+		if(!edges || !edges->mEdges || !edges->mEdgeFaces ||
+			!edges->mEdgeToTriangles || !edges->mFacesByEdges)
+			return false;
+
+		NxU8* cutsA = static_cast<NxU8*>(nxFoundationSDKAllocator->malloc(
+			edges->mNbEdges, NX_MEMORY_TEMP));
+		NxU8* cutsB = static_cast<NxU8*>(nxFoundationSDKAllocator->malloc(
+			edges->mNbEdges, NX_MEMORY_TEMP));
+		NxU32* queue = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(
+			triangleCount * sizeof(NxU32), NX_MEMORY_TEMP));
+		NxU32* mapA = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(
+			triangleCount * sizeof(NxU32), NX_MEMORY_PERSISTENT));
+		NxU32* mapB = static_cast<NxU32*>(nxFoundationSDKAllocator->malloc(
+			triangleCount * sizeof(NxU32), NX_MEMORY_PERSISTENT));
+		bool success = cutsA && cutsB && queue && mapA && mapB;
+		if(success)
+			{
+			const NxU32* triangles = static_cast<const NxU32*>(mesh->mInternal.mTriangles);
+			const NxVec3* vertices = static_cast<const NxVec3*>(mesh->mInternal.mVertices);
+			for(NxU32 edge = 0; edge < edges->mNbEdges; ++edge)
+				{
+				const EdgeDesc& adjacent = edges->mEdgeToTriangles[edge];
+				if(adjacent.Count != 2)
+					{
+					cutsA[edge] = cutsB[edge] = 1;
+					continue;
+					}
+				const NxU32* faceList = edges->mFacesByEdges + adjacent.Offset;
+				const NxU32* face0 = triangles + faceList[0] * 3;
+				const NxU32* face1 = triangles + faceList[1] * 3;
+				const NxU32 opposite = nxTriangleMeshOppositeVertex(face0,
+					edges->mEdges[edge].Ref0, edges->mEdges[edge].Ref1);
+				if(opposite == 0xffffffff || opposite >= mesh->mInternal.mVertexCount)
+					{
+					cutsA[edge] = cutsB[edge] = 1;
+					continue;
+					}
+				const NxVec3& p0 = vertices[face1[0]];
+				const NxVec3& p1 = vertices[face1[1]];
+				const NxVec3& p2 = vertices[face1[2]];
+				NxVec3 normal = (p1 - p0).cross(p2 - p0);
+				const float lengthSquared = normal.dot(normal);
+				float distance = 0.0f;
+				if(lengthSquared != 0.0f)
+					normal *= 1.0f / sqrtf(lengthSquared);
+				distance = normal.dot(vertices[opposite] - p0);
+				cutsA[edge] = distance > 0.01f ? 1 : 0;
+				cutsB[edge] = fabsf(distance) > 0.01f ? 1 : 0;
+				}
+			NxU32 partCountA = 0;
+			NxU32 partCountB = 0;
+			success = nxTriangleMeshAssignParts(mesh, cutsA, mapA, queue, &partCountA) &&
+				nxTriangleMeshAssignParts(mesh, cutsB, mapB, queue, &partCountB);
+			if(success)
+				{
+				nxTriangleMeshFreeTyped(mesh->mArrayA);
+				nxTriangleMeshFreeTyped(mesh->mArrayB);
+				mesh->mArrayA = mapA;
+				mesh->mArrayB = mapB;
+				mesh->mPresenceFlagA = partCountA;
+				mesh->mPresenceFlagB = partCountB;
+				mapA = 0;
+				mapB = 0;
+				}
+			}
+		if(cutsA) nxFoundationSDKAllocator->free(cutsA);
+		if(cutsB) nxFoundationSDKAllocator->free(cutsB);
+		if(queue) nxFoundationSDKAllocator->free(queue);
+		if(mapA) nxFoundationSDKAllocator->free(mapA);
+		if(mapB) nxFoundationSDKAllocator->free(mapB);
+		if(mesh->mEdgeList)
+			{
+			mesh->mEdgeList->~EdgeList();
+			nxIceFree(mesh->mEdgeList);
+			mesh->mEdgeList = 0;
+			}
+		return success;
+		}
 	}
 
 // phys_fn_002251 (oracle RVA 0x00055490): initialize the TriangleMesh object
@@ -592,6 +742,9 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 	if(!nxInternalMeshBuildTopology(&mInternal))
 		return false;
 	nxInternalMeshBuildTriangleData(&mInternal);
+	if(!(mHullFlags & NX_MF_CONVEX) && mHeightFieldVerticalAxis == NX_NOT_HEIGHTFIELD &&
+		!nxTriangleMeshBuildPartMaps(this))
+		return false;
 	if(!buildModel())
 		return false;
 	if(source.pmap && !loadPMap(*source.pmap))

@@ -17,9 +17,11 @@
 #include <stdlib.h>
 
 void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+void __cdecl NxContactBoxMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 void __cdecl NxContactMeshMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 void __cdecl NxContactCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapPlaneMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
+bool __cdecl NxOverlapBoxMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 extern "C" bool __cdecl nxOverlapMeshMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 
@@ -91,6 +93,7 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[0][1][4] = (void*) NxContactSphereMesh;
 	mFunction[0][2][2] = (void*) NxContactBoxBox;
 	mFunction[0][2][3] = (void*) NxContactBoxCapsule;
+	mFunction[0][2][4] = (void*) NxContactBoxMesh;
 	mFunction[0][3][3] = (void*) NxContactCapsuleCapsule;
 	mFunction[0][3][4] = (void*) NxContactCapsuleMesh;
 	mFunction[0][4][4] = (void*) NxContactMeshMesh;
@@ -104,6 +107,7 @@ ShapePairFunctionTable::ShapePairFunctionTable()
 	mFunction[1][1][3] = (void*) NxOverlapSphereCapsule;
 	mFunction[1][2][2] = (void*) NxOverlapBoxBox;
 	mFunction[1][2][3] = (void*) NxOverlapBoxCapsule;
+	mFunction[1][2][4] = (void*) NxOverlapBoxMesh;
 	mFunction[1][3][3] = (void*) NxOverlapCapsuleCapsule;
 	mFunction[1][3][4] = (void*) NxOverlapCapsuleMesh;
 	mFunction[1][0][4] = (void*) NxOverlapPlaneMesh;
