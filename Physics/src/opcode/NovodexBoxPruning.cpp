@@ -1,5 +1,25 @@
 #include "Opcode.h"
 
+namespace
+	{
+RadixSort* gBipartiteSorter0 = 0;
+RadixSort* gBipartiteSorter1 = 0;
+RadixSort* gCompleteSorter = 0;
+	}
+
+// phys_fn_004828 tears down the three process-wide BoxPruning sorters from
+// PhysicsSDK's destructor while the NovodeX allocator bridge is still alive.
+void nxReleaseNovodexBoxPruningCaches004828()
+	{
+	RadixSort** const sorters[] = {
+		&gBipartiteSorter1, &gBipartiteSorter0, &gCompleteSorter};
+	for(unsigned i = 0; i < sizeof(sorters)/sizeof(sorters[0]); ++i)
+		{
+		delete *sorters[i];
+		*sorters[i] = 0;
+		}
+	}
+
 // phys_fn_004814 (0x000b4080): full sweep-and-prune across two pools. The
 // oracle runs the sorted A->B pass, followed by the remaining B->A pass; this
 // preserves its pair order, including equal-minimum boundary cases.
@@ -17,12 +37,10 @@ bool Opcode::BipartiteBoxPruning(udword count0, const AABB** boxes0,
 		minima0[i] = boxes0[i]->GetMin(axis0);
 	for(udword i = 0; i < count1; ++i)
 		minima1[i] = boxes1[i]->GetMin(axis0);
-	static RadixSort* sorter0 = 0;
-	static RadixSort* sorter1 = 0;
-	if(!sorter0) sorter0 = new RadixSort;
-	if(!sorter1) sorter1 = new RadixSort;
-	const udword* sorted0 = sorter0->Sort(minima0, count0).GetRanks();
-	const udword* sorted1 = sorter1->Sort(minima1, count1).GetRanks();
+	if(!gBipartiteSorter0) gBipartiteSorter0 = new RadixSort;
+	if(!gBipartiteSorter1) gBipartiteSorter1 = new RadixSort;
+	const udword* sorted0 = gBipartiteSorter0->Sort(minima0, count0).GetRanks();
+	const udword* sorted1 = gBipartiteSorter1->Sort(minima1, count1).GetRanks();
 	const udword* const last0 = sorted0 + count0;
 	const udword* const last1 = sorted1 + count1;
 	const udword* running0 = sorted0;
@@ -77,10 +95,9 @@ bool Opcode::CompleteBoxPruning(udword count, const AABB** boxes, Pairs& pairs,
 	minima[count] = MAX_FLOAT;
 	++count;
 
-	static RadixSort* sorter = 0;
-	if(!sorter)
-		sorter = new RadixSort;
-	const udword* sorted = sorter->Sort(minima, count).GetRanks();
+	if(!gCompleteSorter)
+		gCompleteSorter = new RadixSort;
+	const udword* sorted = gCompleteSorter->Sort(minima, count).GetRanks();
 	const udword* const last = sorted + count;
 	const udword* running = sorted;
 	while(running < last && sorted < last)

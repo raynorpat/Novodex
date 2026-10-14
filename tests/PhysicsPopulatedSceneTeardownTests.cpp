@@ -58,6 +58,13 @@ class TrackingAllocator : public NxUserAllocator
 		}
 
 	unsigned outstanding() const { return mOutstanding; }
+	unsigned liveAllocationsOfSize(size_t size) const
+		{
+		unsigned count = 0;
+		for(unsigned i = 0; i < mAllocationCount; ++i)
+			if(mPointers[i] && mSizes[i] == size) ++count;
+		return count;
+		}
 	size_t allocationSize(const void* memory) const
 		{
 		for(unsigned i = mAllocationCount; i > 0; --i)
@@ -464,22 +471,40 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned reportCallbacksBeforeRelease = teardownReport.calls;
 	unsigned char* reportInternal = *reinterpret_cast<unsigned char**>(
 		reinterpret_cast<unsigned char*>(reportScene) + 0x24);
+	unsigned char* const reportShapePairHash = reportInternal + 0x2c;
+	void* reportShapePairBuckets = *reinterpret_cast<void**>(reportShapePairHash + 0x08);
+	void* reportShapePairLinks = *reinterpret_cast<void**>(reportShapePairHash + 0x0c);
+	void* reportShapePairEntries = *reinterpret_cast<void**>(reportShapePairHash + 0x14);
+	const size_t reportShapePairBucketsBytes = allocator.allocationSize(reportShapePairBuckets);
+	const size_t reportShapePairLinksBytes = allocator.allocationSize(reportShapePairLinks);
+	const size_t reportShapePairEntriesBytes = allocator.allocationSize(reportShapePairEntries);
 	void* bufferedReportStorage = reportInternal
 		? *reinterpret_cast<void**>(reportInternal + 0x60c) : 0;
 	const size_t bufferedReportBytes = allocator.allocationSize(bufferedReportStorage);
+	if(!reportShapePairBucketsBytes || !reportShapePairLinksBytes || !reportShapePairEntriesBytes)
+		return nxFail("contact-report teardown did not retain its Scene shape-pair hash");
 	if(!bufferedReportStorage || !bufferedReportBytes)
 		return nxFail("contact-report teardown did not retain the buffered report allocation");
 	sdk->releaseScene(*reportScene);
 	const bool bufferedReportFreed =
 		allocator.allocationSize(bufferedReportStorage) == 0;
+	const bool reportShapePairBucketsFreed = allocator.allocationSize(reportShapePairBuckets) == 0;
+	const bool reportShapePairLinksFreed = allocator.allocationSize(reportShapePairLinks) == 0;
+	const bool reportShapePairEntriesFreed = allocator.allocationSize(reportShapePairEntries) == 0;
 	printf("teardown contact_report before_release=%u after_release=%u events=%08x\n",
 		reportCallbacksBeforeRelease, teardownReport.calls, teardownReport.events);
 	printf("teardown contact_report_buffer bytes=%u freed=%u\n",
 		static_cast<unsigned>(bufferedReportBytes), bufferedReportFreed ? 1u : 0u);
+	printf("teardown shape_pair_hash buckets=%u/%u links=%u/%u entries=%u/%u\n",
+		static_cast<unsigned>(reportShapePairBucketsBytes), reportShapePairBucketsFreed ? 1u : 0u,
+		static_cast<unsigned>(reportShapePairLinksBytes), reportShapePairLinksFreed ? 1u : 0u,
+		static_cast<unsigned>(reportShapePairEntriesBytes), reportShapePairEntriesFreed ? 1u : 0u);
 	if(teardownReport.calls == reportCallbacksBeforeRelease)
 		return nxFail("scene teardown did not deliver its pending contact report");
 	if(!bufferedReportFreed)
 		return nxFail("scene teardown did not free its buffered contact-report allocation");
+	if(!reportShapePairBucketsFreed || !reportShapePairLinksFreed || !reportShapePairEntriesFreed)
+		return nxFail("scene teardown did not free its shape-pair hash storage");
 
 	// Generate a queued trigger event and an active simulation root, then release
 	// the Scene while both backing vectors remain allocated at +0x5fc and +0x57c.
@@ -517,22 +542,38 @@ int wmain(int argc, wchar_t** argv)
 		reinterpret_cast<unsigned char*>(triggerScene) + 0x24);
 	void* triggerBuffer = triggerInternal ? *reinterpret_cast<void**>(triggerInternal + 0x5fc) : 0;
 	void* activeRootBuffer = triggerInternal ? *reinterpret_cast<void**>(triggerInternal + 0x57c) : 0;
+	void** previousTriggerPairs = triggerInternal
+		? *reinterpret_cast<void***>(triggerInternal + 0x5d4) : 0;
+	void** currentTriggerPairs = triggerInternal
+		? *reinterpret_cast<void***>(triggerInternal + 0x5d8) : 0;
+	void* previousTriggerPairBuffer = previousTriggerPairs ? previousTriggerPairs[0] : 0;
+	void* currentTriggerPairBuffer = currentTriggerPairs ? currentTriggerPairs[0] : 0;
 	const size_t triggerBufferBytes = allocator.allocationSize(triggerBuffer);
 	const size_t activeRootBufferBytes = allocator.allocationSize(activeRootBuffer);
+	const size_t previousTriggerPairBytes = allocator.allocationSize(previousTriggerPairBuffer);
+	const size_t currentTriggerPairBytes = allocator.allocationSize(currentTriggerPairBuffer);
 	if(!triggerBuffer || !triggerBufferBytes || !activeRootBuffer || !activeRootBufferBytes)
 		return nxFail("trigger teardown did not retain both Scene buffers");
+	if(!previousTriggerPairBytes || !currentTriggerPairBytes)
+		return nxFail("trigger teardown did not retain both trigger-pair arrays");
 	sdk->releaseScene(*triggerScene);
 	const bool triggerBufferFreed = allocator.allocationSize(triggerBuffer) == 0;
 	const bool activeRootBufferFreed = allocator.allocationSize(activeRootBuffer) == 0;
+	const bool previousTriggerPairsFreed = allocator.allocationSize(previousTriggerPairBuffer) == 0;
+	const bool currentTriggerPairsFreed = allocator.allocationSize(currentTriggerPairBuffer) == 0;
 	printf("teardown trigger_buffer bytes=%u freed=%u callbacks=%u\n",
 		static_cast<unsigned>(triggerBufferBytes), triggerBufferFreed ? 1u : 0u,
 		teardownTriggerReport.calls);
+	printf("teardown trigger_pair_arrays previous_bytes=%u previous_freed=%u current_bytes=%u current_freed=%u\n",
+		static_cast<unsigned>(previousTriggerPairBytes), previousTriggerPairsFreed ? 1u : 0u,
+		static_cast<unsigned>(currentTriggerPairBytes), currentTriggerPairsFreed ? 1u : 0u);
 	printf("teardown active_root_buffer bytes=%u freed=%u\n",
 		static_cast<unsigned>(activeRootBufferBytes), activeRootBufferFreed ? 1u : 0u);
 	if(!teardownTriggerReport.calls)
 		return nxFail("trigger teardown fixture did not deliver a trigger callback");
-	if(!triggerBufferFreed || !activeRootBufferFreed)
-		return nxFail("scene teardown did not free its trigger and active-root buffers");
+	if(!triggerBufferFreed || !activeRootBufferFreed ||
+		!previousTriggerPairsFreed || !currentTriggerPairsFreed)
+		return nxFail("scene teardown did not free all trigger and active-root buffers");
 
 
 	// Keep a registered joint alive until Scene destruction. phys_fn_000606
@@ -632,10 +673,19 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("SDK-owned scene wrapper allocation was not 40 bytes");
 	sdk->release();
 	const bool sdkOwnedSceneFreed = allocator.allocationSize(sdkOwnedScene) == 0;
+	const unsigned radixBufferLeaks = allocator.liveAllocationsOfSize(12);
+	const unsigned sdkReleaseOutstanding = allocator.outstanding();
 	printf("teardown sdk_owned_scene bytes=%u freed=%u\n",
 		static_cast<unsigned>(sdkOwnedSceneBytes), sdkOwnedSceneFreed ? 1u : 0u);
+	printf("teardown sdk_cache radix_sort_buffers bytes=12 remaining=%u\n",
+		radixBufferLeaks);
+	printf("teardown sdk_release outstanding=%u\n", sdkReleaseOutstanding);
 	if(!sdkOwnedSceneFreed)
 		return nxFail("PhysicsSDK destructor did not release a registered Scene");
+	if(radixBufferLeaks != 0)
+		return nxFail("PhysicsSDK destructor did not release cached radix-sort buffers");
+	if(sdkReleaseOutstanding != 0)
+		return nxFail("SDK teardown left tracked allocator blocks outstanding");
 
 	foundationSDK->release();
 	return nxReportPairIdentity(pairDirectory);

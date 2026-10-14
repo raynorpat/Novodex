@@ -85,6 +85,8 @@
 #include "Observable.h"
 #include "PhysicsSDK.h"
 
+extern "C" void __fastcall nxReleaseAllocatorFields004149(void* self);
+
 // The oracle's __FILE__ strings for the reports this file makes on their
 // behalf (.rdata 0x10106420 and 0x10104278).
 #define NX_SCENE_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp"
@@ -5213,6 +5215,19 @@ static void nxSceneDelete(void* self, int flags)
 	scene->at<void*>(0x5fc) = 0;
 	scene->at<void*>(0x600) = 0;
 	scene->at<void*>(0x604) = 0;
+	// phys_fn_002342 destroys the two embedded trigger-pair vectors rooted at
+	// Scene+0x5d4. Their begin pointers are the third word of the first header
+	// (+0x08) and the first word of the second header (+0x18).
+	unsigned char* const triggerPairs = scene->bytes() + 0x5d4;
+	const unsigned triggerPairBeginOffsets[] = {0x18, 0x08};
+	for(unsigned offset : triggerPairBeginOffsets)
+		{
+		void*& begin = *reinterpret_cast<void**>(triggerPairs + offset);
+		if(begin) nxFoundationSDKAllocator->free(begin);
+		*reinterpret_cast<void**>(triggerPairs + offset) = 0;
+		*reinterpret_cast<void**>(triggerPairs + offset + 4) = 0;
+		*reinterpret_cast<void**>(triggerPairs + offset + 8) = 0;
+		}
 	nxSceneEngineDestroyPruners(static_cast<unsigned char*>(self) + 0x624);
 	const unsigned objectArrayOffsets[] = {0x57c, 0x56c, 0x55c};
 	for(unsigned offset : objectArrayOffsets)
@@ -5234,6 +5249,7 @@ static void nxSceneDelete(void* self, int flags)
 	reinterpret_cast<NxScenePrunerCollection*>(scene->bytes() + 0x640)->~NxScenePrunerCollection();
 	nxSceneScratchDestroy(reinterpret_cast<NxPolygonScratch*>(scene->bytes()));
 #endif
+	nxReleaseAllocatorFields004149(scene->bytes() + 0x2c);
 	if(flags & 1)
 		nxFoundationSDKAllocator->free(self);
 	}

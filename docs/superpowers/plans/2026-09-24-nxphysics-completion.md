@@ -972,3 +972,8 @@ A row-only no-op at `SceneDumpSetting::print` is detected by the registered `NxP
 ### Continuation — actor owner-pair cleanup (`phys_fn_000521`, 2026-10-14)
 
 Reconstructed the Scene member helper that removes owner-pair records for an actor's root shape before deleting it. The direct staged fixture covers both root-present removal and no-root preservation. A no-op root branch is rejected (`candidate_exit=1`, `stdout_delta=4007`); byte-exact restoration matches the oracle. Phase 7 now records 332 closed / 228 deferred functions, with a fresh full gate passing at 1,980/1,980. The shared simulation fixture also advances the Phase 5/6 coverage floors. No public headers changed. See `docs/reconstruction/novodex-physics/evidence/phase7-actor-owner-pair-cleanup-000521.md`.
+
+
+### Continuation — SDK cache release (`phys_fn_000492`, 2026-10-14)
+
+Closed the seven-block teardown discrepancy by freeing Scene shape-pair hashes and trigger-pair vectors, releasing cached BoxPruning radix sorters, and validating the existing OPCODE pool cleanup. Each path is mutation-tested; the restored populated-scene differential is exact and reports zero outstanding allocator blocks. Fresh Phase 7 passes at 1,980/1,980 with the pinned oracle pair. `phys_fn_000492` and thunk `phys_fn_000494` remain open pending full destructor-row closure. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-cache-release-000492.md`.
