@@ -10872,3 +10872,11 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_000678`: an immediate-return mutation of `NxSceneInternal::overlapAABBTriangles()` removes the three hit triangles and two translated-mesh triangles (`stdout_delta=6`); restored output is exact and the full Phase 7 gate passes at 1,793/1,793. Selected-pruner traversal and broader edge/order behavior remain open. See [phase7-overlap-aabb-triangles-000678.md](phase7-overlap-aabb-triangles-000678.md).
 
 `phys_fn_000671`: an immediate-return mutation of `NxSceneInternal::cullShapes()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5459, stderr exact); restored output is exact. The fixture covers both one-plane half-spaces, caller-buffer output, and callbacks. See [phase7-cull-shapes-000671.md](phase7-cull-shapes-000671.md).
+
+`phys_fn_000680`: replacing `nxRaycastAnyBoundsLoop` with `return false` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=356, stderr exact); restored output is exact. See [phase7-raycast-any-bounds-000680.md](phase7-raycast-any-bounds-000680.md).
+
+`phys_fn_000682`: replacing `nxRaycastAllBoundsLoop` with `return 0` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=5106, stderr exact); restored output is exact. See [phase7-raycast-all-bounds-000682.md](phase7-raycast-all-bounds-000682.md).
+
+`phys_fn_000688`: replacing `nxRaycastClosestBoundsLoop` with an immediate return is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=396, stderr exact); restored output is exact. See [phase7-raycast-closest-bounds-000688.md](phase7-raycast-closest-bounds-000688.md).
+
+`phys_fn_000690`: an immediate-return mutation of `NxSceneInternal::raycastAnyBounds()` is rejected by `NxPhysicsSceneRaycastTests` (both exits 0, stdout_delta=2721, stderr exact); restored output is exact. See [phase7-raycast-any-bounds-public-000690.md](phase7-raycast-any-bounds-public-000690.md).
