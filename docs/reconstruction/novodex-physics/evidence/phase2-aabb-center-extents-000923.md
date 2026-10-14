@@ -1,0 +1,7 @@
+# AABB center/extents helper falsification — 2026-10-14
+
+`phys_fn_000923` is the oracle out-of-line implementation of `IceMaths::AABB::SetCenterExtents`. The reconstructed `BoxShape::nxBoxRebuildHull` calls the same inline body from `External/opcode/upstream/Opcode/Ice/IceAABB.h` to set the minimum and maximum around the zero center and box half-extents. The pinned oracle's box-hull path reaches the helper at `NxPhysics.dll+0x21451`.
+
+The staged baseline `NxPhysicsSceneRaycastTests` differential passes exactly (`stdout_delta=0`, both exits 0, stderr identical). In a fresh CMake archive build, changed only the inline minimum expression from `mMin = c - e` to `mMin = c`, reconfigured CMake to refresh the merged vendor tree, and rebuilt the DLL and test. The registered Phase 4 target rejects the mutation (`stdout_delta=126`, both exits 0, stderr identical). The source header was restored, CMake reconfigured, and the target rebuilt; the restored transcript is exact again (`stdout_delta=0`, both exits 0, stderr identical).
+
+A fresh full Phase 4 gate passes at 529/529 registered assertions. The passing Phase 4 gate discharges this shared Phase 2 row; Phase 2 now records 73 closed / 70 deferred rows. The immutable source header hash is `e90269be5e0647ea83ca1f4739748a41e9c2c27af5a3ecde6167eb4a611f4d23`; the main checkout header was never modified. Raw baseline, mutation, restored-control, build and gate transcripts are compressed under `evidence/raw/phase2-aabb-center-extents-000923-20261014/`.

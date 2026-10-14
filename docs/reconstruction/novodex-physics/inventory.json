@@ -17501,13 +17501,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "External/opcode/upstream/Opcode/Ice/IceAABB.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/381",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2958",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (box hull): 000973 (now reconstructed) calls this row at 0x10021451 in the image (112 oracle hits over the 18 staged targets, one per rebuild); the candidate's 000973 inlines the vendored IceAABB.h SetCenterExtents (same words), so the out-of-line candidate copy is not hit from there. Left discovered (vendored-correspondence rows; its other callers 002280/002296/002304/005143/005295/005317/005318 are not reproduced)."
+      "notes": "Scene-raycast Task 4 (box hull): 000973 (now reconstructed) calls this row at 0x10021451 in the image (112 oracle hits over the 18 staged targets, one per rebuild); the candidate's 000973 inlines the vendored IceAABB.h SetCenterExtents (same words), so the out-of-line candidate copy is not hit from there. Left discovered (vendored-correspondence rows; its other callers 002280/002296/002304/005143/005295/005317/005318 are not reproduced).",
+      "implementation": "External/opcode/upstream/Opcode/Ice/IceAABB.h",
+      "implementation_symbol": "IceMaths::AABB::SetCenterExtents (inlined)"
     },
     {
       "id": "phys_fn_000924",

@@ -116,6 +116,11 @@
       "name": "phase_gate",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 4 -RepoRoot <absolute repo root> -BuildRoot <absolute build root>",
       "result": "Fresh Win32 Release configure and full NxPhysics CMake build succeeded. NxPhysicsAssetTests and NxPhysicsThirdPartyTests passed against the pinned oracle; all seven phys_fn_002029 query fixtures matched return and output words exactly, with query digest 3416250d. NxPhysicsTriangleMeshApiTests and NxPhysicsPMapResolution80Tests staged-pair differentials passed with stdout_delta=0 and exact stderr. The Phase 4 gate evaluated 527 assertions against floor 527 and ended phase_gate=4 status=pass. The query-row accumulator mutation was separately caught (candidate mismatches=1); restored control returned zero. Transcript: build/scene-raycast-row700-red/phase4-pmap-query-gate.log; direct control and mutant: evidence/raw/phase3-pmap-sample-002029/."
+    },
+    {
+      "name": "aabb_center_extents_phase2_discharge_000923",
+      "command": "fresh Win32 Release archive build; run_differential.ps1 -Targets NxPhysicsSceneRaycastTests; run_phase_gate.ps1 -Phase 4",
+      "result": "The baseline NxPhysicsSceneRaycastTests differential is exact. Mutating only the inlined SetCenterExtents minimum calculation is caught at stdout_delta=126; restored output is exact. Fresh full Phase 4 passes at 529/529 assertions and discharges Phase 2 row phys_fn_000923. Evidence: evidence/phase2-aabb-center-extents-000923.md and its raw transcript directory."
     }
   ],
   "excluded_from_comparison": [
