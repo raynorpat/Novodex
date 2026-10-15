@@ -987,3 +987,8 @@ A staged fixture with a live triangle-mesh actor falsified the candidate's mesh-
 ### Continuation — SDK process-wide cache release order (`phys_fn_000492`, 2026-10-14)
 
 A staged actor-group-pair cache fixture caught that the candidate freed this global cache before its registered Scenes and meshes. Moving the reset after Scene, mesh, OPCODE-pool, and BoxPruning-cache teardown restores an exact differential. Fresh Phase 7 passes at 1,980/1,980. The destructor row and deleting thunk remain open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-cache-order-000492.md`.
+
+
+### Continuation — Scene pair refresh (`phys_fn_001976`, 2026-10-14)
+
+The registered simulation differential already exercises the reconstructed `nxSceneRefreshPairs` implementation across all three public broadphase selectors, separated and overlapping actors, dense and bounded pairs, plane contact, pair ordering, and coherent-pruner separation/rejoin. An entry-return mutation is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=4000`); restoring and rebuilding returns an exact differential. The Phase 7 row is now dynamically gated. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-pair-refresh-001976.md`.

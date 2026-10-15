@@ -36802,13 +36802,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/775",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5967",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "The oracle entry at RVA 0x0004c290 is the Scene pair-refresh path. Physics/src/ContactPairManager.cpp implements it as nxSceneRefreshPairs: it enumerates the static and selected-dynamic pruning pools, runs the configured broadphase algorithm, deduplicates candidates by shape IDs, and stamps persistent pair nodes for the current frame. The candidate map resolves the implementation symbol in ContactPairManager.obj.",
+      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests differential covers all three public broadphase selectors plus separated, static/static, overlapping, dense, bounded, plane-contact, pair-order, and coherent-pruner movement cases. An early-return mutation at nxSceneRefreshPairs is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4000, stderr_exact=False); restoring and rebuilding returns oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. See evidence/phase7-scene-pair-refresh-001976.md.",
+      "notes": "",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "nxSceneRefreshPairs",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneRefreshPairs@@YAXPAVNxSceneInternal@@@Z",
+        "address": "0x10018070",
+        "object": "ContactPairManager.obj"
+      }
     },
     {
       "id": "phys_fn_001977",

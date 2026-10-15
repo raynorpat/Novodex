@@ -11026,3 +11026,6 @@ Phase 7 continuation: phys_fn_000537 (x87 control-word save) is mutation-falsifi
 
 
 Phase 7 continuation: phys_fn_001639 (`nxIceIdentityPoses`) is mutation-falsified through the registered `NxPhysicsThirdPartyTests` oracle differential. Returning its uninitialized global block produces 7 mismatches in 127,828 pose-pair words and target exit 1; restored candidate reports zero mismatches. See `phase7-identity-poses-001639.md`.
+
+
+Phase 7 continuation: phys_fn_001976 (Scene pair refresh) is mutation-falsified through the registered NxPhysicsSimulationTests staged-pair differential. An entry-return mutant is rejected (candidate_exit=1, stdout_delta=4000); the restored candidate matches exactly. See phase7-scene-pair-refresh-001976.md.
