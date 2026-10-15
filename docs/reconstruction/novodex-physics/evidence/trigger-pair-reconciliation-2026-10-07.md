@@ -57,9 +57,12 @@ retains two current pairs. With the sphere/box slot null, it reports the same
 two stays and one leave through the missing-dispatcher branch. A retained old
 pair with an empty current list exercises both vector-growth paths: oracle and
 candidate each allocate one current-pair array and one event array, then
-produce one stay and one current pair. An empty previous/current pair-list
-case verifies the oracle's header swap and empty-list reset. Candidate state
-and allocator call counts match all five oracle cases exactly.
+produce one stay and one current pair. A partially filled current list then
+forces growth while retaining an existing pair: both sides copy that pair,
+append the retained old pair, allocate two arrays and free the replaced pair
+buffer once. An empty previous/current pair-list case verifies the oracle's
+header swap and empty-list reset. Candidate state and allocator call counts
+match all six oracle cases exactly.
 
 A temporary unconditional `return -1` in `nxSceneFindTriggerPair` is rejected:
 the overlap-true case reports four candidate events and four pairs, while the
