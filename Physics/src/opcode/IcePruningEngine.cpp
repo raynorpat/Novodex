@@ -7,15 +7,26 @@
 
 /*
 The Scene's pruning engine (the object at Scene+0x624): its add and remove
-(scene-raycast block, Task 3), its pruner factory for the two types shapes use,
-and what Scene.cpp and SceneRaycast.cpp reach without OPCODE types. The
-pruners are IcePruner.cpp.
+(scene-raycast block, Task 3), its pruner factory for types 0-2, and what
+Scene.cpp and SceneRaycast.cpp reach without OPCODE types. The pruners are
+IcePruner.cpp.
 
 	0x000b5180	AddObject
 	0x000b5260	RemoveObject
 
-NOT RECONSTRUCTED. The factory (0x000b5090) builds four types; shapes use types
-0 and 2 only, and only those two are built here. Not claimed.
+PARTIAL. The oracle factory (0x000b5090) builds four types. Types 0-2 are
+implemented here; type 3 allocates 0xa0 bytes and calls phys_fn_005448
+(0x000ef670). That constructor first constructs StaticPruner, installs the
+type-3 vtable at .rdata:0x0011bb98, then constructs a Container at +0x90.
+Its vtable has the inherited pool add/remove and buffer methods, a type-3
+UpdateObject, and query wrappers that run phys_fn_005452 (0x000ef6d0) before
+delegating to the static-pruner query routines. The helper conditionally
+builds the tree and dispatches an internal callback using the pool counts.
+The type-3 destructor also releases the trailing Container. The type-3
+UpdateObject row is already reconstructed in ObjectModel.cpp; the type-3
+factory arm, cache refresh/query wrappers, and destructor remain open.
+Shapes in the current fixtures select types 0 and 2, so existing scene tests
+do not exercise it; returning null for type 3 remains an acknowledged gap.
 
 Runs at API time under 0x027f like IcePruner.cpp; default architecture.
 */
