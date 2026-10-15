@@ -29,6 +29,18 @@
     "restored-differential.log": {
       "bytes": 10931,
       "sha256": "d46d2de4323c56eb40a9e58e346ab3a5e73650956a7b0ec5ce8188e8bbb2e799"
+    },
+    "phase3-gate.log.gz": {
+      "bytes": 89089,
+      "sha256": "b16fc1b151b923a874d28293cb459b78f764d6ad7a753d208c3eec6bea0c77db"
+    },
+    "phase5-gate.log.gz": {
+      "bytes": 205637,
+      "sha256": "25b2b5ee1507598f83605f60053d85451c0f8fc5a12338a7f6c0ae82610cc476"
+    },
+    "phase7-gate.log.gz": {
+      "bytes": 367148,
+      "sha256": "9b3ab2743f159f3d9bd0980ec7582018750f79f7fc226bdb71da0a1a2a1b7f65"
     }
   },
   "mutant_result": {
@@ -40,5 +52,20 @@
     "failure": "PhysicsSDK scalar deleting destructor did not free storage for flag one",
     "exit": 1
   },
-  "schema_version": 1
+  "schema_version": 1,
+  "phase3_gate": {
+    "floor": 974,
+    "status": "pass",
+    "coverage_assertions": 974
+  },
+  "phase5_gate": {
+    "floor": 2737,
+    "status": "pass",
+    "coverage_assertions": 2737
+  },
+  "phase7_gate": {
+    "floor": 2867,
+    "status": "pass",
+    "coverage_assertions": 2867
+  }
 }
