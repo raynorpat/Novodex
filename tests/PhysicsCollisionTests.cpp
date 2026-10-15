@@ -3459,6 +3459,48 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 	allocator.free(candidatePrevious->begin);
 	allocator.free(oracleMissingEvents);
 	allocator.free(candidateMissingEvents);
+
+	// Empty buffers still swap their headers and leave both lists empty.
+	memset(oracleScene, 0, sizeof(oracleScene));
+	auto initialiseEmpty = [](NxU8* scene)
+		{
+		NxTriggerPairTestList* previous =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5dc);
+		NxTriggerPairTestList* current =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5ec);
+		memset(previous, 0, sizeof(*previous));
+		memset(current, 0, sizeof(*current));
+		*(NxTriggerPairTestList**) (scene + 0x5d4) = previous;
+		*(NxTriggerPairTestList**) (scene + 0x5d8) = current;
+		*(NxTriggerPairTestEvent**) (scene + 0x5fc) = nullptr;
+		*(NxTriggerPairTestEvent**) (scene + 0x600) = nullptr;
+		*(NxTriggerPairTestEvent**) (scene + 0x604) = nullptr;
+		};
+	initialiseEmpty(oracleScene);
+	initialiseEmpty(candidateScene.bytes());
+	oracle(oracleMatrix, oracleScene);
+	nxSceneProcessTriggerPairs(&candidateScene);
+	const bool oracleEmptyState =
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d4) ==
+			reinterpret_cast<NxTriggerPairTestList*>(oracleScene + 0x5ec) &&
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d8) ==
+			reinterpret_cast<NxTriggerPairTestList*>(oracleScene + 0x5dc) &&
+		!((NxTriggerPairTestList*) (oracleScene + 0x5ec))->begin &&
+		!((NxTriggerPairTestList*) (oracleScene + 0x5dc))->begin &&
+		!*(NxTriggerPairTestEvent**) (oracleScene + 0x5fc);
+	const bool candidateEmptyState =
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d4) ==
+			reinterpret_cast<NxTriggerPairTestList*>(candidateScene.bytes() + 0x5ec) &&
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d8) ==
+			reinterpret_cast<NxTriggerPairTestList*>(candidateScene.bytes() + 0x5dc) &&
+		!((NxTriggerPairTestList*) (candidateScene.bytes() + 0x5ec))->begin &&
+		!((NxTriggerPairTestList*) (candidateScene.bytes() + 0x5dc))->begin &&
+		!*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x5fc);
+	const unsigned emptyMismatches = oracleEmptyState && candidateEmptyState ? 0u : 1u;
+	mismatches += emptyMismatches;
+	printf("collision trigger-pair-empty oracle_swapped=%u candidate_swapped=%u mismatches=%u\n",
+		oracleEmptyState, candidateEmptyState, emptyMismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=empty_lists_swap\n");
 	nxTriggerPairTestOverlapResult = true;
 	NxSetCollisionDispatchMatrix(savedDispatch);
 	oracleSetAllocator(savedOracleSdk);

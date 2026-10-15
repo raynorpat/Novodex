@@ -54,8 +54,9 @@ current entries to the same prior entry, then rechecks the unmatched duplicate
 and appends it as a third stay (`oracle_events=3`, `oracle_pairs=3`). With the
 slot populated but returning false, it emits two stays and one leave and
 retains two current pairs. With the sphere/box slot null, it reports the same
-two stays and one leave through the missing-dispatcher branch. Candidate state
-matches all three oracle cases exactly.
+two stays and one leave through the missing-dispatcher branch. An empty
+previous/current pair-list case also verifies the oracle's header swap and
+empty-list reset. Candidate state matches all four oracle cases exactly.
 
 A temporary unconditional `return -1` in `nxSceneFindTriggerPair` is rejected:
 the overlap-true case reports four candidate events and four pairs, while the
@@ -72,7 +73,7 @@ The current staged gates pass: Phase 5 at 2,264/2,264 assertions, Phase 6 at
 `build/phase6-compound-trigger.log`, and `build/phase7-compound-trigger.log`).
 These results establish the tested lifecycle, hash collisions exercised by the
 batch, per-shape compound lifecycle, sleeping-overlap retention, and observed
-event-mask behavior. The row remains discovered because duplicate identical
-pairs, unsupported overlap slots, and broader allocation/list edge cases still
-need oracle-backed fixtures and formal mutation falsification. Public Physics
-headers were not changed.
+event-mask behavior. The row remains discovered because other unsupported
+overlap slots and broader allocation/list edge cases still need oracle-backed
+fixtures and formal mutation falsification. Public Physics headers were not
+changed.
