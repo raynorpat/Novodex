@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 259,
+    "differential_falsified": 260,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 84,
     "deferred_not_reconstructed_in_phase": 124,
-    "deferred_reconstructed_not_falsified": 92
+    "deferred_reconstructed_not_falsified": 91
   },
   "closed": [
     {
@@ -3696,18 +3696,19 @@
         "mutation": "In a source mutation, replaced NxFilterShapePair with an unconditional true return, rebuilt NxPhysicsCollisionTests, and ran the direct oracle-address comparison. The seven cases then disagreed in three: disabled group-mask records 3 and 4 and enabled owner-pair record 1. The Phase 7 gate requires the exact matrix contact_filter checks=7 wrong=0 marker, so the mutant transcript loses that registered assertion.",
         "detected": "mismatches=3"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000531",
       "rva": "0x00010600",
-      "size": 97,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "In Physics/src/Scene.cpp, replaced nxSceneAddShape with a no-op, rebuilt NxPhysics.dll, and ran the registered actor-shape mutation staged-pair differential. Oracle and candidate both exited 0, but the transcript differed by 142 lines. Restoring the source and rebuilding returned an exact transcript.",
+        "detected": "stdout_delta=142"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000535",
       "rva": "0x000106a0",

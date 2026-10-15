@@ -505,3 +505,6 @@ Nulling only 000527's first actor-handle assignment changes objects=0.1 to objec
 
 
 Phase 7 row packet: `phys_fn_000529` (`NxFilterShapePair`) is reconstructed and mutation-falsified. Registered `NxPhysicsCollisionTests` as a Phase 7 oracle differential and raised the Phase 7 coverage floor by its 350 required assertions. An unconditional-allow source mutation produced three wrong filter cases out of seven; the restored source rebuild produced `matrix contact_filter checks=7 wrong=0`. Evidence: `phase7-shape-pair-filter-000529.md`.
+
+
+Phase 7 row packet: `phys_fn_000531` (`nxSceneAddShape`) is mutation-falsified. Added `NxPhysicsActorShapeMutationTests` to the Phase 7 staged-pair set and increased its coverage floor by 287 recorded assertions. A no-op mutation yields stdout_delta=142; the restored control is exact. Evidence: `phase7-scene-add-shape-000531.md`. The broad simulation target was also checked and did not reach this row, so it is not used as proof.
