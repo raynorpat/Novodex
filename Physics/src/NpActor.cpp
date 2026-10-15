@@ -622,12 +622,12 @@ static NxReal __fastcall nxCapsuleHandleGetHeight(void* self, void*)
 	return height;
 	}
 
-static bool nxCapsuleHandleWriteTry(void* writeLock)
+static bool nxCapsuleHandleWriteTry(void* writeLock, int line)
 	{
 	if(nxNpSceneGuardWriteTry(writeLock)) return true;
 	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
 		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpCapsuleShape.cpp",
-		0x34, 0,
+		line, 0,
 		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 	return false;
 	}
@@ -642,19 +642,36 @@ static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
 
 static void __fastcall nxCapsuleHandleSetRadius(void* self, void*, NxReal radius)
 	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxCapsuleHandleWriteTry(writeLock, 0x2b)) return;
 	// NpCapsuleShape::setRadius calls the internal shape's slot 14 (000995)
 	// through its table (call [edx+0x38] at 0x10023bd5).
 	unsigned char* shape = nxBoxHandleInternal(self);
 	void** table = *reinterpret_cast<void***>(shape);
 	typedef void (__thiscall* SetRadiusFn)(void*, NxReal);
 	reinterpret_cast<SetRadiusFn>(table[14])(shape, radius);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+static NxReal __fastcall nxCapsuleHandleGetRadius(void* self, void*)
+	{
+	void* readLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x14);
+	nxNpSceneGuardEnter(readLock);
+	unsigned char* shape = nxBoxHandleInternal(self);
+	void** table = *reinterpret_cast<void***>(shape);
+	typedef NxReal (__thiscall* GetRadiusFn)(void*);
+	const NxReal radius = reinterpret_cast<GetRadiusFn>(table[15])(shape);
+	nxNpSceneGuardLeave(readLock);
+	return radius;
 	}
 
 static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height)
 	{
 	void* writeLock = *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(self) + 0x10);
-	if(!nxCapsuleHandleWriteTry(writeLock)) return;
+	if(!nxCapsuleHandleWriteTry(writeLock, 0x34)) return;
 	static_cast<CapsuleShape*>(static_cast<void*>(
 		nxBoxHandleInternal(self)))->nxCapsuleSetHeight(height);
 	nxNpSceneGuardLeave(writeLock);
@@ -833,7 +850,7 @@ void* nxShapePublicVtable(unsigned type)
 			slots[1][33] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[2][31] = reinterpret_cast<void*>(&nxCapsuleHandleSetDimensions);
 			slots[2][32] = reinterpret_cast<void*>(&nxCapsuleHandleSetRadius);
-			slots[2][33] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
+			slots[2][33] = reinterpret_cast<void*>(&nxCapsuleHandleGetRadius);
 			slots[2][34] = reinterpret_cast<void*>(&nxCapsuleHandleSetHeight);
 			slots[2][35] = reinterpret_cast<void*>(&nxCapsuleHandleGetHeight);
 			slots[2][36] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);

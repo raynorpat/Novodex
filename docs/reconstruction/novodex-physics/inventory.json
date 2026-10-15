@@ -21034,13 +21034,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/450",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3229",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "Acquires write link [self+0x10]; failed try-lock reports NXE_INVALID_OPERATION from NpCapsuleShape.cpp line 43 and returns. Success calls internal slot 14 on [self+0x18] and releases the link.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests checks the held-lock report and unchanged public/internal radius; bypassing the reporting try-lock was rejected with stdout_delta=629. See evidence/phase3-capsule-public-radius-locks-001115-001119.md.",
+      "notes": "Capsule vtable slot 32 dispatches nxCapsuleHandleSetRadius; candidate linker map resolves it at RVA 0x35fc0.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxCapsuleHandleSetRadius",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxCapsuleHandleSetRadius@@YIXPAX0M@Z",
+        "address": "0x10036fc0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001116",
@@ -21114,13 +21122,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "lock-bracketed vtable call, float result (0x23c50)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/547",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3235",
-      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, float result (0x23c50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the vtcall pair differential (3z164): result and the recorded slot target failures=0 for both rows, with the Foundation lock API bound and each vtable slot pointed at a recorder",
-      "notes": ""
+      "static_proof": "Acquires read link [self+0x14], calls internal slot 15 on [self+0x18], releases the link, and returns the scalar.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests checks the radius result and read-lock release with a simulated foreign owner; removing the read-lock bracket was rejected with stdout_delta=2. See evidence/phase3-capsule-public-radius-locks-001115-001119.md.",
+      "notes": "Capsule vtable slot 33 dispatches nxCapsuleHandleGetRadius; candidate linker map resolves it at RVA 0x35ed0.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxCapsuleHandleGetRadius",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxCapsuleHandleGetRadius@@YIMPAX0@Z",
+        "address": "0x10036ed0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001120",

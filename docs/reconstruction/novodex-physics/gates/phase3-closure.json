@@ -53,9 +53,9 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 37,
+    "differential_falsified": 39,
     "oracle_differential_falsified": 44,
-    "deferred_not_reconstructed_in_phase": 205,
+    "deferred_not_reconstructed_in_phase": 203,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 5
   },
@@ -256,6 +256,21 @@
       "note": "Phase 5 exercises the box secondary deleting destructor, including the member-only negative control."
     },
     {
+      "id": "phys_fn_001115",
+      "rva": "0x00023b90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Bypassed only the capsule radius setter reporting try-lock; the public radius changed while the oracle reported line 43.",
+        "detected": "stdout_delta=629"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "The Phase 5 public capsule radius fixture exercises the wrapper and compares the restored output exactly. See evidence/phase3-capsule-public-radius-locks-001115-001119.md."
+    },
+    {
       "id": "phys_fn_001117",
       "rva": "0x00023bf0",
       "proof": "differential_falsified",
@@ -269,6 +284,21 @@
         5
       ],
       "note": "The registered Phase 5 actor setter differential exercises the public capsule height wrapper; restored oracle/candidate control is exact. See evidence/phase3-capsule-public-height-locks-001117-001121.md."
+    },
+    {
+      "id": "phys_fn_001119",
+      "rva": "0x00023c50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Removed only the public capsule radius getter read-lock bracket; the differential observed the simulated lock left held.",
+        "detected": "stdout_delta=2"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "The Phase 5 public capsule radius fixture exercises the wrapper and compares the restored output exactly. See evidence/phase3-capsule-public-radius-locks-001115-001119.md."
     },
     {
       "id": "phys_fn_001121",
@@ -1496,22 +1526,6 @@
       "size": 89,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001115",
-      "rva": "0x00023b90",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001119",
-      "rva": "0x00023c50",
-      "size": 42,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
     {
