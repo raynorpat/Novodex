@@ -10209,12 +10209,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NarrowPhase.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/195",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1433",
       "static_proof": "Reconstructed from the pinned Capstone listing: test flag 0x10, collision group masks, then owner-pair record bit; seven oracle-vs-candidate filter cases exercise the branches.",
-      "dynamic_proof": "Seven direct filter cases, including enabled/disabled group pairs and owner-pair hash records, match exactly; see evidence/convex-mesh-gap-2m-run.txt. Pinned NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; candidate NxPhysicsCollisionTests.exe SHA-256 EBF7014FBD8642FA913DBC0FD14C8EC663640F7DE244E50FEE29C4595982145B.",
+      "dynamic_proof": "The seven direct candidate/oracle filter cases match exactly in the restored build. A whole-body unconditional-allow mutation disagreed in three cases: group-mask records 3 and 4, and owner-pair record 1; the Phase 7 NxPhysicsCollisionTests oracle differential requires the exact checks=7 wrong=0 coverage line. See evidence/phase7-shape-pair-filter-000529.md.",
       "notes": ""
     },
     {

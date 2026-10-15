@@ -502,3 +502,6 @@ The registered Phase 7 pair-flag test exercises actor and shape pairs. Clearing 
 ### M7.12 — Pair-flag handle translation (phys_fn_000527)
 
 Nulling only 000527's first actor-handle assignment changes objects=0.1 to objects=255.1 and is rejected by the registered Phase 7 pair-flag differential (stdout_delta=2). The restored candidate matches exactly. Row 000525's shape-index setup is independently closed. Phase 7 moves to 343 closed / 217 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-pair-flag-translation-000527.md.
+
+
+Phase 7 row packet: `phys_fn_000529` (`NxFilterShapePair`) is reconstructed and mutation-falsified. Registered `NxPhysicsCollisionTests` as a Phase 7 oracle differential and raised the Phase 7 coverage floor by its 350 required assertions. An unconditional-allow source mutation produced three wrong filter cases out of seven; the restored source rebuild produced `matrix contact_filter checks=7 wrong=0`. Evidence: `phase7-shape-pair-filter-000529.md`.

@@ -11011,3 +11011,6 @@ Phase 7 continuation: phys_fn_000525 (pair-flag shape-ID index) is mutation-fals
 
 
 Phase 7 continuation: phys_fn_000527 (pair-flag handle translation) is mutation-falsified through NxPhysicsPairFlagTests. Nulling the first actor-handle output changes objects=0.1 to objects=255.1 and is rejected (stdout_delta=2); the restored pair matches exactly. Its preceding shape-index row 000525 is independently closed. See phase7-scene-pair-flag-translation-000527.md.
+
+
+Phase 7 continuation: phys_fn_000529 (shape-pair filter) is mutation-falsified through the direct oracle-address comparison in NxPhysicsCollisionTests, now registered for Phase 7. An unconditional-allow mutant disagreed in three of seven cases (disabled group-mask cases 3 and 4 and owner-pair case 1); the exact `checks=7 wrong=0` coverage marker makes the Phase 7 gate fail. The restored control reports all seven correct. See phase7-shape-pair-filter-000529.md.

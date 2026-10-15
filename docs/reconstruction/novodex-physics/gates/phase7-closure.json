@@ -6,7 +6,7 @@
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through the registered Phase 7 staged-pair gate named on the row. The mutation is to the row's behavior, and the measured non-zero transcript delta identifies its detection. The direct flushStream mutation is tested by NxPhysicsSimulationTests and measured as stdout_delta=554 with candidate_exit=1.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. phys_fn_000604 is the Phase 7 static-proof case: NxPhysicsInternalTests detects a no-op body-record reset before joint teardown.",
-    "oracle_differential_falsified": "a row-specific mutation was rebuilt in the candidate wrapper and caught by the pinned-oracle NxPhysicsFluidEmitterAbiTests probe registered to this phase; mismatches is the measured nonzero probe count, and the restored control matched all six aggregate-return values and x86 call conventions. The same registered probe also supports row-specific scene/fluid caller mutations when the measured detector is a direct callback/state mismatch count."
+    "oracle_differential_falsified": "a row-specific mutation was rebuilt in the candidate wrapper and caught by the pinned-oracle NxPhysicsFluidEmitterAbiTests probe registered to this phase; mismatches is the measured nonzero probe count, and the restored control matched all six aggregate-return values and x86 call conventions. The same registered probe also supports row-specific scene/fluid caller mutations when the measured detector is a direct callback/state mismatch count. Direct-call oracle targets use the same proof kind when they compare a reconstructed implementation with the pinned oracle at the recorded row."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
@@ -22,8 +22,8 @@
   "counts": {
     "differential_falsified": 259,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 83,
-    "deferred_not_reconstructed_in_phase": 125,
+    "oracle_differential_falsified": 84,
+    "deferred_not_reconstructed_in_phase": 124,
     "deferred_reconstructed_not_falsified": 92
   },
   "closed": [
@@ -3686,17 +3686,19 @@
         "detected": "stdout_delta=15"
       },
       "note": "Restored candidate and pinned oracle report exact populated teardown output (both exit 0, stdout_delta=0, exact stderr). The fixture covers Scene-before-mesh ordering, Scene/cache/array release, and zero SDK allocator blocks. Candidate destructor symbol `??1PhysicsSDK@@UAE@XZ` is at RVA 0x00053f50. See evidence/phase7-sdk-destructor-000492.md and evidence/raw/phase7-sdk-destructor-000492-20261014/."
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000529",
       "rva": "0x00010570",
-      "size": 134,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "In a source mutation, replaced NxFilterShapePair with an unconditional true return, rebuilt NxPhysicsCollisionTests, and ran the direct oracle-address comparison. The seven cases then disagreed in three: disabled group-mask records 3 and 4 and enabled owner-pair record 1. The Phase 7 gate requires the exact matrix contact_filter checks=7 wrong=0 marker, so the mutant transcript loses that registered assertion.",
+        "detected": "mismatches=3"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000531",
       "rva": "0x00010600",
