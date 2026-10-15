@@ -31,6 +31,19 @@ public:
 	NxUserAllocator* allocator;
 };
 
+struct NxType3TestOwner
+{
+	float worldBounds[6];
+	unsigned updateCalls;
+};
+
+static void __cdecl nxType3UpdateWorldAabb(void* owner, AABB* bounds)
+{
+	NxType3TestOwner* const testOwner = static_cast<NxType3TestOwner*>(owner);
+	memcpy(bounds, testOwner->worldBounds, sizeof(testOwner->worldBounds));
+	++testOwner->updateCalls;
+}
+
 // Compare the private factory product and the moved-leaf AABB query with the
 // pinned image. The oracle is passed in by the collision harness after its
 // SHA-256 check; candidate implementation symbols are linked into that image.
@@ -63,17 +76,27 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 
 	NxU8 oracleObjects[2][0x2c] = {};
 	Prunable candidateObjects[2];
+	NxType3TestOwner oracleOwners[2] = {};
+	NxType3TestOwner candidateOwners[2] = {};
 	typedef void (__thiscall* OracleCtorFn)(void*);
 	const OracleCtorFn oraclePrunableCtor =
 		reinterpret_cast<OracleCtorFn>(base + 0x000b54a0);
 	for(unsigned i = 0; i != 2; ++i)
 		{
 		oraclePrunableCtor(oracleObjects[i]);
+		*reinterpret_cast<void**>(oracleObjects[i] + 4) = &oracleOwners[i];
 		*reinterpret_cast<NxU32*>(oracleObjects[i] + 8) = PRUNABLE_FLAG_WORLD_AABB_VALID;
 		*reinterpret_cast<NxU32*>(oracleObjects[i] + 0x24) = 0xffffffffu;
+		candidateObjects[i].mOwner = &candidateOwners[i];
 		candidateObjects[i].mFlags = PRUNABLE_FLAG_WORLD_AABB_VALID;
 		candidateObjects[i].mPrunable24 = 0xffffffffu;
 		}
+	void (* const savedCandidateOwnerAabb)(void*, AABB*) = gPrunableOwnerWorldAABB;
+	void (** const oracleOwnerAabbSlot)(void*, AABB*) =
+		reinterpret_cast<void (**)(void*, AABB*)>(base + 0x00128478);
+	void (* const savedOracleOwnerAabb)(void*, AABB*) = *oracleOwnerAabbSlot;
+	gPrunableOwnerWorldAABB = nxType3UpdateWorldAabb;
+	*oracleOwnerAabbSlot = nxType3UpdateWorldAabb;
 
 	typedef bool (__thiscall* AddObjectFn)(void*, void*);
 	typedef bool (__thiscall* RemoveObjectFn)(void*, void*);
@@ -122,19 +145,19 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	if(oracleInitial != candidateInitial || oracleOutput.count != 0 || candidateOutput.count != 0)
 		++mismatches;
 
-	for(unsigned side = 0; side != 2; ++side)
-		{
-		void* const pruner = side ? static_cast<void*>(candidatePruner) : oraclePruner;
-		unsigned char* const object = side ?
-			static_cast<unsigned char*>(static_cast<void*>(&candidateObjects[0])) : oracleObjects[0];
-		float* const poolBoxes = *reinterpret_cast<float**>(
-			static_cast<unsigned char*>(pruner) + 0x14);
-		const unsigned handle = *reinterpret_cast<NxU16*>(object + 0x28);
-		if(poolBoxes && handle < 2)
-			memcpy(poolBoxes + handle * 6, query, sizeof(query));
-		else
-			++mismatches;
-		}
+	memcpy(oracleOwners[0].worldBounds, query, sizeof(query));
+	memcpy(candidateOwners[0].worldBounds, query, sizeof(query));
+	*reinterpret_cast<NxU32*>(oracleObjects[0] + 8) &= ~PRUNABLE_FLAG_WORLD_AABB_VALID;
+	candidateObjects[0].mFlags &= ~PRUNABLE_FLAG_WORLD_AABB_VALID;
+	typedef bool (__thiscall* UpdateObjectFn)(void*, void*);
+	const UpdateObjectFn oracleUpdate = reinterpret_cast<UpdateObjectFn>(oracleVtable[3]);
+	const bool oracleUpdated = oracleUpdate(oraclePruner, oracleObjects[0]);
+	const bool candidateUpdated = candidatePruner->UpdateObject(&candidateObjects[0]);
+	if(!oracleUpdated || !candidateUpdated || oracleOwners[0].updateCalls != 1 ||
+		candidateOwners[0].updateCalls != 1 ||
+		!(*reinterpret_cast<NxU32*>(oracleObjects[0] + 8) & PRUNABLE_FLAG_WORLD_AABB_VALID) ||
+		!(candidateObjects[0].mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+		++mismatches;
 	oracleOutput.count = 0;
 	candidateOutput.count = 0;
 	const bool oracleMoved = oracleQuery(oraclePruner,
@@ -154,6 +177,8 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	printf("collision type3_pruner refit objects=2 oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
 		oracleFound ? 1u : 0u, candidateFound ? 1u : 0u, oracleHits, candidateHits, mismatches);
 	printf("collision coverage name=type3_pruner case=tree_refit_moved_leaf\n");
+	printf("collision coverage name=type3_pruner case=update_object_refresh_invalid_world_box oracle_calls=%u candidate_calls=%u\n",
+		oracleOwners[0].updateCalls, candidateOwners[0].updateCalls);
 
 	for(unsigned i = 0; i != 2; ++i)
 		{
@@ -174,6 +199,8 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		typedef void* (__thiscall* DeleteFn)(void*, unsigned);
 		reinterpret_cast<DeleteFn>(table[0])(oracleObjects[i], 0);
 		}
+	*oracleOwnerAabbSlot = savedOracleOwnerAabb;
+	gPrunableOwnerWorldAABB = savedCandidateOwnerAabb;
 	oracleSetAllocator(savedOracleSdk);
 	nxSetSdkAllocatorBridge(savedCandidateSdk);
 	nxFoundationSDKAllocator = savedFoundationAllocator;
