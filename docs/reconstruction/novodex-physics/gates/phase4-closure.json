@@ -55,9 +55,9 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 748,
-    "deferred_not_reconstructed_in_phase": 177,
+    "deferred_not_reconstructed_in_phase": 176,
     "deferred_vendored_not_falsified": 90,
-    "differential_falsified": 9,
+    "differential_falsified": 10,
     "oracle_differential_falsified": 29
   },
   "closed": [
@@ -452,6 +452,17 @@
         "detected": "stdout_delta=2"
       },
       "note": "The restored candidate matches the oracle generation-tagged handle reuse and timestamps exactly (static=00010002.00000001, dynamic=00010003.00000001; stdout_delta=0). The marker is required in Phases 4, 5 and 7; all three pass at 533/533, 2740/2740 and 2871/2871. Evidence: evidence/phase4-pruner-destructor-005537.md and evidence/raw/phase4-pruner-destructor-005537-20261015/."
+    },
+    {
+      "id": "phys_fn_005442",
+      "rva": "0x000ef3d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Inserted an unconditional return of handle 0 at entry to NxPrunerProcessPool::add, rebuilt NxPhysics, and ran the registered staged-pair Scene raycast test. The oracle observed static=00000000.00000006 and dynamic=00000001.00000004; the candidate returned zero for both registrations and failed the assertion (oracle_exit=0, candidate_exit=1).",
+        "detected": "stdout_delta=2794"
+      },
+      "note": "Restored source was touched to force recompilation; the focused restored differential is exact (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True). Evidence: evidence/phase4-pruner-add-005442.md."
     }
   ],
   "deferred": [
@@ -8054,14 +8065,6 @@
       "size": 152,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005442",
-      "rva": "0x000ef3d0",
-      "size": 485,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
       "driving_phases": []
     },
     {

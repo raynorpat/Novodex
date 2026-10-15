@@ -498,3 +498,8 @@ The `Pruner::Pruner` row `phys_fn_005531` is independently mutation-falsified th
 ## 21. 2026-10-15 Pruner destructor registry row
 
 The `Pruner::~Pruner` row `phys_fn_005537` is independently mutation-falsified through `NxPhysicsSceneRaycastTests`. After a scene with static and dynamic pruners is released, the next scene must reuse those registry slots with the incremented generation words: static `00010002.00000001`, dynamic `00010003.00000001`. Omitting only `nxPrunerUnregister(mRegistration)` leaves the old handles occupied; the candidate allocates handles `00000004` and `00000005` and fails (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2`). The restored actual DLL matches the pinned oracle exactly. Full Phase 4/5/7 gates and raw transcripts are in [phase4-pruner-destructor-005537.md](phase4-pruner-destructor-005537.md).
+
+
+## 22. 2026-10-15 Pruner process-pool add
+
+`NxPrunerProcessPool::add` (`phys_fn_005442`, RVA `0x000ef3d0`) is mutation-falsified through the registered actual-DLL `NxPhysicsSceneRaycastTests` target. Returning handle 0 at entry changes the dynamic registration from `00000001.00000004` to `00000000.00000004`, failing the candidate assertion (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2794`). Restored source was force-recompiled and the staged pair returned exact (`stdout_delta=0`, exact stderr). See [phase4-pruner-add-005442.md](phase4-pruner-add-005442.md).

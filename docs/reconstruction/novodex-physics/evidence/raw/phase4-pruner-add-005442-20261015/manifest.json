@@ -1,0 +1,58 @@
+{
+  "purpose": "Actual-DLL mutation proof for NxPrunerProcessPool::add (phys_fn_005442), with restored Scene control and the user-approved date/time assertion differential.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "5014cf2a223b424922bfe6946bf2ebdff2ad86209a2eef0ec89f446c9be9dfd",
+  "mutation_candidate_sha256": "f5f417f692da776a89afda7131a858ae43a70bc85751ef5b6c5cd11e728b6850",
+  "mutation_result": "Inserted an unconditional return of handle 0 at NxPrunerProcessPool::add entry. Oracle reported static=00000000.00000006 and dynamic=00000001.00000004; mutant candidate reported static=00000000.00000006 and dynamic=00000000.00000004 and failed the assertion (oracle_exit=0, candidate_exit=1, stdout_delta=2794).",
+  "restored_result": "NxPhysicsSceneRaycastTests exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
+  "approved_datetime_result": "NxPhysicsCoreDumpTests exact after validating weekday, month, day, year, time and meridiem before normalization: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
+  "source_sha256": "4324b4bf7e1d40f81d29e46a66c2be9b5363285fb5f79b00d08532955040da10",
+  "logs": {
+    "mutation-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "ab8ffc110cf6ebcc80ad55631798edfbdf51d52dad3ac1268b2a26bb6d9a5f76",
+      "compressed_bytes": 19529,
+      "uncompressed_bytes": 404271
+    },
+    "restored-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "restored-differential.log.gz": {
+      "sha256": "b4d20fa2c5465bad85e7a76996b65ddc31e0db23ea93730ab7aacc41f8db54fb",
+      "compressed_bytes": 36585,
+      "uncompressed_bytes": 799602
+    },
+    "approved-datetime-differential.log.gz": {
+      "sha256": "acb59e03015c649e48e7cbcebd8bdafd8fadbb7974d6684758a7ff552add9b44",
+      "compressed_bytes": 41174,
+      "uncompressed_bytes": 386916
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "7e3ff21fd6776a890ebfdff89b18241ba8c96b8f708443b360c34bc88fcffbf5",
+      "compressed_bytes": 74897,
+      "uncompressed_bytes": 1114726
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "bf1e1ebbb229ee123bda8a9f0c30850a529736140eb5106e91282cffc00266cf",
+      "compressed_bytes": 204921,
+      "uncompressed_bytes": 2792510
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "b5de9d2ecb94c38b1575ff263dfb9c8a58d82edc3153411b4c6ce2a9a8d7ebdf",
+      "compressed_bytes": 368038,
+      "uncompressed_bytes": 4570379
+    }
+  },
+  "phase_gates": {
+    "4": "pass, coverage_assertions_evaluated=533 floor=533",
+    "5": "pass, coverage_assertions_evaluated=2740 floor=2740",
+    "7": "pass, coverage_assertions_evaluated=2871 floor=2871"
+  }
+}

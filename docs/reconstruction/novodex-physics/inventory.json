@@ -101817,13 +101817,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PrunerRegistration.cpp",
+      "implementation": "Physics/src/PrunerRegistration.cpp",
+      "implementation_symbol": "NxPrunerProcessPool::add",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2083",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18839",
       "static_proof": "reached: phys_fn_004830 calls it at 0x000b4cf9. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
-      "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
+      "dynamic_proof": "NxPhysicsSceneRaycastTests observes the type-0 and dynamic Pruner registration words through actual DLL-owned objects and requires static=00000000.00000006 and dynamic=00000001.00000004. An entry-return mutation of NxPrunerProcessPool::add returns handle 0 for both registrations; the candidate fails the existing registered assertion (oracle_exit=0, candidate_exit=1, stdout_delta=2794). Restored candidate exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase4-pruner-add-005442.md.",
+      "notes": "Adds a registration to the process pool, maintaining dense object slots and generation-tagged handles; the existing registered actual-DLL static/dynamic handle assertion mutation-falsifies its return and state updates. Capacity growth and allocation failure remain open."
     },
     {
       "id": "phys_fn_005443",

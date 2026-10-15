@@ -82,9 +82,9 @@
       "gate_artifact": "gates/phase4.json",
       "owned_functions": 1137,
       "owned_data_objects": 2813,
-      "closed_functions": 38,
+      "closed_functions": 39,
       "closed_data_objects": 0,
-      "remaining_functions": 1099,
+      "remaining_functions": 1098,
       "remaining_data_objects": 2813
     },
     {
