@@ -959,13 +959,13 @@
    "ambiguous_rows": [],
    "rows": {
     "discovered": 11,
-    "dynamically_gated": 3,
-    "reconstructed": 5
+    "dynamically_gated": 4,
+    "reconstructed": 4
    },
    "bytes": {
     "discovered": 839,
-    "dynamically_gated": 257,
-    "reconstructed": 312
+    "dynamically_gated": 349,
+    "reconstructed": 220
    },
    "phases": {
     "3": 19

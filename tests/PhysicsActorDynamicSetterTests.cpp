@@ -814,6 +814,20 @@ int wmain(int argc, wchar_t** argv)
 				printf("setter capsule_locked_height=%x.%x.%u\n",
 					bits(capsule->getHeight()), word(familyShape, 0xe4),
 					errors.reports - reportsBeforeLockedHeight);
+				const unsigned reportsBeforeLockedMaterial = errors.reports;
+				const unsigned savedMaterialFlag = writeState[0];
+				const unsigned savedMaterialOwner = writeState[1];
+				writeState[0] = 1;
+				writeState[1] = 0;
+				errors.enabled = true;
+				capsule->setMaterial(7);
+				errors.enabled = false;
+				writeState[0] = savedMaterialFlag;
+				writeState[1] = savedMaterialOwner;
+				printf("setter capsule_locked_material=%x.%x.%u\n",
+					static_cast<unsigned>(capsule->getMaterial()),
+					*reinterpret_cast<const unsigned short*>(familyShape + 0xda),
+					errors.reports - reportsBeforeLockedMaterial);
 				unsigned char* readLink = *reinterpret_cast<unsigned char**>(publicBytes + 0x14);
 				unsigned* readState = reinterpret_cast<unsigned*>(
 					*reinterpret_cast<unsigned char**>(readLink) + 0x18);

@@ -20962,13 +20962,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/448",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3223",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "Acquires write link [self+0x10]; failed try-lock reports NXE_INVALID_OPERATION from NpCapsuleShape.cpp line 16 and returns. Success calls internal slot 13 on [self+0x18] and releases the link.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests checks the held-lock report and unchanged public/internal material index; bypassing the reporting try-lock was rejected with stdout_delta=629. See evidence/phase3-capsule-public-material-lock-001111.md.",
+      "notes": "Capsule public shape slot 25 dispatches nxCapsuleHandleSetMaterial; candidate linker map resolves it at RVA 0x36010.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxCapsuleHandleSetMaterial",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxCapsuleHandleSetMaterial@@YIXPAX0G@Z",
+        "address": "0x10037010",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001112",

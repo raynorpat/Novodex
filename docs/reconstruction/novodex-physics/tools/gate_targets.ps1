@@ -1360,6 +1360,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'momentum static_energy=0'
     )
     'NxPhysicsActorDynamicSetterTests' = @(
+        'setter report=2.10.\Epic\Novodex\SDKs\Physics\src\NpCapsuleShape.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!',
+        'setter capsule_locked_material=0.0.1',
         'setter report=2.22.\Epic\Novodex\SDKs\Physics\src\NpCapsuleShape.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!',
         'setter capsule_locked_dimensions=3f400000.40000000.3f400000.3f800000.1',
         'setter report=2.2b.\Epic\Novodex\SDKs\Physics\src\NpCapsuleShape.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!',
@@ -1401,7 +1403,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # delivers. Static, kinematic and invalid-argument calls report E1 with the row's
         # line and message; with the write lock held by "another thread" every guarded
         # row reports G1 with its own line. Copied from the oracle side, duplicates once.
-        'setter error_actors=1.1.1.3',
+        'setter error_actors=1.1.1.4',
         'setter report=1.d2.\Epic\Novodex\SDKs\Physics\src\NpActor.cpp.Actor::setLinearDamping: Actor must be dynamic!',
         'setter error_static_linear_damping=1',
         'setter report=1.d1.\Epic\Novodex\SDKs\Physics\src\NpActor.cpp.Actor::setLinearDamping: The linear damping must be nonnegative!',
@@ -6105,7 +6107,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2755  # adds capsule radius, height, and dimensions lock-state differentials
+	'5' = 2757  # adds capsule material and geometry lock-state differentials
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
 	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target

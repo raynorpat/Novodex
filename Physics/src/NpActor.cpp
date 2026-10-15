@@ -667,6 +667,19 @@ static NxReal __fastcall nxCapsuleHandleGetRadius(void* self, void*)
 	return radius;
 	}
 
+static void __fastcall nxCapsuleHandleSetMaterial(void* self, void*,
+	NxMaterialIndex material)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxCapsuleHandleWriteTry(writeLock, 0x10)) return;
+	unsigned char* shape = nxBoxHandleInternal(self);
+	void** table = *reinterpret_cast<void***>(shape);
+	typedef void (__thiscall* SetMaterialFn)(void*, NxMaterialIndex);
+	reinterpret_cast<SetMaterialFn>(table[13])(shape, material);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
 static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height)
 	{
 	void* writeLock = *reinterpret_cast<void**>(
@@ -853,6 +866,7 @@ void* nxShapePublicVtable(unsigned type)
 			slots[1][32] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
 			slots[1][33] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[2][31] = reinterpret_cast<void*>(&nxCapsuleHandleSetDimensions);
+			slots[2][25] = reinterpret_cast<void*>(&nxCapsuleHandleSetMaterial);
 			slots[2][32] = reinterpret_cast<void*>(&nxCapsuleHandleSetRadius);
 			slots[2][33] = reinterpret_cast<void*>(&nxCapsuleHandleGetRadius);
 			slots[2][34] = reinterpret_cast<void*>(&nxCapsuleHandleSetHeight);

@@ -53,9 +53,9 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 40,
+    "differential_falsified": 41,
     "oracle_differential_falsified": 44,
-    "deferred_not_reconstructed_in_phase": 202,
+    "deferred_not_reconstructed_in_phase": 201,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 5
   },
@@ -254,6 +254,21 @@
         5
       ],
       "note": "Phase 5 exercises the box secondary deleting destructor, including the member-only negative control."
+    },
+    {
+      "id": "phys_fn_001111",
+      "rva": "0x00023ad0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Suppressed the reporting try-lock in the public capsule material setter while retaining the failed lock and unchanged material index.",
+        "detected": "stdout_delta=629"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "The Phase 5 public capsule material fixture checks the line-16 lock report and unchanged material; the restored differential is exact. See evidence/phase3-capsule-public-material-lock-001111.md."
     },
     {
       "id": "phys_fn_001113",
@@ -1523,14 +1538,6 @@
       "id": "phys_fn_001109",
       "rva": "0x00023a90",
       "size": 50,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001111",
-      "rva": "0x00023ad0",
-      "size": 92,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
