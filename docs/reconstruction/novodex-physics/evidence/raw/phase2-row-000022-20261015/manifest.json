@@ -1,0 +1,78 @@
+{
+  "purpose": "Oracle-backed mutation proof for JointActorBody::row000022 (phys_fn_000022) in NxPhysicsJointSupportTests.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "fixture_source_sha256_normalized": "74bd383805ab9c00b527a14ca9e43aa4ef334df1dffd9b5eb1c81511b21c0814",
+  "restored_result": "oracle and linked candidate pose/callback digests equal fb92701dd0eedd48; target and null-target cases exact.",
+  "mutation_result": "Removed the slot6(arg) dispatch. Target-present case differs by two words, total mismatches=2; target-absent control remains exact. Restored source and rebuilt candidate match.",
+  "phase_gates": {
+    "6": "pass, coverage_assertions_evaluated=1665 floor=1665",
+    "7": "pass, coverage_assertions_evaluated=2877 floor=2877",
+    "3": "pass, coverage_assertions_evaluated=983 floor=983",
+    "2": "pass, coverage_assertions_evaluated=14 floor=14"
+  },
+  "oracle_proof": "The existing kind-5 solver oracle digest and input digest remain unchanged; only the pinned normalized fixture-source hash was updated.",
+  "files": {
+    "phase6-gate.log.gz": {
+      "sha256": "fd77483f40700444468be588251de83d170151e5dc73782dce1151e31313c981",
+      "compressed_bytes": 251601,
+      "uncompressed_sha256": "191db01a075d4ca2971b130a2b5e9cf19a937093e4176f96276415d839f564d9",
+      "uncompressed_bytes": 3094777
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "a306dbea6fa0c1abcd3477ab4897d713b6387447601113857bae4970c50cccda",
+      "compressed_bytes": 368830,
+      "uncompressed_sha256": "8c708afd4d6b927d1a6e2b92a1c58cdc586ac2bed1b0f25f97da4e487804345d",
+      "uncompressed_bytes": 4590297
+    },
+    "mutation-build.log.gz": {
+      "sha256": "835cc275ac39e976d7b27255d73bb428a1e3007296aad6a281f4acb2c683be66",
+      "compressed_bytes": 208,
+      "uncompressed_sha256": "5e3532ce11109a5354d96c8e50bd4b9c793985cb7a7b53c4e277083f1c7f3105",
+      "uncompressed_bytes": 252
+    },
+    "mutation.log.gz": {
+      "sha256": "01e41cedab7aa21d2c33793582e227de5fdce5a14f1c49b1f1ff5569378f323a",
+      "compressed_bytes": 623,
+      "uncompressed_sha256": "d44b7e474c05f121ce0606e765711ed10084ddacdaf71fbe4b1e35d3b3668a53",
+      "uncompressed_bytes": 1817
+    },
+    "restored-build.log.gz": {
+      "sha256": "835cc275ac39e976d7b27255d73bb428a1e3007296aad6a281f4acb2c683be66",
+      "compressed_bytes": 208,
+      "uncompressed_sha256": "5e3532ce11109a5354d96c8e50bd4b9c793985cb7a7b53c4e277083f1c7f3105",
+      "uncompressed_bytes": 252
+    },
+    "restored.log.gz": {
+      "sha256": "595704a2b93829c78d85765c080e18460be98de99a80b6ea733c9ccbb852b358",
+      "compressed_bytes": 611,
+      "uncompressed_sha256": "feff162e7a1f4dddc890e83d2adb68aaa6f10821a00f1fc65f9ac9a61918c5a7",
+      "uncompressed_bytes": 1817
+    },
+    "oracle-proof-transcript.log.gz": {
+      "sha256": "595704a2b93829c78d85765c080e18460be98de99a80b6ea733c9ccbb852b358",
+      "compressed_bytes": 611,
+      "uncompressed_sha256": "feff162e7a1f4dddc890e83d2adb68aaa6f10821a00f1fc65f9ac9a61918c5a7",
+      "uncompressed_bytes": 1817
+    },
+    "phase3-gate.log.gz": {
+      "sha256": "f238d2d07649c53c05ea6e9db0bc2fe5290b8a189100f2cd9b67141ffbf3c95b",
+      "compressed_bytes": 90247,
+      "uncompressed_sha256": "a0b82c3589c0a03002de669643f33ea4eb8403d090a5abfd0978e66a2f1842fd",
+      "uncompressed_bytes": 832513
+    },
+    "oracle-proof.json.gz": {
+      "sha256": "03e31b205347beaf0bcb4c1008389f18938bfd578da91025afe314d05a0af888",
+      "compressed_bytes": 435,
+      "uncompressed_sha256": "ce990ca21236f1fd43f3e0929ef964c4d0bba5b839e01e89131793af33be0b9e",
+      "uncompressed_bytes": 728
+    },
+    "phase2-gate.log.gz": {
+      "sha256": "5e37522843665686d3751867b252e29045a3ea36f1c4f164dd912bf9a0dafd7f",
+      "compressed_bytes": 5746,
+      "uncompressed_sha256": "8166eabdade78cdb59245dfd814b2be90987f1b72f11fb6cbf84c030004e1064",
+      "uncompressed_bytes": 53508
+    }
+  },
+  "discharged_by_phase": 3
+}

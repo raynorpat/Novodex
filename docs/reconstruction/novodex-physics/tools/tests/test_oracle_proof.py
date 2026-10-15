@@ -649,8 +649,8 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
         for target, expected in manifest["targets"].items():
             phases = [phase for phase, targets in phase_targets.items() if target in targets]
             if target == "NxPhysicsJointSupportTests":
-                self.assertEqual(phases, ["6", "7"],
-                    "the shared joint-support oracle differential closes Phase 6 and remains in Phase 7")
+                self.assertEqual(phases, ["3", "6", "7"],
+                    "the shared joint-support oracle differential discharges Phase 2 in Phase 3 and remains in Phases 6-7")
             elif target == "NxPhysicsObjectLayoutTests":
                 self.assertEqual(phases, ["5", "6", "7"],
                     "the object-layout oracle differential is shared by Phases 5-7")

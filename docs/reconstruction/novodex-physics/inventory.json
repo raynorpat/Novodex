@@ -505,13 +505,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/12",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/41",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 14 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
-      "notes": "Its first callee phys_fn_000754 was a deferred NX_ASSERT(0) stub until joint-open-items Task 6 wrote it. The projection rows 004207, 004298 and 004356 reach this row whenever they move a body (14 times in the Task 6 trace).",
+      "dynamic_proof": "differential_falsified",
+      "notes": "Its first callee phys_fn_000754 was a deferred NX_ASSERT(0) stub until joint-open-items Task 6 wrote it. The projection rows 004207, 004298 and 004356 reach this row whenever they move a body (14 times in the Task 6 trace). Direct oracle-RVA/linked-candidate fixture checks the pose update and slot-6 callback for target-present and null-target bodies. Removing the callback is caught (mismatches=2); restored digests match. See evidence/phase2-row-000022.md.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {

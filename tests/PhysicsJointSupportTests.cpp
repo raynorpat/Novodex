@@ -432,6 +432,101 @@ static int nxRunIslandObjectTeardown(unsigned char* oracleBase)
 	return 0;
 	}
 
+struct Row000022Capture : Row000022Target
+	{
+	Row000022Capture(): calls(0), arg(0) {}
+	virtual void slot0() {}
+	virtual void slot1() {}
+	virtual void slot2() {}
+	virtual void slot3() {}
+	virtual void slot4() {}
+	virtual void slot5() {}
+	virtual void slot6(NxU32 value) { ++calls; arg = value; }
+	unsigned calls;
+	NxU32 arg;
+	};
+
+struct Row000022Body
+	{
+	unsigned char prefix[8];
+	unsigned char* record;
+	unsigned char gap[4];
+	Row000022Target* target;
+	};
+
+typedef void (__thiscall *Row000022Fn)(void*, NxU32);
+
+static void nxInitRow000022(Row000022Body& body, unsigned char (&record)[0x170],
+	Row000022Capture* target)
+	{
+	memset(&body, 0, sizeof(body));
+	memset(record, 0, sizeof(record));
+	body.record = record;
+	body.target = target;
+	NxReal* mass = reinterpret_cast<NxReal*>(record + 0xdc);
+	NxReal* local = reinterpret_cast<NxReal*>(record + 0x100);
+	NxReal* rotation = reinterpret_cast<NxReal*>(record + 0x134);
+	NxReal* center = reinterpret_cast<NxReal*>(record + 0x158);
+	mass[0] = mass[4] = mass[8] = 1.0f;
+	rotation[0] = rotation[4] = rotation[8] = 1.0f;
+	local[0] = 0.25f; local[1] = -0.5f; local[2] = 1.0f;
+	center[0] = 1.0f; center[1] = 2.0f; center[2] = 3.0f;
+	}
+
+static unsigned nxRunRow000022Case(unsigned char* oracleBase, bool withTarget,
+	unsigned long long& oracleDigest, unsigned long long& candidateDigest)
+	{
+	const NxU32 arg = 0x13579bdfu;
+	unsigned char oracleRecord[0x170], candidateRecord[0x170];
+	Row000022Body oracleBody, candidateBody;
+	Row000022Capture oracleTarget, candidateTarget;
+	nxInitRow000022(oracleBody, oracleRecord, withTarget ? &oracleTarget : 0);
+	nxInitRow000022(candidateBody, candidateRecord, withTarget ? &candidateTarget : 0);
+	reinterpret_cast<Row000022Fn>(oracleBase + 0x00001840)(&oracleBody, arg);
+	reinterpret_cast<Row000022Fixture*>(&candidateBody)->row000022(arg);
+	const NxReal* op = reinterpret_cast<const NxReal*>(oracleRecord + 0x18);
+	const NxReal* cp = reinterpret_cast<const NxReal*>(candidateRecord + 0x18);
+	const unsigned ow[] = {nxFloatBits(op[0]), nxFloatBits(op[1]), nxFloatBits(op[2]),
+		nxFloatBits(op[3]), nxFloatBits(op[4]), nxFloatBits(op[5]), nxFloatBits(op[6]),
+		oracleTarget.calls, oracleTarget.arg};
+	const unsigned cw[] = {nxFloatBits(cp[0]), nxFloatBits(cp[1]), nxFloatBits(cp[2]),
+		nxFloatBits(cp[3]), nxFloatBits(cp[4]), nxFloatBits(cp[5]), nxFloatBits(cp[6]),
+		candidateTarget.calls, candidateTarget.arg};
+	unsigned mismatches = 0;
+	for(unsigned i = 0; i != sizeof(ow) / sizeof(ow[0]); ++i)
+		{
+		oracleDigest = nxFold(oracleDigest, ow[i]);
+		candidateDigest = nxFold(candidateDigest, cw[i]);
+		mismatches += ow[i] != cw[i];
+		}
+	const unsigned expectedCalls = withTarget ? 1u : 0u;
+	const bool expectedPose = nxFloatBits(op[0]) == nxFloatBits(0.75f)
+		&& nxFloatBits(op[1]) == nxFloatBits(2.5f) && nxFloatBits(op[2]) == nxFloatBits(2.0f)
+		&& nxFloatBits(op[3]) == 0 && nxFloatBits(op[4]) == 0
+		&& nxFloatBits(op[5]) == 0 && nxFloatBits(op[6]) == nxFloatBits(1.0f);
+	const bool expectedTarget = oracleTarget.calls == expectedCalls
+		&& (!withTarget || oracleTarget.arg == arg);
+	if(!expectedPose || !expectedTarget)
+		++mismatches;
+	printf("joint_support row000022 target=%u pose=%08x.%08x.%08x quat=%08x.%08x.%08x.%08x calls=%u arg=%08x mismatches=%u\n",
+		withTarget ? 1u : 0u, nxFloatBits(op[0]), nxFloatBits(op[1]), nxFloatBits(op[2]),
+		nxFloatBits(op[3]), nxFloatBits(op[4]), nxFloatBits(op[5]), nxFloatBits(op[6]),
+		oracleTarget.calls, oracleTarget.arg, mismatches);
+	return mismatches;
+	}
+
+static unsigned nxRunRow000022(unsigned char* oracleBase)
+	{
+	unsigned long long oracleDigest = 14695981039346656037ull;
+	unsigned long long candidateDigest = 14695981039346656037ull;
+	unsigned mismatches = nxRunRow000022Case(oracleBase, true, oracleDigest, candidateDigest);
+	mismatches += nxRunRow000022Case(oracleBase, false, oracleDigest, candidateDigest);
+	printf("joint_support row000022 cases=2 oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest, candidateDigest, mismatches);
+	printf("joint_support coverage name=row000022 pose_update=2 target_slot6=1 null_target=1\n");
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -503,7 +598,8 @@ int wmain(int argc, wchar_t** argv)
 	int islandStatus = nxRunIslandObjectTeardown(base);
 	if(islandStatus)
 		return islandStatus;
+	unsigned row000022Mismatches = nxRunRow000022(base);
 	if(nxReportPairIdentity(pairDirectory))
 		return 1;
-	return (mismatches || impulseMismatches) ? 1 : 0;
+	return (mismatches || impulseMismatches || row000022Mismatches) ? 1 : 0;
 	}
