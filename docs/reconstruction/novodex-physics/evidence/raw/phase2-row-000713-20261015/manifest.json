@@ -1,0 +1,75 @@
+{
+  "purpose": "Phase 2 row phys_fn_000713 discharged by the Phase 3 direct oracle/candidate root-chain differential.",
+  "date": "2026-10-15",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "fixture_source": "tests/PhysicsJointSupportTests.cpp",
+  "fixture_source_sha256_normalized": "ae90869f9eb2123e05f1fe80d8d61307bc036a018fc5d0387c3cabda21bd58f7",
+  "implementation_source": "Physics/src/core/JointSupport.cpp",
+  "mutation_proof": "Returning this without resolving/compressing the +0x1e8 parent chain is caught across self-root, one-link and two-link chains (mismatches=3). Restored linked candidate and oracle digest both equal 729c7b9811e2dcf5.",
+  "phase3_gate": "pass, coverage_assertions_evaluated=984 floor=984",
+  "phase2_disposition": "closed; discharged_by_phase=3",
+  "files": {
+    "direct-control.log.gz": {
+      "sha256": "aeca6f1c920b274ead7da4a97d4113b2ddd844a439291d0d7f3e0a7e05e92658",
+      "compressed_bytes": 1425,
+      "uncompressed_sha256": "67fd34bf5de0e412151713bc0c6da7240500b7b3b51f21e213dbeef6695fac90",
+      "uncompressed_bytes": 6981
+    },
+    "mutant-build.log.gz": {
+      "sha256": "835cc275ac39e976d7b27255d73bb428a1e3007296aad6a281f4acb2c683be66",
+      "compressed_bytes": 208,
+      "uncompressed_sha256": "5e3532ce11109a5354d96c8e50bd4b9c793985cb7a7b53c4e277083f1c7f3105",
+      "uncompressed_bytes": 252
+    },
+    "mutant-differential.log.gz": {
+      "sha256": "92e45b0175ee1e316bc3f2f902726731c0642b561a950e0dc972634961e581ab",
+      "compressed_bytes": 1608,
+      "uncompressed_sha256": "df653d6c1808b8d55cdedf61abb44f35260bbeea6aa0a338439c0c99a558381a",
+      "uncompressed_bytes": 7527
+    },
+    "restored-build.log.gz": {
+      "sha256": "835cc275ac39e976d7b27255d73bb428a1e3007296aad6a281f4acb2c683be66",
+      "compressed_bytes": 208,
+      "uncompressed_sha256": "5e3532ce11109a5354d96c8e50bd4b9c793985cb7a7b53c4e277083f1c7f3105",
+      "uncompressed_bytes": 252
+    },
+    "restored-differential.log.gz": {
+      "sha256": "2649372dddf2a51915359550fd13e1ecd6555b4d978dc41fcb2bdfe75c50ec8e",
+      "compressed_bytes": 1425,
+      "uncompressed_sha256": "f1b910c596a42f70872e818d6ee5e2c9952695950045af57e2daca0d2c6b29b3",
+      "uncompressed_bytes": 6979
+    },
+    "phase3-gate.log.gz": {
+      "sha256": "c1eb2cf1639c94efb3cf205b08b8051e5f8751295a97d685aeacbc4482735692",
+      "compressed_bytes": 90284,
+      "uncompressed_sha256": "01e3c5c0e3d0f10b4f2d5cfccd4075a956350ce40cc63d42f139c66d14c56abf",
+      "uncompressed_bytes": 832736
+    },
+    "oracle-proof-transcript.log.gz": {
+      "sha256": "b06e4c75decd4b990ac9e54dc0b3546dce8fc53288b07345f7f8d16a4d381598",
+      "compressed_bytes": 636,
+      "uncompressed_sha256": "457fdf0a34059f5ce6b2d373574c0e15210094ec6ea56ea5b03838b0d4dc2a13",
+      "uncompressed_bytes": 1914
+    },
+    "oracle-proof.json.gz": {
+      "sha256": "790811c77bfe25247e7ac4d6c0c29f0425c9af2f5d8b4c8948ea5d5faad93f2d",
+      "compressed_bytes": 435,
+      "uncompressed_sha256": "0f581a8b7f3e35e5394eab2dce22d8daf377e1ed564fc83573df6bb8ea77dd27",
+      "uncompressed_bytes": 728
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "4ad1c8af2bbff30fb9c939dea15d35b9ba347300e3b9e37b951770f8ad27ac5e",
+      "compressed_bytes": 251617,
+      "uncompressed_sha256": "87fe13a1f08f7be53f47d2af5567bb19dd9251053feb0b454cf07820dbfdc0c7",
+      "uncompressed_bytes": 3095000
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "eaf11f28a38a4fef2205848c7ac6f0b3683e9c6f0ba5e9c1802e3d106e917812",
+      "compressed_bytes": 369056,
+      "uncompressed_sha256": "b67a44ad6230855cfcd60c47e5ed46e58091f8167758107871f3a041753fcba0",
+      "uncompressed_bytes": 4591950
+    }
+  },
+  "phase6_gate": "pass, coverage_assertions_evaluated=1666 floor=1666",
+  "phase7_gate": "pass, coverage_assertions_evaluated=2878 floor=2878"
+}

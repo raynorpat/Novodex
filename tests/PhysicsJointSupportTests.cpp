@@ -27,8 +27,55 @@ static const unsigned kOracleSolverWrapperRva = 0x0009b240;
 static const unsigned kOracleIterationsRva = 0x0012718c;
 static const unsigned kOracleStepCounterRva = 0x00127184;
 static const unsigned short kSimulateControl = 0x0f7f;
+static const unsigned long kOracleRow000713Rva = 0x00015d50;
 
 typedef int (__thiscall *OracleSolveFn)(void*, NxReal);
+typedef void* (__thiscall *OracleRootFn)(void*);
+static unsigned long long nxFold(unsigned long long state, unsigned value);
+
+static unsigned nxRootIndex(void* root, unsigned char records[3][0x1ec])
+	{
+	for(unsigned i = 0; i != 3; ++i)
+		if(root == records[i])
+			return i;
+	return 3;
+	}
+
+static unsigned nxRunRow000713Case(unsigned char* oracleBase,
+	const unsigned links[3], unsigned long long& oracleDigest,
+	unsigned long long& candidateDigest)
+	{
+	unsigned char oracleRecords[3][0x1ec] = {};
+	unsigned char candidateRecords[3][0x1ec] = {};
+	for(unsigned i = 0; i != 3; ++i)
+		{
+		void* oracleParent = oracleRecords[links[i]];
+		void* candidateParent = candidateRecords[links[i]];
+		memcpy(oracleRecords[i] + 0x1e8, &oracleParent, sizeof(oracleParent));
+		memcpy(candidateRecords[i] + 0x1e8, &candidateParent, sizeof(candidateParent));
+		}
+	void* oracleRoot = reinterpret_cast<OracleRootFn>(oracleBase + kOracleRow000713Rva)(oracleRecords[0]);
+	void* candidateRoot = reinterpret_cast<Row000713Fixture*>(candidateRecords[0])->row000713();
+	unsigned mismatches = 0;
+	const unsigned oracleResult = nxRootIndex(oracleRoot, oracleRecords);
+	const unsigned candidateResult = nxRootIndex(candidateRoot, candidateRecords);
+	oracleDigest = nxFold(oracleDigest, oracleResult);
+	candidateDigest = nxFold(candidateDigest, candidateResult);
+	mismatches += oracleResult != candidateResult;
+	for(unsigned i = 0; i != 3; ++i)
+		{
+		void* oracleCache = 0;
+		void* candidateCache = 0;
+		memcpy(&oracleCache, oracleRecords[i] + 0x1e8, sizeof(void*));
+		memcpy(&candidateCache, candidateRecords[i] + 0x1e8, sizeof(void*));
+		const unsigned oracleIndex = nxRootIndex(oracleCache, oracleRecords);
+		const unsigned candidateIndex = nxRootIndex(candidateCache, candidateRecords);
+		oracleDigest = nxFold(oracleDigest, oracleIndex);
+		candidateDigest = nxFold(candidateDigest, candidateIndex);
+		mismatches += oracleIndex != candidateIndex;
+		}
+	return mismatches;
+	}
 
 class JointCapture
 	{
@@ -527,6 +574,19 @@ static unsigned nxRunRow000022(unsigned char* oracleBase)
 	return mismatches;
 	}
 
+static unsigned nxRunRow000713(unsigned char* oracleBase)
+	{
+	const unsigned links[][3] = {{0, 1, 2}, {1, 1, 2}, {1, 2, 2}};
+	unsigned long long oracleDigest = 14695981039346656037ull;
+	unsigned long long candidateDigest = 14695981039346656037ull;
+	unsigned mismatches = 0;
+	for(unsigned i = 0; i != sizeof(links) / sizeof(links[0]); ++i)
+		mismatches += nxRunRow000713Case(oracleBase, links[i], oracleDigest, candidateDigest);
+	printf("joint_support row000713 cases=3 oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest, candidateDigest, mismatches);
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -599,7 +659,8 @@ int wmain(int argc, wchar_t** argv)
 	if(islandStatus)
 		return islandStatus;
 	unsigned row000022Mismatches = nxRunRow000022(base);
+	unsigned row000713Mismatches = nxRunRow000713(base);
 	if(nxReportPairIdentity(pairDirectory))
 		return 1;
-	return (mismatches || impulseMismatches || row000022Mismatches) ? 1 : 0;
+	return (mismatches || impulseMismatches || row000022Mismatches || row000713Mismatches) ? 1 : 0;
 	}

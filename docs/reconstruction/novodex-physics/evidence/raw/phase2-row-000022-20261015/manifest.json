@@ -2,7 +2,7 @@
   "purpose": "Oracle-backed mutation proof for JointActorBody::row000022 (phys_fn_000022) in NxPhysicsJointSupportTests.",
   "date": "2026-10-15",
   "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256_normalized": "74bd383805ab9c00b527a14ca9e43aa4ef334df1dffd9b5eb1c81511b21c0814",
+  "fixture_source_sha256_normalized": "ae90869f9eb2123e05f1fe80d8d61307bc036a018fc5d0387c3cabda21bd58f7",
   "restored_result": "oracle and linked candidate pose/callback digests equal fb92701dd0eedd48; target and null-target cases exact.",
   "mutation_result": "Removed the slot6(arg) dispatch. Target-present case differs by two words, total mismatches=2; target-absent control remains exact. Restored source and rebuilt candidate match.",
   "phase_gates": {
@@ -11,7 +11,7 @@
     "3": "pass, coverage_assertions_evaluated=983 floor=983",
     "2": "pass, coverage_assertions_evaluated=14 floor=14"
   },
-  "oracle_proof": "The existing kind-5 solver oracle digest and input digest remain unchanged; only the pinned normalized fixture-source hash was updated.",
+  "oracle_proof": "The kind-5 input/output proof remains unchanged; the shared fixture source hash is refreshed to include the additional row000713 differential.",
   "files": {
     "phase6-gate.log.gz": {
       "sha256": "fd77483f40700444468be588251de83d170151e5dc73782dce1151e31313c981",
@@ -62,10 +62,10 @@
       "uncompressed_bytes": 832513
     },
     "oracle-proof.json.gz": {
-      "sha256": "03e31b205347beaf0bcb4c1008389f18938bfd578da91025afe314d05a0af888",
-      "compressed_bytes": 435,
-      "uncompressed_sha256": "ce990ca21236f1fd43f3e0929ef964c4d0bba5b839e01e89131793af33be0b9e",
-      "uncompressed_bytes": 728
+      "sha256": "6cff36c05c7d3ba8f9d8934d4cad4c71595ddf9f7f361aebc82a7893668e080d",
+      "compressed_bytes": 430,
+      "uncompressed_sha256": "591312dcce60fba4772aa4191e09de246f7b9289d09d6cb1403167b2e9128e58",
+      "uncompressed_bytes": 714
     },
     "phase2-gate.log.gz": {
       "sha256": "5e37522843665686d3751867b252e29045a3ea36f1c4f164dd912bf9a0dafd7f",

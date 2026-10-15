@@ -131,7 +131,7 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
     # Most probes receive only the pair directory. Direct oracle fixtures pin
     # the exact staged Physics image before making private RVA calls.
     $arguments = @('"' + $Pair.Directory + '"')
-    if ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests') {
+    if ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsJointSupportTests') {
         # This probe hashes the staged oracle before loading it. Supplying the
         # staged pair's identity keeps direct invocations bound to the exact
         # DLL selected by the differential runner.
@@ -315,7 +315,7 @@ foreach ($target in $Targets) {
         if (-not $exitExact) { $differences++ }
         continue
     }
-    if ($target -ceq 'NxPhysicsCollisionTests' -or $target -ceq 'NxPhysicsType3PrunerTests') {
+    if ($target -ceq 'NxPhysicsCollisionTests' -or $target -ceq 'NxPhysicsType3PrunerTests' -or $target -ceq 'NxPhysicsJointSupportTests') {
         # The fixture directly compares pinned oracle RVAs against candidate
         # implementations linked into the harness, so there is no second DLL
         # run to compare. Its own oracle-side assertions and coverage lines are

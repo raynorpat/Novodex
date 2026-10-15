@@ -4544,7 +4544,8 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint_support applyImpulse inputs=9 digest=cf0a288f38c68f7c',
         'joint_support island_teardown oracle=3/0/0001c392/2 candidate=3/0/0001c392/2 oracle_cleared=1 candidate_cleared=1 mismatches=0',
         'joint_support coverage name=island_object_teardown calls=3 frees=2 cleared=1',
-        'joint_support coverage name=row000022 pose_update=2 target_slot6=1 null_target=1'
+        'joint_support coverage name=row000022 pose_update=2 target_slot6=1 null_target=1',
+        'joint_support row000713 cases=3'
     )
     'NxPhysicsCollisionTests' = @(
         'collision generator=xorshift32 pair_iterations=60000 aimed_iterations=60000',
@@ -6099,7 +6100,7 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 17  # adds three focused Scene-index and swap-removal assertions
-	'3' = 983  # adds the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and row 000022 assertions
+	'3' = 984  # adds the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
                # previous 973 includes nine populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
                # plus the two-live-scene actor-group flag wrapper case
@@ -6188,7 +6189,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1665  # adds candidate-DLL base shape descriptor validation and shape-count/shape-list differentials
+	'6' = 1666  # adds candidate-DLL shape-row cases and joint-support root compression
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6231,7 +6232,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2877  # adds actual-DLL Pruner registration, constructor/growth OOM, handle-reuse, shape-list/count and row 000022 assertions
+	'7' = 2878  # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions

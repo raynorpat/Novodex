@@ -121,6 +121,11 @@
       "name": "phase2_shared_row_body_pose_dispatch_000022",
       "command": "run_phase_gate.ps1 -Phase 3 -RepoRoot <worktree> -BuildRoot <Win32 Release build>",
       "result": "Phase 3 passes at 983/983 assertions. The registered NxPhysicsJointSupportTests oracle differential checks row 000022 body pose and slot-6 dispatch; omitting the target callback is rejected (mismatches=2), restored digest matches. Discharges Phase 2 row phys_fn_000022. Evidence: evidence/phase2-row-000022.md."
+    },
+    {
+      "name": "joint_support_root_compression_phys_fn_000713_2026-10-15",
+      "command": "run_phase_gate.ps1 -Phase 3",
+      "result": "NxPhysicsJointSupportTests directly compares oracle RVA 0x15d50 against the candidate-linked row for self-root, one-link and two-link chains; all restored digests match. A return-this mutation is rejected (mismatches=3). The full Phase 3 gate passes at 984/984 and discharges Phase 2 row phys_fn_000713. Evidence: evidence/phase2-row-000713.md."
     }
   ],
   "excluded_from_comparison": [
