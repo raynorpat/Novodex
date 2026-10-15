@@ -43676,12 +43676,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "allocator-singleton release with unconditional three-field clears (0x5aa90)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/871",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7317",
       "static_proof": "static review of the recorded shape: allocator-singleton release with unconditional three-field clears (0x5aa90); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the allocclear2342 differential (3z223): failures=0 over three consecutive runs for all four occupancy pans, comparing the slot hit count and the whole object, with the allocator singleton bound. This is the row held back in 3z219, closed by acting on that round located diff rather than re-guessing",
+      "dynamic_proof": "Phase 7 row-specific mutation through the registered NxPhysicsPopulatedSceneTeardownTests staged-pair differential: skipping only the +0x18 trigger-pair vector free leaves previous_freed=0 (current_freed=1), fails the teardown assertion, and exits 1 against an oracle exit of 0 (stdout_delta=15). Restoring the release, rebuilding CMake NxPhysics, and rerunning gives both exits 0, stdout_delta=0, stderr_exact=True. The helper is implemented by nxAllocReleaseClear2342 in Physics/src/ObjectModel.cpp and called in Scene teardown. See evidence/phase7-scene-trigger-pair-release-002342.md and evidence/raw/phase7-scene-trigger-pair-release-002342-20261015/.",
       "notes": ""
     },
     {

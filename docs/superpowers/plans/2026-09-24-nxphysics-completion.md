@@ -1121,3 +1121,7 @@ Added direct oracle-RVA/candidate-map calls for the abstract `Effector` scalar d
 ### Phase 7 continuation — controller position getter (`phys_fn_002334`, 2026-10-15)
 
 IDA confirms the four-byte getter is `lea eax,[ecx+0x28]; ret`, implemented by `NxControllerCore::getPosition` in `Physics/src/Scene.cpp`. The registered `NxPhysicsSimulationTests` differential covers two initialized controller positions and the post-move position. A candidate-only `+0x2c` offset mutation is rejected after explicitly rebuilding `NxPhysics` (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=62`, exact stderr); the restored getter rebuild matches exactly. Phase 7 records 353 closed / 207 deferred; its coverage floor is unchanged. See `docs/reconstruction/novodex-physics/evidence/phase7-controller-getposition-002334.md`.
+
+### Phase 7 continuation — Scene trigger-pair vector release (`phys_fn_002342`, 2026-10-15)
+
+The populated Scene teardown differential retains both embedded trigger-pair allocations and checks them after `releaseScene`. Skipping only the +0x18 vector free in the candidate makes `previous_freed=0`, fails the teardown assertion, and is rejected (oracle exit 0, candidate exit 1, `stdout_delta=15`). Restoring the free and rebuilding returns the staged transcript to exact equality. Phase 7 now records 354 closed / 206 deferred; the existing coverage floor is unchanged. See `docs/reconstruction/novodex-physics/evidence/phase7-scene-trigger-pair-release-002342.md`.

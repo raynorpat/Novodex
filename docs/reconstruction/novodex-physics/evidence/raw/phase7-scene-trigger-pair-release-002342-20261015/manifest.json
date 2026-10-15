@@ -1,0 +1,46 @@
+{
+  "purpose": "Actual-DLL mutation proof for NxPhysics Scene trigger-pair vector cleanup (phys_fn_002342).",
+  "oracle": {
+    "path": "D:\\FlamingEnt__\\Unreal_3\\Binaries\\NxPhysics.dll",
+    "sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c"
+  },
+  "candidate_restored_sha256": "c0e098ae137dacbab0ccb951b08063a86e950e2828f3b6842640106eec9dea86",
+  "candidate_mutant_sha256": "783e4d19442f08187adef49a844399ea1fd738b8153ddf80d204834ac7647546",
+  "target": "NxPhysicsPopulatedSceneTeardownTests",
+  "mutant_result": {
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 15,
+    "detector": "previous_freed=0 current_freed=1; teardown assertion failed"
+  },
+  "restored_result": {
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true
+  },
+  "files": {
+    "mutant.log.gz": {
+      "sha256": "c5eff1d828a93a4da0c777ef60f90f78ec5a24da30ebbb4e9b9fdb3be18f24fb",
+      "bytes": 1937
+    },
+    "mutation.patch": {
+      "sha256": "e190159860602e11f19be7f2d210832e80cf00dd909e98a4042cd5a4256b8e28",
+      "bytes": 181
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "625f8478b1c66e35fcb77f7a1b3c55298ffbf031e133cf655b553a8e6c0a5065",
+      "bytes": 370268
+    },
+    "restored.log.gz": {
+      "sha256": "c432d693d8825e408048bed1a22da6bf8b2daaa811c3bfd48ad54fc16b536e3c",
+      "bytes": 1807
+    }
+  },
+  "phase7_gate": {
+    "result": "pass",
+    "coverage_assertions_evaluated": 2884,
+    "coverage_floor": 2884,
+    "log": "phase7-gate.log.gz"
+  }
+}

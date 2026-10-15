@@ -11048,3 +11048,5 @@ The row-specific mutation changes the local X translation assignment to the untr
 
 
 Phase 7 row `phys_fn_002334` (`NxControllerCore::getPosition`) is mutation-falsified through the registered `NxPhysicsSimulationTests` staged-pair differential. A candidate-only +0x2c field-offset mutation corrupts controller positions and is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=62`, exact stderr); the restored +0x28 getter matches exactly. See `phase7-controller-getposition-002334.md` and its raw evidence folder.
+
+Phase 7 row `phys_fn_002342` (Scene trigger-pair release) is mutation-falsified through `NxPhysicsPopulatedSceneTeardownTests`: skipping the +0x18 vector free leaves the previous trigger-pair allocation live and is rejected (oracle exit 0, candidate exit 1, stdout_delta=15); the restored control is exact. See `phase7-scene-trigger-pair-release-002342.md`.

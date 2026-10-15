@@ -1,0 +1,5 @@
+--- a/Physics/src/Scene.cpp
++++ b/Physics/src/Scene.cpp
+@@
+-		if(begin) nxFoundationSDKAllocator->free(begin);
++		if(begin && offset != 0x18) nxFoundationSDKAllocator->free(begin);
