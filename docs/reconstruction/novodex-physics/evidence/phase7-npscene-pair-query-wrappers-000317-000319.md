@@ -15,3 +15,8 @@ rebuilding, the control returns to `stdout_delta=0` with exact stderr.
 The fresh full Phase 7 gate passes at `1,704/1,704` required assertions. Raw
 mutation, restored-control, and gate transcripts are archived under
 [`evidence/raw/phase7-npscene-pair-query-wrappers-000317-000319-20261012/`](raw/phase7-npscene-pair-query-wrappers-000317-000319-20261012/).
+
+The Win32 Release map resolves the candidate methods to
+`?getNbPairs@NpScene@@UBEIXZ` at `0x100428b0` and
+`?getPairFlagArray@NpScene@@UBE_NPAUNxPairFlag@@I@Z` at `0x100429d0`, both
+in `NpScene.obj`.

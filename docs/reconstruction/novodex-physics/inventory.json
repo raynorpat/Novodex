@@ -6236,7 +6236,13 @@
       "static_proof": "locked Scene::getNbPairs field/count forward; confirmed against the pinned Capstone listing and NpScene implementation.",
       "dynamic_proof": "NpScene::getNbPairs on the registered Phase 7 NxPhysicsPairFlagTests staged-pair differential. stdout_delta=6 under a row-specific mutation; oracle_exit=0, candidate_exit=0, stderr_exact=True. Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-pair-query-wrappers-000317-000319.md.",
       "notes": "",
-      "implementation_symbol": "NpScene::getNbPairs"
+      "implementation_symbol": "NpScene::getNbPairs",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getNbPairs@NpScene@@UBEIXZ",
+        "address": "0x100428b0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000318",
@@ -6273,7 +6279,13 @@
       "static_proof": "read-locked Scene::getPairFlagArray forward; confirmed against the pinned Capstone listing and NpScene implementation.",
       "dynamic_proof": "NpScene::getPairFlagArray on the registered Phase 7 NxPhysicsPairFlagTests staged-pair differential. stdout_delta=4 under a row-specific mutation; oracle_exit=0, candidate_exit=0, stderr_exact=True. Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-pair-query-wrappers-000317-000319.md.",
       "notes": "",
-      "implementation_symbol": "NpScene::getPairFlagArray"
+      "implementation_symbol": "NpScene::getPairFlagArray",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getPairFlagArray@NpScene@@UBE_NPAUNxPairFlag@@I@Z",
+        "address": "0x100429d0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000320",
