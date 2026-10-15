@@ -39,13 +39,11 @@ The engine (Scene+0x624) that owns the pruners, its add and remove and its
 factory, are IcePruningEngine.cpp.
 
 NOT RECONSTRUCTED IN THIS FILE.
-  * The process-wide registration helper at +0x34 (0x000b4cc0) remains
-    emulated by the engine factory's nxOpcodeEnsurePool path; allocation-failure
-    behavior and the base destructor's unregistration (0x000f15a0 ->
-    0x000b4d20) remain open. The Pruner base constructor's pool, bounds, and
-    counters are reconstructed and its six empty-bound words are independently
-    mutation-falsified through the public DLL Scene path (evidence/phase4-
-    pruner-constructor-005531.md).
+  * Registration buffer-allocation failure and capacity-exhaustion behavior
+    remain open. The successful process-wide registration path and base
+    destructor's unregistration are implemented by PrunerRegistration.cpp;
+    actual static/dynamic handles and update timestamps are checked through
+    the public DLL Scene path (evidence/phase4-pruner-registration-005531.md).
   * Slot 5 across the pruner families. The base defaults remain false. The
     static, bounded-dynamic, and unbounded-dynamic query slots 7/8 are
     reconstructed below.
@@ -83,10 +81,8 @@ static_assert(sizeof(Pruner) == 0x3c, "the base pruner is 0x3c bytes");
 static_assert(sizeof(StaticPruner) == 0x90, "the static pruner is 0x90 bytes (0x000b50e7)");
 static_assert(sizeof(DynamicPruner) == 0x3c, "the dynamic pruner is 0x3c bytes (0x000b50ad)");
 static_assert(sizeof(Prunable) == 0x2c, "a prunable is 0x2c bytes");
-#if !NX_PHYSICS_USE_X87
 static_assert(alignof(Pruner)==4 && offsetof(Pruner,mRegistration)==0x34,
-    "actual scalar registration occupies Pruner+34..3c");
-#endif
+    "actual registration occupies Pruner+34..3c");
 
 ///////////////////////////////////////////////////////////////////////////////
 // The pool.
@@ -249,27 +245,18 @@ __declspec(noinline) void PruningPool::RemoveObject(Prunable* object)
 ///////////////////////////////////////////////////////////////////////////////
 // The base pruner.
 
-// phys_fn_005531 (0x000f1550): the pool, vtable, registration block, counters,
-// and empty bounds (0x00053810). The engine factory primes the process-wide
-// registration object; the six bounds words have an actual-DLL proof.
+// phys_fn_005531 (0x000f1550): the pool, vtable, per-instance process
+// registration, counters, and empty bounds (0x00053810).
 Pruner::Pruner()
 {
-#if NX_PHYSICS_USE_X87
-	mTimestamp	= 0;
-	mPruner34	= 0;
-#else
     nxPrunerRegister(mRegistration);
-#endif
 	mBounds.SetEmpty();
 }
 
-// The pool's arrays, boxes first (0x000efed0), as the base destructor frees
-// them; the +0x34 unregistration is not reproduced.
+// Remove the instance handle before releasing the pool's arrays, boxes first.
 Pruner::~Pruner()
 {
-#if !NX_PHYSICS_USE_X87
     nxPrunerUnregister(mRegistration);
-#endif
 	if(mPool.mWorldBoxes)	{ opcNovodeXFree(mPool.mWorldBoxes);	mPool.mWorldBoxes = null;	}
 	if(mPool.mObjects)		{ opcNovodeXFree(mPool.mObjects);		mPool.mObjects = null;		}
 }
@@ -283,11 +270,7 @@ bool Pruner::AddObject(Prunable* object)
 // phys_fn_005210 (0x000e50d0, 21 B)
 bool Pruner::RemoveObject(Prunable* object)
 {
-#if NX_PHYSICS_USE_X87
-	mTimestamp++;
-#else
     mRegistration.mTimestamp++;
-#endif
 	mPool.RemoveObject(object);
 	return true;
 }
@@ -295,11 +278,7 @@ bool Pruner::RemoveObject(Prunable* object)
 // 0x000e50f0 (phys_fn_005212, recorded elsewhere).
 bool Pruner::UpdateObject(Prunable* /*object*/)
 {
-#if NX_PHYSICS_USE_X87
-	mTimestamp++;
-#else
     mRegistration.mTimestamp++;
-#endif
 	return true;
 }
 
@@ -388,11 +367,7 @@ bool StaticPruner::RemoveObject(Prunable* object)
 		delete mTree;
 		mTree = null;
 	}
-#if NX_PHYSICS_USE_X87
-	mTimestamp++;
-#else
     mRegistration.mTimestamp++;
-#endif
 	mPool.RemoveObject(object);
 	return true;
 }
@@ -405,11 +380,7 @@ bool StaticPruner::UpdateObject(Prunable* /*object*/)
 		delete mTree;
 		mTree = null;
 	}
-#if NX_PHYSICS_USE_X87
-	mTimestamp++;
-#else
     mRegistration.mTimestamp++;
-#endif
 	return true;
 }
 

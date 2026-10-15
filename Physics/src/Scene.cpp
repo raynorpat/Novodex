@@ -3288,52 +3288,6 @@ void nxSceneAuxUnregisterRecord(void* auxPointer, void* recordPointer)
 	*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd - 1;
 	}
 
-// OPCODE's pool is initialized by the first pruning object, whether static or
-// dynamic. Its process-wide header owns four initial buffers. Unlike the Scene
-// rows, the pool (0x000b4cc0) and its buffers (0x000ef270) allocate through
-// phys_fn_004803, so this helper keeps nxGetSdkAllocator.
-#if NX_PHYSICS_USE_X87
-static unsigned char* gNxOpcodePool = 0;
-
-bool nxOpcodeEnsurePool()
-	{
-	if(gNxOpcodePool) return true;
-	gNxOpcodePool = static_cast<unsigned char*>(nxGetSdkAllocator()->malloc(
-		0x1c, NX_MEMORY_PERSISTENT));
-	if(!gNxOpcodePool) return false;
-	memset(gNxOpcodePool, 0, 0x1c);
-	const unsigned sizes[4] = {8, 4, 4, 4};
-	const unsigned offsets[4] = {0, 0xc, 0x10, 0x14};
-	for(unsigned i = 0; i < 4; ++i)
-		{
-		void* block = nxGetSdkAllocator()->malloc(sizes[i],
-			NX_MEMORY_PERSISTENT);
-		if(!block) return false;
-		memset(block, i == 1 || i == 2 ? 0xff : 0, sizes[i]);
-		*reinterpret_cast<void**>(gNxOpcodePool + offsets[i]) = block;
-		}
-	*reinterpret_cast<unsigned*>(gNxOpcodePool + 8) = 2;
-	return true;
-	}
-
-void nxOpcodeReleasePool()
-	{
-	if(!gNxOpcodePool) return;
-	const unsigned offsets[4] = {0x14, 0x10, 0xc, 0};
-	for(unsigned offset : offsets)
-		{
-		void*& block = *reinterpret_cast<void**>(gNxOpcodePool + offset);
-		if(block)
-			{
-			nxGetSdkAllocator()->free(block);
-			block = 0;
-			}
-		}
-	nxGetSdkAllocator()->free(gNxOpcodePool);
-	gNxOpcodePool = 0;
-	}
-
-#endif
 // The pending-shape array at Scene+0x69c..0x6a4 is +0x624's +0x78 header, which
 // 0x0004bb9c grows through phys_fn_004840 -- a phys_fn_004803 container -- so it
 // stays on nxGetSdkAllocator, as do the 0x3c/0x90 pruners built by 0x000b5090 and

@@ -3,9 +3,6 @@
 #include "NxPhysicsBackend.h"
 #include "NxSdkAllocator.h"
 #include <stddef.h>
-#if NX_PHYSICS_USE_X87
-#error Pruner registration is the scalar fixed32 lifecycle implementation
-#endif
 // Ordinary non-owning member at Pruner+34..3c, never a placement overlay.
 struct NxPrunerRegistration { NxU32 mHandle; NxU32 mTimestamp; };
 // Shipped005438/005440/005442/005444/005446, successful-buffer domain.

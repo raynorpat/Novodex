@@ -1,5 +1,4 @@
 #include "NxPhysicsBackend.h"
-#if !NX_PHYSICS_USE_X87
 #include "NxPrunerRegistration.h"
 #include <new>
 #include <string.h>
@@ -69,4 +68,3 @@ void nxPrunerProcessPoolDestroy() {
     gNxPrunerProcessPool->~NxPrunerProcessPool();nxGetSdkAllocator()->free(gNxPrunerProcessPool);gNxPrunerProcessPool=nullptr;
 }
 void nxOpcodeReleasePool() { nxPrunerProcessPoolDestroy(); }
-#endif

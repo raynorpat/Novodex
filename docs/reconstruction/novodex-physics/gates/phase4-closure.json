@@ -437,10 +437,10 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSceneRaycastTests",
       "falsification": {
-        "mutation": "In a throwaway edit to Physics/src/opcode/IcePruner.cpp, inserted an immediate return at entry to Pruner::Pruner, forced a rebuild of NxPhysics and NxPhysicsSceneRaycastTests, and ran the registered staged pair. The oracle reports the six type-0 pruner empty-bound words as 7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff; the candidate retained the guarded-allocation cdcdcdcd words and failed its constructor assertion (oracle_exit=0, candidate_exit=1).",
+        "mutation": "Two independent throwaway edits to Physics/src/opcode/IcePruner.cpp were rejected through the registered staged pair. The earlier entry-return mutation leaves guarded-allocation cdcdcdcd bounds and fails the constructor assertion. The 2026-10-15 mutation omitted only nxPrunerRegister(mRegistration); the candidate reported poisoned registration words cdcdcdcd.cdcdcdd3 and cdcdcdcd.cdcdcdd1, then failed while the oracle reported static=00000000.00000006 and dynamic=00000001.00000004 (oracle_exit=0, candidate_exit=1).",
         "detected": "stdout_delta=2793"
       },
-      "note": "The restored candidate reports the exact six oracle words with both processes exiting 0 and stdout_delta=0. The required marker is registered in the Phase 4 gate; the full gate passes at 531/531. This proves the constructor bounds initialization path through the actual DLL."
+      "note": "The restored candidate reports exact empty bounds and registration words; its focused differential has both processes exiting 0, stdout_delta=0 and exact stderr. The required markers are registered in Phases 4, 5 and 7, which pass at 532/532, 2739/2739 and 2870/2870. See evidence/phase4-pruner-registration-005531.md and evidence/raw/phase4-pruner-registration-005531-20261015/."
     }
   ],
   "deferred": [

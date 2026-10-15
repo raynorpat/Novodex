@@ -87,14 +87,30 @@ static bool nxCheckPrunerConstructorBounds(NxScene* wrapper)
 	memcpy(&prunerAddress, engine + 0x1c, sizeof(prunerAddress));
 	if(!prunerAddress)
 		return false;
+	NxU32 dynamicPrunerAddress = 0;
+	memcpy(&dynamicPrunerAddress, engine + 0x24, sizeof(dynamicPrunerAddress));
+	if(!dynamicPrunerAddress)
+		return false;
 	NxU32 bounds[6];
 	memcpy(bounds, reinterpret_cast<const NxU8*>(prunerAddress) + 0x1c, sizeof(bounds));
+	NxU32 staticRegistration[2];
+	NxU32 dynamicRegistration[2];
+	memcpy(staticRegistration, reinterpret_cast<const NxU8*>(prunerAddress) + 0x34,
+		sizeof(staticRegistration));
+	memcpy(dynamicRegistration, reinterpret_cast<const NxU8*>(dynamicPrunerAddress) + 0x34,
+		sizeof(dynamicRegistration));
 	const bool empty = bounds[0] == 0x7f7fffff && bounds[1] == 0x7f7fffff &&
 		bounds[2] == 0x7f7fffff && bounds[3] == 0xff7fffff &&
 		bounds[4] == 0xff7fffff && bounds[5] == 0xff7fffff;
+	const bool registrations = staticRegistration[0] == 0 && staticRegistration[1] == 6 &&
+		dynamicRegistration[0] == 1 && dynamicRegistration[1] == 4;
 	printf("scene_pruner constructor_empty_bounds=%u words=%08x.%08x.%08x.%08x.%08x.%08x\n",
 		empty ? 1u : 0u, bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
-	return empty;
+	printf("scene_pruner registrations_match=%u static=%08x.%08x dynamic=%08x.%08x\n",
+		registrations ? 1u : 0u,
+		staticRegistration[0], staticRegistration[1],
+		dynamicRegistration[0], dynamicRegistration[1]);
+	return empty && registrations;
 	}
 
 // ---------------------------------------------------------------------------
@@ -1122,7 +1138,7 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < kShapeCaseCount; i++)
 		nxActors[i] = nxCreateCase(scene, i);
 	if(!nxCheckPrunerConstructorBounds(scene))
-		return nxFail("type-0 pruner constructor did not initialize empty bounds");
+		return nxFail("static/dynamic pruner registration or empty bounds did not match");
 
 	nxSpatialOverlapChecks(sdk, scene);
 

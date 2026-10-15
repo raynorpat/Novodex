@@ -31,11 +31,6 @@ Runs at API time under 0x027f like IcePruner.cpp; default architecture.
 #include <new>
 #include <malloc.h>
 
-// Scene.cpp's emulation of the process-wide object 0x000b4cc0 creates.
-#if NX_PHYSICS_USE_X87
-bool nxOpcodeEnsurePool();
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 // The engine: the object at Scene+0x624. Its bounds are the six floats at
 // +0x04 (the minimum) and +0x10 (the maximum); its pruners are the four words
@@ -57,9 +52,6 @@ Pruner* nxPruningEngineCreatePruner(udword type)
 		void* memory = opcNovodeXAlloc(sizeof(StaticPruner));
 		if(!memory)
 			return null;
-#if NX_PHYSICS_USE_X87
-		nxOpcodeEnsurePool();
-#endif
 		return new(memory) StaticPruner;
 	}
 	if(type == 1)
@@ -67,9 +59,6 @@ Pruner* nxPruningEngineCreatePruner(udword type)
 		void* memory = opcNovodeXAlloc(sizeof(BoundedDynamicPruner));
 		if(!memory)
 			return null;
-#if NX_PHYSICS_USE_X87
-		nxOpcodeEnsurePool();
-#endif
 		return new(memory) BoundedDynamicPruner;
 	}
 	if(type == 2)
@@ -77,9 +66,6 @@ Pruner* nxPruningEngineCreatePruner(udword type)
 		void* memory = opcNovodeXAlloc(sizeof(DynamicPruner));
 		if(!memory)
 			return null;
-#if NX_PHYSICS_USE_X87
-		nxOpcodeEnsurePool();
-#endif
 		return new(memory) DynamicPruner;
 	}
 	return null;

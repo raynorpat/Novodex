@@ -1,0 +1,67 @@
+{
+  "purpose": "Actual-DLL Pruner registration reconstruction and mutation proof for phys_fn_005531; the public Scene harness verifies static/dynamic handles and timestamps, then Phases 4, 5 and 7 gate the assertion.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "bc5942ffa7c92b087453ec4cddd58bd570864f2b96b03508cfc7f68c5d8ba2f3",
+  "mutated_candidate_sha256": "d6a760e17bfc1d221aff0ecdac591ba66eef580d188b9b1549d34600cebbf519",
+  "expected_registration_words": "static=00000000.00000006 dynamic=00000001.00000004",
+  "mutation_result": "Omitted only nxPrunerRegister(mRegistration) in Pruner::Pruner; candidate observed poisoned handle/timestamp words and failed (oracle_exit=0, candidate_exit=1, stdout_delta=2793).",
+  "restored_result": "Focused actual-DLL pair exact: oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true.",
+  "phase_gates": {
+    "4": "phase_gate=4 status=pass; coverage_assertions_evaluated=532 floor=532",
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2739 floor=2739",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2870 floor=2870"
+  },
+  "logs": {
+    "assertion-red.log.gz": {
+      "sha256": "ba67a175ede593e45affe490b6c76d4784d273c52211c457b0d5d8e3623fc47f",
+      "compressed_bytes": 19502,
+      "uncompressed_bytes": 404382
+    },
+    "discovery-pair.log.gz": {
+      "sha256": "38e904eab11d79bbe2f40d76fe0976f584ed96ad120f542d1df6eeba55d1a6c2",
+      "compressed_bytes": 36770,
+      "uncompressed_bytes": 800148
+    },
+    "full-release-build.log.gz": {
+      "sha256": "5b615da73b06627e36150d7ee75dfe981aa0199509442be0705e397e55ad583a",
+      "compressed_bytes": 1631,
+      "uncompressed_bytes": 16170
+    },
+    "mutation-build.log.gz": {
+      "sha256": "9b195964dd7b3152abdc4a4fc07e9bfc7b9f16ab5849c47258e1acd37e607be6",
+      "compressed_bytes": 445,
+      "uncompressed_bytes": 1498
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "9b59d8f925f7019753acb53500f2b927573ad47f5900ac48381db39cacc0ee55",
+      "compressed_bytes": 19505,
+      "uncompressed_bytes": 404389
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "a36e217fe1a8f119698f199728347d39f8327823e1c2c723ebd1ffaa5acd8876",
+      "compressed_bytes": 74970,
+      "uncompressed_bytes": 1118691
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "981d7d2c93f3e8cddbdb7f75e28d59cce56460bd780fa37a818af98100db98fb",
+      "compressed_bytes": 204921,
+      "uncompressed_bytes": 2809589
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "5d1e689c3c042e6f2f47830fc5951cb89cd9bfa606e5e7e82a7f3027e124842e",
+      "compressed_bytes": 368281,
+      "uncompressed_bytes": 4594111
+    },
+    "restored-build.log.gz": {
+      "sha256": "06a1014806fc35b24e2697410b4049f674aac99087305f20726e32dcd2018e38",
+      "compressed_bytes": 434,
+      "uncompressed_bytes": 1466
+    },
+    "restored-differential.log.gz": {
+      "sha256": "8655c2d70590d8900c1410e8adc2a0a7f6c0f8eb69d986ba1bc8b11610076021",
+      "compressed_bytes": 36568,
+      "uncompressed_bytes": 800210
+    }
+  }
+}

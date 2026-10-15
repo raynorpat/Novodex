@@ -108,7 +108,6 @@ source_group("Header Files" FILES ${PHYSICS_HEADERS})
 # OPCODE is External/opcode/ and nowhere else.
 file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/core/*.cpp Physics/src/opcode/*.cpp)
 if(NX_PHYSICS_USE_X87)
-    list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/PrunerRegistration.cpp")
     list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/SceneActorIdPool.cpp")
     list(REMOVE_ITEM PHYSICS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Physics/src/ReadWriteLockScalar.cpp")
 endif()
@@ -867,7 +866,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/PhysicsNoSdkStubs.cpp
 		Physics/src/Containers.cpp tests/PhysicsInternalContactStubs.cpp
 		tests/PhysicsInternalMeshContactStubs.cpp
-		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp
+		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp Physics/src/PrunerRegistration.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PMap.cpp Physics/src/TriangleMesh.cpp Physics/src/InternalTriangleMesh.cpp
 		Physics/src/MemoryStream.cpp
@@ -947,6 +946,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/PrunerRegistration.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp Physics/src/Distance.cpp
@@ -1137,6 +1137,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactPairManager.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/PrunerRegistration.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
