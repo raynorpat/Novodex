@@ -406,15 +406,21 @@ Falsified four ways, each rebuilt and run through the real differential:
 | the gap is filled with a fresh `NxMaterial` rather than `gDefaultMaterial` | `stdout_delta=2` |
 | a null material past the end appends instead of doing nothing | `stdout_delta=12` |
 
-### One allocator slot this closed in passing
+### Allocator observation scope
 
-`realloc_calls` moving 2 -> 3 across `step=purge` is `resize`'s shrink-to-fit
-reaching `SdkAllocatorBridge::realloc` (`phys_fn_000462`, slot `+8` of the vtable
-at `.rdata 0x00106304`). It is the only thing in Phase 2 that reaches that slot,
-and until `purgeMaterials` existed nothing exercised it. The bridge's `malloc`
-and `free` slots were already gated by `NxPhysicsSDKTests`; `mallocDEBUG`
-(`phys_fn_000466`) remains unexercised, because nothing on a Release path calls
-it.
+The `realloc_calls` counter moving 2 -> 3 across `step=purge` observes the
+allocator supplied to `NxCreatePhysicsSDK`, but it does not prove a call to
+`SdkAllocatorBridge::realloc` (`phys_fn_000462`, slot `+8` of the vtable at
+`.rdata 0x00106304`). A candidate-only no-op mutation of that bridge method
+leaves the registered `NxPhysicsCoreClusterTests` differential exact
+(`stdout_delta=0`). The material-array path uses the Foundation allocator
+directly, so Phase 2 has no valid dynamic proof for this bridge slot. Its
+implementation remains present in `PhysicsInternal.cpp`; `phys_fn_000462`
+stays deferred as unreachable in Phase 2 until a later-phase caller is found.
+
+The bridge's `malloc` and `free` slots were already gated by
+`NxPhysicsSDKTests`; `mallocDEBUG` (`phys_fn_000466`) remains unexercised,
+because nothing on a Release path calls it.
 
 ### Harness change
 
