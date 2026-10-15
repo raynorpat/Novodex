@@ -44452,12 +44452,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "doubly-dereferenced lock-API test (0x5b8c0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/893",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7425",
       "static_proof": "static review of the recorded shape: doubly-dereferenced lock-API test (0x5b8c0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the smallrows differential (3z206): failures=0 over three consecutive runs for all three rows, comparing the report tuple, the whole object, the hook hit count and arguments, with the report slot and both globals bound",
+      "dynamic_proof": "Direct oracle/source differential marker newreach row=002385; changing callback argument 0xffffffffu to 0xfffffffeu produced mismatches=1 and candidate exit 1; restored control mismatches=0 and differential-pass.",
       "notes": ""
     },
     {
@@ -44542,12 +44542,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "callback-field dispatch thunk (0x5b910)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/memory_blocks/1",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7429",
       "static_proof": "static review of the recorded shape: callback-field dispatch thunk (0x5b910); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via thunks3 differential (3z163): argument count and every recorded argument failures=0 for all three, with the dispatch targets bound to recorder stubs",
+      "dynamic_proof": "Direct oracle/source differential marker newreach row=002390; changing the forwarded callback argument with arg ^ 1u produced mismatches=1 and candidate exit 1; restored control mismatches=0 and differential-pass.",
       "notes": ""
     },
     {

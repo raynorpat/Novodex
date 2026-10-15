@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "packet": "phase7-lock-api-virtual-callback-002385-002390-20261015",
+  "logs": [
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "phase5-gate.log",
+      "uncompressed_bytes": 2833519,
+      "uncompressed_sha256": "57594d6179d9778f406e589be1f5d84aec427fdeaab7c4fc9ca39690e3c20511",
+      "compressed_bytes": 207312,
+      "compressed_sha256": "2265c7d314d321da327b8c5d62fc5335cca981b0618e7aa0f75e861cf499f777"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "phase6-gate.log",
+      "uncompressed_bytes": 3100761,
+      "uncompressed_sha256": "d21bc6a2d7426c4e92bacb76b400f80ad88c940edc905a925ae0f37c332ba5bb",
+      "compressed_bytes": 251930,
+      "compressed_sha256": "02f41f90efa042ae53f9087af782f7b0e2f620a2a7a4bc4ce0740721ea884b95"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "phase7-gate.log",
+      "uncompressed_bytes": 4605894,
+      "uncompressed_sha256": "7cafa8e382982c9f865e20ce72c1f0c1456e513c1e9b451702e4a7c025ffd984",
+      "compressed_bytes": 369828,
+      "compressed_sha256": "f1a7fd9840afa3f67c7621544cfcf8270efda8b068d7d46da2a5678376ba0135"
+    },
+    {
+      "file": "tool-tests.log.gz",
+      "source": "tool-tests.log",
+      "uncompressed_bytes": 922,
+      "uncompressed_sha256": "097a147b5476424a8ff26d7d1ee9d2c62cb3483cc609423dbd92dfc996e147ef",
+      "compressed_bytes": 67,
+      "compressed_sha256": "358a58bced19e43bf1d5fe254b34b6d9bc3ba9bccabff18801c3dbd0c977c941"
+    },
+    {
+      "file": "restored-source-differential.log.gz",
+      "source": "restored-source-differential.log",
+      "uncompressed_bytes": 21366,
+      "uncompressed_sha256": "b7e6cb51158a9389d8792b4b967021b902192fdb24936fd3cb6bb670f6a22ba8",
+      "compressed_bytes": 4889,
+      "compressed_sha256": "69bb08e421f3b7a5ad7cc3464e4ab2f3783615878c7d53942990378b5f693629"
+    },
+    {
+      "file": "mutation-results.log.gz",
+      "source": "mutation-results.log",
+      "uncompressed_bytes": 814,
+      "uncompressed_sha256": "42b5b5ccc13c488d317fab454bfcf17d080f5c014a67a10477c688a7d4221e21",
+      "compressed_bytes": 391,
+      "compressed_sha256": "c72c39b41e9ec8d5cebf88cb422609a7e29b9372974b95295195e430d4e17f0f"
+    }
+  ]
+}
