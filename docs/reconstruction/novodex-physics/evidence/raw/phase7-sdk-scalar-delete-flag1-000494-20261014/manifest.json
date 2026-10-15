@@ -1,0 +1,44 @@
+{
+  "row": "phys_fn_000494",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_differential": {
+    "stderr_exact": true,
+    "candidate_exit": 0,
+    "oracle_exit": 0,
+    "stdout_delta": 0
+  },
+  "mutant_candidate_sha256": "9a2b76e99f77287fa60859ce322f53f761859289a25732edd70cd70a8b03bb48",
+  "restored_candidate_sha256": "cc945060bdd39a2cba90aa7c593d9c054a1f1b128d771bc59fdc1db79b2edfc5",
+  "mutation": {
+    "original": "a80174",
+    "meaning": "change test al, 1 immediate to zero so the flag-one thunk call skips the free",
+    "raw_file_offset": "0x000535ed",
+    "candidate_rva": "0x000541c0",
+    "replacement": "a80074"
+  },
+  "gate": "NxPhysicsPopulatedSceneTeardownTests",
+  "files": {
+    "mutant-differential.log": {
+      "bytes": 11059,
+      "sha256": "c2b679c4b7b7c0405c54d69463b5876654b2b2afeb2f036f956eac67785e5413"
+    },
+    "mutant-candidate-sha256.txt": {
+      "bytes": 64,
+      "sha256": "7c2403889c8cc5947cef8813507dc94d367fdd3d5ad4e052e0e7006075f7a0da"
+    },
+    "restored-differential.log": {
+      "bytes": 10931,
+      "sha256": "d46d2de4323c56eb40a9e58e346ab3a5e73650956a7b0ec5ce8188e8bbb2e799"
+    }
+  },
+  "mutant_result": {
+    "stdout_delta": 7,
+    "freed": 0,
+    "stderr_exact": false,
+    "candidate_exit": 1,
+    "oracle_exit": 0,
+    "failure": "PhysicsSDK scalar deleting destructor did not free storage for flag one",
+    "exit": 1
+  },
+  "schema_version": 1
+}

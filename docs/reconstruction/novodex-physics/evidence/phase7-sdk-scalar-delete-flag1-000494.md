@@ -1,0 +1,9 @@
+# Phase 7 row 000494: PhysicsSDK scalar deleting destructor, delete flag 1
+
+The registered populated-scene teardown fixture already released its PhysicsSDK through the public SDK `release()` path, which dispatches the generated `PhysicsSDK` scalar deleting destructor with delete flag 1. The fixture now captures the internal 56-byte `PhysicsSDK` allocation before release, verifies that the allocator no longer owns it afterward, and reports `teardown sdk_scalar_delete flag=1 bytes=56 freed=1`. The separate direct-vtable flag-0 case continues to assert that the same allocation remains live and that the thunk returns the original pointer.
+
+The pinned UE3 oracle and restored candidate both report the flag-1 and flag-0 markers above with `oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, and exact stderr. The restored candidate NxPhysics DLL SHA-256 is `cc945060bdd39a2cba90aa7c593d9c054a1f1b128d771bc59fdc1db79b2edfc5`; the pinned oracle DLL SHA-256 is `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`.
+
+For the row-specific negative control, changed only the candidate thunk's `test al,1` immediate to zero at RVA `0x000541c0` (raw file offset `0x000535ed`). This makes the flag-1 call skip its free while leaving the flag-0 behavior intact. The registered fixture rejects it with `teardown sdk_scalar_delete flag=1 bytes=56 freed=0` and `FAIL PhysicsSDK scalar deleting destructor did not free storage for flag one`; the staged differential reports `oracle_exit=0`, `candidate_exit=1`, `stdout_delta=7`, and non-exact stderr. Restoring the saved candidate DLL returns the exact differential. Raw restored and mutant transcripts are in `evidence/raw/phase7-sdk-scalar-delete-flag1-000494-20261014/`.
+
+This extends the existing row 000494 proof to both scalar-delete flag branches. No production implementation or public header changed.

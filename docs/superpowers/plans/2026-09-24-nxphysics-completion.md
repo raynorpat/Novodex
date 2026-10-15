@@ -992,3 +992,8 @@ A staged actor-group-pair cache fixture caught that the candidate freed this glo
 ### Continuation — Scene pair refresh (`phys_fn_001976`, 2026-10-14)
 
 The registered simulation differential already exercises the reconstructed `nxSceneRefreshPairs` implementation across all three public broadphase selectors, separated and overlapping actors, dense and bounded pairs, plane contact, pair ordering, and coherent-pruner separation/rejoin. An entry-return mutation is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=4000`); restoring and rebuilding returns an exact differential. The Phase 7 row is now dynamically gated. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-pair-refresh-001976.md`.
+
+
+### M6.43 — PhysicsSDK scalar deleting destructor flag 1 (`phys_fn_000494`)
+
+Extended the populated-scene teardown fixture to assert that public `release()` frees the internal 56-byte PhysicsSDK allocation through the generated scalar deleting destructor with flag 1. The direct vtable flag-0 check remains and verifies preserved storage and return identity. A candidate-only mutation suppressing the flag-1 free is rejected (`candidate_exit=1`, `stdout_delta=7`, `freed=0`); restored oracle/candidate teardown output is exact. The current user checkout has an unrelated dirty `PhysicsObjectLayoutTests.cpp` whose source hash prevents the full Phase 7 gate's pinned oracle-only proof; rerun the formal gate from a clean checkout after preserving that user change. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-scalar-delete-flag1-000494.md`.

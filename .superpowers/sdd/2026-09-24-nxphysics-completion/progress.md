@@ -517,3 +517,8 @@ Phase 7 row packet: `phys_fn_000537` (x87 control-word save) is mutation-falsifi
 
 
 Phase 7 row packet: `phys_fn_001639` (`nxIceIdentityPoses`) is mutation-falsified. Registered `NxPhysicsThirdPartyTests` as a Phase 7 oracle differential and raised the coverage floor by 217 assertions. The uninitialized-global mutation yields 7 mismatches; restored control yields 0. Evidence: `phase7-identity-poses-001639.md`.
+
+
+### M6.43 — PhysicsSDK scalar deleting destructor flag 1
+
+Extended the registered populated-scene teardown target to assert that `PhysicsSDK::release()` frees its 56-byte internal SDK allocation through deleting-destructor flag 1; the direct flag-0 vtable test remains. The pinned oracle and restored candidate match exactly. A candidate-only thunk mutation suppressing the flag-1 free is rejected (`freed=0`, `candidate_exit=1`, `stdout_delta=7`). The full Phase 7 run in the current dirty checkout reached its oracle-only layout proof and stopped because the user's unrelated `PhysicsObjectLayoutTests.cpp` no longer matches its pinned source hash; this does not affect the focused target differential, which passes. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-scalar-delete-flag1-000494.md`.

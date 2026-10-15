@@ -725,7 +725,13 @@ int wmain(int argc, wchar_t** argv)
 	sdkOwnedMeshActorDesc.shapes.pushBack(&sdkOwnedMeshShape);
 	if(!sdkOwnedScene->createActor(sdkOwnedMeshActorDesc))
 		return nxFail("SDK-owned teardown mesh actor creation failed");
+	void* const sdkInternal = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(sdk) + sizeof(void*));
+	const size_t sdkInternalBytes = allocator.allocationSize(sdkInternal);
+	if(sdkInternalBytes != 0x38)
+		return nxFail("PhysicsSDK scalar-delete release fixture has an invalid allocation");
 	sdk->release();
+	const bool sdkInternalFreed = allocator.allocationSize(sdkInternal) == 0;
 	const bool sdkOwnedSceneFreed = allocator.allocationSize(sdkOwnedScene) == 0;
 	const bool sdkOwnedMeshFreed = allocator.allocationSize(sdkOwnedMesh) == 0;
 	const unsigned sdkOwnedSceneFreeSequence = allocator.freedSequence(sdkOwnedScene);
@@ -752,6 +758,8 @@ int wmain(int argc, wchar_t** argv)
 	printf("teardown sdk_cache radix_sort_buffers bytes=12 remaining=%u\n",
 		radixBufferLeaks);
 	printf("teardown sdk_release outstanding=%u\n", sdkReleaseOutstanding);
+	printf("teardown sdk_scalar_delete flag=1 bytes=%u freed=%u\n",
+		static_cast<unsigned>(sdkInternalBytes), sdkInternalFreed ? 1u : 0u);
 	if(!sdkOwnedSceneFreed)
 		return nxFail("PhysicsSDK destructor did not release a registered Scene");
 	if(!sdkOwnedMeshFreed)
@@ -762,6 +770,8 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("PhysicsSDK destructor released actor-group-pair cache before its Scenes and meshes");
 	if(radixBufferLeaks != 0)
 		return nxFail("PhysicsSDK destructor did not release cached radix-sort buffers");
+	if(!sdkInternalFreed)
+		return nxFail("PhysicsSDK scalar deleting destructor did not free storage for flag one");
 	if(sdkReleaseOutstanding != 0)
 		return nxFail("SDK teardown left tracked allocator blocks outstanding");
 
