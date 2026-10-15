@@ -1739,7 +1739,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter capsule_public=1.3.1.0.0',
         'setter capsule_public_dimensions=3f000000.3f800000',
         'setter capsule_world_bounds=bf000000.bf800000.bf000000.3f000000.3f800000.3f000000',
-        'setter capsule_changed=3f400000.40000000.3f400000.3f800000.80002.2',
+        'setter capsule_height_row=40200000.3fa00000.1',
+        'setter capsule_changed=3f400000.40000000.3f400000.3f800000.80002.3',
         'setter capsule_set_dimensions=3f800000.40400000.3f800000.3fc00000.80002.1',
         'setter capsule_changed_aabb=bf800000.c0200000.bf800000.3f800000.40200000.3f800000',
         'setter capsule_changed_world_bounds=bf800000.c0200000.bf800000.3f800000.40200000.3f800000',
@@ -6096,7 +6097,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2746  # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
+	'5' = 2747  # adds the capsule set/get height row differential
+	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
 	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe

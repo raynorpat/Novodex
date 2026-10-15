@@ -613,8 +613,8 @@ static NxReal __fastcall nxShapeHandleGetRadius(void* self, void*)
 
 static NxReal __fastcall nxCapsuleHandleGetHeight(void* self, void*)
 	{
-	return 2.0f * *reinterpret_cast<const NxReal*>(
-		nxBoxHandleInternal(self) + 0xe4);
+	return static_cast<CapsuleShape*>(static_cast<void*>(
+		nxBoxHandleInternal(self)))->nxCapsuleGetHeight();
 	}
 
 static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
@@ -637,9 +637,8 @@ static void __fastcall nxCapsuleHandleSetRadius(void* self, void*, NxReal radius
 
 static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height)
 	{
-	unsigned char* shape = nxBoxHandleInternal(self);
-	*reinterpret_cast<NxReal*>(shape + 0xe4) = height * 0.5f;
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	static_cast<CapsuleShape*>(static_cast<void*>(
+		nxBoxHandleInternal(self)))->nxCapsuleSetHeight(height);
 	}
 
 // phys_fn_000983 (0x000219d0, 62 B)

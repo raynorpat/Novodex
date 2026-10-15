@@ -2020,6 +2020,11 @@ class CapsuleShape
 	void				nxCapsuleSetRadius(float radius);
 	//! CAPSULE-table slot 15, phys_fn_001359 (0x00027920): returns +0xe0.
 	float				nxCapsuleGetRadius() const { return mFloatE0; }
+	//! phys_fn_000997 (0x00021c00): stores height * 0.5 at +0xe4, then
+	//! calls BASE vtable slot 6 with 1 to update the owning actor.
+	void				nxCapsuleSetHeight(float height);
+	//! phys_fn_000999 (0x00021c20): returns twice the float at +0xe4.
+	float				nxCapsuleGetHeight() const;
 
 	//! CAPSULE-table slot 0, phys_fn_001014 (0x000225e0): scalar deleting
 	//! destructor -- destroys colobj unconditionally, base-dtor chain,

@@ -784,6 +784,12 @@ int wmain(int argc, wchar_t** argv)
 				{
 				NxCapsuleShape* capsule = static_cast<NxCapsuleShape*>(publicShape);
 				capsule->setRadius(0.75f);
+				const unsigned beforeHeightEpoch = familyPruner
+					? word(familyPruner, 0x38) : 0u;
+				capsule->setHeight(2.5f);
+				printf("setter capsule_height_row=%x.%x.%u\n",
+					bits(capsule->getHeight()), word(familyShape, 0xe4),
+					familyPruner ? word(familyPruner, 0x38) - beforeHeightEpoch : 0u);
 				capsule->setHeight(2.0f);
 				printf("setter capsule_changed=%x.%x.%x.%x.%x.%u\n",
 					bits(capsule->getRadius()), bits(capsule->getHeight()),

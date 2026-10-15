@@ -53,9 +53,9 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 33,
+    "differential_falsified": 35,
     "oracle_differential_falsified": 44,
-    "deferred_not_reconstructed_in_phase": 209,
+    "deferred_not_reconstructed_in_phase": 207,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 5
   },
@@ -199,6 +199,36 @@
         "mutation": "the box corner helper keeps the first row of the rotation wide where the oracle narrows it",
         "detected": "mismatches=28009"
       }
+    },
+    {
+      "id": "phys_fn_000997",
+      "rva": "0x00021c00",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed only CapsuleShape::nxCapsuleSetHeight to store height * 0.25 instead of height * 0.5; the registered public differential reports the wrong getter and stored half-height. Restored control has stdout_delta=0.",
+        "detected": "stdout_delta=4"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "The registered Phase 5 actor setter target exercises the row through the public capsule height API; details and restored control are in evidence/phase3-capsule-height-000997-000999.md."
+    },
+    {
+      "id": "phys_fn_000999",
+      "rva": "0x00021c20",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Changed only CapsuleShape::nxCapsuleGetHeight to return mFloatE4 instead of mFloatE4 + mFloatE4; the registered public differential reports the wrong public getter value. Restored control has stdout_delta=0.",
+        "detected": "stdout_delta=10"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "The registered Phase 5 actor setter target exercises the row through the public capsule height API; details and restored control are in evidence/phase3-capsule-height-000997-000999.md."
     },
     {
       "id": "phys_fn_001010",
@@ -1030,22 +1060,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000997",
-      "rva": "0x00021c00",
-      "size": 29,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000999",
-      "rva": "0x00021c20",
-      "size": 9,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_001006",

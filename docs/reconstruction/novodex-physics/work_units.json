@@ -854,14 +854,14 @@
     "phys_fn_001041"
    ],
    "rows": {
-    "discovered": 3,
-    "dynamically_gated": 6,
-    "reconstructed": 15
+    "discovered": 2,
+    "dynamically_gated": 8,
+    "reconstructed": 14
    },
    "bytes": {
-    "discovered": 691,
-    "dynamically_gated": 534,
-    "reconstructed": 3797
+    "discovered": 662,
+    "dynamically_gated": 572,
+    "reconstructed": 3788
    },
    "phases": {
     "3": 19,

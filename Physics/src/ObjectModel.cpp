@@ -6202,6 +6202,22 @@ void CapsuleShape::nxCapsuleSetRadius(float radius)
 	reinterpret_cast<OwnerUpdateFn>(vtable[6])(this, 1u);
 	}
 
+// phys_fn_000997 (0x00021c00, 29 B): public NxCapsuleShape::setHeight's
+// internal row. It halves the public height and dispatches BASE slot 6 with 1.
+__declspec(noinline) void CapsuleShape::nxCapsuleSetHeight(float height)
+	{
+	void** vtable = static_cast<void**>(mBase.mVptrSlot);
+	mFloatE4 = height * 0.5f;
+	typedef void (__thiscall* OwnerUpdateFn)(void*, unsigned);
+	reinterpret_cast<OwnerUpdateFn>(vtable[6])(this, 1u);
+	}
+
+// phys_fn_000999 (0x00021c20, 9 B): x87 load from +0xe4 and double in place.
+__declspec(noinline) float CapsuleShape::nxCapsuleGetHeight() const
+	{
+	return mFloatE4 + mFloatE4;
+	}
+
 // Row 000993 (CapsuleShape::nxCapsuleSetDimensions) is in NpActor.cpp, next
 // to its only caller, because it calls 001325 (Scene.cpp).
 
