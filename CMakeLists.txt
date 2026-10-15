@@ -1117,7 +1117,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# tests/PhysicsCollisionOpcode.cpp (convex-mesh gap Task 2i) holds the candidate
 	# side's OPCODE models, OBBCollider and the Foundation SDK the Task 2i
 	# families need, apart from Opcode.h's pragmas (see PhysicsCollisionInflate.cpp).
-	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp tests/PhysicsCollisionInflate.cpp tests/PhysicsCollisionOpcode.cpp
+	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp tests/PhysicsCollisionInflate.cpp tests/PhysicsCollisionOpcode.cpp tests/PhysicsType3PrunerFixture.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
@@ -1164,6 +1164,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	if(MSVC)
 		target_link_options(NxPhysicsCollisionTests PRIVATE /MAP)
 	endif()
+	# Phase 4's focused type-3 oracle differential uses the same in-process
+	# candidate harness with a narrow command-line fixture selector.
+	add_custom_target(NxPhysicsType3PrunerTests DEPENDS NxPhysicsCollisionTests)
 	# No architecture rule here: source file properties are per directory, so
 	# the /arch:IA32 rule above already covers these two files in this target
 	# too. A second rule naming them would set the same value and silently

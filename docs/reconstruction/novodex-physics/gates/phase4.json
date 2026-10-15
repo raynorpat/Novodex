@@ -121,6 +121,11 @@
       "name": "aabb_center_extents_phase2_discharge_000923",
       "command": "fresh Win32 Release archive build; run_differential.ps1 -Targets NxPhysicsSceneRaycastTests; run_phase_gate.ps1 -Phase 4",
       "result": "The baseline NxPhysicsSceneRaycastTests differential is exact. Mutating only the inlined SetCenterExtents minimum calculation is caught at stdout_delta=126; restored output is exact. Fresh full Phase 4 passes at 529/529 assertions and discharges Phase 2 row phys_fn_000923. Evidence: evidence/phase2-aabb-center-extents-000923.md and its raw transcript directory."
+    },
+    {
+      "name": "type3_pruner_tree_refit_and_runner_registration_2026-10-15",
+      "command": "run_differential.ps1 -Targets NxPhysicsType3PrunerTests; run_phase_gate.ps1 -Phase 4",
+      "result": "The focused moved-leaf tree-refit differential reports oracle_found=1 and candidate_found=1 with mismatches=0. Skipping Type3StaticPruner::PrepareQuery's Refit2 call is rejected (candidate_found=0, mismatches=1, oracle_exit=0, candidate_exit=1); restored control passes. The first full-gate attempt exposed a launch mapping defect: it looked for an unbuilt NxPhysicsType3PrunerTests.exe and silently reused a zero exit code. The runner now launches NxPhysicsCollisionTests.exe with --type3-pruner-only. Fresh Phase 4 passes at 535/535 coverage assertions. This adds one refit case and does not close the broader type-3 pruner family. Evidence: evidence/phase4-type3-pruner-refit-20261015.md and evidence/raw/type3-pruner-refit-20261015/."
     }
   ],
   "excluded_from_comparison": [

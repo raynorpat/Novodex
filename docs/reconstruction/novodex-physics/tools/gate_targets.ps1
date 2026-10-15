@@ -64,7 +64,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '1' = @()
     '2' = @()
     '3' = @('NxPhysicsCollisionTests')
-    '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
+    '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsType3PrunerTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
     '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsCollisionTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsPlaneShapeDescValidationTests')
@@ -5318,6 +5318,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=scene_base_dtor_owner case=owner_scene_pruner_and_slot_cleanup',
         'collision input name=scene_base_dtor_owner words=1 input=ad2aca7747985764'
     )
+    'NxPhysicsType3PrunerTests' = @(
+        'collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0',
+        'collision coverage name=type3_pruner case=tree_refit_moved_leaf'
+    )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
     # load path and the mesh-header rejects, and stayed green as Task 4 added
@@ -6069,7 +6073,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 533  # adds actual-DLL Pruner constructor bounds, registration and handle-reuse assertions
+    '4' = 535  # adds actual-DLL Pruner constructor bounds, registration, handle-reuse and type-3 query assertions
                # adds the triangle-mesh creation marker for AABB-tree build rows
                # adds seven PMap query cases, their oracle digest and two mesh-release cases
                # all registered asset, PMap export, and Scene raycast coverage lines
@@ -6346,7 +6350,8 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsShapeVtableTests',
     'NxPhysicsPlaneShapeDescValidationTests',
-    'NxPhysicsThirdPartyTests'
+    'NxPhysicsThirdPartyTests',
+    'NxPhysicsType3PrunerTests'
 )
 $NxSkippedExitCode = 3
 

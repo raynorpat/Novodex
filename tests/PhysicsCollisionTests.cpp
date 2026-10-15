@@ -2746,6 +2746,7 @@ static unsigned nxDrivePSceneBaseDtorRegistry(unsigned char* base);
 static unsigned nxDrivePSceneBaseDtorOwner(unsigned char* base);
 static unsigned nxDrivePScenePrunerOwnerDestroy(unsigned char* base);
 static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base);
+unsigned nxDriveType3PrunerRefit(unsigned char* base);
 extern "C" void __fastcall NxScenePrunerNodeRemove(void* node);
 extern "C" void __stdcall NxScenePrunerNodeDestroy(void* node);
 extern "C" void __fastcall NxScenePrunerShapeRemove(void* group, void* owner);
@@ -4230,9 +4231,10 @@ int wmain(int argc, wchar_t** argv)
 	const bool scenePrunerOwnerOnly = argc == 4 && wcscmp(argv[3], L"--scene-pruner-owner-only") == 0;
 	const bool sceneBaseDtorOwnerOnly = argc == 4 && wcscmp(argv[3], L"--scene-base-dtor-owner-only") == 0;
 	const bool sceneTriggerPairDuplicatesOnly = argc == 4 && wcscmp(argv[3], L"--scene-trigger-pair-duplicates-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly)
+	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly)
 		{
-		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only]\n");
+		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
 		}
 	wchar_t physicsPath[MAX_PATH];
@@ -4268,6 +4270,12 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(type3PrunerOnly)
+		{
+		const unsigned mismatches = nxDriveType3PrunerRefit(base);
+		printf("collision type3_pruner mismatches=%u\n", mismatches);
+		return mismatches ? 1 : 0;
+		}
 	if(planeMeshOnly)
 		{
 		const unsigned mismatches = nxDrivePlaneMesh(base);

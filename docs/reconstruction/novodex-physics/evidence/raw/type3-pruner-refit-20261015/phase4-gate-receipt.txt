@@ -1,0 +1,9 @@
+gate=oracle_differential:NxPhysicsType3PrunerTests command="D:\github\Novodex\build\Release\NxPhysicsCollisionTests.exe" D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c --type3-pruner-only
+collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0
+collision coverage name=type3_pruner case=tree_refit_moved_leaf
+collision type3_pruner mismatches=0
+gate=oracle_differential:NxPhysicsType3PrunerTests exit=0
+pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0
+pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=tree_refit_moved_leaf
+coverage_assertions_evaluated=535 floor=535
+phase_gate=4 status=pass
