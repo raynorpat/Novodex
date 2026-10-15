@@ -9,3 +9,5 @@ An entry-return mutation before the CRT time calls and `strftime` is rejected (`
 This closes one Phase 6 reconstructed row through the existing registered staged-pair target.
 
 After merge at `9ef2605b`, the registered `NxPhysicsCoreDumpTests` differential passed on main: both sides exited 0, `stdout_delta=0`, and stderr matched exactly. The post-merge transcript is stored in the raw evidence directory.
+
+The user-approved assertion was rerun on 2026-10-15 through a fresh Win32 Release Phase 6 gate in a detached checkout at `d7b1f6a7`. `NxPhysicsCoreDumpTests` emitted the date-line coverage markers across its text and binary dump cases, and the complete gate passed with 1,662/1,662 coverage assertions. The full runner transcript is compressed at `evidence/raw/phase6-scene-dump-datetime-003992-20261014/phase6-gate-20261015.log.gz`; its uncompressed SHA-256 is `3203634d325043a5a60094599be80108dc431ae7e63d2db3f8c1ef8a253a08af`.

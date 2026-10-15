@@ -79,5 +79,22 @@
       "source_bytes": 386151,
       "compressed_bytes": 41042
     }
+  },
+  "fresh_phase6_gate_2026_10_15": {
+    "source_revision": "d7b1f6a73d121d88b993766b55c97138f2138dbb",
+    "target": "NxPhysicsCoreDumpTests",
+    "phase_gate": 6,
+    "coverage_assertions_evaluated": 1662,
+    "coverage_floor": 1662,
+    "phase_gate_status": "pass",
+    "date_line_markers": "NxPhysicsCoreDumpTests emitted the registered date-line markers for text and binary dump cases; formatted weekday, month, day, year, 12-hour time, and AM/PM are checked before normalization.",
+    "transcript": {
+      "path": "phase6-gate-20261015.log.gz",
+      "source": "D:\\github\\Novodex\\build\\phase6-datetime-approval-rerun-20261015.log",
+      "source_sha256": "3203634d325043a5a60094599be80108dc431ae7e63d2db3f8c1ef8a253a08af",
+      "compressed_sha256": "924c34b8892400e6b4daa43f59d2355ee2e6e2835f0a0735bf4c953ad1880986",
+      "source_bytes": 3089161,
+      "compressed_bytes": 256580
+    }
   }
 }
