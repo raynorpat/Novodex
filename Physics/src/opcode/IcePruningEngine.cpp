@@ -24,7 +24,7 @@ delegating to the static-pruner query routines. The helper conditionally
 builds the tree and dispatches an internal callback using the pool counts.
 The type-3 destructor also releases the trailing Container. The type-3
 UpdateObject row is already reconstructed in ObjectModel.cpp; the type-3
-factory arm, cache refresh/query wrappers, and destructor remain open.
+factory arm, query preparation/wrappers, and destructor remain open.
 Shapes in the current fixtures select types 0 and 2, so existing scene tests
 do not exercise it; returning null for type 3 remains an acknowledged gap.
 
