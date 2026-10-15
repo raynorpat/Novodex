@@ -11055,3 +11055,4 @@ Phase 7 row `phys_fn_002346` (Scene trigger-pair list initialization) is mutatio
 
 Phase 7 `phys_fn_002367` lock-API initializer mutation detection: `mismatches=1`; restored oracle/source comparison returns `mismatches=0`. See `phase7-physfn-002367-lock-api-init.md`.
 Phase 7 `phys_fn_002369` and `phys_fn_002373` lock-API push-self rows mutation detection: each reports `mismatches=1`; the restored oracle/source comparisons return `mismatches=0`. See `phase7-lock-api-push-self-002369-002373.md`.
+Phase 7 `phys_fn_002371` and `phys_fn_002375` lock-API call/test rows are independently mutation-falsified: 002371 reports `mismatches=1`, 002375 reports `mismatches=2`, and restored comparisons return zero. See `phase7-lock-api-call-and-test-002371-002375.md`.

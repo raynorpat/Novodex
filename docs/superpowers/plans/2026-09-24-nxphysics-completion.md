@@ -8,12 +8,16 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 356 / 204. The restored source-built Win32 Release candidate passes the full Phase 7 oracle gate at 2,887/2,887 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
+**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 360 / 200. The restored source-built Win32 Release candidate passes the full Phase 7 oracle gate at 2,889/2,889 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
 
 
 ### Continuation — lock-API initializer differential enforcement (`phys_fn_002367`, 2026-10-15)
 
 The `NxPhysicsObjectLayoutTests` comparison for row 002367 now emits a registered row-specific coverage marker and contributes mismatches to the test's failing result. The differential runner supplies and verifies the staged oracle DLL identity, then treats this target as a candidate-source harness instead of launching it against the candidate DLL as a second oracle. A callback-argument mutation was rejected (`newreach row=002367 mismatches=1`, candidate failures=1); the restored control reports zero mismatches. Phase 7 advances to 356 closed / 204 deferred and the fresh full gate passes at 2,885/2,885; all 816 reconstruction-tool tests pass. The object-layout oracle fixture digest and retained proof self-hashes were refreshed for the harness change. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-physfn-002367-lock-api-init.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-physfn-002367-20261015/`.
+
+### Continuation — lock-API call and test callbacks (`phys_fn_002371`, `phys_fn_002375`, 2026-10-15)
+
+The candidate source harness now differentially checks the callback argument loaded from `[self]` and the zero/nonzero callback return mapping. Mutating the first callback value produces one mismatch for 002371; inverting the second row's return mapping produces two mismatches for 002375. Each mutation leaves the other row exact, the runner rejects both, and rebuilt restored controls report zero mismatches. Phase 7 advances to 360 closed / 200 deferred. Fresh Phase 5, 6, and 7 gates pass with 2,773, 1,673, and 2,889 registered assertions; all 816 reconstruction-tool tests pass. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-call-and-test-002371-002375.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-lock-api-call-and-test-002371-002375-20261015/`.
 
 ### M2 sphere radius lock wrappers (phys_fn_001183 / phys_fn_001185)
 
@@ -1138,3 +1142,8 @@ The populated-scene teardown and trigger-simulation staged-pair differentials ex
 ### Continuation — lock-API push-self wrappers (`phys_fn_002369`, `002373`, 2026-10-15)
 
 The existing `nxLockApiPushSelf` source comparison is now required coverage for both lock-API callback wrappers. A candidate-source mutation from `fn(v)` to `fn(v ^ 1u)` is rejected at both row markers (`mismatches=1` each; candidate failures=2); restored source is rebuilt byte-for-byte and both controls match. Fresh Phase 5, Phase 6, and Phase 7 gates pass at 2,771/2,771, 1,671/1,671, and 2,887/2,887 coverage assertions. Phase 7 advances to 358 closed / 202 deferred. Public headers and production behavior are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-push-self-002369-002373.md`.
+
+
+### Continuation — lock-API call and result wrappers (`phys_fn_002371`, `002375`, 2026-10-15)
+
+The existing `nxLockApiCall2371` and `nxLockApiTest2375` source comparisons are now required gate rows. Changing the forwarded 002371 word is caught (`mismatches=1`); inverting 002375's boolean return is caught in both callback-result cases (`mismatches=2`). Restored controls match. The Phase 7 ledger advances to 360 closed / 200 deferred. Public headers and production behavior are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-call-and-test-002371-002375.md`.

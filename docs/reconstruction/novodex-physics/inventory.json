@@ -44200,12 +44200,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "lock-API global call (0x5b7e0)",
+      "state": "dynamically_gated",
+      "source": "lock-API global call (nxLockApiCall2371, Physics/src/ObjectModel.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/886",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7416",
-      "static_proof": "static review of the recorded shape: lock-API global call (0x5b7e0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
+      "static_proof": "The oracle row at RVA 0x5b7e0 loads the 32-bit word at [self] and calls lock-API global 0x10104020 with it.",
+      "dynamic_proof": "Direct registered NxPhysicsObjectLayoutTests oracle differential: rows 002371 and 002375 are compared against nxLockApiCall2371 and nxLockApiTest2375 linked from Physics/src/ObjectModel.cpp. The fixture checks callback arguments and return behavior for zero/nonzero results. Mutating the forwarded 002371 word is rejected (mismatches=1); inverting the 002375 return is rejected (mismatches=2). Restored control matches. Evidence: evidence/phase7-lock-api-call-and-test-002371-002375.md and evidence/raw/phase7-lock-api-call-and-test-002371-002375-20261015/.",
       "notes": ""
     },
     {
@@ -44272,12 +44272,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "lock-API global test (0x5b800, ret 4)",
+      "state": "dynamically_gated",
+      "source": "lock-API global test (nxLockApiTest2375, Physics/src/ObjectModel.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/888",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7418",
-      "static_proof": "static review of the recorded shape: lock-API global test (0x5b800, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
+      "static_proof": "The oracle row at RVA 0x5b800 loads [self], forwards it with the second argument to lock-API global 0x10104028, then returns 1 for a zero callback result and 0 otherwise.",
+      "dynamic_proof": "Direct registered NxPhysicsObjectLayoutTests oracle differential: rows 002371 and 002375 are compared against nxLockApiCall2371 and nxLockApiTest2375 linked from Physics/src/ObjectModel.cpp. The fixture checks callback arguments and return behavior for zero/nonzero results. Mutating the forwarded 002371 word is rejected (mismatches=1); inverting the 002375 return is rejected (mismatches=2). Restored control matches. Evidence: evidence/phase7-lock-api-call-and-test-002371-002375.md and evidence/raw/phase7-lock-api-call-and-test-002371-002375-20261015/.",
       "notes": ""
     },
     {
