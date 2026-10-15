@@ -111,6 +111,7 @@ $NxRequiredCoverageLines = [ordered] @{
 	)
 	'NxPhysicsPrunerPoolAllocationFailureTests' = @(
 		'pruner pool array oom cases=4 slots=objects.forward.reverse.generations exit=c0000005.c0000005.c0000005.c0000005 mismatches=0'
+		'pruner pool growth array oom cases=4 slots=objects.forward.reverse.generations exit=c0000005.c0000005.c0000005.c0000005 mismatches=0'
 	)
 	'NxPhysicsJointWithoutBodiesTests' = @(
 		'joint bodyless list member=1 nodes=1 next_null=1'
@@ -6095,7 +6096,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2745  # adds process-pool lifecycle plus owner and parallel-array allocation-failure coverage
+	'5' = 2746  # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
 	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6201,7 +6202,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2873  # adds actual-DLL Pruner registration, parallel-array failure and handle-reuse assertions
+	'7' = 2874  # adds actual-DLL Pruner registration, constructor/growth OOM and handle-reuse assertions
 	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions

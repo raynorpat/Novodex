@@ -1,6 +1,6 @@
-// The shipped constructor does not recover when one of its four process-pool
-// arrays cannot be allocated. Keep that access violation inside a child process
-// and require the oracle and candidate to fail at the same allocation site.
+// The shipped process pool does not recover when one of its constructor or
+// growth arrays cannot be allocated. Keep those access violations inside child
+// processes and require the oracle and candidate to fail at matching sites.
 #include "PhysicsPairLoader.h"
 
 #include "NxPhysicsSDK.h"
@@ -8,6 +8,7 @@
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
 #include "NxActor.h"
+#include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
 #include "NxUserAllocator.h"
 #include <stdlib.h>
@@ -59,7 +60,8 @@ static const NxPoolAllocationProbe kProbes[] =
 		{ "generations", 4, 3 }
 	};
 
-static int nxRunFailingChild(const wchar_t* pairDirectory, unsigned size, unsigned ordinal)
+static int nxRunFailingChild(const wchar_t* pairDirectory, const wchar_t* mode,
+	unsigned size, unsigned ordinal)
 	{
 	wchar_t self[MAX_PATH];
 	if(!GetModuleFileNameW(0, self, MAX_PATH))
@@ -67,7 +69,7 @@ static int nxRunFailingChild(const wchar_t* pairDirectory, unsigned size, unsign
 
 	wchar_t commandLine[MAX_PATH * 2 + 96];
 	if(swprintf_s(commandLine, sizeof(commandLine) / sizeof(commandLine[0]),
-		L"\"%s\" \"%s\" --child %u %u", self, pairDirectory, size, ordinal) < 0)
+		L"\"%s\" \"%s\" %s %u %u", self, pairDirectory, mode, size, ordinal) < 0)
 		return 1;
 
 	SECURITY_ATTRIBUTES security = { sizeof(security), 0, TRUE };
@@ -104,12 +106,16 @@ static int nxRunFailingChild(const wchar_t* pairDirectory, unsigned size, unsign
 		TerminateProcess(process.hProcess, 0xffffffffu);
 	CloseHandle(process.hThread);
 	CloseHandle(process.hProcess);
+	if(waited == WAIT_OBJECT_0)
+		printf("child allocation mode=%ls size=%u ordinal=%u exit=%08lx\n",
+			mode, size, ordinal, exitCode);
 	return waited == WAIT_OBJECT_0 && exitCode == 0xc0000005u ? 0 : 1;
 	}
 
 static int nxRunChild(int argc, wchar_t** argv, HMODULE physics)
 	{
-	if(argc != 5 || wcscmp(argv[2], L"--child") != 0)
+	const bool growth = argc == 5 && wcscmp(argv[2], L"--growth-child") == 0;
+	if(argc != 5 || (wcscmp(argv[2], L"--child") != 0 && !growth))
 		return 2;
 	const unsigned size = static_cast<unsigned>(wcstoul(argv[3], 0, 10));
 	const unsigned ordinal = static_cast<unsigned>(wcstoul(argv[4], 0, 10));
@@ -139,18 +145,36 @@ static int nxRunChild(int argc, wchar_t** argv, HMODULE physics)
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene)
 		return 7;
+	if(growth)
+		{
+		NxBoxShapeDesc box;
+		NxActorDesc actorDesc;
+		actorDesc.shapes.pushBack(&box);
+		if(!scene->createActor(actorDesc))
+			return 8;
+		NxBodyDesc body;
+		NxActorDesc dynamicDesc;
+		dynamicDesc.body = &body;
+		dynamicDesc.density = 1.0f;
+		dynamicDesc.shapes.pushBack(&box);
+		if(!scene->createActor(dynamicDesc)) return 8;
+		scene = sdk->createScene(sceneDesc);
+		if(!scene) return 8;
+		actorDesc = dynamicDesc;
+		}
 
 	sdkAllocator.failAllocationOfSizeAfter(size, ordinal);
 	NxBoxShapeDesc box;
 	NxActorDesc actorDesc;
 	actorDesc.shapes.pushBack(&box);
 	NxActor* actor = scene->createActor(actorDesc);
-	return actor ? 0 : 8;
+	return actor ? 0 : 9;
 	}
 
 int wmain(int argc, wchar_t** argv)
 	{
-	const bool child = argc == 5 && wcscmp(argv[2], L"--child") == 0;
+	const bool child = argc == 5 && (wcscmp(argv[2], L"--child") == 0
+		|| wcscmp(argv[2], L"--growth-child") == 0);
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;
 	const int status = nxOpenPair(child ? 2 : argc, argv,
@@ -166,10 +190,26 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < sizeof(kProbes) / sizeof(kProbes[0]); ++i)
 		{
 		const NxPoolAllocationProbe& probe = kProbes[i];
-		if(nxRunFailingChild(pairDirectory, probe.size, probe.ordinal))
+		if(nxRunFailingChild(pairDirectory, L"--child", probe.size, probe.ordinal))
 			++failures;
 		}
 	printf("pruner pool array oom cases=4 slots=objects.forward.reverse.generations exit=c0000005.c0000005.c0000005.c0000005 mismatches=%u\n",
 		failures);
-	return failures ? 1 : 0;
+	const NxPoolAllocationProbe growthProbes[] =
+		{
+		{ "objects", 16, 1 },
+		{ "forward", 8, 1 },
+		{ "reverse", 8, 2 },
+		{ "generations", 8, 3 }
+		};
+	unsigned growthFailures = 0;
+	for(unsigned i = 0; i < sizeof(growthProbes) / sizeof(growthProbes[0]); ++i)
+		{
+		const NxPoolAllocationProbe& probe = growthProbes[i];
+		if(nxRunFailingChild(pairDirectory, L"--growth-child", probe.size, probe.ordinal))
+			++growthFailures;
+		}
+	printf("pruner pool growth array oom cases=4 slots=objects.forward.reverse.generations exit=c0000005.c0000005.c0000005.c0000005 mismatches=%u\n",
+		growthFailures);
+	return failures || growthFailures ? 1 : 0;
 	}

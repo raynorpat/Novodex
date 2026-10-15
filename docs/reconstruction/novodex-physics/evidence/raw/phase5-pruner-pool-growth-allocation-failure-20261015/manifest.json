@@ -1,0 +1,76 @@
+{
+  "packet": "phase5-pruner-pool-growth-allocation-failure-20261015",
+  "base_commit": "6a1e7bec1ab9d23d5a5bbee8cf2afa8bd625f0db",
+  "candidate_physics_sha256": "2875ada564304a2cdd220b5ebd1a859ee2a3bb7458b2b0c568ac3042ee700871",
+  "mutation_candidate_physics_sha256": "df5271348d99591be54cd6d958298bf8807bde6e5a324520a806ddada3b89502",
+  "growth_array_cases": [
+    {
+      "slot": "objects",
+      "size_hex": "10",
+      "ordinal": 1
+    },
+    {
+      "slot": "forward",
+      "size_hex": "8",
+      "ordinal": 1
+    },
+    {
+      "slot": "reverse",
+      "size_hex": "8",
+      "ordinal": 2
+    },
+    {
+      "slot": "generations",
+      "size_hex": "8",
+      "ordinal": 3
+    }
+  ],
+  "expected_child_exit": "c0000005",
+  "restored_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true",
+  "mutation_differential": "oracle_exit=0 candidate_exit=1 stdout_delta=10 growth_mismatches=4",
+  "phase5_gate": "status=pass coverage_assertions=2746 floor=2746",
+  "phase7_gate": "status=pass coverage_assertions=2874 floor=2874",
+  "tooling_suite": "816 tests OK",
+  "artifacts": [
+    {
+      "file": "candidate-growth-suppression-mutation.log.gz",
+      "source": "build/m1-scene-lifecycle/pruner-pool-growth-mutation.log",
+      "size_source": 9624,
+      "sha256_source": "1b45a937cc496d639ff46718e733780e6741312ce8711c565c6b0b65664e84bf",
+      "size_gzip": 1404,
+      "sha256_gzip": "624cc2da93956723585dbae6ac546611588febe3a68fde672af2e9aad40db2d3"
+    },
+    {
+      "file": "restored-control.log.gz",
+      "source": "build/m1-scene-lifecycle/pruner-pool-growth-restored.log",
+      "size_source": 9287,
+      "sha256_source": "11f51f10a8047da217d8cacabbc0f7d9c43387235381960b58d2fb8da6ae3aa6",
+      "size_gzip": 1284,
+      "sha256_gzip": "a077177d47066d0dcf24e73f6d5a1b4443b4e2defaba27a00fb94af718e1ce26"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "build/m1-scene-lifecycle/phase5-pruner-growth-oom.log",
+      "size_source": 2825657,
+      "sha256_source": "2aeb1dceec5ca0a08301a0403dd1d4a2bfa716e795b2072838c1f3a09b658eb4",
+      "size_gzip": 205724,
+      "sha256_gzip": "24aefa7eeda2b8f69ab521863d7c1358ffc91f7a7c0275eeb7d1d9247e825f10"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "build/m1-scene-lifecycle/phase7-pruner-growth-oom.log",
+      "size_source": 4604489,
+      "sha256_source": "13bb8a445cb387f4e379072c4d8e0ed9d90aec622b5d3092b8fa64a0f0fe3e50",
+      "size_gzip": 368552,
+      "sha256_gzip": "5bbbeb5793798f3932efb60d08723eb1b82f99461a0610fc609066246425f510"
+    },
+    {
+      "file": "tooling-tests.log.gz",
+      "source": "build/m1-scene-lifecycle/tooling-pruner-pool-growth.log",
+      "size_source": 922,
+      "sha256_source": "2cf87be683696798c63ac3a4ccf365d8f56fc3dc2d6c34ce4b4ca195fae84d71",
+      "size_gzip": 67,
+      "sha256_gzip": "3ae00102beaa9d36d5c96fc5b1d0079c478653f5be6e12f231ed19224778d220"
+    }
+  ]
+}
