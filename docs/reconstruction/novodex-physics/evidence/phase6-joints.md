@@ -11052,3 +11052,5 @@ Phase 7 row `phys_fn_002334` (`NxControllerCore::getPosition`) is mutation-falsi
 Phase 7 row `phys_fn_002342` (Scene trigger-pair release) is mutation-falsified through `NxPhysicsPopulatedSceneTeardownTests`: skipping the +0x18 vector free leaves the previous trigger-pair allocation live and is rejected (oracle exit 0, candidate exit 1, stdout_delta=15); the restored control is exact. See `phase7-scene-trigger-pair-release-002342.md`.
 
 Phase 7 row `phys_fn_002346` (Scene trigger-pair list initialization) is mutation-falsified through the populated-scene and trigger-simulation staged-pair differentials. A wrong second-lane pointer crashes both candidate paths while the oracle exits zero (`stdout_delta=38` and `stdout_delta=32`); the restored controls match exactly. See `phase7-scene-trigger-pair-init-002346.md`.
+
+Phase 7 `phys_fn_002367` lock-API initializer mutation detection: `mismatches=1`; restored oracle/source comparison returns `mismatches=0`. See `phase7-physfn-002367-lock-api-init.md`.

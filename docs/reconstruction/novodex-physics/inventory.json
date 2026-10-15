@@ -44128,12 +44128,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-API initializer (0x5b7b0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/884",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7414",
       "static_proof": "static review of the recorded shape: lock-API initializer (0x5b7b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
+      "dynamic_proof": "Direct registered NxPhysicsObjectLayoutTests oracle differential: oracle RVA 0x5b7b0 versus nxLockApiInit2367 linked from Physics/src/ObjectModel.cpp; return pointer, four callback arguments, and all 0x20 initialized bytes matched. A source mutation changing fn(0u,1u,0u,0u) to fn(0u,0u,0u,0u) was detected as newreach row=002367 mismatches=1 and newreach candidate failures=1 (oracle exit 0; runner rejected). Restored build returned mismatches=0. Evidence: evidence/phase7-physfn-002367-lock-api-init.md and evidence/raw/phase7-physfn-002367-20261015/.",
       "notes": ""
     },
     {

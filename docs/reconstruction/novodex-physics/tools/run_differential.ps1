@@ -131,7 +131,7 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
     # Most probes receive only the pair directory. Direct oracle fixtures pin
     # the exact staged Physics image before making private RVA calls.
     $arguments = @('"' + $Pair.Directory + '"')
-    if ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsJointSupportTests') {
+    if ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsJointSupportTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
         # This probe hashes the staged oracle before loading it. Supplying the
         # staged pair's identity keeps direct invocations bound to the exact
         # DLL selected by the differential runner.
@@ -175,6 +175,10 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
         $expectedOracle = "oracle module path=$(Join-Path $Pair.Directory 'NxPhysics.dll') sha256=$($Pair.PhysicsSha256)"
         Assert-True ($lines -ccontains $expectedOracle) "$Target/$($Pair.Name) reported the staged oracle identity: $expectedOracle"
     }
+    if ($Target -ceq 'NxPhysicsObjectLayoutTests') {
+        $expectedLayoutOracle = "layout module path=$(Join-Path $Pair.Directory 'NxPhysics.dll') sha256=$($Pair.PhysicsSha256)"
+        Assert-True ($lines -ccontains $expectedLayoutOracle) "$Target/$($Pair.Name) reported the staged oracle identity: $expectedLayoutOracle"
+    }
     if ($Target -ceq 'NxPhysicsCollisionTests') {
         $candidateFoundation = Join-Path $releaseRoot 'NxFoundation.dll'
         $candidateFoundationSha256 = Get-FileSha256 $candidateFoundation
@@ -184,10 +188,10 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
     $loadedModules = if ($Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests') {
         @()
     }
-    elseif ($Target -ceq 'NxPhysicsShapeVtableTests') {
-        # This harness links candidate implementation objects directly and
-        # explicitly loads only the selected Physics image as its oracle.
-        @(@{ Name = 'NxPhysics.dll'; Sha256 = $Pair.PhysicsSha256 })
+    elseif ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
+        # These harnesses explicitly load the selected Physics image as oracle;
+        # NxPhysicsObjectLayoutTests reports it as `layout module`, checked above.
+        @()
     }
     else {
         @(@{ Name = 'NxPhysics.dll'; Sha256 = $Pair.PhysicsSha256 }, @{ Name = 'NxFoundation.dll'; Sha256 = $Pair.FoundationSha256 })
@@ -304,7 +308,7 @@ foreach ($target in $Targets) {
         if (-not $exitExact) { $differences++ }
         continue
     }
-    if ($target -ceq 'NxPhysicsShapeVtableTests') {
+    if ($target -ceq 'NxPhysicsShapeVtableTests' -or $target -ceq 'NxPhysicsObjectLayoutTests') {
         # The probe links the candidate implementation objects into the test
         # executable and compares them to the explicitly loaded oracle image.
         # Running it with the candidate DLL as the oracle would reinterpret

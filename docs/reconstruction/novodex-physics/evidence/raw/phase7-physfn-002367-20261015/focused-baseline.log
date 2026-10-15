@@ -1,0 +1,408 @@
+phase=none resolved_targets=NxPhysicsObjectLayoutTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsObjectLayoutTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\github\Novodex\build\pairs-phase7-002367-current-20261015\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\github\Novodex\build\pairs-phase7-002367-current-20261015\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxPhysics.dll source_sha256=086764dd1f6c0498ff812f5adc29fb455c24f8ddfc56b09bcc7d3b1cbe51d004 staged=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\candidate\NxPhysics.dll staged_sha256=086764dd1f6c0498ff812f5adc29fb455c24f8ddfc56b09bcc7d3b1cbe51d004
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxFoundation.dll source_sha256=f5d2638fe8c5320220215a1a2dd153e8fb6859a88149dcade94f8eb163cd5eeb staged=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\candidate\NxFoundation.dll staged_sha256=f5d2638fe8c5320220215a1a2dd153e8fb6859a88149dcade94f8eb163cd5eeb
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxPhysics.map staged=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxPhysicsObjectLayoutTests.exe
+child target=NxPhysicsObjectLayoutTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\phase7-scene-auxiliary-000624\Release\NxPhysicsObjectLayoutTests.exe" "D:\github\Novodex\build\pairs-phase7-002367-current-20261015\oracle" "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c" exit=0
+child_stdout_begin
+layout module path=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+layout base=10000000 mode=differential
+layout pin=matched
+layout arena-bridge=installed
+layout allocator-shim=installed
+layout foundation-shim=installed
+ownerupd pruning oracle_ok=1 candidate_ok=1 oracle_list=1/00315a51 candidate_list=1/00315a51 oracle_update=1/00315a51/00000000 candidate_update=1/00315a51/00000000 mismatches=0
+addthunk row=oracle failures=0 digest=f9aac08b
+addthunk candidate failures=0 mismatches=0 digest=f9aac08b
+slot1wrapper row=oracle cases=4 failures=0 digest=05167dcd
+slot1wrapper candidate cases=4 failures=0 mismatches=0 digest=05167dcd
+vt name=actor_interface slots=87 digest=62936499
+vt name=actor_dynamic slots=88 digest=cdd44a90
+vt name=shape_base slots=12 digest=650a3f61
+vt name=box slots=12 digest=5daef065
+vt name=capsule slots=12 digest=ef7766c2
+vt name=plane slots=12 digest=2368c934
+vt name=sphere slots=12 digest=86cf5cb3
+vt name=mesh slots=12 digest=cef7ce84
+colobj ctor=phys_fn_001193 size=28 digest=e1df25e5 vptr_final=10107218 zero04=00000000 arg_at_8=a5a5a5a5 vptr_member=101072a0 arg_at_18=a5a5a5a5
+owner accessor=phys_fn_001281 mark=13579bdf returned=13579bdf
+hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10
+hull static tables digest=f835c8c3
+hull support row=phys_fn_000975 min_bits=c19c0000 max_bits=4eada5a5
+hull sharedhook row=phys_fn_000985 stable=1 words=00000000.00000000.00000000
+shapebase ctor=phys_fn_001273 size=224 digest=de5f5000 zero08=00000000 pose_diag=3f800000 zero9c=00000000 zeroa0=00000000 prun24=ffffffff prun28=0000ffff sentinel_d0=7fffffff arg_d4=5a5a5a5a hw_dc=6 hw_de=8
+shapeleaf row=oracle digest=cb0e48f9
+boxshape ctor=phys_fn_000977 size=552 digest=ac5ed12f sentinel_d0=2 arg_d4=5a5a5a5a dims=3f800000.3f800000.3f800000 face0_corners=00000000 face5_corners=00000000 verts_poison=cdcdcdcd floats_poison=cdcdcdcd colobj_ok=1
+sphere ctor=phys_fn_001349 size=228 digest=37ea7205 sentinel_d0=1 arg_d4=5a5a5a5a radius_e0=00000000 colobj_ok=1
+capsule ctor=phys_fn_000987 size=236 digest=ba7317e3 sentinel_d0=3 arg_d4=5a5a5a5a float_e0=00000000 float_e4=00000000 colobj_ok=1
+plane ctor=phys_fn_001247 size=268 digest=abed37e0 sentinel_d0=0 arg_d4=5a5a5a5a normal=00000000.3f800000.00000000 dist_ec=00000000 word108=1 tangent_f0=bf800000.00000000.00000000 binormal_fc=80000000.80000000.3f800000 colobj_ok=1
+mesh ctor=phys_fn_001379 size=232 digest=422a1f78 sentinel_d0=4 arg_d4=5a5a5a5a word_e0=00000000 word_e4=00000000 colobj_ok=1
+basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd
+boxrow slot10=phys_fn_000937 out=3fa00000.c0200000.3f400000.40c38275
+boxray oracle slots4-5=00020850,00020880
+boxraycap case=0 ret=1 rec=0013dba8 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=1 ret=1 rec=0013dba8 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=2 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
+boxraycap case=3 ret=1 rec=0013dba8 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=4 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
+boxraycap case=5 ret=1 rec=0013dba8 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
+boxraycap case=6 ret=0 rec=cdcdcdcd 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd 3f800000 cdcdcdcd cdcdcdcd cdcdcdcd
+boxraycap case=7 ret=1 rec=0013dba8 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxray contract cases=8 failures=0 mode=oracle-only
+boxray candidate8 mode=provisional
+boxray sweep cases=72 failures=0 mode=provisional
+rendercap row1 guards-zero calls=0
+rendercap contract mask=0 n20=0 n38=0 payloads=match
+rendercap candidate mask=0 agree n20=0 n38=0
+rendercap contract mask=1 n20=3 n38=0 payloads=match
+rendercap candidate mask=1 agree n20=3 n38=0
+rendercap contract mask=2 n20=0 n38=3 payloads=match
+rendercap candidate mask=2 agree n20=0 n38=3
+rendercap contract mask=3 n20=3 n38=3 payloads=match
+rendercap candidate mask=3 agree n20=3 n38=3
+rendercap contract mask=4 n20=0 n38=0 payloads=match
+rendercap candidate mask=4 agree n20=0 n38=0
+rendercap contract mask=5 n20=3 n38=0 payloads=match
+rendercap candidate mask=5 agree n20=3 n38=0
+rendercap candidate masks=6 agree
+slot3 contract cases=64 failures=0 mode=oracle-only
+slot3 candidate masks=64 agree n28-first=1
+slot3 order case agree calls=7 seq28>20/38 both
+boxrow2 slot11=phys_fn_000939 out=00000000.00000000.00000000.3fddb3d7 slot13=phys_fn_000927 saved=1 digest=853c971d dims_at_4c=3f800000
+boxrow3 slot8=phys_fn_000941 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000 slot9=phys_fn_000935 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000
+boxrow4 slots14-16=phys_fn_001391 stable=1
+boxdtor row=phys_fn_000979 digest=a29800b7
+planesave row=phys_fn_001251 saved=1 digest=7629841d normal_y=3f800000 neg_d=80000000
+sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000
+capsave row=phys_fn_000991 saved=1 digest=bf079f3c rad4c=00000000 hgt50=00000000
+meshword row=phys_fn_001381 mark_hit=1
+meshwords44 row=phys_fn_001389 out=deadbeef.cafebabe.12345678.00000000.00000000.00000000
+aabbrows sph9=phys_fn_001361 minmax=00000000.00000000.00000000.00000000.00000000.00000000 cap10=phys_fn_001001 cr=00000000.00000000.00000000.00000000 cap11=phys_fn_001003 cr=00000000.00000000.00000000.00000000
+meshrows slot13=phys_fn_001385 saved=1 digest=0ccd08b4 slot11=phys_fn_001387 words=0badf00d.00000000.00000000.13579bdf
+sphlocal row=phys_fn_001367 minmax=80000000.80000000.80000000.00000000.00000000.00000000
+setrad row=phys_fn_001357 stored=3fa00000 expected=3fa00000
+capsetrad row=phys_fn_000995 stored=3fc00000 expected=3fc00000
+sphdtor row=phys_fn_001375 digest=c4a35d15
+sphload row=phys_fn_001353 rad=40200000 group=0006
+setgroup row=phys_fn_001329 hw_d8=0007 expected=0007
+ownerupd row=phys_fn_001315 noop=1
+massframe row=phys_fn_000851 mass_scaled=4302e653 mass_unit=4282e653 digest=0bed6c36
+boxslot4 candidate cases=64 failures=0 provisional=1
+massmerge reciprocal-store regression agree words=13
+massmerge fractional centers agree cases=16 words=13
+mftranslate candidate run=54 failures=0 provisional=1
+negtrans candidate run=5 failures=0 provisional=1
+mfcombo candidate run=6 failures=0 provisional=1
+posecopy candidate run=4 failures=0 provisional=1
+shapegetters candidate failures=0 provisional=1
+shapegetters2 candidate failures=0 provisional=1
+ptrgetters candidate failures=0 provisional=1
+simplegetters candidate failures=0 provisional=1
+batchgetters candidate failures=0 provisional=1
+tinygetters candidate failures=0 provisional=1
+setget2 candidate failures=0 provisional=1
+setget3 candidate failures=0 provisional=1
+zeroinit candidate failures=0 provisional=1
+globalwrite candidate failures=0 provisional=1
+smallctor candidate failures=0 provisional=1
+zmix candidate failures=0 provisional=1
+zmix2 candidate failures=0 provisional=1
+initbatch candidate failures=0 provisional=1
+finalbatch candidate failures=0 provisional=1
+triplecopy candidate failures=0 provisional=1
+quadbatch candidate failures=0 provisional=1
+multicopy candidate failures=0 provisional=1
+posecopy2 candidate failures=0 provisional=1
+clampfcg candidate failures=0 provisional=1
+misc3 candidate failures=0 provisional=1
+tmplinit row=phys_fn_000496 candidate_vs_oracle bytes=64 mismatches=0
+tmplinit row=phys_fn_000496 candidate_dll_vs_oracle bytes=64 mismatches=0
+tmplinit row=phys_fn_000499 candidate_dll_vs_oracle bytes=84 mismatches=0
+shapevalid row=phys_fn_000498 candidate_dll_vs_oracle cases=8 mismatches=0
+tmplinit row=phys_fn_002314 candidate_dll_vs_oracle bytes=80 mismatches=0
+tmplinit candidate failures=0 provisional=1
+crossprod candidate failures=0 provisional=1
+boundedpush candidate failures=0 provisional=1
+tmplinit2 candidate failures=0 provisional=1
+condsum candidate failures=0 provisional=1
+bufreset candidate failures=0 provisional=1
+tmplfm candidate failures=0 provisional=1
+bufpop candidate failures=0 provisional=1
+ctorlink candidate failures=0 provisional=1
+builder4 candidate failures=0 provisional=1
+markdeg candidate failures=0 provisional=1
+xaccum candidate failures=0 provisional=1
+flagsel candidate failures=0 provisional=1
+lcgfloat candidate failures=0 provisional=1
+compact decisions failure=0 provisional=1
+negdiff candidate failures=0 provisional=1
+dcmp candidate failures=0 provisional=1
+indexedlookup candidate failures=0 provisional=1
+containsf candidate failures=0 provisional=1
+lookupfield candidate failures=0 provisional=1
+nestlookup candidate failures=0 provisional=1
+switch candidate failures=0 provisional=1
+pairsearch candidate failures=0 provisional=1
+reversearr candidate failures=0 provisional=1
+flagcmp candidate failures=0 provisional=1
+chaincopy candidate failures=0 provisional=1
+listpeek candidate failures=0 provisional=1
+delimscan candidate failures=0 provisional=1
+biginit candidate failures=0 provisional=1
+smallclean candidate failures=0 provisional=1
+condsetb candidate failures=0 provisional=1
+vec6cmp candidate failures=0 provisional=1
+ctorwrap candidate failures=0 provisional=1
+zerowrap candidate failures=0 provisional=1
+vzwrap candidate failures=0 provisional=1
+wrap240 candidate failures=0 provisional=1
+smallflag candidate failures=0 provisional=1
+smallflag2 candidate failures=0 provisional=1
+repcopy candidate failures=0 provisional=1
+indfield candidate failures=0 provisional=1
+cwread candidate failures=0 provisional=1
+ixsum2 candidate failures=0 provisional=1
+elemcount candidate failures=0 provisional=1
+transpt1403 candidate failures=0 provisional=1
+sphmass candidate failures=0 provisional=1
+capmass2 candidate failures=0 provisional=1
+planeaabb candidate failures=0 provisional=1
+actorthunk candidate failures=0 rows=phys_fn_000038,phys_fn_000040
+planeix6 candidate failures=0 provisional=1
+capaabb candidate failures=0 provisional=1
+globzero2 candidate failures=0 provisional=1
+posecopy827 candidate failures=0 provisional=1
+aggaabb1030 candidate failures=0 provisional=1
+d2f9 candidate failures=0 provisional=1
+gather0046 candidate failures=0 provisional=1
+quatm0132 candidate failures=0 provisional=1
+poseq0130 candidate failures=0 provisional=1
+orient0094 candidate failures=0 provisional=1
+lockacc candidate failures=0 provisional=1
+lockedget candidate failures=0 provisional=1
+lockedget2 candidate failures=0 provisional=1
+lockedcopy candidate failures=0 provisional=1
+lockacc3 candidate failures=0 provisional=1
+lockacc4 candidate failures=0 provisional=1
+lockacc5 candidate failures=0 provisional=1
+lockacc6 candidate failures=0 provisional=1
+lockacc7 candidate failures=0 provisional=1
+lockacc8 candidate failures=0 provisional=1
+lockacc9 candidate failures=0 provisional=1
+wrap5450 candidate failures=0 provisional=1
+wrap1787 candidate failures=0 provisional=1
+boxmass row=phys_fn_000849 mass_scaled=42f00000 mass_unit=42700000 digest=d82de90e
+capmass row=phys_fn_000853 e=4287663e.4287663e.41f56fdb.421d1463 f=41756fdb.4207663e.4207663e.419d1463 digest=ab81bd0c
+paxis row=phys_fn_000831 s0=41660000 q0=c0ae0000 digest=1d701701
+errstream row=phys_fn_001357 invalid_fires=1 valid_fires=0 digest=c2ab04f6
+grouperr row=phys_fn_001329 invalid_fires=1 d8=00000005 c8=00000020 digest=b6f879ec
+applydesc row=phys_fn_001347 result=1 digest=11e5e856 flags=1234 group=5 material=5678
+loaderr row=sphere+capsule fires=1/1 rad=bf800000.bf800000 hh=00000000 digest=8f125103
+ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67
+owndtor row=oracle flag=00000002 clr=1/1/1 pop=0 mv=0 fl=1 pair=0 freed=0 digest=6d133744
+vecgrow row=oracle proxy=c0c0c0c0 count=8 cap=14 elems=1 mops=3 mbytes=100 fops=2 fbytes=40 digest=6f1d9bd7
+vecgrow2 row=oracle noalloc=1 stored=1 digest=8eac5155
+relgrow row=oracle nopush=1 s37zero=1 poison=1 mv2=1 fl=10/18 dup=1 mops=1 mbytes=76 fops=1 fbytes=36 digest=dc548b5a
+pairrm row=oracle cases=5 digest=f0bdae43
+actorsm row=oracle digest=1bdc2fa8
+actorctor row=oracle ct=1/1/1/1/1 dd=1/1/1 adj=1/1/1 w=1/1/1 digest=19f4915a
+actorsm2 row=oracle energy=4240985d/4240985d digest=f3e3d65f
+actorsm3 row=oracle lin=3eb33333 ang=3e000000 digest=5bc8156a
+actorsm4 row=oracle digest=0ecc5ea9
+actorsm5 row=oracle digest=75b57124
+actorsm6 row=oracle digest=6f47ea3d
+actorsm7 row=oracle digest=0b4b17e4
+miscsm row=oracle digest=9460eb64
+miscsm2 row=oracle digest=c4bc7155
+slate11 row=oracle digest=7a409e75
+mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019
+material row=template flags=00000000 digest=527814f5
+materialboot row=template flags=00000000 digest=dcc6a675
+planeext row=phys_fn_001257 out=00000000.00000000.00000000.7f7fffff
+dtors2 plane=phys_fn_001263 digest=7ac6fe28 mesh=phys_fn_001399 digest=b3c6ab70
+capdtor row=phys_fn_001014 digest=7a376673
+capload row=phys_fn_000989 rad=3fc00000
+planeload row=phys_fn_001265 ny=3f800000
+meshload row=phys_fn_001383 bound=1
+boxload row=phys_fn_000981 stored=1
+capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000
+layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1
+layout oracle digest=774d629d
+sceneaux row=phys_fn_000649 arrays=10 oracle_frees=10 candidate_frees=10 mismatches=0
+colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=0013616c
+owner candidate ok=1 returned=13579bdf
+hull candidate ok=1 face2_offset=0xb8 vertices_offset=0x10
+hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5
+hull sharedhook candidate ok=1 stable=1
+shapebase candidate ok=1 digest=de5f5000 owner_self=1
+shapeleaf candidate ok=1 digest=cb0e48f9
+boxshape candidate ok=1 digest=ac5ed12f sentinel_d0=2
+boxvptr candidate word=0024aa18
+boxvptr candidate dispatch=unverified
+boxsweep-diff candidate run=48 failures=0 provisional=1
+sphere candidate ok=1 digest=37ea7205 sentinel_d0=1
+capsule candidate ok=1 digest=ba7317e3 sentinel_d0=3
+plane candidate ok=1 digest=abed37e0 sentinel_d0=0
+mesh candidate ok=1 digest=422a1f78 sentinel_d0=4
+basesave candidate ok=1 digest=bc9dc964
+boxrow candidate ok=1 digest=4e1a53cd
+boxrow2 candidate ok=1 d11=2f2dc4eb d13=853c971d
+boxrow3 candidate ok=1 d8=8428d8b5 d9=8428d8b5
+boxrow4 candidate ok=1
+boxdtor candidate ok=1 digest=a29800b7
+planesave candidate ok=1 digest=7629841d
+sphererows candidate ok=1 d13=f9280a78 rad=00000000
+morerows candidate okCap=1 okMesh=1
+aabbrows candidate ok=1 d9=e2ba14a5 dc=0b2ae445
+meshrows candidate ok=1 d13=0ccd08b4 dw=966271e0
+meshwords44 candidate ok=1 d44=2e7f4c1b
+sphlocal candidate ok=1 d8=33c61825
+dtors2 candidate ok=1 plane=7ac6fe28 mesh=b3c6ab70
+capaabb candidate ok=1 da=33c61825
+capload candidate ok=1 rad=3fc00000
+planeload candidate ok=1 ny=3f800000
+meshload candidate ok=1
+boxload candidate ok=1
+ownerupd candidate ok=1
+massframe candidate ok=1 digest=0bed6c36
+boxmass candidate ok=1 digest=d82de90e
+capmass candidate ok=1 digest=ab81bd0c
+paxis candidate ok=1 digest=1d701701
+errstream candidate ok=1 digest=c2ab04f6
+grouperr candidate ok=1 digest=b6f879ec
+applydesc candidate ok=1 result=1 digest=11e5e856 flags=1234 group=5 material=5678
+loaderr candidate ok=1 digest=8f125103
+material candidate ok=1 digest=527814f5
+owndtor candidate ok=1 digest=6d133744
+vecgrow candidate ok=1 count=8 cap=14 elems=1 digest=6f1d9bd7/8eac5155
+relgrow candidate ok=1 nopush=1 s37zero=1 poison=1 mv2=1 fl=10/18 dup=1 digest=dc548b5a
+pairrm candidate ok=1 digest=f0bdae43
+actorsm candidate ok=1 digest=1bdc2fa8
+actorctor candidate ok=1 ct=1/1/1/1/1 dd=1/1/1 adj=1/1/1 w=1/1/1 digest=19f4915a
+actorsm2 candidate ok=1 energy=4240985d/4240985d digest=f3e3d65f
+actorsm3 candidate ok=1 lin=3eb33333 ang=3e000000 digest=5bc8156a
+actorsm4 candidate ok=1 digest=0ecc5ea9
+actorsm5 candidate ok=1 digest=75b57124
+actorsm6 candidate ok=1 digest=6f47ea3d
+actorsm7 candidate ok=1 digest=0b4b17e4
+miscsm candidate ok=1 digest=9460eb64
+miscsm2 candidate ok=1 digest=c4bc7155
+slate11 candidate ok=1 digest=7a409e75
+materialboot candidate ok=1 digest=dcc6a675
+mzero candidate ok=1 digest=23206019
+ownctor candidate ok=1 digest=641beb67
+capdtor candidate ok=1 dc=7a376673
+setrad candidate ok=1 rad=3fa00000
+capsetrad candidate ok=1 rad=3fc00000
+setgroup candidate ok=1 hw_d8=0007
+sphload candidate ok=1 rad=40200000 group=0006
+planeext candidate ok=1 dp=517c20a1
+assertrows candidate failures=0 provisional=1
+wordrows candidate failures=0 provisional=1
+gate3708 candidate failures=0 provisional=1
+probe0392 candidate failures=0 provisional=1
+mutexfamily candidate failures=0 provisional=1
+vtconst candidate failures=0 provisional=1
+thunks3 candidate failures=0 provisional=1
+vtcall pair candidate failures=0 provisional=1
+arrayloop candidate failures=0 provisional=1
+dtor2142 candidate failures=0 provisional=1
+mutexdirect candidate failures=0 provisional=1
+applygroup probe failures=0 provisional=1
+vtcall slots candidate failures=0 provisional=1
+oncedispatch candidate failures=0 provisional=1
+dtor3938 candidate failures=0 provisional=1
+guardedstore candidate failures=0 provisional=1
+mutexwork candidate failures=0 provisional=1
+mutexwide candidate failures=0 provisional=1
+loop1024 candidate failures=0 provisional=1
+globalflag4491 candidate failures=0 provisional=1
+once0342 candidate failures=0 provisional=1
+chain4763 candidate failures=0 provisional=1
+store5382 candidate failures=0 provisional=1
+allocdtor candidate failures=0 provisional=1
+ownedptr candidate failures=0 provisional=1
+registry4743 candidate failures=0 provisional=1
+blockers candidate failures=0 provisional=1
+blockers2 candidate failures=0 provisional=1
+blockers3 candidate failures=0 provisional=1
+blockers4 candidate failures=0 provisional=1
+newunlock candidate failures=0 provisional=1
+lockhelper candidate failures=0 provisional=1
+lockhelperF candidate failures=0 provisional=1
+dtorchain candidate failures=0 provisional=1
+tailjmp candidate failures=0 provisional=1
+tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match
+tailsmall candidate failures=0 provisional=1
+reportonceF candidate failures=0 provisional=1
+accum0867 candidate failures=0 provisional=1
+pair0448 candidate failures=0 provisional=1
+list4089 candidate failures=0 provisional=1
+mutexlistfree candidate failures=0 provisional=1
+tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0
+newreach row=002367 oracle_differential candidate=source mismatches=0
+newreach candidate failures=0
+bindprobe done
+orderprobe done
+n3min candidate failures=0 provisional=1
+n3rest candidate failures=0 provisional=1
+floatout3575 candidate failures=0 provisional=1
+lockthunkF candidate failures=0 provisional=1
+smallrows candidate failures=0 provisional=1
+lockthunk2 candidate failures=0 provisional=1
+tailabi row=003936 cleanup=0 oracle=1 candidate=1 this=match
+extrarows candidate failures=0 provisional=1
+n4family candidate failures=0 provisional=1
+vcall413 candidate failures=0 provisional=1
+vecloop4165 candidate failures=0 provisional=1
+slot1544 candidate failures=0 provisional=1
+vecloop4163 candidate failures=0 provisional=1
+fourslot4861 candidate failures=0 provisional=1
+singletonrel candidate failures=0 provisional=1
+allocrel candidate failures=0 provisional=1
+masked4866 candidate failures=0 provisional=1
+masked4864 candidate failures=0 provisional=1
+allocrelease4149 candidate failures=0 provisional=1
+allocclear2342 candidate failures=0 provisional=1
+adjusted2060 candidate failures=0 provisional=1
+layout candidate mismatches=0 mode=differential candidate_fold=99fddf71
+layout result=differential-pass
+
+child_stdout_end
+child_stderr_begin
+DBG colobj=0013dc80 vtbl=10106dc8 slot0=100235d0 rva=000235d0
+v6 same=1 big=0
+cw read=0x027f/0x027f
+ix2 r=51
+orderprobe slot2 before=00000000
+orderprobe slot2 ok=1 after=000961a0
+orderprobe slot2 restored=00000000
+
+child_stderr_end
+pass: NxPhysicsObjectLayoutTests/oracle reported the staged oracle identity: layout module path=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+differential target=NxPhysicsObjectLayoutTests oracle_exit=0 candidate_sources_in_harness=True
+differential_targets=NxPhysicsObjectLayoutTests
+differential_pairs=D:\github\Novodex\build\pairs-phase7-002367-current-20261015\oracle,D:\github\Novodex\build\pairs-phase7-002367-current-20261015\candidate
+pass: every requested target passes its registered oracle/candidate differential contract
+differential=pass

@@ -8,7 +8,12 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 355 / 205. The restored source-built Win32 Release candidate passes the full Phase 7 oracle gate at 2,884/2,884 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
+**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 356 / 204. The restored source-built Win32 Release candidate passes the full Phase 7 oracle gate at 2,885/2,885 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
+
+
+### Continuation — lock-API initializer differential enforcement (`phys_fn_002367`, 2026-10-15)
+
+The `NxPhysicsObjectLayoutTests` comparison for row 002367 now emits a registered row-specific coverage marker and contributes mismatches to the test's failing result. The differential runner supplies and verifies the staged oracle DLL identity, then treats this target as a candidate-source harness instead of launching it against the candidate DLL as a second oracle. A callback-argument mutation was rejected (`newreach row=002367 mismatches=1`, candidate failures=1); the restored control reports zero mismatches. Phase 7 advances to 356 closed / 204 deferred and the fresh full gate passes at 2,885/2,885; all 816 reconstruction-tool tests pass. The object-layout oracle fixture digest and retained proof self-hashes were refreshed for the harness change. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-physfn-002367-lock-api-init.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-physfn-002367-20261015/`.
 
 ### M2 sphere radius lock wrappers (phys_fn_001183 / phys_fn_001185)
 

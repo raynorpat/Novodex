@@ -1,0 +1,3 @@
+Command: python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests -p test_*.py
+Result: Ran 816 tests in 54.083s
+OK
