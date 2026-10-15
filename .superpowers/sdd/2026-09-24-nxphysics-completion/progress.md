@@ -537,3 +537,7 @@ M2 sphere radius wrappers: `phys_fn_001183` getter read-lock behavior is exercis
 ### M7 continuation — `phys_fn_003611` global-to-local emitter pose
 
 IDA maps RVA `0x89410` to the shared emitter global-pose conversion. Added the candidate helper and a registered direct oracle differential for unattached, matrix-frame, and dynamic-body quaternion cases. A local-X translation mutation is rejected in both attached cases; the restored control is exact (3/3 callbacks, 3/3 stack checks). The helper is in `Physics/src/ZzFluidEmitterPose.cpp` so CMake links it after `PhysicsSDK.cpp` and keeps `NxCreatePhysicsSDK` at its required baseline RVA. Phase 5 passes at 2,768/2,768; Phase 7 passes at 2,882/2,882; all tooling tests pass (831 tests, 743 subtests).
+
+### Phase 6 continuation — `phys_fn_003936` Effector base destructor (2026-10-15)
+
+The registered `NxPhysicsEffectorTests` lifecycle reaches the base Effector destructor through the derived deleting-destructor chain. A candidate naked-return mutation suppressing the compiler-generated Observable destructor is caught (candidate access violation, `stdout_delta=75`, exact stderr); restored control is exact. Phase 6 closure moves to 163 closed / 270 deferred, with a fresh gate passing at 1,666/1,666. The approved core-dump date/time differential also passes exact on the fresh Win32 Release build. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-effector-base-destructor-003936.md` and its raw transcript folder.

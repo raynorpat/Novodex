@@ -1109,3 +1109,7 @@ The Phase 4 polygon-interface oracle differential drives 65 scratch-stamp wraps.
 ### M7 continuation — `phys_fn_003611` global-to-local emitter pose
 
 IDA maps RVA `0x89410` to the shared emitter global-pose conversion. The direct oracle differential covers unattached, matrix-frame, and dynamic-body quaternion cases; a local-X translation mutation is rejected in both attached cases. The helper lives in `Physics/src/ZzFluidEmitterPose.cpp`; its CMake source order preserves `NxCreatePhysicsSDK` at RVA `0x00055e50`, avoiding the link-layout-sensitive allocator crash. Phase 5 passes at 2,768/2,768; Phase 7 passes at 2,882/2,882 and the tooling suite passes with 831 tests and 743 subtests. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-emitter-global-to-local-003611.md`.
+
+### Phase 6 continuation — Effector base destructor (`phys_fn_003936`, 2026-10-15)
+
+The registered `NxPhysicsEffectorTests` staged-pair release path reaches the base `Effector` destructor through the derived deleting-destructor chain. A candidate naked-return mutant suppressing the compiler-generated `Observable` base teardown is rejected (oracle exit 0, candidate access violation, `stdout_delta=75`, exact stderr); the restored control is exact. `phys_fn_003936` is now mutation-falsified in the Phase 6 ledger. Fresh Win32 Release Phase 6 passes at 1,666/1,666, including the approved core-dump date/time assertion. Full DLL reconstruction remains open. See `docs/reconstruction/novodex-physics/evidence/phase6-effector-base-destructor-003936.md`.
