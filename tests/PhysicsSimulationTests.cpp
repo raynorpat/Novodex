@@ -321,12 +321,14 @@ class NxSimulationTriggerReport : public NxUserTriggerReport
 	NxShape* expectedOther;
 	unsigned calls;
 	unsigned status;
+	bool lastMatches;
 	NxSimulationTriggerReport(NxShape* trigger, NxShape* other)
-		: expectedTrigger(trigger), expectedOther(other), calls(0), status(0) {}
+		: expectedTrigger(trigger), expectedOther(other), calls(0), status(0), lastMatches(false) {}
 	virtual void onTrigger(NxShape& trigger, NxShape& other, NxTriggerFlag event)
 		{
 		++calls;
 		status = static_cast<unsigned>(event);
+		lastMatches = &trigger == expectedTrigger && &other == expectedOther;
 		printf("simulation fetch-trigger trigger=%u other=%u status=%u\n",
 			&trigger == expectedTrigger, &other == expectedOther, status);
 		}
@@ -3201,6 +3203,8 @@ int wmain(int argc, wchar_t** argv)
 	callbackScene->simulate(0.01f);
 	const bool callbackReady = callbackScene->checkResults(NX_RIGID_BODY_FINISHED, true);
 	const bool callbackFetched = callbackScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	const bool triggerQueueCleared = *triggerEndField == *triggerBeginField;
+	const bool contactQueueCleared = *contactEndField == *contactBeginField;
 	*triggerBeginField = savedTriggerBegin;
 	*triggerEndField = savedTriggerEnd;
 	*triggerCapacityField = savedTriggerCapacity;
@@ -3209,10 +3213,18 @@ int wmain(int argc, wchar_t** argv)
 	*contactCapacityField = savedContactCapacity;
 	if(!callbackReady || !callbackFetched)
 		return nxFail("fetch-callback simulation result was not ready and fetched");
-	printf("simulation fetch-callback summary ready=%u fetched=%u trigger_get=%u trigger_calls=%u contact_get=%u contact_calls=%u\n",
+	const bool callbackDispatchExact = triggerGetter && triggerReport.calls == 1 &&
+		triggerReport.lastMatches && triggerReport.status == NX_TRIGGER_ON_ENTER &&
+		triggerQueueCleared &&
+		contactGetter && contactReport.calls == 1 &&
+		contactReport.events == NX_NOTIFY_ON_TOUCH && contactQueueCleared;
+	printf("simulation fetch-callback summary ready=%u fetched=%u trigger_get=%u trigger_calls=%u trigger_cleared=%u contact_get=%u contact_calls=%u contact_cleared=%u exact=%u\n",
 		callbackReady, callbackFetched, triggerGetter, triggerReport.calls,
-		contactGetter, contactReport.calls);
+		triggerQueueCleared, contactGetter, contactReport.calls,
+		contactQueueCleared, callbackDispatchExact);
 	sdk->releaseScene(*callbackScene);
+	if(!callbackDispatchExact)
+		return nxFail("fetch-callback dispatch or queue reset did not match the oracle contract");
 
 	// fetchResults must retain buffered contact reports while no user callback
 	// is installed. Installing the listener before the next fetch must deliver

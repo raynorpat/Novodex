@@ -12393,13 +12393,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/251",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1704",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00012a90"
+      "static_proof": "IDA pseudocode for the continuation at RVA 0x00012ad0 walks 12-byte trigger records, invokes NxUserTriggerReport::onTrigger with the two public shapes and event flags, conditionally resets the trigger end pointer, then drains the Scene joint-break queue.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests target checks synthetic trigger callback identity/event and queue reset, plus public enter/stay/leave and joint-break delivery. Suppressing onTrigger is rejected (candidate exit=1, stdout_delta=4072); suppressing processJointBreakEvents is rejected (candidate exit=1, stdout_delta=842); retaining the trigger end pointer is rejected by the explicit queue-cleared assertion (candidate exit=1, stdout_delta=4074). Restored staged-pair control is exact.",
+      "notes": "continuation of the entry at 0x00012a90; implementation shared with phys_fn_000640 and phys_fn_000644",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?processSimulationCallbacks@NxSceneInternal@@QAEXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?processSimulationCallbacks@NxSceneInternal@@QAEXXZ",
+        "address": "0x1006cd70",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000643",
@@ -12429,13 +12437,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/251",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1707",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00012a90"
+      "static_proof": "IDA pseudocode for the continuation at RVA 0x00012b50 walks 44-byte contact records, forwards each NxContactPair and its event word to NxUserContactReport::onContactNotify, and resets the contact end pointer only when a listener and records are present.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests target checks synthetic contact callback count/event and queue reset. Replacing onContactNotify with a no-op is rejected (candidate exit=1, stdout_delta=610); retaining the contact end pointer fails the explicit assertion (candidate exit=1, stdout_delta=587). Restored staged-pair control is exact.",
+      "notes": "continuation of the entry at 0x00012a90; implementation shared with phys_fn_000640 and phys_fn_000642",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?processSimulationCallbacks@NxSceneInternal@@QAEXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?processSimulationCallbacks@NxSceneInternal@@QAEXXZ",
+        "address": "0x1006cd70",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000645",

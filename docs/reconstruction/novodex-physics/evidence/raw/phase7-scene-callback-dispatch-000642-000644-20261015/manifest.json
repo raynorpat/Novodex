@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "purpose": "Mutation and registered-gate evidence for Scene callback-dispatch continuation rows phys_fn_000642 and phys_fn_000644.",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_nxphysics_sha256": "7c43b72a1d36f07420acf97e3a9af29eaa47475093cab0213349ba1cbcdbef24",
+  "scene_cpp_sha256": "1bd2b5747970eed514fc528848acd02f33e4754c5745558a3b946e1343c795dd",
+  "simulation_target": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "phase_gates": {
+    "5": "2786/2786 pass",
+    "6": "1687/1687 pass",
+    "7": "2903/2903 pass"
+  },
+  "artifacts": [
+    {
+      "path": "restored-differential.log.gz",
+      "source_sha256": "025c8cafbfb2494f83aa05428f823b56062c50b7013a8a5e11cd4022fc0a498a",
+      "source_bytes": 848059,
+      "sha256": "68b51e42c6c78b5fbc762c640f1161771b20aca3a05f5cbf7c2650ffaac406c7",
+      "bytes": 54961
+    },
+    {
+      "path": "trigger-callback-mutant.log.gz",
+      "source_sha256": "b039acd64b775c75e662294a5ae3290860aec383dbf5c83cec5c58320d6dfbad",
+      "source_bytes": 429340,
+      "sha256": "0f7be4c1391493811e0138a6d7a8f9cbb78af40d1d5ca2a6fed44e5b6c850a58",
+      "bytes": 28673
+    },
+    {
+      "path": "contact-callback-mutant.log.gz",
+      "source_sha256": "ac9cbbf08fd19080441c45f2df13bc4c8159ebf490827d2e888b502e364a0d3a",
+      "source_bytes": 777706,
+      "sha256": "4a24109f9f7e1c0018fb3d5e70af394797159fd454c77f857bf13fd719070d36",
+      "bytes": 47050
+    },
+    {
+      "path": "trigger-queue-reset-mutant.log.gz",
+      "source_sha256": "67b3aea7c3844f2e9319050504a89b3eefdb30a5a5f112580b44a4248de03088",
+      "source_bytes": 429814,
+      "sha256": "7781a3a31cf8e9730540bae02e934bab123181a33da799830aa7974ab767687d",
+      "bytes": 28709
+    },
+    {
+      "path": "contact-queue-reset-mutant.log.gz",
+      "source_sha256": "f6c80caa76ef878aff4b862cd590bbb028aebb8fa37e64d243384aed4186f759",
+      "source_bytes": 781849,
+      "sha256": "9c7f57a725c8163c4b532cb61243228be511a7d4e187b1364b55cc18316d66bf",
+      "bytes": 47255
+    },
+    {
+      "path": "joint-break-drain-mutant.log.gz",
+      "source_sha256": "4d282c05a9788b84a58ce7022717fb92840fb2ab84c44139b50d836a313b2978",
+      "source_bytes": 748071,
+      "sha256": "9ff98cdefa4f66941ab8ce93f3d972b9c683a8525e259d08319f7287b6db6a02",
+      "bytes": 41612
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source_sha256": "aa6a75a8df1e61cdd76c615de3ab52143628330c92040879dc12c50444adad0e",
+      "source_bytes": 2845579,
+      "sha256": "134fc22dfb4b841df6c775c1a0b5ff431b01e7dc3a9122f2a8e12931e226b4fb",
+      "bytes": 207342
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "source_sha256": "1484d0a3ca431015d90a80758ee3eb679d47476ddb3455281b1880ec5a011ad5",
+      "source_bytes": 3110170,
+      "sha256": "e2fd277afaa2ad156f555c04423dde4b66e331eff5b233aa75e9fe1fec5eba52",
+      "bytes": 252683
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source_sha256": "6e74ad318d4ba6e7a0d9a344010c1f5cd43042d5127471b1812c86cf8092d85c",
+      "source_bytes": 4627204,
+      "sha256": "2f3e9d0e37c2adb613551777102de6e5b174de79be5be532f5b2ab9137e09757",
+      "bytes": 370857
+    }
+  ]
+}

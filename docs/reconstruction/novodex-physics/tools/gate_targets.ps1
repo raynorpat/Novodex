@@ -3382,6 +3382,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # Pair reconciliation produces one enter, one stay and one leave event
         # with the corresponding public shape handles across fetched steps.
         'simulation trigger-lifecycle summary fetched=1 calls=3 bad_shapes=0 exact=1'
+        # Fetch dispatch must deliver the synthetic trigger/contact records
+        # once and clear each queue only after its listener runs.
+        'simulation fetch-callback summary ready=1 fetched=1 trigger_get=1 trigger_calls=1 trigger_cleared=1 contact_get=1 contact_calls=1 contact_cleared=1 exact=1'
         # Thirty-two concurrent pairs exercise hash-chain matching, overlap
         # retention and queue growth; any enabled trigger bit admits all events.
         'simulation trigger-batch summary fetched=1 calls=96 bad_shapes=0 exact=1'
@@ -3611,7 +3614,6 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=spherepair60-a position=bef33333.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation stage=spherepair60-b position=3ef33333.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation contact callbacks=26 events=0000000a pairs=26 patches=26 points=26 normal=80000000.bf800000.80000000 point=00000000.bc916940.00000000 separation=bc916940'
-        'simulation fetch-callback summary ready=1 fetched=1 trigger_get=1 trigger_calls=1 contact_get=1 contact_calls=1'
         'simulation deferred-contact-report first=1 pending=1 second=1 calls=1 events=00000008'
         'simulation scene-release-contact start=1 before=1 calls=2 events=00000004 end_touch=1 actors=1'
         'simulation stage=contact60 position=00000000.3ee66666.00000000 velocity=00000000.00000000.00000000'
@@ -6156,7 +6158,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2786  # adds the allocator-bridge setter differential
+	'5' = 2786  # replaces the fetch-callback coverage marker with its asserted form
+	           # adds the allocator-bridge setter differential
 	           # adds sphere radius setter/getter lock state and invalid-radius report rows
 	           # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
@@ -6223,7 +6226,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1687  # adds the Joint scalar deleting destructor differential
+	'6' = 1687  # replaces the fetch-callback coverage marker with its asserted form
+	          # adds the Joint scalar deleting destructor differential
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6266,7 +6270,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2903  # adds the Joint scalar deleting destructor differential
+	'7' = 2903  # replaces the fetch-callback coverage marker with its asserted form
+	          # adds the Joint scalar deleting destructor differential
 	          # includes direct row 000965 Prunable owner-query result
 	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585
