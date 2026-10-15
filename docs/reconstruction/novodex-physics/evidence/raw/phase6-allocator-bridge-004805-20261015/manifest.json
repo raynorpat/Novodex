@@ -1,0 +1,72 @@
+{
+  "row": "phys_fn_004805",
+  "rva": "0x000b4020",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "fixture_source_sha256": "b722514ce69643eafc1185f622127c4245f1ebc53d71d56cb0cc411032d56571",
+  "candidate_sha256": "efb4842679e8edddfa65fb36f37d65f1c0b662e1a36f5a494b2e23b6261f5c2c",
+  "mutation": "In a throwaway git archive of 6fe57131, removed only the gSdkAllocator = allocator store from nxSetSdkAllocatorBridge and rebuilt the candidate DLL.",
+  "mutant_candidate_sha256": "f91433c8de8e3867f2b38bc25190f323ec98bfb8289e9db307e572a153358cdc",
+  "mutation_detection": "The registered NxPhysicsObjectLayoutTests helper compared the map-resolved candidate setter/global with oracle phys_fn_004805 and reported mismatches=1; the target exited 1.",
+  "restored_control": "The final focused registered oracle/candidate differential passed after preserving the source file original newline format: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True, allocator bridge mismatches=0.",
+  "coverage": {
+    "phase5": {
+      "assertions": 2785,
+      "floor": 2785,
+      "status": "pass"
+    },
+    "phase6": {
+      "assertions": 1685,
+      "floor": 1685,
+      "status": "pass"
+    },
+    "phase7": {
+      "assertions": 2901,
+      "floor": 2901,
+      "status": "pass"
+    }
+  },
+  "approved_datetime_assertion": "Phase 6 NxPhysicsCoreDumpTests validated the formatted date fields before normalization; ten text/binary/date markers per side were emitted and the staged differential was exact.",
+  "artifacts": [
+    {
+      "path": "phase5-gate-20261015.log.gz",
+      "source": "build/phase5-allocator-bridge-full-20261015.log",
+      "source_sha256": "3370de80a4475317989597ee71c647c76a2108320ad2d21705901db9430a424e",
+      "compressed_sha256": "e767870c48e72f942be396f215338f9de912985b05298f18980bb246e0769690",
+      "source_bytes": 2845192,
+      "compressed_bytes": 207265
+    },
+    {
+      "path": "phase6-gate-20261015.log.gz",
+      "source": "build/phase6-allocator-bridge-full-20261015.log",
+      "source_sha256": "9e5e43bfd6b6fca00c18c888db2cd849e998387e9df622ba060dd94daf756ac7",
+      "compressed_sha256": "0bc59ed1086fde9b2e1f3fee72f40c05e0135a890dd445df5814ac9abc133864",
+      "source_bytes": 3109406,
+      "compressed_bytes": 252452
+    },
+    {
+      "path": "phase7-gate-20261015.log.gz",
+      "source": "build/phase7-allocator-bridge-full-20261015.log",
+      "source_sha256": "3df89726c38cee645d99a7bc6c9daa2ec692e4874495d1a654bb891f8a8ce0cb",
+      "compressed_sha256": "8edb6724a841c1843895776ed7bcd67bbada2db844adfadec2ff520277cc8640",
+      "source_bytes": 4623754,
+      "compressed_bytes": 370332
+    },
+    {
+      "path": "setter-noop-mutation-20261015.log.gz",
+      "source": "build/allocator-bridge-004805-mutant.log",
+      "source_sha256": "a359455e889755ef29fa8cb1c5ea316ea17c6b579ef89c516f9aa18050fc2780",
+      "compressed_sha256": "a393c43dd45c37f336502b202adc12eded1d3adc43296c7a2ccfbd9aef380f62",
+      "source_bytes": 6318,
+      "compressed_bytes": 1414
+    },
+    {
+      "path": "restored-focused-control-20261015.log.gz",
+      "source": "build/allocator-bridge-004805-control-final.log",
+      "source_sha256": "ce86bdfb3196a05ea8f75d7da759b307a48afc2f615c2018d629b2528ed1c284",
+      "compressed_sha256": "85bbc8f84161fa976776d86727513961c6984aeffa1eea87537b451e34f3b08f",
+      "source_bytes": 27266,
+      "compressed_bytes": 5866
+    }
+  ],
+  "note": "No production source or public SDK header changed in this packet; nxSetSdkAllocatorBridge already contained the reconstructed store."
+}

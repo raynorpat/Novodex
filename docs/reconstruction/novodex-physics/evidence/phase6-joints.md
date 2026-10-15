@@ -11079,3 +11079,6 @@ Phase 7 row phys_fn_002396 derived worker-owner constructor mutation proof: flip
 ## Default allocator malloc/realloc rows 004807 and 004808
 
 The oracle-differential target NxPhysicsObjectLayoutTests exercises allocator vtable slots 0 and 2. The throwaway malloc mutant for phys_fn_004807 is caught with mismatches=3; the independent realloc mutant for phys_fn_004808 is caught with mismatches=3. The restored control is exact. See phase6-default-allocator-malloc-realloc-004807-004808.md and raw/phase6-default-allocator-004807-004808-20261015/.
+
+
+Phase 6 row `phys_fn_004805` (SDK allocator bridge setter) is now mutation-falsified through the map-resolved oracle/candidate comparison in `NxPhysicsObjectLayoutTests`. A candidate no-op store is rejected with `mismatches=1`; the restored staged differential is exact. Phase 5/6/7 gates pass at 2,785/2,785, 1,685/1,685, and 2,901/2,901 assertions. Phase 6 also validates the approved core-dump date/time fields before normalization. See [phase6-allocator-bridge-004805.md](phase6-allocator-bridge-004805.md) and [its raw evidence](raw/phase6-allocator-bridge-004805-20261015/manifest.json).
