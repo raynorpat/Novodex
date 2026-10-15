@@ -11005,3 +11005,6 @@ Phase 7 continuation: phys_fn_000517 (scene owner-pair entry) is mutation-falsif
 
 
 Phase 7 continuation: phys_fn_000519 (owner-pair loop continuation) is mutation-falsified through NxPhysicsSimulationTests. Suppressing its matching-record removal causes the row 000521 fixture to retain the root record (stdout_delta=4007); the restored candidate passes exactly. The C++ helper combines rows 000517 and 000519, which are independently falsified. See phase7-scene-owner-pair-record-remove-000519.md.
+
+
+Phase 7 continuation: phys_fn_000525 (pair-flag shape-ID index) is mutation-falsified through the registered NxPhysicsPairFlagTests. Clearing the row's shape-ID mapping causes the candidate access violation (candidate_exit=-1073741819, stdout_delta=24); the restored pair matches exactly. The following conversion continuation 000527 remains open. See phase7-scene-pair-flag-shape-index-000525.md.

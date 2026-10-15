@@ -10137,13 +10137,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/194",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1421",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA row 000525 starts at 0x00010410 and prepares a 0x40000-entry stack index of shapes found in the static and selected dynamic pruner pools. It keys each shape by its +0xd4 shape ID. The following hash-entry translation is continuation row 000527. Candidate implementation is NxSceneInternal::getPairFlagArray at NxPhysics.map VA 0x10060ab0.",
+      "dynamic_proof": "The registered Phase 7 NxPhysicsPairFlagTests exercises getPairFlagArray for an actor pair and shape pair. Mutating only the row 000525 shape-ID index assignment to store null causes the candidate to access-violate (candidate_exit=-1073741819, stdout_delta=24); restored oracle/candidate control is exact (stdout_delta=0, exact stderr). See evidence/phase7-scene-pair-flag-shape-index-000525.md.",
+      "notes": "The candidate C++ method combines this shape-index setup with continuation row 000527's pair-entry translation. Only row 000525's shape-ID index population is falsified here; row 000527 remains open."
     },
     {
       "id": "phys_fn_000526",

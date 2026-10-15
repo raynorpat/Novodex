@@ -492,3 +492,8 @@ The registered Phase 7 simulation reaches the owner-pair helper through row 0005
 ### M7.10 — Scene owner-pair loop continuation (phys_fn_000519)
 
 Suppressing only the matching-record removal in the row 000519 continuation is caught through the registered Phase 7 simulation (stdout_delta=4007). Restoring and rebuilding returns the exact differential. The candidate helper combines 000517 and 000519, now independently falsified. Phase 7 moves to 341 closed / 219 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-owner-pair-record-remove-000519.md.
+
+
+### M7.11 — Pair-flag shape index (phys_fn_000525)
+
+The registered Phase 7 pair-flag test exercises actor and shape pairs. Clearing only 000525's shape-ID index is caught by the candidate access violation (stdout_delta=24); restoring and rebuilding returns the exact differential. Continuation 000527 remains open. Phase 7 moves to 342 closed / 218 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-pair-flag-shape-index-000525.md.
