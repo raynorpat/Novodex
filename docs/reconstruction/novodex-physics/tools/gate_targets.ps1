@@ -178,6 +178,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'triangle_mesh case=precomputed_convex created=1',
         'triangle_mesh convex_cook case=welded_pair',
         'triangle_mesh convex_cook case=five_clusters',
+        'triangle_mesh created=1',
         'triangle_mesh release_in_use refused=1 errors=1 code=2 line=173',
         'triangle_mesh invalid_desc rejected=1'
     )
@@ -6065,7 +6066,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 529  # adds seven PMap query cases, their oracle digest and two mesh-release cases
+    '4' = 530  # adds the actual-DLL triangle-mesh creation marker for AABB-tree build rows
+               # adds seven PMap query cases, their oracle digest and two mesh-release cases
                # all registered asset, PMap export, and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics

@@ -1,0 +1,23 @@
+CMake is re-running because C:/Users/raynorpat/.codex/worktrees/aabbtree-proof/Novodex/build-aabb-proof/External/CMakeFiles/generate.stamp is out-of-date.
+  the file 'C:/Users/raynorpat/.codex/worktrees/aabbtree-proof/Novodex/External/opcode/novodex/OPC_AABBTree.cpp'
+  is newer than 'C:/Users/raynorpat/.codex/worktrees/aabbtree-proof/Novodex/build-aabb-proof/External/CMakeFiles/generate.stamp.depend'
+  result='-1'
+-- NxPhysics backend: NX_PHYSICS_USE_X87=1
+-- Including Win32 support
+-- Configuring done (0.5s)
+-- Generating done (5.4s)
+-- Build files have been written to: C:/Users/raynorpat/.codex/worktrees/aabbtree-proof/Novodex/build-aabb-proof
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxQhull.vcxproj -> C:\Users\raynorpat\.codex\worktrees\aabbtree-proof\Novodex\build-aabb-proof\External\Release\NxQhull.lib
+  NxFoundation.vcxproj -> C:\Users\raynorpat\.codex\worktrees\aabbtree-proof\Novodex\build-aabb-proof\Release\NxFoundation.dll
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [C:\Users\raynorpat\.codex\worktrees\aabbtree-proof\Novodex\build-aabb-proof\External\NxOpcode.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [C:\Users\raynorpat\.codex\worktrees\aabbtree-proof\Novodex\build-aabb-proof\External\NxOpcode.vcxproj]
+  OPC_AABBTree.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  NxOpcode.vcxproj -> C:\Users\raynorpat\.codex\worktrees\aabbtree-proof\Novodex\build-aabb-proof\External\Release\NxOpcode.lib
+     Creating library C:/Users/raynorpat/.codex/worktrees/aabbtree-proof/Novodex/build-aabb-proof/Release/NxPhysics.lib and object C:/Users/raynorpat/.codex/worktrees/aabbtree-proof/Novodex/build-aabb-proof/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> C:\Users\raynorpat\.codex\worktrees\aabbtree-proof\Novodex\build-aabb-proof\Release\NxPhysics.dll

@@ -483,3 +483,8 @@ The source mutation changed the compute arm's one-ray classification loop from o
 This proves the exercised rasterization and classification path. The allocation-failure exits and alternate OPCODE-tree shapes remain open branch coverage. The Phase 4 gate log with both resolution markers is retained in [`phase4-pmap-export-002049.md`](phase4-pmap-export-002049.md).
 
 Measured row detection: phys_fn_002047 stdout_delta=26.
+
+
+## 19. 2026-10-14 OPCODE AABB-tree build rows
+
+The `AABBTreeNode::_BuildHierarchy` row `phys_fn_005517` and `AABBTree::Build` row `phys_fn_005523` each have an independent function-entry mutation, rebuilt and caught by the registered `NxPhysicsTriangleMeshApiTests` staged pair. Each mutation made authored PMap mesh creation fail in the candidate (`candidate_exit=1`, `stdout_delta=26`) while the pinned oracle passed. The restored pair matched exactly, and the full Phase 4 gate passed at 530/530 coverage assertions. Details and raw transcripts: [phase4-aabbtree-005517-005523.md](phase4-aabbtree-005517-005523.md).

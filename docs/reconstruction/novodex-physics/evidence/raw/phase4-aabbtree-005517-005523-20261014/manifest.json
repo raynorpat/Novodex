@@ -1,0 +1,62 @@
+{
+  "purpose": "Raw build and staged-pair logs for independent Phase 4 OPCODE AABB-tree row mutations and restored full-gate verification.",
+  "base_commit": "735ea43a6c4fc62813c64b753c536bd65b4667a5",
+  "candidate_source_sha256": "ED0782A45D5490618C8FE107AADC88F4E4D42F1D4CEB33970E56DA19F41E8464",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_nxphysics_sha256": "9AFE8D10277A617EAF3EE1E9015BACAE09F501F10D48E5197B4D9E05823DF784",
+  "phase4_gate": "phase_gate=4 status=pass; coverage_assertions_evaluated=530 floor=530",
+  "logs": {
+    "build-005517-mutation.log": {
+      "sha256": "af66e1e9df9f923e3866f0185496d5ba154ffb624913ebc4aa9b4591374471f3",
+      "bytes": 1921
+    },
+    "build-005523-mutation.log": {
+      "sha256": "e8d55ea3ba31e8c7f06c837a6113f427efba2520e3c40a1abd28432010937383",
+      "bytes": 1921
+    },
+    "build-NxPhysicsAssetTests.log": {
+      "sha256": "85e6db2322552e6c1655a09227e0aa36ff7e91191ce1f070005738e2fe74590e",
+      "bytes": 4594
+    },
+    "build-NxPhysicsConvexMeshTests.log": {
+      "sha256": "61f3e9b58a6b29833b64354f80d325ae662c605d3dca2c1f83f153de5424f5de",
+      "bytes": 372
+    },
+    "build-NxPhysicsPMapResolution80Tests.log": {
+      "sha256": "e6a5df0161f05ec7df95fff5003d2b64bdac3d97c645d30a302d35dc7601128f",
+      "bytes": 386
+    },
+    "build-NxPhysicsSceneRaycastTests.log": {
+      "sha256": "f1a89ec697a50bd7d1a82ec1fee187380d36467467a61dfb94e238957608c342",
+      "bytes": 375
+    },
+    "build-NxPhysicsThirdPartyTests.log": {
+      "sha256": "eb67e14ff76ca884e1737f007f241bcc90167d4c541620856e9be046b62dba86",
+      "bytes": 4118
+    },
+    "build-restored-control.log": {
+      "sha256": "2fd492f7b06502f856dc9fbfc67775f3ca646769c6e1f01ae5fee325f1af68e1",
+      "bytes": 1921
+    },
+    "differential-005517-mutation.log": {
+      "sha256": "b3e211eff6ac29cdce7a84f33ef209a03a14245098daa7a5209d2d8f0d6fcbf9",
+      "bytes": 10981
+    },
+    "differential-005523-marker-red.log": {
+      "sha256": "8c16fb9167bc89cd1dcf212d7dbc1ff3323003454088072743b6edadf4ad3b16",
+      "bytes": 11142
+    },
+    "differential-005523-mutation.log": {
+      "sha256": "1cd134d3a9c0916c2c6979beed6f063ebd859db081fdc834c2c4c914a8a3716e",
+      "bytes": 10981
+    },
+    "differential-restored-control.log": {
+      "sha256": "1e9cff7cf1b8f5b83bee8e40994623f966f3b91818aac5c67dd203e92c5b8071",
+      "bytes": 13170
+    },
+    "phase4-full-gate.log": {
+      "sha256": "7ceab9e533c66affad5d29ce95939337871126f3ad68ae838cdd6dabc7b9311c",
+      "bytes": 1118996
+    }
+  }
+}

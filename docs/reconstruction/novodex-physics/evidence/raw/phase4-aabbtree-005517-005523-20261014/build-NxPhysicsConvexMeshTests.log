@@ -1,0 +1,6 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule C:/Users/raynorpat/.codex/worktrees/aabbtree-proof/Novodex/CMakeLists.txt
+  PhysicsConvexMeshApiTests.cpp
+  NxPhysicsConvexMeshTests.vcxproj -> C:\Users\raynorpat\.codex\worktrees\aabbtree-proof\Novodex\build-aabb-proof\Release\NxPhysicsConvexMeshTests.exe
