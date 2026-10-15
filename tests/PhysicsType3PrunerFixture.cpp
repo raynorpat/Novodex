@@ -186,13 +186,38 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	const bool candidateSphere = candidatePruner->NovodeXPrunerSlot8(
 		reinterpret_cast<NxU32>(&candidateOutput), reinterpret_cast<NxU32>(sphere),
 		0, 0xffffffffu);
+	const NxU32 oracleSphereHits = oracleOutput.count;
+	const NxU32 candidateSphereHits = candidateOutput.count;
 	bool oracleSphereFound = false, candidateSphereFound = false;
 	for(NxU32 i = 0; i < oracleOutput.count && i < 8; ++i)
 		oracleSphereFound = oracleSphereFound || oracleEntries[i] == reinterpret_cast<NxU32>(oracleObjects[0]);
 	for(NxU32 i = 0; i < candidateOutput.count && i < 8; ++i)
 		candidateSphereFound = candidateSphereFound || candidateEntries[i] == reinterpret_cast<NxU32>(&candidateObjects[0]);
-	if(!oracleSphere || !candidateSphere || oracleOutput.count != 1 ||
-		candidateOutput.count != 1 || !oracleSphereFound || !candidateSphereFound)
+	if(!oracleSphere || !candidateSphere || oracleSphereHits != 1 ||
+		candidateSphereHits != 1 || !oracleSphereFound || !candidateSphereFound)
+		++mismatches;
+	const float planes[8] = {1.0f, 0.0f, 0.0f, -3.0f,
+		-1.0f, 0.0f, 0.0f, 6.0f};
+	oracleOutput.count = 0;
+	candidateOutput.count = 0;
+	typedef bool (__thiscall* PlaneQueryFn)(void*, NxU32, NxU32, NxU32, NxU32, NxU32);
+	const PlaneQueryFn oraclePlaneQuery =
+		reinterpret_cast<PlaneQueryFn>(oracleVtable[5]);
+	const bool oraclePlane = oraclePlaneQuery(oraclePruner,
+		reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(planes),
+		2, 0, 0xffffffffu);
+	const bool candidatePlane = candidatePruner->NovodeXPrunerSlot5(
+		reinterpret_cast<NxU32>(&candidateOutput), reinterpret_cast<NxU32>(planes),
+		2, 0, 0xffffffffu);
+	const NxU32 oraclePlaneHits = oracleOutput.count;
+	const NxU32 candidatePlaneHits = candidateOutput.count;
+	bool oraclePlaneFound = false, candidatePlaneFound = false;
+	for(NxU32 i = 0; i < oracleOutput.count && i < 8; ++i)
+		oraclePlaneFound = oraclePlaneFound || oracleEntries[i] == reinterpret_cast<NxU32>(oracleObjects[0]);
+	for(NxU32 i = 0; i < candidateOutput.count && i < 8; ++i)
+		candidatePlaneFound = candidatePlaneFound || candidateEntries[i] == reinterpret_cast<NxU32>(&candidateObjects[0]);
+	if(!oraclePlane || !candidatePlane || oraclePlaneHits != 1 ||
+		candidatePlaneHits != 1 || !oraclePlaneFound || !candidatePlaneFound)
 		++mismatches;
 	printf("collision type3_pruner refit objects=2 oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
 		oracleFound ? 1u : 0u, candidateFound ? 1u : 0u, oracleHits, candidateHits, mismatches);
@@ -201,8 +226,12 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		oracleOwners[0].updateCalls, candidateOwners[0].updateCalls);
 	printf("collision type3_pruner sphere oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
 		oracleSphereFound ? 1u : 0u, candidateSphereFound ? 1u : 0u,
-		oracleOutput.count, candidateOutput.count, mismatches);
+		oracleSphereHits, candidateSphereHits, mismatches);
 	printf("collision coverage name=type3_pruner case=sphere_query_after_refit\n");
+	printf("collision type3_pruner planes oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
+		oraclePlaneFound ? 1u : 0u, candidatePlaneFound ? 1u : 0u,
+		oraclePlaneHits, candidatePlaneHits, mismatches);
+	printf("collision coverage name=type3_pruner case=plane_query_after_refit\n");
 
 	for(unsigned i = 0; i != 2; ++i)
 		{

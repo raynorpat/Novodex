@@ -5322,7 +5322,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0',
         'collision coverage name=type3_pruner case=tree_refit_moved_leaf',
         'collision coverage name=type3_pruner case=update_object_refresh_invalid_world_box oracle_calls=1 candidate_calls=1',
-        'collision coverage name=type3_pruner case=sphere_query_after_refit'
+        'collision coverage name=type3_pruner case=sphere_query_after_refit',
+        'collision coverage name=type3_pruner case=plane_query_after_refit'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -6075,7 +6076,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 537  # adds actual-DLL Pruner constructor bounds, registration, handle-reuse and type-3 query/update assertions
+    '4' = 538  # adds actual-DLL Pruner constructor bounds, registration, handle-reuse and type-3 query/update assertions
                # adds the triangle-mesh creation marker for AABB-tree build rows
                # adds seven PMap query cases, their oracle digest and two mesh-release cases
                # all registered asset, PMap export, and Scene raycast coverage lines

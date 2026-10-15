@@ -1,0 +1,11 @@
+oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+oracle base=10000000 control_word=027f
+oracle pin=matched
+collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=1
+collision coverage name=type3_pruner case=tree_refit_moved_leaf
+collision coverage name=type3_pruner case=update_object_refresh_invalid_world_box oracle_calls=1 candidate_calls=1
+collision type3_pruner sphere oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=1
+collision coverage name=type3_pruner case=sphere_query_after_refit
+collision type3_pruner planes oracle_found=1 candidate_found=0 oracle_hits=1 candidate_hits=0 mismatches=1
+collision coverage name=type3_pruner case=plane_query_after_refit
+collision type3_pruner mismatches=1
