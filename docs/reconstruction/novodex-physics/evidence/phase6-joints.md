@@ -11008,3 +11008,6 @@ Phase 7 continuation: phys_fn_000519 (owner-pair loop continuation) is mutation-
 
 
 Phase 7 continuation: phys_fn_000525 (pair-flag shape-ID index) is mutation-falsified through the registered NxPhysicsPairFlagTests. Clearing the row's shape-ID mapping causes the candidate access violation (candidate_exit=-1073741819, stdout_delta=24); the restored pair matches exactly. The following conversion continuation 000527 remains open. See phase7-scene-pair-flag-shape-index-000525.md.
+
+
+Phase 7 continuation: phys_fn_000527 (pair-flag handle translation) is mutation-falsified through NxPhysicsPairFlagTests. Nulling the first actor-handle output changes objects=0.1 to objects=255.1 and is rejected (stdout_delta=2); the restored pair matches exactly. Its preceding shape-index row 000525 is independently closed. See phase7-scene-pair-flag-translation-000527.md.

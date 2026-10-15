@@ -497,3 +497,8 @@ Suppressing only the matching-record removal in the row 000519 continuation is c
 ### M7.11 — Pair-flag shape index (phys_fn_000525)
 
 The registered Phase 7 pair-flag test exercises actor and shape pairs. Clearing only 000525's shape-ID index is caught by the candidate access violation (stdout_delta=24); restoring and rebuilding returns the exact differential. Continuation 000527 remains open. Phase 7 moves to 342 closed / 218 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-pair-flag-shape-index-000525.md.
+
+
+### M7.12 — Pair-flag handle translation (phys_fn_000527)
+
+Nulling only 000527's first actor-handle assignment changes objects=0.1 to objects=255.1 and is rejected by the registered Phase 7 pair-flag differential (stdout_delta=2). The restored candidate matches exactly. Row 000525's shape-index setup is independently closed. Phase 7 moves to 343 closed / 217 deferred rows. Evidence: docs/reconstruction/novodex-physics/evidence/phase7-scene-pair-flag-translation-000527.md.
