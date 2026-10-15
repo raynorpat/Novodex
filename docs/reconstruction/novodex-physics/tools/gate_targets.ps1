@@ -67,7 +67,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsType3PrunerTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsRangeIterationTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
-    '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsCollisionTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsPlaneShapeDescValidationTests')
+    '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsCollisionTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsPlaneShapeDescValidationTests', 'NxPhysicsSceneAuxiliaryBlockTests')
     '8' = @()
 }
 
@@ -4553,6 +4553,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'range_iteration cases=6 oracle=4c02e27d356771c1 candidate=4c02e27d356771c1 mismatches=0',
         'range_iteration inputs=6 digest=b243ae91d0f8ad04'
     )
+    'NxPhysicsSceneAuxiliaryBlockTests' = @(
+        'layout coverage row=phys_fn_000624 cases=3 oracle_frees=6 candidate_frees=6 stack=0/0 mismatches=0 candidate_digest=f0f65c44',
+        'layout oracle digest=f0f65c44'
+    )
     'NxPhysicsCollisionTests' = @(
         'collision generator=xorshift32 pair_iterations=60000 aimed_iterations=60000',
         'collision seeds pair=c0ffee11 aimed=5eed10ad',
@@ -6240,7 +6244,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2879  # adds direct row 000965 Prunable owner-query result
+	'7' = 2881  # adds direct row 000624 auxiliary-block cleanup proof
+	          # includes direct row 000965 Prunable owner-query result
 	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
@@ -6407,6 +6412,7 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsShapeVtableTests',
     'NxPhysicsPlaneShapeDescValidationTests',
+    'NxPhysicsSceneAuxiliaryBlockTests',
     'NxPhysicsRangeIterationTests',
     'NxPhysicsThirdPartyTests',
     'NxPhysicsType3PrunerTests'

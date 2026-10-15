@@ -694,7 +694,10 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(sum(line.startswith("shape vtable boxsweep inputs=84 digest=")
                                       for line in lines), 1)
             elif expected["format"] == "layout_digest":
-                self.assertEqual(expected["fixture_source"], "tests/PhysicsObjectLayoutTests.cpp")
+                self.assertIn(expected["fixture_source"], {
+                    "tests/PhysicsObjectLayoutTests.cpp",
+                    "tests/PhysicsSceneAuxiliaryBlockTests.cpp",
+                })
                 self.assertEqual(len(expected["oracle_digest_fnv32"]), 8)
                 self.assertEqual(sum(line == expected["coverage_line"] for line in lines), 1)
             elif expected["format"] == "fluid_oracle_lines":

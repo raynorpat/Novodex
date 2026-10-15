@@ -745,6 +745,16 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsRangeIterationTests tests/PhysicsRangeIterationTests.cpp
 		Physics/src/RecoveredRows.cpp)
 	target_link_libraries(NxPhysicsRangeIterationTests bcrypt)
+	add_executable(NxPhysicsSceneAuxiliaryBlockTests tests/PhysicsSceneAuxiliaryBlockTests.cpp)
+	target_include_directories(NxPhysicsSceneAuxiliaryBlockTests PRIVATE
+		Foundation/include Physics/include Physics/src/include tests)
+	target_link_libraries(NxPhysicsSceneAuxiliaryBlockTests bcrypt)
+	add_dependencies(NxPhysicsSceneAuxiliaryBlockTests NxPhysics)
+	add_custom_command(TARGET NxPhysicsSceneAuxiliaryBlockTests POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:NxPhysics>
+			$<TARGET_FILE_DIR:NxPhysicsSceneAuxiliaryBlockTests>/NxPhysicsCandidate.dll
+		COMMENT "Staging NxPhysics.dll under a distinct module name for direct auxiliary-block testing")
 	add_executable(NxPhysicsPairFlagTests tests/PhysicsPairFlagTests.cpp)
 	target_include_directories(NxPhysicsPairFlagTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsPairFlagTests bcrypt)

@@ -12052,13 +12052,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneAuxiliary.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/242",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1584",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA 127-byte thiscall helper at RVA 0x116b0 releases four 12-byte array records in descending order at offsets 0x30, 0x20, 0x10, and 0x00; each record's three words are cleared while its 4-byte inter-record padding is preserved.",
+      "dynamic_proof": "NxPhysicsSceneAuxiliaryBlockTests directly calls oracle RVA 0x000116b0 and the candidate DLL method at RVA 0x0006edd0 (build/Release/NxPhysics.map) for all-present, alternating-null, and empty record sets. It compares all 0x40 bytes, allocator free count/order, and ESP balance; restored digest is f0f65c44 with 0 mismatches. An unconditional-return mutation reports 6 oracle frees versus 0 candidate frees and 5 mismatches. The full Phase 7 gate includes both the oracle digest and candidate coverage line.",
+      "notes": "The auxiliary-manager destructor now invokes this explicit thiscall helper twice, matching the oracle's shared-call structure. No public headers changed.",
+      "implementation": "Physics/src/SceneAuxiliary.cpp",
+      "implementation_symbol": "?destroy@NxSceneAuxiliaryArrayBlock@@QAEXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?destroy@NxSceneAuxiliaryArrayBlock@@QAEXXZ",
+        "address": "0x1006edd0",
+        "object": "SceneAuxiliary.obj"
+      }
     },
     {
       "id": "phys_fn_000625",

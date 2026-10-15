@@ -1,14 +1,27 @@
 #include "SceneAuxiliary.h"
 #include "NxUserAllocator.h"
 
+__declspec(noinline) void NxSceneAuxiliaryArrayBlock::destroy()
+	{
+	unsigned char* bytes = reinterpret_cast<unsigned char*>(this);
+	for(unsigned offset = 0x30;; offset -= 0x10)
+		{
+		void*& entries = *reinterpret_cast<void**>(bytes + offset);
+		if(entries)
+			nxFoundationSDKAllocator->free(entries);
+		*reinterpret_cast<unsigned*>(bytes + offset + 0x00) = 0;
+		*reinterpret_cast<unsigned*>(bytes + offset + 0x04) = 0;
+		*reinterpret_cast<unsigned*>(bytes + offset + 0x08) = 0;
+		if(offset == 0)
+			break;
+		}
+	}
+
 void nxSceneAuxDestroy(void* auxiliary)
 	{
-	static const unsigned offsets[10] =
-		{ 0x90, 0x80, 0x70, 0x60, 0x50, 0x40, 0x30, 0x20, 0x10, 0x00 };
 	unsigned char* bytes = static_cast<unsigned char*>(auxiliary);
-	for(unsigned i = 0; i != 10; ++i)
+	for(unsigned offset = 0x90; offset >= 0x80; offset -= 0x10)
 		{
-		unsigned offset = offsets[i];
 		void*& entries = *reinterpret_cast<void**>(bytes + offset);
 		if(entries)
 			nxFoundationSDKAllocator->free(entries);
@@ -16,4 +29,6 @@ void nxSceneAuxDestroy(void* auxiliary)
 		*reinterpret_cast<unsigned*>(bytes + offset + 0x04) = 0;
 		*reinterpret_cast<unsigned*>(bytes + offset + 0x08) = 0;
 		}
+	reinterpret_cast<NxSceneAuxiliaryArrayBlock*>(bytes + 0x40)->destroy();
+	reinterpret_cast<NxSceneAuxiliaryArrayBlock*>(bytes)->destroy();
 	}

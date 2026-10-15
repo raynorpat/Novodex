@@ -1,0 +1,44 @@
+{
+  "purpose": "Direct oracle differential and row-specific mutation plus the clean Phase 7 gate for phys_fn_000624.",
+  "date": "2026-10-15",
+  "mutation_proof": "A no-op helper mutation was rejected with 5 mismatches (oracle frees=6, candidate frees=0); restored control has zero mismatches and exact digest f0f65c44.",
+  "gate": "Phase 7 passes with 2,881/2,881 coverage assertions; the new direct oracle-side block test and candidate coverage both pass.",
+  "files": {
+    "control-differential.log.gz": {
+      "sha256": "2b42be225d7d1a4fd47cb51237fa4c6f424d337efc41b342cf2511085ccee556",
+      "compressed_bytes": 129,
+      "uncompressed_sha256": "a4a05713266562222c5797df08858b28dd270e4b95d2b30a9a50e7c7558782d5",
+      "uncompressed_bytes": 157
+    },
+    "mutation-build.log.gz": {
+      "sha256": "6a6553867d976b7fa49bd9842dcb8562f316bb0465858edc83ef60f128767714",
+      "compressed_bytes": 393,
+      "uncompressed_sha256": "f4b52bb6e8952bd596b5de6e66b7dfbdc8d9de3b1055240db7bb358ad3eadec2",
+      "uncompressed_bytes": 1246
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "72768bc07e0c68e28394767ef5b8bf094d29dd766a8c98c180b22545154a6138",
+      "compressed_bytes": 238,
+      "uncompressed_sha256": "2a04404707200b657c9e153ce43cef3ea95b9baecc0ede1a449e25622600a7ec",
+      "uncompressed_bytes": 422
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "faf820f6fc3ed2e3660d1c8ba554cd45094cb37067a87dfb5585a1a76b0ce49b",
+      "compressed_bytes": 375132,
+      "uncompressed_sha256": "dd08a8e393a576b3f476dfc5b1f76031257ab3f768349649683abd5f90b30f56",
+      "uncompressed_bytes": 4736767
+    },
+    "restored-build.log.gz": {
+      "sha256": "6a6553867d976b7fa49bd9842dcb8562f316bb0465858edc83ef60f128767714",
+      "compressed_bytes": 393,
+      "uncompressed_sha256": "f4b52bb6e8952bd596b5de6e66b7dfbdc8d9de3b1055240db7bb358ad3eadec2",
+      "uncompressed_bytes": 1246
+    },
+    "restored-differential.log.gz": {
+      "sha256": "2b42be225d7d1a4fd47cb51237fa4c6f424d337efc41b342cf2511085ccee556",
+      "compressed_bytes": 129,
+      "uncompressed_sha256": "a4a05713266562222c5797df08858b28dd270e4b95d2b30a9a50e7c7558782d5",
+      "uncompressed_bytes": 157
+    }
+  }
+}

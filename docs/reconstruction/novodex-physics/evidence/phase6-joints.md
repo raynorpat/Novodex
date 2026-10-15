@@ -11032,3 +11032,6 @@ Phase 7 continuation: phys_fn_001976 (Scene pair refresh) is mutation-falsified 
 
 
 Phase 7 continuation: phys_fn_000585 (`NxPlaneShapeDesc::isValid`) is mutation-falsified through the direct oracle/candidate DLL differential in `NxPhysicsPlaneShapeDescValidationTests`. Ten descriptor cases match; a candidate row-local false-return mutation is caught on the valid descriptor (`mismatches=1`). See `phase7-plane-shape-desc-valid-000585.md`.
+# Phase 7 auxiliary cleanup continuation
+
+The Phase 7 closure ledger also records the direct oracle differential for `phys_fn_000624`, the four-record Scene auxiliary array-block cleanup helper. Replacing the candidate body with an immediate return is detected with `mismatches=5`; the restored three-case oracle comparison is exact. The source reconstruction and raw transcripts are documented in `phase7-scene-auxiliary-array-block-000624.md`.

@@ -22,8 +22,8 @@
   "counts": {
     "differential_falsified": 263,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 86,
-    "deferred_not_reconstructed_in_phase": 122,
+    "oracle_differential_falsified": 87,
+    "deferred_not_reconstructed_in_phase": 121,
     "deferred_reconstructed_not_falsified": 88
   },
   "closed": [
@@ -3757,17 +3757,20 @@
         "mutation": "Patched the map-resolved candidate DLL ?isValid@NxPlaneShapeDesc@@UBE_NXZ entry to xor eax,eax; ret after the ten-case oracle differential.",
         "detected": "mismatches=1"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000624",
       "rva": "0x000116b0",
-      "size": 127,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsSceneAuxiliaryBlockTests",
+      "falsification": {
+        "mutation": "In a temporary candidate-source mutation, replaced NxSceneAuxiliaryArrayBlock::destroy with an immediate return and rebuilt NxPhysics.dll. The direct pinned-oracle comparison exercised all-present, alternating-null, and empty 0x40-byte blocks; the mutant freed 0 records against the oracle's 6 and preserved uncleared words, producing 5 mismatches. Restoring the implementation returned the oracle/candidate digest to f0f65c44 with zero byte, free-order, or ESP mismatches.",
+        "detected": "mismatches=5"
+      },
+      "note": "Direct differential calls the oracle helper at RVA 0x116b0 and the candidate DLL method resolved from NxPhysics.map; all four record offsets and preserved padding are checked."
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000642",
       "rva": "0x00012ad0",
