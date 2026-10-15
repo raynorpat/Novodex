@@ -1877,3 +1877,7 @@ The whole destructor now has a row-specific staged mutation: replacing its CMake
 ### Continuation — shape-descriptor initializer mapping (`phys_fn_000496`, 2026-10-14)
 
 Mapped the 65-byte oracle initializer at RVA `0x0000fd10` to the inline `NxShapeDesc::setToDefault` method in the unchanged public header. Its identity pose, visualization flag, and cleared metadata match the oracle's recorded stores; the CMake Release map emits `?setToDefault@NxShapeDesc@@UAEXXZ` from `Scene.obj` at RVA `0x0006d4d0`. The existing fixture only calls the oracle address, so the row stays open until a candidate-side differential exercises the method. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-shape-desc-default-000496.md`.
+
+### Continuation — Joint base scalar deleting destructor (`phys_fn_004119`, 2026-10-15)
+
+The compiler-generated `Joint` deleting thunk is now exercised through oracle RVA `0x98750` and candidate map symbol `??_GJoint@@UAEPAXI@Z`. The fixture checks flag-zero base-vptr reset and storage preservation, then flag-one allocator release. A throwaway-archive no-op `Joint::operator delete` mutation is rejected (`frees=0,0`, `mismatches=1`, `stdout_delta=87`, candidate exit 1); the restored staged pair is exact. The gate adds one coverage assertion to Phases 6 and 7. Full DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-base-delete-004119.md`.

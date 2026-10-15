@@ -342,6 +342,8 @@ Joint::Joint(const NxJointDesc& desc, NxU32 typeBit)
 	loadFromDescBase(desc);
 	}
 
+// phys_fn_004119 (0x00098750, 66 B) is the MSVC scalar deleting wrapper generated
+// from this destructor and Joint::operator delete; the wrapper is gated by NxPhysicsJointSlotTests.
 // phys_fn_004095 (0x00095e20, 41 B)
 // The compiler reinstalls the base vptr 0x101192d0 on entry, as the listing
 // does at 0x95e26. The listing ends with a tail jump to phys_fn_004089.

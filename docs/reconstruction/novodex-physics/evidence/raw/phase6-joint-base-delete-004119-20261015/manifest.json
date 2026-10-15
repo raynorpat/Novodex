@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_004119",
+  "phase": 6,
+  "gate_target": "NxPhysicsJointSlotTests",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "7adeba111596bc683859a0e8bb9449ebb4d6e33ee40ffa0f444879c953e86be6",
+  "mutant_candidate_sha256": "f0fdc8d51649cf7641696c34403259f9ff1d46e91144dadb87bb8db909115eda",
+  "mutation": "In an isolated git archive of 776487b3, changed only Joint::operator delete to omit nxFoundationSDKAllocator->free(p), then rebuilt the Win32 Release NxPhysics.dll.",
+  "restored_result": {
+    "oracle_line": "joint base-delete row=phys_fn_004119 flags=0,1 returned=1 vptr_reset=1 frees=0,1 mismatches=0",
+    "candidate_line": "joint base-delete row=phys_fn_004119 flags=0,1 returned=1 vptr_reset=1 frees=0,1 mismatches=0",
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "both_exit_zero": true
+  },
+  "mutant_result": {
+    "oracle_line": "joint base-delete row=phys_fn_004119 flags=0,1 returned=1 vptr_reset=1 frees=0,1 mismatches=0",
+    "candidate_line": "joint base-delete row=phys_fn_004119 flags=0,1 returned=1 vptr_reset=1 frees=0,0 mismatches=1",
+    "candidate_exit": 1,
+    "differential_stdout_delta": 87
+  },
+  "logs": {
+    "restored-focused-differential.log.gz": "0af3c834d9017205743da60317202c918855e045119ce1d8882be6b503602bc4",
+    "no-op-delete-isolated-archive.log.gz": "612cd654b66d2cec2c6648fc71973e0c338a4f7907fd8e342f1f3c1d8e5ce6e2",
+    "phase6-official-gate.log.gz": "fa84e3b29642fb9257398b908110c51cb9a2c2905d354e45684d5e209fdbfe7f",
+    "phase7-official-gate.log.gz": "cfd4e3bd313bb310a5fb07a8aa9d6e563e29d9f353c0c635674c2e981992cdc0"
+  },
+  "official_gates": {
+    "phase6": "pass, coverage_assertions_evaluated=1687 floor=1687",
+    "phase7": "pass, coverage_assertions_evaluated=2903 floor=2903"
+  }
+}

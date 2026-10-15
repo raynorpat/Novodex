@@ -2712,6 +2712,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # in revolute's second projection and the rotation cases (the Foundation's
     # NxFindRotationMatrix rounded where the oracle's does not).
     'NxPhysicsJointSlotTests' = @(
+        'joint base-delete row=phys_fn_004119 flags=0,1 returned=1 vptr_reset=1 frees=0,1 mismatches=0',
         'slots family=revolute config=0 created=yes',
         'slots family=revolute config=0 call=vis cw=027f calls=24',
         'slots family=revolute config=0 call=vis cw=027f vis n=0 arrow p=3fd067e6.3f34c3b4.bee0427e d=3eb851ec.3ef5c28f.3f4ccccd length=3f800000 scale=3f900000 color=00ffffff',
@@ -6222,7 +6223,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1686  # adds the allocator-bridge setter and default-free differentials
+	'6' = 1687  # adds the Joint scalar deleting destructor differential
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6265,7 +6266,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2902  # adds the allocator-bridge setter and default-free differentials
+	'7' = 2903  # adds the Joint scalar deleting destructor differential
 	          # includes direct row 000965 Prunable owner-query result
 	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585

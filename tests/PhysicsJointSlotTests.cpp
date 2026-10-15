@@ -110,6 +110,121 @@ static void* nxSlot(void* object, unsigned index)
 	return (*reinterpret_cast<void***>(object))[index];
 	}
 
+static HMODULE gJointProbeModule;
+static const wchar_t* gJointProbePairDirectory;
+static NxPageGuardedAllocator* gJointProbeAllocator;
+static bool gJointBaseDeleteProbed;
+static unsigned gJointBaseDeleteFailures;
+
+static void* nxJointMapSymbolAddress(HMODULE module, const wchar_t* pairDirectory,
+	const char* wanted)
+	{
+	wchar_t path[MAX_PATH];
+	if(swprintf_s(path, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return 0;
+	FILE* map = 0;
+	if(_wfopen_s(&map, path, L"rb") != 0 || !map)
+		return 0;
+	char line[2048];
+	void* address = 0;
+	unsigned long preferredBase = 0;
+	while(fgets(line, sizeof(line), map))
+		{
+		const char* preferred = strstr(line, "Preferred load address is ");
+		if(preferred)
+			{
+			preferred += strlen("Preferred load address is ");
+			preferredBase = strtoul(preferred, 0, 16);
+			continue;
+			}
+		const char* symbol = strstr(line, wanted);
+		if(!symbol)
+			continue;
+		const char* addressText = symbol + strlen(wanted);
+		while(*addressText == ' ' || *addressText == '\t') ++addressText;
+		char* addressEnd = 0;
+		const unsigned long mapAddress = strtoul(addressText, &addressEnd, 16);
+		if(addressEnd == addressText || !preferredBase || mapAddress < preferredBase)
+			continue;
+		address = reinterpret_cast<unsigned char*>(module) + (mapAddress - preferredBase);
+		break;
+		}
+	fclose(map);
+	return address;
+	}
+
+static void nxProbeJointBaseDeletingDestructor(void* derivedVtable)
+	{
+	if(gJointBaseDeleteProbed || !gJointProbeAllocator)
+		return;
+	gJointBaseDeleteProbed = true;
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", gJointProbePairDirectory) < 0)
+		{
+		++gJointBaseDeleteFailures;
+		return;
+		}
+	const bool hasCandidateMap = GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES;
+	const unsigned char* base = reinterpret_cast<const unsigned char*>(gJointProbeModule);
+	void* deletingAddress = hasCandidateMap
+		? nxJointMapSymbolAddress(gJointProbeModule, gJointProbePairDirectory,
+			"??_GJoint@@UAEPAXI@Z")
+		: const_cast<unsigned char*>(base + 0x98750);
+	void* baseVtable = hasCandidateMap
+		? nxJointMapSymbolAddress(gJointProbeModule, gJointProbePairDirectory,
+			"??_7Joint@@6B@")
+		: const_cast<unsigned char*>(base + 0x1192d0);
+	if(!deletingAddress || !baseVtable)
+		{
+		fprintf(stderr, "FAIL Joint base deleting destructor map symbols missing\n");
+		++gJointBaseDeleteFailures;
+		return;
+		}
+	typedef void* (__thiscall *DeletingDestructor)(void*, NxU32);
+	DeletingDestructor deletingDestructor = reinterpret_cast<DeletingDestructor>(deletingAddress);
+	unsigned totalMismatches = 0;
+	unsigned freedFlag0 = 0, freedFlag1 = 0;
+	bool returnedBoth = true, vptrReset = false;
+	for(unsigned flags = 0; flags <= 1; ++flags)
+		{
+		unsigned char* object = static_cast<unsigned char*>(gJointProbeAllocator->malloc(0x16c));
+		if(!object)
+			{
+			++totalMismatches;
+			continue;
+			}
+		memset(object, 0, 0x16c);
+		memcpy(object, &derivedVtable, sizeof(void*));
+		const unsigned freesBefore = gJointProbeAllocator->frees();
+		void* returned = deletingDestructor(object, flags);
+		const unsigned frees = gJointProbeAllocator->frees() - freesBefore;
+		returnedBoth = returnedBoth && returned == object;
+		if(flags == 0)
+			{
+			vptrReset = *reinterpret_cast<void**>(object) == baseVtable;
+			if(frees != 0 || returned != object || !vptrReset)
+				++totalMismatches;
+			freedFlag0 = frees;
+			gJointProbeAllocator->free(object);
+			}
+		else
+			{
+			freedFlag1 = frees;
+			const bool releasedObject = frees == 1
+				&& gJointProbeAllocator->freedPointerFromEnd(0) == object
+				&& gJointProbeAllocator->freedSizeFromEnd(0) == 0x16c;
+			if(frees != 1 || !releasedObject || returned != object)
+				++totalMismatches;
+			if(!releasedObject)
+				gJointProbeAllocator->free(object);
+			}
+		}
+	printf("joint base-delete row=phys_fn_004119 flags=0,1 returned=%u vptr_reset=%u frees=%u,%u mismatches=%u\n",
+		returnedBoth ? 1u : 0u, vptrReset ? 1u : 0u,
+		freedFlag0, freedFlag1, totalMismatches);
+	gJointBaseDeleteFailures += totalMismatches;
+	}
+
 static const unsigned short kControlDefault = 0x027f;	// PC 53, RC near
 static const unsigned short kControlStep = 0x0f7f;		// PC 64, RC chop
 
@@ -683,6 +798,8 @@ static void nxSlotCase(NxScene& scene, NxJointDesc& desc, const char* family, un
 	c.internal = *reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(joint) + 0x18);
 	c.jointSize = nxJointSize(joint->getType());
 	c.scene = *reinterpret_cast<unsigned char**>(c.internal + 0x30);
+	if(strcmp(family, "revolute") == 0 && config == 0)
+		nxProbeJointBaseDeletingDestructor(*reinterpret_cast<void**>(c.internal));
 	for(unsigned i = 0; i < 2; i++)
 		{
 		c.body[i] = *reinterpret_cast<unsigned char**>(c.internal + 0x08 + 4 * i);
@@ -1053,6 +1170,9 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<unsigned>(nxGetControl()));
 
 	static NxPageGuardedAllocator guardedAllocator;
+	gJointProbeModule = physics;
+	gJointProbePairDirectory = pairDirectory;
+	gJointProbeAllocator = &guardedAllocator;
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &guardedAllocator, 0);
 	printf("sdk=%s\n", sdk ? "created" : "null");
 	if(!sdk)
@@ -1090,6 +1210,8 @@ int wmain(int argc, wchar_t** argv)
 
 	nxAllSlotCases(*scene);
 	nxRotationCases();
+	if(gJointBaseDeleteFailures != 0)
+		return nxFail("Joint base scalar deleting destructor differential failed");
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");

@@ -11087,3 +11087,5 @@ Phase 6 row `phys_fn_004805` (SDK allocator bridge setter) is now mutation-falsi
 ### SDK default allocator free (`phys_fn_004810`)
 
 Phase 6 row `phys_fn_004810` (SDK default allocator free) is mutation-falsified through a same-size pointer-reuse observation. Oracle and restored candidate reuse their just-freed 128-byte blocks; an isolated-archive no-op free is caught (`candidate_reuse=0`, `mismatches=1`, target exit 1). Fresh Phase 6 and 7 gates pass at 1,686 and 2,902 assertions. See [the row evidence](phase6-default-free-004810.md).
+
+Phase 6 row `phys_fn_004119` Joint scalar deleting destructor: the staged-pair probe verifies flag-zero vptr reset and storage retention plus flag-one allocator free. Oracle/candidate match (`mismatches=0`); the isolated no-op `Joint::operator delete` mutant is caught (`frees=0,0`, `mismatches=1`, `stdout_delta=87`, exit 1). See [row evidence](phase6-joint-base-delete-004119.md) and [raw manifest](raw/phase6-joint-base-delete-004119-20261015/manifest.json).

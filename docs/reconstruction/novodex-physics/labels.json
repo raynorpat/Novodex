@@ -3066,6 +3066,13 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/139",
       "reason": "Oracle NxScene base-vtable slot 0 points to this routine. The frozen header defines an inline virtual destructor; the rebuilt NpScene.obj emits the corresponding NxScene scalar-deleting destructor and base vtable, with the same base-vptr transition, this return, x86 cleanup, and CRT-free path. See evidence/phase7-nxscene-inline-scalar-dtor-000283.md."
+    },
+    {
+      "id": "phys_fn_004119",
+      "label": "Joint scalar deleting destructor",
+      "confidence": "semantic",
+      "evidence": "evidence/phase6-joint-base-delete-004119.md",
+      "reason": "the oracle scalar deleting wrapper resets the Joint vptr and frees through the Foundation allocator only for flag 1; a paired scratch-object fixture verifies flags 0/1 and catches an isolated no-op operator-delete mutant"
     }
   ]
 }
