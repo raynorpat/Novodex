@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 364 / 196. The restored source-built Win32 Release candidate passes the Phase 5/6/7 gates at 2,777/2,777, 1,677/1,677, and 2,893/2,893 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
+**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 365 / 195. The restored source-built Win32 Release candidate passes the Phase 5/6/7 gates at 2,778/2,778, 1,678/1,678, and 2,894/2,894 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
 
 
 ### Continuation — lock-API initializer differential enforcement (`phys_fn_002367`, 2026-10-15)
@@ -19,6 +19,11 @@ The `NxPhysicsObjectLayoutTests` comparison for row 002367 now emits a registere
 
 The candidate source harness now differentially checks the callback argument loaded from `[self]` and the zero/nonzero callback return mapping. Mutating the first callback value produces one mismatch for 002371; inverting the second row's return mapping produces two mismatches for 002375. Each mutation leaves the other row exact, the runner rejects both, and rebuilt restored controls report zero mismatches. Phase 7 advances to 360 closed / 200 deferred. Fresh Phase 5, 6, and 7 gates pass with 2,773, 1,673, and 2,889 registered assertions; all 816 reconstruction-tool tests pass. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-call-and-test-002371-002375.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-lock-api-call-and-test-002371-002375-20261015/`.
 
+
+
+### Continuation — lock-API worker thread exit (`phys_fn_002389`, 2026-10-15)
+
+The row writes state `2` through `[[this+4]+4]` and calls the imported `ExitThread(0)`. A child-thread fixture calls the pinned oracle row and the candidate source helper in separate threads, then compares the state buffers and thread exit codes without terminating the test process. A state-store mutation to `1` is caught by row 002389 alone (`mismatches=1`, candidate exit 1); the restored control reports zero mismatches and both thread exit codes are 0. Phase 7 advances to 365 closed / 195 deferred. Fresh Phase 5/6/7 gates pass at 2,778 / 1,678 / 2,894 assertions; all 816 reconstruction-tool tests pass, inventory validation reports unexplained=0, and both public-header trees match the 80-file manifest. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-thread-exit-002389.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-lock-api-thread-exit-002389-20261015/`.
 
 ### Continuation — lock-API virtual callback rows (`phys_fn_002385`, `phys_fn_002390`, 2026-10-15)
 

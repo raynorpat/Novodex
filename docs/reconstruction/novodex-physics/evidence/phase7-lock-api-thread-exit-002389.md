@@ -1,0 +1,7 @@
+# Lock-API worker thread exit row 002389
+
+`phys_fn_002389` at RVA `0x0005b8f0` loads the state object from `[this+4]`, stores the 32-bit value `2` at state offset `+4`, and invokes the imported `KERNEL32!ExitThread(0)`. Its source implementation is `nxLockApiThreadExit2389` in the final-sort translation unit `Physics/src/ZzLockApiByteRows.cpp`; the private declaration is in `Physics/src/include/ObjectModel.h`. The public SDK headers are unchanged. Keeping the helper in this translation unit preserves `NxCreatePhysicsSDK` at RVA `0x55e50`.
+
+The registered oracle/source fixture calls each implementation on a separate child thread, waits for both to exit, and compares their full state buffers and exit codes. Changing the candidate store from `2u` to `1u` reports `newreach row=002389 ... mismatches=1` and exits 1 while the oracle thread exits 0. The rebuilt restored control reports zero mismatches, equal state bytes, zero exit codes, and `layout result=differential-pass`.
+
+Fresh Phase 5/6/7 gates pass at 2,778/2,778, 1,678/1,678, and 2,894/2,894; all 816 reconstruction-tool tests pass, inventory validation reports unexplained=0, and both public-header trees match the 80-file manifest. Mutation/restoration transcripts are retained under `evidence/raw/phase7-lock-api-thread-exit-002389-20261015/`. Updated coverage floors are 2,778, 1,678, and 2,894; Phase 7 now records 365 closed / 195 deferred functions. Full-DLL reconstruction remains open.

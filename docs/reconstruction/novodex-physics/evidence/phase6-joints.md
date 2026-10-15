@@ -11060,3 +11060,5 @@ Phase 7 `phys_fn_002383` lock-API byte setter mutation detection: changing the b
 Phase 7 `phys_fn_002387` lock-API byte getter mutation detection: returning constant zero reports `mismatches=1` over zero and 0xee input bytes; row 002383 remains exact, and the restored source reports zero. See `phase7-lock-api-byte-setter-getter-002383-002387.md`.
 
 Phase 7 lock-API virtual callback rows `phys_fn_002385` and `phys_fn_002390` are independently mutation-falsified by the registered object-layout oracle/source differential. Each callback-argument mutation reports `mismatches=1`; restored controls report zero and the differential passes. See `evidence/phase7-lock-api-virtual-callback-002385-002390.md`.
+
+Phase 7 lock-API worker-exit row `phys_fn_002389` is mutation-falsified by the registered child-thread object-layout differential. Changing the stored completion state from 2 to 1 reports one row mismatch and exits 1; restored oracle and candidate workers both exit 0 with matching state bytes. See `evidence/phase7-lock-api-thread-exit-002389.md`.

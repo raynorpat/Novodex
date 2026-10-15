@@ -1260,6 +1260,10 @@ void					nxLockApiSetByte2383(void* self);
 //! phys_fn_002387 (0x5b8e0): returns byte 8 through the pointer in [self+4].
 unsigned char			nxLockApiGetByte2387(void* self);
 
+//! phys_fn_002389 (0x5b8f0): stores state 2 through [self+4] at +4, then
+//! terminates the current thread with ExitThread(0).
+void __fastcall nxLockApiThreadExit2389(void* self);
+
 //! phys_fn_005320 (0x7c10): when [self+0x4c] is non-null, frees
 //! ([self+0x4c] - 4) through the 004803 allocator and clears both [self+0x4c]
 //! and [self+0x48].

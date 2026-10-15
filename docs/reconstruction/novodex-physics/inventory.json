@@ -44524,12 +44524,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/895",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7428",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "Direct child-thread oracle/source differential marker newreach row=002389; changing the stored state from 2u to 1u produced mismatches=1 and candidate exit 1; restored control mismatches=0 and differential-pass. Both oracle and candidate threads exited with code 0.",
       "notes": ""
     },
     {
