@@ -13,3 +13,8 @@ stderr. The fresh full Phase 7 gate passes at `1,704/1,704` required
 assertions. Raw mutation, restored-control, and gate transcripts are archived
 under
 [`evidence/raw/phase7-npscene-getgravity-000291-20261012/`](raw/phase7-npscene-getgravity-000291-20261012/).
+
+The source-to-candidate census is also explicit: oracle RVA `0x0000c460`
+corresponds to `NpScene::getGravity` in `Physics/src/NpScene.cpp`, and the
+Win32 Release map resolves `?getGravity@NpScene@@UAEXAAVNxVec3@@@Z` at
+`0x10042660` in `NpScene.obj`.
