@@ -101745,13 +101745,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PrunerRegistration.cpp",
+      "implementation": "Physics/src/PrunerRegistration.cpp",
+      "implementation_symbol": "NxPrunerProcessPool::NxPrunerProcessPool",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2081",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18833",
       "static_proof": "reached: phys_fn_004830 calls it at 0x000b4ce8. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
-      "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
+      "dynamic_proof": "The registered NxPhysicsSceneRaycastTests target initializes the actual DLL process pool on its first Scene Pruner registration, then exercises pool growth, registration, handle reuse, and SDK teardown. An entry-return mutation of NxPrunerProcessPool::NxPrunerProcessPool leaves the zero-initialized registration transcript intact but crashes during teardown (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=2804, stderr_exact=True). Restored candidate exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase4-pruner-pool-constructor-005438.md.",
+      "notes": "Initializes the persistent process pool with capacity two, allocates its four parallel arrays, clears active/free counts, and seeds forward/reverse maps and generations. The actual-DLL first-registration lifecycle rejects an entry-return mutation."
     },
     {
       "id": "phys_fn_005439",

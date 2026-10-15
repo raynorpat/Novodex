@@ -1,0 +1,40 @@
+{
+  "purpose": "Actual-DLL process pool constructor initialization proof for phys_fn_005438.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "mutation_candidate_sha256": "06904b9abc5d865c2cf7aeb4d6b990e59e2cd216e1dabf7143461f817fabbb90",
+  "restored_candidate_sha256": "80dfbc53e3c4da41be08b61d4d004a6fd541ae594162efd768972da5ccc06271",
+  "source_sha256": "4324b4bf7e1d40f81d29e46a66c2be9b5363285fb5f79b00d08532955040da10",
+  "mutation_result": "Entry-return mutation passes the initial registration/reuse outputs, then candidate crashes during teardown (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=2804, stderr_exact=True).",
+  "restored_result": "Focused staged-pair differential exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
+  "logs": {
+    "mutation-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "605f156800c866cf8bb3311e26a930adb0155929ec4acb1631ca524926fa6574",
+      "compressed_bytes": 19408,
+      "uncompressed_bytes": 403732
+    },
+    "restored-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "restored-differential.log.gz": {
+      "sha256": "49c438da5e730e4531749661676bf5503a52d8e9ccb8f5ff2d96148ba7252a45",
+      "compressed_bytes": 36596,
+      "uncompressed_bytes": 799752
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "f320496de35a73b88bb7faacfd75c17a7b0025d55109dd629edefd124b7a31e6",
+      "compressed_bytes": 74920,
+      "uncompressed_bytes": 1115164
+    }
+  },
+  "phase_gates": {
+    "4": "pass, coverage_assertions_evaluated=533 floor=533"
+  }
+}
