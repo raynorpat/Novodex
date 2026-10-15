@@ -1,0 +1,1776 @@
+pass: program pin file exists: D:\github\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: oracle-only proof baseline exists: D:\github\Novodex\docs\reconstruction\novodex-physics\evidence\oracle-only-baselines.json
+pass: oracle-only proof baseline uses schema version 1
+pass: program.json registers exactly one build_configure gate
+pass: build_configure names no generator, leaving this runner the only authority
+pass: the export/identity target is registered to a phase: NxPhysicsExportTests
+pass: phase is registered in gate_targets.ps1: 5
+pass: selected test target is registered: NxPhysicsActorBodyFlagTests
+pass: selected test target is registered: NxPhysicsActorCMassTests
+pass: selected test target is registered: NxPhysicsActorDynamicSetterTests
+pass: selected test target is registered: NxPhysicsActorDynamicsTests
+pass: selected test target is registered: NxPhysicsActorForceTests
+pass: selected test target is registered: NxPhysicsActorLifecycleTests
+pass: selected test target is registered: NxPhysicsActorMassTests
+pass: selected test target is registered: NxPhysicsActorMetadataTests
+pass: selected test target is registered: NxPhysicsActorMomentumTests
+pass: selected test target is registered: NxPhysicsActorNameTests
+pass: selected test target is registered: NxPhysicsActorReleaseShapeProbeTests
+pass: selected test target is registered: NxPhysicsActorShapeMutationTests
+pass: selected test target is registered: NxPhysicsBodyCreationTests
+pass: selected test target is registered: NxPhysicsControllerSweepFaceTests
+pass: selected test target is registered: NxPhysicsConvexMeshTests
+pass: selected test target is registered: NxPhysicsDynamicFirstTests
+pass: selected test target is registered: NxPhysicsEmptySceneTests
+pass: selected test target is registered: NxPhysicsFluidEmitterBodyRepulsionTests
+pass: selected test target is registered: NxPhysicsFluidInitialParticlesTests
+pass: selected test target is registered: NxPhysicsMeshSimulationTests
+pass: selected test target is registered: NxPhysicsSceneAllocatorTests
+pass: selected test target is registered: NxPhysicsSceneRaycastTests
+pass: selected test target is registered: NxPhysicsSimulationTests
+selected_targets=NxPhysicsActorBodyFlagTests,NxPhysicsActorCMassTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorDynamicsTests,NxPhysicsActorForceTests,NxPhysicsActorLifecycleTests,NxPhysicsActorMassTests,NxPhysicsActorMetadataTests,NxPhysicsActorMomentumTests,NxPhysicsActorNameTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsActorShapeMutationTests,NxPhysicsBodyCreationTests,NxPhysicsControllerSweepFaceTests,NxPhysicsConvexMeshTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsFluidEmitterBodyRepulsionTests,NxPhysicsFluidInitialParticlesTests,NxPhysicsMeshSimulationTests,NxPhysicsSceneAllocatorTests,NxPhysicsSceneRaycastTests,NxPhysicsSimulationTests
+pass: selected static-proof target is registered: NxPhysicsRangeIterationTests
+pass: a static-proof target is not also a differential: NxPhysicsRangeIterationTests
+selected_static_proof_targets=NxPhysicsRangeIterationTests
+pass: selected oracle-differential target is registered: NxPhysicsFluidEmitterAbiTests
+pass: an oracle-differential target is not also a staged-pair differential: NxPhysicsFluidEmitterAbiTests
+pass: an oracle-differential target is not also a static proof: NxPhysicsFluidEmitterAbiTests
+pass: selected oracle-differential target is registered: NxPhysicsObjectLayoutTests
+pass: an oracle-differential target is not also a staged-pair differential: NxPhysicsObjectLayoutTests
+pass: an oracle-differential target is not also a static proof: NxPhysicsObjectLayoutTests
+pass: selected oracle-differential target is registered: NxPhysicsShapeVtableTests
+pass: an oracle-differential target is not also a staged-pair differential: NxPhysicsShapeVtableTests
+pass: an oracle-differential target is not also a static proof: NxPhysicsShapeVtableTests
+pass: oracle proof target is registered: NxPhysicsObjectLayoutTests
+pass: oracle proof target belongs to a phase: NxPhysicsObjectLayoutTests
+pass: selected phase includes its oracle proof target: NxPhysicsObjectLayoutTests
+pass: oracle proof target is registered: NxPhysicsFluidEmitterAbiTests
+pass: oracle proof target belongs to a phase: NxPhysicsFluidEmitterAbiTests
+pass: selected phase includes its oracle proof target: NxPhysicsFluidEmitterAbiTests
+pass: oracle proof target is registered: NxPhysicsShapeVtableTests
+pass: oracle proof target belongs to a phase: NxPhysicsShapeVtableTests
+pass: selected phase includes its oracle proof target: NxPhysicsShapeVtableTests
+pass: oracle proof target is registered: NxPhysicsJointSupportTests
+pass: oracle proof target belongs to a phase: NxPhysicsJointSupportTests
+pass: oracle proof target is registered: NxPhysicsJointDescTests
+pass: oracle proof target belongs to a phase: NxPhysicsJointDescTests
+pass: oracle proof target is registered: NxPhysicsJointTests
+pass: oracle proof target belongs to a phase: NxPhysicsJointTests
+pass: oracle proof target is registered: NxPhysicsAssetTests
+pass: oracle proof target belongs to a phase: NxPhysicsAssetTests
+pass: oracle proof target is registered: NxPhysicsThirdPartyTests
+pass: oracle proof target belongs to a phase: NxPhysicsThirdPartyTests
+pass: oracle proof target is registered: NxPhysicsCollisionTests
+pass: oracle proof target belongs to a phase: NxPhysicsCollisionTests
+selected_oracle_differential_targets=NxPhysicsFluidEmitterAbiTests,NxPhysicsObjectLayoutTests,NxPhysicsShapeVtableTests
+
+=== immutable public headers ===
+
+gate=immutable_headers:D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include command="python.exe" -B D:\github\Novodex\docs\reconstruction\novodex-physics\tools\verify_public_headers.py --root D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include --manifest D:\github\Novodex\docs\reconstruction\novodex-physics\public_header_hashes.json
+public_headers=pass
+files=80
+gate=immutable_headers:D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include exit=0
+
+gate=immutable_headers:D:\github\Novodex\Physics\include command="python.exe" -B D:\github\Novodex\docs\reconstruction\novodex-physics\tools\verify_public_headers.py --root D:\github\Novodex\Physics\include --manifest D:\github\Novodex\docs\reconstruction\novodex-physics\public_header_hashes.json
+public_headers=pass
+files=80
+gate=immutable_headers:D:\github\Novodex\Physics\include exit=0
+
+=== inventory ===
+
+gate=validate_inventory command="python.exe" -B D:\github\Novodex\docs\reconstruction\novodex-physics\tools\validate_inventory.py D:\github\Novodex\docs\reconstruction\novodex-physics\inventory.json
+inventory=pass
+closure phase=2 closed=76 deferred=67
+closure phase=3 closed=77 deferred=315
+closure phase=4 closed=43 deferred=1010
+closure phase=5 closed=205 deferred=0
+closure phase=6 closed=162 deferred=271
+closure phase=7 closed=350 deferred=210
+functions=6338
+data_objects=5138
+unexplained=0
+gate=validate_inventory exit=0
+
+=== vendored third-party sources ===
+
+gate=verify_vendored_sources command="python.exe" -B D:\github\Novodex\docs\reconstruction\novodex-physics\tools\verify_vendored_sources.py --repo D:\github\Novodex
+vendored repo=D:\github\Novodex pinned=D:\github\Novodex
+vendored upstream files checked=152 locally modified=43
+vendored status=pass failures=0
+gate=verify_vendored_sources exit=0
+
+=== build ===
+
+gate=build_configure command="cmake.exe" -S D:\github\Novodex -B D:\github\Novodex\build\phase5-plan-repro-20261015 -G Visual Studio 18 2026 -A Win32 --fresh
+-- The C compiler identification is MSVC 19.51.36260.0
+-- The CXX compiler identification is MSVC 19.51.36260.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/18/Professional/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test NOVODEX_COMPILER_SUPPORTS_X87
+-- Performing Test NOVODEX_COMPILER_SUPPORTS_X87 - Success
+-- NxPhysics backend: NX_PHYSICS_USE_X87=1
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Found Threads: TRUE
+-- Including Win32 support
+-- Configuring done (14.5s)
+-- Generating done (1.4s)
+-- Build files have been written to: D:/github/Novodex/build/phase5-plan-repro-20261015
+gate=build_configure exit=0
+configured_generator=Visual Studio 18 2026 configured_platform=Win32
+pass: the configured generator is the installed one: Visual Studio 18 2026
+pass: the configured platform is Win32
+
+gate=build_physics command="cmake.exe" --build D:\github\Novodex\build\phase5-plan-repro-20261015 --config Release --target NxPhysics NxPhysicsActorBodyFlagTests NxPhysicsActorCMassTests NxPhysicsActorDynamicSetterTests NxPhysicsActorDynamicsTests NxPhysicsActorForceTests NxPhysicsActorLifecycleTests NxPhysicsActorMassTests NxPhysicsActorMetadataTests NxPhysicsActorMomentumTests NxPhysicsActorNameTests NxPhysicsActorReleaseShapeProbeTests NxPhysicsActorShapeMutationTests NxPhysicsBodyCreationTests NxPhysicsControllerSweepFaceTests NxPhysicsConvexMeshTests NxPhysicsDynamicFirstTests NxPhysicsEmptySceneTests NxPhysicsFluidEmitterBodyRepulsionTests NxPhysicsFluidInitialParticlesTests NxPhysicsMeshSimulationTests NxPhysicsSceneAllocatorTests NxPhysicsSceneRaycastTests NxPhysicsSimulationTests NxPhysicsRangeIterationTests NxPhysicsFluidEmitterAbiTests NxPhysicsObjectLayoutTests NxPhysicsShapeVtableTests
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  1>Checking Build System
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  Box.cpp
+  Capsule.cpp
+  CustomArray.cpp
+  DebugRenderable.cpp
+  DefaultAllocator.cpp
+  Exception.cpp
+  FPU.cpp
+  FoundationSDK.cpp
+  Observable.cpp
+D:\github\Novodex\Foundation\src\FoundationSDK.cpp(73,39): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxFoundation.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+D:\github\Novodex\Foundation\src\FoundationSDK.cpp(83,51): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxFoundation.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+D:\github\Novodex\Foundation\src\FoundationSDK.cpp(244,78): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxFoundation.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+  Profiler.cpp
+  Ray.cpp
+  Segment.cpp
+  Sphere.cpp
+  Time.cpp
+  VolumeIntegration.cpp
+  Generating Code...
+  Utilities.cpp
+     Creating library D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxFoundation.lib and object D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxFoundation.exp
+  NxFoundation.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxFoundation.dll
+  Building Custom Rule D:/github/Novodex/External/CMakeLists.txt
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\phase5-plan-repro-20261015\External\NxOpcode.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\phase5-plan-repro-20261015\External\NxOpcode.vcxproj]
+  OPC_AABBCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_AABBTree.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_BaseModel.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_Collider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_Common.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_LSSCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_MeshInterface.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_Model.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_OBBCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_OptimizedTree.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_PlanesCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_RayCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_SphereCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_SweepAndPrune.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_TreeBuilders.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_TreeCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  OPC_VolumeCollider.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  StdAfx.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceAABB.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceContainer.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Generating Code...
+  Compiling...
+  IceHPoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceIndexedTriangle.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMatrix3x3.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMatrix4x4.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceOBB.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IcePlane.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IcePoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceRandom.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceRay.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceRevisitedRadix.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceSegment.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceTriangle.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceUtils.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Generating Code...
+  NxOpcode.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxOpcode.lib
+  Building Custom Rule D:/github/Novodex/External/CMakeLists.txt
+  geom.c
+  geom2.c
+  global.c
+  io.c
+  mem.c
+  merge.c
+  poly.c
+  poly2.c
+  qhull.c
+  qset.c
+  stat.c
+  user.c
+  Generating Code...
+  NxQhull.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxQhull.lib
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  BodyCreation.cpp
+  IceAdjacencies.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  SceneRaycast.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  TriangleMeshTopology.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  NpCylindricalJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpCylindricalJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpD6Joint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpD6Joint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpDistanceJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpDistanceJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpFixedJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpFixedJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpJointShared.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpJointShared.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpPointInPlaneJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpPointInPlaneJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpPointOnLineJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpPointOnLineJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpPrismaticJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpPrismaticJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpPulleyJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpPulleyJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpRevoluteJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpRevoluteJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpSphericalJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpSphericalJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpSpringAndDamperEffector.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/NpSpringAndDamperEffector.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  IcePruningEngine.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Generating Code...
+  BodyStep.cpp
+  ContactBoxMeshICE.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactCapsuleMesh.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactGeneration.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactMeshHeightfield.cpp
+  ContactMeshMesh.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactPairManager.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactPlaneMesh.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactPolygon.cpp
+  ContactSphereMesh.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactStream.cpp
+  Distance.cpp
+  Geometry.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  InternalTriangleMesh.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Island.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  MassProperties.cpp
+  NarrowPhase.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  NpActor.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/NpActor.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
+      see previous definition of 'ARRAYSIZE'
+  
+  ObjectModel.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/ObjectModel.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  ShapeRaycast.cpp
+  Generating Code...
+  Compiling...
+  StepOnlyRows.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ActorMass.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  JointSupport.cpp
+  Generating Code...
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  ContactConvexConvex.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ContactConvexHeightfield.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ConvexHull.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  EdgeList.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMeshBuilder2.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMeshTools.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceSupportMaps.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  QhullHost.cpp
+  Quantizer.cpp
+  TriangleMeshPolygons.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  CylindricalJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/CylindricalJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  D6Joint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/D6Joint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  DistanceJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/DistanceJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  FixedJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/FixedJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  Joint.cpp
+  PointInPlaneJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/PointInPlaneJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  PointOnLineJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/PointOnLineJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  PrismaticJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/PrismaticJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  PulleyJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/PulleyJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  RevoluteJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/RevoluteJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  Generating Code...
+  Compiling...
+  SceneDump.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  SphericalJoint.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/SphericalJoint.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  SpringAndDamperEffector.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/core/SpringAndDamperEffector.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  Generating Code...
+  Containers.cpp
+  DllMain.cpp
+  FluidCollision.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  FluidSupport.cpp
+  ImplicitMesh.cpp
+  JointDesc.cpp
+  MemoryStream.cpp
+  NpFluidEmitter.cpp
+  NpPhysicsSDK.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/NpPhysicsSDK.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  NpScene.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/NpScene.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
+      see previous definition of 'ARRAYSIZE'
+  
+  PhysicsInternal.cpp
+D:\github\Novodex\Physics\src\PhysicsInternal.cpp(188,56): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+  PhysicsSDK.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\Physics\src\PhysicsSDK.cpp(85,58): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+D:\github\Novodex\Physics\src\PhysicsSDK.cpp(94,28): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+D:\github\Novodex\Physics\src\PhysicsSDK.cpp(466,44): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+  PrunerRegistration.cpp
+  RecoveredRows.cpp
+  Scene.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  (compiling source file '../../Physics/src/Scene.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
+      see previous definition of 'ARRAYSIZE'
+  
+D:\github\Novodex\Physics\src\Scene.cpp(788,55): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+  SceneAuxiliary.cpp
+  SceneVisualize.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ThirdPartyHost.cpp
+  TriangleMesh.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Articulation.cpp
+  Generating Code...
+  Compiling...
+  IcePrunable.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  NovodexBoxPruning.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Generating Code...
+  PMap.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  SmoothNormals.cpp
+  Generating Code...
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysics.vcxproj]
+  IcePruner.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+     Creating library D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxPhysics.lib and object D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysics.dll
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorBodyFlagTests.cpp
+  NxPhysicsActorBodyFlagTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorBodyFlagTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorCMassTests.cpp
+  NxPhysicsActorCMassTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorCMassTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorDynamicSetterTests.cpp
+  NxPhysicsActorDynamicSetterTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorDynamicSetterTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorDynamicsTests.cpp
+  NxPhysicsActorDynamicsTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorDynamicsTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorForceTests.cpp
+  NxPhysicsActorForceTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorForceTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorLifecycleTests.cpp
+  NxPhysicsActorLifecycleTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorLifecycleTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorMassTests.cpp
+  NxPhysicsActorMassTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorMassTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorMetadataTests.cpp
+  NxPhysicsActorMetadataTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorMetadataTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorMomentumTests.cpp
+  NxPhysicsActorMomentumTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorMomentumTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorNameTests.cpp
+  NxPhysicsActorNameTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorNameTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorReleaseShapeProbeTests.cpp
+  NxPhysicsActorReleaseShapeProbeTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorReleaseShapeProbeTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorShapeMutationTests.cpp
+  NxPhysicsActorShapeMutationTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorShapeMutationTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsBodyCreationTests.cpp
+  NxPhysicsBodyCreationTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsBodyCreationTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsControllerSweepFaceTests.cpp
+  NxPhysicsControllerSweepFaceTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsControllerSweepFaceTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsConvexMeshApiTests.cpp
+  NxPhysicsConvexMeshTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsConvexMeshTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorLifecycleTests.cpp
+  NxPhysicsDynamicFirstTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsDynamicFirstTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsActorLifecycleTests.cpp
+  NxPhysicsEmptySceneTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsEmptySceneTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxQhull.lib
+  NxPhysics.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysics.dll
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  FluidModelFlagCallbackFixture.cpp
+     Creating library D:/github/Novodex/build/phase5-plan-repro-20261015/Release/FluidModel.lib and object D:/github/Novodex/build/phase5-plan-repro-20261015/Release/FluidModel.exp
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\FluidModel.dll
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsFluidEmitterBodyRepulsionTests.cpp
+  NxPhysicsFluidEmitterBodyRepulsionTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsFluidEmitterBodyRepulsionTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxQhull.lib
+  NxPhysics.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysics.dll
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\FluidModel.dll
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsFluidInitialParticlesTests.cpp
+  NxPhysicsFluidInitialParticlesTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsFluidInitialParticlesTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsMeshSimulationTests.cpp
+  NxPhysicsMeshSimulationTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsMeshSimulationTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsSceneAllocatorTests.cpp
+  NxPhysicsSceneAllocatorTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsSceneAllocatorTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsSceneRaycastTests.cpp
+  NxPhysicsSceneRaycastTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsSceneRaycastTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\FluidModel.dll
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsSimulationTests.cpp
+  NxPhysicsSimulationTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsSimulationTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsRangeIterationTests.cpp
+  RecoveredRows.cpp
+  Generating Code...
+  NxPhysicsRangeIterationTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsRangeIterationTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxQhull.lib
+  NxPhysics.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysics.dll
+  NxPhysicsFluidModelCallbackFixture.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\FluidModel.dll
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsFluidEmitterAbiTests.cpp
+  NpFluidEmitter.cpp
+  Generating Code...
+  NxPhysicsFluidEmitterAbiTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsFluidEmitterAbiTests.exe
+  Staging NxPhysics.dll under a distinct module name for direct DLL-row testing
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxOpcode.lib
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsObjectLayoutTests.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+  (compiling source file '../../tests/PhysicsObjectLayoutTests.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
+      see previous definition of 'ARRAYSIZE'
+  
+D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp(4725,25): warning C4806: '&': unsafe operation: no value of type 'bool' promoted to type 'unsigned int' can equal the given constant [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp(5811,1): warning C4789: in function 'wmain' buffer 'body' of size 96 bytes will be overrun; 16 bytes will be written starting at offset 92 [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp(6117,1): warning C4789: in function 'wmain' buffer 'ob' of size 128 bytes will be overrun; 4 bytes will be written starting at offset 224 [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp(6117,1): warning C4789: in function 'wmain' buffer 'ob' of size 128 bytes will be overrun; 4 bytes will be written starting at offset 228 [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp(6118,1): warning C4789: in function 'wmain' buffer 'cb' of size 128 bytes will be overrun; 4 bytes will be written starting at offset 224 [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp(6118,1): warning C4789: in function 'wmain' buffer 'cb' of size 128 bytes will be overrun; 4 bytes will be written starting at offset 228 [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+  ObjectModel.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+  (compiling source file '../../Physics/src/ObjectModel.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  StepOnlyRows.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Containers.cpp
+  SceneAuxiliary.cpp
+  PhysicsObjectModelSceneStubs.cpp
+  MemoryStream.cpp
+  Geometry.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\Physics\src\Geometry.cpp(187,19): warning C4273: 'NxRayPlaneIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRayPlane.h(16,47):
+      see previous definition of 'NxRayPlaneIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(216,19): warning C4273: 'NxSegmentPlaneIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRayPlane.h(11,47):
+      see previous definition of 'NxSegmentPlaneIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(273,19): warning C4273: 'NxRaySphereIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRaySphere.h(11,47):
+      see previous definition of 'NxRaySphereIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(347,37): warning C4273: 'NxRayTriIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRayTriangle.h(13,47):
+      see previous definition of 'NxRayTriIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(891,19): warning C4273: 'NxRayAABBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(19,47):
+      see previous definition of 'NxRayAABBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(924,20): warning C4273: 'NxRayAABBIntersect2': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(24,48):
+      see previous definition of 'NxRayAABBIntersect2'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(967,19): warning C4273: 'NxBoxBoxIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionBoxBox.h(18,47):
+      see previous definition of 'NxBoxBoxIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1090,19): warning C4273: 'NxSegmentAABBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(34,47):
+      see previous definition of 'NxSegmentAABBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1138,19): warning C4273: 'NxSegmentBoxIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(14,47):
+      see previous definition of 'NxSegmentBoxIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1250,19): warning C4273: 'NxRayOBBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(39,47):
+      see previous definition of 'NxRayOBBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1313,19): warning C4273: 'NxSegmentOBBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(29,47):
+      see previous definition of 'NxSegmentOBBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1395,20): warning C4273: 'NxRayCapsuleIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentCapsule.h(13,49):
+      see previous definition of 'NxRayCapsuleIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1639,19): warning C4273: 'NxSweptSpheresIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSweptSpheres.h(10,47):
+      see previous definition of 'NxSweptSpheresIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1739,24): warning C4273: 'NxSeparatingAxis': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionBoxBox.h(63,52):
+      see previous definition of 'NxSeparatingAxis'
+  
+  ShapeRaycast.cpp
+  IcePrunable.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ThirdPartyHost.cpp
+  PhysicsInternal.cpp
+D:\github\Novodex\Physics\src\PhysicsInternal.cpp(188,56): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+  PhysicsInternalContactStubs.cpp
+  PhysicsInternalMeshContactStubs.cpp
+  Generating Code...
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+  IceSupportMaps.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ConvexHull.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceAdjacencies.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  EdgeList.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMeshTools.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMeshBuilder2.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Generating Code...
+  SmoothNormals.cpp
+     Creating library D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxPhysicsObjectLayoutTests.lib and object D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxPhysicsObjectLayoutTests.exp
+LINK : warning LNK4217: symbol '_NxRayAABBIntersect2' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: void * __thiscall BoxShape::nxBoxRaycast(float const *,float,unsigned int,unsigned int,void *)const " (?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: bool __thiscall MeshShape::nxMeshSweepPrepared(float *,float const *)const " (?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4286: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRaySphereIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastSphere(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastSphere@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayCapsuleIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastCapsule(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastCapsule@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsObjectLayoutTests.vcxproj]
+  NxPhysicsObjectLayoutTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsObjectLayoutTests.exe
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\External\Release\NxOpcode.lib
+  Building Custom Rule D:/github/Novodex/CMakeLists.txt
+  PhysicsShapeVtableTests.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+  (compiling source file '../../tests/PhysicsShapeVtableTests.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
+      see previous definition of 'ARRAYSIZE'
+  
+  ObjectModel.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+  (compiling source file '../../Physics/src/ObjectModel.cpp')
+      D:\github\Novodex\build\phase5-plan-repro-20261015\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+  StepOnlyRows.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Containers.cpp
+  PhysicsObjectModelSceneStubs.cpp
+  MemoryStream.cpp
+  Geometry.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\Physics\src\Geometry.cpp(187,19): warning C4273: 'NxRayPlaneIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRayPlane.h(16,47):
+      see previous definition of 'NxRayPlaneIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(216,19): warning C4273: 'NxSegmentPlaneIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRayPlane.h(11,47):
+      see previous definition of 'NxSegmentPlaneIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(273,19): warning C4273: 'NxRaySphereIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRaySphere.h(11,47):
+      see previous definition of 'NxRaySphereIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(347,37): warning C4273: 'NxRayTriIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionRayTriangle.h(13,47):
+      see previous definition of 'NxRayTriIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(891,19): warning C4273: 'NxRayAABBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(19,47):
+      see previous definition of 'NxRayAABBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(924,20): warning C4273: 'NxRayAABBIntersect2': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(24,48):
+      see previous definition of 'NxRayAABBIntersect2'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(967,19): warning C4273: 'NxBoxBoxIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionBoxBox.h(18,47):
+      see previous definition of 'NxBoxBoxIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1090,19): warning C4273: 'NxSegmentAABBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(34,47):
+      see previous definition of 'NxSegmentAABBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1138,19): warning C4273: 'NxSegmentBoxIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(14,47):
+      see previous definition of 'NxSegmentBoxIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1250,19): warning C4273: 'NxRayOBBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(39,47):
+      see previous definition of 'NxRayOBBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1313,19): warning C4273: 'NxSegmentOBBIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentBox.h(29,47):
+      see previous definition of 'NxSegmentOBBIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1395,20): warning C4273: 'NxRayCapsuleIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSegmentCapsule.h(13,49):
+      see previous definition of 'NxRayCapsuleIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1639,19): warning C4273: 'NxSweptSpheresIntersect': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionSweptSpheres.h(10,47):
+      see previous definition of 'NxSweptSpheresIntersect'
+  
+D:\github\Novodex\Physics\src\Geometry.cpp(1739,24): warning C4273: 'NxSeparatingAxis': inconsistent dll linkage [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Physics\include\NxIntersectionBoxBox.h(63,52):
+      see previous definition of 'NxSeparatingAxis'
+  
+  ShapeRaycast.cpp
+  IcePrunable.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ThirdPartyHost.cpp
+  PhysicsInternal.cpp
+D:\github\Novodex\Physics\src\PhysicsInternal.cpp(188,56): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+  
+  PhysicsInternalContactStubs.cpp
+  PhysicsInternalMeshContactStubs.cpp
+  Generating Code...
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+  IceSupportMaps.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  ConvexHull.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceAdjacencies.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  EdgeList.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMeshTools.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  IceMeshBuilder2.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+  Generating Code...
+  SmoothNormals.cpp
+     Creating library D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxPhysicsShapeVtableTests.lib and object D:/github/Novodex/build/phase5-plan-repro-20261015/Release/NxPhysicsShapeVtableTests.exp
+LINK : warning LNK4217: symbol '_NxRayAABBIntersect2' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: void * __thiscall BoxShape::nxBoxRaycast(float const *,float,unsigned int,unsigned int,void *)const " (?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: bool __thiscall MeshShape::nxMeshSweepPrepared(float *,float const *)const " (?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4286: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRaySphereIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastSphere(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastSphere@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayCapsuleIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastCapsule(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastCapsule@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsShapeVtableTests.vcxproj]
+  NxPhysicsShapeVtableTests.vcxproj -> D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsShapeVtableTests.exe
+gate=build_physics exit=0
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorBodyFlagTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorCMassTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorDynamicSetterTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorDynamicsTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorForceTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorLifecycleTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorMassTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorMetadataTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorMomentumTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorNameTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorReleaseShapeProbeTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsActorShapeMutationTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsBodyCreationTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsControllerSweepFaceTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsConvexMeshTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsDynamicFirstTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsEmptySceneTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsFluidEmitterBodyRepulsionTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsFluidInitialParticlesTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsMeshSimulationTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsSceneAllocatorTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsSceneRaycastTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsSimulationTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsRangeIterationTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsFluidEmitterAbiTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsObjectLayoutTests.exe
+pass: built test target exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsShapeVtableTests.exe
+
+=== static proof (not a differential) ===
+
+gate=static_proof:NxPhysicsRangeIterationTests command="D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsRangeIterationTests.exe" 
+phys_fn_000002 range iteration checks passed
+gate=static_proof:NxPhysicsRangeIterationTests exit=0
+pass: the pinned oracle is present: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: isolated oracle-address image byte-matches the pinned NxPhysics.dll
+
+=== oracle differential (one run, not one per pair) ===
+pass: candidate DLL copy exists: D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsCandidate.dll
+pass: candidate DLL copy byte-matches the built NxPhysics.dll
+gate=oracle_differential:NxPhysicsFluidEmitterAbiTests command="D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsFluidEmitterAbiTests.exe" D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c D:\github\Novodex\build\phase5-plan-repro-20261015\NxPhysicsOracle.dll b591b9f252a2a31cf82a474eaeac74d14c1743c956624e8cb5f9e192550a23b5
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+loaded module=NxPhysicsCandidate.dll path=D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsCandidate.dll sha256=b591b9f252a2a31cf82a474eaeac74d14c1743c956624e8cb5f9e192550a23b5
+contact patch assignment cases=3 oracle_return=3 candidate_return=3 payload_equal=3 vptr_preserved=3 padding_preserved=3 stack=3/3 mismatches=0
+fluid collision bucket-prefix records=4 oracle_total=9 candidate_total=9 prefixes=1 return=1 stack=1/1 mismatches=0
+fluid collision bucket-prefix empty total=0 return=1 preserved=1 stack=1/1 mismatches=0
+fluid collision cell-prefix buckets=3 cells=3 oracle_total=6 candidate_total=6 prefixes=1 counts_cleared=1 return=1 stack=1/1 mismatches=0
+fluid collision cell-prefix empty preserved=1 return=1 total_preserved=1 stack=1/1 mismatches=0
+fluid collision hash-count buckets=5 cells=7 counts=1 words_preserved=1 return=1 stack=1/1 mismatches=0
+fluid collision hash-count empty preserved=1 return=1 stack=1/1 mismatches=0
+fluid collision static-copy buckets=3 cells=3 indices=4 oracle_return=4 candidate_return=4 rows=1 cells_match=1 indices_match=1 headers=1 source_preserved=1 stack=1/1 mismatches=0 undefined_bucket_word=ignored
+fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0
+fluid emitter ctor size=24 secondary_vptr_nonnull=1 internal=1 mismatches=0
+fluid emitter owner/frame cases=2 oracle_owner=1 candidate_owner=1 dll_owner=1 oracle_frame_actor=1 candidate_frame_actor=1 dll_frame_actor=1 mismatches=0
+fluid emitter name rows=2 replacements=1 clears=1 candidate_dll=1 mismatches=0
+fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0
+fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0
+fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0
+fluid emitter flags cases=2 mismatches=0
+fluid collision static-rebuild case=0 empty=1 mesh=0 arrays=1 grid=1 parameters=1 return=0/0 stack=1/1 mismatches=0
+fluid collision static-rebuild case=1 empty=0 mesh=1 arrays=1 grid=1 parameters=1 return=1/1 stack=1/1 mismatches=0
+fluid manager step dirty-refresh callbacks=3/3 order=1 parameters=1 dirty-clear=1 stack=1/1 exceptions=00000000@00000000/00000000@00000000 mismatches=0
+fluid manager replacement-buffer built=1 old-preserved=1
+fluid collision static-rebuild cases=2 empty=1 nonempty_mesh=1 candidate_present=1 mismatches=0
+fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0
+fluid emitter global-pose rows=2 callback_checks=2 stack_checks=2 mismatches=0
+fluid collision triangle-cells case=0 cells=3/3 capacity=512/512 return=1/1 cells_match=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-cells case=1 cells=10/10 capacity=512/512 return=1/1 cells_match=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-cells case=2 cells=1/1 capacity=2/2 return=1/1 cells_match=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-cells cases=3 oracle_digest=86d21a58 candidate_digest=86d21a58 oracle_cells=14 candidate_present=1 mismatches=0
+fluid collision triangle-builder case=0 cells=3/3 buckets=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-builder case=1 cells=4/4 buckets=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-builder case=2 cells=0/0 buckets=1 tails=1 stack=1/1 mismatches=0
+fluid collision triangle-builder cases=3 oracle_digest=b2825642 candidate_present=1 oracle_cells=7 mismatches=0
+fluid collision cell-hash case=0 records=1 buckets=1 expected=1 stack=1/1 mismatches=0
+fluid collision cell-hash case=1 records=1 buckets=1 expected=1 stack=1/1 mismatches=0
+fluid collision cell-hash case=2 records=1 buckets=1 expected=1 stack=1/1 mismatches=0
+fluid collision cell-hash cases=3 inputs=7 unique=5 bucket_counts=2,1,2 candidate_present=1 mismatches=0
+fluid collision indexed-mesh-build case=0 cells=4/4 buckets=1 records=1 return=1/1 stack=1/1 mismatches=0
+fluid collision indexed-mesh-build case=1 cells=77/77 buckets=1 records=1 return=1/1 stack=1/1 mismatches=0
+fluid collision indexed-mesh-build case=2 cells=0/0 buckets=1 records=1 return=0/0 stack=1/1 mismatches=0
+fluid collision indexed-mesh-build cases=3 nonempty=1 empty=1 null_output=1 candidate_present=1 mismatches=0
+fluid collision cell-index case=0 count=1 buckets=1 cells=1 indices=1 return=1/1 stack=1/1 mismatches=0
+fluid collision cell-index case=1 count=3 buckets=1 cells=1 indices=1 return=1/1 stack=1/1 mismatches=0
+fluid collision cell-index case=2 count=0 buckets=1 cells=1 indices=1 return=1/1 stack=1/1 mismatches=0
+fluid collision cell-index cases=3 matched=1 missing=1 empty=1 candidate_present=1 mismatches=0
+fluid collision triangle-index-builder case=0 cells=4/4 buckets=1 records=1 indices=1 return=1/1 stack=1/1 mismatches=0
+fluid collision triangle-index-builder case=1 cells=5/5 buckets=1 records=1 indices=1 return=1/1 stack=1/1 mismatches=0
+fluid collision triangle-index-builder case=2 cells=0/0 buckets=1 records=1 indices=1 return=0/0 stack=1/1 mismatches=0
+fluid collision triangle-index-builder cases=3 mesh=1 empty=1 null_output=1 candidate_present=1 mismatches=0
+fluid collision shape-pack case=0 return=12340000/12340000 output=1 stack=1/1 mismatches=0
+fluid collision shape-pack case=1 return=12340001/12340001 output=1 stack=1/1 mismatches=0
+fluid collision shape-pack cases=2 selected_record=1 flag=1 candidate_present=1 mismatches=0
+fluid collision shape-count-router cases=13 static=6 dynamic=5 excluded=1 refresh=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision scene-shape-count cases=3 empty=1 collections=2 compound_lists=2 routed_shapes=9 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision sphere-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision capsule-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision box-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision plane-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision mesh-array append cases=2 selected=1 ignored=1 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision shape-array router cases=13 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid collision scene-shape-collector cases=2 empty=1 populated=1 compound_children=6 routed_shapes=12 candidate_present=1 oracle_contract=1 stack=1/1 mismatches=0
+fluid emitter body repulsion bodyless actor=1 callbacks=3/3 order=1 vectors=1 mass=1 stack=1/1 mismatches=0
+fluid substep empty-emitter cases=1 callback=1 timestep=1 state-clear=1 mismatches=0
+fluid substep nonempty-emitter cases=1 pose_callback=1 fluid_run=1 payloads_match=1 timestep=1 state-clear=1 repulsion-skipped=1 stack=1/1 mismatches=0
+fluid manager step live-fluids=2 oracle_callbacks=2 candidate_callbacks=2 order=1 timestep=1 state=1 stack=1/1 mismatches=0
+fluid post-step traversal fluids=2 oracle_callbacks=7 candidate_callbacks=7 particle_counts=3/3 particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=0
+fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0
+fluid manager actor-release fluids=1 emitters=3 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0
+fluid emitter attach matrix-frame cases=1 oracle_callbacks=3 candidate_callbacks=3 mismatches=0
+fluid emitter attach quaternion-frame cases=1 oracle_callbacks=3 candidate_callbacks=3 mismatches=0
+fluid emitter world-pose cases=3 mismatches=0
+fluid emitter body-state update cases=2 oracle_callbacks=5 candidate_callbacks=5 mismatches=0
+fluid surface-mesh dispatch cases=1 oracle_callbacks=1 candidate_callbacks=1 args=1 return=1 stack=1/1 mismatches=0
+fluid surface-mesh empty cases=1 oracle_callbacks=0 candidate_callbacks=0 stack=1/1 mismatches=0
+fluid manager surface-mesh traversal fluids=2 oracle_callbacks=2 candidate_callbacks=2 mismatches=0
+implicit mesh setMeshData public wrapper valid=1 invalid=1 lock_rejected=1 reentry_rejected=1 stack_checks=4 mismatches=0
+implicit mesh setMeshData valid_cases=3 invalid_cases=8 errors=8 stack_checks=11 mismatches=0
+fluid manager replacement-buffer built=1 old-preserved=1
+fluid manager dirty-refresh get=1 destroy=1 create=1 data=1 flag=1 fluids=2/2 callbacks=1 timestep=1 state=1 stack=1/1 mismatches=0
+fluid emitter aggregate cases=6 mismatches=0
+gate=oracle_differential:NxPhysicsFluidEmitterAbiTests exit=0
+gate=oracle_differential:NxPhysicsObjectLayoutTests command="D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsObjectLayoutTests.exe" D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+layout module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+layout base=10000000 mode=differential
+layout pin=matched
+layout arena-bridge=installed
+layout allocator-shim=installed
+layout foundation-shim=installed
+ownerupd pruning oracle_ok=1 candidate_ok=1 oracle_list=1/00315a51 candidate_list=1/00315a51 oracle_update=1/00315a51/00000000 candidate_update=1/00315a51/00000000 mismatches=0
+addthunk row=oracle failures=0 digest=f9aac08b
+addthunk candidate failures=0 mismatches=0 digest=f9aac08b
+slot1wrapper row=oracle cases=4 failures=0 digest=05167dcd
+slot1wrapper candidate cases=4 failures=0 mismatches=0 digest=05167dcd
+vt name=actor_interface slots=87 digest=62936499
+vt name=actor_dynamic slots=88 digest=cdd44a90
+vt name=shape_base slots=12 digest=650a3f61
+vt name=box slots=12 digest=5daef065
+vt name=capsule slots=12 digest=ef7766c2
+vt name=plane slots=12 digest=2368c934
+vt name=sphere slots=12 digest=86cf5cb3
+vt name=mesh slots=12 digest=cef7ce84
+colobj ctor=phys_fn_001193 size=28 digest=e1df25e5 vptr_final=10107218 zero04=00000000 arg_at_8=a5a5a5a5 vptr_member=101072a0 arg_at_18=a5a5a5a5
+owner accessor=phys_fn_001281 mark=13579bdf returned=13579bdf
+hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10
+hull static tables digest=f835c8c3
+hull support row=phys_fn_000975 min_bits=c19c0000 max_bits=4eada5a5
+hull sharedhook row=phys_fn_000985 stable=1 words=00000000.00000000.00000000
+shapebase ctor=phys_fn_001273 size=224 digest=de5f5000 zero08=00000000 pose_diag=3f800000 zero9c=00000000 zeroa0=00000000 prun24=ffffffff prun28=0000ffff sentinel_d0=7fffffff arg_d4=5a5a5a5a hw_dc=6 hw_de=8
+shapeleaf row=oracle digest=cb0e48f9
+boxshape ctor=phys_fn_000977 size=552 digest=ac5ed12f sentinel_d0=2 arg_d4=5a5a5a5a dims=3f800000.3f800000.3f800000 face0_corners=00000000 face5_corners=00000000 verts_poison=cdcdcdcd floats_poison=cdcdcdcd colobj_ok=1
+sphere ctor=phys_fn_001349 size=228 digest=37ea7205 sentinel_d0=1 arg_d4=5a5a5a5a radius_e0=00000000 colobj_ok=1
+capsule ctor=phys_fn_000987 size=236 digest=ba7317e3 sentinel_d0=3 arg_d4=5a5a5a5a float_e0=00000000 float_e4=00000000 colobj_ok=1
+plane ctor=phys_fn_001247 size=268 digest=abed37e0 sentinel_d0=0 arg_d4=5a5a5a5a normal=00000000.3f800000.00000000 dist_ec=00000000 word108=1 tangent_f0=bf800000.00000000.00000000 binormal_fc=80000000.80000000.3f800000 colobj_ok=1
+mesh ctor=phys_fn_001379 size=232 digest=422a1f78 sentinel_d0=4 arg_d4=5a5a5a5a word_e0=00000000 word_e4=00000000 colobj_ok=1
+basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd
+boxrow slot10=phys_fn_000937 out=3fa00000.c0200000.3f400000.40c38275
+boxray oracle slots4-5=00020850,00020880
+boxraycap case=0 ret=1 rec=00e3dba8 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=1 ret=1 rec=00e3dba8 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxraycap case=2 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
+boxraycap case=3 ret=1 rec=00e3dba8 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd 00000000 3f800000 00000000 00000000 00000013
+boxraycap case=4 ret=0 rec=cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd
+boxraycap case=5 ret=1 rec=00e3dba8 3f800000 3f800000 00000000 3f800000 00000000 00000000 00000000 3fb504f3 00000000 00000000 00000017
+boxraycap case=6 ret=0 rec=cdcdcdcd 3f800000 00000000 00000000 cdcdcdcd cdcdcdcd cdcdcdcd cdcdcdcd 3f800000 cdcdcdcd cdcdcdcd cdcdcdcd
+boxraycap case=7 ret=1 rec=00e3dba8 3f800000 00000000 00000000 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000 00000017
+boxray contract cases=8 failures=0 mode=oracle-only
+boxray candidate8 mode=provisional
+boxray sweep cases=72 failures=0 mode=provisional
+rendercap row1 guards-zero calls=0
+rendercap contract mask=0 n20=0 n38=0 payloads=match
+rendercap candidate mask=0 agree n20=0 n38=0
+rendercap contract mask=1 n20=3 n38=0 payloads=match
+rendercap candidate mask=1 agree n20=3 n38=0
+rendercap contract mask=2 n20=0 n38=3 payloads=match
+rendercap candidate mask=2 agree n20=0 n38=3
+rendercap contract mask=3 n20=3 n38=3 payloads=match
+rendercap candidate mask=3 agree n20=3 n38=3
+rendercap contract mask=4 n20=0 n38=0 payloads=match
+rendercap candidate mask=4 agree n20=0 n38=0
+rendercap contract mask=5 n20=3 n38=0 payloads=match
+rendercap candidate mask=5 agree n20=3 n38=0
+rendercap candidate masks=6 agree
+slot3 contract cases=64 failures=0 mode=oracle-only
+slot3 candidate masks=64 agree n28-first=1
+slot3 order case agree calls=7 seq28>20/38 both
+boxrow2 slot11=phys_fn_000939 out=00000000.00000000.00000000.3fddb3d7 slot13=phys_fn_000927 saved=1 digest=853c971d dims_at_4c=3f800000
+boxrow3 slot8=phys_fn_000941 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000 slot9=phys_fn_000935 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000
+boxrow4 slots14-16=phys_fn_001391 stable=1
+DBG colobj=00e3dc80 vtbl=10106dc8 slot0=100235d0 rva=000235d0
+boxdtor row=phys_fn_000979 digest=a29800b7
+planesave row=phys_fn_001251 saved=1 digest=7629841d normal_y=3f800000 neg_d=80000000
+sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000
+capsave row=phys_fn_000991 saved=1 digest=bf079f3c rad4c=00000000 hgt50=00000000
+meshword row=phys_fn_001381 mark_hit=1
+meshwords44 row=phys_fn_001389 out=deadbeef.cafebabe.12345678.00000000.00000000.00000000
+aabbrows sph9=phys_fn_001361 minmax=00000000.00000000.00000000.00000000.00000000.00000000 cap10=phys_fn_001001 cr=00000000.00000000.00000000.00000000 cap11=phys_fn_001003 cr=00000000.00000000.00000000.00000000
+meshrows slot13=phys_fn_001385 saved=1 digest=0ccd08b4 slot11=phys_fn_001387 words=0badf00d.00000000.00000000.13579bdf
+sphlocal row=phys_fn_001367 minmax=80000000.80000000.80000000.00000000.00000000.00000000
+setrad row=phys_fn_001357 stored=3fa00000 expected=3fa00000
+capsetrad row=phys_fn_000995 stored=3fc00000 expected=3fc00000
+sphdtor row=phys_fn_001375 digest=c4a35d15
+sphload row=phys_fn_001353 rad=40200000 group=0006
+setgroup row=phys_fn_001329 hw_d8=0007 expected=0007
+ownerupd row=phys_fn_001315 noop=1
+massframe row=phys_fn_000851 mass_scaled=4302e653 mass_unit=4282e653 digest=0bed6c36
+boxslot4 candidate cases=64 failures=0 provisional=1
+massmerge reciprocal-store regression agree words=13
+massmerge fractional centers agree cases=16 words=13
+mftranslate candidate run=54 failures=0 provisional=1
+negtrans candidate run=5 failures=0 provisional=1
+mfcombo candidate run=6 failures=0 provisional=1
+posecopy candidate run=4 failures=0 provisional=1
+shapegetters candidate failures=0 provisional=1
+shapegetters2 candidate failures=0 provisional=1
+ptrgetters candidate failures=0 provisional=1
+simplegetters candidate failures=0 provisional=1
+batchgetters candidate failures=0 provisional=1
+tinygetters candidate failures=0 provisional=1
+setget2 candidate failures=0 provisional=1
+setget3 candidate failures=0 provisional=1
+zeroinit candidate failures=0 provisional=1
+globalwrite candidate failures=0 provisional=1
+smallctor candidate failures=0 provisional=1
+zmix candidate failures=0 provisional=1
+zmix2 candidate failures=0 provisional=1
+initbatch candidate failures=0 provisional=1
+finalbatch candidate failures=0 provisional=1
+triplecopy candidate failures=0 provisional=1
+quadbatch candidate failures=0 provisional=1
+multicopy candidate failures=0 provisional=1
+posecopy2 candidate failures=0 provisional=1
+clampfcg candidate failures=0 provisional=1
+misc3 candidate failures=0 provisional=1
+tmplinit row=phys_fn_000496 candidate_vs_oracle bytes=64 mismatches=0
+tmplinit row=phys_fn_000496 candidate_dll_vs_oracle bytes=64 mismatches=0
+tmplinit row=phys_fn_000499 candidate_dll_vs_oracle bytes=84 mismatches=0
+shapevalid row=phys_fn_000498 candidate_dll_vs_oracle cases=8 mismatches=0
+tmplinit row=phys_fn_002314 candidate_dll_vs_oracle bytes=80 mismatches=0
+tmplinit candidate failures=0 provisional=1
+crossprod candidate failures=0 provisional=1
+boundedpush candidate failures=0 provisional=1
+tmplinit2 candidate failures=0 provisional=1
+condsum candidate failures=0 provisional=1
+bufreset candidate failures=0 provisional=1
+tmplfm candidate failures=0 provisional=1
+bufpop candidate failures=0 provisional=1
+ctorlink candidate failures=0 provisional=1
+builder4 candidate failures=0 provisional=1
+markdeg candidate failures=0 provisional=1
+xaccum candidate failures=0 provisional=1
+flagsel candidate failures=0 provisional=1
+lcgfloat candidate failures=0 provisional=1
+compact decisions failure=0 provisional=1
+negdiff candidate failures=0 provisional=1
+dcmp candidate failures=0 provisional=1
+indexedlookup candidate failures=0 provisional=1
+containsf candidate failures=0 provisional=1
+lookupfield candidate failures=0 provisional=1
+nestlookup candidate failures=0 provisional=1
+switch candidate failures=0 provisional=1
+pairsearch candidate failures=0 provisional=1
+reversearr candidate failures=0 provisional=1
+flagcmp candidate failures=0 provisional=1
+chaincopy candidate failures=0 provisional=1
+listpeek candidate failures=0 provisional=1
+delimscan candidate failures=0 provisional=1
+biginit candidate failures=0 provisional=1
+smallclean candidate failures=0 provisional=1
+condsetb candidate failures=0 provisional=1
+v6 same=1 big=0
+vec6cmp candidate failures=0 provisional=1
+ctorwrap candidate failures=0 provisional=1
+zerowrap candidate failures=0 provisional=1
+vzwrap candidate failures=0 provisional=1
+wrap240 candidate failures=0 provisional=1
+smallflag candidate failures=0 provisional=1
+smallflag2 candidate failures=0 provisional=1
+repcopy candidate failures=0 provisional=1
+indfield candidate failures=0 provisional=1
+cw read=0x027f/0x027f
+cwread candidate failures=0 provisional=1
+ix2 r=51
+ixsum2 candidate failures=0 provisional=1
+elemcount candidate failures=0 provisional=1
+transpt1403 candidate failures=0 provisional=1
+sphmass candidate failures=0 provisional=1
+capmass2 candidate failures=0 provisional=1
+planeaabb candidate failures=0 provisional=1
+actorthunk candidate failures=0 rows=phys_fn_000038,phys_fn_000040
+planeix6 candidate failures=0 provisional=1
+capaabb candidate failures=0 provisional=1
+globzero2 candidate failures=0 provisional=1
+posecopy827 candidate failures=0 provisional=1
+aggaabb1030 candidate failures=0 provisional=1
+d2f9 candidate failures=0 provisional=1
+gather0046 candidate failures=0 provisional=1
+quatm0132 candidate failures=0 provisional=1
+poseq0130 candidate failures=0 provisional=1
+orient0094 candidate failures=0 provisional=1
+lockacc candidate failures=0 provisional=1
+lockedget candidate failures=0 provisional=1
+lockedget2 candidate failures=0 provisional=1
+lockedcopy candidate failures=0 provisional=1
+lockacc3 candidate failures=0 provisional=1
+lockacc4 candidate failures=0 provisional=1
+lockacc5 candidate failures=0 provisional=1
+lockacc6 candidate failures=0 provisional=1
+lockacc7 candidate failures=0 provisional=1
+lockacc8 candidate failures=0 provisional=1
+lockacc9 candidate failures=0 provisional=1
+wrap5450 candidate failures=0 provisional=1
+wrap1787 candidate failures=0 provisional=1
+boxmass row=phys_fn_000849 mass_scaled=42f00000 mass_unit=42700000 digest=d82de90e
+capmass row=phys_fn_000853 e=4287663e.4287663e.41f56fdb.421d1463 f=41756fdb.4207663e.4207663e.419d1463 digest=ab81bd0c
+paxis row=phys_fn_000831 s0=41660000 q0=c0ae0000 digest=1d701701
+errstream row=phys_fn_001357 invalid_fires=1 valid_fires=0 digest=c2ab04f6
+grouperr row=phys_fn_001329 invalid_fires=1 d8=00000005 c8=00000020 digest=b6f879ec
+applydesc row=phys_fn_001347 result=1 digest=11e5e856 flags=1234 group=5 material=5678
+loaderr row=sphere+capsule fires=1/1 rad=bf800000.bf800000 hh=00000000 digest=8f125103
+ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67
+owndtor row=oracle flag=00000002 clr=1/1/1 pop=0 mv=0 fl=1 pair=0 freed=0 digest=6d133744
+vecgrow row=oracle proxy=c0c0c0c0 count=8 cap=14 elems=1 mops=3 mbytes=100 fops=2 fbytes=40 digest=6f1d9bd7
+vecgrow2 row=oracle noalloc=1 stored=1 digest=8eac5155
+relgrow row=oracle nopush=1 s37zero=1 poison=1 mv2=1 fl=10/18 dup=1 mops=1 mbytes=76 fops=1 fbytes=36 digest=dc548b5a
+pairrm row=oracle cases=5 digest=f0bdae43
+actorsm row=oracle digest=1bdc2fa8
+actorctor row=oracle ct=1/1/1/1/1 dd=1/1/1 adj=1/1/1 w=1/1/1 digest=19f4915a
+actorsm2 row=oracle energy=4240985d/4240985d digest=f3e3d65f
+actorsm3 row=oracle lin=3eb33333 ang=3e000000 digest=5bc8156a
+actorsm4 row=oracle digest=0ecc5ea9
+actorsm5 row=oracle digest=75b57124
+actorsm6 row=oracle digest=6f47ea3d
+actorsm7 row=oracle digest=0b4b17e4
+miscsm row=oracle digest=9460eb64
+miscsm2 row=oracle digest=c4bc7155
+slate11 row=oracle digest=7a409e75
+mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019
+material row=template flags=00000000 digest=527814f5
+materialboot row=template flags=00000000 digest=dcc6a675
+planeext row=phys_fn_001257 out=00000000.00000000.00000000.7f7fffff
+dtors2 plane=phys_fn_001263 digest=7ac6fe28 mesh=phys_fn_001399 digest=b3c6ab70
+capdtor row=phys_fn_001014 digest=7a376673
+capload row=phys_fn_000989 rad=3fc00000
+planeload row=phys_fn_001265 ny=3f800000
+meshload row=phys_fn_001383 bound=1
+boxload row=phys_fn_000981 stored=1
+capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000
+layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1
+layout oracle digest=774d629d
+sceneaux row=phys_fn_000649 arrays=10 oracle_frees=10 candidate_frees=10 mismatches=0
+colobj candidate ok=1 zero04=00000000 arg8=a5a5a5a5 arg18=a5a5a5a5 member=00e36134
+owner candidate ok=1 returned=13579bdf
+hull candidate ok=1 face2_offset=0xb8 vertices_offset=0x10
+hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5
+hull sharedhook candidate ok=1 stable=1
+shapebase candidate ok=1 digest=de5f5000 owner_self=1
+shapeleaf candidate ok=1 digest=cb0e48f9
+boxshape candidate ok=1 digest=ac5ed12f sentinel_d0=2
+boxvptr candidate word=00f4aa18
+boxvptr candidate dispatch=unverified
+boxsweep-diff candidate run=48 failures=0 provisional=1
+sphere candidate ok=1 digest=37ea7205 sentinel_d0=1
+capsule candidate ok=1 digest=ba7317e3 sentinel_d0=3
+plane candidate ok=1 digest=abed37e0 sentinel_d0=0
+mesh candidate ok=1 digest=422a1f78 sentinel_d0=4
+basesave candidate ok=1 digest=bc9dc964
+boxrow candidate ok=1 digest=4e1a53cd
+boxrow2 candidate ok=1 d11=2f2dc4eb d13=853c971d
+boxrow3 candidate ok=1 d8=8428d8b5 d9=8428d8b5
+boxrow4 candidate ok=1
+boxdtor candidate ok=1 digest=a29800b7
+planesave candidate ok=1 digest=7629841d
+sphererows candidate ok=1 d13=f9280a78 rad=00000000
+morerows candidate okCap=1 okMesh=1
+aabbrows candidate ok=1 d9=e2ba14a5 dc=0b2ae445
+meshrows candidate ok=1 d13=0ccd08b4 dw=966271e0
+meshwords44 candidate ok=1 d44=2e7f4c1b
+sphlocal candidate ok=1 d8=33c61825
+dtors2 candidate ok=1 plane=7ac6fe28 mesh=b3c6ab70
+capaabb candidate ok=1 da=33c61825
+capload candidate ok=1 rad=3fc00000
+planeload candidate ok=1 ny=3f800000
+meshload candidate ok=1
+boxload candidate ok=1
+ownerupd candidate ok=1
+massframe candidate ok=1 digest=0bed6c36
+boxmass candidate ok=1 digest=d82de90e
+capmass candidate ok=1 digest=ab81bd0c
+paxis candidate ok=1 digest=1d701701
+errstream candidate ok=1 digest=c2ab04f6
+grouperr candidate ok=1 digest=b6f879ec
+applydesc candidate ok=1 result=1 digest=11e5e856 flags=1234 group=5 material=5678
+loaderr candidate ok=1 digest=8f125103
+material candidate ok=1 digest=527814f5
+owndtor candidate ok=1 digest=6d133744
+vecgrow candidate ok=1 count=8 cap=14 elems=1 digest=6f1d9bd7/8eac5155
+relgrow candidate ok=1 nopush=1 s37zero=1 poison=1 mv2=1 fl=10/18 dup=1 digest=dc548b5a
+pairrm candidate ok=1 digest=f0bdae43
+actorsm candidate ok=1 digest=1bdc2fa8
+actorctor candidate ok=1 ct=1/1/1/1/1 dd=1/1/1 adj=1/1/1 w=1/1/1 digest=19f4915a
+actorsm2 candidate ok=1 energy=4240985d/4240985d digest=f3e3d65f
+actorsm3 candidate ok=1 lin=3eb33333 ang=3e000000 digest=5bc8156a
+actorsm4 candidate ok=1 digest=0ecc5ea9
+actorsm5 candidate ok=1 digest=75b57124
+actorsm6 candidate ok=1 digest=6f47ea3d
+actorsm7 candidate ok=1 digest=0b4b17e4
+miscsm candidate ok=1 digest=9460eb64
+miscsm2 candidate ok=1 digest=c4bc7155
+slate11 candidate ok=1 digest=7a409e75
+materialboot candidate ok=1 digest=dcc6a675
+mzero candidate ok=1 digest=23206019
+ownctor candidate ok=1 digest=641beb67
+capdtor candidate ok=1 dc=7a376673
+setrad candidate ok=1 rad=3fa00000
+capsetrad candidate ok=1 rad=3fc00000
+setgroup candidate ok=1 hw_d8=0007
+sphload candidate ok=1 rad=40200000 group=0006
+planeext candidate ok=1 dp=517c20a1
+assertrows candidate failures=0 provisional=1
+wordrows candidate failures=0 provisional=1
+gate3708 candidate failures=0 provisional=1
+probe0392 candidate failures=0 provisional=1
+mutexfamily candidate failures=0 provisional=1
+vtconst candidate failures=0 provisional=1
+thunks3 candidate failures=0 provisional=1
+vtcall pair candidate failures=0 provisional=1
+arrayloop candidate failures=0 provisional=1
+dtor2142 candidate failures=0 provisional=1
+mutexdirect candidate failures=0 provisional=1
+applygroup probe failures=0 provisional=1
+vtcall slots candidate failures=0 provisional=1
+oncedispatch candidate failures=0 provisional=1
+dtor3938 candidate failures=0 provisional=1
+guardedstore candidate failures=0 provisional=1
+mutexwork candidate failures=0 provisional=1
+mutexwide candidate failures=0 provisional=1
+loop1024 candidate failures=0 provisional=1
+globalflag4491 candidate failures=0 provisional=1
+once0342 candidate failures=0 provisional=1
+chain4763 candidate failures=0 provisional=1
+store5382 candidate failures=0 provisional=1
+allocdtor candidate failures=0 provisional=1
+ownedptr candidate failures=0 provisional=1
+registry4743 candidate failures=0 provisional=1
+blockers candidate failures=0 provisional=1
+blockers2 candidate failures=0 provisional=1
+blockers3 candidate failures=0 provisional=1
+blockers4 candidate failures=0 provisional=1
+newunlock candidate failures=0 provisional=1
+lockhelper candidate failures=0 provisional=1
+lockhelperF candidate failures=0 provisional=1
+dtorchain candidate failures=0 provisional=1
+tailjmp candidate failures=0 provisional=1
+tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match
+tailsmall candidate failures=0 provisional=1
+reportonceF candidate failures=0 provisional=1
+accum0867 candidate failures=0 provisional=1
+pair0448 candidate failures=0 provisional=1
+list4089 candidate failures=0 provisional=1
+mutexlistfree candidate failures=0 provisional=1
+tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0
+newreach candidate failures=0 provisional=1
+bindprobe done
+orderprobe slot2 before=00000000
+orderprobe done
+orderprobe slot2 ok=1 after=00d961a0
+orderprobe slot2 restored=00000000
+n3min candidate failures=0 provisional=1
+n3rest candidate failures=0 provisional=1
+floatout3575 candidate failures=0 provisional=1
+lockthunkF candidate failures=0 provisional=1
+smallrows candidate failures=0 provisional=1
+lockthunk2 candidate failures=0 provisional=1
+tailabi row=003936 cleanup=0 oracle=1 candidate=1 this=match
+extrarows candidate failures=0 provisional=1
+n4family candidate failures=0 provisional=1
+vcall413 candidate failures=0 provisional=1
+vecloop4165 candidate failures=0 provisional=1
+slot1544 candidate failures=0 provisional=1
+vecloop4163 candidate failures=0 provisional=1
+fourslot4861 candidate failures=0 provisional=1
+singletonrel candidate failures=0 provisional=1
+allocrel candidate failures=0 provisional=1
+masked4866 candidate failures=0 provisional=1
+masked4864 candidate failures=0 provisional=1
+allocrelease4149 candidate failures=0 provisional=1
+allocclear2342 candidate failures=0 provisional=1
+adjusted2060 candidate failures=0 provisional=1
+layout candidate mismatches=0 mode=differential candidate_fold=99fddf71
+layout result=differential-pass
+gate=oracle_differential:NxPhysicsObjectLayoutTests exit=0
+gate=oracle_differential:NxPhysicsShapeVtableTests command="D:\github\Novodex\build\phase5-plan-repro-20261015\Release\NxPhysicsShapeVtableTests.exe" D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+abi probe applygroup oracle_flags=0 candidate_flags=0 state_equal=1 mismatches=0
+abi probe negative_controls register_flags=1e stack_flags=1
+collision dtor family=0 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=0 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=1 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=1 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=2 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=2 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=3 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=3 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision dtor family=4 oracle_root_return=1 candidate_root_return=1 primary_transition=1 stack_balanced=1 frees=1 mismatches=0
+collision deleting dtor family=4 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 stack_balanced=1 mismatches=0
+collision primary deleting dtor family=0 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=1 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=2 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=3 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary deleting dtor family=4 oracle_root_return=1 candidate_root_return=1 oracle_frees=1 candidate_frees=1 mismatches=0
+collision primary dtor families=5 mismatches=0
+collision dtor families=5 mismatches=0
+collision dtor member-only mutant mismatches=5
+shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0
+shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1
+shape vtable base_stub slot5 oracle_null=1 candidate_null=1 esp_balanced=1
+shape vtable base_stub slot7 oracle_false=1 candidate_false=1 output_preserved=1
+shape vtable base_stub_cases=3 mismatches=0
+shape vtable oracle_digest=ed1294b6 cases=645 mismatches=0
+shape vtable base_stubs oracle_digest=6d347130 cases=3 mismatches=0
+shape vtable boxmass oracle_digest=82843962 cases=24 failures=0
+shape vtable capsule_load_return oracle=1 candidate=1
+shape vtable massframe oracle_digest=7c450cef cases=201 failures=0
+shape vtable massframe centre oracle_digest=65953565 cases=4 failures=0
+shape vtable boxsweep inputs=84 digest=46df40a9
+shape vtable boxsweep oracle_digest=2c5d5c09 cases=84 failures=0
+box hull oracle_digest=e0477220 cases=324 failures=0
+gate=oracle_differential:NxPhysicsShapeVtableTests exit=0
+
+gate=oracle_proof:NxPhysicsObjectLayoutTests command="python.exe" -B D:\github\Novodex\docs\reconstruction\novodex-physics\tools\oracle_proof.py --manifest D:\github\Novodex\docs\reconstruction\novodex-physics\evidence\oracle-only-baselines.json --target NxPhysicsObjectLayoutTests --transcript D:\github\Novodex\build\phase5-plan-repro-20261015\oracle-proofs\NxPhysicsObjectLayoutTests.stdout.txt --oracle-sha256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c --repo-root D:\github\Novodex --evidence-output D:\github\Novodex\build\phase5-plan-repro-20261015\oracle-proofs\NxPhysicsObjectLayoutTests.json
+oracle proof FAILED fixture source SHA-256 differs from the pinned baseline
+gate=oracle_proof:NxPhysicsObjectLayoutTests exit=1

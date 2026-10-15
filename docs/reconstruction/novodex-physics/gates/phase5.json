@@ -31,6 +31,11 @@
       "name": "viewer_all_scenes",
       "command": "ctest --test-dir build -C Release --output-on-failure -R '^Viewer'",
       "result": "Committed main at 0430e616 passes the full 48-entry Viewer CTest selection, including all 39 available scene entrypoints and focused Viewer checks: 43 passed, five known pinned-oracle asset cases skipped, zero failed. Full output: build/viewer-all-scenes-posecopy-main.log."
+    },
+    {
+      "name": "clean_head_phase5_reproduction_2026-10-15",
+      "command": "run_phase_gate.ps1 -Phase 5 -RepoRoot <detached checkout at d7b1f6a7> -BuildRoot <fresh checkout build> -OracleRoot D:\\FlamingEnt__\\Unreal_3 -PairsRoot <fresh checkout build>\\pairs",
+      "result": "A fresh detached checkout and Win32 Release build pass Phase 5 at 2740/2740 coverage assertions; NxPhysicsObjectLayoutTests oracle-only proof matches pinned digest 774d629d. The primary working-copy run's candidate differential itself reports mismatches=0, then stops because its modified test source SHA-256 (603724e849442b2cde5b8273779bc39fe89762cae9fe0fb4dfcd56883751726b) differs from the pinned source SHA-256 (a2f83215f4a03fdd8a4a2f0bda280cfa10af9e74fde367a23a709c1f07a92bc4). No source was changed. Full transcripts: evidence/raw/phase5-plan-reproduction-20261015/."
     }
   ],
   "excluded_from_comparison": [
