@@ -20926,13 +20926,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked match-or-self accessor (0x23a90, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/447",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3222",
-      "static_proof": "static review of the recorded shape: locked match-or-self accessor (0x23a90, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "static_proof": "Acquires read link [self+0x14], compares the requested NxShapeType with the internal shape type at [self+0x18], releases the link, and returns the public wrapper on a match or null otherwise.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests checks a matching capsule type query and read-lock release with a simulated foreign owner; removing the read-lock bracket was rejected with stdout_delta=2. See evidence/phase3-capsule-public-is-lock-001109.md.",
+      "notes": "Capsule public shape slot 28 dispatches nxCapsuleHandleIs; candidate linker map resolves it at RVA 0x35f60.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxCapsuleHandleIs",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxCapsuleHandleIs@@YIPAXPAX0W4NxShapeType@@@Z",
+        "address": "0x10036f60",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001110",

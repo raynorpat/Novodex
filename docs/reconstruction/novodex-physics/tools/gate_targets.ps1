@@ -1360,6 +1360,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'momentum static_energy=0'
     )
     'NxPhysicsActorDynamicSetterTests' = @(
+        'setter capsule_locked_is=1.0.1',
         'setter report=2.10.\Epic\Novodex\SDKs\Physics\src\NpCapsuleShape.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!',
         'setter capsule_locked_material=0.0.1',
         'setter report=2.22.\Epic\Novodex\SDKs\Physics\src\NpCapsuleShape.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!',
@@ -6107,7 +6108,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2757  # adds capsule material and geometry lock-state differentials
+	'5' = 2758  # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
 	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target

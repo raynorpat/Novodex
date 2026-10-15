@@ -556,6 +556,16 @@ static void* __fastcall nxBoxHandleIs(void* self, void*, NxShapeType requested)
 	return requested == nxBoxHandleGetType(self, 0) ? self : 0;
 	}
 
+static void* __fastcall nxCapsuleHandleIs(void* self, void*, NxShapeType requested)
+	{
+	void* readLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x14);
+	nxNpSceneGuardEnter(readLock);
+	void* result = requested == nxBoxHandleGetType(self, 0) ? self : 0;
+	nxNpSceneGuardLeave(readLock);
+	return result;
+	}
+
 static const NxVec3* __fastcall nxBoxHandleGetDimensions(void* self, void*)
 	{
 	return reinterpret_cast<const NxVec3*>(nxBoxHandleInternal(self) + 0xe4);
@@ -866,6 +876,7 @@ void* nxShapePublicVtable(unsigned type)
 			slots[1][32] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
 			slots[1][33] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[2][31] = reinterpret_cast<void*>(&nxCapsuleHandleSetDimensions);
+			slots[2][28] = reinterpret_cast<void*>(&nxCapsuleHandleIs);
 			slots[2][25] = reinterpret_cast<void*>(&nxCapsuleHandleSetMaterial);
 			slots[2][32] = reinterpret_cast<void*>(&nxCapsuleHandleSetRadius);
 			slots[2][33] = reinterpret_cast<void*>(&nxCapsuleHandleGetRadius);

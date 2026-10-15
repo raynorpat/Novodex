@@ -835,6 +835,12 @@ int wmain(int argc, wchar_t** argv)
 				const unsigned savedReadOwner = readState[1];
 				readState[0] = 1;
 				readState[1] = 0;
+				void* capsuleMatch = capsule->is(NX_SHAPE_CAPSULE);
+				printf("setter capsule_locked_is=%u.%x.%u\n",
+					capsuleMatch == capsule ? 1u : 0u, readState[0],
+					readState[1] != 0 ? 1u : 0u);
+				readState[0] = 1;
+				readState[1] = 0;
 				const NxReal lockedReadRadius = capsule->getRadius();
 				printf("setter capsule_locked_read_radius=%x.%x.%x\n",
 					bits(lockedReadRadius), readState[0], readState[1] != 0 ? 1u : 0u);
