@@ -1,0 +1,56 @@
+{
+  "row": "phys_fn_000002",
+  "date": "2026-10-15",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_nxphysics_sha256": "236268be55a05263991050dfda3b3c878a4ae0431122c118ddaf1c00e3a9e49f",
+  "candidate_symbol": "_phys_fn_000002@16",
+  "candidate_rva": "0x0005abd0",
+  "oracle_rva": "0x00001030",
+  "source_sha256": "fcf56a4e4bcc296b70d3e1a5da538f5481f603298107a79d576c8296687ca59b",
+  "test_sha256": "0f25670a7682d366223dfeb96685635c7a4dda87985c255c331ccbf3ab7e6fdd",
+  "mutation": "Changed address -= stride to address += stride in phys_fn_000002.",
+  "mutation_result": {
+    "candidate_exit": 1,
+    "oracle_exit": 0,
+    "oracle_digest": "4c02e27d356771c1",
+    "mutant_candidate_digest": "9446a40071e62479",
+    "mismatches": 9,
+    "input_digest": "b243ae91d0f8ad04"
+  },
+  "restored_result": {
+    "candidate_exit": 0,
+    "oracle_exit": 0,
+    "oracle_digest": "4c02e27d356771c1",
+    "candidate_digest": "4c02e27d356771c1",
+    "mismatches": 0,
+    "input_digest": "b243ae91d0f8ad04"
+  },
+  "phase5_gate": {
+    "status": "pass",
+    "coverage_assertions_evaluated": 2767,
+    "coverage_floor": 2767,
+    "target": "NxPhysicsRangeIterationTests",
+    "oracle_exit": 0,
+    "log": "phase5_gate.log.gz"
+  },
+  "oracle_pair": "D:\\FlamingEnt__\\Unreal_3\\Binaries",
+  "candidate_pair": "D:\\FlamingEnt__\\novodex-analysis\\pairs\\candidate",
+  "files": {
+    "mutant.log.gz": {
+      "sha256": "829b32d3dc15d675a94ad654e59255dfa59df2ab56de6333d01cb7329d4212d2",
+      "compressed_bytes": 371,
+      "uncompressed_bytes": 955
+    },
+    "restored.log.gz": {
+      "sha256": "251ce135fbda3c479f931172b3539385a27c0f2f53cef1fbb5fecdaf5aae8445",
+      "compressed_bytes": 333,
+      "uncompressed_bytes": 907
+    },
+    "phase5_gate.log.gz": {
+      "sha256": "30a913764a9c0220f51bf834528cd5f4bf82867fd9d71510af453812220b1b74",
+      "compressed_bytes": 206675,
+      "uncompressed_bytes": 2814693
+    }
+  },
+  "candidate_map": "build/Release/NxPhysics.map symbol _phys_fn_000002@16"
+}

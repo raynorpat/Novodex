@@ -95,9 +95,19 @@ stride, the final callback result, and zero-count behavior. Mutating the loop
 update from `address -= stride` to `address += stride` made the target fail
 three named checks; the first reported `check_failed three values are visited
 in descending address order`. The restored implementation passes the focused
-Release test. The row is classified `statically_reviewed`, since this target
-compares against the recovered disassembly contract rather than a pinned-oracle
-transcript. No public header changed.
+Release test.
+
+The fixture now calls oracle RVA `0x00001030` and candidate DLL symbol
+`_phys_fn_000002@16` at RVA `0x0005abd0` directly for six cases: positive and negative strides,
+zero and negative counts, zero stride, and a single callback. It compares
+return value, callback count and order, callback values, and x86 stack delta.
+The restored oracle and candidate digests match at `4c02e27d356771c1` with
+zero mismatches; the pinned input digest is `b243ae91d0f8ad04`. Reversing the
+candidate's address update changes its digest to `9446a40071e62479` and is
+rejected: `phys_fn_000002 mismatches=9`. The gate pins both oracle-side digests. The row
+is now an oracle-differential closure rather than a static-only proof. No
+public header changed. Raw runs are recorded in
+`evidence/raw/phase5-range-iteration-000002-20261015/`.
 
 ## Object-layout helper rows: `phys_fn_000004` and `phys_fn_000012`
 

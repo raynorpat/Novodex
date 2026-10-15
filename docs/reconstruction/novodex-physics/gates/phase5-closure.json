@@ -24,18 +24,17 @@
   },
   "counts": {
     "differential_falsified": 121,
-    "oracle_differential_falsified": 83,
-    "static_proof_falsified": 1
+    "oracle_differential_falsified": 84
   },
   "closed": [
     {
       "id": "phys_fn_000002",
       "rva": "0x00001030",
-      "proof": "static_proof_falsified",
+      "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsRangeIterationTests",
       "falsification": {
         "mutation": "Changed the loop update from address -= stride to address += stride, reversing the reverse-strided walk.",
-        "detected": "check_failed three values are visited in descending address order"
+        "detected": "mismatches=9"
       }
     },
     {

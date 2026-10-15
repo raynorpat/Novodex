@@ -21,12 +21,10 @@
     "phys_fn_000022"
    ],
    "rows": {
-    "dynamically_gated": 12,
-    "statically_reviewed": 1
+    "dynamically_gated": 13
    },
    "bytes": {
-    "dynamically_gated": 2042,
-    "statically_reviewed": 49
+    "dynamically_gated": 2091
    },
    "phases": {
     "2": 4,

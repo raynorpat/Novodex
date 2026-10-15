@@ -31,7 +31,7 @@ $NxPhaseStaticProofTargets = [ordered] @{
     '2' = @('NxPhysicsInternalTests')
     '3' = @()
     '4' = @('NxPhysicsInternalTests')
-    '5' = @('NxPhysicsRangeIterationTests')
+    '5' = @()
     '6' = @()
     '7' = @('NxPhysicsInternalTests')
     '8' = @()
@@ -65,7 +65,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '2' = @()
     '3' = @('NxPhysicsCollisionTests', 'NxPhysicsJointSupportTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsType3PrunerTests')
-    '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests')
+    '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsRangeIterationTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
     '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsCollisionTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsPlaneShapeDescValidationTests')
     '8' = @()
@@ -4549,6 +4549,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'joint_support coverage name=row000022 pose_update=2 target_slot6=1 null_target=1',
         'joint_support row000713 cases=3'
     )
+    'NxPhysicsRangeIterationTests' = @(
+        'range_iteration cases=6 oracle=4c02e27d356771c1 candidate=4c02e27d356771c1 mismatches=0',
+        'range_iteration inputs=6 digest=b243ae91d0f8ad04'
+    )
     'NxPhysicsCollisionTests' = @(
         'collision generator=xorshift32 pair_iterations=60000 aimed_iterations=60000',
         'collision seeds pair=c0ffee11 aimed=5eed10ad',
@@ -6126,7 +6130,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2765  # adds direct row 000965 Prunable owner-query result
+	'5' = 2767  # adds direct row 000965 and the two pinned range-iteration coverage lines
 	           # adds sphere radius setter/getter lock state and invalid-radius report rows
 	           # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
@@ -6391,8 +6395,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsSDKSceneLookupTests'
 )
 $NxRegisteredStaticProofTargets = @(
-    'NxPhysicsInternalTests',
-    'NxPhysicsRangeIterationTests'
+    'NxPhysicsInternalTests'
 )
 $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsAssetTests',
@@ -6404,6 +6407,7 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsShapeVtableTests',
     'NxPhysicsPlaneShapeDescValidationTests',
+    'NxPhysicsRangeIterationTests',
     'NxPhysicsThirdPartyTests',
     'NxPhysicsType3PrunerTests'
 )

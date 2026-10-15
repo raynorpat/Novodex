@@ -744,6 +744,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsSceneBoundsPlanesTests bcrypt)
 	add_executable(NxPhysicsRangeIterationTests tests/PhysicsRangeIterationTests.cpp
 		Physics/src/RecoveredRows.cpp)
+	target_link_libraries(NxPhysicsRangeIterationTests bcrypt)
 	add_executable(NxPhysicsPairFlagTests tests/PhysicsPairFlagTests.cpp)
 	target_include_directories(NxPhysicsPairFlagTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsPairFlagTests bcrypt)
