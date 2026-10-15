@@ -2866,14 +2866,14 @@
    ],
    "rows": {
     "discovered": 86,
-    "dynamically_gated": 17,
-    "reconstructed": 462,
+    "dynamically_gated": 19,
+    "reconstructed": 460,
     "statically_reviewed": 3
    },
    "bytes": {
     "discovered": 27105,
-    "dynamically_gated": 3212,
-    "reconstructed": 139675,
+    "dynamically_gated": 3232,
+    "reconstructed": 139655,
     "statically_reviewed": 157
    },
    "phases": {

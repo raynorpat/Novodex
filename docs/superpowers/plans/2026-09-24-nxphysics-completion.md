@@ -8,7 +8,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 356 / 204. The restored source-built Win32 Release candidate passes the full Phase 7 oracle gate at 2,885/2,885 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
+**Status, updated 2026-10-15:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 88 closed / 55 deferred; Phase 3 87 / 305; Phase 4 43 / 1,010; Phase 5 205 / 0; Phase 6 164 / 269; Phase 7 356 / 204. The restored source-built Win32 Release candidate passes the full Phase 7 oracle gate at 2,887/2,887 assertions, and all 816 reconstruction-tool tests pass. M1 and the full-image M8 audit remain open; public headers remain byte-identical and CMake remains the build path.
 
 
 ### Continuation — lock-API initializer differential enforcement (`phys_fn_002367`, 2026-10-15)
@@ -1133,3 +1133,8 @@ The populated Scene teardown differential retains both embedded trigger-pair all
 ### Phase 7 continuation — Scene trigger-pair list initialization (`phys_fn_002346`, 2026-10-15)
 
 The populated-scene teardown and trigger-simulation staged-pair differentials exercise the reconstructed two-lane initializer. Changing only the second header pointer from `self+0x18` to `self+0x14` crashes both candidate trigger paths (oracle exit 0; candidate exit `-1073741819`; `stdout_delta=38` and `32`). The constructor-only control remains exact. Restoring the pointer and rebuilding returns all three target controls to exact equality. The full Phase 7 gate passes at 2,884/2,884 assertions; Phase 7 now records 355 closed / 205 deferred. See `docs/reconstruction/novodex-physics/evidence/phase7-scene-trigger-pair-init-002346.md`.
+
+
+### Continuation — lock-API push-self wrappers (`phys_fn_002369`, `002373`, 2026-10-15)
+
+The existing `nxLockApiPushSelf` source comparison is now required coverage for both lock-API callback wrappers. A candidate-source mutation from `fn(v)` to `fn(v ^ 1u)` is rejected at both row markers (`mismatches=1` each; candidate failures=2); restored source is rebuilt byte-for-byte and both controls match. Fresh Phase 5, Phase 6, and Phase 7 gates pass at 2,771/2,771, 1,671/1,671, and 2,887/2,887 coverage assertions. Phase 7 advances to 358 closed / 202 deferred. Public headers and production behavior are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-push-self-002369-002373.md`.

@@ -44164,12 +44164,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "lock-API trampoline (0x5b7d0)",
+      "state": "dynamically_gated",
+      "source": "lock-API push-self trampoline (nxLockApiPushSelf, Physics/src/ObjectModel.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/885",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7415",
-      "static_proof": "static review of the recorded shape: lock-API trampoline (0x5b7d0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
+      "static_proof": "The oracle row at RVA 0x5b7d0 loads the 32-bit word at [self] and calls lock-API global 0x1010401c with it. Candidate source helper: nxLockApiPushSelf in Physics/src/ObjectModel.cpp.",
+      "dynamic_proof": "Direct registered NxPhysicsObjectLayoutTests oracle differential: oracle RVAs 0x5b7d0 and 0x5b7f0 versus nxLockApiPushSelf linked from Physics/src/ObjectModel.cpp. Each row compares the loaded self word and callback record. The fn(v ^ 1u) mutation is rejected independently at both row markers; restored comparison matches. Evidence: evidence/phase7-lock-api-push-self-002369-002373.md and evidence/raw/phase7-lock-api-push-self-002369-002373-20261015/.",
       "notes": ""
     },
     {
@@ -44236,12 +44236,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "lock-API trampoline (0x5b7f0)",
+      "state": "dynamically_gated",
+      "source": "lock-API push-self trampoline (nxLockApiPushSelf, Physics/src/ObjectModel.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/887",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7417",
-      "static_proof": "static review of the recorded shape: lock-API trampoline (0x5b7f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
+      "static_proof": "The oracle row at RVA 0x5b7f0 loads the 32-bit word at [self] and calls lock-API global 0x10104024 with it. Candidate source helper: nxLockApiPushSelf in Physics/src/ObjectModel.cpp.",
+      "dynamic_proof": "Direct registered NxPhysicsObjectLayoutTests oracle differential: oracle RVAs 0x5b7d0 and 0x5b7f0 versus nxLockApiPushSelf linked from Physics/src/ObjectModel.cpp. Each row compares the loaded self word and callback record. The fn(v ^ 1u) mutation is rejected independently at both row markers; restored comparison matches. Evidence: evidence/phase7-lock-api-push-self-002369-002373.md and evidence/raw/phase7-lock-api-push-self-002369-002373-20261015/.",
       "notes": ""
     },
     {

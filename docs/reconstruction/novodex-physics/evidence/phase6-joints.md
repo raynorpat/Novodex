@@ -11054,3 +11054,4 @@ Phase 7 row `phys_fn_002342` (Scene trigger-pair release) is mutation-falsified 
 Phase 7 row `phys_fn_002346` (Scene trigger-pair list initialization) is mutation-falsified through the populated-scene and trigger-simulation staged-pair differentials. A wrong second-lane pointer crashes both candidate paths while the oracle exits zero (`stdout_delta=38` and `stdout_delta=32`); the restored controls match exactly. See `phase7-scene-trigger-pair-init-002346.md`.
 
 Phase 7 `phys_fn_002367` lock-API initializer mutation detection: `mismatches=1`; restored oracle/source comparison returns `mismatches=0`. See `phase7-physfn-002367-lock-api-init.md`.
+Phase 7 `phys_fn_002369` and `phys_fn_002373` lock-API push-self rows mutation detection: each reports `mismatches=1`; the restored oracle/source comparisons return `mismatches=0`. See `phase7-lock-api-push-self-002369-002373.md`.

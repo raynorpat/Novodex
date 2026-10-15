@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "artifacts": [
+    {
+      "path": "candidate-source-positive.log.gz",
+      "source": "lock-api-rows-restored.log",
+      "uncompressed_size": 25270,
+      "uncompressed_sha256": "3680f126a87b52b941baae54ec4c4d4b8d7483530d5a6ada16e0d1d335ed297c",
+      "compressed_size": 5710,
+      "compressed_sha256": "8f97ea1b8172907fcefa5e462d788a1b78ab6abf5ed0f5c41063c1014e82d951"
+    },
+    {
+      "path": "candidate-source-mutant.log.gz",
+      "source": "lock-api-rows-mutant.log",
+      "uncompressed_size": 25459,
+      "uncompressed_sha256": "bd750ec60f612f9e40da0936ee9fa1b3d4fda4f6b5558b7c38167149e31d1af4",
+      "compressed_size": 5849,
+      "compressed_sha256": "18c19e7be432d44fecd82ed433d60414b0b50537cd8149f49e7d90acf18d1cdc"
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "build/lock-api-phase5-gate-final.log",
+      "uncompressed_size": 2828537,
+      "uncompressed_sha256": "0187b51289049b7701bb5788bc4d85065b8844046faefb0afba7348f7a8ed549",
+      "compressed_size": 206611,
+      "compressed_sha256": "0b06745df7b9c21b259a2d23595ba27a08ad827690558016591f3fdc7cae1720"
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "source": "build/lock-api-phase6-gate-final.log",
+      "uncompressed_size": 3099351,
+      "uncompressed_sha256": "45db531127054d0ba54716320fa6f7e556599074977370184b1d5d62535659ea",
+      "compressed_size": 251854,
+      "compressed_sha256": "ffc6b6128868d63d3ff79d39b1be21088a0c83d86619446f2050581acb47eab0"
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build/lock-api-phase7-gate-final.log",
+      "uncompressed_size": 4602875,
+      "uncompressed_sha256": "1c59e4be32b09b001831e7d063d034e22b8b9c3f21d7abcc45b0d45255ffbe19",
+      "compressed_size": 369532,
+      "compressed_sha256": "c6568e178777ee5e383343ac5ad861813bc9e11050ff8aa8a01aa1f4a53e5f28"
+    },
+    {
+      "path": "mutant-build.log.gz",
+      "source": "lock-api-mutation-build.log",
+      "uncompressed_size": 3303,
+      "uncompressed_sha256": "f64ca11c5f2f6fe5aa42b64eab4e1e97839e41a4de5259f10889b1b8c1d63594",
+      "compressed_size": 887,
+      "compressed_sha256": "4f94a12cb3bc9cce586fb734493539509b9b848cd79ccf0dcac31e546244864f"
+    },
+    {
+      "path": "restored-build.log.gz",
+      "source": "lock-api-restored-forced-build.log",
+      "uncompressed_size": 4642,
+      "uncompressed_sha256": "9b1175610b669778a82784fbc01d82770ccd78ae0a54c589517c296ad03ed9fc",
+      "compressed_size": 935,
+      "compressed_sha256": "8306e3c22a21d2390a9480a621099189a4efe88520a9d5f9bd8cfab3369894af"
+    }
+  ]
+}
