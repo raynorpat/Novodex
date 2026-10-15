@@ -11074,3 +11074,8 @@ Phase 7 row phys_fn_002394 scalar deleting thunk mutation proof: the null-return
 Phase 7 row phys_fn_002377 worker-owner base constructor mutation proof: changing record byte +8 from zero to one reports mismatches=1; restored source reports mismatches=0. See phase7-lock-api-worker-base-construct-002377.md.
 
 Phase 7 row phys_fn_002396 derived worker-owner constructor mutation proof: flipping bit 0 of the third argument reports mismatches=1; restored source reports mismatches=0. See phase7-lock-api-worker-construct-002396.md.
+
+
+## Default allocator malloc/realloc rows 004807 and 004808
+
+The oracle-differential target NxPhysicsObjectLayoutTests exercises allocator vtable slots 0 and 2. The throwaway malloc mutant for phys_fn_004807 is caught with mismatches=3; the independent realloc mutant for phys_fn_004808 is caught with mismatches=3. The restored control is exact. See phase6-default-allocator-malloc-realloc-004807-004808.md and raw/phase6-default-allocator-004807-004808-20261015/.

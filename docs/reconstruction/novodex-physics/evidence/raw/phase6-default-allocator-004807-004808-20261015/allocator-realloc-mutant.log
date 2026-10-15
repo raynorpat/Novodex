@@ -1,0 +1,53 @@
+phase=none resolved_targets=NxPhysicsObjectLayoutTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsObjectLayoutTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxPhysics.dll source_sha256=58c0df009c5c0b127bcdbf069bb3bbf6d6fee6b160766ded73b2754b70c96ec9 staged=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\candidate\NxPhysics.dll staged_sha256=58c0df009c5c0b127bcdbf069bb3bbf6d6fee6b160766ded73b2754b70c96ec9
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxFoundation.dll source_sha256=fa3e11b0a8d6451016a02a96a7b0a8bb39411d6de10efbe2bbedec26d2907253 staged=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\candidate\NxFoundation.dll staged_sha256=fa3e11b0a8d6451016a02a96a7b0a8bb39411d6de10efbe2bbedec26d2907253
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxPhysicsObjectLayoutTests.exe
+child target=NxPhysicsObjectLayoutTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\Release\NxPhysicsObjectLayoutTests.exe" "C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\oracle" "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c" exit=1
+child_stdout_begin
+layout module path=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+layout base=10000000 mode=differential
+layout pin=matched
+layout arena-bridge=installed
+layout allocator-shim=installed
+layout foundation-shim=installed
+allocator heap rows=phys_fn_004807,phys_fn_004808 cases=3 realloc=grow preserved_prefix=1 mismatches=3
+allocator debug row=phys_fn_004812 cases=2 oracle_null=2 candidate_null=2 mismatches=0
+
+child_stdout_end
+child_stderr_begin
+FAIL the SDK default allocator vtable differs from the oracle
+
+child_stderr_end
+pass: NxPhysicsObjectLayoutTests/oracle reported the staged oracle identity: layout module path=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+differential target=NxPhysicsObjectLayoutTests oracle_exit=1 candidate_sources_in_harness=True
+differential_targets=NxPhysicsObjectLayoutTests
+differential_pairs=C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\oracle,C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\build\pairs\candidate
+Exception: C:\Users\raynorpat\.codex\worktrees\range-iteration-diff\Novodex\build\allocator-mutation-20261015\docs\reconstruction\novodex-physics\tools\run_differential.ps1:62
+Line |
+  62 |          throw "GATE FAILED: requirement not met: $Requirement"
+     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | GATE FAILED: requirement not met: every requested target passes its registered oracle/candidate differential
+     | contract
+
