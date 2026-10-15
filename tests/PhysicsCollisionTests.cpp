@@ -3851,6 +3851,129 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 		typeCases, typeCases, typeCases, typeMismatches);
 	printf("collision coverage name=trigger_pair_duplicates case=all_ordered_type_pairs_both_trigger_sides\n");
 	printf("collision coverage name=trigger_pair_duplicates case=event_flag_masks_0_through_15\n");
+
+	// Probe every overlap-dispatch slot as null while all other slots remain
+	// callable. This isolates the null-slot branch for each unordered shape
+	// type pair instead of relying only on the sphere/box example above.
+	memset(oracleMatrix, 0, sizeof(oracleMatrix));
+	memset(candidateMatrix, 0, sizeof(candidateMatrix));
+	for(unsigned slot = 0; slot != 36; ++slot)
+		{
+		*(NxShapeOverlapFn*) (oracleMatrix + 0x94 + slot * sizeof(void*)) = nxTriggerPairTestOverlap;
+		*(NxShapeOverlapFn*) (candidateMatrix + 0x94 + slot * sizeof(void*)) = nxTriggerPairTestOverlap;
+		}
+	unsigned nullSlotCases = 0;
+	unsigned nullSlotMismatches = 0;
+	for(unsigned firstType = 0; firstType != 6; ++firstType)
+		for(unsigned secondType = firstType; secondType != 6; ++secondType)
+			{
+			const unsigned slot = NxCollisionPairIndex(firstType, secondType);
+			*(NxShapeOverlapFn*) (oracleMatrix + 0x94 + slot * sizeof(void*)) = nullptr;
+			*(NxShapeOverlapFn*) (candidateMatrix + 0x94 + slot * sizeof(void*)) = nullptr;
+			NxU8 oracleSlotScene[0x710] = {};
+			NxU8 oracleSlotShapes[2][0xe0] = {};
+			NxSceneInternal candidateSlotScene;
+			NxU8 candidateSlotShapes[2][0xe0] = {};
+			void* const oracleSlotPreviousData = allocator.malloc(2 * sizeof(void*));
+			void* const candidateSlotPreviousData = allocator.malloc(2 * sizeof(void*));
+			if(!oracleSlotPreviousData || !candidateSlotPreviousData)
+				return nxFail("trigger-pair null-slot fixture could not allocate pair arrays");
+			for(unsigned shape = 0; shape != 2; ++shape)
+				{
+				*(NxU32*) (oracleSlotShapes[shape] + 0xd0) = shape ? secondType : firstType;
+				*(NxU32*) (candidateSlotShapes[shape] + 0xd0) = shape ? secondType : firstType;
+				*(NxU32*) (oracleSlotShapes[shape] + 0xd4) = shape + 1;
+				*(NxU32*) (candidateSlotShapes[shape] + 0xd4) = shape + 1;
+				}
+			*(NxU8*) (oracleSlotShapes[0] + 0xde) = 1;
+			*(NxU8*) (candidateSlotShapes[0] + 0xde) = 1;
+			NxTriggerPairTestList* const oracleSlotPrevious =
+				reinterpret_cast<NxTriggerPairTestList*>(oracleSlotScene + 0x5dc);
+			NxTriggerPairTestList* const oracleSlotCurrent =
+				reinterpret_cast<NxTriggerPairTestList*>(oracleSlotScene + 0x5ec);
+			NxTriggerPairTestList* const candidateSlotPrevious =
+				reinterpret_cast<NxTriggerPairTestList*>(candidateSlotScene.bytes() + 0x5dc);
+			NxTriggerPairTestList* const candidateSlotCurrent =
+				reinterpret_cast<NxTriggerPairTestList*>(candidateSlotScene.bytes() + 0x5ec);
+			oracleSlotPrevious->begin = (NxCollisionShape**) oracleSlotPreviousData;
+			oracleSlotPrevious->end = oracleSlotPrevious->begin + 2;
+			oracleSlotPrevious->capacity = oracleSlotPrevious->end;
+			oracleSlotCurrent->begin = oracleSlotCurrent->end = oracleSlotCurrent->capacity = nullptr;
+			candidateSlotPrevious->begin = (NxCollisionShape**) candidateSlotPreviousData;
+			candidateSlotPrevious->end = candidateSlotPrevious->begin + 2;
+			candidateSlotPrevious->capacity = candidateSlotPrevious->end;
+			candidateSlotCurrent->begin = candidateSlotCurrent->end = candidateSlotCurrent->capacity = nullptr;
+			oracleSlotPrevious->begin[0] = (NxCollisionShape*) oracleSlotShapes[0];
+			oracleSlotPrevious->begin[1] = (NxCollisionShape*) oracleSlotShapes[1];
+			candidateSlotPrevious->begin[0] = (NxCollisionShape*) candidateSlotShapes[0];
+			candidateSlotPrevious->begin[1] = (NxCollisionShape*) candidateSlotShapes[1];
+			*(NxTriggerPairTestEvent**) (oracleSlotScene + 0x5fc) = nullptr;
+			*(NxTriggerPairTestEvent**) (oracleSlotScene + 0x600) = nullptr;
+			*(NxTriggerPairTestEvent**) (oracleSlotScene + 0x604) = nullptr;
+			*(NxTriggerPairTestEvent**) (candidateSlotScene.bytes() + 0x5fc) = nullptr;
+			*(NxTriggerPairTestEvent**) (candidateSlotScene.bytes() + 0x600) = nullptr;
+			*(NxTriggerPairTestEvent**) (candidateSlotScene.bytes() + 0x604) = nullptr;
+			*(NxTriggerPairTestList**) (oracleSlotScene + 0x5d4) = oracleSlotPrevious;
+			*(NxTriggerPairTestList**) (oracleSlotScene + 0x5d8) = oracleSlotCurrent;
+			*(NxTriggerPairTestList**) (candidateSlotScene.bytes() + 0x5d4) = candidateSlotPrevious;
+			*(NxTriggerPairTestList**) (candidateSlotScene.bytes() + 0x5d8) = candidateSlotCurrent;
+			const unsigned oracleSlotAllocationsBefore = allocator.allocations;
+			oracle(oracleMatrix, oracleSlotScene);
+			const unsigned oracleSlotAllocations = allocator.allocations - oracleSlotAllocationsBefore;
+			const unsigned candidateSlotAllocationsBefore = allocator.allocations;
+			nxSceneProcessTriggerPairs(&candidateSlotScene);
+			const unsigned candidateSlotAllocations = allocator.allocations - candidateSlotAllocationsBefore;
+			NxTriggerPairTestEvent* const oracleSlotEvents =
+				*(NxTriggerPairTestEvent**) (oracleSlotScene + 0x5fc);
+			NxTriggerPairTestEvent* const candidateSlotEvents =
+				*(NxTriggerPairTestEvent**) (candidateSlotScene.bytes() + 0x5fc);
+			const unsigned oracleSlotEventCount = oracleSlotEvents
+				? (unsigned) (*(NxTriggerPairTestEvent**) (oracleSlotScene + 0x600) - oracleSlotEvents) : 0;
+			const unsigned candidateSlotEventCount = candidateSlotEvents
+				? (unsigned) (*(NxTriggerPairTestEvent**) (candidateSlotScene.bytes() + 0x600) - candidateSlotEvents) : 0;
+			NxTriggerPairTestList* const oracleSlotNextCurrent =
+				*(NxTriggerPairTestList**) (oracleSlotScene + 0x5d4);
+			NxTriggerPairTestList* const candidateSlotNextCurrent =
+				*(NxTriggerPairTestList**) (candidateSlotScene.bytes() + 0x5d4);
+			NxTriggerPairTestList* const oracleSlotNextPrevious =
+				*(NxTriggerPairTestList**) (oracleSlotScene + 0x5d8);
+			NxTriggerPairTestList* const candidateSlotNextPrevious =
+				*(NxTriggerPairTestList**) (candidateSlotScene.bytes() + 0x5d8);
+			const unsigned oracleSlotPairCount = oracleSlotNextCurrent->begin
+				? (unsigned) ((oracleSlotNextCurrent->end - oracleSlotNextCurrent->begin) / 2) : 0;
+			const unsigned candidateSlotPairCount = candidateSlotNextCurrent->begin
+				? (unsigned) ((candidateSlotNextCurrent->end - candidateSlotNextCurrent->begin) / 2) : 0;
+			const unsigned expectedEvent = 2u;
+			const bool slotOkay = oracleSlotEventCount == 1 && candidateSlotEventCount == 1 &&
+				oracleSlotEvents[0].trigger == (NxShape*) oracleSlotShapes[0] &&
+				oracleSlotEvents[0].other == (NxShape*) oracleSlotShapes[1] &&
+				candidateSlotEvents[0].trigger == (NxShape*) candidateSlotShapes[0] &&
+				candidateSlotEvents[0].other == (NxShape*) candidateSlotShapes[1] &&
+				oracleSlotEvents[0].event == expectedEvent &&
+				candidateSlotEvents[0].event == expectedEvent &&
+				oracleSlotPairCount == 0 && candidateSlotPairCount == 0 &&
+				oracleSlotAllocations == 1 && candidateSlotAllocations == 1;
+			if(!slotOkay)
+				{
+				++nullSlotMismatches;
+				printf("collision trigger-pair-null-slot-mismatch types=%u.%u slot=%u oracle_events=%u candidate_events=%u oracle_event=%u candidate_event=%u oracle_pairs=%u candidate_pairs=%u oracle_allocs=%u candidate_allocs=%u\n",
+					firstType, secondType, slot, oracleSlotEventCount, candidateSlotEventCount,
+					oracleSlotEventCount ? oracleSlotEvents[0].event : 0,
+					candidateSlotEventCount ? candidateSlotEvents[0].event : 0,
+					oracleSlotPairCount, candidateSlotPairCount,
+					oracleSlotAllocations, candidateSlotAllocations);
+				}
+			++nullSlotCases;
+			allocator.free(oracleSlotNextPrevious->begin);
+			allocator.free(candidateSlotNextPrevious->begin);
+			allocator.free(oracleSlotEvents);
+			allocator.free(candidateSlotEvents);
+			*(NxShapeOverlapFn*) (oracleMatrix + 0x94 + slot * sizeof(void*)) = nxTriggerPairTestOverlap;
+			*(NxShapeOverlapFn*) (candidateMatrix + 0x94 + slot * sizeof(void*)) = nxTriggerPairTestOverlap;
+			}
+	printf("collision trigger-pair-null-slot-matrix cases=%u oracle_cases=%u candidate_cases=%u mismatches=%u\n",
+		nullSlotCases, nullSlotCases, nullSlotCases, nullSlotMismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=all_unordered_overlap_slots_null\n");
 	nxTriggerPairTestOverlapResult = true;
 	NxSetCollisionDispatchMatrix(savedDispatch);
 	oracleSetAllocator(savedOracleSdk);

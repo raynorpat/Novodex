@@ -82,14 +82,21 @@ The rebuilt production DLL also passes the public simulation differential with
 exact enter/stay/leave callbacks (`stdout_delta=0`, `stderr_exact=True`,
 `build/trigger-pair-event-mask-simulation-differential.log`).
 
+The null-dispatch branch now has a second matrix over all 21 unordered pairs
+of the six shape types. For each case, only that overlap slot is null while
+the remaining slots are populated; oracle and candidate both emit one leave,
+retain no pair, and make one event allocation. The restored fixture reports
+21/21 matches (`build/trigger-pair-null-slot-full-collision.log`). A mutation
+that treated a missing overlap callback as a positive overlap produced 21
+mismatches, one per slot, then was reverted.
+
 A temporary unconditional `return -1` in `nxSceneFindTriggerPair` is rejected:
 the overlap-true case reports four candidate events and four pairs, while the
 false and null-slot cases report four candidate events. The fixture exits 1.
 After restoring the source and rebuilding, the full collision harness passes
 with `mismatches=0`
-(`build/trigger-pair-duplicates-restored-full-collision.log`). Unsupported
-overlap slots beyond the measured sphere/box null entry, plus broader
-allocation/list edge cases, remain open, so the inventory row stays
+(`build/trigger-pair-duplicates-restored-full-collision.log`). Broader
+pair-list allocation and edge cases remain open, so the inventory row stays
 `discovered`.
 
 The current staged gates pass: Phase 5 at 2,264/2,264 assertions, Phase 6 at
@@ -97,7 +104,6 @@ The current staged gates pass: Phase 5 at 2,264/2,264 assertions, Phase 6 at
 `build/phase6-compound-trigger.log`, and `build/phase7-compound-trigger.log`).
 These results establish the tested lifecycle, hash collisions exercised by the
 batch, per-shape compound lifecycle, sleeping-overlap retention, and observed
-event-mask behavior. The row remains discovered because other unsupported
-overlap slots and broader allocation/list edge cases still need oracle-backed
-fixtures and formal mutation falsification. Public Physics headers were not
-changed.
+event-mask behavior. The row remains discovered because broader allocation
+and list edge cases still need oracle-backed fixtures and formal mutation
+falsification. Public Physics headers were not changed.

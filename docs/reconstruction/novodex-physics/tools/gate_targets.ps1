@@ -4523,6 +4523,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision trigger-pair-grow-current oracle_events=2 candidate_events=2 oracle_pairs=2 candidate_pairs=2 oracle_allocs=2 candidate_allocs=2 oracle_frees=1 candidate_frees=1 mismatches=0',
         'collision trigger-pair-empty oracle_swapped=1 candidate_swapped=1 mismatches=0',
         'collision trigger-pair-type-matrix cases=1152 oracle_cases=1152 candidate_cases=1152 mismatches=0',
+        'collision trigger-pair-null-slot-matrix cases=21 oracle_cases=21 candidate_cases=21 mismatches=0',
         'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_true',
         'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_false',
         'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_slot_null',
@@ -4531,6 +4532,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=trigger_pair_duplicates case=empty_lists_swap',
         'collision coverage name=trigger_pair_duplicates case=all_ordered_type_pairs_both_trigger_sides',
         'collision coverage name=trigger_pair_duplicates case=event_flag_masks_0_through_15',
+        'collision coverage name=trigger_pair_duplicates case=all_unordered_overlap_slots_null',
 
         'collision name=plane_sphere.random index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=4513405a6ba24fb9',
         'collision name=plane_sphere.aimed index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=ed8746bf83b7801f',
@@ -6041,7 +6043,7 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 14  # adds the material, purge and inspector Scene-lock refusal/unwind cases
-    '3' = 969  # adds nine registered populated-SDK teardown assertions
+    '3' = 971  # adds nine registered populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
                # plus the two-live-scene actor-group flag wrapper case
                # includes the pending contact-report end-touch and retained joint teardown during Scene destruction
@@ -6166,7 +6168,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2862  # adds candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
+	'7' = 2864  # adds candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions
 				# adds direct row 000521 owner-pair cleanup probe and row 000867 accumulator probe
 				# adds direct row 000859 rotated anisotropic-friction probe
