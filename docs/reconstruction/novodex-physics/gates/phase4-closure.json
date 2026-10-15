@@ -55,9 +55,9 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 748,
-    "deferred_not_reconstructed_in_phase": 173,
+    "deferred_not_reconstructed_in_phase": 172,
     "deferred_vendored_not_falsified": 90,
-    "differential_falsified": 13,
+    "differential_falsified": 14,
     "oracle_differential_falsified": 29
   },
   "closed": [
@@ -496,6 +496,19 @@
         "detected": "stdout_delta=2804"
       },
       "note": "Restored source was touched to force MSBuild recompilation; the focused restored staged pair is exact (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True). Evidence: evidence/phase4-pruner-pool-constructor-005438.md."
+    },
+    {
+      "id": "phys_fn_005446",
+      "rva": "0x000ef660",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneAllocatorTests",
+      "falsification": {
+        "mutation": "Replaced nxOpcodeReleasePool with a no-op, rebuilt NxPhysics, and ran the registered SDK allocator staged pair. The oracle reports five SDK-allocator frees at sdk_release (4,4,4,8,1c); the candidate reports no corresponding b_free_sizes.",
+        "detected": "stdout_delta=6"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [5, 7],
+      "note": "The allocator target is registered in Phases 5 and 7. Restored source was force-recompiled; oracle and candidate both report the five pool frees and match exactly (stdout_delta=0, exact stderr). Evidence: evidence/phase4-pruner-release-pool-005446.md."
     }
   ],
   "deferred": [
@@ -8087,14 +8100,7 @@
 
 
 
-    {
-      "id": "phys_fn_005446",
-      "rva": "0x000ef660",
-      "size": 14,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
+
     {
       "id": "phys_fn_005448",
       "rva": "0x000ef670",

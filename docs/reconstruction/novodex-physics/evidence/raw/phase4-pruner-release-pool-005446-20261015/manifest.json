@@ -1,0 +1,40 @@
+{
+  "purpose": "Actual-DLL SDK process-pool release shim proof for phys_fn_005446 using the SDK allocator transcript.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "mutation_candidate_sha256": "d726fb30462344cf233d908ee4ae746c9f7e0091b2cdb5fa1438efa9806c2b6d",
+  "restored_candidate_sha256": "6968574021172a95a370a541d835c68c158b6f21d77dcc6aa99e0553479aafb6",
+  "source_sha256": "4324b4bf7e1d40f81d29e46a66c2be9b5363285fb5f79b00d08532955040da10",
+  "mutation_result": "Oracle sdk_release reports five allocator-B frees with sizes 4,4,4,8,1c; no-op candidate reports zero allocator-B frees. Both child processes exit 0; stdout_delta=6 and stderr is exact.",
+  "restored_result": "Oracle and candidate each report five allocator-B frees; both exit 0, stdout_delta=0, stderr_exact=True.",
+  "phase_gates": {
+    "5": "pass, coverage_assertions_evaluated=2740 floor=2740; allocator target evaluated sdk_release marker in both pairs"
+  },
+  "logs": {
+    "mutation-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "b9f8ffd09d948ed59f8836ba3727d8bae36d76eb4c74aca321a30b107115cf04",
+      "compressed_bytes": 1963,
+      "uncompressed_bytes": 15590
+    },
+    "restored-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "restored-differential.log.gz": {
+      "sha256": "e2abf5d3c7ced92f23e306b9f6588b2fa58ca553a714d1b3838dae7505a443d2",
+      "compressed_bytes": 1775,
+      "uncompressed_bytes": 15093
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "f3e772b68ed4bcf3a6b6bb644fabda79f69349b39f4f98eb1f7ff4d895ff488d",
+      "compressed_bytes": 204936,
+      "uncompressed_bytes": 2794002
+    }
+  }
+}

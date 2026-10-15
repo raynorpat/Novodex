@@ -518,3 +518,8 @@ The `Pruner::~Pruner` row `phys_fn_005537` is independently mutation-falsified t
 ## 25. 2026-10-15 Pruner process-pool constructor
 
 `NxPrunerProcessPool::NxPrunerProcessPool` (`phys_fn_005438`, RVA `0x000ef270`) is mutation-falsified through registered `NxPhysicsSceneRaycastTests`. An entry-return mutant leaves the first registration words plausible but crashes during SDK teardown (`candidate_exit=-1073741819`, `stdout_delta=2804`, exact stderr); the oracle exits 0. The restored staged pair is exact. See [phase4-pruner-pool-constructor-005438.md](phase4-pruner-pool-constructor-005438.md).
+
+
+## 26. 2026-10-15 SDK pruner-pool release shim
+
+`nxOpcodeReleasePool` (`phys_fn_005446`, RVA `0x000ef660`) is mutation-falsified through `NxPhysicsSceneAllocatorTests`, discharged by Phase 5. Replacing the shim with a no-op removes all five process-pool SDK-allocator frees (`b_free_sizes=none`) and changes the staged transcript (`stdout_delta=6`, both exits 0, exact stderr). Restored output matches exactly. See [phase4-pruner-release-pool-005446.md](phase4-pruner-release-pool-005446.md).
