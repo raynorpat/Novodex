@@ -451,12 +451,12 @@
     "phys_fn_000509"
    ],
    "rows": {
-    "dynamically_gated": 9,
-    "reconstructed": 3
+    "dynamically_gated": 10,
+    "reconstructed": 2
    },
    "bytes": {
-    "dynamically_gated": 1761,
-    "reconstructed": 315
+    "dynamically_gated": 1811,
+    "reconstructed": 265
    },
    "phases": {
     "2": 5,

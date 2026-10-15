@@ -60,8 +60,8 @@
   "counts": {
     "differential_falsified": 76,
     "static_proof_falsified": 6,
-    "oracle_differential_falsified": 4,
-    "deferred_homeless_shared_code": 17,
+    "oracle_differential_falsified": 5,
+    "deferred_homeless_shared_code": 16,
     "deferred_reconstructed_not_falsified": 31,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
@@ -1060,6 +1060,22 @@
         "detected": "stdout_delta=6"
       },
       "note": "The row is an internal continuation of phys_fn_002417. The Phase 3 body-creation target exercises its array-growth/append path through 257 live bodies."
+    },
+    {
+      "id": "phys_fn_000505",
+      "rva": "0x00010190",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "discharged_by_phase": 4,
+      "driving_phases": [
+        3,
+        4
+      ],
+      "falsification": {
+        "mutation": "Changed nxScratchStamp wrap restart from capacity to zero.",
+        "detected": "mismatches=714"
+      },
+      "note": "The Phase 4 polygon-interface oracle differential exercises 65 scratch-stamp wraps and links TriangleMeshPolygons.cpp."
     }
   ],
   "deferred": [
@@ -1136,20 +1152,6 @@
         7
       ],
       "callers": 5
-    },
-    {
-      "id": "phys_fn_000505",
-      "rva": "0x00010190",
-      "size": 50,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap PhysicsSDK.cpp .. Scene.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [
-        3,
-        4
-      ],
-      "callers": 8
     },
     {
       "id": "phys_fn_000509",

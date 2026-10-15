@@ -1,0 +1,11 @@
+{
+  "row": "phys_fn_000505",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_test_executable_sha256": "4a452024453c7f9583b9ab1936061bb12450e1e85df01ccd2590a24cea6ade0c",
+  "candidate_differential": "NxPhysicsThirdPartyTests linked reconstruction versus pinned oracle DLL",
+  "files": {
+    "control.log.gz": "49cc4e402b33f844e92913a317fb4c6be500904a297026dd98959222d4323e18",
+    "mutant.log.gz": "e0404247f0c751ee09586e99b86957e6d6b9d14078a825371e938043d65ea717",
+    "restored.log.gz": "2dad557b22d07a657c2bd3b103c592747229957eb1da44c726b6e8dd9462f056"
+  }
+}

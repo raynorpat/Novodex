@@ -9827,14 +9827,21 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "growable buffer reset (0x10190)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/185",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1395",
       "static_proof": "when [this+0x14] underflows (inc->0), zero the [this+8] buffer ([this+4]*4 bytes) via rep stosd/stosb and set [this+0x14]=[this+4]; returns [this+0x14]",
-      "dynamic_proof": "confirmed via bufreset drive (3z68): failures=0",
+      "dynamic_proof": "The Phase 4 NxPhysicsThirdPartyTests polygon-interface oracle differential drives scratch stamp wrap 65 times. Baseline/restored control: mismatches=0, worst_ulp=0. Mutating the wrap restart value from capacity to zero yields mismatches=714 and exit 1; restored control yields zero candidate mismatches and zero layout failures. Evidence: evidence/phase2-scratch-stamp-wrap-000505.md and evidence/raw/phase2-scratch-stamp-wrap-000505-20261015/.",
       "notes": "convex-mesh gap Task 2g: the product form is nxScratchStamp in Physics/src/TriangleMeshPolygons.cpp (naked, listing-exact; stable-ID line), which the naked 002249 calls where the listing does; hit in evidence/convex-mesh-gap-trace-2g.txt, and the polygon_interface family compares it with the oracle's. The existing proof stands; state unchanged",
-      "implementation": "Physics/src/TriangleMeshPolygons.cpp"
+      "implementation": "Physics/src/TriangleMeshPolygons.cpp",
+      "implementation_symbol": "nxScratchStamp",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxScratchStamp@@YIIPAX@Z",
+        "address": "0x100789d0",
+        "object": "TriangleMeshPolygons.obj"
+      }
     },
     {
       "id": "phys_fn_000506",
