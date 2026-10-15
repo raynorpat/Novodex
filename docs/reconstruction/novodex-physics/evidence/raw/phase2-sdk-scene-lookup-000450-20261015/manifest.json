@@ -1,0 +1,46 @@
+{
+  "purpose": "Row-specific Phase 2 oracle differential and index-alias mutation proof for PhysicsSDK::getScene (phys_fn_000450).",
+  "date": "2026-10-15",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "6d5c738091c89b795fcd3422ff2bfee374b3eb9e6b30e7c0bee9c62deb30ef82",
+  "mutation_proof": "The candidate-only mutation returned scene 0 for requested index 1. The focused differential reported first=1, second=0 and rejected the candidate (oracle_exit=0, candidate_exit=1, stdout_delta=6). Restored CMake Release control passes with stdout_delta=0 and exact stderr.",
+  "gate": "Fresh Phase 2 passed at 17/17 coverage assertions. NxPhysicsSDKSceneLookupTests checks both indexes, swap-removal survivor lookup, and empty-registry behavior.",
+  "files": {
+    "restored-control-final.log.gz": {
+      "sha256": "3880bf1d87816ab02277c50c60408cd2da108d186760acb3feba739bf834c971",
+      "compressed_bytes": 1201,
+      "uncompressed_sha256": "9a542a40015e8b2db6d4846c905ede9493d57337f72f96735fd33e639f84bfc3",
+      "uncompressed_bytes": 8088
+    },
+    "mutant-build.log.gz": {
+      "sha256": "9005c5831f7717672f0fc2ca2cd94003bc0229cbc4101134607a93c034c6671e",
+      "compressed_bytes": 587,
+      "uncompressed_sha256": "a78ef83d32559f95e97790eaf744195c7f7eefaabfd20dc37289a3b4b982a2a7",
+      "uncompressed_bytes": 2582
+    },
+    "mutant-differential.log.gz": {
+      "sha256": "14abf6e8c896fc94fd1bcdcfec0618cd3d22621405f0fab0a267097e6a1a4c20",
+      "compressed_bytes": 1401,
+      "uncompressed_sha256": "6dcbb0a8cee79a74d2acaaccad4ed27b7e7640dbe1375745d5f4fd7fcf147be8",
+      "uncompressed_bytes": 8168
+    },
+    "restored-build.log.gz": {
+      "sha256": "b3282cc7726e2e0666f16c64a23de6e4b59468d79906444d1f62937a2d316906",
+      "compressed_bytes": 558,
+      "uncompressed_sha256": "32983cdc68868ce963a7822d4b50b2e912d4618cbd18a7639086a732b6200119",
+      "uncompressed_bytes": 2390
+    },
+    "restored-differential-final.log.gz": {
+      "sha256": "c5bf5236509cd8b1485b9fb914697fbbc6bbf657f55dc209efecb308ead844e5",
+      "compressed_bytes": 1201,
+      "uncompressed_sha256": "59a5970a348c41cd9b0f967c39f257ac740c8684f2228a0e3e17b567acfa6329",
+      "uncompressed_bytes": 8084
+    },
+    "phase2-gate.log.gz": {
+      "sha256": "f270f27fa30c00fa29b45b411749c1cd5ce784549fde2655743613a2a38b796b",
+      "compressed_bytes": 5942,
+      "uncompressed_sha256": "7d85a726e756356188919ddc4cb7d25da5a7255819768ca0f89c94795a860889",
+      "uncompressed_bytes": 58952
+    }
+  }
+}

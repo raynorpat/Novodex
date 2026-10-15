@@ -29,7 +29,7 @@ COMMAND_PATTERN = re.compile(
 # What each phase in the plans must resolve to from gate_targets.ps1. A phase
 # with nothing registered resolves to the empty list and skips.
 PHASE_TARGETS = {
-    "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests,NxPhysicsTriangleMeshReleaseLockTests",
+    "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsSDKSceneLookupTests,NxPhysicsCoreClusterTests,NxPhysicsTriangleMeshReleaseLockTests",
     "3": "NxPhysicsBodyCreationTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests,NxPhysicsSDKTests,NxPhysicsCoreDumpTests,NxPhysicsPopulatedSceneTeardownTests",
     "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests,NxPhysicsSceneRaycastTests",
     "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsSceneLifecycleTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsBodyCreationTests,NxPhysicsFluidEmitterBodyRepulsionTests,NxPhysicsSimulationTests,NxPhysicsFluidInitialParticlesTests,NxPhysicsMeshSimulationTests,NxPhysicsConvexMeshTests,NxPhysicsSceneRaycastTests,NxPhysicsControllerSweepFaceTests,NxPhysicsSceneAllocatorTests,NxPhysicsPrunerPoolAllocationFailureTests",

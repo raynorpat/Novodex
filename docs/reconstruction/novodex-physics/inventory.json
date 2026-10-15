@@ -8731,13 +8731,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/164",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1212",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-sdk.md: \"| `phys_fn_000450` | `0x0000df00` | 33 | `oracle/ghidra/manifest.json#/functions/164` | `oracle/capstone/manifest.json#/entries/1212` |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Checks index against mScenes.size(), returns null for an out-of-range index, and returns the indexed Scene pointer otherwise; this is the SDK-side registry lookup used by NpPhysicsSDK::getScene.",
+      "dynamic_proof": "NxPhysicsSDKSceneLookupTests creates two scenes, checks insertion-order lookups, releases the first and checks the swap-removed survivor, then checks the empty registry. Returning scene 0 for requested index 1 is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=6); restored control has stdout_delta=0 and exact stderr. Evidence: evidence/phase2-sdk-scene-lookup-000450.md.",
+      "notes": "The focused test isolates getScene ordering before lock and material behavior.",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000451",

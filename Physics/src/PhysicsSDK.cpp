@@ -244,6 +244,7 @@ NxU32 PhysicsSDK::getNbScenes() const
 	return mScenes.size();
 	}
 
+// phys_fn_000450 (0x0000df00): return the indexed Scene in the SDK registry.
 Scene* PhysicsSDK::getScene(NxU32 index)
 	{
 	if(index >= mScenes.size())

@@ -10,7 +10,7 @@
 
 $NxPhaseTestTargets = [ordered] @{
     '1' = @()
-    '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests', 'NxPhysicsTriangleMeshReleaseLockTests')
+    '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsSDKSceneLookupTests', 'NxPhysicsCoreClusterTests', 'NxPhysicsTriangleMeshReleaseLockTests')
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsPopulatedSceneTeardownTests')
     '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsSceneLifecycleTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneAllocatorTests', 'NxPhysicsPrunerPoolAllocationFailureTests')
@@ -215,6 +215,11 @@ $NxRequiredCoverageLines = [ordered] @{
         # The second release runs NxSceneInternal's deleting destructor before
         # SDK teardown, which must return the scene allocations to its allocator.
         'step=scenes_released.allocator'
+    )
+    'NxPhysicsSDKSceneLookupTests' = @(
+        'scene_lookup created=1 count=2 first=1 second=1'
+        'scene_lookup after_release count=1 survivor=1'
+        'scene_lookup empty count=0'
     )
     'NxPhysicsPopulatedSceneTeardownTests' = @(
         'teardown static_first release_delta=-39',
@@ -6093,7 +6098,7 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 14  # adds the material, purge and inspector Scene-lock refusal/unwind cases
+    '2' = 17  # adds three focused Scene-index and swap-removal assertions
 	'3' = 983  # adds the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and row 000022 assertions
                # previous 973 includes nine populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
@@ -6376,7 +6381,8 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsMeshSimulationTests',
     'NxPhysicsTriggerSimulationTests',
     'NxPhysicsPopulatedSceneTeardownTests',
-    'NxPhysicsSDKTests'
+    'NxPhysicsSDKTests',
+    'NxPhysicsSDKSceneLookupTests'
 )
 $NxRegisteredStaticProofTargets = @(
     'NxPhysicsInternalTests',

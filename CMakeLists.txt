@@ -444,6 +444,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsSDKTests tests/PhysicsSDKTests.cpp)
 	target_include_directories(NxPhysicsSDKTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSDKTests bcrypt)
+	add_executable(NxPhysicsSDKSceneLookupTests tests/PhysicsSDKSceneLookupTests.cpp)
+	target_include_directories(NxPhysicsSDKSceneLookupTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsSDKSceneLookupTests bcrypt)
 	# The Phase 6 joint differential. A separate translation unit on purpose:
 	# PhysicsObjectLayoutTests.cpp's frame is ~250 KB and a 0xA5 poisoned jump
 	# follows any change to it (evidence/phase5-object-model.md 3z262-3z289), so
