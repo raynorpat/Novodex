@@ -74,14 +74,14 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	if(!oraclePruner || !candidatePruner)
 		return 1;
 
-	NxU8 oracleObjects[2][0x2c] = {};
-	Prunable candidateObjects[2];
-	NxType3TestOwner oracleOwners[2] = {};
-	NxType3TestOwner candidateOwners[2] = {};
+	NxU8 oracleObjects[3][0x2c] = {};
+	Prunable candidateObjects[3];
+	NxType3TestOwner oracleOwners[3] = {};
+	NxType3TestOwner candidateOwners[3] = {};
 	typedef void (__thiscall* OracleCtorFn)(void*);
 	const OracleCtorFn oraclePrunableCtor =
 		reinterpret_cast<OracleCtorFn>(base + 0x000b54a0);
-	for(unsigned i = 0; i != 2; ++i)
+	for(unsigned i = 0; i != 3; ++i)
 		{
 		oraclePrunableCtor(oracleObjects[i]);
 		*reinterpret_cast<void**>(oracleObjects[i] + 4) = &oracleOwners[i];
@@ -143,6 +143,45 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	const bool candidateInitial = candidatePruner->NovodeXPrunerSlot7(
 		reinterpret_cast<NxU32>(&candidateOutput), reinterpret_cast<NxU32>(query), 0, 0xffffffffu);
 	if(oracleInitial != candidateInitial || oracleOutput.count != 0 || candidateOutput.count != 0)
+		++mismatches;
+	const float addedBounds[6] = {20.0f, 0.0f, 0.0f, 21.0f, 1.0f, 1.0f};
+	memcpy(oracleOwners[2].worldBounds, addedBounds, sizeof(addedBounds));
+	memcpy(candidateOwners[2].worldBounds, addedBounds, sizeof(addedBounds));
+	*reinterpret_cast<NxU32*>(oracleObjects[2] + 8) = PRUNABLE_FLAG_WORLD_AABB_VALID;
+	candidateObjects[2].mFlags = PRUNABLE_FLAG_WORLD_AABB_VALID;
+	const bool oracleAddedAfterBuild = oracleAdd(oraclePruner, oracleObjects[2]);
+	const bool candidateAddedAfterBuild = candidatePruner->AddObject(&candidateObjects[2]);
+	for(unsigned side = 0; side != 2; ++side)
+		{
+		void* const pruner = side ? static_cast<void*>(candidatePruner) : oraclePruner;
+		unsigned char* const object = side ?
+			static_cast<unsigned char*>(static_cast<void*>(&candidateObjects[2])) : oracleObjects[2];
+		float* const poolBoxes = *reinterpret_cast<float**>(
+			static_cast<unsigned char*>(pruner) + 0x14);
+		const unsigned handle = *reinterpret_cast<NxU16*>(object + 0x28);
+		if(poolBoxes && handle < 3)
+			memcpy(poolBoxes + handle * 6, addedBounds, sizeof(addedBounds));
+		else
+			++mismatches;
+		}
+	oracleOutput.count = 0;
+	candidateOutput.count = 0;
+	const bool oracleAddedQuery = oracleQuery(oraclePruner,
+		reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(addedBounds),
+		0, 0xffffffffu);
+	const bool candidateAddedQuery = candidatePruner->NovodeXPrunerSlot7(
+		reinterpret_cast<NxU32>(&candidateOutput), reinterpret_cast<NxU32>(addedBounds),
+		0, 0xffffffffu);
+	const NxU32 oracleAddedHits = oracleOutput.count;
+	const NxU32 candidateAddedHits = candidateOutput.count;
+	bool oracleAddedFound = false, candidateAddedFound = false;
+	for(NxU32 i = 0; i < oracleOutput.count && i < 8; ++i)
+		oracleAddedFound = oracleAddedFound || oracleEntries[i] == reinterpret_cast<NxU32>(oracleObjects[2]);
+	for(NxU32 i = 0; i < candidateOutput.count && i < 8; ++i)
+		candidateAddedFound = candidateAddedFound || candidateEntries[i] == reinterpret_cast<NxU32>(&candidateObjects[2]);
+	if(!oracleAddedAfterBuild || !candidateAddedAfterBuild || !oracleAddedQuery ||
+		!candidateAddedQuery || oracleOutput.count != 1 || candidateOutput.count != 1 ||
+		!oracleAddedFound || !candidateAddedFound)
 		++mismatches;
 
 	memcpy(oracleOwners[0].worldBounds, query, sizeof(query));
@@ -273,8 +312,12 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		oracleRemoved ? 1u : 0u, candidateRemoved ? 1u : 0u,
 		oracleOutput.count, candidateOutput.count, mismatches);
 	printf("collision coverage name=type3_pruner case=remove_invalidates_tree\n");
+	printf("collision type3_pruner add_after_build oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
+		oracleAddedFound ? 1u : 0u, candidateAddedFound ? 1u : 0u,
+		oracleAddedHits, candidateAddedHits, mismatches);
+	printf("collision coverage name=type3_pruner case=add_invalidates_tree\n");
 
-	for(unsigned i = 0; i != 2; ++i)
+	for(unsigned i = 0; i != 3; ++i)
 		{
 		if(*reinterpret_cast<NxU16*>(oracleObjects[i] + 0x28) != PRUNABLE_INVALID_HANDLE)
 			oracleRemove(oraclePruner, oracleObjects[i]);
@@ -287,7 +330,7 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		reinterpret_cast<DeleteFn>(table[0])(oraclePruner, 1);
 	}
 	nxPruningEngineDestroyPruner(candidatePruner);
-	for(unsigned i = 0; i != 2; ++i)
+	for(unsigned i = 0; i != 3; ++i)
 		{
 		void** const table = *reinterpret_cast<void***>(oracleObjects[i]);
 		typedef void* (__thiscall* DeleteFn)(void*, unsigned);

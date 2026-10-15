@@ -28,6 +28,11 @@ oracle and candidate both report zero stale hits and invalidate the removed
 prunable's handle. A mutation that skips the inherited pool removal and tree
 invalidation leaves one stale candidate hit and is rejected.
 
+The fixture also inserts a third object after the first tree has been built,
+places its pool box at a new location, and queries that location. Both sides
+find the new object once. Retaining the old tree across `AddObject` makes the
+candidate miss it and is rejected.
+
 The control was run through the registered `NxPhysicsType3PrunerTests`
 oracle-differential target. Its CMake custom target depends on the existing
 `NxPhysicsCollisionTests` executable; both differential runners map the
@@ -52,10 +57,10 @@ mismatches. Restoring the method returns both callback counts to one and the
 differential to zero mismatches.
 
 The fresh full Phase 4 gate completed with `phase_gate=4 status=pass` and
-`coverage_assertions_evaluated=540 floor=540`. This establishes the moved-leaf
+`coverage_assertions_evaluated=541 floor=541`. This establishes the moved-leaf
 tree-refit, invalid-world-box refresh, sphere-query, plane-query, raycast, and
-one removal path only. It does not close the type-3 family: additional
-add/remove edge cases, extended-object behavior, and public scene selection of
-pruner type 3 remain to be driven and compared.
+one add and one removal path only. It does not close the type-3 family:
+additional add/remove edge cases, extended-object behavior, and public scene
+selection of pruner type 3 remain to be driven and compared.
 
-Raw transcripts: [focused restored differential](raw/type3-pruner-refit-20261015/focused-restored-differential.log), [refit-skipped mutation](raw/type3-pruner-refit-20261015/refit-skipped-mutation.log), [update/refit differential](raw/type3-pruner-refit-20261015/update-and-refit-differential.log), [UpdateObject mutation](raw/type3-pruner-refit-20261015/update-object-mutation.log), [restored UpdateObject control](raw/type3-pruner-refit-20261015/update-object-restored-control.log), [sphere-query mutation](raw/type3-pruner-refit-20261015/sphere-query-mutation.log), [sphere-query restored control](raw/type3-pruner-refit-20261015/sphere-query-restored-control.log), [plane-query mutation](raw/type3-pruner-refit-20261015/plane-query-mutation.log), [plane-query restored control](raw/type3-pruner-refit-20261015/plane-query-restored-control.log), [raycast mutation](raw/type3-pruner-refit-20261015/raycast-mutation.log), [raycast restored control](raw/type3-pruner-refit-20261015/raycast-restored-control.log), [remove mutation](raw/type3-pruner-refit-20261015/remove-mutation.log), [remove restored control](raw/type3-pruner-refit-20261015/remove-restored-control.log), [restored control](raw/type3-pruner-refit-20261015/restored-control.log), and [Phase 4 receipt](raw/type3-pruner-refit-20261015/phase4-gate-receipt.txt).
+Raw transcripts: [focused restored differential](raw/type3-pruner-refit-20261015/focused-restored-differential.log), [refit-skipped mutation](raw/type3-pruner-refit-20261015/refit-skipped-mutation.log), [update/refit differential](raw/type3-pruner-refit-20261015/update-and-refit-differential.log), [UpdateObject mutation](raw/type3-pruner-refit-20261015/update-object-mutation.log), [restored UpdateObject control](raw/type3-pruner-refit-20261015/update-object-restored-control.log), [sphere-query mutation](raw/type3-pruner-refit-20261015/sphere-query-mutation.log), [sphere-query restored control](raw/type3-pruner-refit-20261015/sphere-query-restored-control.log), [plane-query mutation](raw/type3-pruner-refit-20261015/plane-query-mutation.log), [plane-query restored control](raw/type3-pruner-refit-20261015/plane-query-restored-control.log), [raycast mutation](raw/type3-pruner-refit-20261015/raycast-mutation.log), [raycast restored control](raw/type3-pruner-refit-20261015/raycast-restored-control.log), [remove mutation](raw/type3-pruner-refit-20261015/remove-mutation.log), [remove restored control](raw/type3-pruner-refit-20261015/remove-restored-control.log), [add mutation](raw/type3-pruner-refit-20261015/add-mutation.log), [add restored control](raw/type3-pruner-refit-20261015/add-restored-control.log), [restored control](raw/type3-pruner-refit-20261015/restored-control.log), and [Phase 4 receipt](raw/type3-pruner-refit-20261015/phase4-gate-receipt.txt).
