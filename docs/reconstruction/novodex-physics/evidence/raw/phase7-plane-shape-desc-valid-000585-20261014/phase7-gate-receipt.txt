@@ -1,0 +1,9 @@
+Phase 7 clean-checkout gate receipt
+Date: 2026-10-14
+Commit: d7d0163edb2db624a962d4b6f25e8bddf10a92e8
+Command:
+powershell -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 7 -RepoRoot D:\github\Novodex-phase7-585 -BuildRoot D:\github\Novodex-phase7-585\build -OracleRoot D:\FlamingEnt__\Unreal_3 -PairsRoot D:\github\Novodex-phase7-585\build\pairs
+Process exit code: 0
+Gate result: phase_gate=7 status=pass
+Coverage assertions evaluated: 2868 (floor 2868)
+Clean Release candidate NxPhysics.dll SHA-256: d28cd56e5f1340e402718e73a74d1e02bceea279da7cfff666980d638c3d32eb
