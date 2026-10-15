@@ -2953,10 +2953,11 @@ struct NxSceneOwnerPairRecordsFixture
 class NxScenePairTestAllocator : public NxUserAllocator
 	{
 	public:
+	unsigned allocations = 0;
 	unsigned frees = 0;
-	void* mallocDEBUG(size_t size, const char*, int) override { return ::malloc(size); }
-	void* malloc(size_t size) override { return ::malloc(size); }
-	void* realloc(void* memory, size_t size) override { return ::realloc(memory, size); }
+	void* mallocDEBUG(size_t size, const char*, int) override { ++allocations; return ::malloc(size); }
+	void* malloc(size_t size) override { ++allocations; return ::malloc(size); }
+	void* realloc(void* memory, size_t size) override { ++allocations; return ::realloc(memory, size); }
 	void free(void* memory) override
 		{
 		if(memory)
@@ -3459,6 +3460,96 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 	allocator.free(candidatePrevious->begin);
 	allocator.free(oracleMissingEvents);
 	allocator.free(candidateMissingEvents);
+
+	// When broadphase omits a still-overlapping previous pair, both sides must
+	// allocate a fresh current-pair array and one stay-event array.
+	nxTriggerPairTestOverlapResult = true;
+	*(NxShapeOverlapFn*) (oracleMatrix + sphereBoxOverlap) = nxTriggerPairTestOverlap;
+	*(NxShapeOverlapFn*) (candidateMatrix + sphereBoxOverlap) = nxTriggerPairTestOverlap;
+	void* const oracleRetainedData = allocator.malloc(2 * sizeof(void*));
+	void* const candidateRetainedData = allocator.malloc(2 * sizeof(void*));
+	if(!oracleRetainedData || !candidateRetainedData)
+		return nxFail("trigger-pair retained-pair fixture could not allocate previous lists");
+	memset(oracleScene, 0, sizeof(oracleScene));
+	memset(oracleShapes, 0, sizeof(oracleShapes));
+	memset(candidateShapes, 0, sizeof(candidateShapes));
+	auto initialiseRetained = [&](NxU8* scene, NxU8 (*shapes)[0xe0], void* previousData)
+		{
+		*(NxU32*) (shapes[0] + 0xd0) = 2;
+		*(NxU32*) (shapes[1] + 0xd0) = 1;
+		*(NxU32*) (shapes[0] + 0xd4) = 1;
+		*(NxU32*) (shapes[1] + 0xd4) = 2;
+		*(NxU8*) (shapes[0] + 0xde) = 1;
+		NxTriggerPairTestList* previous =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5dc);
+		NxTriggerPairTestList* current =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5ec);
+		previous->begin = (NxCollisionShape**) previousData;
+		previous->end = previous->begin + 2;
+		previous->capacity = previous->end;
+		current->begin = current->end = current->capacity = nullptr;
+		previous->begin[0] = (NxCollisionShape*) shapes[0];
+		previous->begin[1] = (NxCollisionShape*) shapes[1];
+		*(NxTriggerPairTestList**) (scene + 0x5d4) = previous;
+		*(NxTriggerPairTestList**) (scene + 0x5d8) = current;
+		*(NxTriggerPairTestEvent**) (scene + 0x5fc) = nullptr;
+		*(NxTriggerPairTestEvent**) (scene + 0x600) = nullptr;
+		*(NxTriggerPairTestEvent**) (scene + 0x604) = nullptr;
+		};
+	initialiseRetained(oracleScene, oracleShapes, oracleRetainedData);
+	initialiseRetained(candidateScene.bytes(), candidateShapes, candidateRetainedData);
+	const unsigned oracleAllocationsBefore = allocator.allocations;
+	oracle(oracleMatrix, oracleScene);
+	const unsigned oracleRetainedAllocations = allocator.allocations - oracleAllocationsBefore;
+	const unsigned candidateAllocationsBefore = allocator.allocations;
+	nxSceneProcessTriggerPairs(&candidateScene);
+	const unsigned candidateRetainedAllocations = allocator.allocations - candidateAllocationsBefore;
+	NxTriggerPairTestEvent* const oracleRetainedEvents =
+		*(NxTriggerPairTestEvent**) (oracleScene + 0x5fc);
+	NxTriggerPairTestEvent* const candidateRetainedEvents =
+		*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x5fc);
+	const unsigned oracleRetainedEventCount = oracleRetainedEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (oracleScene + 0x600) - oracleRetainedEvents) : 0;
+	const unsigned candidateRetainedEventCount = candidateRetainedEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x600) - candidateRetainedEvents) : 0;
+	NxTriggerPairTestList* const oracleRetainedCurrent =
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d4);
+	NxTriggerPairTestList* const candidateRetainedCurrent =
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d4);
+	const unsigned oracleRetainedPairCount = oracleRetainedCurrent->begin
+		? (unsigned) ((oracleRetainedCurrent->end - oracleRetainedCurrent->begin) / 2) : 0;
+	const unsigned candidateRetainedPairCount = candidateRetainedCurrent->begin
+		? (unsigned) ((candidateRetainedCurrent->end - candidateRetainedCurrent->begin) / 2) : 0;
+	const bool oracleRetainedState = oracleRetainedEventCount == 1 &&
+		oracleRetainedEvents[0].trigger == (NxShape*) oracleShapes[0] &&
+		oracleRetainedEvents[0].other == (NxShape*) oracleShapes[1] &&
+		oracleRetainedEvents[0].event == 4 && oracleRetainedPairCount == 1 &&
+		oracleRetainedCurrent->begin[0] == (NxCollisionShape*) oracleShapes[0] &&
+		oracleRetainedCurrent->begin[1] == (NxCollisionShape*) oracleShapes[1];
+	const bool candidateRetainedState = candidateRetainedEventCount == 1 &&
+		candidateRetainedEvents[0].trigger == (NxShape*) candidateShapes[0] &&
+		candidateRetainedEvents[0].other == (NxShape*) candidateShapes[1] &&
+		candidateRetainedEvents[0].event == 4 && candidateRetainedPairCount == 1 &&
+		candidateRetainedCurrent->begin[0] == (NxCollisionShape*) candidateShapes[0] &&
+		candidateRetainedCurrent->begin[1] == (NxCollisionShape*) candidateShapes[1];
+	const unsigned retainedMismatches = oracleRetainedState && candidateRetainedState &&
+		oracleRetainedAllocations == 2 && candidateRetainedAllocations == 2 ? 0u : 1u;
+	mismatches += retainedMismatches;
+	printf("collision trigger-pair-retain-growth oracle_events=%u candidate_events=%u oracle_pairs=%u candidate_pairs=%u oracle_allocs=%u candidate_allocs=%u mismatches=%u\n",
+		oracleRetainedEventCount, candidateRetainedEventCount,
+		oracleRetainedPairCount, candidateRetainedPairCount,
+		oracleRetainedAllocations, candidateRetainedAllocations, retainedMismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=old_overlap_allocates_current_pair\n");
+	NxTriggerPairTestList* const oracleRetainedPrevious =
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d8);
+	NxTriggerPairTestList* const candidateRetainedPrevious =
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d8);
+	allocator.free(oracleRetainedCurrent->begin);
+	allocator.free(oracleRetainedPrevious->begin);
+	allocator.free(candidateRetainedCurrent->begin);
+	allocator.free(candidateRetainedPrevious->begin);
+	allocator.free(oracleRetainedEvents);
+	allocator.free(candidateRetainedEvents);
 
 	// Empty buffers still swap their headers and leave both lists empty.
 	memset(oracleScene, 0, sizeof(oracleScene));
