@@ -544,9 +544,9 @@ void FUN_1000df30(ushort param_1,ushort param_2,char param_3)
 ## phys_fn_000454 (0x0000df90, 58 B, statically_reviewed)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: int __cdecl FUN_1000df90(int param_1)
+- source: Physics/src/PhysicsInternal.cpp
+- implementation: Physics/src/PhysicsInternal.cpp (`nxGetSdkPointerBinding`)
+- prototype: void* __cdecl nxGetSdkPointerBinding(void* key)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_000086 (0x00002d60), phys_fn_004085 (0x00095cb0), phys_fn_004743 (0x000b3670)
 - callees: none
@@ -581,6 +581,13 @@ int __cdecl FUN_1000df90(int param_1)
 
 
 ```
+
+IDA confirms the row begins at VA `0x1000df90` and covers the 58-byte lookup
+body. The phase-8 note that referred to VA `0x10007460` was a cross-row address
+error; that address lies inside the unrelated `NpActor::setLinearVelocity`
+function beginning at `0x100073f0`. The candidate map resolves
+`?nxGetSdkPointerBinding@@YAPAXPAX@Z` at `0x100534e0` in
+`PhysicsInternal.obj`.
 
 ## phys_fn_000456 (0x0000dfd0, 95 B, dynamically_gated)
 

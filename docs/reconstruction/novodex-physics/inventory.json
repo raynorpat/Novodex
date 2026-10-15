@@ -8857,12 +8857,20 @@
       "phase": 2,
       "phase_provenance": "translation_unit",
       "state": "statically_reviewed",
-      "source": null,
+      "source": "Physics/src/PhysicsInternal.cpp",
+      "implementation": "Physics/src/PhysicsInternal.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/166",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1217",
-      "static_proof": "CAVEAT (phase-8 audit 3z259): the block at 0x7460 reads ebx and eax without setting either, so it is a mid-function FRAGMENT rather than a row. It keeps the statically_reviewed state only because the closure ledger lists it; the state should be revisited with the ledger",
+      "static_proof": "Oracle RVA 0x0000df90 (58 bytes), __cdecl nxGetSdkPointerBinding(void*). Checks the global pointer-binding array and key for null, scans the array's 8-byte key/value pairs, returns the first matching value, and returns null on a miss. No error reporting or mutation. IDA pseudocode at VA 0x1000df90 confirms the source implementation.",
       "dynamic_proof": null,
-      "notes": "DOWNGRADED from statically_reviewed in the phase-8 audit (3z259): the block at 0x7460 reads ebx and eax without setting either, so it is a mid-function FRAGMENT rather than a row. It had been classified statically_reviewed, which the drivability filter treats as a satisfied dependency, so it was silently admissible. Reclassifying it removes that"
+      "notes": "The phase-8 audit caveat pointing at 0x7460 was a cross-row address error: 0x0000df90 is the complete pointer-binding lookup. The unrelated actor method begins at VA 0x100073f0. See evidence/phase2-sdk-pointer-binding-get-000454.md.",
+      "implementation_symbol": "nxGetSdkPointerBinding",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGetSdkPointerBinding@@YAPAXPAX@Z",
+        "address": "0x100534e0",
+        "object": "PhysicsInternal.obj"
+      }
     },
     {
       "id": "phys_fn_000455",
