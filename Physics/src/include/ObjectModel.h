@@ -2300,4 +2300,7 @@ static_assert(sizeof(MeshShape) == 0xe8, "the mesh is base plus two words so far
 static_assert(offsetof(MeshShape, mWordE0) == 0xe0, "the first datum is at +0xe0");
 static_assert(offsetof(MeshShape, mWordE4) == 0xe4, "the second datum is at +0xe4");
 
+//! phys_fn_002377 (0x5b820): initialize the worker-record owner base.
+void* __fastcall nxLockApiWorkerBaseConstruct2377(void* self, void* edx);
+
 #endif

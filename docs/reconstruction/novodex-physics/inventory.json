@@ -44308,13 +44308,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ZzLockApiByteRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/889",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7420",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x5b820: install vtable 0x1010886c; allocate 0x14 bytes with type 0 through allocator vtable slot +8; store the record at this+4; zero record dwords at +0 and +4 and byte +8; return this.",
+      "dynamic_proof": "Direct oracle/source allocator-shim differential marker newreach row=002377 checks this identity, vptr, one 0x14-byte/type-0 allocation, the zeroed first nine record bytes, and untouched allocator-pattern tail bytes. Changing byte 8 to 1 is caught with mismatches=1; restored source reports mismatches=0.",
+      "notes": "Private lock-API worker owner base constructor; no public headers changed."
     },
     {
       "id": "phys_fn_002378",

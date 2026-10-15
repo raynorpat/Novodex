@@ -1170,3 +1170,12 @@ Row 002392 now reconstructs the complete worker-record teardown: vptr reset, con
 ### Continuation — lock-API worker scalar deleting thunk (`phys_fn_002394`, 2026-10-15)
 
 The adjacent MSVC scalar deleting thunk now completes the worker record's deleting-destructor path. The direct flags 0/1 oracle differential checks object lifetime and destructor side effects; an inverted flag mutant is rejected with heap corruption, and the restored implementation matches. Phase 7 advances to 367 closed / 193 deferred. The row is registered in all shared Phase 5/6/7 layout gates. See `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-worker-scalar-delete-002394.md`.
+
+### Phase 7 continuation — lock-API worker base constructor (`phys_fn_002377`, 2026-10-15)
+
+IDA evidence identifies a compact 55-byte constructor at RVA `0x5b820`, called by the newly closed scalar deleting thunk's corresponding owner constructor. It installs the base vtable, allocates a 0x14-byte record through `nxFoundationSDKAllocator`, clears bytes 0–8 of that record, and returns the owner pointer. A direct oracle/source fixture with distinct patterned allocator shims will verify allocation size/ownership, initialized bytes, untouched tail bytes, and return identity. The public SDK header set remains immutable.
+
+### Phase 7 continuation — lock-API worker base constructor (`phys_fn_002377`, 2026-10-15)
+
+IDA confirms the base constructor installs vtable `0x1010886c`, allocates a 0x14-byte worker record through the Foundation allocator, and clears the first nine bytes. The direct oracle/source fixture uses distinct patterned allocator shims and verifies allocation size, zeroed fields, untouched tail bytes, and return identity. A byte-8-to-1 mutant is rejected (`mismatches=1`); the restored control matches. Phase 7 advances to 368 closed / 192 deferred. The row adds one assertion to each shared Phase 5/6/7 gate. See `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-worker-base-construct-002377.md`.
+Fresh Release Phase 5/6/7 gates pass at 2,781/2,781, 1,681/1,681, and 2,897/2,897 assertions, including the direct constructor marker on all three phases. The 816-test tool suite and inventory validator pass. See the raw evidence packet at `docs/reconstruction/novodex-physics/evidence/raw/phase7-lock-api-worker-base-construct-002377-20261015/`.

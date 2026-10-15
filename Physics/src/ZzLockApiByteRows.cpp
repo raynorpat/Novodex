@@ -78,3 +78,19 @@ void* __fastcall nxLockApiWorkerScalarDelete2394(void* self, void*, unsigned fla
 		::operator delete(self);
 	return self;
 	}
+
+// phys_fn_002377 (0x5b820): construct the base worker owner and zero its record.
+void* __fastcall nxLockApiWorkerBaseConstruct2377(void* self, void*)
+	{
+	unsigned char* owner = static_cast<unsigned char*>(self);
+	void* vtable = reinterpret_cast<void*>(static_cast<size_t>(0x1010886cu));
+	memcpy(owner, &vtable, 4);
+	unsigned char* record = static_cast<unsigned char*>(
+		nxFoundationSDKAllocator->malloc(0x14, NX_MEMORY_PERSISTENT));
+	memcpy(owner + 4, &record, 4);
+	unsigned zero = 0;
+	memcpy(record, &zero, 4);
+	memcpy(record + 4, &zero, 4);
+	record[8] = 0;
+	return self;
+	}
