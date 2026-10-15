@@ -10,6 +10,9 @@ actor velocity setter at `0x100073f0`.
 The candidate Win32 Release map resolves
 `?nxGetSdkPointerBinding@@YAPAXPAX@Z` at `0x100534e0` in
 `PhysicsInternal.obj`. `NxPhysicsInternalTests::testPointerBindings` covers
-missing keys, insertion, rebind, removal, and final-table cleanup. The row
-remains `statically_reviewed`; this mapping does not claim an independent
-oracle mutation for the getter itself or close a full-census row.
+missing keys, insertion, rebind, removal, and final-table cleanup. A temporary
+return-null mutation of the getter fails at `check_failed both read back`
+(candidate exit 1). The restored source rebuilds `NxPhysics.dll` and the
+internal test target; the latter passes all 98 checks. This is candidate
+assertion coverage rather than an oracle DLL differential, and the row remains
+open in the full-census backlog.

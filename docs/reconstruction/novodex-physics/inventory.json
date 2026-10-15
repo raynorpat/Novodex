@@ -8862,7 +8862,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/166",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1217",
       "static_proof": "Oracle RVA 0x0000df90 (58 bytes), __cdecl nxGetSdkPointerBinding(void*). Checks the global pointer-binding array and key for null, scans the array's 8-byte key/value pairs, returns the first matching value, and returns null on a miss. No error reporting or mutation. IDA pseudocode at VA 0x1000df90 confirms the source implementation.",
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsInternalTests::testPointerBindings exercises absent-table and absent-key misses, insertion/readback of two pairs, and preservation of a surviving pair. A temporary return-null mutation of nxGetSdkPointerBinding fails at `check_failed both read back` (candidate exit 1); after restoring the source, NxPhysicsInternalTests passes at 98 checks and NxPhysics rebuilds successfully. This is an internal candidate assertion, not a public oracle differential. See evidence/phase2-sdk-pointer-binding-get-000454.md.",
       "notes": "The phase-8 audit caveat pointing at 0x7460 was a cross-row address error: 0x0000df90 is the complete pointer-binding lookup. The unrelated actor method begins at VA 0x100073f0. See evidence/phase2-sdk-pointer-binding-get-000454.md.",
       "implementation_symbol": "nxGetSdkPointerBinding",
       "candidate_map_reference": {

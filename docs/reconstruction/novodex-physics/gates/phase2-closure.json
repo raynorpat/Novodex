@@ -568,8 +568,8 @@
       "proof": "static_proof_falsified",
       "gate": "NxPhysicsInternalTests",
       "falsification": {
-        "mutation": "a rebind appends instead of updating in place",
-        "detected": "check_failed rebinding a key updates it"
+        "mutation": "nxGetSdkPointerBinding is changed to return null unconditionally",
+        "detected": "check_failed both read back"
       }
     },
     {
