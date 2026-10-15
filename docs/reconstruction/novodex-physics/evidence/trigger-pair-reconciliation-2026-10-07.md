@@ -64,15 +64,23 @@ buffer once. An empty previous/current pair-list case verifies the oracle's
 header swap and empty-list reset. Candidate state and allocator call counts
 match all six oracle cases exactly.
 
-The retained-pair fixture also checks all 36 ordered pairs of six shape types
-with the trigger on either side (72 oracle/candidate cases). This exposed a
-candidate mismatch: after sorting by shape type, the oracle places the trigger
-shape first in the retained pair. The candidate now mirrors that orientation
-before appending and reporting stay. All 72 cases match, including event
-identity, pair-list order, and the two expected allocations
-(`build/trigger-pair-duplicates-restored-full-collision.log`). A mutation that
-disabled the trigger-orientation swap produced 36 mismatches, confirming the
-matrix catches this behavior.
+The retained-pair fixture checks all 36 ordered pairs of six shape types with
+the trigger on either side and event-mask bytes 0 through 15 (1,152
+oracle/candidate cases). This exposed two mismatches: after sorting by type,
+the oracle puts the flagged trigger first in the retained pair; and, once a
+pair is in the trigger-pair list, the oracle emits its transition even when
+the low event-mask bits are zero. The candidate now matches both rules. The
+matrix compares event identity, pair-list order, and allocations. Disabling
+the trigger-orientation swap produces 36 mismatches; restoring the candidate's
+old low-bit event filter produces 144. The restored matrix reports zero
+mismatches (`build/trigger-pair-duplicates-restored-full-collision.log`).
+The expanded full collision harness reports `collision=pass` with the matrix
+at 1,152/1,152 (`build/trigger-pair-event-mask-full-collision.log`). The
+registered Phase 3 gate passes at 969/969 coverage assertions, including the
+oracle-only matrix and mask lines (`build/phase3-trigger-event-mask-gate.log`).
+The rebuilt production DLL also passes the public simulation differential with
+exact enter/stay/leave callbacks (`stdout_delta=0`, `stderr_exact=True`,
+`build/trigger-pair-event-mask-simulation-differential.log`).
 
 A temporary unconditional `return -1` in `nxSceneFindTriggerPair` is rejected:
 the overlap-true case reports four candidate events and four pairs, while the

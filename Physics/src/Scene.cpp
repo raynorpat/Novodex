@@ -7525,14 +7525,12 @@ static void nxSceneAppendTriggerPair(NxSceneTriggerPairs* pairs,
 static void nxSceneReportTriggerTransition(NxSceneInternal* scene,
 	NxCollisionShape* first, NxCollisionShape* second, NxU32 event)
 	{
-	NxCollisionShape* trigger = (*(reinterpret_cast<NxU8*>(first) + 0xde) & 7) ? first : second;
-	NxCollisionShape* other = trigger == first ? second : first;
-	const NxU8 flags = *(reinterpret_cast<NxU8*>(trigger) + 0xde);
-	// phys_fn_002350 and its callback drain only test that at least one
-	// trigger event bit is enabled; the pinned build reports every transition.
-	if((flags & 7u) != 0)
-		nxSceneAppendTriggerEvent(scene, reinterpret_cast<NxShape*>(trigger),
-			reinterpret_cast<NxShape*>(other), event);
+	// The oracle treats membership in the trigger-pair list as authoritative:
+	// it reports every transition and preserves the pair's first/second order.
+	// The overlap-retention path orders its pair first, preferring the trigger
+	// shape when its low event bits are set.
+	nxSceneAppendTriggerEvent(scene, reinterpret_cast<NxShape*>(first),
+		reinterpret_cast<NxShape*>(second), event);
 	}
 	}
 
