@@ -1434,9 +1434,9 @@ LAB_1000eccd:
 ## phys_fn_000480 (0x0000edc0, 388 B, statically_reviewed)
 
 - ambiguous: no
-- source: None
-- implementation: None
-- prototype: undefined4 __cdecl FUN_1000edc0(int * param_1, int param_2)
+- source: Physics/src/PhysicsInternal.cpp
+- implementation: Physics/src/PhysicsInternal.cpp (`nxSetSdkPointerBinding`)
+- prototype: bool __cdecl nxSetSdkPointerBinding(void* key, void* value)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_000030 (0x00001c40), phys_fn_000034 (0x00002010), phys_fn_000088 (0x00002d90), phys_fn_001323 (0x00026bd0), phys_fn_001347 (0x00027740), phys_fn_003491 (0x00085890), phys_fn_003503 (0x00086080), phys_fn_003603 (0x000882b0), phys_fn_003609 (0x00089290), phys_fn_003683 (0x0008aea0), phys_fn_003687 (0x0008af20), phys_fn_003689 (0x0008af80), phys_fn_004095 (0x00095e20), phys_fn_004119 (0x00098750), phys_fn_004121 (0x000987a0), phys_fn_004453 (0x000b08e0), phys_fn_004493 (0x000b0f40), phys_fn_004523 (0x000b13e0), phys_fn_004553 (0x000b18b0), phys_fn_004583 (0x000b1d50), phys_fn_004609 (0x000b2190), phys_fn_004637 (0x000b2610), phys_fn_004667 (0x000b2b10), phys_fn_004693 (0x000b2f50), phys_fn_004745 (0x000b36a0)
 - callees: phys_fn_000474 (0x0000ea30)

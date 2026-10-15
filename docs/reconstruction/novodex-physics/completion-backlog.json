@@ -7,7 +7,7 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1853,
+    "mapped_code_rows": 1854,
     "source_correspondence_only_rows": 448,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
@@ -118,7 +118,7 @@
         "rows": 143,
         "bytes": 32572,
         "open_rows": 143,
-        "rows_without_implementation_mapping": 28,
+        "rows_without_implementation_mapping": 27,
         "rows_with_unresolved_indirect_calls": 69,
         "by_state": {
           "discovered": 2,
@@ -21490,14 +21490,20 @@
       "state": "statically_reviewed",
       "label": "phys_fn_000480",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/PhysicsInternal.cpp",
+        "role": "reconstruction",
+        "symbol": "nxSetSdkPointerBinding",
+        "file_exists": true,
+        "oracle_source": "Physics/src/PhysicsInternal.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxSetSdkPointerBinding@@YA_NPAX0@Z",
+          "address": "0x100535c0",
+          "object": "PhysicsInternal.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -21554,10 +21560,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 2,
+        "owner_phase": 8,
         "row_id": "phys_fn_000480",
         "rva": "0x0000edc0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -231108,7 +231114,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "b5b15d75cde8947744750373eedebb7a293507039f76a4f06124267ac5bc0f48",
+    "inventory_sha256": "b01c67ed14feca69b81cf6efc9f92c44813fe1a9fa457c74e854638d47389f88",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",

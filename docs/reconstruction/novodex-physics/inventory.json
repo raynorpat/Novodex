@@ -9343,12 +9343,20 @@
       "phase": 2,
       "phase_provenance": "shared_by_callers",
       "state": "statically_reviewed",
-      "source": null,
+      "source": "Physics/src/PhysicsInternal.cpp",
+      "implementation": "Physics/src/PhysicsInternal.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/175",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1290",
       "static_proof": "the registry lookup-and-insert at [0x10123c0c]: with a zero second argument AND a null registry it returns 1 inertly; otherwise it allocates a 0x10-byte entry through the allocator allocate slot, zeroes its three words, stores it as the registry and appends. The INSERT path mutates global state, which is why the rows that call it are driven with a zero argument",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation_symbol": "nxSetSdkPointerBinding",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSetSdkPointerBinding@@YA_NPAX0@Z",
+        "address": "0x100535c0",
+        "object": "PhysicsInternal.obj"
+      }
     },
     {
       "id": "phys_fn_000481",
