@@ -1,0 +1,40 @@
+{
+  "purpose": "Actual-DLL Pruner process-pool remove and generation-tagged handle reuse proof for phys_fn_005444.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "a67312572bf60c3cd17afca43f3e16f93f8264225786c79e985e1e6fd838c78e",
+  "mutation_candidate_sha256": "a5d6a39d7d724c8c805f5d4c891772aceb54a8be295306cbcac244b4f59577ab",
+  "source_sha256": "4324b4bf7e1d40f81d29e46a66c2be9b5363285fb5f79b00d08532955040da10",
+  "mutation_result": "Entry-return mutation left previous handles occupied and allocated indices 4/5 at generation 1 instead of reusing 2/3; candidate assertion failed (oracle_exit=0, candidate_exit=1, stdout_delta=2).",
+  "restored_result": "Focused differential exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
+  "logs": {
+    "mutation-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "bf4f51a9a4d12848baa03edc9e57647c777a6981bda93bda798e0f23731bffbc",
+      "compressed_bytes": 36864,
+      "uncompressed_bytes": 799796
+    },
+    "restored-build.log.gz": {
+      "sha256": "af6fcada37770338e9c529b81f0c1246a5f809be35298a4d69b40ebba7533d0c",
+      "compressed_bytes": 310,
+      "uncompressed_bytes": 839
+    },
+    "restored-differential.log.gz": {
+      "sha256": "25136b43abfbfd817679e7085da62c5f6a741953f4c7626663e29877f703ba42",
+      "compressed_bytes": 36590,
+      "uncompressed_bytes": 799677
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "1bc26f3137163aa93ea382ee1ed50f7ea414f60f6e4952ce5495f073712ed253",
+      "compressed_bytes": 74908,
+      "uncompressed_bytes": 1114945
+    }
+  },
+  "phase_gates": {
+    "4": "pass, coverage_assertions_evaluated=533 floor=533"
+  }
+}

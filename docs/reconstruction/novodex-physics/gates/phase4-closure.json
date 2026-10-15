@@ -55,9 +55,9 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 748,
-    "deferred_not_reconstructed_in_phase": 175,
+    "deferred_not_reconstructed_in_phase": 174,
     "deferred_vendored_not_falsified": 90,
-    "differential_falsified": 11,
+    "differential_falsified": 12,
     "oracle_differential_falsified": 29
   },
   "closed": [
@@ -474,6 +474,17 @@
         "detected": "stdout_delta=13"
       },
       "note": "Restored source was touched to force MSBuild recompilation; the focused restored staged pair is exact (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True). Evidence: evidence/phase4-pruner-replace-005440.md."
+    },
+    {
+      "id": "phys_fn_005444",
+      "rva": "0x000ef5c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Inserted an unconditional return at entry to NxPrunerProcessPool::remove and ran the registered Scene raycast staged pair. The oracle reused indices 2/3 with generation 1; the candidate retained the old slots and allocated indices 4/5, then failed its handle-reuse assertion (oracle_exit=0, candidate_exit=1).",
+        "detected": "stdout_delta=2"
+      },
+      "note": "Restored source was touched to force MSBuild recompilation; the focused restored staged pair is exact (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True). Evidence: evidence/phase4-pruner-remove-005444.md."
     }
   ],
   "deferred": [
@@ -8071,14 +8082,7 @@
       "driving_phases": []
     },
 
-    {
-      "id": "phys_fn_005444",
-      "rva": "0x000ef5c0",
-      "size": 146,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
+
     {
       "id": "phys_fn_005446",
       "rva": "0x000ef660",

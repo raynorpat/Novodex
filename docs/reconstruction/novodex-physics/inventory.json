@@ -101857,13 +101857,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PrunerRegistration.cpp",
+      "implementation": "Physics/src/PrunerRegistration.cpp",
+      "implementation_symbol": "NxPrunerProcessPool::remove",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2084",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18843",
       "static_proof": "reached: phys_fn_004832 calls it at 0x000b4d2f. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
-      "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
+      "dynamic_proof": "NxPhysicsSceneRaycastTests destroys a Scene with static and dynamic pruners and creates a replacement Scene. It requires the retired indices to be reused with incremented generations: static=00010002.00000001 and dynamic=00010003.00000001. An entry-return mutation of NxPrunerProcessPool::remove leaves the handles occupied and produces static=00000004.00000001 and dynamic=00000005.00000001; the candidate assertion fails (oracle_exit=0, candidate_exit=1, stdout_delta=2). Restored candidate exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase4-pruner-remove-005444.md.",
+      "notes": "Releases a generation-tagged pool handle, packs the dense object array, and queues the slot for reuse with incremented generation. Actual-DLL handle reuse and a no-op mutation are checked through the registered Scene fixture."
     },
     {
       "id": "phys_fn_005445",
