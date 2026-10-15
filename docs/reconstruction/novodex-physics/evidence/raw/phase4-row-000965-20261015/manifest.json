@@ -34,6 +34,22 @@
       "compressed_bytes": 76043,
       "uncompressed_sha256": "7a93217e329fd711aae7548c70e545704e2dd63b0e555d7fb606c00f67ee3f4e",
       "uncompressed_bytes": 1119651
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "125b3f536c554159eb2c6f1f8e34dfa243917b93099b5fb3fbdbf9d39c1196fc",
+      "compressed_bytes": 209673,
+      "uncompressed_sha256": "7484119a7d6e052c68c85ac04728f1a0d3215e0fbcdac0547e010fda73b98172",
+      "uncompressed_bytes": 2877464
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "fd6ea7b8e1d605ee8899a2016aa50f3ac14687dd81845a3d190e72c5bf1b295f",
+      "compressed_bytes": 370978,
+      "uncompressed_sha256": "a9ed452c70900e4d0c9bf10feaf1d3771b3328f44d053ab53e81cafdeb750f0b",
+      "uncompressed_bytes": 4643607
     }
-  }
+  },
+  "clean_gate_commit": "d5585367200ba883a71d24957cbb695d060dc1ed",
+  "clean_gate_candidate_sha256": "2f83a4857551c908bce87e52229610a0c44f7cdd93e03afcec7888a9931d6949",
+  "phase5_gate": "pass, coverage_assertions_evaluated=2765 floor=2765",
+  "phase7_gate": "pass, coverage_assertions_evaluated=2879 floor=2879"
 }

@@ -4,6 +4,6 @@ The three-byte oracle row at RVA `0x000213e0` is a cdecl callback that ignores i
 
 `NxPhysicsSceneRaycastTests` now resolves the oracle RVA or candidate map symbol and calls the callback with both a null pointer and an opaque non-null pointer. Returning one instead of zero in the candidate is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2806`). Restoring the implementation gives an exact staged-pair differential (`stdout_delta=0`, exact stderr).
 
-The Phase 4 gate passes with the new marker at `542/542`. The row was owned by Phase 2 but deferred as homeless shared code because its ordinary caller belongs to a later phase; this direct probe discharges that deferral through Phase 4.
+The Phase 4, Phase 5, and Phase 7 gates pass with the new marker at `542/542`, `2,765/2,765`, and `2,879/2,879`. Phase 5 and Phase 7 were verified from clean commit `d5585367` using candidate DLL SHA-256 `2f83a4857551c908bce87e52229610a0c44f7cdd93e03afcec7888a9931d6949`. The row was owned by Phase 2 but deferred as homeless shared code because its ordinary caller belongs to a later phase; this direct probe discharges that deferral through Phase 4.
 
 Raw logs and checksums: `raw/phase4-row-000965-20261015/manifest.json`.

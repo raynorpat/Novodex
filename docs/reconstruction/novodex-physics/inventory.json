@@ -18315,8 +18315,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/391",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3020",
       "static_proof": "Oracle RVA 0x000213e0 is a three-byte __cdecl owner-query callback: xor eax,eax; ret. It ignores its void* owner argument and always returns zero. The same folded stub is installed as BoxHullFacade vtable slot 5 and the Prunable owner-query hook at .data 0x10128470.",
-      "dynamic_proof": "Direct registered NxPhysicsSceneRaycastTests staged-pair probe resolves oracle RVA 0x000213e0 and candidate map symbol ?shapeOwnerQuery@@YAIPAX@Z, calls each with null and opaque owner pointers, and asserts zero both times. Candidate-only return-1 mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=2806); restored DLL pair matches exactly (both exits=0, stdout_delta=0, stderr_exact=True). Phase 4 passes at 542/542. See evidence/phase4-prunable-owner-query-000965.md.",
-      "notes": "Shared owner callback; Phase 2's homeless_shared_code deferral remains because its caller belongs to a later phase.",
+      "dynamic_proof": "Direct registered NxPhysicsSceneRaycastTests staged-pair probe resolves oracle RVA 0x000213e0 and candidate map symbol ?shapeOwnerQuery@@YAIPAX@Z, calls each with null and opaque owner pointers, and asserts zero both times. Candidate-only return-1 mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=2806); restored DLL pair matches exactly (both exits=0, stdout_delta=0, stderr_exact=True). Phase 4, 5, and 7 gates pass with the marker at 542/542, 2765/2765, and 2879/2879. See evidence/phase4-prunable-owner-query-000965.md and evidence/raw/phase4-row-000965-20261015/.",
+      "notes": "Shared owner callback. Phase 2's homeless_shared_code deferral was discharged through the Phase 4 direct staged-pair probe because its ordinary caller belongs to a later phase.",
       "implementation": "Physics/src/ObjectModel.cpp",
       "implementation_symbol": "shapeOwnerQuery",
       "candidate_map_reference": {
