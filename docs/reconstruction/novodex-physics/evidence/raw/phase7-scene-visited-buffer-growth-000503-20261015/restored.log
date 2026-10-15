@@ -1,0 +1,200 @@
+phase=none resolved_targets=NxPhysicsSceneAllocatorTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsSceneAllocatorTests
+pass: program pin file exists: D:\github\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: D:\github\Novodex\build\Release\NxPhysics.dll
+pass: source exists: D:\github\Novodex\build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=D:\github\Novodex\build\Release\NxPhysics.dll source_sha256=ecefab5f408fc79dfccff0bfd635a55f0fc1b6678e8793bc41eac08559acaa8e staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll staged_sha256=ecefab5f408fc79dfccff0bfd635a55f0fc1b6678e8793bc41eac08559acaa8e
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=D:\github\Novodex\build\Release\NxFoundation.dll source_sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5 staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll staged_sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: D:\github\Novodex\build\Release\NxPhysics.map
+staged candidate map source=D:\github\Novodex\build\Release\NxPhysics.map staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: D:\github\Novodex\build\Release\NxPhysicsSceneAllocatorTests.exe
+child target=NxPhysicsSceneAllocatorTests pair=oracle command="D:\github\Novodex\build\Release\NxPhysicsSceneAllocatorTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+alloc phase=foundation_create a_allocs=1 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=foundation_create a_alloc_sizes=38
+alloc phase=foundation_create a_free_sizes=none
+alloc phase=foundation_create b_alloc_sizes=none
+alloc phase=foundation_create b_free_sizes=none
+alloc phase=sdk_create a_allocs=5 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=sdk_create a_alloc_sizes=38.124.90.c.20
+alloc phase=sdk_create a_free_sizes=none
+alloc phase=sdk_create b_alloc_sizes=none
+alloc phase=sdk_create b_free_sizes=none
+alloc phase=scene_create_oom status=null scenes=0 fail_hits=1
+alloc phase=scene_create_oom a_allocs=0 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=scene_create_oom a_alloc_sizes=none
+alloc phase=scene_create_oom a_free_sizes=none
+alloc phase=scene_create_oom b_alloc_sizes=none
+alloc phase=scene_create_oom b_free_sizes=none
+alloc phase=pruner_pool_owner_oom a_allocs=25 a_frees=3 b_allocs=4 b_frees=0 cross_frees=0
+alloc phase=pruner_pool_owner_oom a_alloc_sizes=710.28.4.20.4.20.18.14.a8.8.50.18.228.800.400.800.400.800.400.400.400.1c.400.400.8
+alloc phase=pruner_pool_owner_oom a_free_sizes=800.800.800
+alloc phase=pruner_pool_owner_oom b_alloc_sizes=90.60.10.8
+alloc phase=pruner_pool_owner_oom b_free_sizes=none
+alloc phase=pruner_pool_owner_oom status=created scenes=1 fail_hits=1 after_release_scenes=0
+alloc phase=scene_create a_allocs=9 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=scene_create a_alloc_sizes=710.28.4.20.4.20.18.14.a8
+alloc phase=scene_create a_free_sizes=none
+alloc phase=scene_create b_alloc_sizes=none
+alloc phase=scene_create b_free_sizes=none
+alloc phase=static_create a_allocs=15 a_frees=3 b_allocs=9 b_frees=0 cross_frees=0
+alloc phase=static_create a_alloc_sizes=50.18.228.800.400.800.400.800.400.400.400.1c.400.400.8
+alloc phase=static_create a_free_sizes=800.800.800
+alloc phase=static_create b_alloc_sizes=90.1c.8.4.4.4.60.10.8
+alloc phase=static_create b_free_sizes=none
+alloc phase=dynamic_create a_allocs=14 a_frees=3 b_allocs=3 b_frees=0 cross_frees=0
+alloc phase=dynamic_create a_alloc_sizes=50.18.228.1c.260.800.400.800.400.800.400.400.400.8
+alloc phase=dynamic_create a_free_sizes=800.800.800
+alloc phase=dynamic_create b_alloc_sizes=3c.60.10
+alloc phase=dynamic_create b_free_sizes=none
+alloc phase=multi_create a_allocs=11 a_frees=1 b_allocs=1 b_frees=1 cross_frees=0
+alloc phase=multi_create a_alloc_sizes=50.18.110.228.1c.8.8.228.1c.260.18
+alloc phase=multi_create a_free_sizes=8
+alloc phase=multi_create b_alloc_sizes=10
+alloc phase=multi_create b_free_sizes=8
+scene_visited_growth match=1 initial=256 grown=512 allocs=2 frees=2 containers=3 pruners=2 zeroed=512
+alloc phase=multi_release a_allocs=4 a_frees=11 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=multi_release a_alloc_sizes=8.8.8.18
+alloc phase=multi_release a_free_sizes=18.260.1c.228.1c.228.8.8.8.110.50
+alloc phase=multi_release b_alloc_sizes=none
+alloc phase=multi_release b_free_sizes=none
+alloc phase=dynamic_release a_allocs=0 a_frees=5 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=dynamic_release a_alloc_sizes=none
+alloc phase=dynamic_release a_free_sizes=18.260.1c.228.50
+alloc phase=dynamic_release b_alloc_sizes=none
+alloc phase=dynamic_release b_free_sizes=none
+alloc phase=static_release a_allocs=1 a_frees=5 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=static_release a_alloc_sizes=18
+alloc phase=static_release a_free_sizes=18.8.1c.228.50
+alloc phase=static_release b_alloc_sizes=none
+alloc phase=static_release b_free_sizes=none
+alloc phase=scene_release a_allocs=0 a_frees=26 b_allocs=0 b_frees=7 cross_frees=0
+alloc phase=scene_release a_alloc_sizes=none
+alloc phase=scene_release a_free_sizes=14.18.20.4.20.4.28.800.800.400.400.400.400.400.400.400.400.400.400.a8.8.18.18.8.18.710
+alloc phase=scene_release b_alloc_sizes=none
+alloc phase=scene_release b_free_sizes=10.60.10.90.60.10.3c
+alloc phase=sdk_release a_allocs=0 a_frees=7 b_allocs=0 b_frees=5 cross_frees=0
+alloc phase=sdk_release a_alloc_sizes=none
+alloc phase=sdk_release a_free_sizes=20.c.38.124.90.8.38
+alloc phase=sdk_release b_alloc_sizes=none
+alloc phase=sdk_release b_free_sizes=4.4.4.8.1c
+alloc total a_allocs=89 a_frees=89 b_allocs=17 b_frees=17 cross_frees=0
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsSceneAllocatorTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSceneAllocatorTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: D:\github\Novodex\build\Release\NxPhysicsSceneAllocatorTests.exe
+child target=NxPhysicsSceneAllocatorTests pair=candidate command="D:\github\Novodex\build\Release\NxPhysicsSceneAllocatorTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\candidate" exit=0
+child_stdout_begin
+pair_directory=D:\FlamingEnt__\novodex-analysis\pairs\candidate
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ecefab5f408fc79dfccff0bfd635a55f0fc1b6678e8793bc41eac08559acaa8e
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5
+alloc phase=foundation_create a_allocs=1 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=foundation_create a_alloc_sizes=38
+alloc phase=foundation_create a_free_sizes=none
+alloc phase=foundation_create b_alloc_sizes=none
+alloc phase=foundation_create b_free_sizes=none
+alloc phase=sdk_create a_allocs=5 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=sdk_create a_alloc_sizes=38.124.90.c.20
+alloc phase=sdk_create a_free_sizes=none
+alloc phase=sdk_create b_alloc_sizes=none
+alloc phase=sdk_create b_free_sizes=none
+alloc phase=scene_create_oom status=null scenes=0 fail_hits=1
+alloc phase=scene_create_oom a_allocs=0 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=scene_create_oom a_alloc_sizes=none
+alloc phase=scene_create_oom a_free_sizes=none
+alloc phase=scene_create_oom b_alloc_sizes=none
+alloc phase=scene_create_oom b_free_sizes=none
+alloc phase=pruner_pool_owner_oom a_allocs=25 a_frees=3 b_allocs=4 b_frees=0 cross_frees=0
+alloc phase=pruner_pool_owner_oom a_alloc_sizes=710.28.4.20.4.20.18.14.a8.8.50.18.228.800.400.800.400.800.400.400.400.1c.400.400.8
+alloc phase=pruner_pool_owner_oom a_free_sizes=800.800.800
+alloc phase=pruner_pool_owner_oom b_alloc_sizes=90.60.10.8
+alloc phase=pruner_pool_owner_oom b_free_sizes=none
+alloc phase=pruner_pool_owner_oom status=created scenes=1 fail_hits=1 after_release_scenes=0
+alloc phase=scene_create a_allocs=9 a_frees=0 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=scene_create a_alloc_sizes=710.28.4.20.4.20.18.14.a8
+alloc phase=scene_create a_free_sizes=none
+alloc phase=scene_create b_alloc_sizes=none
+alloc phase=scene_create b_free_sizes=none
+alloc phase=static_create a_allocs=15 a_frees=3 b_allocs=9 b_frees=0 cross_frees=0
+alloc phase=static_create a_alloc_sizes=50.18.228.800.400.800.400.800.400.400.400.1c.400.400.8
+alloc phase=static_create a_free_sizes=800.800.800
+alloc phase=static_create b_alloc_sizes=90.1c.8.4.4.4.60.10.8
+alloc phase=static_create b_free_sizes=none
+alloc phase=dynamic_create a_allocs=14 a_frees=3 b_allocs=3 b_frees=0 cross_frees=0
+alloc phase=dynamic_create a_alloc_sizes=50.18.228.1c.260.800.400.800.400.800.400.400.400.8
+alloc phase=dynamic_create a_free_sizes=800.800.800
+alloc phase=dynamic_create b_alloc_sizes=3c.60.10
+alloc phase=dynamic_create b_free_sizes=none
+alloc phase=multi_create a_allocs=11 a_frees=1 b_allocs=1 b_frees=1 cross_frees=0
+alloc phase=multi_create a_alloc_sizes=50.18.110.228.1c.8.8.228.1c.260.18
+alloc phase=multi_create a_free_sizes=8
+alloc phase=multi_create b_alloc_sizes=10
+alloc phase=multi_create b_free_sizes=8
+scene_visited_growth match=1 initial=256 grown=512 allocs=2 frees=2 containers=3 pruners=2 zeroed=512
+alloc phase=multi_release a_allocs=4 a_frees=11 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=multi_release a_alloc_sizes=8.8.8.18
+alloc phase=multi_release a_free_sizes=18.260.1c.228.1c.228.8.8.8.110.50
+alloc phase=multi_release b_alloc_sizes=none
+alloc phase=multi_release b_free_sizes=none
+alloc phase=dynamic_release a_allocs=0 a_frees=5 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=dynamic_release a_alloc_sizes=none
+alloc phase=dynamic_release a_free_sizes=18.260.1c.228.50
+alloc phase=dynamic_release b_alloc_sizes=none
+alloc phase=dynamic_release b_free_sizes=none
+alloc phase=static_release a_allocs=1 a_frees=5 b_allocs=0 b_frees=0 cross_frees=0
+alloc phase=static_release a_alloc_sizes=18
+alloc phase=static_release a_free_sizes=18.8.1c.228.50
+alloc phase=static_release b_alloc_sizes=none
+alloc phase=static_release b_free_sizes=none
+alloc phase=scene_release a_allocs=0 a_frees=26 b_allocs=0 b_frees=7 cross_frees=0
+alloc phase=scene_release a_alloc_sizes=none
+alloc phase=scene_release a_free_sizes=14.18.20.4.20.4.28.800.800.400.400.400.400.400.400.400.400.400.400.a8.8.18.18.8.18.710
+alloc phase=scene_release b_alloc_sizes=none
+alloc phase=scene_release b_free_sizes=10.60.10.90.60.10.3c
+alloc phase=sdk_release a_allocs=0 a_frees=7 b_allocs=0 b_frees=5 cross_frees=0
+alloc phase=sdk_release a_alloc_sizes=none
+alloc phase=sdk_release a_free_sizes=20.c.38.124.90.8.38
+alloc phase=sdk_release b_alloc_sizes=none
+alloc phase=sdk_release b_free_sizes=4.4.4.8.1c
+alloc total a_allocs=89 a_frees=89 b_allocs=17 b_frees=17 cross_frees=0
+modules pair=2 trusted_system=12 rejected=0
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ecefab5f408fc79dfccff0bfd635a55f0fc1b6678e8793bc41eac08559acaa8e
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsSceneAllocatorTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll sha256=ecefab5f408fc79dfccff0bfd635a55f0fc1b6678e8793bc41eac08559acaa8e
+pass: NxPhysicsSceneAllocatorTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5
+differential target=NxPhysicsSceneAllocatorTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
+differential_targets=NxPhysicsSceneAllocatorTests
+differential_pairs=D:\FlamingEnt__\novodex-analysis\pairs\oracle,D:\FlamingEnt__\novodex-analysis\pairs\candidate
+pass: every requested target passes its registered oracle/candidate differential contract
+differential=pass

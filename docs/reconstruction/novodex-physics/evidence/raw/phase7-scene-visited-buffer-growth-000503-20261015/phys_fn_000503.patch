@@ -1,0 +1,5 @@
+--- a/Physics/src/Scene.cpp
++++ b/Physics/src/Scene.cpp
+@@ -5304,1 +5304,1 @@
+- nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, buffer);
++ // mutation row 000503: omitted Pruner rebind

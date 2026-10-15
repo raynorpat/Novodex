@@ -153,6 +153,108 @@ static void nxReport(const char* phase, const NxPhaseMark& before)
 	nxPrintSizes(phase, "b_free_sizes", gSdkAllocator, before.bFrees, after.bFrees, true);
 	}
 
+static unsigned nxReadWord(const unsigned char* bytes, unsigned offset)
+	{
+	unsigned value;
+	memcpy(&value, bytes + offset, sizeof(value));
+	return value;
+	}
+
+static int nxCheckSceneVisitedBufferGrowth(HMODULE physics, NxScene* publicScene)
+	{
+	wchar_t path[MAX_PATH];
+	char hash[65];
+	if(!GetModuleFileNameW(physics, path, MAX_PATH) || !nxSha256(path, hash))
+		return nxFail("cannot identify Physics DLL for the direct 000503 call");
+	static const char kOracleHash[] = "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c";
+	const unsigned entryRva = strcmp(hash, kOracleHash) == 0 ? 0x100a0 : 0x6c610;
+	typedef void (__thiscall *OracleUpdateActorCountFn)(void*, unsigned);
+	typedef void (__cdecl *CandidateUpdateActorCountFn)(void*, unsigned);
+	const bool oracle = strcmp(hash, kOracleHash) == 0;
+	OracleUpdateActorCountFn oracleUpdate = oracle
+		? reinterpret_cast<OracleUpdateActorCountFn>(reinterpret_cast<unsigned char*>(physics) + entryRva) : 0;
+	CandidateUpdateActorCountFn candidateUpdate = oracle ? 0
+		: reinterpret_cast<CandidateUpdateActorCountFn>(reinterpret_cast<unsigned char*>(physics) + entryRva);
+	unsigned char* wrapper = reinterpret_cast<unsigned char*>(publicScene);
+	unsigned char* scene = *reinterpret_cast<unsigned char**>(wrapper + 0x24);
+	if(!scene)
+		return nxFail("public Scene has no internal Scene for row 000503");
+
+	const unsigned initialCapacity = nxReadWord(scene, 4);
+	const unsigned initialVisits = nxReadWord(scene, 8);
+	const unsigned initialShared = nxReadWord(scene, 12);
+	const unsigned initialStamp = nxReadWord(scene, 20);
+	const unsigned noOpAllocs = gFoundationAllocator.allocations();
+	const unsigned noOpFrees = gFoundationAllocator.frees();
+	if(oracle) oracleUpdate(scene, initialCapacity); else candidateUpdate(scene, initialCapacity);
+	if(gFoundationAllocator.allocations() != noOpAllocs
+		|| gFoundationAllocator.frees() != noOpFrees
+		|| nxReadWord(scene, 8) != initialVisits
+		|| nxReadWord(scene, 12) != initialShared
+		|| nxReadWord(scene, 20) != initialStamp)
+		return nxFail("row 000503 equal-capacity call changed owned buffers or stamp");
+
+	const unsigned request = initialCapacity + 1;
+	const unsigned expectedCapacity = (request + 0x100u) & ~0xffu;
+	const unsigned growthAllocs = gFoundationAllocator.allocations();
+	const unsigned growthFrees = gFoundationAllocator.frees();
+	if(oracle) oracleUpdate(scene, request); else candidateUpdate(scene, request);
+	const unsigned capacity = nxReadWord(scene, 4);
+	const unsigned visits = nxReadWord(scene, 8);
+	const unsigned shared = nxReadWord(scene, 12);
+	if(capacity != expectedCapacity || nxReadWord(scene, 20) != capacity
+		|| gFoundationAllocator.allocations() - growthAllocs != 2
+		|| gFoundationAllocator.frees() - growthFrees != (initialCapacity ? 2u : 0u))
+		return nxFail("row 000503 growth capacity, stamp, or allocation order differs");
+	for(unsigned i = 0; i < capacity; ++i)
+		if(nxReadWord(reinterpret_cast<const unsigned char*>(visits), i * 4) != 0)
+			return nxFail("row 000503 did not clear the full visited array");
+
+	const unsigned containerOffsets[] = {0x50, 0x500, 0x510};
+	for(unsigned i = 0; i < sizeof(containerOffsets) / sizeof(containerOffsets[0]); ++i)
+		{
+		const unsigned offset = containerOffsets[i];
+		if(nxReadWord(scene, offset) != capacity || nxReadWord(scene, offset + 4) != 0
+			|| nxReadWord(scene, offset + 8) != shared
+			|| nxReadWord(scene, offset + 12) != 0xbf800000u)
+			return nxFail("row 000503 did not rebind an embedded Scene container");
+		}
+
+	unsigned pruners = 0;
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		const unsigned pruner = nxReadWord(scene, 0x640 + i * 4);
+		if(!pruner)
+			continue;
+		++pruners;
+		if(i != 0)
+			continue;
+		const unsigned char* object = reinterpret_cast<const unsigned char*>(pruner);
+		const unsigned capMatch = nxReadWord(object, 0x40) == capacity;
+		const unsigned countMatch = nxReadWord(object, 0x44) == 0;
+		const unsigned pointerMatch = nxReadWord(object, 0x48) == shared;
+		const unsigned factorMatch = nxReadWord(object, 0x4c) == 0xbf800000u;
+		const bool matches = capMatch && countMatch && pointerMatch && factorMatch;
+		if(!matches)
+			return nxFail("row 000503 did not rebind the original static Pruner buffer");
+		}
+	if(pruners < 2 || !nxReadWord(scene, 0x648))
+		return nxFail("row 000503 fixture did not create live static and dynamic Pruners");
+
+	const unsigned stableAllocs = gFoundationAllocator.allocations();
+	const unsigned stableFrees = gFoundationAllocator.frees();
+	if(oracle) oracleUpdate(scene, capacity); else candidateUpdate(scene, capacity);
+	if(gFoundationAllocator.allocations() != stableAllocs
+		|| gFoundationAllocator.frees() != stableFrees
+		|| nxReadWord(scene, 8) != visits || nxReadWord(scene, 12) != shared
+		|| nxReadWord(scene, 4) != capacity || nxReadWord(scene, 20) != capacity)
+		return nxFail("row 000503 post-growth no-op changed the Scene state");
+
+	printf("scene_visited_growth match=1 initial=%u grown=%u allocs=2 frees=%u containers=3 pruners=%u zeroed=%u\n",
+		initialCapacity, capacity, initialCapacity ? 2u : 0u, pruners, capacity);
+	return 0;
+	}
+
 int wmain(int argc, wchar_t** argv)
 {
 	wchar_t pairDirectory[MAX_PATH];
@@ -252,6 +354,8 @@ int wmain(int argc, wchar_t** argv)
 	NxActor* multiActor = scene->createActor(multiDesc);
 	if(!multiActor) return nxFail("two-box actor creation failed");
 	nxReport("multi_create", mark);
+	if(nxCheckSceneVisitedBufferGrowth(physics, scene))
+		return 1;
 
 	mark = nxMark();
 	scene->releaseActor(*multiActor);

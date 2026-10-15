@@ -9783,13 +9783,20 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/184",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1391",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle pseudocode and the matching source implementation establish capacity no-op, 0x100-rounded growth, replacement/zeroing of both cached arrays, stamp update, rebinding of Scene containers at +0x50/+0x500/+0x510, and forwarding to the pruning collection at +0x624.",
+      "dynamic_proof": "NxPhysicsSceneAllocatorTests directly calls oracle RVA 0x100a0 (__thiscall) and candidate RVA 0x6c610 (__cdecl) on the public Scene's internal Scene. Equal-capacity no-op, rounded growth, allocation/free order, full zeroing, stamp, three embedded containers, static Pruner binding, and post-growth no-op match exactly (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true). Omitting the Pruner external-buffer rebind crashes the candidate (exit=-1073741819, stdout_delta=71) while oracle exits 0; restored control passes. Official Phase 5 and 7 runs built but were blocked by the independent pinned-source hash mismatch for modified tests/PhysicsObjectLayoutTests.cpp. Evidence: evidence/phase7-scene-visited-buffer-growth-000503.md and evidence/raw/phase7-scene-visited-buffer-growth-000503-20261015/.",
+      "notes": "Function-level differential and mutation proof are complete. Phase 2 deferral remains until the full required driving-phase gates can be rerun cleanly.",
+      "implementation_symbol": "nxSceneUpdateActorCount",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneUpdateActorCount@@YAXPAXI@Z",
+        "address": "0x1006c610",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000504",

@@ -1,0 +1,13 @@
+{
+  "row": "phys_fn_000503",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "ecefab5f408fc79dfccff0bfd635a55f0fc1b6678e8793bc41eac08559acaa8e",
+  "mutant_candidate_sha256": "987400ccb7019ababca8ff493dd4cd55b7dcf30cf061ee917a3a3ae32d05dc75",
+  "files": {
+    "mutant.log": "20d00ffe8c1f0e87772e213edf8eaf48800f9708301a6868ba01e6b63b6ff06f",
+    "phase5-gate.log": "07dc817ba1b6837f8c1a5b7f6830d6c283f1b1042c28253acf758eead17e0486",
+    "phase7-gate.log": "aff1ad373a3ee09b253e757954df7c867d6bc4208731e2be6c86cf0c2994c3ef",
+    "phys_fn_000503.patch": "84d152f7f809546bf37de17e594242b72e49314e9ad413e1f344afa801d30fef",
+    "restored.log": "eeffefa3077e92737194272f04e5de82576df3919740a09aaf192972d1fec5cf"
+  }
+}

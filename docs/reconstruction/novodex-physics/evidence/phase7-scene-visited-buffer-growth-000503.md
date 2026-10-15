@@ -1,0 +1,9 @@
+# `phys_fn_000503` (`Scene::nxSceneUpdateActorCount`) differential proof
+
+The row is reconstructed in `Physics/src/Scene.cpp` as `nxSceneUpdateActorCount` (candidate map RVA `0x0006c610`, `Scene.obj`). The oracle entry is `NxPhysics.dll+0x100a0`, a `__thiscall` function. The candidate translation is called with its actual `__cdecl` ABI from the focused fixture.
+
+`NxPhysicsSceneAllocatorTests` calls the oracle and candidate directly on a live internal Scene reached through the public Scene wrapper. It verifies that an equal-capacity request is a no-op, then requests one slot beyond capacity and compares the rounded capacity, two allocations, prior-buffer frees, all zeroed visitation words, the Scene stamp, the three embedded `SdkContainer` bindings, and the original static Pruner's external-buffer binding. A second equal-capacity call verifies the post-growth no-op. The control staged-pair differential passes with `oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, and exact stderr.
+
+The mutation omitted only the `nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, buffer)` call. The oracle still exited 0; the candidate crashed with exit `-1073741819` and the differential reported `stdout_delta=71`. Restoring the source and rebuilding returned the differential to exact parity. The mutation was temporary; `Physics/src/Scene.cpp` is unchanged in the worktree.
+
+The official Phase 5 and Phase 7 commands both rebuilt successfully but stopped at the same unrelated oracle-proof fixture check: the workspace's modified `tests/PhysicsObjectLayoutTests.cpp` does not match the pinned source hash in `evidence/oracle-only-baselines.json`. The focused row differential itself passes. Raw transcripts and hashes are in `evidence/raw/phase7-scene-visited-buffer-growth-000503-20261015/`.
