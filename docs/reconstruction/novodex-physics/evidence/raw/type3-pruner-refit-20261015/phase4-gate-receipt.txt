@@ -8,6 +8,8 @@ collision type3_pruner planes oracle_found=1 candidate_found=1 oracle_hits=1 can
 collision coverage name=type3_pruner case=plane_query_after_refit
 collision type3_pruner raycast oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0
 collision coverage name=type3_pruner case=raycast_after_refit
+collision type3_pruner remove oracle_removed=1 candidate_removed=1 oracle_stale_hits=0 candidate_stale_hits=0 mismatches=0
+collision coverage name=type3_pruner case=remove_invalidates_tree
 collision type3_pruner mismatches=0
 gate=oracle_differential:NxPhysicsType3PrunerTests exit=0
 pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0
@@ -16,5 +18,6 @@ pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 oc
 pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=sphere_query_after_refit
 pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=plane_query_after_refit
 pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=raycast_after_refit
-coverage_assertions_evaluated=539 floor=539
+pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=remove_invalidates_tree
+coverage_assertions_evaluated=540 floor=540
 phase_gate=4 status=pass

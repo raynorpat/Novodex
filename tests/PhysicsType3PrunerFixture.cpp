@@ -236,6 +236,22 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	if(!oracleRay || !candidateRay || oracleRayHits.GetNbEntries() != 1 ||
 		candidateRayHits.GetNbEntries() != 1 || !oracleRayFound || !candidateRayFound)
 		++mismatches;
+	const bool oracleRemoved = oracleRemove(oraclePruner, oracleObjects[1]);
+	const bool candidateRemoved = candidatePruner->RemoveObject(&candidateObjects[1]);
+	const float removedBounds[6] = {10.0f, 0.0f, 0.0f, 11.0f, 1.0f, 1.0f};
+	oracleOutput.count = 0;
+	candidateOutput.count = 0;
+	const bool oracleAfterRemove = oracleQuery(oraclePruner,
+		reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(removedBounds),
+		0, 0xffffffffu);
+	const bool candidateAfterRemove = candidatePruner->NovodeXPrunerSlot7(
+		reinterpret_cast<NxU32>(&candidateOutput), reinterpret_cast<NxU32>(removedBounds),
+		0, 0xffffffffu);
+	if(!oracleRemoved || !candidateRemoved || !oracleAfterRemove || !candidateAfterRemove ||
+		oracleOutput.count != 0 || candidateOutput.count != 0 ||
+		*reinterpret_cast<NxU16*>(oracleObjects[1] + 0x28) != PRUNABLE_INVALID_HANDLE ||
+		candidateObjects[1].mHandle != PRUNABLE_INVALID_HANDLE)
+		++mismatches;
 	printf("collision type3_pruner refit objects=2 oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
 		oracleFound ? 1u : 0u, candidateFound ? 1u : 0u, oracleHits, candidateHits, mismatches);
 	printf("collision coverage name=type3_pruner case=tree_refit_moved_leaf\n");
@@ -253,6 +269,10 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		oracleRayFound ? 1u : 0u, candidateRayFound ? 1u : 0u,
 		oracleRayHits.GetNbEntries(), candidateRayHits.GetNbEntries(), mismatches);
 	printf("collision coverage name=type3_pruner case=raycast_after_refit\n");
+	printf("collision type3_pruner remove oracle_removed=%u candidate_removed=%u oracle_stale_hits=%u candidate_stale_hits=%u mismatches=%u\n",
+		oracleRemoved ? 1u : 0u, candidateRemoved ? 1u : 0u,
+		oracleOutput.count, candidateOutput.count, mismatches);
+	printf("collision coverage name=type3_pruner case=remove_invalidates_tree\n");
 
 	for(unsigned i = 0; i != 2; ++i)
 		{
