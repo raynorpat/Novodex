@@ -278,6 +278,16 @@ Assert-True ($candidatePair.PhysicsSha256 -cne $oraclePair.PhysicsSha256) 'candi
 $differences = 0
 foreach ($target in $Targets) {
     $oracleRun = Invoke-Child $target $oraclePair $candidatePair.PhysicsSha256
+    if ($target -ceq 'NxPhysicsPlaneShapeDescValidationTests') {
+        # This fixture loads the candidate DLL beside itself and compares its
+        # map-resolved row to the explicitly loaded oracle. A second launch
+        # against the staged candidate pair would reinterpret the candidate
+        # image as the oracle and load the same image twice under two names.
+        $exitExact = $oracleRun.ExitCode -eq 0
+        Write-Host "differential target=$target oracle_exit=$($oracleRun.ExitCode) candidate_dll_sha256=$($candidatePair.PhysicsSha256) candidate_rows_in_oracle_probe=True"
+        if (-not $exitExact) { $differences++ }
+        continue
+    }
     if ($target -ceq 'NxPhysicsFluidEmitterAbiTests') {
         # This probe itself loads and tests the built candidate DLL. Running it
         # a second time with the candidate staged pair preloads candidate

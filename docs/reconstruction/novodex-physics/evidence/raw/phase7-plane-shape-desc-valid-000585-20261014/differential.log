@@ -1,0 +1,42 @@
+phase=none resolved_targets=NxPhysicsPlaneShapeDescValidationTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsPlaneShapeDescValidationTests
+pass: program pin file exists: D:\github\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: D:\github\Novodex\build\Release\NxPhysics.dll
+pass: source exists: D:\github\Novodex\build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\FlamingEnt__\novodex-analysis\pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=D:\github\Novodex\build\Release\NxPhysics.dll source_sha256=cc945060bdd39a2cba90aa7c593d9c054a1f1b128d771bc59fdc1db79b2edfc5 staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll staged_sha256=cc945060bdd39a2cba90aa7c593d9c054a1f1b128d771bc59fdc1db79b2edfc5
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=D:\github\Novodex\build\Release\NxFoundation.dll source_sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5 staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxFoundation.dll staged_sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: D:\github\Novodex\build\Release\NxPhysics.map
+staged candidate map source=D:\github\Novodex\build\Release\NxPhysics.map staged=D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: D:\github\Novodex\build\Release\NxPhysicsPlaneShapeDescValidationTests.exe
+child target=NxPhysicsPlaneShapeDescValidationTests pair=oracle command="D:\github\Novodex\build\Release\NxPhysicsPlaneShapeDescValidationTests.exe" "D:\FlamingEnt__\novodex-analysis\pairs\oracle" exit=0
+child_stdout_begin
+loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+planevalid row=phys_fn_000585 candidate_dll_vs_oracle cases=10 mismatches=0
+planevalid mutant row=phys_fn_000585 caught=1 mismatches=1
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsPlaneShapeDescValidationTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsPlaneShapeDescValidationTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=D:\FlamingEnt__\novodex-analysis\pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+differential target=NxPhysicsPlaneShapeDescValidationTests oracle_exit=0 candidate_dll_sha256=cc945060bdd39a2cba90aa7c593d9c054a1f1b128d771bc59fdc1db79b2edfc5 candidate_rows_in_oracle_probe=True
+differential_targets=NxPhysicsPlaneShapeDescValidationTests
+differential_pairs=D:\FlamingEnt__\novodex-analysis\pairs\oracle,D:\FlamingEnt__\novodex-analysis\pairs\candidate
+pass: every requested target passes its registered oracle/candidate differential contract
+differential=pass

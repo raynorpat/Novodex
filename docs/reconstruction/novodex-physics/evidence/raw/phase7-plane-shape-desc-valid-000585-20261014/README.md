@@ -1,0 +1,3 @@
+# Phase 7 plane descriptor row 000585 raw evidence
+
+`differential.log` is the focused `run_differential.ps1 -Targets NxPhysicsPlaneShapeDescValidationTests` transcript against the pinned UE3 oracle. It passes staged-image identity checks and reports ten matching cases plus the row-local mutation control (`mismatches=1`). The CMake Win32 Release candidate DLL SHA-256 is `cc945060bdd39a2cba90aa7c593d9c054a1f1b128d771bc59fdc1db79b2edfc5`; the fixture source SHA-256 is `9daf7de1ef996a42ca58a5cda4503924e8e904e1d686815d09ad4e767e19c5c8`. Transcript SHA-256 is `d0aaab7f9b70912959063734e706c5737d3a5c9a5a1616c2cf29baf3ce79d1e3`.

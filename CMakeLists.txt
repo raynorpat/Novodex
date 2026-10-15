@@ -1094,6 +1094,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		# shape.txt). /MAP writes a file beside the exe and changes nothing in it.
 		target_link_options(NxPhysicsShapeVtableTests PRIVATE /MAP)
 	endif()
+	# Direct oracle-versus-candidate DLL validation for the plane shape descriptor.
+	# This calls the map-resolved NxPlaneShapeDesc virtual method in each image.
+	add_executable(NxPhysicsPlaneShapeDescValidationTests
+		tests/PhysicsPlaneShapeDescValidationTests.cpp)
+	target_link_libraries(NxPhysicsPlaneShapeDescValidationTests bcrypt)
 	# The narrow-phase differential. Neither a staged-pair differential nor a
 	# static proof: it holds the pinned oracle in its own process and calls the
 	# recorded internal addresses, because the shape-pair dispatch matrix and

@@ -11248,13 +11248,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "template validity (0x10ab0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/223",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1488",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "The oracle row 0x10ab0 and CMake-built candidate DLL method ?isValid@NxPlaneShapeDesc@@UBE_NXZ resolved from NxPhysics.map agree on ten identical plane-descriptor inputs: valid defaults, non-finite plane normal/distance, non-finite pose, and invalid group, flags, type, and material. A runtime candidate-row mutation to xor eax,eax; ret is caught on the valid descriptor. The public implementation remains unchanged in Physics/include/NxPlaneShapeDesc.h. See evidence/phase7-plane-shape-desc-valid-000585.md.",
+      "notes": "",
+      "implementation": "Physics/include/NxPlaneShapeDesc.h",
+      "implementation_symbol": "?isValid@NxPlaneShapeDesc@@UBE_NXZ"
     },
     {
       "id": "phys_fn_000586",

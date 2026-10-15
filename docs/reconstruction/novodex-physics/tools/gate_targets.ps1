@@ -67,7 +67,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
-    '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsCollisionTests', 'NxPhysicsThirdPartyTests')
+    '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsCollisionTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsPlaneShapeDescValidationTests')
     '8' = @()
 }
 
@@ -585,6 +585,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # against the oracle rows. The
         # oracle side's line, appended as its own statement.
         'box hull oracle_digest=e0477220 cases=324 failures=0'
+    )
+    'NxPhysicsPlaneShapeDescValidationTests' = @(
+        'planevalid row=phys_fn_000585 candidate_dll_vs_oracle cases=10 mismatches=0'
     )
     # Joint-open-items Task 4 review: seven rotated bodies (a general rotation,
     # 180 degrees about x, y and z, and three general rotations whose largest
@@ -6172,7 +6175,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2867  # adds the flag-one PhysicsSDK scalar-delete assertion
+	'7' = 2868  # adds plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions
 				# adds direct row 000521 owner-pair cleanup probe and row 000867 accumulator probe
@@ -6334,6 +6337,7 @@ $NxRegisteredOracleDifferentialTargets = @(
 	'NxPhysicsJointSupportTests',
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsShapeVtableTests',
+    'NxPhysicsPlaneShapeDescValidationTests',
     'NxPhysicsThirdPartyTests'
 )
 $NxSkippedExitCode = 3
