@@ -1053,7 +1053,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# deleting-destructor behavior against the shipped DLL. See
 	# evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
-		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
+		Physics/src/ObjectModel.cpp Physics/src/ZzLockApiByteRows.cpp
+		Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
 		Physics/src/SceneAuxiliary.cpp
 		tests/PhysicsObjectModelSceneStubs.cpp
 		Physics/src/MemoryStream.cpp

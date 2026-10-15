@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "packet": "phase7-lock-api-byte-setter-getter-002383-002387-20261015",
+  "logs": [
+    {
+      "file": "candidate-source-positive.log.gz",
+      "source": "build/lock-api-2383-2387-positive.log",
+      "uncompressed_bytes": 21224,
+      "uncompressed_sha256": "760f48389d8a3a5e5e84f7b3789a3e1fc9b40f8be1cd0e8fb92deb5ef17aba2f",
+      "compressed_bytes": 4877,
+      "compressed_sha256": "53d9248729d3b689cdeb8ec9d235b442615d4587bf49d447e1da8558fbd0b9ef"
+    },
+    {
+      "file": "row-002383-mutant.log.gz",
+      "source": "build/lock-api-2383-mutant.log",
+      "uncompressed_bytes": 21248,
+      "uncompressed_sha256": "cff9f95cbea8854ff5600e07476b82c1e5223d297f0286d91bf3b07e4c4d2935",
+      "compressed_bytes": 4898,
+      "compressed_sha256": "c441a892b1fd558f5bdfe503da032e2f001187e134701b488ba5ca709c1a053e"
+    },
+    {
+      "file": "row-002383-mutant-build.log.gz",
+      "source": "build/lock-api-2383-mutant-build.log",
+      "uncompressed_bytes": 2840,
+      "uncompressed_sha256": "f00c1f39d2c6167a4c8ba2c32d4cfa7d11e4dc0b49fb9a9347494f36c3ffbe30",
+      "compressed_bytes": 734,
+      "compressed_sha256": "ef33f03b1e934fe2e520eae7a8a174947539158d820d87b5aed4c86689901b13"
+    },
+    {
+      "file": "row-002383-restored.log.gz",
+      "source": "build/lock-api-2383-restored.log",
+      "uncompressed_bytes": 21224,
+      "uncompressed_sha256": "cbfd753e27d6efe2769bf5a2b0cb3649c3026d56dff04719b25f1d124f436e80",
+      "compressed_bytes": 4873,
+      "compressed_sha256": "6be785197935d7936b562747fc9893418b3253270be42f852e6bf7a777eb5bd4"
+    },
+    {
+      "file": "row-002383-restored-build.log.gz",
+      "source": "build/lock-api-2383-restored-build.log",
+      "uncompressed_bytes": 3303,
+      "uncompressed_sha256": "2406cf2ecde5727bdecdbc0e2b5e73cd154ce71a78c2e7dfb78dcf4982e33010",
+      "compressed_bytes": 885,
+      "compressed_sha256": "5418e88098546733346087a02113b45c19d97fed1aa377522dd255aebabebdcb"
+    },
+    {
+      "file": "row-002387-mutant.log.gz",
+      "source": "build/lock-api-2387-mutant.log",
+      "uncompressed_bytes": 21248,
+      "uncompressed_sha256": "b9af34cb4103b61a5a747784830fb355aaecde637c9c660e088ed9c70269fb6d",
+      "compressed_bytes": 4898,
+      "compressed_sha256": "aa46dfd2663b88fb6a367ce5bb3662928811505119c6d260d448823959db0cc5"
+    },
+    {
+      "file": "row-002387-mutant-build.log.gz",
+      "source": "build/lock-api-2387-mutant-build.log",
+      "uncompressed_bytes": 2840,
+      "uncompressed_sha256": "f00c1f39d2c6167a4c8ba2c32d4cfa7d11e4dc0b49fb9a9347494f36c3ffbe30",
+      "compressed_bytes": 734,
+      "compressed_sha256": "ef33f03b1e934fe2e520eae7a8a174947539158d820d87b5aed4c86689901b13"
+    },
+    {
+      "file": "row-002387-restored.log.gz",
+      "source": "build/lock-api-2387-restored.log",
+      "uncompressed_bytes": 21224,
+      "uncompressed_sha256": "804354e60624b3adcae893e3e9ed34fa8217de9c1ab88e170060bdeb06a04e19",
+      "compressed_bytes": 4877,
+      "compressed_sha256": "6eedbe5f1255efe400b54677cee4559d6a409b0b582f4840936e9383e7758195"
+    },
+    {
+      "file": "row-002387-restored-build.log.gz",
+      "source": "build/lock-api-2387-restored-build.log",
+      "uncompressed_bytes": 3303,
+      "uncompressed_sha256": "2406cf2ecde5727bdecdbc0e2b5e73cd154ce71a78c2e7dfb78dcf4982e33010",
+      "compressed_bytes": 885,
+      "compressed_sha256": "5418e88098546733346087a02113b45c19d97fed1aa377522dd255aebabebdcb"
+    },
+    {
+      "file": "cmake-configure.log.gz",
+      "source": "build/lock-api-2383-2387-cmake-configure.log",
+      "uncompressed_bytes": 236,
+      "uncompressed_sha256": "78c9a8a11174a26b2f3e14d3613532b7f4e9ba1b1db7c8db7d93516db705ed6f",
+      "compressed_bytes": 207,
+      "compressed_sha256": "b64e87046fb38609f8c65d9dfaede568d59981532b9f6de1bac88581351309af"
+    },
+    {
+      "file": "dll-build.log.gz",
+      "source": "build/lock-api-2383-2387-dll-build.log",
+      "uncompressed_bytes": 1541,
+      "uncompressed_sha256": "d56e23c4c7c0122c7f8a0147b4a00d9d7fd5d1ee77df6025ea9699b95954cce4",
+      "compressed_bytes": 566,
+      "compressed_sha256": "679cfb479c780585aac35f4a1e18555db76abfea6abae6e38f8a5506dd2ed7bc"
+    },
+    {
+      "file": "link-layout-check.log.gz",
+      "source": "build/lock-api-2383-2387-link-layout-check.log",
+      "uncompressed_bytes": 525,
+      "uncompressed_sha256": "a91e2949cbdf57a88978442fa738f13082b2098f664799a2fcfec2a0d53bb116",
+      "compressed_bytes": 305,
+      "compressed_sha256": "0f76e35ca944a4cc97535d86979f891ac369c2930d8f0067c48e6889e0221b11"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "build/lock-api-2383-2387-phase5-gate-final.log",
+      "uncompressed_bytes": 2832624,
+      "uncompressed_sha256": "3327254283b45b9f2a6e87cd74f137eda90545b62c65d629c3cdd546fe9b3267",
+      "compressed_bytes": 207309,
+      "compressed_sha256": "6fc4f4389e7688917957d88828c6b344ebede7cadc0082c15a4cda4578870c47"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "build/lock-api-2383-2387-phase6-gate-final.log",
+      "uncompressed_bytes": 3100291,
+      "uncompressed_sha256": "1fd3ef392b9d306fe7ee22ce6016e64bd1bb147ba6910572789f5f9676ca155a",
+      "compressed_bytes": 251890,
+      "compressed_sha256": "f3af62967cac6ae6ed8cb10e38943cd46e6b8e3dfbb08a9ca9403e673d75cd38"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "build/lock-api-2383-2387-phase7-gate-final.log",
+      "uncompressed_bytes": 4638713,
+      "uncompressed_sha256": "b28d9cc096c59ecf11c5a79ffcec403fbec9442fa182c0a9db16dea01b8fd23a",
+      "compressed_bytes": 370836,
+      "compressed_sha256": "7ff13cf1999736cddfce6c9db5f7ddf28d0e51de8f2dfa2379d1dba5f542cd65"
+    },
+    {
+      "file": "oracle-proof.json.gz",
+      "source": "build/lock-api-2387-oracle-proof.json",
+      "uncompressed_bytes": 1013,
+      "uncompressed_sha256": "2ffb96cab154eef3d3f32d4d46483af0b4cf9328ab940bc3a81cfb88ab9a7ce4",
+      "compressed_bytes": 575,
+      "compressed_sha256": "4fbf7eff91daefc6ad4a52ec2585d6c95852ff9fdd81ad86fdbb77f175858f41"
+    },
+    {
+      "file": "tool-tests.log.gz",
+      "source": "build/lock-api-2383-2387-tool-tests-final.log",
+      "uncompressed_bytes": 922,
+      "uncompressed_sha256": "ae39c49c391700b5732523f69f922d2b9642a8502189369c9354e2a274d25307",
+      "compressed_bytes": 67,
+      "compressed_sha256": "d301143e3696140bae64d12cee2495b43cb2671bd40add335782be7a9ef0beb9"
+    }
+  ]
+}

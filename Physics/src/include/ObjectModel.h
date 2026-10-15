@@ -1253,6 +1253,13 @@ void					nxLockApiCall2371(void* self, void (__stdcall* fn)(unsigned));
 unsigned char			nxLockApiTest2375(void* self, unsigned arg,
 							unsigned (__stdcall* fn)(unsigned, unsigned));
 
+//! phys_fn_002383 (0x5b8b0): stores byte 1 through the pointer in [self+4]
+//! at byte offset 8.
+void					nxLockApiSetByte2383(void* self);
+
+//! phys_fn_002387 (0x5b8e0): returns byte 8 through the pointer in [self+4].
+unsigned char			nxLockApiGetByte2387(void* self);
+
 //! phys_fn_005320 (0x7c10): when [self+0x4c] is non-null, frees
 //! ([self+0x4c] - 4) through the 004803 allocator and clears both [self+0x4c]
 //! and [self+0x48].

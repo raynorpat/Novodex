@@ -6,8 +6,8 @@
   "fixture_source_sha256": "0c045c17c834837d3fc2afc314d4ebd22f3fe8c1a03e68dcb3502f9ef2ec4955",
   "fixture_source": "tests/PhysicsSceneAuxiliaryBlockTests.cpp",
   "proof_lines_sha256": "fb62e0807b16a86f4f11edcc8c096f57eafee9db8ccb8b59925344742ac17727",
-  "baseline_sha256": "edf1b1666d7023e5a7973619464478b80c7ff972f2d105765146d86a70db808c",
+  "baseline_sha256": "c4ace060c09ba71fb7f92f17a7aef8b288d1565fd6bda96341d072f5efde2400",
   "oracle_digest_fnv32": "f0f65c44",
   "coverage_line": "layout coverage row=phys_fn_000624 cases=3 oracle_frees=6 candidate_frees=6 stack=0/0 mismatches=0 candidate_digest=f0f65c44",
-  "proof_sha256": "d7248ecaf781f6fa5e63407694e707cd74feaaff7877a24030d5344df212da27"
+  "proof_sha256": "f3fbe736e63a33b5b8b63065dc990948559523e958b2cce5128075dc0f13a4d7"
 }

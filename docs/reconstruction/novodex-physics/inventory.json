@@ -44416,12 +44416,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "setter: byte *[this+4]+8 = 1 (0x5b8b0)",
+      "state": "dynamically_gated",
+      "source": "lock-API byte setter (nxLockApiSetByte2383, Physics/src/ObjectModel.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/892",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7424",
-      "static_proof": "mov eax,[ecx+4]; mov byte ptr [eax+8],1; ret",
-      "dynamic_proof": "confirmed via ptrgetters drive (3z45): failures=0",
+      "static_proof": "The oracle stores byte value 1 at byte offset 8 through the pointer loaded from [this+4].",
+      "dynamic_proof": "The registered NxPhysicsObjectLayoutTests direct oracle/source differential compares the 16-byte pointed records after the oracle and candidate setters run on independent copies. A store-to-zero mutation is rejected (row 002383 mismatches=1; row 002387 remains exact); restored output matches. Evidence: evidence/phase7-lock-api-byte-setter-getter-002383-002387.md and evidence/raw/phase7-lock-api-byte-setter-getter-002383-002387-20261015/.",
       "notes": ""
     },
     {
@@ -44488,12 +44488,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "getter: byte *[this+4]+8 (0x5b8e0)",
+      "state": "dynamically_gated",
+      "source": "lock-API byte getter (nxLockApiGetByte2387, Physics/src/ObjectModel.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/894",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7427",
-      "static_proof": "mov eax,[ecx+4]; mov al,byte ptr [eax+8]; ret",
-      "dynamic_proof": "confirmed via ptrgetters drive (3z45): failures=0",
+      "static_proof": "The oracle returns the byte at offset 8 through the pointer loaded from [this+4].",
+      "dynamic_proof": "The registered NxPhysicsObjectLayoutTests direct oracle/source differential checks both zero and 0xee pointees. A constant-zero mutation is rejected (row 002387 mismatches=1; row 002383 remains exact); restored output matches. Evidence: evidence/phase7-lock-api-byte-setter-getter-002383-002387.md and evidence/raw/phase7-lock-api-byte-setter-getter-002383-002387-20261015/.",
       "notes": ""
     },
     {

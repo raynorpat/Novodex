@@ -5665,6 +5665,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'materialboot candidate ok=1 digest=dcc6a675',
         'newreach row=002371 oracle_differential candidate=source mismatches=0',
         'newreach row=002375 oracle_differential candidate=source mismatches=0',
+        'newreach row=002383 oracle_differential candidate=source mismatches=0',
+        'newreach row=002387 oracle_differential candidate=source mismatches=0',
         'newreach row=002369 oracle_differential candidate=source mismatches=0',
         'newreach row=002373 oracle_differential candidate=source mismatches=0',
         'newreach row=002367 oracle_differential candidate=source mismatches=0',
@@ -6142,7 +6144,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2773  # adds two lock API differentials to the previous 2771 registrations
+	'5' = 2775  # adds two byte-state lock API differentials to the previous 2773 registrations
 	           # adds sphere radius setter/getter lock state and invalid-radius report rows
 	           # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
@@ -6209,7 +6211,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1673  # adds two lock API differentials to the previous 1671 registrations
+	'6' = 1675  # adds two byte-state lock API differentials to the previous 1673 registrations
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6252,7 +6254,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2889  # adds two lock API differentials to the previous 2887 registrations
+	'7' = 2891  # adds two byte-state lock API differentials to the previous 2889 registrations
 	          # includes direct row 000965 Prunable owner-query result
 	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585
