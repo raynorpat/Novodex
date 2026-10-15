@@ -412,6 +412,7 @@ static unsigned nxObservableCount(const void* object)
 	}
 
 static unsigned gActorPairDtorFailures;
+static unsigned gEffectorDtorFailures;
 
 // Probe the abstract base's scalar deleting destructor using the candidate's
 // linker-map symbol. The oracle uses its pinned row RVA. A scratch effector is
@@ -491,6 +492,67 @@ static void nxProbeActorPairDeletingDestructor(HMODULE physics,
 			flags ? 1u : static_cast<unsigned>(baseVptr), stackBalanced, freed, mismatches);
 		gActorPairDtorFailures += mismatches;
 		if(flags == 0)
+			gAllocator.free(object);
+		}
+	}
+
+// Probe Effector's abstract-base scalar deleting destructor (phys_fn_003938)
+// directly. Its table is never installed on a concrete public object, so use
+// an initialized scratch Observable prefix and compare the oracle RVA with
+// the candidate map symbol for both deleting-destructor flag values.
+static void nxProbeEffectorDeletingDestructor(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		{
+		++gEffectorDtorFailures;
+		return;
+		}
+	const bool hasCandidateMap = GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES;
+	const unsigned char* base = gImageBase[0];
+	void* deletingAddress = hasCandidateMap
+		? nxMapSymbolAddress(physics, pairDirectory, "??_GEffector@@UAEPAXI@Z")
+		: const_cast<unsigned char*>(base + 0x8eec0);
+	void* vtable = hasCandidateMap
+		? nxMapSymbolAddress(physics, pairDirectory, "??_7Effector@@6B@")
+		: const_cast<unsigned char*>(base + 0x117920);
+	if(!deletingAddress || !vtable)
+		{
+		fprintf(stderr, "FAIL Effector map symbols missing\n");
+		++gEffectorDtorFailures;
+		return;
+		}
+	typedef void* (__thiscall *DeletingDestructor)(void*, unsigned);
+	DeletingDestructor deletingDestructor =
+		reinterpret_cast<DeletingDestructor>(deletingAddress);
+	for(unsigned flags = 0; flags <= 1; ++flags)
+		{
+		unsigned char* object = static_cast<unsigned char*>(
+			gAllocator.malloc(0x24, NX_MEMORY_PERSISTENT));
+		if(!object)
+			{
+			++gEffectorDtorFailures;
+			return;
+			}
+		memset(object, 0, 0x24);
+		memcpy(object, &vtable, 4);
+		const unsigned freesBefore = gAllocator.frees();
+		unsigned espBefore = 0, espAfter = 0;
+		__asm mov espBefore, esp
+		void* returned = deletingDestructor(object, flags);
+		__asm mov espAfter, esp
+		const bool stackBalanced = espBefore == espAfter;
+		const unsigned freed = gAllocator.frees() - freesBefore;
+		const unsigned freedSize = freed ? gAllocator.freedSizeFromEnd(0) : 0;
+		const bool returnedSelf = returned == object;
+		const bool exactFree = flags ? (freed == 1 && freedSize == 0x24) : freed == 0;
+		const unsigned mismatches = !returnedSelf || !stackBalanced || !exactFree;
+		printf("effector base dtor flag=%u returned=%u stack_balanced=%u frees=%u "
+			"freed_size=%x mismatches=%u\n", flags, returnedSelf,
+			stackBalanced, freed, freedSize, mismatches);
+		gEffectorDtorFailures += mismatches;
+		if(!flags)
 			gAllocator.free(object);
 		}
 	}
@@ -584,6 +646,7 @@ static void nxEffectorCases(NxPhysicsSDK& sdk, NxScene& scene, HMODULE physics,
 	nxProbeHookAdjustor(e);
 	nxProbeActorPairDeletingDestructor(physics, pairDirectory,
 		nxActorRecord(a), nxActorRecord(b));
+	nxProbeEffectorDeletingDestructor(physics, pairDirectory);
 	void* internal = nxPointerAt(e, 0x14);
 	nxPrintRecord("create", "rec_a", nxActorRecord(a));
 	nxPrintRecord("create", "rec_b", nxActorRecord(b));
@@ -728,10 +791,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("scene=released\n");
 	sdk->release();
 	printf("sdk=released\n");
-	if(gActorPairDtorFailures)
+	if(gActorPairDtorFailures || gEffectorDtorFailures)
 		{
 		FreeLibrary(physics);
-		return nxFail("ActorPairEffector deleting destructor probe failed");
+		return nxFail("Effector deleting-destructor probes failed");
 		}
 
 	status = nxReportPairIdentity(pairDirectory);

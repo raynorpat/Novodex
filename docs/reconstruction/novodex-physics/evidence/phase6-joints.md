@@ -10986,6 +10986,9 @@ Fresh full Phase 7 gate after `phys_fn_000718`: 1,779/1,779 coverage assertions 
 `phys_fn_003936`: the `Effector` base destructor's compiler-generated `Observable` teardown is reached through the derived effector release chain. A candidate naked-return mutation suppressing that base call is rejected by `NxPhysicsEffectorTests` (candidate access violation, `stdout_delta=75`, exact stderr); restored control is exact. See [phase6-effector-base-destructor-003936.md](phase6-effector-base-destructor-003936.md).
 
 
+`phys_fn_003938`: direct scratch-object calls compare the abstract `Effector` scalar deleting destructor for flags 0 and 1. A candidate no-op allocator-delete mutation is caught when the flag-1 thunk fails to free its 0x24-byte object (`mismatches=1`, candidate exit 1, `stdout_delta=12`); the restored oracle/candidate control is exact. See [phase6-effector-deleting-destructor-003938.md](phase6-effector-deleting-destructor-003938.md).
+
+
 `phys_fn_000521`: the actor cleanup wrapper removes a root-owned pair-map record and preserves the map when the actor has no root. The registered `NxPhysicsSimulationTests` direct probe matches both cases; disabling the root branch is caught with candidate_exit=1 and stdout_delta=4007, while the byte-exact restored control is exact. See [phase7-actor-owner-pair-cleanup-000521.md](phase7-actor-owner-pair-cleanup-000521.md).
 
 Phase 7 row `phys_fn_000423` (NpScene scalar deleting destructor) is now mutation-falsified by `NxPhysicsPopulatedSceneTeardownTests`: the candidate no-op retains its 40-byte scene wrapper and is rejected (`stdout_delta=28`, candidate exit 1); restored controls match exactly. See `phase7-npscene-scalar-delete-000423.md`.

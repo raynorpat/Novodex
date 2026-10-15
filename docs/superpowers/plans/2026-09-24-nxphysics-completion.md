@@ -1113,3 +1113,7 @@ IDA maps RVA `0x89410` to the shared emitter global-pose conversion. The direct 
 ### Phase 6 continuation — Effector base destructor (`phys_fn_003936`, 2026-10-15)
 
 The registered `NxPhysicsEffectorTests` staged-pair release path reaches the base `Effector` destructor through the derived deleting-destructor chain. A candidate naked-return mutant suppressing the compiler-generated `Observable` base teardown is rejected (oracle exit 0, candidate access violation, `stdout_delta=75`, exact stderr); the restored control is exact. `phys_fn_003936` is now mutation-falsified in the Phase 6 ledger. Fresh Win32 Release Phase 6 passes at 1,666/1,666, including the approved core-dump date/time assertion. Full DLL reconstruction remains open. See `docs/reconstruction/novodex-physics/evidence/phase6-effector-base-destructor-003936.md`.
+
+### Phase 6 continuation — Effector scalar deleting destructor (`phys_fn_003938`, 2026-10-15)
+
+Added direct oracle-RVA/candidate-map calls for the abstract `Effector` scalar deleting destructor with flags 0 and 1. The probe checks return identity, stack balance, and the flag-controlled 0x24-byte deallocation. A candidate-only no-op allocator-delete mutation is caught (`mismatches=1`, candidate exit 1, `stdout_delta=12`); the restored differential is exact. `phys_fn_003938` is now mutation-falsified, with Phase 6/7 coverage floors advanced to 1,668/2,884. See `docs/reconstruction/novodex-physics/evidence/phase6-effector-deleting-destructor-003938.md`.

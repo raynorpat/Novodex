@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 163 rows are closed (4 oracle differentials, 159 mutation-falsified); 270 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. The allocator release rows 004149/004151 are directly map-resolved and mutation-falsified by NxPhysicsAllocatorReleaseTests. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. Current closure totals are 163 closed and 270 open. See evidence/phase6-actor-group-hash-004153-004155.md. Fresh full Phase 6 gate rerun after extending its shared NxPhysicsSDKTests target: 1,642/1,642 coverage assertions pass, including the two-Scene addMaterial refusal, reverse-unlock and unlocked-add markers; staged differential is exact. Evidence: evidence/phase2-sdk-add-material-lock-000254-000256.md.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 164 rows are closed (4 oracle differentials, 160 mutation-falsified); 269 rows remain open. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. The allocator release rows 004149/004151 are directly map-resolved and mutation-falsified by NxPhysicsAllocatorReleaseTests. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. Current closure totals are 164 closed and 269 open. See evidence/phase6-actor-group-hash-004153-004155.md. Fresh full Phase 6 gate rerun after extending its shared NxPhysicsSDKTests target: 1,642/1,642 coverage assertions pass, including the two-Scene addMaterial refusal, reverse-unlock and unlocked-add markers; staged differential is exact. Evidence: evidence/phase2-sdk-add-material-lock-000254-000256.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -64,9 +64,9 @@
     ]
   },
   "counts": {
-    "differential_falsified": 159,
+    "differential_falsified": 160,
     "oracle_differential_falsified": 4,
-    "deferred_reconstructed_not_falsified": 253,
+    "deferred_reconstructed_not_falsified": 252,
     "deferred_not_reconstructed_in_phase": 17
   },
   "closed": [
@@ -148,6 +148,16 @@
       "falsification": {
         "mutation": "In the candidate only, changed Effector::~Effector at RVA 0x0008eeb0 to a naked immediate return, suppressing the compiler-generated NxFoundation::Observable base destructor. The registered NxPhysicsEffectorTests staged-pair lifecycle differential releases effectors through the derived destructor chain. The pinned oracle exited 0 and the mutant candidate access-violated (candidate_exit=-1073741819, stdout_delta=75, exact stderr). After restoring the original source and forcing a CMake Release rebuild, the staged differential matched exactly (both exits 0, stdout_delta=0, exact stderr). Raw mutant and restored transcripts are in evidence/raw/phase6-effector-base-destructor-003936-20261015/.",
         "detected": "stdout_delta=75"
+      }
+    },
+    {
+      "id": "phys_fn_003938",
+      "rva": "0x0008eec0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsEffectorTests",
+      "falsification": {
+        "mutation": "The candidate-only mutation changed Effector::operator delete to a no-op, then rebuilt NxPhysics.dll. The registered NxPhysicsEffectorTests probe directly called the candidate-map Effector scalar deleting destructor with flags 0 and 1 on scratch 0x24-byte objects. The flag-1 oracle freed exactly one 0x24-byte object; the mutant reported frees=0, freed_size=0, mismatches=1, with oracle_exit=0, candidate_exit=1, stdout_delta=12. Restoring the allocator call and rebuilding returned the staged differential to exact equality (both exits 0, stdout_delta=0, exact stderr). Baseline, mutant, and restored transcripts are in evidence/raw/phase6-effector-deleting-thunk-003938-20261015/.",
+        "detected": "stdout_delta=12"
       }
     },
     {
@@ -1707,15 +1717,6 @@
     }
   ],
   "deferred": [
-    {
-      "id": "phys_fn_003938",
-      "rva": "0x0008eec0",
-      "size": 41,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
     {
       "id": "phys_fn_003981",
       "rva": "0x0008fb00",

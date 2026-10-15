@@ -3823,6 +3823,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'effector hook_dtor primary_same=yes hook_changed=yes read_link_same=yes internal_same=yes',
         'effector actorpair dtor flag=0 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=0 mismatches=0',
         'effector actorpair dtor flag=1 registered=1 observer_restore=1 returned=1 body_cleared=1 base_vptr=1 stack_balanced=1 frees=1 mismatches=0',
+        'effector base dtor flag=0 returned=1 stack_balanced=1 frees=0 freed_size=0 mismatches=0',
+        'effector base dtor flag=1 returned=1 stack_balanced=1 frees=1 freed_size=24 mismatches=0',
         'effector create rec_a vt=physics observers=1 capacity=2 list=eff',
         'effector create rec_b vt=physics observers=1 capacity=2 list=eff',
         'effector create count=1 iterator=np',
@@ -6202,7 +6204,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1666  # adds candidate-DLL shape-row cases and joint-support root compression
+	'6' = 1668  # adds candidate-DLL shape-row cases, joint-support root compression, and Effector deleting-destructor flags
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6245,7 +6247,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2882  # adds direct row 000624 cleanup and phys_fn_003611 global-to-local emitter proof
+	'7' = 2884  # adds direct row 000624 cleanup, phys_fn_003611 global-to-local emitter, and Effector deleting-destructor flags
 	          # includes direct row 000965 Prunable owner-query result
 	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585
