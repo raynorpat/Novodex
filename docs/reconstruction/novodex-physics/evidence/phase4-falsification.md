@@ -503,3 +503,8 @@ The `Pruner::~Pruner` row `phys_fn_005537` is independently mutation-falsified t
 ## 22. 2026-10-15 Pruner process-pool add
 
 `NxPrunerProcessPool::add` (`phys_fn_005442`, RVA `0x000ef3d0`) is mutation-falsified through the registered actual-DLL `NxPhysicsSceneRaycastTests` target. Returning handle 0 at entry changes the dynamic registration from `00000001.00000004` to `00000000.00000004`, failing the candidate assertion (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2794`). Restored source was force-recompiled and the staged pair returned exact (`stdout_delta=0`, exact stderr). See [phase4-pruner-add-005442.md](phase4-pruner-add-005442.md).
+
+
+## 23. 2026-10-15 Pruner process-pool replacement
+
+`NxPrunerProcessPool::replace` (`phys_fn_005440`, RVA `0x000ef330`) is mutation-falsified through registered `NxPhysicsSceneRaycastTests`. An entry-return mutant preserves the registration and handle-reuse markers but crashes during final pool cleanup (`candidate_exit=-1073741819`, `stdout_delta=13`, exact stderr); the oracle exits 0. The restored source is exact against the oracle. See [phase4-pruner-replace-005440.md](phase4-pruner-replace-005440.md).

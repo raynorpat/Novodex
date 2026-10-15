@@ -101781,13 +101781,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PrunerRegistration.cpp",
+      "implementation": "Physics/src/PrunerRegistration.cpp",
+      "implementation_symbol": "NxPrunerProcessPool::replace",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2082",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18834",
       "static_proof": "reached: phys_fn_005442 calls it at 0x000ef56b. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
-      "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
+      "dynamic_proof": "NxPhysicsSceneRaycastTests constructs and destroys enough Scenes to grow and release the process pruner pool. An entry-return mutation of NxPrunerProcessPool::replace preserves the expected registration and generation-reuse markers, but the candidate crashes during final pool cleanup (oracle_exit=0, candidate_exit=-1073741819, stdout_delta=13, stderr_exact=True). Restored candidate exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. Evidence: evidence/phase4-pruner-replace-005440.md.",
+      "notes": "Releases the current pool arrays and adopts the replacement set during capacity growth; the same helper clears all pool arrays at teardown. Both lifecycle paths are exercised by the registered Scene fixture and its entry-return mutation is rejected."
     },
     {
       "id": "phys_fn_005441",

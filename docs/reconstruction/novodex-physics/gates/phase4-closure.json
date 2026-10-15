@@ -55,9 +55,9 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 748,
-    "deferred_not_reconstructed_in_phase": 176,
+    "deferred_not_reconstructed_in_phase": 175,
     "deferred_vendored_not_falsified": 90,
-    "differential_falsified": 10,
+    "differential_falsified": 11,
     "oracle_differential_falsified": 29
   },
   "closed": [
@@ -463,6 +463,17 @@
         "detected": "stdout_delta=2794"
       },
       "note": "Restored source was touched to force recompilation; the focused restored differential is exact (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True). Evidence: evidence/phase4-pruner-add-005442.md."
+    },
+    {
+      "id": "phys_fn_005440",
+      "rva": "0x000ef330",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Inserted an unconditional return at entry to NxPrunerProcessPool::replace, rebuilt NxPhysics, and ran the registered Scene raycast staged pair. Oracle passed. The candidate retained expected static/dynamic registration and generation-reuse markers, then crashed during final pool cleanup.",
+        "detected": "stdout_delta=13"
+      },
+      "note": "Restored source was touched to force MSBuild recompilation; the focused restored staged pair is exact (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True). Evidence: evidence/phase4-pruner-replace-005440.md."
     }
   ],
   "deferred": [
@@ -8059,14 +8070,7 @@
       "phase_provenance": "callers",
       "driving_phases": []
     },
-    {
-      "id": "phys_fn_005440",
-      "rva": "0x000ef330",
-      "size": 152,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
+
     {
       "id": "phys_fn_005444",
       "rva": "0x000ef5c0",
