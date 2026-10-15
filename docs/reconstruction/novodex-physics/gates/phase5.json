@@ -41,6 +41,11 @@
       "name": "sphere_public_radius_locks_2026-10-15",
       "command": "run_phase_gate.ps1 -Phase 5 -RepoRoot <worktree> -BuildRoot <Win32 Release build> -OracleRoot D:\\FlamingEnt__\\Unreal_3 -PairsRoot <isolated pairs root>",
       "result": "Fresh Win32 Release Phase 5 gate passes at 2,761/2,761. NxPhysicsActorDynamicSetterTests stdout_delta=0, both exits zero, exact stderr. Setter try-lock mutation stdout_delta=663; getter bracket mutation stdout_delta=2. Evidence: evidence/phase3-sphere-public-radius-locks-001183-001185.md and evidence/raw/phase3-sphere-public-radius-locks-001183-001185-20261015/."
+    },
+    {
+      "name": "lock_api_worker_destroy_002392_2026-10-15",
+      "command": "run_phase_gate.ps1 -Phase 5 -RepoRoot <worktree> -BuildRoot <Win32 Release build> -OracleRoot D:\\FlamingEnt__\\Unreal_3 -PairsRoot <isolated pairs root>",
+      "result": "Fresh Win32 Release Phase 5 gate passes at 2,779/2,779 coverage assertions. NxPhysicsObjectLayoutTests row 002392 oracle/source differential reports mismatches=0; a no-op implementation mutation reports mismatches=4 and candidate exit 1. Public headers match the 80-file manifest. Evidence: evidence/phase7-lock-api-worker-destroy-002392.md and evidence/raw/phase7-lock-api-worker-destroy-002392-20261015/."
     }
   ],
   "excluded_from_comparison": [

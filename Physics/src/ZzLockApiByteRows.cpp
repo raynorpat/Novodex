@@ -35,3 +35,35 @@ void __fastcall nxLockApiThreadExit2389(void* self)
 	memcpy(state + 4, &value, 4);
 	::ExitThread(0u);
 	}
+
+// phys_fn_002392 (0x5b920): destroy a worker record. Install its final
+// vptr, terminate a still-running worker and mark it stopped, close the
+// thread handle, release the record through the Foundation allocator, then
+// clear the owner pointer. Keep this leaf in the final-sort TU.
+void __fastcall nxLockApiWorkerDestroy2392(void* self)
+	{
+	unsigned char* owner = static_cast<unsigned char*>(self);
+	void* vtable = reinterpret_cast<void*>(static_cast<size_t>(0x1010886cu));
+	memcpy(owner, &vtable, 4);
+	unsigned recordWord = 0;
+	memcpy(&recordWord, owner + 4, 4);
+	unsigned char* record = reinterpret_cast<unsigned char*>(
+		static_cast<size_t>(recordWord));
+	unsigned threadWord = 0, state = 0;
+	memcpy(&threadWord, record, 4);
+	memcpy(&state, record + 4, 4);
+	if(state == 1u)
+		{
+		::TerminateThread(reinterpret_cast<HANDLE>(
+			static_cast<size_t>(threadWord)), 0u);
+		state = 2u;
+		memcpy(record + 4, &state, 4);
+		}
+	::CloseHandle(reinterpret_cast<HANDLE>(static_cast<size_t>(threadWord)));
+	if(recordWord)
+		{
+		nxFoundationSDKAllocator->free(record);
+		unsigned cleared = 0;
+		memcpy(owner + 4, &cleared, 4);
+		}
+	}

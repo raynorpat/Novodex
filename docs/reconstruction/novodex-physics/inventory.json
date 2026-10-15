@@ -44578,12 +44578,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ZzLockApiByteRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/896",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7430",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA disassembly at 0x5b920 installs vptr 0x1010886c, terminates the stored thread only when state is 1 and stores state 2, closes the stored handle, frees the record through NxFoundationSDKAllocator::free, then clears owner+4.",
+      "dynamic_proof": "Direct oracle/source differential marker newreach row=002392 covers record states 0, 1, and 2, verifies vptr/owner clearing, thread-handle closure, allocator identity and state-at-free; no-op candidate mutation produced mismatches=4 and exit 1; restored control mismatches=0 and layout result=differential-pass.",
       "notes": ""
     },
     {

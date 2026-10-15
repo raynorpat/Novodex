@@ -1475,12 +1475,12 @@ Decompile (capstone disassembly):
 0x0005b91b  ret
 ```
 
-## phys_fn_002392 (0x0005b920, 81 B, discovered)
+## phys_fn_002392 (0x0005b920, 81 B, dynamically gated)
 
-- ambiguous: yes
-- source: None
-- implementation: None
-- prototype: undefined __fastcall FUN_1005b920(undefined4 * param_1)
+- ambiguous: no
+- source: Physics/src/ZzLockApiByteRows.cpp
+- implementation: nxLockApiWorkerDestroy2392
+- prototype: void __fastcall nxLockApiWorkerDestroy2392(void* self)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_002394 (0x0005b980), phys_fn_002402 (0x0005ba40)
 - callees: none
@@ -1509,6 +1509,8 @@ void __fastcall FUN_1005b920(undefined4 *param_1)
 
 
 ```
+
+Reconstruction: `nxLockApiWorkerDestroy2392` installs vtable `0x1010886c`, terminates the worker and writes state `2` only when its current state is `1`, closes the handle, releases the worker record through `nxFoundationSDKAllocator`, and clears owner offset `+4`. The direct differential covers states 0/1/2 and checks the free-time state, record identity, handle closure, vptr, and cleared owner pointer. A no-op mutation produced four mismatches and exit 1; restored control produced zero row mismatches and `layout result=differential-pass`.
 
 ## phys_fn_002394 (0x0005b980, 30 B, discovered)
 

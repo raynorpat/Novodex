@@ -1263,6 +1263,8 @@ unsigned char			nxLockApiGetByte2387(void* self);
 //! phys_fn_002389 (0x5b8f0): stores state 2 through [self+4] at +4, then
 //! terminates the current thread with ExitThread(0).
 void __fastcall nxLockApiThreadExit2389(void* self);
+//! phys_fn_002392 (0x5b920): stop active worker, close handle, free record, clear owner.
+void __fastcall nxLockApiWorkerDestroy2392(void* self);
 
 //! phys_fn_005320 (0x7c10): when [self+0x4c] is non-null, frees
 //! ([self+0x4c] - 4) through the 004803 allocator and clears both [self+0x4c]

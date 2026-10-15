@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "packet": "phase7-lock-api-worker-destroy-002392-20261015",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_nxphysics_sha256": "c841aa9d0ba01161208eec9fd195cca6c497316cd71df87482f8bfa15e6458de",
+  "fixture_source_sha256": "21363f98278685fa869e9e187e9167f50277329729f7a1f06a44fcdf0a52de02",
+  "logs": [
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "phase5-002392-final.log",
+      "uncompressed_bytes": 2847497,
+      "uncompressed_sha256": "93304fab4a3f7c6d849c2f2998bd18702e60a1b24c76da63686759ac67e9abd1",
+      "compressed_bytes": 207090,
+      "compressed_sha256": "119f322bb38ee68d4b2e5084fdf457793eedc5ef851ea2b05f366152ac0abef0"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "phase6-002392-final.log",
+      "uncompressed_bytes": 3110686,
+      "uncompressed_sha256": "0440c9b451cdd5b5bb9e2befee0fdc4e1315600ff6ead643d1e8ae01e9d1a21d",
+      "compressed_bytes": 252392,
+      "compressed_sha256": "7fb58d21d6fa2cfcc0ac6b7b00756d7b902593d2bd68cb9d0397b3c04ea64ca5"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "phase7-002392-final.log",
+      "uncompressed_bytes": 4667255,
+      "uncompressed_sha256": "d37eabd71becab866c95b4441ba9d2db86229aac6f222ae3ca6060c0764bc9da",
+      "compressed_bytes": 371505,
+      "compressed_sha256": "e87ecb1c4e94bca60d73796233f68d2d85fc4f6c9e6575c6acec1ef1df1b01f7"
+    },
+    {
+      "file": "tool-tests.log.gz",
+      "source": "tool-tests-002392-final.log",
+      "uncompressed_bytes": 125875,
+      "uncompressed_sha256": "24bde414f9f398f095dcc65be245d43c402168095e7f6693c369fbab532f081f",
+      "compressed_bytes": 18986,
+      "compressed_sha256": "d0fcacf4912eb392d23a52080ce01cea920eaa0348c38cad0535a270716a618a"
+    },
+    {
+      "file": "row-002392-mutant-build.log.gz",
+      "source": "mutation-build.log",
+      "uncompressed_bytes": 3654,
+      "uncompressed_sha256": "de42d382195f5a71b1698c36ec2d40ef99497a7c8d4a612ac57c6e6055d245e1",
+      "compressed_bytes": 927,
+      "compressed_sha256": "81a415d3acc43c673090ba7a14596385ce57ce0bde84bfa3c514d88129db5d8e"
+    },
+    {
+      "file": "row-002392-mutant.log.gz",
+      "source": "row-002392-mutation.log",
+      "uncompressed_bytes": 21532,
+      "uncompressed_sha256": "58562a95f9ffce257f31147a08ee7b24b690274f05c38509a7534f166c634839",
+      "compressed_bytes": 4922,
+      "compressed_sha256": "54de2f93857e720c7ec787981fd9dbf1380b449ab4fef9fbdde5045e78502ef7"
+    },
+    {
+      "file": "row-002392-restored-build.log.gz",
+      "source": "build2392-restored.log",
+      "uncompressed_bytes": 5232,
+      "uncompressed_sha256": "0339d377b89b417d6c4c443f9d475d2c7220c55f97afe005e8988c8d00f65a30",
+      "compressed_bytes": 975,
+      "compressed_sha256": "ea05fa01785bff6751f4fde4719f26f8547f4179915389562840581f1e939b22"
+    },
+    {
+      "file": "row-002392-restored.log.gz",
+      "source": "row-002392-restored.log",
+      "uncompressed_bytes": 21508,
+      "uncompressed_sha256": "dbaf7557f4575183432abb11ff60824ce0496c1d04d36c1696da771817dd48b4",
+      "compressed_bytes": 4901,
+      "compressed_sha256": "83cd31a0b59334b59695dfb3cf5cd742ee27ce02f6d5413efcf22cf4e7023a8b"
+    }
+  ]
+}
