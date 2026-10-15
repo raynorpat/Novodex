@@ -16,9 +16,13 @@ are allocated in the processing caller's stack frame so their lifetime covers
 all lookups. The overlap fallback retains sleeping bodies that are still
 inside a trigger even when the broadphase omits them.
 
-The public simulation corpus covers one pair through enter/stay/leave, eight
+The public simulation corpus covers one pair through enter/stay/leave, 32
 simultaneous pairs through the same transitions, and two trigger shapes on one
-actor overlapping the same dynamic sphere. The compound fixture verifies each
+actor overlapping the same dynamic sphere. The 32-pair fixture exercises the
+hash-chain lookup, overlap retention and event-buffer growth at a larger batch
+size; oracle and candidate output match exactly (`oracle_exit=0`,
+`candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`,
+`build/trigger-pair-32-differential.log`). The compound fixture verifies each
 shape receives exactly one enter, stay, and leave callback with its own shape
 handle; the pinned oracle and candidate transcripts match exactly
 (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`,

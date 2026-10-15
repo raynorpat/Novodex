@@ -3337,9 +3337,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # Pair reconciliation produces one enter, one stay and one leave event
         # with the corresponding public shape handles across fetched steps.
         'simulation trigger-lifecycle summary fetched=1 calls=3 bad_shapes=0 exact=1'
-        # Eight concurrent pairs exercise hash-chain matching, overlap
+        # Thirty-two concurrent pairs exercise hash-chain matching, overlap
         # retention and queue growth; any enabled trigger bit admits all events.
-        'simulation trigger-batch summary fetched=1 calls=24 bad_shapes=0 exact=1'
+        'simulation trigger-batch summary fetched=1 calls=96 bad_shapes=0 exact=1'
         # Two trigger shapes on one actor remain distinct through overlap
         # entry, stay and separation for their common dynamic partner.
         'simulation trigger-compound summary fetched=1 calls=6 bad_shapes=0 exact=1'

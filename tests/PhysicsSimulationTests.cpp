@@ -358,7 +358,7 @@ class NxSimulationTriggerLifecycleReport : public NxUserTriggerReport
 class NxSimulationTriggerBatchReport : public NxUserTriggerReport
 	{
 	public:
-	enum { BatchCount = 8 };
+	enum { BatchCount = 32 };
 	NxShape* trigger;
 	NxShape* others[BatchCount];
 	unsigned eventCounts[BatchCount][3];
@@ -1229,7 +1229,7 @@ int wmain(int argc, wchar_t** argv)
 		NxActorDesc batchOtherActorDesc;
 		batchOtherActorDesc.body = &batchOtherBodyDesc;
 		batchOtherActorDesc.density = 1.0f;
-		batchOtherActorDesc.globalPose.t = NxVec3(-0.7f + 0.2f * index, 0.0f, 0.0f);
+		batchOtherActorDesc.globalPose.t = NxVec3(-1.55f + 0.1f * index, 0.0f, 0.0f);
 		batchOtherActorDesc.shapes.pushBack(&batchOtherShapeDesc);
 		batchOtherActors[index] = triggerBatchScene->createActor(batchOtherActorDesc);
 		if(!batchOtherActors[index])
@@ -1247,7 +1247,7 @@ int wmain(int argc, wchar_t** argv)
 		if(step < 2)
 			for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
 				batchOtherActors[index]->setGlobalPosition(
-					NxVec3(-0.7f + 0.2f * index + 0.05f * step, 0.0f, 0.0f));
+				NxVec3(-1.55f + 0.1f * index + 0.05f * step, 0.0f, 0.0f));
 		triggerBatchScene->simulate(0.01f);
 		triggerBatchFetched = triggerBatchScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 		printf("simulation trigger-batch tick=%u calls=%u\n", step + 1,
@@ -1263,7 +1263,7 @@ int wmain(int argc, wchar_t** argv)
 		triggerBatchScene->simulate(0.01f);
 		triggerBatchFetched = triggerBatchScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 		}
-	bool triggerBatchExact = triggerBatchFetched && triggerBatchReport.calls == 24 &&
+	bool triggerBatchExact = triggerBatchFetched && triggerBatchReport.calls == 96 &&
 		triggerBatchReport.badShapes == 0;
 	for(unsigned index = 0; index != NxSimulationTriggerBatchReport::BatchCount; ++index)
 		for(unsigned event = 0; event != 3; ++event)
