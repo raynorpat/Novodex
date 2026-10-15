@@ -1,0 +1,31 @@
+{
+  "purpose": "Negative control: the registered public Scene raycast differential did not observe a no-op mutation to the Pruner base constructor; this does not close the row.",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "baseline_candidate_sha256": "9afe8d10277a617eaf3ee1e9015bacae09f501f10d48e5197b4d9e05823df784",
+  "mutated_candidate_sha256": "4b9aa53c04c929c7a2d7d4734a6151051532e6b1d85ed76d9b5f0056b875cbc9",
+  "restored_candidate_sha256": "769ca1034abccfaf91b44c22dac09c3d98de2c9f1079a1480cc59bfd10857659",
+  "restored_source_sha256": "525CE15EF6927B8B6719DC9E0550C47B9D53EDE6CA9AB351F8DFE4DE6779EFD1",
+  "measurements": "control and no-op-mutated candidate both exit 0, stdout_delta=0, stderr_exact=True; restored control also exact",
+  "logs": {
+    "build-library-mutation.log": {
+      "sha256": "8b38ca6fc4532051794969403f7d425768702e60fd7aaeddde4f6057a567f34e",
+      "bytes": 1239
+    },
+    "build-restored-control.log": {
+      "sha256": "8b38ca6fc4532051794969403f7d425768702e60fd7aaeddde4f6057a567f34e",
+      "bytes": 1239
+    },
+    "differential-control.log": {
+      "sha256": "261fc79b31699412dcf4d46b28957b6f366b3c15695a710194e9823d9bb4a3a8",
+      "bytes": 800250
+    },
+    "differential-mutation-rebuilt.log": {
+      "sha256": "4c9d2ef06d411fd5c16a614cd394936d094fb53bbfd2a5979124b7b27dbf0d9f",
+      "bytes": 800475
+    },
+    "differential-restored-control.log": {
+      "sha256": "aa8392d8cee66c7acb592b5ddba1475210624468913aafe3b0ad9fece38301fe",
+      "bytes": 800275
+    }
+  }
+}
