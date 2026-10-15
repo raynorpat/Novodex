@@ -734,10 +734,14 @@ __declspec(noinline) void CapsuleShape::nxCapsuleSetDimensions(float radius,
 static void __fastcall nxCapsuleHandleSetDimensions(void* self, void*,
 	NxReal radius, NxReal height)
 	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxCapsuleHandleWriteTry(writeLock, 0x22)) return;
 	// 001113 calls 000993 on the internal shape (0x10023b78).
 	unsigned char* shape = nxBoxHandleInternal(self);
 	static_cast<CapsuleShape*>(static_cast<void*>(shape))->nxCapsuleSetDimensions(
 		radius, height);
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 static void __fastcall nxPlaneHandleSetPlane(void* self, void*,

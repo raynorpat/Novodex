@@ -958,13 +958,13 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 12,
-    "dynamically_gated": 2,
+    "discovered": 11,
+    "dynamically_gated": 3,
     "reconstructed": 5
    },
    "bytes": {
-    "discovered": 928,
-    "dynamically_gated": 168,
+    "discovered": 839,
+    "dynamically_gated": 257,
     "reconstructed": 312
    },
    "phases": {

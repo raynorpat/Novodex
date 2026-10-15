@@ -843,6 +843,20 @@ int wmain(int argc, wchar_t** argv)
 					word(familyShape, 0xe0), word(familyShape, 0xe4),
 					word(familyShape, 0xdc),
 					familyPruner ? word(familyPruner, 0x38) - beforeEpoch : 0u);
+				const unsigned reportsBeforeLockedDimensions = errors.reports;
+				const unsigned savedDimensionFlag = writeState[0];
+				const unsigned savedDimensionOwner = writeState[1];
+				writeState[0] = 1;
+				writeState[1] = 0;
+				errors.enabled = true;
+				capsule->setDimensions(1.25f, 4.0f);
+				errors.enabled = false;
+				writeState[0] = savedDimensionFlag;
+				writeState[1] = savedDimensionOwner;
+				printf("setter capsule_locked_dimensions=%x.%x.%x.%x.%u\n",
+					bits(capsule->getRadius()), bits(capsule->getHeight()),
+					word(familyShape, 0xe0), word(familyShape, 0xe4),
+					errors.reports - reportsBeforeLockedDimensions);
 				const unsigned beforeDimensionsEpoch = familyPruner
 					? word(familyPruner, 0x38) : 0u;
 				capsule->setDimensions(1.0f, 3.0f);

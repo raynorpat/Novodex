@@ -20998,13 +20998,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/449",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3226",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Acquires write link [self+0x10]; failed try-lock reports NXE_INVALID_OPERATION from NpCapsuleShape.cpp line 34 and returns. Success calls internal row 000993 on [self+0x18] and releases the link.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests checks the held-lock report and unchanged public/internal capsule dimensions; suppressing the reporting try-lock was rejected with stdout_delta=617. See evidence/phase3-capsule-public-dimensions-lock-001113.md.",
+      "notes": "Capsule vtable slot 31 dispatches nxCapsuleHandleSetDimensions; candidate linker map resolves it at RVA 0x35f40.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxCapsuleHandleSetDimensions",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxCapsuleHandleSetDimensions@@YIXPAX0MM@Z",
+        "address": "0x10036f40",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001114",
