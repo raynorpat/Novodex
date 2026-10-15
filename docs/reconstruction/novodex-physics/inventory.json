@@ -43748,12 +43748,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-lane list init (0x5ab50)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/873",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7326",
       "static_proof": "zero [this+8..10] and [this+0x18..20]; [this]=this+8; [this+4]=this+0x18; ret",
-      "dynamic_proof": "confirmed via quadbatch drive (3z59): failures=0",
+      "dynamic_proof": "Phase 7 row-specific mutation through the registered NxPhysicsPopulatedSceneTeardownTests and NxPhysicsTriggerSimulationTests staged-pair differentials: changing only the second embedded header pointer from self+0x18 to self+0x14 crashes the candidate in both trigger-use paths (candidate exits -1073741819, stdout_delta=38 and 32 respectively) while both oracle processes exit 0. The constructor-only target still matches. Restoring self+0x18 and rebuilding returns all three oracle/candidate controls to exact equality. See evidence/phase7-scene-trigger-pair-init-002346.md and evidence/raw/phase7-scene-trigger-pair-init-002346-20261015/.",
       "notes": "Scene initialisation: the candidate now makes only the eight listed stores (it also zeroed +0x14 and +0x24); units/joint-open-items-contract.md \"## Scene initialisation\"."
     },
     {
