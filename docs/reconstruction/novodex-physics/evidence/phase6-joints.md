@@ -11017,3 +11017,6 @@ Phase 7 continuation: phys_fn_000529 (shape-pair filter) is mutation-falsified t
 
 
 Phase 7 continuation: phys_fn_000531 (`nxSceneAddShape`) is mutation-falsified through the registered `NxPhysicsActorShapeMutationTests` staged-pair differential. Replacing the function with a no-op changes the transcript by 142 lines (both exits remain 0); restored source and rebuild return an exact match. See `phase7-scene-add-shape-000531.md`.
+
+
+Phase 7 continuation: phys_fn_000535 (`nxSceneRemoveDynamicShape`) is mutation-falsified through the registered `NxPhysicsActorShapeMutationTests` staged-pair differential. A no-op returning true causes an access violation (candidate_exit=-1073741819, stdout_delta=220); restored source and rebuild return both exits to zero and exact output. See `phase7-scene-remove-dynamic-shape-000535.md`.

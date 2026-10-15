@@ -508,3 +508,6 @@ Phase 7 row packet: `phys_fn_000529` (`NxFilterShapePair`) is reconstructed and 
 
 
 Phase 7 row packet: `phys_fn_000531` (`nxSceneAddShape`) is mutation-falsified. Added `NxPhysicsActorShapeMutationTests` to the Phase 7 staged-pair set and increased its coverage floor by 287 recorded assertions. A no-op mutation yields stdout_delta=142; the restored control is exact. Evidence: `phase7-scene-add-shape-000531.md`. The broad simulation target was also checked and did not reach this row, so it is not used as proof.
+
+
+Phase 7 row packet: `phys_fn_000535` (`nxSceneRemoveDynamicShape`) is mutation-falsified through the Phase 7 actor-shape mutation differential. A no-op returning true crashes the candidate (stdout_delta=220); restored control is exact. Evidence: `phase7-scene-remove-dynamic-shape-000535.md`.

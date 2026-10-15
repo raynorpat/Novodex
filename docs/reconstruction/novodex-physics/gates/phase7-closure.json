@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 260,
+    "differential_falsified": 261,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 84,
     "deferred_not_reconstructed_in_phase": 124,
-    "deferred_reconstructed_not_falsified": 91
+    "deferred_reconstructed_not_falsified": 90
   },
   "closed": [
     {
@@ -3706,18 +3706,19 @@
         "mutation": "In Physics/src/Scene.cpp, replaced nxSceneAddShape with a no-op, rebuilt NxPhysics.dll, and ran the registered actor-shape mutation staged-pair differential. Oracle and candidate both exited 0, but the transcript differed by 142 lines. Restoring the source and rebuilding returned an exact transcript.",
         "detected": "stdout_delta=142"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000535",
       "rva": "0x000106a0",
-      "size": 40,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "In Physics/src/Scene.cpp, replaced nxSceneRemoveDynamicShape with a no-op that returns true, rebuilt NxPhysics.dll, and ran the registered actor-shape mutation staged-pair differential. The candidate exited with an access violation (-1073741819) and the transcript differed by 220 lines. Restoring the source and rebuilding returned both exits to zero and an exact transcript.",
+        "detected": "stdout_delta=220"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000537",
       "rva": "0x000106d0",
