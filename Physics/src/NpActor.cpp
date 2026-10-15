@@ -663,9 +663,9 @@ static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
 		return;
 		}
 	unsigned char* shape = nxBoxHandleInternal(self);
-	*reinterpret_cast<NxReal*>(shape + 0xe0) = radius;
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
-	nxSceneMarkShapeDirty(shape, 0x20);
+	void** table = *reinterpret_cast<void***>(shape);
+	typedef void (__thiscall* SetRadiusFn)(void*, NxReal);
+	reinterpret_cast<SetRadiusFn>(table[14])(shape, radius);
 	nxNpSceneGuardLeave(writeLock);
 	}
 

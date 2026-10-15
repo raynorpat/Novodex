@@ -6,6 +6,9 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "ObjectModel.h"
+#include "FoundationSDK.h"
+
+void nxSceneMarkShapeDirty(void* shape, unsigned flag);
 
 extern "C" void __fastcall NxScenePrunerShapeRemove(void* group, void* owner);
 extern "C" void __fastcall NxScenePrunerOwnerDestroy(void* manager, void* owner);
@@ -623,6 +626,18 @@ void nxReport(int kind, const char* file, int line, int code,
 		gReportSink(kind, file, line, code, message);
 	}
 
+// The source-level object-layout probe captures internal reports through its
+// local sink. The production DLL has no sink and the original row reports
+// through FoundationSDK's error stream.
+static void nxSphereSetRadiusReport(void)
+	{
+	if(gReportSink != nullptr)
+		nxReport(1, nxSourceFileSphereShapeCpp, 0x4a, 0,
+			nxMsgSetRadiusPositive);
+	else
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			nxSourceFileSphereShapeCpp, 0x4a, 0, nxMsgSetRadiusPositive);
+	}
 
 // phys_fn_000975 (0x000217c0, 168 B)
 // Facade slot 11, __thiscall ret 0x18: min pointer in the second stack
@@ -4776,8 +4791,9 @@ void SphereShape::nxSphereSetRadius(float radius)
 	// owner-notify and dirty-flag 0x20 via phys_fn_001315-adjacent helper
 	// 0x26c90 (see evidence 3k/3t).
 	if(!(radius > 0.0f))
-		nxReport(1, nxSourceFileSphereShapeCpp, 0x4a, 0,
-			nxMsgSetRadiusPositive);
+		nxSphereSetRadiusReport();
+	mBase.nxApplyOwnerUpdate(1);
+	nxSceneMarkShapeDirty(this, 0x20);
 	}
 
 // The 001874 narrow-phase callback constructs two temporary SphereShapes and

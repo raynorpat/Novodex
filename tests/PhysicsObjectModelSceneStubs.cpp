@@ -3,6 +3,10 @@
 // this link-only seam; product and collision targets link the real function.
 void NxSceneRemoveOwnerPairRecords(void*, const void*) {}
 
+// Detached object-layout fixtures have no live scene to dirty. Production
+// targets link the real helper from Scene.cpp.
+void nxSceneMarkShapeDirty(void*, unsigned) {}
+
 // The isolated shape-layout targets still do not exercise live owner teardown.
 // Keep the newly linked pruner calls local to those targets; the product and
 // collision targets resolve the real implementations in Scene.cpp and

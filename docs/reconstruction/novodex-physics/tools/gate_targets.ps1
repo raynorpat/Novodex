@@ -1362,6 +1362,9 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsActorDynamicSetterTests' = @(
 		'setter report=2.29.\Epic\Novodex\SDKs\Physics\src\NpSphereShape.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!',
 		'setter sphere_locked_radius=3fc00000.3fc00000.1',
+        'setter sphere_zero_radius=0.0.1',
+        'setter sphere_negative_radius=bf800000.bf800000.1',
+        'setter report=1.4a.\Epic\Novodex\SDKs\Physics\src\SphereShape.cpp.SphereShape::setRadius: radius should be positive!',
 		'setter sphere_locked_read_radius=3fc00000.0.1',
         'setter capsule_locked_is=1.0.1',
         'setter report=2.10.\Epic\Novodex\SDKs\Physics\src\NpCapsuleShape.cpp.PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!',
@@ -1407,7 +1410,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # delivers. Static, kinematic and invalid-argument calls report E1 with the row's
         # line and message; with the write lock held by "another thread" every guarded
         # row reports G1 with its own line. Copied from the oracle side, duplicates once.
-		'setter error_actors=1.1.1.5',
+		'setter error_actors=1.1.1.7',
         'setter report=1.d2.\Epic\Novodex\SDKs\Physics\src\NpActor.cpp.Actor::setLinearDamping: Actor must be dynamic!',
         'setter error_static_linear_damping=1',
         'setter report=1.d1.\Epic\Novodex\SDKs\Physics\src\NpActor.cpp.Actor::setLinearDamping: The linear damping must be nonnegative!',
@@ -6111,7 +6114,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2761  # adds sphere radius setter/getter lock state
+	'5' = 2764  # adds sphere radius setter/getter lock state and invalid-radius report rows
 	           # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
 	           # includes candidate-DLL base shape descriptor validation

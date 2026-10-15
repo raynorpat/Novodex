@@ -779,6 +779,22 @@ int wmain(int argc, wchar_t** argv)
 					bits(sphere->getRadius()), word(familyShape, 0xe0),
 					word(familyShape, 0xdc),
 					familyPruner ? word(familyPruner, 0x38) - beforeEpoch : 0u);
+				const unsigned reportsBeforeZeroRadius = errors.reports;
+				errors.enabled = true;
+				sphere->setRadius(0.0f);
+				errors.enabled = false;
+				printf("setter sphere_zero_radius=%x.%x.%u\n",
+					bits(sphere->getRadius()), word(familyShape, 0xe0),
+					errors.reports - reportsBeforeZeroRadius);
+				sphere->setRadius(1.5f);
+				const unsigned reportsBeforeNegativeRadius = errors.reports;
+				errors.enabled = true;
+				sphere->setRadius(-1.0f);
+				errors.enabled = false;
+				printf("setter sphere_negative_radius=%x.%x.%u\n",
+					bits(sphere->getRadius()), word(familyShape, 0xe0),
+					errors.reports - reportsBeforeNegativeRadius);
+				sphere->setRadius(1.5f);
 				unsigned char* publicBytes = reinterpret_cast<unsigned char*>(publicShape);
 				unsigned char* writeLink = *reinterpret_cast<unsigned char**>(publicBytes + 0x10);
 				unsigned* writeState = reinterpret_cast<unsigned*>(
