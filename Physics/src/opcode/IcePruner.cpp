@@ -336,6 +336,76 @@ StaticPruner::StaticPruner()
 	mCache6C[0] = udword(&mTouched);	// +0x6c
 }
 
+// phys_fn_005448 (0x000ef670): the fourth factory type derives from the static
+// pruner and appends a second default Container at +0x90. Query overrides are
+// kept separate because their tree-preparation path has additional behavior.
+Type3StaticPruner::Type3StaticPruner()
+	: StaticPruner(), mExtendedObjects()
+{
+}
+
+Type3StaticPruner::~Type3StaticPruner()
+{
+}
+
+// The type-3 table's slot 3 uses phys_fn_005450: refresh a valid, stale pool
+// box, then advance the common registration timestamp.
+bool Type3StaticPruner::UpdateObject(Prunable* object)
+{
+	if(object->mHandle != PRUNABLE_INVALID_HANDLE &&
+		!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
+		object->UpdateWorldAABB(&mPool.mWorldBoxes[object->mHandle]);
+	++mRegistration.mTimestamp;
+	return true;
+}
+
+// phys_fn_005452 (0x000ef6d0): the type-3 query path updates every tree node
+// bottom-up from the pool's current world boxes before dispatching its query.
+bool Type3StaticPruner::PrepareQuery()
+{
+	const udword nb = mPool.mNbObjects[0] + mPool.mNbObjects[1];
+	if(!nb)
+		return true;
+	if(!mTree && !BuildTree())
+		return false;
+	if(!mTree)
+		return true;
+	AABBTreeOfAABBsBuilder builder;
+	builder.mSettings.mLimit = 1;
+	builder.mSettings.mRules = SPLIT_SPLATTER_POINTS;
+	builder.mNbPrimitives = nb;
+	builder.mAABBArray = mPool.mWorldBoxes;
+	return mTree->Refit2(&builder);
+}
+
+bool Type3StaticPruner::NovodeXPrunerSlot5(udword result, udword planes,
+	udword nbPlanes, udword flags, udword mask)
+{
+	return PrepareQuery() &&
+		StaticPruner::NovodeXPrunerSlot5(result, planes, nbPlanes, flags, mask);
+}
+
+bool Type3StaticPruner::Raycast(Container& objects, const Ray& world_ray,
+	float max_dist, bool first_contact, udword mask)
+{
+	return PrepareQuery() &&
+		StaticPruner::Raycast(objects, world_ray, max_dist, first_contact, mask);
+}
+
+bool Type3StaticPruner::NovodeXPrunerSlot7(udword result, udword bounds,
+	udword first_contact, udword mask)
+{
+	return PrepareQuery() &&
+		StaticPruner::NovodeXPrunerSlot7(result, bounds, first_contact, mask);
+}
+
+bool Type3StaticPruner::NovodeXPrunerSlot8(udword result, udword bounds,
+	udword first_contact, udword mask)
+{
+	return PrepareQuery() &&
+		StaticPruner::NovodeXPrunerSlot8(result, bounds, first_contact, mask);
+}
+
 // 0x000e5810 (not claimed): the tree, the touched container's storage, then
 // the base.
 StaticPruner::~StaticPruner()

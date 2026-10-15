@@ -29,6 +29,7 @@
 #include "Containers.h"
 #include "Scene.h"
 #include "BodyStep.h"
+#include "IcePruner.h"
 #include "core/JointSupport.h"
 #include "TriangleMesh.h"
 #include "NxFoundationSDK.h"
@@ -742,6 +743,120 @@ static int testTriangleMeshDestructorOwnership()
 	return 0;
 	}
 
+// phys_fn_005448's type-3 arm in the oracle factory allocates a 0xa0-byte
+// StaticPruner derivative and initializes a second 16-byte Container at +0x90.
+// The existing source factory returned null for this valid type.
+static int testType3PrunerFactory()
+	{
+	CountingAllocator sdkAllocator;
+	nxSetSdkAllocatorBridge(&sdkAllocator);
+	Pruner* const pruner = nxPruningEngineCreatePruner(3);
+	if(!check(pruner != 0, "pruning factory creates the supported type-3 pruner"))
+		{
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 pruning factory returned null");
+		}
+	const NxU32* const tail = reinterpret_cast<const NxU32*>(
+		reinterpret_cast<const NxU8*>(pruner) + 0x90);
+	const bool trailingContainer = tail[0] == 0 && tail[1] == 0 && tail[2] == 0 && tail[3] == 0x40000000;
+	if(!check(trailingContainer, "type-3 constructor initializes its trailing Container"))
+		{
+		nxPruningEngineDestroyPruner(pruner);
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 trailing Container did not match the oracle layout");
+		}
+	Prunable object;
+	AABB worldBox;
+	object.mHandle = 0;
+	object.mFlags = 0;
+	pruner->mPool.mWorldBoxes = &worldBox;
+	const udword timestampBefore = pruner->mRegistration.mTimestamp;
+	const bool updated = pruner->UpdateObject(&object);
+	pruner->mPool.mWorldBoxes = null;
+	if(!check(updated && (object.mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID) != 0 &&
+		pruner->mRegistration.mTimestamp == timestampBefore + 1,
+		"type-3 UpdateObject refreshes the handle box and advances its timestamp"))
+		{
+		nxPruningEngineDestroyPruner(pruner);
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 UpdateObject did not refresh its handle box");
+		}
+	// phys_fn_005452 refits an already-built tree from the current pool boxes
+	// before a type-3 query. Moving this box after the build makes the query
+	// miss unless the virtual type-3 wrapper performs that refit.
+	object.mFlags |= PRUNABLE_FLAG_WORLD_AABB_VALID;
+	object.mPrunable24 = 0xffffffff;
+	if(!pruner->AddObject(&object))
+		{
+		nxPruningEngineDestroyPruner(pruner);
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 refit fixture could not register its object");
+		}
+	object.mPruner = pruner;
+	float* const objectBox = reinterpret_cast<float*>(
+		&pruner->mPool.mWorldBoxes[object.mHandle]);
+	objectBox[0] = 0.0f; objectBox[1] = 0.0f; objectBox[2] = 0.0f;
+	objectBox[3] = 1.0f; objectBox[4] = 1.0f; objectBox[5] = 1.0f;
+	Prunable secondObject;
+	secondObject.mFlags |= PRUNABLE_FLAG_WORLD_AABB_VALID;
+	secondObject.mPruner = pruner;
+	if(!pruner->AddObject(&secondObject))
+		{
+		pruner->RemoveObject(&object);
+		nxPruningEngineDestroyPruner(pruner);
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 refit fixture could not register its second object");
+		}
+	float* const secondBox = reinterpret_cast<float*>(
+		&pruner->mPool.mWorldBoxes[secondObject.mHandle]);
+	secondBox[0] = 10.0f; secondBox[1] = 10.0f; secondBox[2] = 10.0f;
+	secondBox[3] = 11.0f; secondBox[4] = 11.0f; secondBox[5] = 11.0f;
+	const bool built = static_cast<Type3StaticPruner*>(pruner)->BuildTree();
+	objectBox[0] = 4.0f; objectBox[1] = 4.0f; objectBox[2] = 4.0f;
+	objectBox[3] = 5.0f; objectBox[4] = 5.0f; objectBox[5] = 5.0f;
+	float queryBox[6] = { 3.0f, 3.0f, 3.0f, 6.0f, 6.0f, 6.0f };
+	SdkContainer queryResult;
+	const bool queried = built && pruner->NovodeXPrunerSlot7(
+		udword(&queryResult), udword(queryBox), 0, 0xffffffff);
+	const bool refitReportedMovedObject = queried && queryResult.mCount == 1 &&
+		queryResult.mEntries[0] == udword(&object);
+	queryResult.empty();
+	if(!refitReportedMovedObject)
+		{
+		pruner->RemoveObject(&secondObject);
+		pruner->RemoveObject(&object);
+		}
+	if(!check(refitReportedMovedObject,
+		"type-3 AABB query refits moved pool bounds before traversing its tree"))
+		{
+		nxPruningEngineDestroyPruner(pruner);
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 query used stale tree bounds");
+		}
+	pruner->RemoveObject(&secondObject);
+	pruner->RemoveObject(&object);
+	Container* const extra = reinterpret_cast<Container*>(
+		reinterpret_cast<NxU8*>(pruner) + 0x90);
+	const unsigned freesBefore = sdkAllocator.frees;
+	extra->Add(0x12345678u);
+	if(!check(extra->GetNbEntries() == 1 && extra->GetEntry(0) == 0x12345678u,
+		"type-3 trailing Container owns its allocated entry"))
+		{
+		nxPruningEngineDestroyPruner(pruner);
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 trailing Container could not store an entry");
+		}
+	nxPruningEngineDestroyPruner(pruner);
+	if(!check(sdkAllocator.frees >= freesBefore + 2,
+		"type-3 destruction releases both the trailing buffer and pruner allocation"))
+		{
+		nxSetSdkAllocatorBridge(0);
+		return fail("type-3 destruction left its allocations live");
+		}
+	nxSetSdkAllocatorBridge(0);
+	return 0;
+	}
+
 int main()
 	{
 	// ReadWriteLock allocates its block through nxFoundationSDKAllocator, which
@@ -769,6 +884,8 @@ int main()
 		status = testBodyIslandRebuildConnected();
 	if(!status)
 		status = testTriangleMeshDestructorOwnership();
+	if(!status)
+		status = testType3PrunerFactory();
 
 	printf("static_proof checks=%d status=%s\n", gChecks, status ? "fail" : "pass");
 	foundation->release();

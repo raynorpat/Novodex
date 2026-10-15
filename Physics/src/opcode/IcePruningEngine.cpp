@@ -7,7 +7,7 @@
 
 /*
 The Scene's pruning engine (the object at Scene+0x624): its add and remove
-(scene-raycast block, Task 3), its pruner factory for types 0-2, and what
+(scene-raycast block, Task 3), its pruner factory for all four types, and what
 Scene.cpp and SceneRaycast.cpp reach without OPCODE types. The pruners are
 IcePruner.cpp.
 
@@ -21,12 +21,11 @@ type-3 vtable at .rdata:0x0011bb98, then constructs a Container at +0x90.
 Its vtable has the inherited pool add/remove and buffer methods, a type-3
 UpdateObject, and query wrappers that run phys_fn_005452 (0x000ef6d0) before
 delegating to the static-pruner query routines. The helper conditionally
-builds the tree and dispatches an internal callback using the pool counts.
-The type-3 destructor also releases the trailing Container. The type-3
-UpdateObject row is already reconstructed in ObjectModel.cpp; the type-3
-factory arm, query preparation/wrappers, and destructor remain open.
-Shapes in the current fixtures select types 0 and 2, so existing scene tests
-do not exercise it; returning null for type 3 remains an acknowledged gap.
+builds the tree and refits it bottom-up from current pool boxes. The type-3
+constructor, trailing-Container destructor, UpdateObject, and four query
+wrappers are implemented. The secondary Container's runtime purpose and a
+direct oracle differential remain open. Shapes in the current fixtures
+select types 0 and 2, so scene tests do not exercise this pruner family.
 
 Runs at API time under 0x027f like IcePruner.cpp; default architecture.
 */
@@ -52,7 +51,7 @@ static inline_ Pruner*& nxEnginePruner(void* engine, udword type)
 	return *reinterpret_cast<Pruner**>(static_cast<ubyte*>(engine) + 0x1c + type*4);
 }
 
-// The factory, types 0, 1 and 2 (see the file comment). The base constructor's
+// The factory, types 0 through 3 (see the file comment). The base constructor's
 // first-use creation of the process-wide object (0x000b4cc0) is Scene.cpp's
 // emulation, run where the constructor would run it: after the pruner's own
 // allocation.
@@ -78,6 +77,13 @@ Pruner* nxPruningEngineCreatePruner(udword type)
 		if(!memory)
 			return null;
 		return new(memory) DynamicPruner;
+	}
+	if(type == 3)
+	{
+		void* memory = opcNovodeXAlloc(sizeof(Type3StaticPruner));
+		if(!memory)
+			return null;
+		return new(memory) Type3StaticPruner;
 	}
 	return null;
 }

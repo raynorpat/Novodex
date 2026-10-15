@@ -112,6 +112,30 @@ class BoundedDynamicPruner : public DynamicPruner
 static_assert(sizeof(BoundedDynamicPruner) == 0x40,
 	"bounded dynamic pruner type 1 is a 0x40-byte object");
 
+// The oracle's type-3 pruner is a static-pruner derivative with one trailing
+// Container. Its query slots refit the tree from current pool boxes before
+// delegating to the static-pruner query implementations.
+class Type3StaticPruner : public StaticPruner
+{
+	public:
+								Type3StaticPruner();
+								~Type3StaticPruner();
+	virtual bool			UpdateObject(Prunable* object);
+	virtual bool			NovodeXPrunerSlot5(udword result, udword planes,
+								udword nbPlanes, udword flags, udword mask);
+	virtual bool			Raycast(Container& objects, const Ray& world_ray,
+								float max_dist, bool first_contact, udword mask);
+	virtual bool			NovodeXPrunerSlot7(udword result, udword bounds,
+								udword first_contact, udword mask);
+	virtual bool			NovodeXPrunerSlot8(udword result, udword bounds,
+								udword first_contact, udword mask);
+			bool				PrepareQuery();
+			Container			mExtendedObjects;	//!< +0x90
+};
+
+static_assert(sizeof(Type3StaticPruner) == 0xa0,
+	"type-3 static pruner is a 0xa0-byte object");
+
 // The engine's two entry points the Scene's shape registration uses, and its
 // pruner factory for the two pruning types shapes use.
 bool		nxPruningEngineAddObject(void* engine, Prunable* object);

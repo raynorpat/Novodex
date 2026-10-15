@@ -1,0 +1,7 @@
+FAIL type-3 query used stale tree bounds
+scene body_record_cleanup records=3 wake=3ecccccc/3ecccccc/3e800000
+body_island rebuild_empty dirty_cleared=1 traversed=1 island=1 allocations=4 frees=4
+body_island rebuild_connected dirty_cleared=1 root_marked=1 child_marked=1 island=1 allocations=5 frees=5
+triangle_mesh destructor foundation=8.8 sdk=20.20 deleting=3
+check_failed type-3 AABB query refits moved pool bounds before traversing its tree
+static_proof checks=96 status=fail

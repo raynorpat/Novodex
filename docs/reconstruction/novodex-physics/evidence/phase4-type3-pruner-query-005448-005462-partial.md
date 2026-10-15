@@ -1,0 +1,7 @@
+# Phase 4 type-3 pruner query slice (partial)
+
+The factory now constructs the oracle's type-3 static-pruner family instead of returning null. The candidate allocates a `Type3StaticPruner` of `0xa0` bytes, constructs the additional `Container` at `+0x90`, and destroys that member through the derived destructor. Its type-3 `UpdateObject` refreshes the handle's stale world box and increments the registration timestamp. The four query slots now prepare the static tree by building it when absent and calling the oracle's bottom-up `AABBTree::Refit2` path with the current pool boxes before delegating to the static-pruner plane, ray, AABB, or sphere query.
+
+`NxPhysicsInternalTests` registers a static-proof case for the factory layout, update behavior, secondary-container storage and release, and a two-object AABB fixture. That fixture builds a tree, moves one object's box while keeping it inside the original root, and requires the virtual type-3 AABB slot to report it. Skipping `Refit2` is rejected (`static_proof checks=96 status=fail`); the restored candidate passes (`static_proof checks=98 status=pass`). Raw build and test output is in `evidence/raw/phase4-pruner-type3-005448/`.
+
+This is a verified implementation slice, not closure of the pruner function family. No public fixture selects type 3, the five type-3 query rows do not yet have a DLL-to-DLL oracle differential, and the runtime role of the extra `Container` is not established. The family therefore remains open in the phase closure and full-image backlog. No public Physics header changed.

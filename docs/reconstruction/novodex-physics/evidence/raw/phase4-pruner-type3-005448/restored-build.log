@@ -1,0 +1,28 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\build\External\Release\NxQhull.lib
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\NxPhysics.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\NxPhysics.vcxproj]
+  IcePruningEngine.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+     Creating library D:/github/Novodex/build/Release/NxPhysics.lib and object D:/github/Novodex/build/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> D:\github\Novodex\build\Release\NxPhysics.dll
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\External\Release\NxOpcode.lib
+  NxQhull.vcxproj -> D:\github\Novodex\build\External\Release\NxQhull.lib
+cl : command line  warning D9025: overriding '/EHs' with '/EHs-' [D:\github\Novodex\build\NxPhysicsInternalTests.vcxproj]
+cl : command line  warning D9025: overriding '/EHc' with '/EHc-' [D:\github\Novodex\build\NxPhysicsInternalTests.vcxproj]
+  IcePruningEngine.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+     Creating library D:/github/Novodex/build/Release/NxPhysicsInternalTests.lib and object D:/github/Novodex/build/Release/NxPhysicsInternalTests.exp
+  NxPhysicsInternalTests.vcxproj -> D:\github\Novodex\build\Release\NxPhysicsInternalTests.exe
