@@ -44614,13 +44614,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ZzLockApiByteRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/897",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7433",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA x86 evidence at RVA 0x5b980: push esi; preserve this; call phys_fn_002392; test [esp+8],1; skip delete when clear; otherwise call CRT operator delete; return this; ret 4.",
+      "dynamic_proof": "Direct oracle/source differential marker newreach row=002394 checks scalar deleting flags 0 and 1, return identity, inner worker-record teardown, heap ownership and destructor effects. Inverting the flag condition is detected by heap corruption (0xC0000374); restored source reports mismatches=0.",
+      "notes": "Private MSVC scalar deleting thunk for the lock API worker record. Uses the candidate CRT global operator delete only when flag bit 0 is set. Public SDK headers unchanged."
     },
     {
       "id": "phys_fn_002395",

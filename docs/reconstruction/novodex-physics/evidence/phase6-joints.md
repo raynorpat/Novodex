@@ -11064,3 +11064,9 @@ Phase 7 lock-API virtual callback rows `phys_fn_002385` and `phys_fn_002390` are
 Phase 7 lock-API worker-exit row `phys_fn_002389` is mutation-falsified by the registered child-thread object-layout differential. Changing the stored completion state from 2 to 1 reports one row mismatch and exits 1; restored oracle and candidate workers both exit 0 with matching state bytes. See `evidence/phase7-lock-api-thread-exit-002389.md`.
 
 Phase 7 row `phys_fn_002392` worker-record teardown is mutation-falsified by the direct object-layout oracle/source differential across states 0/1/2; the no-op mutation reports `mismatches=4` and the restored implementation reports `mismatches=0`. Fresh Phase 5/6/7 gates pass at 2,779/2,779, 1,679/1,679, and 2,895/2,895; all 816 reconstruction-tool tests pass. See `phase7-lock-api-worker-destroy-002392.md` and `evidence/raw/phase7-lock-api-worker-destroy-002392-20261015/`.
+
+### Continuation — lock-API worker scalar deleting thunk (`phys_fn_002394`, 2026-10-15)
+
+IDA confirms the x86 scalar deleting ABI at RVA `0x5b980`: call the reconstructed worker destructor, delete through the candidate CRT only when flag bit 0 is set, return `this`, and pop the flags argument. The direct oracle/source fixture covers flags 0 and 1 and checks return identity, worker teardown, handle closure, owner bytes, and allocation lifetime. Inverting the condition is detected by heap corruption (`0xC0000374`); restored source reports mismatches=0. Phase 7 advances to 367 closed / 193 deferred. The registered row adds one coverage assertion to Phase 5/6/7, whose floors are now 2,780/1,680/2,896. See `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-worker-scalar-delete-002394.md`.
+
+Phase 7 row phys_fn_002394 scalar deleting thunk mutation proof: the null-return mutant reports mismatches=2; the restored candidate reports mismatches=0. See phase7-lock-api-worker-scalar-delete-002394.md.

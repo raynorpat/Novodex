@@ -1,6 +1,7 @@
 #include "ObjectModel.h"
 
 #include <cstring>
+#include <new>
 #include <windows.h>
 
 // Keep these recovered leaf rows in this final-sort translation unit so they
@@ -66,4 +67,14 @@ void __fastcall nxLockApiWorkerDestroy2392(void* self)
 		unsigned cleared = 0;
 		memcpy(owner + 4, &cleared, 4);
 		}
+	}
+
+// phys_fn_002394 (0x5b980): scalar deleting destructor for the worker owner.
+// The low flag bit controls the CRT delete; the base destruction always runs.
+void* __fastcall nxLockApiWorkerScalarDelete2394(void* self, void*, unsigned flags)
+	{
+	nxLockApiWorkerDestroy2392(self);
+	if(flags & 1u)
+		::operator delete(self);
+	return self;
 	}

@@ -1265,6 +1265,8 @@ unsigned char			nxLockApiGetByte2387(void* self);
 void __fastcall nxLockApiThreadExit2389(void* self);
 //! phys_fn_002392 (0x5b920): stop active worker, close handle, free record, clear owner.
 void __fastcall nxLockApiWorkerDestroy2392(void* self);
+//! phys_fn_002394 (0x5b980): scalar deleting thunk; delete this only for flag bit 0.
+void* __fastcall nxLockApiWorkerScalarDelete2394(void* self, void* edx, unsigned flags);
 
 //! phys_fn_005320 (0x7c10): when [self+0x4c] is non-null, frees
 //! ([self+0x4c] - 4) through the 004803 allocator and clears both [self+0x4c]

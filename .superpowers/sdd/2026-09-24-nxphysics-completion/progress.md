@@ -549,3 +549,16 @@ Added a direct oracle-RVA/candidate-map scratch probe of the abstract Effector s
 ### Phase 7 continuation — controller position getter (`phys_fn_002334`, 2026-10-15)
 
 IDA confirms the four-byte row is `lea eax,[ecx+0x28]; ret`, implemented by `NxControllerCore::getPosition` in `Physics/src/Scene.cpp`. The registered simulation staged-pair target already reads two controller positions and the post-move position. A candidate-only offset mutation to `+0x2c`, followed by an explicit `NxPhysics` rebuild, corrupts the returned coordinates and is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=62`, exact stderr); restoring and rebuilding the getter returns an exact differential. Phase 7 closure moves to 353 closed / 207 deferred with no new coverage assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-controller-getposition-002334.md` and its raw transcript/patch folder.
+
+### Continuation packet — lock-API worker-adjacent row 002392
+Task: complete (b655c10d, merged to local main). Fresh Release build passed; clean Phase 7 passed at 2,895/2,895, including 002392 mismatches=0; tool suite 816/816; inventory unexplained=0; raw evidence manifest verified. The user-local main test edits remain unstaged and outside the proof baseline.
+
+### Task 1 — inspect adjacent unresolved lock-API row 002394
+Status: in progress. Validate the current plan/base and recover RVA 0x5b980 from the pinned oracle with IDA before selecting a differential. Do not edit public headers. Task choice is based on the completed 002392 destructor's documented callers and adjacency; abandon if the callee does not provide a bounded, independently testable reconstruction slice.
+
+Task 1: complete — IDA established 0x1005b980..0x1005b99b is the 30-byte scalar deleting thunk referenced by vtable 0x1010886c. It saves this, calls 002392, tests flags bit 0, calls the oracle CRT delete thunk at 0x100f41f0 only when set, returns this, and ret 4. This is a directly testable continuation of the worker-record destructor.
+Ruling: implement 002394 as a private ABI-compatible thunk that calls 002392 and C++ global operator delete only for flag bit 0 — IDA identifies the oracle call as its CRT operator delete; matching the candidate CRT via ::operator delete is the correct translation and avoids hardcoding an allocator. Cost if wrong: cross-CRT heap behavior or flag ABI could differ; the paired flag-0/flag-1 fixture and branch mutation will test this.
+
+Task 2: in progress — add the oracle/source differential first; verify the test fails at link for the missing row helper before implementation.
+
+Task 2: complete — private helper and oracle/source fixture added; the missing-helper red link was confirmed before implementation. A null-return mutant was rejected with mismatches=2, and the restored helper reported mismatches=0. The owner delete flag branch was also mutation-checked (the inverted branch triggered heap corruption). Fresh Phase 5/6/7 gates pass at 2,780/1,680/2,896; all 816 tool tests pass; inventory validator reports unexplained=0. Immutable public header checks pass. Evidence and compressed raw logs: `docs/reconstruction/novodex-physics/evidence/phase7-lock-api-worker-scalar-delete-002394.md` and `evidence/raw/phase7-lock-api-worker-scalar-delete-002394-20261015/`. Ready to commit and fast-forward local main.

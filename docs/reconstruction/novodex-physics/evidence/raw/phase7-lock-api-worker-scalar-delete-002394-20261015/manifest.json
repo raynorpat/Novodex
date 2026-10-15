@@ -1,0 +1,53 @@
+{
+  "row": "phys_fn_002394",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "mutation": "return nullptr instead of this",
+  "mutation_exit": 1,
+  "mutation_marker": "newreach row=002394 oracle_differential candidate=source mismatches=2",
+  "restored_marker": "newreach row=002394 oracle_differential candidate=source mismatches=0",
+  "restored_result": "layout result=differential-pass",
+  "phase_gates": {
+    "5": {
+      "assertions": 2780,
+      "status": "pass"
+    },
+    "6": {
+      "assertions": 1680,
+      "status": "pass"
+    },
+    "7": {
+      "assertions": 2896,
+      "status": "pass"
+    }
+  },
+  "logs": {
+    "phase5-gate.log.gz": {
+      "sha256": "e9089a8c6ff16d48c1b77260b1e8a47b2bec01957d6d6ea366bb42ab28fa52e3",
+      "bytes": 2851697
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "cbdba24b499c863fd845e17737253e33f534e0e02ac5fee34dfbd5e6983f5fce",
+      "bytes": 3101466
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "357c97dfa2070a1e35b0b43b7ec7ecebb7128544e8eae6a2aa238c52ec1e5d48",
+      "bytes": 4639888
+    },
+    "mutation-build.log.gz": {
+      "sha256": "5228a10b046b57bf3b1989bcf6bf10e9e7743f6c498c4069703c3e0947969626",
+      "bytes": 3315
+    },
+    "mutation.log.gz": {
+      "sha256": "1d0473c6b0b84ad1e809561c4cf2c655dcd8d3c1838ac9f92e74884fb670ed94",
+      "bytes": 21603
+    },
+    "restored-build.log.gz": {
+      "sha256": "5228a10b046b57bf3b1989bcf6bf10e9e7743f6c498c4069703c3e0947969626",
+      "bytes": 3315
+    },
+    "restored.log.gz": {
+      "sha256": "b84f40ebcdf6e5692369f98852c9c1caa38450175ed64ded57b105bbf2fe1dc5",
+      "bytes": 21579
+    }
+  }
+}
