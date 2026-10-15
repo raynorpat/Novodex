@@ -174,11 +174,35 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	if(!oracleMoved || !candidateMoved || oracleHits != 1 || candidateHits != 1 ||
 		!oracleFound || !candidateFound)
 		++mismatches;
+	const float sphere[4] = {4.5f, 0.5f, 0.5f, 0.4f};
+	oracleOutput.count = 0;
+	candidateOutput.count = 0;
+	typedef bool (__thiscall* SphereQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
+	const SphereQueryFn oracleSphereQuery =
+		reinterpret_cast<SphereQueryFn>(oracleVtable[8]);
+	const bool oracleSphere = oracleSphereQuery(oraclePruner,
+		reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(sphere),
+		0, 0xffffffffu);
+	const bool candidateSphere = candidatePruner->NovodeXPrunerSlot8(
+		reinterpret_cast<NxU32>(&candidateOutput), reinterpret_cast<NxU32>(sphere),
+		0, 0xffffffffu);
+	bool oracleSphereFound = false, candidateSphereFound = false;
+	for(NxU32 i = 0; i < oracleOutput.count && i < 8; ++i)
+		oracleSphereFound = oracleSphereFound || oracleEntries[i] == reinterpret_cast<NxU32>(oracleObjects[0]);
+	for(NxU32 i = 0; i < candidateOutput.count && i < 8; ++i)
+		candidateSphereFound = candidateSphereFound || candidateEntries[i] == reinterpret_cast<NxU32>(&candidateObjects[0]);
+	if(!oracleSphere || !candidateSphere || oracleOutput.count != 1 ||
+		candidateOutput.count != 1 || !oracleSphereFound || !candidateSphereFound)
+		++mismatches;
 	printf("collision type3_pruner refit objects=2 oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
 		oracleFound ? 1u : 0u, candidateFound ? 1u : 0u, oracleHits, candidateHits, mismatches);
 	printf("collision coverage name=type3_pruner case=tree_refit_moved_leaf\n");
 	printf("collision coverage name=type3_pruner case=update_object_refresh_invalid_world_box oracle_calls=%u candidate_calls=%u\n",
 		oracleOwners[0].updateCalls, candidateOwners[0].updateCalls);
+	printf("collision type3_pruner sphere oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
+		oracleSphereFound ? 1u : 0u, candidateSphereFound ? 1u : 0u,
+		oracleOutput.count, candidateOutput.count, mismatches);
+	printf("collision coverage name=type3_pruner case=sphere_query_after_refit\n");
 
 	for(unsigned i = 0; i != 2; ++i)
 		{

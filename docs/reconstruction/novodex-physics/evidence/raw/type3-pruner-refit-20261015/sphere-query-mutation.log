@@ -1,0 +1,45 @@
+phase=none resolved_targets=NxPhysicsType3PrunerTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsType3PrunerTests
+pass: program pin file exists: D:\github\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: D:\github\Novodex\build\Release\NxPhysics.dll
+pass: source exists: D:\github\Novodex\build\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\candidate
+staged pair=candidate module=NxPhysics.dll source=D:\github\Novodex\build\Release\NxPhysics.dll source_sha256=c20077fc28d7ecfdb122c0d081fd6acc706148540150ca97e4a6009cc693f241 staged=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\candidate\NxPhysics.dll staged_sha256=c20077fc28d7ecfdb122c0d081fd6acc706148540150ca97e4a6009cc693f241
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=D:\github\Novodex\build\Release\NxFoundation.dll source_sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5 staged=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\candidate\NxFoundation.dll staged_sha256=cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: D:\github\Novodex\build\Release\NxPhysics.map
+staged candidate map source=D:\github\Novodex\build\Release\NxPhysics.map staged=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: D:\github\Novodex\build\Release\NxPhysicsCollisionTests.exe
+child target=NxPhysicsType3PrunerTests pair=oracle command="D:\github\Novodex\build\Release\NxPhysicsCollisionTests.exe" "D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\oracle" "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c" --type3-pruner-only exit=1
+child_stdout_begin
+oracle module path=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+oracle base=10000000 control_word=027f
+oracle pin=matched
+collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=1
+collision coverage name=type3_pruner case=tree_refit_moved_leaf
+collision coverage name=type3_pruner case=update_object_refresh_invalid_world_box oracle_calls=1 candidate_calls=1
+collision type3_pruner sphere oracle_found=1 candidate_found=0 oracle_hits=1 candidate_hits=0 mismatches=1
+collision coverage name=type3_pruner case=sphere_query_after_refit
+collision type3_pruner mismatches=1
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsType3PrunerTests/oracle reported the staged oracle identity: oracle module path=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+differential target=NxPhysicsType3PrunerTests oracle_exit=1 candidate_sources_in_harness=True
+differential_targets=NxPhysicsType3PrunerTests
+differential_pairs=D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\oracle,D:\github\Novodex\build\phase4-type3-pruner-pairs-final-20261015\candidate

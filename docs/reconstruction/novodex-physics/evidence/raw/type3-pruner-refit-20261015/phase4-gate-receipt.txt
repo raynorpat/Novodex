@@ -2,10 +2,13 @@ gate=oracle_differential:NxPhysicsType3PrunerTests command="D:\github\Novodex\bu
 collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0
 collision coverage name=type3_pruner case=tree_refit_moved_leaf
 collision coverage name=type3_pruner case=update_object_refresh_invalid_world_box oracle_calls=1 candidate_calls=1
+collision type3_pruner sphere oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0
+collision coverage name=type3_pruner case=sphere_query_after_refit
 collision type3_pruner mismatches=0
 gate=oracle_differential:NxPhysicsType3PrunerTests exit=0
 pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0
 pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=tree_refit_moved_leaf
 pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=update_object_refresh_invalid_world_box oracle_calls=1 candidate_calls=1
-coverage_assertions_evaluated=536 floor=536
+pass: NxPhysicsType3PrunerTests reported its recorded oracle-side coverage (1 occurrences): collision coverage name=type3_pruner case=sphere_query_after_refit
+coverage_assertions_evaluated=537 floor=537
 phase_gate=4 status=pass
