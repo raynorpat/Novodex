@@ -1061,3 +1061,7 @@ Extended `NxPhysicsSceneLifecycleTests` to instantiate static and dynamic Pruner
 ### 2026-10-15 continuation — NpScene internal Scene accessor (`phys_fn_000287`)
 
 Made the +0x24 NpScene pointer getter an explicit noinline method and routed public `releaseScene` through it. The registered two-Scene staged-pair test now pins the row marker and survivor lookup. Returning `this` is rejected (oracle exit 0, candidate exit 1, `stdout_delta=7`); restored control is exact. Phase 2 records 84 closed / 59 deferred functions. No public header changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-row-000287.md`.
+
+### 2026-10-15 continuation — NpScene gravity source mapping (`phys_fn_000289`)
+
+Completed the source-to-candidate census entry for the already reconstructed gravity setter. IDA's oracle body and the existing mutex-wide mutation differential identify `NpScene::setGravity`; the current linker map resolves the candidate symbol in `NpScene.obj`. Added the exact write-lock/forward/error-return contract and candidate map address to the inventory. This mapping does not change phase closure counts or the full-image backlog.
