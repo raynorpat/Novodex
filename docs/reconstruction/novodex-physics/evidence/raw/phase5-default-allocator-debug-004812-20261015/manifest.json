@@ -1,0 +1,68 @@
+{
+  "purpose": "Oracle/candidate evidence for the NxPhysics default allocator debug-allocation vtable slot, shared with phys_fn_004812, plus the approved clock-field assertion.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "pre_fix_candidate_sha256": "d6cb20975e4f1ec4a28992abb2f8e345ffc42bdc3c5ffb87cba7250e5d40c15c",
+  "restored_candidate_sha256": "4c93f0c7a3c03c0e525c162614efb78faee09ecd282c234472a9774a90e04fba",
+  "test_source_sha256": "ed9328868a2686dbfccecaf6d848c4673a88d0e33c8363a240f1cdfc7f040794",
+  "allocator_source_sha256": "6aba9f235098f16edb2ecbc173636ae9f463dd60cdf844d324ed1259c698d50a",
+  "fixture_source_snapshots_updated": 10,
+  "pre_fix_result": "oracle allocator debug vtable returned null for sizes 1 and 0x40; candidate returned non-null for both; mismatches=2; target exit=1.",
+  "restored_result": "oracle_null=2 candidate_null=2 mismatches=0; oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True.",
+  "phase_gates": {
+    "5": "pass, coverage_assertions_evaluated=2783 floor=2783",
+    "6": "pass, coverage_assertions_evaluated=1683 floor=1683",
+    "7": "pass, coverage_assertions_evaluated=2899 floor=2899"
+  },
+  "approved_date_time_result": "NxPhysicsCoreDumpTests validates date/time fields before normalization; oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True.",
+  "logs": {
+    "pre-fix-differential.log.gz": {
+      "source_log": "build/allocator-debug-red.log",
+      "purpose": "pre-fix vtable behavior: oracle null, candidate malloc results; mismatches=2; differential rejected",
+      "sha256": "86ed7b9444c0cff70f1bbaf7ed91343151b450076077aa31ec61b9904f5c8511",
+      "compressed_bytes": 1110,
+      "uncompressed_sha256": "ab1f431046ed9a89e858df0d77d10edcf4ff5552a602654936000b70dd2363b8",
+      "uncompressed_bytes": 5325
+    },
+    "restored-differential.log.gz": {
+      "source_log": "build/allocator-debug-restored.log",
+      "purpose": "corrected allocator debug vtable: exact differential",
+      "sha256": "416c9a49db2fa6db5fce4880f74a7acb180bf643aa43a25e5f5bc6bd13c4fee5",
+      "compressed_bytes": 5796,
+      "uncompressed_sha256": "407b7c0a810cf110c98a75b72aa2c0f7a5a13575081f52634562e40896f52162",
+      "uncompressed_bytes": 26791
+    },
+    "phase5-gate.log.gz": {
+      "source_log": "build/allocator-debug-phase5.log",
+      "purpose": "full Phase 5 gate",
+      "sha256": "9a859a50ba9966823e20ef4dbad87f502f0d8fd6042a5107a15acd5a00fb65d0",
+      "compressed_bytes": 207069,
+      "uncompressed_sha256": "4af45475f9e01d5f4d115bacd834198e34b9060a7090d671bf4d08795b538b07",
+      "uncompressed_bytes": 2840614
+    },
+    "phase6-gate.log.gz": {
+      "source_log": "build/allocator-debug-phase6.log",
+      "purpose": "full Phase 6 gate",
+      "sha256": "a349fe7190ea1437fd3e6230587c448052e8d443e6ba0a0eef592dd244a6c18a",
+      "compressed_bytes": 252412,
+      "uncompressed_sha256": "03c318e9b21cc76ec2e40b5d79c0f88a023e5aa1023a3379db2eddff06eba501",
+      "uncompressed_bytes": 3107362
+    },
+    "phase7-gate.log.gz": {
+      "source_log": "build/allocator-debug-phase7.log",
+      "purpose": "full Phase 7 gate",
+      "sha256": "f6b04c68197a0837bb41ed43aaff3a998c13a8bc74398c09cc5e1789f034109e",
+      "compressed_bytes": 371819,
+      "uncompressed_sha256": "88d0c667faad0e993f2ea74660d0653b47ea477a1597f7c6f6da41dad8b990f5",
+      "uncompressed_bytes": 4668133
+    },
+    "approved-date-time-differential.log.gz": {
+      "source_log": "build/date-assert-final.log",
+      "purpose": "fresh user-approved date/time assertion differential after allocator fix",
+      "sha256": "1955a663bd6074c08a8e295d4c2de5c346d385e981b4a36e6e9449f3a01d1f29",
+      "compressed_bytes": 41388,
+      "uncompressed_sha256": "0452d7abc3d60cc40e3f8ab2bd0fb3dad43478134febd2b4441e0b8a1eded82f",
+      "uncompressed_bytes": 388472
+    }
+  }
+}

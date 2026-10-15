@@ -6,9 +6,9 @@
   "fixture_source": "tests/PhysicsShapeVtableTests.cpp",
   "fixture_source_sha256": "6eedebdeb6b0c36b27cc85ebf97bfb34a88e531e470e2ec0af4ea56aedf865d7",
   "proof_lines_sha256": "d2d219afbd5d01794228691639c4150dcad928fbea5438618009a9012b27a0e5",
-  "baseline_sha256": "9fca6c0af302dbefad2e3737ca46689e167153e05f3cf56f65412f8fc2801aa0",
+  "baseline_sha256": "9d5eee26ecc2e74825f2f9fd90dd7c4a4dc4f31d73284e2655f6e14fac50dff3",
   "cases": 84,
   "input_digest_fnv32": "46df40a9",
   "oracle_output_digest_fnv32": "2c5d5c09",
-  "proof_sha256": "660fc04db42efa9682112679f6c1c4766e0d134f53b5f2343f6ab4e56da70ec4"
+  "proof_sha256": "d96f60ac02d28dfd23c50ed1e659a92aedfb217d1cf20633195d0ca992cbf518"
 }

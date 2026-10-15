@@ -2081,8 +2081,8 @@
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsShapeVtableTests",
       "falsification": {
-        "mutation": "return a non-null pointer from ShapeBase::nxBaseSlot5 in the candidate; the direct oracle/candidate base-stub check rejected the return mismatch.",
-        "detected": "mismatches=1"
+        "mutation": "return a non-null pointer from ShapeBase::nxBaseSlot5 in the candidate; the direct oracle/candidate base-stub check rejected the return mismatch. The allocator-vtable differential also caught the pre-fix SdkDefaultAllocator::mallocDEBUG wrapper returning CRT allocations.",
+        "detected": "mismatches=2"
       }
     },
     {

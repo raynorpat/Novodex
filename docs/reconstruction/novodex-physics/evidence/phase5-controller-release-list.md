@@ -1030,3 +1030,5 @@ The `miscsm2` candidate fixture invokes `nxMemberDeletingDtor` for `phys_fn_0024
 ## Container adjustor thunk `phys_fn_002352`
 
 The `addthunk` probe drives `phys_fn_002352` and `nxContainerAddThunk` against the oracle over owned, external, and null-entry containers, checking allocator traffic, cleared fields, retained external entries, and unchanged owned-buffer contents. Removing the candidate call to `SdkContainer::empty` produces `addthunk candidate failures=4 mismatches=4` (exit 1; `build/phase5-container-thunk-002352-mutation.log`). Restoring the call returns digest `f9aac08b`, zero candidate failures and mismatches, and exit 0 (`build/phase5-container-thunk-002352-restored.log`).
+
+The same `phys_fn_004812` null-return body is also reached through the SDK default allocator debug vtable. The pre-fix allocator wrapper disagreed on both probe sizes (`mismatches=2`); the corrected and registered Phase 5/6/7 differential is documented in [the allocator debug-slot evidence](phase5-default-allocator-debug-004812.md).

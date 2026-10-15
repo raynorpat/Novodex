@@ -90097,7 +90097,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2332",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15619",
       "static_proof": "xor eax,eax; ret 0x14 -- five stack arguments (ray, max distance, groups, hints, hit), always null; BASE vtable .rdata 0x10107494 slot 5 (pe.json pointer record)",
-      "dynamic_proof": "Direct oracle/candidate comparison in NxPhysicsShapeVtableTests verifies null for slot 5. Independent non-null-return mutation is caught (mismatches=1).",
+      "dynamic_proof": "Direct oracle/candidate comparison in NxPhysicsShapeVtableTests verifies null for slot 5. Independent non-null-return mutation is caught (mismatches=1). NxPhysicsObjectLayoutTests also reaches the same slot through the SDK default allocator debug vtable arm for sizes 1 and 0x40; the old allocating wrapper differed in both cases (mismatches=2), while the corrected null-return wrapper matches (oracle_null=2, candidate_null=2, mismatches=0).",
       "notes": "P5 Task 3: consumer unestablished.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },

@@ -6,9 +6,9 @@ void* SdkDefaultAllocator::malloc(size_t size, NxMemoryType)
 	return ::malloc(size);
 	}
 
-void* SdkDefaultAllocator::mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType)
+void* SdkDefaultAllocator::mallocDEBUG(size_t, const char*, int, const char*, NxMemoryType)
 	{
-	return ::malloc(size);
+	return 0;
 	}
 
 void* SdkDefaultAllocator::realloc(void* memory, size_t size)

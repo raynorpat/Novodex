@@ -43,10 +43,10 @@ allocator is asked for and nothing has been registered.
 
 Its four slot bodies are NOT Phase 2 rows -- phys_fn_004807 (0x000b4030),
 phys_fn_004812 (0x000b4070), phys_fn_004808 (0x000b4040) and phys_fn_004810
-(0x000b4060) are Phase 6, 3, 6 and 6 -- and each forwards to the statically
-linked CRT (malloc at 0x000f4722, realloc at 0x000f788e, free at 0x000f4734).
-They are written here only so that the accessor has the object it installs;
-their phases own the bodies.
+(0x000b4060) are Phase 6, 3, 6 and 6. malloc, realloc and free forward to the
+statically linked CRT; mallocDEBUG follows the oracle's null-return stub. These
+bodies are written here only so the accessor has the object it installs; their
+phases own the rows.
 */
 class SdkDefaultAllocator : public SdkAllocator
 	{
