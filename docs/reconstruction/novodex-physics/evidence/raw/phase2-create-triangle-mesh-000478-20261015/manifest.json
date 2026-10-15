@@ -1,0 +1,40 @@
+{
+  "purpose": "Row-local Phase 2 discharge proof for PhysicsSDK::createTriangleMesh (phys_fn_000478).",
+  "date": "2026-10-15",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "3fc59e303e750a2f13b0cde4c266f3655d227def6051c41741f66f00d2939b0a",
+  "mutation_proof": "Replacing the successful return of the registered TriangleMesh with null is rejected by NxPhysicsTriangleMeshApiTests (oracle_exit=0, candidate_exit=1, stdout_delta=26). The rebuilt restored candidate passes (both exits zero, stdout_delta=0, stderr_exact=True).",
+  "gate": "Fresh Phase 2 gate passed at 14/14 coverage assertions after closing the Phase 2 wrapper row. The gate includes the registered TriangleMesh API fixture. This proof closes only the SDK createTriangleMesh wrapper; the six listed TriangleMesh internal dependencies remain open in their owning phase.",
+  "files": {
+    "mutant-build.log.gz": {
+      "sha256": "b3282cc7726e2e0666f16c64a23de6e4b59468d79906444d1f62937a2d316906",
+      "compressed_bytes": 558,
+      "uncompressed_sha256": "32983cdc68868ce963a7822d4b50b2e912d4618cbd18a7639086a732b6200119",
+      "uncompressed_bytes": 2390
+    },
+    "mutant-differential.log.gz": {
+      "sha256": "3574ab4b34094d86568cebe40263a14299534b520a0c0355126acee27bffdb33",
+      "compressed_bytes": 1924,
+      "uncompressed_sha256": "05381b080cf933938b437eb8556458e5e398477099d41751f20561821727e348",
+      "uncompressed_bytes": 9735
+    },
+    "restored-build.log.gz": {
+      "sha256": "1c197df8ade6a519a735bb96778c31337e0b8b4abc87b59f398736865a8edd0c",
+      "compressed_bytes": 234,
+      "uncompressed_sha256": "111a57ca1baa1a9c46bef633bdec80430bf96cf6bb340343329fe6771956940d",
+      "uncompressed_bytes": 543
+    },
+    "restored-differential.log.gz": {
+      "sha256": "c1834c20fc76d67483b31c93bfedbc04aac7054c7158b47094ea46ebe401e170",
+      "compressed_bytes": 1956,
+      "uncompressed_sha256": "290af1279151beb6ab676ba59b09675691d3373d71bacc0b42487ad54b4c18c0",
+      "uncompressed_bytes": 12492
+    },
+    "phase2-gate.log.gz": {
+      "sha256": "3a3153ec9cdedcc7aef95694dd48144f05106a95b913c041e335f551bcc68033",
+      "compressed_bytes": 5741,
+      "uncompressed_sha256": "9ee6c8e29906f55365643ef6129e1a20b443c8da1ba123b887fe39a8045683df",
+      "uncompressed_bytes": 53508
+    }
+  }
+}

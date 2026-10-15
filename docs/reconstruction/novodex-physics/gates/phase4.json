@@ -126,6 +126,11 @@
       "name": "type3_pruner_tree_refit_and_runner_registration_2026-10-15",
       "command": "run_differential.ps1 -Targets NxPhysicsType3PrunerTests; run_phase_gate.ps1 -Phase 4",
       "result": "The focused moved-leaf tree-refit differential reports oracle_found=1 and candidate_found=1 with mismatches=0. Skipping Type3StaticPruner::PrepareQuery's Refit2 call is rejected (candidate_found=0, mismatches=1); skipping Type3StaticPruner::UpdateObject's invalid-box refresh is rejected (candidate owner callback calls=0, mismatches=2); omitting Type3StaticPruner's sphere-query dispatch is rejected (candidate_hits=0); omitting its plane-query dispatch is rejected (candidate_hits=0); omitting its raycast dispatch is rejected (candidate_hits=0); skipping pool removal leaves candidate_stale_hits=1; retaining the pre-insertion tree makes candidate_found=0 after add; these mutations are rejected and all restored controls pass. The first full-gate attempt exposed a launch mapping defect: it looked for an unbuilt NxPhysicsType3PrunerTests.exe and silently reused a zero exit code. The runner now launches NxPhysicsCollisionTests.exe with --type3-pruner-only. Fresh Phase 4 passes at 541/541 coverage assertions. This adds moved-leaf refit, invalid-world-box refresh, sphere-query, plane-query, raycast, add, and removal cases and does not close the broader type-3 pruner family. Evidence: evidence/phase4-type3-pruner-refit-20261015.md and evidence/raw/type3-pruner-refit-20261015/."
+    },
+    {
+      "name": "triangle_mesh_sdk_create_wrapper_phys_fn_000478_2026-10-15",
+      "command": "run_differential.ps1 -Targets NxPhysicsTriangleMeshApiTests; row-local successful-return mutation; restored CMake Release rebuild and differential",
+      "result": "The authored PMap staged-pair rejects returning null after successful PhysicsSDK::createTriangleMesh registration (oracle_exit=0, candidate_exit=1, stdout_delta=26). Restored candidate passes with stdout_delta=0 and exact stderr. This closes only the wrapper; TriangleMesh internals remain open. Evidence: evidence/phase2-create-triangle-mesh-000478.md and evidence/raw/phase2-create-triangle-mesh-000478-20261015/."
     }
   ],
   "excluded_from_comparison": [

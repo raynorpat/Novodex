@@ -9246,13 +9246,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/PhysicsSDK.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/174",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1271",
       "static_proof": "Validates NxTriangleMeshDesc and reports NXE_INVALID_PARAMETER at the oracle source PhysicsSDK.cpp:498 with the exact createTriangleMesh diagnostic; allocates the measured 0xe8 TriangleMesh, constructs its separate public facade, cooks it through loadFromDesc, and appends it to mTriangleMeshes. Paired tetrahedron proves the success path and release.",
-      "dynamic_proof": "NxPhysicsTriangleMeshApiTests exercises invalid descriptor rejection through the public SDK callback and matches code=1, line=498, source path, and message exactly. The full paired mesh API transcript matches (stdout_delta=0, stderr_exact=True); the API descriptor outputs also match. Full Phase 4 gate passed at commit 056d0b6b with coverage_assertions_evaluated=264 floor=264. Evidence: evidence/phase2-invalid-triangle-mesh-diagnostic.md.",
-      "notes": "",
+      "dynamic_proof": "NxPhysicsTriangleMeshApiTests staged-pair authored PMap success path: replacing the successful return with null is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=26); restored CMake Win32 Release candidate passes (both exits zero, stdout_delta=0, stderr_exact=True). This closes only the SDK wrapper; TriangleMesh internals remain separate open rows. Evidence: evidence/phase2-create-triangle-mesh-000478.md.",
+      "notes": "Row-specific mutation proof; internal TriangleMesh dependencies remain open: phys_fn_002060, phys_fn_002065, phys_fn_002067, phys_fn_002085, phys_fn_002140, phys_fn_002239.",
       "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
