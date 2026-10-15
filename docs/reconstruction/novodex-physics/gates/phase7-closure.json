@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 263,
+    "differential_falsified": 264,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 88,
     "deferred_not_reconstructed_in_phase": 120,
-    "deferred_reconstructed_not_falsified": 88
+    "deferred_reconstructed_not_falsified": 87
   },
   "closed": [
     {
@@ -3779,6 +3779,16 @@
         "detected": "mismatches=5"
       },
       "note": "Direct differential calls the oracle helper at RVA 0x116b0 and the candidate DLL method resolved from NxPhysics.map; all four record offsets and preserved padding are checked."
+    },
+    {
+      "id": "phys_fn_002334",
+      "rva": "0x0005a870",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In Physics/src/Scene.cpp, changed only NxControllerCore::getPosition to return the vector at this+0x2c instead of this+0x28, rebuilt the CMake NxPhysics target, and ran the registered Phase 7 NxPhysicsSimulationTests staged-pair differential against the pinned UE3 DLL. The oracle reports first controller position (0,0,0), second (2,0,0), and moved position (0.25,0,0). The mutant reports corrupted z values and is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=62, stderr_exact=True). Restoring the +0x28 load, rebuilding, and rerunning returns oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True. The candidate map resolves the row to ?getPosition@NxControllerCore@?A0x50552ca8@@UBEABVNxVec3@@XZ at 0x100618e0. Raw baseline, mutant, and restored transcripts are retained in evidence/raw/phase7-controller-getposition-002334-20261015/.",
+        "detected": "stdout_delta=62"
+      }
     }
   ],
   "deferred": [
@@ -4103,15 +4113,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002334",
-      "rva": "0x0005a870",
-      "size": 4,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002336",

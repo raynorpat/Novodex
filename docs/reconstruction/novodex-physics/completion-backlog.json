@@ -104,11 +104,11 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 352,
-        "deferred_rows": 208,
+        "closed_rows": 353,
+        "deferred_rows": 207,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 120,
-          "reconstructed_not_falsified": 88
+          "reconstructed_not_falsified": 87
         }
       }
     },
@@ -180,8 +180,8 @@
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "discovered": 116,
-          "dynamically_gated": 351,
-          "reconstructed": 92,
+          "dynamically_gated": 352,
+          "reconstructed": 91,
           "statically_reviewed": 1
         }
       }
@@ -98028,22 +98028,22 @@
       "size": 4,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002334",
       "implementation": {
         "path": null,
         "role": "unmapped",
         "symbol": null,
         "file_exists": null,
-        "oracle_source": "pointer getter this+0x28 (0x5a870)",
+        "oracle_source": "Physics/src/Scene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsSimulationTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -98062,26 +98062,26 @@
       },
       "applicable_contexts": {
         "four_digit_hex_literals": [],
-        "simulation_mentioned": false,
+        "simulation_mentioned": true,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsSimulationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
         "owner_phase": 7,
         "row_id": "phys_fn_002334",
         "rva": "0x0005a870",
         "action": "record_candidate_implementation_mapping",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -231133,7 +231133,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "d96938829dd15fa4ac9e3625a6be1a5700c4c1c4766e98b5febfba3bac6a5efe",
+    "inventory_sha256": "fdf808c04158b335d3edfb22f1eb371d355761146040434b18759d17d9c35fff",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -231143,7 +231143,7 @@
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "c8e00eda1b7ded7d669bf6150a46f97292ff6b154b32f14a067f802b73596f40",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "eeb8858264b9c8a8f230fd06c8fc39a7453d8033ad03cabae77ab45d77ccdac2",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "305df70e4d3fc755a23f19af8925fee7575217585f7f7bb7dbd2b47c3a8c2cb3",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "e449d2495739679523e7a04ab1076ceb5cd520708cff55ae7053424330e64b2d"
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "e6c68526452a6d83129c8206362979c31cab755099d786ef379cfdca9e16e7fe"
     }
   }
 }

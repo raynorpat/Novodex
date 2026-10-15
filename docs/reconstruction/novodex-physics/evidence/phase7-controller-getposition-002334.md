@@ -1,0 +1,9 @@
+# Phase 7: controller position getter (`phys_fn_002334`)
+
+IDA at RVA `0x0005a870` decodes this four-byte row as `lea eax, [ecx+28h]; retn`. It is `NxControllerCore::getPosition` in `Physics/src/Scene.cpp`, reached through the private controller ABI mirror because the frozen public header leaves `NxController` incomplete. The rebuilt Win32 Release map resolves `?getPosition@NxControllerCore@?A0x50552ca8@@UBEABVNxVec3@@XZ` at `0x100618e0` in `Scene.obj`.
+
+The registered `NxPhysicsSimulationTests` staged-pair fixture reads two newly created controller positions, moves one controller, and reads the position again. The oracle and restored candidate report `(0,0,0)`, `(2,0,0)`, and `(0.25,0,0)` respectively. The baseline and restored controls exit zero with `stdout_delta=0` and exact stderr.
+
+For row-specific falsification, only the getter's field offset was changed from `+0x28` to `+0x2c` in the candidate, then the CMake `NxPhysics` target was explicitly rebuilt before staging. The mutant corrupts the reported z coordinates and is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=62`, `stderr_exact=True`). The original `+0x28` source was restored, `NxPhysics.dll` rebuilt, and the restored staged differential passed exactly.
+
+The compact getter itself is reconstructed; this closes only its row. The full Phase 7 gate passes at `2,884/2,884`, including the simulation staged-pair control, the pinned 80-file public-header check, and inventory validation; its compressed transcript is `phase7-gate.log.gz` in the raw folder. The adjacent controller factory/move rows and the wider controller contract remain open. No public header changed. Raw baseline, mutation, and restored transcripts plus the exact mutation patch are retained under `evidence/raw/phase7-controller-getposition-002334-20261015/`.

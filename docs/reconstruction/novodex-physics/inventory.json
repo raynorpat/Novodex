@@ -43530,12 +43530,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "pointer getter this+0x28 (0x5a870)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1138",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7308",
       "static_proof": "lea eax,[ecx+0x28]; ret",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
+      "dynamic_proof": "Phase 7 row-specific mutation (2026-10-15): the registered NxPhysicsSimulationTests staged-pair differential exercises the candidate map-resolved NxControllerCore::getPosition (NxPhysics.map: ?getPosition@NxControllerCore@?A0x50552ca8@@UBEABVNxVec3@@XZ at 0x100618e0) through the private controller ABI mirror. Changing only the returned field offset from +0x28 to +0x2c changes controller positions; oracle_exit=0, candidate_exit=1, stdout_delta=62, stderr_exact=True. Restoring +0x28 and rebuilding returns both exits 0, stdout_delta=0, stderr_exact=True. See evidence/phase7-controller-getposition-002334.md and evidence/raw/phase7-controller-getposition-002334-20261015/.",
       "notes": ""
     },
     {

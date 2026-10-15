@@ -11045,3 +11045,6 @@ The Phase 7 closure ledger also records the direct oracle differential for `phys
 ### Fluid-emitter world-to-local pose helper `phys_fn_003611` (mismatches=2)
 
 The row-specific mutation changes the local X translation assignment to the untransformed world-space delta. The matrix-backed and quaternion-backed actor cases fail against the pinned oracle; restored controls match. See `phase7-fluid-emitter-global-to-local-003611.md`.
+
+
+Phase 7 row `phys_fn_002334` (`NxControllerCore::getPosition`) is mutation-falsified through the registered `NxPhysicsSimulationTests` staged-pair differential. A candidate-only +0x2c field-offset mutation corrupts controller positions and is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=62`, exact stderr); the restored +0x28 getter matches exactly. See `phase7-controller-getposition-002334.md` and its raw evidence folder.
