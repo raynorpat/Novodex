@@ -1,0 +1,76 @@
+{
+  "phase5_gate": "status=pass coverage_assertions=2745 floor=2745",
+  "retry_mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=2 cases_mismatched=4",
+  "array_cases": [
+    {
+      "ordinal": 1,
+      "size_hex": "8",
+      "slot": "objects"
+    },
+    {
+      "ordinal": 1,
+      "size_hex": "4",
+      "slot": "forward"
+    },
+    {
+      "ordinal": 2,
+      "size_hex": "4",
+      "slot": "reverse"
+    },
+    {
+      "ordinal": 3,
+      "size_hex": "4",
+      "slot": "generations"
+    }
+  ],
+  "tooling_suite": "816 tests OK",
+  "packet": "phase5-pruner-pool-array-allocation-failure-20261015",
+  "base_commit": "c88d967e5d74a8e007077818bd2daf177c4ab4f1",
+  "candidate_physics_sha256": "cf9036a9730846fa95d6653a0d021f1e924837abda4030ae256ac1f968eed0b7",
+  "phase7_gate": "status=pass coverage_assertions=2873 floor=2873",
+  "expected_child_exit": "c0000005",
+  "restored_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true",
+  "artifacts": [
+    {
+      "sha256_source": "a68aaa7a853c9aaf9c0d141d5974ec01e968645eddfa99cc77aebeeaaf6eff87",
+      "sha256_gzip": "56de66288927e5013e2d3876c47d1cadeddab887252124710f1f841ec65a8fe7",
+      "size_source": 8281,
+      "size_gzip": 1300,
+      "source": "build/m1-scene-lifecycle/pruner-array-oom-mutation.log",
+      "file": "candidate-retry-mutation.log.gz"
+    },
+    {
+      "sha256_source": "a91b8735636b8a623daf01e16bb447bc57d5a5610e2349d93e76351c16513a66",
+      "sha256_gzip": "9a119c77294cc54ba9df8e831ec9e077359995fc848b7ae065d9bb9b82e66661",
+      "size_source": 7969,
+      "size_gzip": 1202,
+      "source": "build/m1-scene-lifecycle/pruner-array-oom-restored.log",
+      "file": "restored-control.log.gz"
+    },
+    {
+      "sha256_source": "8ba3352a835e676544ec2c81fc8456e082758dbd090ef4aba9c436f8b99edd4e",
+      "sha256_gzip": "09796bd14d4ae3517eeaf216f816f1b1efda7ef70a5fd6dfa20250b3df839a0f",
+      "size_source": 2824444,
+      "size_gzip": 207471,
+      "source": "build/m1-scene-lifecycle/phase5-pruner-array-oom-gate.log",
+      "file": "phase5-gate.log.gz"
+    },
+    {
+      "sha256_source": "a5b1383dddc0d8404697388603ad21dd20e17a74fb171b27c84d2d4358b18f93",
+      "sha256_gzip": "9eed5a0ecb9b478ea448f32d6fccd3324664e8695fb80293dec1ca6fb87bcc03",
+      "size_source": 4603815,
+      "size_gzip": 375766,
+      "source": "build/m1-scene-lifecycle/phase7-pruner-array-oom-gate.log",
+      "file": "phase7-gate.log.gz"
+    },
+    {
+      "sha256_source": "34ac62fe153ead735cdd1c3478fb65d584e251f28e1ebae9f770b27c37752fd4",
+      "sha256_gzip": "6c853000f607ee87c107384513f430fddec179d3964e67ff64e9ebb0e477e9de",
+      "size_source": 125875,
+      "size_gzip": 19003,
+      "source": "build/m1-scene-lifecycle/tooling-tests-pruner-array-oom.log",
+      "file": "tooling-tests.log.gz"
+    }
+  ],
+  "mutation_candidate_physics_sha256": "c1a90602f5c0468df40ad6d17c2bcec505f6ddef0f900c0d19a45f2357e08a49"
+}
