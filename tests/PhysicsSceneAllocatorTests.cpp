@@ -195,6 +195,29 @@ int wmain(int argc, wchar_t** argv)
 	nxReport("scene_create_oom", mark);
 	if(!sceneAllocationFailureExact)
 		return nxFail("Scene allocation failure changed public result or left an SDK Scene");
+	const unsigned sdkFailHitsBeforePool = gSdkAllocator.failHits();
+	gSdkAllocator.failNextAllocationOfSize(0x1c); // NxPrunerProcessPool owner
+	mark = nxMark();
+	NxScene* sceneWithoutPrunerPool = sdk->createScene(sceneDesc);
+	NxBoxShapeDesc poolFailureBox;
+	NxActorDesc poolFailureActorDesc;
+	poolFailureActorDesc.shapes.pushBack(&poolFailureBox);
+	NxActor* poolFailureActor = sceneWithoutPrunerPool
+		? sceneWithoutPrunerPool->createActor(poolFailureActorDesc) : 0;
+	const unsigned scenesAfterPoolFailure = sdk->getNbScenes();
+	const bool prunerPoolAllocationFailed = sceneWithoutPrunerPool != 0 && poolFailureActor != 0
+		&& scenesAfterPoolFailure == 1
+		&& gSdkAllocator.failHits() == sdkFailHitsBeforePool + 1;
+	nxReport("pruner_pool_owner_oom", mark);
+	if(sceneWithoutPrunerPool)
+		sdk->releaseScene(*sceneWithoutPrunerPool);
+	const bool prunerPoolFailureCleanup = sdk->getNbScenes() == 0;
+	printf("alloc phase=pruner_pool_owner_oom status=%s scenes=%u fail_hits=%u after_release_scenes=%u\n",
+		prunerPoolAllocationFailed ? "created" : "failed",
+		scenesAfterPoolFailure, gSdkAllocator.failHits() - sdkFailHitsBeforePool, sdk->getNbScenes());
+	if(!prunerPoolAllocationFailed || !prunerPoolFailureCleanup)
+		return nxFail("Pruner process-pool owner allocation failure changed the public Scene lifecycle");
+	mark = nxMark();
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene) return nxFail("scene creation failed");
 	nxReport("scene_create", mark);

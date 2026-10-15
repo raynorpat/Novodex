@@ -1,0 +1,55 @@
+{
+  "phase7_gate": "status=pass coverage_assertions=2872 floor=2872",
+  "pool_owner_size_hex": "1c",
+  "required_marker": "alloc phase=pruner_pool_owner_oom status=created scenes=1 fail_hits=1 after_release_scenes=0",
+  "mutation_candidate_physics_sha256": "98096d4ef62813601be71c3331a73c61095cac37713eb9167e0bac0212ac62f6",
+  "restored_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true",
+  "null_guard_mutation": "oracle_exit=0 candidate_exit=-1073741819 stdout_delta=70 stderr_exact=true",
+  "packet": "phase5-pruner-pool-owner-allocation-failure-20261015",
+  "artifacts": [
+    {
+      "size_gzip": 1893,
+      "file": "candidate-mutation.log.gz",
+      "sha256_gzip": "7ee0fb85bf8ce32c9d5247ad4fd20ef8f1df84e6fe9a8b1e8821e29883737d0a",
+      "size_source": 12533,
+      "sha256_source": "b7d405643a67c5eb4e68e3388933aee3f38ef47b807f0c3163f0b29bffc1a27e",
+      "source": "build/m1-scene-lifecycle/pruner-owner-oom-mutation.log"
+    },
+    {
+      "size_gzip": 1841,
+      "file": "restored-control.log.gz",
+      "sha256_gzip": "88a07e770b5251baf46e9909964be3685a5cdf58d58fc6054ce73e81675d7ce5",
+      "size_source": 16873,
+      "sha256_source": "33c27ac39573511fbbb9a91dd9dacf9f71fe08cc32cab75ef34be47c5fe73342",
+      "source": "build/m1-scene-lifecycle/pruner-owner-oom-restored.log"
+    },
+    {
+      "size_gzip": 207085,
+      "file": "phase5-gate.log.gz",
+      "sha256_gzip": "5a0fe1f64c57e05ded8a9e314fa0ceced67e28108375844220600cc4ce4b6aa6",
+      "size_source": 2819113,
+      "sha256_source": "139789966d905c6ff13d52e57e2ff19b69b291995fa2cffeb335e253844a7ee6",
+      "source": "build/m1-scene-lifecycle/phase5-pruner-owner-oom-gate.log"
+    },
+    {
+      "size_gzip": 375481,
+      "file": "phase7-gate.log.gz",
+      "sha256_gzip": "4d1394f7fdc3593215e69cb9110f8f2c8af60abc2eba34f3c9107daac959991e",
+      "size_source": 4598833,
+      "sha256_source": "e4b18a176f891c27dc176aacbefb3554c4e0c87b13c0e204ac064b09ea3713e8",
+      "source": "build/m1-scene-lifecycle/phase7-pruner-owner-oom-gate.log"
+    },
+    {
+      "size_gzip": 19002,
+      "file": "tooling-tests.log.gz",
+      "sha256_gzip": "c9968bb5d3ee874990d5bc8840adbb4b95108c57b2e57d7054ce76b1fb50e6e2",
+      "size_source": 125875,
+      "sha256_source": "ca1f61dfe0eb033f27dff789221bac41cdbad96533c2833acb3cf7e7fa73cb15",
+      "source": "build/m1-scene-lifecycle/tooling-tests-pruner-owner-oom.log"
+    }
+  ],
+  "tooling_suite": "816 tests OK",
+  "base_commit": "36f9dd8556af48e0cc43fa44a1050cff6661c540",
+  "candidate_physics_sha256": "1d8e92b67680e7fe78b1c0bda7bb927d5d60b2cb75e854116e4888e6a2670aaf",
+  "phase5_gate": "status=pass coverage_assertions=2744 floor=2744"
+}

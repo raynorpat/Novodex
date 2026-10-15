@@ -97,6 +97,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'alloc phase=sdk_create a_allocs='
 		'alloc phase=scene_create_oom status=null scenes=0 fail_hits=1'
 		'alloc phase=scene_create_oom a_allocs='
+		'alloc phase=pruner_pool_owner_oom status=created scenes=1 fail_hits=1 after_release_scenes=0'
 		'alloc phase=scene_create a_allocs='
 		'alloc phase=static_create a_allocs='
 		'alloc phase=dynamic_create a_allocs='
@@ -6091,7 +6092,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2743  # adds explicit process-pool growth and generation-tagged slot reuse
+	'5' = 2744  # adds process-pool growth/reuse and Pruner owner-allocation failure coverage
 	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6197,7 +6198,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2871  # adds actual-DLL Pruner constructor bounds, registration and handle-reuse assertions
+	'7' = 2872  # adds actual-DLL Pruner registration, owner-allocation failure and handle-reuse assertions
 	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions
