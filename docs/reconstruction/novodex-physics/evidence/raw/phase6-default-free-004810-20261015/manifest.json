@@ -1,0 +1,60 @@
+{
+  "row": "phys_fn_004810",
+  "rva": "0x000b4060",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "archive_commit": "7ef4eb25",
+  "fixture_source_sha256": "aa47c8a7cd7d6e7a2c6d68f495f28e94ef0b22dc2971c7e3583a7a829b0adf89",
+  "restored_candidate_sha256": "7adeba111596bc683859a0e8bb9449ebb4d6e33ee40ffa0f444879c953e86be6",
+  "mutation": "Changed only SdkDefaultAllocator::free in the isolated archive to omit ::free(memory).",
+  "mutant_candidate_sha256": "7392a91f06cba2b9eba497e6eaf1ec2d06e218afd8416eca3e834e482b353f3f",
+  "mutation_detection": "registered NxPhysicsObjectLayoutTests exited 1; allocator free row=phys_fn_004810 oracle_reuse=1 candidate_reuse=0 mismatches=1.",
+  "restored_control": "Focused differential passed with oracle_reuse=1 candidate_reuse=1 mismatches=0.",
+  "coverage": {
+    "phase6": {
+      "assertions": 1686,
+      "floor": 1686,
+      "status": "pass"
+    },
+    "phase7": {
+      "assertions": 2902,
+      "floor": 2902,
+      "status": "pass"
+    }
+  },
+  "oracle_only_layout_digest": "774d629d",
+  "artifacts": [
+    {
+      "path": "free-noop-isolated-archive.log.gz",
+      "source": "build\\mutation-free-004810-20261015\\build\\free-row-mutant.log",
+      "source_sha256": "7b4dd5aa1905cd2860385aa23bcae94e4d828b68052ccce1a89abbb4d30e4455",
+      "compressed_sha256": "edbbfaf5ace4f76a6bd427f6a585fa385d6115003722134ada6fbc838cf18f61",
+      "source_bytes": 5269,
+      "compressed_bytes": 1216
+    },
+    {
+      "path": "restored-focused-control.log.gz",
+      "source": "build\\free-row-restored.log",
+      "source_sha256": "cc7fe325978811ba69ea7c4424f906f9e44e46cc0892e3754fd493131d67f6b7",
+      "compressed_sha256": "8d665d49c08c9653017455db91234d64b57e0b348e74c5a0ec285fae7ff9a91c",
+      "source_bytes": 26415,
+      "compressed_bytes": 5863
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "source": "build\\phase6-free-row-official.log",
+      "source_sha256": "c8ed1477ab4582c39190ec53e988240cb15b094960ae664e83e799fef121b693",
+      "compressed_sha256": "86339abd9bbe59b8f9287f3525be1b02a200de802b8002b01336c1f191708f49",
+      "source_bytes": 3103028,
+      "compressed_bytes": 252184
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build\\phase7-free-row-official.log",
+      "source_sha256": "d717a7f8ef53f35e75500dd9bda8064a92fd50702634316732f88a7daff324f3",
+      "compressed_sha256": "17ae104119c1536a2d704d0d9124c1fe8c8cae0d95cfc34e1b183f6097cff135",
+      "source_bytes": 4606552,
+      "compressed_bytes": 369767
+    }
+  ],
+  "note": "No product source or public Physics header changed; this packet adds test observability and closes the existing free implementation."
+}

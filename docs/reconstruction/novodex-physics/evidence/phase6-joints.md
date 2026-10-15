@@ -11082,3 +11082,8 @@ The oracle-differential target NxPhysicsObjectLayoutTests exercises allocator vt
 
 
 Phase 6 row `phys_fn_004805` (SDK allocator bridge setter) is now mutation-falsified through the map-resolved oracle/candidate comparison in `NxPhysicsObjectLayoutTests`. A candidate no-op store is rejected with `mismatches=1`; the restored staged differential is exact. Phase 5/6/7 gates pass at 2,785/2,785, 1,685/1,685, and 2,901/2,901 assertions. Phase 6 also validates the approved core-dump date/time fields before normalization. See [phase6-allocator-bridge-004805.md](phase6-allocator-bridge-004805.md) and [its raw evidence](raw/phase6-allocator-bridge-004805-20261015/manifest.json).
+
+
+### SDK default allocator free (`phys_fn_004810`)
+
+Phase 6 row `phys_fn_004810` (SDK default allocator free) is mutation-falsified through a same-size pointer-reuse observation. Oracle and restored candidate reuse their just-freed 128-byte blocks; an isolated-archive no-op free is caught (`candidate_reuse=0`, `mismatches=1`, target exit 1). Fresh Phase 6 and 7 gates pass at 1,686 and 2,902 assertions. See [the row evidence](phase6-default-free-004810.md).

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 167 rows are closed (160 staged-pair differential rows and 7 oracle/candidate DLL differential rows); 266 rows remain open. The default allocator bridge setter row 004805 and malloc/realloc rows 004807/004808 are independently mutation-falsified by NxPhysicsObjectLayoutTests; see evidence/phase6-allocator-bridge-004805.md and evidence/phase6-default-allocator-malloc-realloc-004807-004808.md. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. See evidence/phase6-actor-group-hash-004153-004155.md.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 168 rows are closed (160 staged-pair differential rows and 8 oracle/candidate DLL differential rows); 265 rows remain open. The default allocator bridge setter row 004805, malloc/realloc rows 004807/004808, and free row 004810 are independently mutation-falsified by NxPhysicsObjectLayoutTests; see evidence/phase6-allocator-bridge-004805.md and evidence/phase6-default-allocator-malloc-realloc-004807-004808.md. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. See evidence/phase6-actor-group-hash-004153-004155.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
@@ -65,8 +65,8 @@
   },
   "counts": {
     "differential_falsified": 160,
-    "oracle_differential_falsified": 7,
-    "deferred_reconstructed_not_falsified": 252,
+    "oracle_differential_falsified": 8,
+    "deferred_reconstructed_not_falsified": 251,
     "deferred_not_reconstructed_in_phase": 14
   },
   "closed": [
@@ -1742,6 +1742,16 @@
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
         "mutation": "In a throwaway git archive of 6fe57131, removed only the gSdkAllocator = allocator store from nxSetSdkAllocatorBridge. The registered NxPhysicsObjectLayoutTests helper compared the map-resolved candidate setter/global with oracle phys_fn_004805, reported allocator bridge row=phys_fn_004805 return=1 stored_pointer=1 restored=1 mismatches=1, and failed. The mutant DLL SHA-256 was f91433c8de8e3867f2b38bc25190f323ec98bfb8289e9db307e572a153358cdc. The restored candidate produced mismatches=0 and an exact staged differential.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_004810",
+      "rva": "0x000b4060",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "In an isolated git archive of 7ef4eb25 with the focused test and gate registry overlaid, changed only SdkDefaultAllocator::free to omit the linked runtime free and rebuilt the Win32 Release NxPhysics.dll. The mutant candidate SHA-256 was 7392a91f06cba2b9eba497e6eaf1ec2d06e218afd8416eca3e834e482b353f3f.",
         "detected": "mismatches=1"
       }
     }
@@ -4117,15 +4127,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004810",
-      "rva": "0x000b4060",
-      "size": 14,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "The free wrapper is reconstructed from the pinned runtime free call and candidate map correspondence; an independent behavioral mutation fixture has not yet observed release."
     }
   ]
 }

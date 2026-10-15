@@ -1,3 +1,7 @@
+### Continuation — SDK default allocator free (`phys_fn_004810`, 2026-10-15)
+
+Added a direct oracle/candidate allocator-vtable observation for the previously unobserved release effect: allocate 128 bytes, free it, and request the same size again. The pinned CRT reuses the block on both sides. A no-op `free` rebuilt in an isolated `git archive` is rejected (`oracle_reuse=1`, `candidate_reuse=0`, `mismatches=1`, target exit 1); the restored focused control is exact. The registered marker is in the Phase 6 oracle-differential target and the Phase 6/7 floors now pass at 1,686/1,686 and 2,902/2,902. Phase 6 records 168 closed / 265 deferred rows. No product code or public Physics header changed. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-default-free-004810.md`. Full DLL reconstruction remains open.
+
 ### Continuation — FluidManager array growth and swap removal (`phys_fn_003649`, 2026-10-13)
 
 Added a public DLL differential that creates seven licensed fluids, forcing both

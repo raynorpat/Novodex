@@ -5508,6 +5508,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'tmplinit row=phys_fn_000496 candidate_dll_vs_oracle bytes=64 mismatches=0',
         'allocator bridge row=phys_fn_004805 return=1 stored_pointer=1 restored=1 mismatches=0',
         'allocator heap rows=phys_fn_004807,phys_fn_004808 cases=3 realloc=grow preserved_prefix=1 mismatches=0',
+		'allocator free row=phys_fn_004810 oracle_reuse=1 candidate_reuse=1 mismatches=0',
         'allocator debug row=phys_fn_004812 cases=2 oracle_null=2 candidate_null=2 mismatches=0',
         'shapevalid row=phys_fn_000498 candidate_dll_vs_oracle cases=8 mismatches=0',
         'tmplinit row=phys_fn_000499 candidate_dll_vs_oracle bytes=84 mismatches=0',
@@ -6154,7 +6155,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2785  # adds the allocator-bridge setter differential
+	'5' = 2786  # adds the allocator-bridge setter differential
 	           # adds sphere radius setter/getter lock state and invalid-radius report rows
 	           # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
@@ -6221,7 +6222,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1685  # adds the allocator-bridge setter differential
+	'6' = 1686  # adds the allocator-bridge setter and default-free differentials
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6264,7 +6265,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2901  # adds the allocator-bridge setter differential
+	'7' = 2902  # adds the allocator-bridge setter and default-free differentials
 	          # includes direct row 000965 Prunable owner-query result
 	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585
