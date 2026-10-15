@@ -64,6 +64,16 @@ buffer once. An empty previous/current pair-list case verifies the oracle's
 header swap and empty-list reset. Candidate state and allocator call counts
 match all six oracle cases exactly.
 
+The retained-pair fixture also checks all 36 ordered pairs of six shape types
+with the trigger on either side (72 oracle/candidate cases). This exposed a
+candidate mismatch: after sorting by shape type, the oracle places the trigger
+shape first in the retained pair. The candidate now mirrors that orientation
+before appending and reporting stay. All 72 cases match, including event
+identity, pair-list order, and the two expected allocations
+(`build/trigger-pair-duplicates-restored-full-collision.log`). A mutation that
+disabled the trigger-orientation swap produced 36 mismatches, confirming the
+matrix catches this behavior.
+
 A temporary unconditional `return -1` in `nxSceneFindTriggerPair` is rejected:
 the overlap-true case reports four candidate events and four pairs, while the
 false and null-slot cases report four candidate events. The fixture exits 1.

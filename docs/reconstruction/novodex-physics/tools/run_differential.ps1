@@ -127,10 +127,10 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
 
     $startInfo = [Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $exe
-    # Most probes receive only the pair directory. The fluid-emitter ABI probe
-    # also pins the exact staged Physics image before it makes direct row calls.
+    # Most probes receive only the pair directory. Direct oracle fixtures pin
+    # the exact staged Physics image before making private RVA calls.
     $arguments = @('"' + $Pair.Directory + '"')
-    if ($Target -ceq 'NxPhysicsShapeVtableTests') {
+    if ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests') {
         # This probe hashes the staged oracle before loading it. Supplying the
         # staged pair's identity keeps direct invocations bound to the exact
         # DLL selected by the differential runner.
@@ -167,7 +167,18 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
 
     $lines = @($stdout -split "`r?`n")
     Assert-NoCandidateFailures -Lines $lines -Context "$Target/$($Pair.Name)"
-    $loadedModules = if ($Target -ceq 'NxPhysicsShapeVtableTests') {
+    if ($Target -ceq 'NxPhysicsCollisionTests') {
+        $expectedOracle = "oracle module path=$(Join-Path $Pair.Directory 'NxPhysics.dll') sha256=$($Pair.PhysicsSha256)"
+        Assert-True ($lines -ccontains $expectedOracle) "$Target/$($Pair.Name) reported the staged oracle identity: $expectedOracle"
+        $candidateFoundation = Join-Path $releaseRoot 'NxFoundation.dll'
+        $candidateFoundationSha256 = Get-FileSha256 $candidateFoundation
+        $expectedFoundation = "binding NxComputeSquareDistance path=$candidateFoundation sha256=$candidateFoundationSha256"
+        Assert-True ($lines -ccontains $expectedFoundation) "$Target/$($Pair.Name) reported the staged Foundation binding: $expectedFoundation"
+    }
+    $loadedModules = if ($Target -ceq 'NxPhysicsCollisionTests') {
+        @()
+    }
+    elseif ($Target -ceq 'NxPhysicsShapeVtableTests') {
         # This harness links candidate implementation objects directly and
         # explicitly loads only the selected Physics image as its oracle.
         @(@{ Name = 'NxPhysics.dll'; Sha256 = $Pair.PhysicsSha256 })
@@ -283,6 +294,16 @@ foreach ($target in $Targets) {
         # Running it with the candidate DLL as the oracle would reinterpret
         # oracle RVAs against a different image and is not a second candidate
         # run.
+        $exitExact = $oracleRun.ExitCode -eq 0
+        Write-Host "differential target=$target oracle_exit=$($oracleRun.ExitCode) candidate_sources_in_harness=True"
+        if (-not $exitExact) { $differences++ }
+        continue
+    }
+    if ($target -ceq 'NxPhysicsCollisionTests') {
+        # The fixture directly compares pinned oracle RVAs against candidate
+        # implementations linked into the harness, so there is no second DLL
+        # run to compare. Its own oracle-side assertions and coverage lines are
+        # checked by the phase gate.
         $exitExact = $oracleRun.ExitCode -eq 0
         Write-Host "differential target=$target oracle_exit=$($oracleRun.ExitCode) candidate_sources_in_harness=True"
         if (-not $exitExact) { $differences++ }

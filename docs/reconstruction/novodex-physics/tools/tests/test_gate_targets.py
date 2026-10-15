@@ -88,6 +88,10 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "scene_base_dtor_registry", "scene_pruner_owner_destroy",
                            "scene_base_dtor_owner")
 
+# Direct coverage-only fixtures have no generated input digest or collision
+# oracle-output digest. Their dedicated coverage assertion pins the matrix run.
+COLLISION_COVERAGE_ONLY_NAMES = ("trigger_pair_duplicates",)
+
 # Fixed-input splits of a direct block, divergent under an enforced ceiling:
 # registered up to their oracle digest, with no input or coverage line of their
 # own (the block's lines cover their inputs).
@@ -519,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 14, "3": 954, "4": 260, "5": 2737, "6": 1662, "7": 1993}
+    MINIMUM = {"2": 14, "3": 968, "4": 260, "5": 2737, "6": 1662, "7": 2861}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -773,6 +777,7 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
         live |= set(COLLISION_DIRECT_BLOCKS)
         live |= set(COLLISION_SNAN_BLOCKS)
         live |= set(COLLISION_SPLIT_BLOCKS)
+        live |= set(COLLISION_COVERAGE_ONLY_NAMES)
         for line in self.registered:
             match = re.match(r"collision (?:coverage |input )?name=(\S+) ", line)
             if match:

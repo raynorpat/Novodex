@@ -3703,6 +3703,133 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 	printf("collision trigger-pair-empty oracle_swapped=%u candidate_swapped=%u mismatches=%u\n",
 		oracleEmptyState, candidateEmptyState, emptyMismatches);
 	printf("collision coverage name=trigger_pair_duplicates case=empty_lists_swap\n");
+
+	// Exercise the overlap dispatch's complete ordered shape-type domain in
+	// both trigger orientations; the callback records no geometry so this
+	// isolates type sorting, slot selection and event-shape orientation.
+	for(unsigned low = 0; low != 6; ++low)
+		for(unsigned high = low; high != 6; ++high)
+			{
+			const unsigned slotOffset = 0x94 + (6 * low + high) * sizeof(void*);
+			*(NxShapeOverlapFn*) (oracleMatrix + slotOffset) = nxTriggerPairTestOverlap;
+			*(NxShapeOverlapFn*) (candidateMatrix + slotOffset) = nxTriggerPairTestOverlap;
+			}
+	unsigned typeCases = 0;
+	unsigned typeMismatches = 0;
+	for(unsigned firstType = 0; firstType != 6; ++firstType)
+		for(unsigned secondType = 0; secondType != 6; ++secondType)
+			for(unsigned triggerIndex = 0; triggerIndex != 2; ++triggerIndex)
+				{
+			NxU8 oracleTypeShapes[2][0xe0] = {};
+			NxU8 candidateTypeShapes[2][0xe0] = {};
+			NxCollisionShape* oraclePreviousPair[2] = {};
+			NxCollisionShape* candidatePreviousPair[2] = {};
+			*(NxU32*) (oracleTypeShapes[0] + 0xd0) = firstType;
+			*(NxU32*) (oracleTypeShapes[1] + 0xd0) = secondType;
+			*(NxU32*) (candidateTypeShapes[0] + 0xd0) = firstType;
+			*(NxU32*) (candidateTypeShapes[1] + 0xd0) = secondType;
+			*(NxU32*) (oracleTypeShapes[0] + 0xd4) = 1;
+			*(NxU32*) (oracleTypeShapes[1] + 0xd4) = 2;
+			*(NxU32*) (candidateTypeShapes[0] + 0xd4) = 1;
+			*(NxU32*) (candidateTypeShapes[1] + 0xd4) = 2;
+			*(NxU8*) (oracleTypeShapes[triggerIndex] + 0xde) = 1;
+			*(NxU8*) (candidateTypeShapes[triggerIndex] + 0xde) = 1;
+			oraclePreviousPair[0] = (NxCollisionShape*) oracleTypeShapes[0];
+			oraclePreviousPair[1] = (NxCollisionShape*) oracleTypeShapes[1];
+			candidatePreviousPair[0] = (NxCollisionShape*) candidateTypeShapes[0];
+			candidatePreviousPair[1] = (NxCollisionShape*) candidateTypeShapes[1];
+			memset(oracleScene, 0, sizeof(oracleScene));
+			auto initialiseTypeScene = [&](NxU8* scene, NxCollisionShape** previousPair)
+				{
+				NxTriggerPairTestList* previous =
+					reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5dc);
+				NxTriggerPairTestList* current =
+					reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5ec);
+				previous->begin = previousPair;
+				previous->end = previousPair + 2;
+				previous->capacity = previous->end;
+				current->begin = current->end = current->capacity = nullptr;
+				*(NxTriggerPairTestList**) (scene + 0x5d4) = previous;
+				*(NxTriggerPairTestList**) (scene + 0x5d8) = current;
+				*(NxTriggerPairTestEvent**) (scene + 0x5fc) = nullptr;
+				*(NxTriggerPairTestEvent**) (scene + 0x600) = nullptr;
+				*(NxTriggerPairTestEvent**) (scene + 0x604) = nullptr;
+				};
+			initialiseTypeScene(oracleScene, oraclePreviousPair);
+			initialiseTypeScene(candidateScene.bytes(), candidatePreviousPair);
+			const unsigned oracleTypeAllocStart = allocator.allocations;
+			oracle(oracleMatrix, oracleScene);
+			const unsigned oracleTypeAllocs = allocator.allocations - oracleTypeAllocStart;
+			const unsigned candidateTypeAllocStart = allocator.allocations;
+			nxSceneProcessTriggerPairs(&candidateScene);
+			const unsigned candidateTypeAllocs = allocator.allocations - candidateTypeAllocStart;
+			NxTriggerPairTestEvent* const oracleTypeEvents =
+				*(NxTriggerPairTestEvent**) (oracleScene + 0x5fc);
+			NxTriggerPairTestEvent* const candidateTypeEvents =
+				*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x5fc);
+			const unsigned oracleTypeEventCount = oracleTypeEvents
+				? (unsigned) (*(NxTriggerPairTestEvent**) (oracleScene + 0x600) - oracleTypeEvents) : 0;
+			const unsigned candidateTypeEventCount = candidateTypeEvents
+				? (unsigned) (*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x600) - candidateTypeEvents) : 0;
+			NxTriggerPairTestList* const oracleTypeCurrent =
+				*(NxTriggerPairTestList**) (oracleScene + 0x5d4);
+			NxTriggerPairTestList* const candidateTypeCurrent =
+				*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d4);
+			const unsigned oracleTypePairCount = oracleTypeCurrent->begin
+				? (unsigned) ((oracleTypeCurrent->end - oracleTypeCurrent->begin) / 2) : 0;
+			const unsigned candidateTypePairCount = candidateTypeCurrent->begin
+				? (unsigned) ((candidateTypeCurrent->end - candidateTypeCurrent->begin) / 2) : 0;
+			const NxShape* const oracleTrigger =
+				reinterpret_cast<NxShape*>(oracleTypeShapes[triggerIndex]);
+			const NxShape* const candidateTrigger =
+				reinterpret_cast<NxShape*>(candidateTypeShapes[triggerIndex]);
+			NxCollisionShape* const oracleExpectedFirst =
+				(NxCollisionShape*) oracleTypeShapes[triggerIndex];
+			NxCollisionShape* const oracleExpectedSecond =
+				(NxCollisionShape*) oracleTypeShapes[1 - triggerIndex];
+			NxCollisionShape* const candidateExpectedFirst =
+				(NxCollisionShape*) candidateTypeShapes[triggerIndex];
+			NxCollisionShape* const candidateExpectedSecond =
+				(NxCollisionShape*) candidateTypeShapes[1 - triggerIndex];
+			const bool oracleTypeOk = oracleTypeEventCount == 1 &&
+				oracleTypeEvents[0].trigger == oracleTrigger &&
+				oracleTypeEvents[0].other == reinterpret_cast<NxShape*>(oracleTypeShapes[1 - triggerIndex]) &&
+				oracleTypeEvents[0].event == 4 && oracleTypePairCount == 1 &&
+				oracleTypeCurrent->begin[0] == oracleExpectedFirst &&
+				oracleTypeCurrent->begin[1] == oracleExpectedSecond;
+			const bool candidateTypeOk = candidateTypeEventCount == 1 &&
+				candidateTypeEvents[0].trigger == candidateTrigger &&
+				candidateTypeEvents[0].other == reinterpret_cast<NxShape*>(candidateTypeShapes[1 - triggerIndex]) &&
+				candidateTypeEvents[0].event == 4 && candidateTypePairCount == 1 &&
+				candidateTypeCurrent->begin[0] == candidateExpectedFirst &&
+				candidateTypeCurrent->begin[1] == candidateExpectedSecond;
+			if(!oracleTypeOk || !candidateTypeOk || oracleTypeAllocs != 2 || candidateTypeAllocs != 2)
+				{
+				++typeMismatches;
+				printf("collision trigger-pair-type-mismatch types=%u.%u trigger=%u oracle_ok=%u candidate_ok=%u oracle_trigger=%u candidate_trigger=%u oracle_other=%u candidate_other=%u oracle_event=%u candidate_event=%u oracle_allocs=%u candidate_allocs=%u\n",
+					firstType, secondType, triggerIndex, oracleTypeOk, candidateTypeOk,
+					oracleTypeEvents && oracleTypeEventCount ?
+						oracleTypeEvents[0].trigger == reinterpret_cast<NxShape*>(oracleTypeShapes[0]) : 0,
+					candidateTypeEvents && candidateTypeEventCount ?
+						candidateTypeEvents[0].trigger == reinterpret_cast<NxShape*>(candidateTypeShapes[0]) : 0,
+					oracleTypeEvents && oracleTypeEventCount ?
+						oracleTypeEvents[0].other == reinterpret_cast<NxShape*>(oracleTypeShapes[1]) : 0,
+					candidateTypeEvents && candidateTypeEventCount ?
+						candidateTypeEvents[0].other == reinterpret_cast<NxShape*>(candidateTypeShapes[1]) : 0,
+					oracleTypeEvents && oracleTypeEventCount ? oracleTypeEvents[0].event : 0,
+					candidateTypeEvents && candidateTypeEventCount ? candidateTypeEvents[0].event : 0,
+					oracleTypeAllocs, candidateTypeAllocs);
+				}
+			++typeCases;
+			allocator.free(oracleTypeCurrent->begin);
+			allocator.free(candidateTypeCurrent->begin);
+			allocator.free(oracleTypeEvents);
+			allocator.free(candidateTypeEvents);
+			}
+	mismatches += typeMismatches;
+	printf("collision trigger-pair-type-matrix cases=%u oracle_cases=%u candidate_cases=%u mismatches=%u\n",
+		typeCases, typeCases, typeCases, typeMismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=all_ordered_type_pairs_both_trigger_sides\n");
 	nxTriggerPairTestOverlapResult = true;
 	NxSetCollisionDispatchMatrix(savedDispatch);
 	oracleSetAllocator(savedOracleSdk);

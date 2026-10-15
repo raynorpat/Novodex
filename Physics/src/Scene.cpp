@@ -7571,8 +7571,22 @@ void nxSceneProcessTriggerPairs(NxSceneInternal* scene)
 			NxCollisionShape* const second = previous->begin[pair * 2 + 1];
 			if(nxSceneTriggerPairStillOverlaps(first, second))
 				{
-				nxSceneAppendTriggerPair(current, first, second);
-				nxSceneReportTriggerTransition(scene, first, second, 4u);
+			NxCollisionShape* retainedFirst = first;
+			NxCollisionShape* retainedSecond = second;
+			if(retainedFirst->type > retainedSecond->type)
+				{
+				NxCollisionShape* const swap = retainedFirst;
+				retainedFirst = retainedSecond;
+				retainedSecond = swap;
+				}
+			if(*(reinterpret_cast<NxU8*>(retainedSecond) + 0xde) & 7u)
+				{
+				NxCollisionShape* const swap = retainedFirst;
+				retainedFirst = retainedSecond;
+				retainedSecond = swap;
+				}
+			nxSceneAppendTriggerPair(current, retainedFirst, retainedSecond);
+			nxSceneReportTriggerTransition(scene, retainedFirst, retainedSecond, 4u);
 				}
 			else
 				nxSceneReportTriggerTransition(scene, first, second, 2u);
