@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 261,
+    "differential_falsified": 262,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 84,
     "deferred_not_reconstructed_in_phase": 124,
-    "deferred_reconstructed_not_falsified": 90
+    "deferred_reconstructed_not_falsified": 89
   },
   "closed": [
     {
@@ -3716,18 +3716,19 @@
         "mutation": "In Physics/src/Scene.cpp, replaced nxSceneRemoveDynamicShape with a no-op that returns true, rebuilt NxPhysics.dll, and ran the registered actor-shape mutation staged-pair differential. The candidate exited with an access violation (-1073741819) and the transcript differed by 220 lines. Restoring the source and rebuilding returned both exits to zero and an exact transcript.",
         "detected": "stdout_delta=220"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000537",
       "rva": "0x000106d0",
-      "size": 16,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In the candidate scene-step implementation, replaced the inline x87 fnstcw save for row 000537 with a zero control-word value, rebuilt NxPhysics.dll, and ran the registered simulation staged-pair differential. The candidate aborted on a floating-point exception (exit -1073741681) and differed by 3997 transcript lines. Restoring fnstcw and rebuilding returned both exits to zero and an exact transcript.",
+        "detected": "stdout_delta=3997"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000585",
       "rva": "0x00010ab0",

@@ -11020,3 +11020,6 @@ Phase 7 continuation: phys_fn_000531 (`nxSceneAddShape`) is mutation-falsified t
 
 
 Phase 7 continuation: phys_fn_000535 (`nxSceneRemoveDynamicShape`) is mutation-falsified through the registered `NxPhysicsActorShapeMutationTests` staged-pair differential. A no-op returning true causes an access violation (candidate_exit=-1073741819, stdout_delta=220); restored source and rebuild return both exits to zero and exact output. See `phase7-scene-remove-dynamic-shape-000535.md`.
+
+
+Phase 7 continuation: phys_fn_000537 (x87 control-word save) is mutation-falsified through `NxPhysicsSimulationTests`. Replacing the `fnstcw` save with zero causes a floating-point exception (candidate_exit=-1073741681, stdout_delta=3997); restoring the save returns the staged-pair transcript to exact equality. See `phase7-x87-control-word-000537.md`.

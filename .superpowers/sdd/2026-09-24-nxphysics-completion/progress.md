@@ -511,3 +511,6 @@ Phase 7 row packet: `phys_fn_000531` (`nxSceneAddShape`) is mutation-falsified. 
 
 
 Phase 7 row packet: `phys_fn_000535` (`nxSceneRemoveDynamicShape`) is mutation-falsified through the Phase 7 actor-shape mutation differential. A no-op returning true crashes the candidate (stdout_delta=220); restored control is exact. Evidence: `phase7-scene-remove-dynamic-shape-000535.md`.
+
+
+Phase 7 row packet: `phys_fn_000537` (x87 control-word save) is mutation-falsified through the simulation differential. Replacing the `fnstcw` save with zero makes the candidate abort with a floating-point exception (`stdout_delta=3997`); the restored control is exact. Evidence: `phase7-x87-control-word-000537.md`.

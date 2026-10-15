@@ -104,11 +104,11 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 346,
-        "deferred_rows": 214,
+        "closed_rows": 347,
+        "deferred_rows": 213,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 124,
-          "reconstructed_not_falsified": 90
+          "reconstructed_not_falsified": 89
         }
       }
     },
@@ -182,8 +182,8 @@
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "discovered": 120,
-          "dynamically_gated": 345,
-          "reconstructed": 94,
+          "dynamically_gated": 346,
+          "reconstructed": 93,
           "statically_reviewed": 1
         }
       }
@@ -23762,7 +23762,7 @@
       "size": 16,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_000537",
       "implementation": {
         "path": null,
@@ -23777,7 +23777,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsSimulationTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -23795,29 +23795,27 @@
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
-        "four_digit_hex_literals": [
-          "027f"
-        ],
-        "simulation_mentioned": false,
+        "four_digit_hex_literals": [],
+        "simulation_mentioned": true,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsSimulationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
         "owner_phase": 7,
         "row_id": "phys_fn_000537",
         "rva": "0x000106d0",
         "action": "record_candidate_implementation_mapping",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -28973,7 +28971,7 @@
           {
             "id": "phys_fn_000537",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_000655",
@@ -231023,7 +231021,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "9c3b5aefa5ca149fd5825d4fd8930d9f21bde98bdfd96eeb8b7dc4dfa14b1aec",
+    "inventory_sha256": "5305bb5407ba1ea8be96e0552da6b092b1af0887baef240add02b232b7e2fa5f",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -231033,7 +231031,7 @@
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "3e47856bfe8ccf054e530adc03616d67f26990ca739981f3da4f9b904587fc67",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "cf95bb578c2e17a06652396b19a693e69124b663f8d70db68e4828a9713731f5",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "b6d2e2e76e909dd9331561905dcac88336eb9bdba4f1b25d52de0e6be4ffa241",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "6155a8cd6928eced6c14974feb9b644c2176b73fcf9e3a3c2a73b8d97fa70810"
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "2b50c77d508b459cbbcb03492578508857796b00e65f74f85bc11dafaaa0da91"
     }
   }
 }
