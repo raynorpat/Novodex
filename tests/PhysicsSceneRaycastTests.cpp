@@ -34,6 +34,7 @@
 #include "NxPageGuardedAllocator.h"
 
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
@@ -70,6 +71,69 @@ static NxU32 nxU(NxReal value)
 	NxU32 bits;
 	memcpy(&bits, &value, 4);
 	return bits;
+	}
+
+static bool nxResolvePrunableOwnerQuery(HMODULE physics, const wchar_t* pairDirectory,
+	void** function)
+	{
+	const NxU32 oracleRva = 0x000213e0;
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	if(GetFileAttributesW(mapPath) == INVALID_FILE_ATTRIBUTES)
+		{
+		*function = reinterpret_cast<unsigned char*>(physics) + oracleRva;
+		return true;
+		}
+	FILE* map = 0;
+	if(_wfopen_s(&map, mapPath, L"rt") != 0 || !map)
+		return false;
+	NxU32 preferredBase = 0;
+	NxU32 symbolAddress = 0;
+	char line[1024];
+	while(fgets(line, sizeof(line), map))
+		{
+		unsigned long parsedBase = 0;
+		if(sscanf_s(line, " Preferred load address is %lx", &parsedBase) == 1)
+			preferredBase = static_cast<NxU32>(parsedBase);
+		const char* const decorated = "?shapeOwnerQuery@@YAIPAX@Z";
+		char* symbol = strstr(line, decorated);
+		if(symbol)
+			{
+			char* address = symbol + strlen(decorated);
+			while(*address == ' ' || *address == '\t') ++address;
+			char* end = 0;
+			const unsigned long parsedAddress = strtoul(address, &end, 16);
+			if(end == address)
+				{
+				fclose(map);
+				return false;
+				}
+			symbolAddress = static_cast<NxU32>(parsedAddress);
+			break;
+			}
+		}
+	fclose(map);
+	if(!preferredBase || symbolAddress < preferredBase)
+		return false;
+	*function = reinterpret_cast<unsigned char*>(physics) + (symbolAddress - preferredBase);
+	return true;
+	}
+
+static bool nxCheckPrunableOwnerQuery(HMODULE physics, const wchar_t* pairDirectory)
+	{
+	void* rowAddress = 0;
+	if(!nxResolvePrunableOwnerQuery(physics, pairDirectory, &rowAddress))
+		return false;
+	typedef NxU32 (__cdecl* PrunableOwnerQueryFn)(void*);
+	PrunableOwnerQueryFn const query = reinterpret_cast<PrunableOwnerQueryFn>(rowAddress);
+	void* const opaqueOwner = reinterpret_cast<void*>(static_cast<unsigned long>(0x1234));
+	const NxU32 nullResult = query(0);
+	const NxU32 opaqueResult = query(opaqueOwner);
+	const bool matches = nullResult == 0 && opaqueResult == 0;
+	printf("scene_pruner row000965 owner_query_match=%u null=%u opaque=%u\n",
+		matches ? 1u : 0u, nullResult, opaqueResult);
+	return matches;
 	}
 
 // Read the actual DLL-owned Scene and its type-0 pruner through the recovered
@@ -1181,6 +1245,8 @@ int wmain(int argc, wchar_t** argv)
 	int status = nxOpenPair(argc, argv, "NxPhysicsSceneRaycastTests", pairDirectory, &physics);
 	if(status)
 		return status;
+	if(!nxCheckPrunableOwnerQuery(physics, pairDirectory))
+		return nxFail("Prunable owner-query row 000965 did not return zero");
 	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK)

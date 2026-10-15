@@ -1065,3 +1065,7 @@ Made the +0x24 NpScene pointer getter an explicit noinline method and routed pub
 ### 2026-10-15 continuation — NpScene gravity source mapping (`phys_fn_000289`)
 
 Completed the source-to-candidate census entry for the already reconstructed gravity setter. IDA's oracle body and the existing mutex-wide mutation differential identify `NpScene::setGravity`; the current linker map resolves the candidate symbol in `NpScene.obj`. Added the exact write-lock/forward/error-return contract and candidate map address to the inventory. This mapping does not change phase closure counts or the full-image backlog.
+
+### 2026-10-15 continuation — Prunable owner-query callback (`phys_fn_000965`)
+
+Added a direct oracle-RVA/candidate-map probe for the three-byte callback that always returns zero. The existing scene raycast differential did not observe this row: a return-one mutation survived. The new direct call with null and opaque owners rejects that mutation; the restored pair is exact. Phase 4 passes at `542/542`, discharging the row's Phase 2 homeless-shared-code deferral through its later-phase caller. Phase 2 now records 85 closed / 58 deferred rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase4-prunable-owner-query-000965.md`.

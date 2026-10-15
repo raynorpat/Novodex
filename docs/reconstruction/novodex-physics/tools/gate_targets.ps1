@@ -2872,6 +2872,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # overflowed against the plane's box), and a moved static shape was missed
     # at its new place (the static pruner's tree was never dropped).
     'NxPhysicsSceneRaycastTests' = @(
+        'scene_pruner row000965 owner_query_match=1 null=0 opaque=0',
         # AABB triangle query: appends intersecting world-space mesh triangles,
         # returns no elements for a miss, and applies a translated actor pose.
         'scene_overlap triangles hit_count=3 array_count=3',
@@ -6117,14 +6118,16 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 541  # adds actual-DLL Pruner constructor bounds, registration, handle-reuse and type-3 query/update/add/remove assertions
+    '4' = 542  # adds direct row 000965 Prunable owner-query result
+               # adds actual-DLL Pruner constructor bounds, registration, handle-reuse and type-3 query/update/add/remove assertions
                # adds the triangle-mesh creation marker for AABB-tree build rows
                # adds seven PMap query cases, their oracle digest and two mesh-release cases
                # all registered asset, PMap export, and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2764  # adds sphere radius setter/getter lock state and invalid-radius report rows
+	'5' = 2765  # adds direct row 000965 Prunable owner-query result
+	           # adds sphere radius setter/getter lock state and invalid-radius report rows
 	           # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
 	           # includes candidate-DLL base shape descriptor validation
@@ -6233,7 +6236,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2878  # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
+	'7' = 2879  # adds direct row 000965 Prunable owner-query result
+	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions

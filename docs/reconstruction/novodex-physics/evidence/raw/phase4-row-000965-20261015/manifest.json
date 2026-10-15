@@ -1,0 +1,39 @@
+{
+  "purpose": "Actual-DLL direct mutation proof for phys_fn_000965 (Prunable shape owner-query callback).",
+  "date": "2026-10-15",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "implementation_source": "Physics/src/ObjectModel.cpp",
+  "implementation_source_sha256": "3eded9823a8b4e6a1441e8c0b4b50c6b9bc65ae71837ad2150132983d15cd1c6",
+  "test_source": "tests/PhysicsSceneRaycastTests.cpp",
+  "test_source_sha256": "ab1de4d945c2a95d45e8bdbbcead64873d8cc8461e11c7ce0028c82c69e965bc",
+  "candidate_symbol": "?shapeOwnerQuery@@YAIPAX@Z",
+  "candidate_map": "build/Release/NxPhysics.map",
+  "candidate_map_sha256": "2a84d6b6e2cf0a182e0645d5946810fd8372ed34d1bf927c897073f013b35e14",
+  "candidate_map_address": "0x1004f0d0",
+  "mutation": "Changed shapeOwnerQuery to return 1 instead of 0 and rebuilt the candidate DLL.",
+  "mutation_result": "Direct oracle/candidate probe calls with null and opaque owner pointers; oracle prints owner_query_match=1 null=0 opaque=0, mutant candidate prints owner_query_match=0 null=1 opaque=1 and exits 1. Differential: oracle_exit=0, candidate_exit=1, stdout_delta=2806.",
+  "mutant_candidate_sha256": "74924f9153592b06fb3ec693365455af505d398433fc23055b7ad36c9a73d9ff",
+  "restored_candidate_sha256": "3d2a55e31aac03a130a38a11805e4cd5191e3832326dedc7092d76ea0db64bee",
+  "restored_result": "Both exits are zero; stdout_delta=0 and stderr_exact=True. Both direct probes print owner_query_match=1 null=0 opaque=0.",
+  "phase4_gate": "pass, coverage_assertions_evaluated=542 floor=542",
+  "logs": {
+    "mutant-differential.log.gz": {
+      "sha256": "13a4db4104878fe38c7485780b35d70f7c51171016982fab60b9e3e704a96eae",
+      "compressed_bytes": 19095,
+      "uncompressed_sha256": "058d936e4fe0e282157913c71f5e10ab303e8b8c78ea2749d053c2fc7a6d8c07",
+      "uncompressed_bytes": 402398
+    },
+    "restored-differential.log.gz": {
+      "sha256": "ea8a76ad6654cf52d8c2b5ad699134aa2cdaf3a1c8f4ee18cf9400750957cea5",
+      "compressed_bytes": 36540,
+      "uncompressed_sha256": "1bc9d454814d275aa639e9ba48834254dafab05b0a78334f69ac5d79784d0343",
+      "uncompressed_bytes": 798911
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "3b89275b8a1e43a1ac4f4b38292f453216d90f2c2fa0b5a7695bc9a1105fcd05",
+      "compressed_bytes": 76043,
+      "uncompressed_sha256": "7a93217e329fd711aae7548c70e545704e2dd63b0e555d7fb606c00f67ee3f4e",
+      "uncompressed_bytes": 1119651
+    }
+  }
+}
