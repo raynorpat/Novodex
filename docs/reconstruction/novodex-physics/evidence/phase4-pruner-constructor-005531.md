@@ -1,0 +1,9 @@
+# Phase 4 Pruner constructor: `phys_fn_005531`
+
+`phys_fn_005531` is `Pruner::Pruner` at RVA `0x000f1550`. IDA's constructor initializes the pool member, writes its vtable, initializes the registration block, and calls the empty-bounds initializer at `0x00053810` for the six words beginning at `this+0x1c`. The candidate implementation is `Physics/src/opcode/IcePruner.cpp`; the process-wide registration allocation is primed by `nxOpcodeEnsurePool` in the engine factory.
+
+`NxPhysicsSceneRaycastTests` now registers an actual-DLL assertion after shape registration has created the type-0 pruner. Through the public `NxScene` wrapper it follows the recovered private layout to the DLL-owned Scene, pruning engine, and type-0 Pruner, then checks the six bound words are exactly `7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff` (positive `FLT_MAX` minimum and negative `FLT_MAX` maximum). Oracle and restored candidate both report the marker, with exact staged-pair output (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`).
+
+For row-specific falsification, inserted an immediate return at `Pruner::Pruner` entry, explicitly rebuilt `NxPhysics` and `NxPhysicsSceneRaycastTests`, then ran the registered staged pair. The oracle retained the expected bounds; the candidate observed guarded-allocation `cdcdcdcd` words and failed the assertion (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2793`). The source was restored to SHA-256 `525CE15EF6927B8B6719DC9E0550C47B9D53EDE6CA9AB351F8DFE4DE6779EFD1`, then rebuilt. The full Phase 4 gate passed at 531/531.
+
+This proves the constructor's pool/bounds initialization on the live public scene path. It does not independently exercise the allocation-failure branch inside the process-wide registration helper or the base pruner destructor; those remain separate open rows. Raw build, mutation, restored-control, and full-gate logs are in [raw evidence](raw/phase4-pruner-assertion-005531-20261014/).

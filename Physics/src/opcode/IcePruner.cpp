@@ -16,7 +16,7 @@ Task 3). See IcePruner.h. The rows, all from the Capstone listing:
 		0x000f00c0	PruningPool::AddObject
 		0x000f02a0	PruningPool::RemoveObject
 	base pruner (table 0x0011bc18)
-		0x000f1550	Pruner::Pruner                     not claimed: see below
+		0x000f1550	Pruner::Pruner
 		0x000e50c0	slot 1, AddObject
 		0x000e50d0	slot 2, RemoveObject
 		0x000e50f0	slot 3, UpdateObject (already recorded as phys_fn_005212)
@@ -38,14 +38,14 @@ Task 3). See IcePruner.h. The rows, all from the Capstone listing:
 The engine (Scene+0x624) that owns the pruners, its add and remove and its
 factory, are IcePruningEngine.cpp.
 
-NOT RECONSTRUCTED.
-  * The base constructor's +0x34 member (0x000b4cc0): the image registers the
-    pruner with a process-wide 0x1c-byte object it creates on first use
-    (0x000ef270) and keeps the handle at +0x34. The engine's factory creates
-    that object through Scene.cpp's existing emulation (nxOpcodeEnsurePool,
-    which reproduces its allocations) and the handle is left 0. So 0x000f1550
-    is not claimed, and neither are the destructors, whose base (0x000f15a0)
-    undoes that registration (0x000b4d20).
+NOT RECONSTRUCTED IN THIS FILE.
+  * The process-wide registration helper at +0x34 (0x000b4cc0) remains
+    emulated by the engine factory's nxOpcodeEnsurePool path; allocation-failure
+    behavior and the base destructor's unregistration (0x000f15a0 ->
+    0x000b4d20) remain open. The Pruner base constructor's pool, bounds, and
+    counters are reconstructed and its six empty-bound words are independently
+    mutation-falsified through the public DLL Scene path (evidence/phase4-
+    pruner-constructor-005531.md).
   * Slot 5 across the pruner families. The base defaults remain false. The
     static, bounded-dynamic, and unbounded-dynamic query slots 7/8 are
     reconstructed below.
@@ -249,10 +249,9 @@ __declspec(noinline) void PruningPool::RemoveObject(Prunable* object)
 ///////////////////////////////////////////////////////////////////////////////
 // The base pruner.
 
-// 0x000f1550, not claimed (see the file comment): the pool, the table, the
-// +0x34 member (0x000b4cc0: its registration is emulated by the engine's
-// factory, IcePruningEngine.cpp, and the handle left 0) and the empty bounds
-// (0x00053810).
+// phys_fn_005531 (0x000f1550): the pool, vtable, registration block, counters,
+// and empty bounds (0x00053810). The engine factory primes the process-wide
+// registration object; the six bounds words have an actual-DLL proof.
 Pruner::Pruner()
 {
 #if NX_PHYSICS_USE_X87

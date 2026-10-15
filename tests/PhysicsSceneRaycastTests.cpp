@@ -72,6 +72,31 @@ static NxU32 nxU(NxReal value)
 	return bits;
 	}
 
+// Read the actual DLL-owned Scene and its type-0 pruner through the recovered
+// private layout. NpScene::mScene is +0x24; the Scene pruning engine is +0x624;
+// its type-0 pruner pointer is +0x1c. The Pruner constructor initializes the
+// six AABB words at +0x1c to an empty box (FLT_MAX, -FLT_MAX).
+static bool nxCheckPrunerConstructorBounds(NxScene* wrapper)
+	{
+	NxU32 sceneAddress = 0;
+	memcpy(&sceneAddress, reinterpret_cast<const NxU8*>(wrapper) + 0x24, sizeof(sceneAddress));
+	if(!sceneAddress)
+		return false;
+	const NxU8* const engine = reinterpret_cast<const NxU8*>(sceneAddress) + 0x624;
+	NxU32 prunerAddress = 0;
+	memcpy(&prunerAddress, engine + 0x1c, sizeof(prunerAddress));
+	if(!prunerAddress)
+		return false;
+	NxU32 bounds[6];
+	memcpy(bounds, reinterpret_cast<const NxU8*>(prunerAddress) + 0x1c, sizeof(bounds));
+	const bool empty = bounds[0] == 0x7f7fffff && bounds[1] == 0x7f7fffff &&
+		bounds[2] == 0x7f7fffff && bounds[3] == 0xff7fffff &&
+		bounds[4] == 0xff7fffff && bounds[5] == 0xff7fffff;
+	printf("scene_pruner constructor_empty_bounds=%u words=%08x.%08x.%08x.%08x.%08x.%08x\n",
+		empty ? 1u : 0u, bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
+	return empty;
+	}
+
 // ---------------------------------------------------------------------------
 // Pointer names.
 
@@ -1096,6 +1121,8 @@ int wmain(int argc, wchar_t** argv)
 
 	for(unsigned i = 0; i < kShapeCaseCount; i++)
 		nxActors[i] = nxCreateCase(scene, i);
+	if(!nxCheckPrunerConstructorBounds(scene))
+		return nxFail("type-0 pruner constructor did not initialize empty bounds");
 
 	nxSpatialOverlapChecks(sdk, scene);
 

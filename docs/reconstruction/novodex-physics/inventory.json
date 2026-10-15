@@ -103452,13 +103452,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/IcePruner.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2123",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19090",
       "static_proof": "reached: phys_fn_005232 calls it at 0x000e56d5. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
-      "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
+      "dynamic_proof": "NxPhysicsSceneRaycastTests reads the type-0 Pruner empty bounds from the public Scene wrapper after shape registration. The registered marker requires 7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff. A forced, row-entry return mutation leaves guarded cdcdcdcd words and fails only the candidate (candidate_exit=1, stdout_delta=2793); restored DLL matches exactly. Full Phase 4 passes at 531/531. See evidence/phase4-pruner-constructor-005531.md.",
+      "notes": "Pruner::Pruner pool/counter and empty-bounds initialization is proven through the actual DLL; process-global registration setup is emulated by nxOpcodeEnsurePool in the engine factory. See evidence/phase4-pruner-constructor-005531.md.",
+      "implementation": "Physics/src/opcode/IcePruner.cpp",
+      "implementation_symbol": "Pruner::Pruner"
     },
     {
       "id": "phys_fn_005532",

@@ -1,0 +1,58 @@
+{
+  "purpose": "Actual-DLL constructor initialization proof for phys_fn_005531 through the public Scene raycast path; raw gate runs also verify all affected phase coverage registrations.",
+  "base_commit": "d997b0e8da3005c243e7d799b9f4a786c3c6c72e",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "mutated_candidate_sha256": "b54d7222d2a3334fef60dc560dfc40861bfe2d3c935e81a8d77c0ab1bb4e36df",
+  "restored_candidate_sha256": "a1997ddbd0877b204ba32b0892a50068fa4078022d90913e8939a657244657bd",
+  "restored_source_sha256": "525CE15EF6927B8B6719DC9E0550C47B9D53EDE6CA9AB351F8DFE4DE6779EFD1",
+  "oracle_bounds_words": "7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff",
+  "mutation": "Pruner::Pruner entry return; forced NxPhysics and test-target rebuild; candidate exit 1, oracle exit 0, stdout_delta=2793.",
+  "restored_control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true",
+  "phase_gates": {
+    "4": "phase_gate=4 status=pass; coverage_assertions_evaluated=531 floor=531",
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2738 floor=2738",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2869 floor=2869"
+  },
+  "logs": {
+    "build-assertion-mutation.log": {
+      "sha256": "8b38ca6fc4532051794969403f7d425768702e60fd7aaeddde4f6057a567f34e",
+      "bytes": 1239
+    },
+    "build-assertion-test-mutation.log": {
+      "sha256": "11e74f65580cd2fdb3385c3c0afd927cbbd23728da2887ee75b798fa6979b5c7",
+      "bytes": 245
+    },
+    "build-restored-assertion-test.log": {
+      "sha256": "71eefc4855baa69509394357ddadbbc8d69da5c5bb728b657e48e98ca8341ef8",
+      "bytes": 277
+    },
+    "build-restored-assertion.log": {
+      "sha256": "8b38ca6fc4532051794969403f7d425768702e60fd7aaeddde4f6057a567f34e",
+      "bytes": 1239
+    },
+    "differential-assert-mutation.log": {
+      "sha256": "d6faeb907a5b632f49aa56d062d2837e411618cd045d0961a9f830d5632e4179",
+      "bytes": 405382
+    },
+    "differential-restored-assertion.log": {
+      "sha256": "5a922315e79da42fdece8e70d1159ae1440e437aa37442e87ce554afb6ac9494",
+      "bytes": 800727
+    },
+    "phase4-gate-final.log": {
+      "sha256": "3fe198035b236e768cf217ccc70274dcb5df4f41c6d3e57bdc6888eb0d1561df",
+      "bytes": 1120613
+    },
+    "phase4-gate.log": {
+      "sha256": "135c397cf2f9ce1693e257ac62dfc509c1150e2341e666e6abcac13a4bd4aaea",
+      "bytes": 1119531
+    },
+    "phase5-gate.log": {
+      "sha256": "aa7c95531ddcbafc00794c25b1815320ba3f72e9256a3fa591afcf153ca01100",
+      "bytes": 2842109
+    },
+    "phase7-gate.log": {
+      "sha256": "91a27085c15b87845afd131faa7d6140efb91fa4d152e1be3a3f2cd9533ddcf5",
+      "bytes": 4650642
+    }
+  }
+}

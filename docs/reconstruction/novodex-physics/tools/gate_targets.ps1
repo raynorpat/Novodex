@@ -2881,6 +2881,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # Strict ordered bounded-dynamic query output pins the boundary-cell
         # stream before the fully-contained subtree stream.
         'scene_overlap bounded_tree all count=12 order=bounded_05.bounded_10.bounded_00.bounded_02.bounded_04.bounded_03.bounded_01.bounded_09.bounded_08.bounded_06.bounded_07.bounded_11',
+        'scene_pruner constructor_empty_bounds=1 words=7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
         'scene_overlap sphere=10 type=2 result=1',
         'scene_overlap sphere=11 type=2 result=0',
         'scene_overlap aabb=0 type=3 result=1',
@@ -6066,13 +6067,15 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 530  # adds the actual-DLL triangle-mesh creation marker for AABB-tree build rows
+    '4' = 531  # adds the actual-DLL Pruner constructor bounds assertion
+               # adds the triangle-mesh creation marker for AABB-tree build rows
                # adds seven PMap query cases, their oracle digest and two mesh-release cases
                # all registered asset, PMap export, and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2737  # adds candidate-DLL base shape descriptor validation
+	'5' = 2738  # adds the actual-DLL Pruner constructor bounds assertion
+	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
@@ -6177,7 +6180,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2868  # adds plane descriptor virtual validation row 000585
+	'7' = 2869  # adds the actual-DLL Pruner constructor bounds assertion
+	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions
 				# adds direct row 000521 owner-pair cleanup probe and row 000867 accumulator probe

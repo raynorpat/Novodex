@@ -488,3 +488,8 @@ Measured row detection: phys_fn_002047 stdout_delta=26.
 ## 19. 2026-10-14 OPCODE AABB-tree build rows
 
 The `AABBTreeNode::_BuildHierarchy` row `phys_fn_005517` and `AABBTree::Build` row `phys_fn_005523` each have an independent function-entry mutation, rebuilt and caught by the registered `NxPhysicsTriangleMeshApiTests` staged pair. Each mutation made authored PMap mesh creation fail in the candidate (`candidate_exit=1`, `stdout_delta=26`) while the pinned oracle passed. The restored pair matched exactly, and the full Phase 4 gate passed at 530/530 coverage assertions. Details and raw transcripts: [phase4-aabbtree-005517-005523.md](phase4-aabbtree-005517-005523.md).
+
+
+## 20. 2026-10-14 Pruner base-constructor row
+
+The `Pruner::Pruner` row `phys_fn_005531` is independently mutation-falsified through `NxPhysicsSceneRaycastTests`. The test reads the type-0 pruner's six initialized empty-bound words from the actual DLL-owned Scene; a forced constructor-entry return mutation leaves `cdcdcdcd` words and is detected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2793`). Restored output is exact and the full Phase 4 gate passes at 531/531. Registration-helper allocation failures and the base destructor remain outside this proof. Details and raw transcripts: [phase4-pruner-constructor-005531.md](phase4-pruner-constructor-005531.md).
