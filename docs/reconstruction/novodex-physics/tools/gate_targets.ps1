@@ -4487,6 +4487,8 @@ $NxRequiredCoverageLines = [ordered] @{
     #     is over the shipped DLL's own return values, so it pins that the
     #     oracle was called, with these inputs, this many times. Nothing on the
     #     reconstruction side can produce it.
+    #   * direct Scene-row differential summaries, which pin the oracle's
+    #     observable pair-list and event counts alongside candidate equality.
     #
     # Verified by the strong form rather than by editing a pinned number:
     # de-aiming the aimed generator (dropping the separation aiming so every
@@ -4514,6 +4516,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'matrix index_rule probes=2592 wrong=0',
         'matrix contact_filter checks=7 wrong=0',
         'matrix contact_compound calls_oracle=3 calls_candidate=3 wrong=0',
+        'collision trigger-pair-duplicates oracle_events=3 candidate_events=3 oracle_pairs=3 candidate_pairs=3 mismatches=0',
+        'collision trigger-pair-duplicates overlap=false oracle_events=3 candidate_events=3 oracle_pairs=2 candidate_pairs=2 mismatches=0',
+        'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_true',
+        'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_false',
 
         'collision name=plane_sphere.random index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=4513405a6ba24fb9',
         'collision name=plane_sphere.aimed index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=ed8746bf83b7801f',

@@ -56,10 +56,12 @@
 #include "ObjectModel.h"
 #pragma pop_macro("ARRAYSIZE")
 #include "PhysicsInternal.h"
+#include "Scene.h"
 
 // convex-mesh gap Task 2m candidate dispatch entry, implemented in the
 // production narrow-phase dispatcher.
 void __cdecl NxDispatchShapePair(void*, const NxCollisionShape*, const NxCollisionShape*, void*, void*);
+void nxSceneProcessTriggerPairs(NxSceneInternal* scene);
 
 // ---------------------------------------------------------------------------
 // The recovered dispatch matrix.
@@ -2743,6 +2745,7 @@ static unsigned nxDrivePScenePrunerShapeRemove(unsigned char* base);
 static unsigned nxDrivePSceneBaseDtorRegistry(unsigned char* base);
 static unsigned nxDrivePSceneBaseDtorOwner(unsigned char* base);
 static unsigned nxDrivePScenePrunerOwnerDestroy(unsigned char* base);
+static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base);
 extern "C" void __fastcall NxScenePrunerNodeRemove(void* node);
 extern "C" void __stdcall NxScenePrunerNodeDestroy(void* node);
 extern "C" void __fastcall NxScenePrunerShapeRemove(void* group, void* owner);
@@ -3177,6 +3180,230 @@ struct NxSceneSdkTestAllocator : SdkAllocator {
  void* realloc(void* p,size_t n) override{return inner->realloc(p,n);}
  void free(void* p) override{inner->free(p);}
 };
+
+struct NxTriggerPairTestList
+	{
+	NxCollisionShape** begin;
+	NxCollisionShape** end;
+	NxCollisionShape** capacity;
+	};
+
+struct NxTriggerPairTestEvent
+	{
+	NxShape* trigger;
+	NxShape* other;
+	NxU32 event;
+	};
+
+static bool nxTriggerPairTestOverlapResult = true;
+
+static bool __cdecl nxTriggerPairTestOverlap(
+	const NxCollisionShape* first, const NxCollisionShape* second)
+	{
+	return first != nullptr && second != nullptr && nxTriggerPairTestOverlapResult;
+	}
+
+static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("trigger-pair duplicate fixture could not initialize foundation");
+	NxScenePairTestAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator =
+		(OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("trigger-pair duplicate fixture could not install oracle allocator");
+
+	NxU8 oracleScene[0x710] = {};
+	NxU8 oracleShapes[2][0xe0] = {};
+	NxSceneInternal candidateScene;
+	NxU8 candidateShapes[2][0xe0] = {};
+	void* oraclePreviousData = allocator.malloc(4 * sizeof(void*));
+	void* oracleCurrentData = allocator.malloc(12 * sizeof(void*));
+	void* candidatePreviousData = allocator.malloc(4 * sizeof(void*));
+	void* candidateCurrentData = allocator.malloc(12 * sizeof(void*));
+	if(!oraclePreviousData || !oracleCurrentData ||
+		!candidatePreviousData || !candidateCurrentData)
+		return nxFail("trigger-pair duplicate fixture could not allocate pair arrays");
+
+	NxU8 oracleMatrix[0x124] = {};
+	NxU8 candidateMatrix[0x124] = {};
+	const unsigned boxBoxOverlap = 0x94 + (6 * 2 + 2) * sizeof(void*);
+	*(NxShapeOverlapFn*) (oracleMatrix + boxBoxOverlap) = nxTriggerPairTestOverlap;
+	*(NxShapeOverlapFn*) (candidateMatrix + boxBoxOverlap) = nxTriggerPairTestOverlap;
+	void* const savedDispatch = NxGetCollisionDispatchMatrix();
+	NxSetCollisionDispatchMatrix(candidateMatrix);
+
+	auto initialise = [&](NxU8* scene, NxU8 (*shapes)[0xe0],
+		void* previousData, void* currentData)
+		{
+		for(unsigned shape = 0; shape != 2; ++shape)
+			{
+			*(NxU32*) (shapes[shape] + 0xd0) = 2;
+			*(NxU32*) (shapes[shape] + 0xd4) = shape + 1;
+			}
+		*(NxU8*) (shapes[0] + 0xde) = 1;
+		NxTriggerPairTestList* previous =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5dc);
+		NxTriggerPairTestList* current =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5ec);
+		previous->begin = (NxCollisionShape**) previousData;
+		previous->end = previous->begin + 4;
+		previous->capacity = previous->end;
+		current->begin = (NxCollisionShape**) currentData;
+		current->end = current->begin + 4;
+		current->capacity = current->begin + 12;
+		for(unsigned pair = 0; pair != 2; ++pair)
+			{
+			previous->begin[pair * 2] = (NxCollisionShape*) shapes[0];
+			previous->begin[pair * 2 + 1] = (NxCollisionShape*) shapes[1];
+			current->begin[pair * 2] = (NxCollisionShape*) shapes[0];
+			current->begin[pair * 2 + 1] = (NxCollisionShape*) shapes[1];
+			}
+		*(NxTriggerPairTestEvent**) (scene + 0x5fc) = nullptr;
+		*(NxTriggerPairTestEvent**) (scene + 0x600) = nullptr;
+		*(NxTriggerPairTestEvent**) (scene + 0x604) = nullptr;
+		*(NxTriggerPairTestList**) (scene + 0x5d4) = previous;
+		*(NxTriggerPairTestList**) (scene + 0x5d8) = current;
+		};
+	initialise(oracleScene, oracleShapes, oraclePreviousData, oracleCurrentData);
+	initialise(candidateScene.bytes(), candidateShapes,
+		candidatePreviousData, candidateCurrentData);
+
+	typedef void* (__thiscall* OracleTriggerPairsFn)(void*, void*);
+	const OracleTriggerPairsFn oracle = (OracleTriggerPairsFn) (base + 0x0005ae50);
+	oracle(oracleMatrix, oracleScene);
+	nxSceneProcessTriggerPairs(&candidateScene);
+	NxTriggerPairTestEvent* const oracleEvents =
+		*(NxTriggerPairTestEvent**) (oracleScene + 0x5fc);
+	NxTriggerPairTestEvent* const candidateEvents =
+		*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x5fc);
+	const unsigned oracleEventCount = oracleEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (oracleScene + 0x600) - oracleEvents) : 0;
+	const unsigned candidateEventCount = candidateEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x600) - candidateEvents) : 0;
+	NxTriggerPairTestList* const oracleCurrent =
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d4);
+	NxTriggerPairTestList* const candidateCurrent =
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d4);
+	const unsigned oraclePairCount = oracleCurrent->begin
+		? (unsigned) ((oracleCurrent->end - oracleCurrent->begin) / 2) : 0;
+	const unsigned candidatePairCount = candidateCurrent->begin
+		? (unsigned) ((candidateCurrent->end - candidateCurrent->begin) / 2) : 0;
+	unsigned mismatches = oracleEventCount != 3 || candidateEventCount != 3 ||
+		oraclePairCount != 3 || candidatePairCount != 3 ? 1u : 0u;
+	for(unsigned event = 0; event != 3; ++event)
+		{
+		const bool oracleEventOk = oracleEventCount > event && oracleEvents[event].trigger == (NxShape*) oracleShapes[0] &&
+			oracleEvents[event].other == (NxShape*) oracleShapes[1] && oracleEvents[event].event == 4;
+		const bool candidateEventOk = candidateEventCount > event && candidateEvents[event].trigger == (NxShape*) candidateShapes[0] &&
+			candidateEvents[event].other == (NxShape*) candidateShapes[1] && candidateEvents[event].event == 4;
+		mismatches += oracleEventOk == candidateEventOk ? 0u : 1u;
+		mismatches += oracleEventOk ? 0u : 1u;
+		mismatches += candidateEventOk ? 0u : 1u;
+		}
+	for(unsigned pair = 0; pair != 3; ++pair)
+		{
+		const bool oraclePairOk = oraclePairCount > pair && oracleCurrent->begin[pair * 2] ==
+			(NxCollisionShape*) oracleShapes[0] && oracleCurrent->begin[pair * 2 + 1] ==
+			(NxCollisionShape*) oracleShapes[1];
+		const bool candidatePairOk = candidatePairCount > pair && candidateCurrent->begin[pair * 2] ==
+			(NxCollisionShape*) candidateShapes[0] && candidateCurrent->begin[pair * 2 + 1] ==
+			(NxCollisionShape*) candidateShapes[1];
+		mismatches += oraclePairOk && candidatePairOk ? 0u : 1u;
+		}
+	printf("collision trigger-pair-duplicates oracle_events=%u candidate_events=%u oracle_pairs=%u candidate_pairs=%u mismatches=%u\n",
+		oracleEventCount, candidateEventCount, oraclePairCount, candidatePairCount, mismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_true\n");
+
+	NxTriggerPairTestList* oraclePrevious =
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d8);
+	NxTriggerPairTestList* candidatePrevious =
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d8);
+	allocator.free(oracleCurrent->begin);
+	allocator.free(oraclePrevious->begin);
+	allocator.free(candidateCurrent->begin);
+	allocator.free(candidatePrevious->begin);
+	allocator.free(oracleEvents);
+	allocator.free(candidateEvents);
+
+	// The same duplicate layout with a false overlap answer must preserve both
+	// current stays and classify only the unmatched old duplicate as leave.
+	nxTriggerPairTestOverlapResult = false;
+	oraclePreviousData = allocator.malloc(4 * sizeof(void*));
+	oracleCurrentData = allocator.malloc(12 * sizeof(void*));
+	candidatePreviousData = allocator.malloc(4 * sizeof(void*));
+	candidateCurrentData = allocator.malloc(12 * sizeof(void*));
+	if(!oraclePreviousData || !oracleCurrentData ||
+		!candidatePreviousData || !candidateCurrentData)
+		return nxFail("trigger-pair duplicate leave fixture could not allocate pair arrays");
+	memset(oracleScene, 0, sizeof(oracleScene));
+	memset(oracleShapes, 0, sizeof(oracleShapes));
+	memset(candidateShapes, 0, sizeof(candidateShapes));
+	initialise(oracleScene, oracleShapes, oraclePreviousData, oracleCurrentData);
+	initialise(candidateScene.bytes(), candidateShapes,
+		candidatePreviousData, candidateCurrentData);
+	oracle(oracleMatrix, oracleScene);
+	nxSceneProcessTriggerPairs(&candidateScene);
+	NxTriggerPairTestEvent* const oracleLeaveEvents =
+		*(NxTriggerPairTestEvent**) (oracleScene + 0x5fc);
+	NxTriggerPairTestEvent* const candidateLeaveEvents =
+		*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x5fc);
+	const unsigned oracleLeaveCount = oracleLeaveEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (oracleScene + 0x600) - oracleLeaveEvents) : 0;
+	const unsigned candidateLeaveCount = candidateLeaveEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x600) - candidateLeaveEvents) : 0;
+	NxTriggerPairTestList* const oracleLeaveCurrent =
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d4);
+	NxTriggerPairTestList* const candidateLeaveCurrent =
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d4);
+	const unsigned oracleLeavePairs = oracleLeaveCurrent->begin
+		? (unsigned) ((oracleLeaveCurrent->end - oracleLeaveCurrent->begin) / 2) : 0;
+	const unsigned candidateLeavePairs = candidateLeaveCurrent->begin
+		? (unsigned) ((candidateLeaveCurrent->end - candidateLeaveCurrent->begin) / 2) : 0;
+	unsigned leaveMismatches = oracleLeaveCount != 3 || candidateLeaveCount != 3 ||
+		oracleLeavePairs != 2 || candidateLeavePairs != 2 ? 1u : 0u;
+	for(unsigned event = 0; event != 3; ++event)
+		{
+		const NxU32 expectedEvent = event == 2 ? 2u : 4u;
+		const bool oracleEventOk = oracleLeaveCount > event && oracleLeaveEvents[event].trigger == (NxShape*) oracleShapes[0] &&
+			oracleLeaveEvents[event].other == (NxShape*) oracleShapes[1] &&
+			oracleLeaveEvents[event].event == expectedEvent;
+		const bool candidateEventOk = candidateLeaveCount > event && candidateLeaveEvents[event].trigger ==
+			(NxShape*) candidateShapes[0] && candidateLeaveEvents[event].other ==
+			(NxShape*) candidateShapes[1] && candidateLeaveEvents[event].event == expectedEvent;
+		leaveMismatches += oracleEventOk && candidateEventOk ? 0u : 1u;
+		}
+	mismatches += leaveMismatches;
+	printf("collision trigger-pair-duplicates overlap=false oracle_events=%u candidate_events=%u oracle_pairs=%u candidate_pairs=%u mismatches=%u\n",
+		oracleLeaveCount, candidateLeaveCount, oracleLeavePairs, candidateLeavePairs,
+		leaveMismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_false\n");
+	oraclePrevious = *(NxTriggerPairTestList**) (oracleScene + 0x5d8);
+	candidatePrevious = *(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d8);
+	allocator.free(oracleLeaveCurrent->begin);
+	allocator.free(oraclePrevious->begin);
+	allocator.free(candidateLeaveCurrent->begin);
+	allocator.free(candidatePrevious->begin);
+	allocator.free(oracleLeaveEvents);
+	allocator.free(candidateLeaveEvents);
+	nxTriggerPairTestOverlapResult = true;
+	NxSetCollisionDispatchMatrix(savedDispatch);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 static unsigned nxDrivePSceneBaseDtorRegistry(unsigned char* base) {
  if(!nx2iFoundationBegin())return nxFail("base-dtor registry fixture could not initialize foundation");
  NxScenePairTestAllocator allocator;NxUserAllocator* saved=nxFoundationSDKAllocator;nxFoundationSDKAllocator=&allocator;
@@ -3309,7 +3536,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool sceneBaseDtorOnly = argc == 4 && wcscmp(argv[3], L"--scene-base-dtor-only") == 0;
 	const bool scenePrunerOwnerOnly = argc == 4 && wcscmp(argv[3], L"--scene-pruner-owner-only") == 0;
 	const bool sceneBaseDtorOwnerOnly = argc == 4 && wcscmp(argv[3], L"--scene-base-dtor-owner-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly)
+	const bool sceneTriggerPairDuplicatesOnly = argc == 4 && wcscmp(argv[3], L"--scene-trigger-pair-duplicates-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only]\n");
 		return 2;
@@ -3404,6 +3632,11 @@ int wmain(int argc, wchar_t** argv)
 	if(sceneBaseDtorOwnerOnly)
 		{
 		const unsigned mismatches = nxDrivePSceneBaseDtorOwner(base);
+		return mismatches ? 1 : 0;
+		}
+	if(sceneTriggerPairDuplicatesOnly)
+		{
+		const unsigned mismatches = nxDrivePSceneTriggerPairDuplicates(base);
 		return mismatches ? 1 : 0;
 		}
 	if(sceneOwnerPairRecordsOnly)
@@ -3737,6 +3970,7 @@ int wmain(int argc, wchar_t** argv)
 
 	unsigned totalMismatch = 0;
 	totalMismatch += compoundDispatchWrong;
+	totalMismatch += nxDrivePSceneTriggerPairDuplicates(base);
 	unsigned char storage0[kShapeBytes];
 	unsigned char storage1[kShapeBytes];
 	NxCollisionShape* shape0 = (NxCollisionShape*) storage0;
