@@ -784,6 +784,37 @@ int wmain(int argc, wchar_t** argv)
 				{
 				NxCapsuleShape* capsule = static_cast<NxCapsuleShape*>(publicShape);
 				capsule->setRadius(0.75f);
+				// NpCapsuleShape::setHeight must preserve the original failure
+				// behavior when another thread owns the scene write lock.
+				unsigned char* publicBytes = reinterpret_cast<unsigned char*>(publicShape);
+				unsigned char* writeLink = *reinterpret_cast<unsigned char**>(publicBytes + 0x10);
+				unsigned* writeState = reinterpret_cast<unsigned*>(
+					*reinterpret_cast<unsigned char**>(writeLink) + 0x18);
+				const unsigned savedFlag = writeState[0];
+				const unsigned savedOwner = writeState[1];
+				const unsigned reportsBeforeLockedHeight = errors.reports;
+				writeState[0] = 1;
+				writeState[1] = 0;
+				errors.enabled = true;
+				capsule->setHeight(4.0f);
+				errors.enabled = false;
+				writeState[0] = savedFlag;
+				writeState[1] = savedOwner;
+				printf("setter capsule_locked_height=%x.%x.%u\n",
+					bits(capsule->getHeight()), word(familyShape, 0xe4),
+					errors.reports - reportsBeforeLockedHeight);
+				unsigned char* readLink = *reinterpret_cast<unsigned char**>(publicBytes + 0x14);
+				unsigned* readState = reinterpret_cast<unsigned*>(
+					*reinterpret_cast<unsigned char**>(readLink) + 0x18);
+				const unsigned savedReadFlag = readState[0];
+				const unsigned savedReadOwner = readState[1];
+				readState[0] = 1;
+				readState[1] = 0;
+				const NxReal lockedReadHeight = capsule->getHeight();
+				printf("setter capsule_locked_read_height=%x.%x.%x\n",
+					bits(lockedReadHeight), readState[0], readState[1] != 0 ? 1u : 0u);
+				readState[0] = savedReadFlag;
+				readState[1] = savedReadOwner;
 				const unsigned beforeHeightEpoch = familyPruner
 					? word(familyPruner, 0x38) : 0u;
 				capsule->setHeight(2.5f);

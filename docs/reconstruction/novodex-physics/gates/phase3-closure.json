@@ -53,9 +53,9 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 35,
+    "differential_falsified": 37,
     "oracle_differential_falsified": 44,
-    "deferred_not_reconstructed_in_phase": 207,
+    "deferred_not_reconstructed_in_phase": 205,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 5
   },
@@ -254,6 +254,36 @@
         5
       ],
       "note": "Phase 5 exercises the box secondary deleting destructor, including the member-only negative control."
+    },
+    {
+      "id": "phys_fn_001117",
+      "rva": "0x00023bf0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Suppress only the capsule write-lock error report while preserving the failed try-lock and unchanged value; the registered differential no longer observed the oracle NpCapsuleShape.cpp report and failed its assertion.",
+        "detected": "stdout_delta=623"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "The registered Phase 5 actor setter differential exercises the public capsule height wrapper; restored oracle/candidate control is exact. See evidence/phase3-capsule-public-height-locks-001117-001121.md."
+    },
+    {
+      "id": "phys_fn_001121",
+      "rva": "0x00023c80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Removed only the public getter read-lock enter/leave bracket; the registered differential observed the held-lock state and rejected the mutant.",
+        "detected": "stdout_delta=2"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "note": "The registered Phase 5 actor setter differential exercises the public capsule height wrapper; restored oracle/candidate control is exact. See evidence/phase3-capsule-public-height-locks-001117-001121.md."
     },
     {
       "id": "phys_fn_001123",
@@ -1477,24 +1507,8 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_001117",
-      "rva": "0x00023bf0",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_001119",
       "rva": "0x00023c50",
-      "size": 42,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001121",
-      "rva": "0x00023c80",
       "size": 42,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",

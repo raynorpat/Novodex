@@ -613,8 +613,23 @@ static NxReal __fastcall nxShapeHandleGetRadius(void* self, void*)
 
 static NxReal __fastcall nxCapsuleHandleGetHeight(void* self, void*)
 	{
-	return static_cast<CapsuleShape*>(static_cast<void*>(
+	void* readLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x14);
+	nxNpSceneGuardEnter(readLock);
+	const NxReal height = static_cast<CapsuleShape*>(static_cast<void*>(
 		nxBoxHandleInternal(self)))->nxCapsuleGetHeight();
+	nxNpSceneGuardLeave(readLock);
+	return height;
+	}
+
+static bool nxCapsuleHandleWriteTry(void* writeLock)
+	{
+	if(nxNpSceneGuardWriteTry(writeLock)) return true;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpCapsuleShape.cpp",
+		0x34, 0,
+		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+	return false;
 	}
 
 static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
@@ -637,8 +652,12 @@ static void __fastcall nxCapsuleHandleSetRadius(void* self, void*, NxReal radius
 
 static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height)
 	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxCapsuleHandleWriteTry(writeLock)) return;
 	static_cast<CapsuleShape*>(static_cast<void*>(
 		nxBoxHandleInternal(self)))->nxCapsuleSetHeight(height);
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 // phys_fn_000983 (0x000219d0, 62 B)
