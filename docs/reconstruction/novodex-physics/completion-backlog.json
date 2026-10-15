@@ -15410,12 +15410,18 @@
       "implementation": {
         "path": null,
         "role": "unmapped",
-        "symbol": null,
+        "symbol": "NpScene::flushStream",
         "file_exists": null,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?flushStream@NpScene@@UAEXXZ",
+          "address": "0x10042530",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -15474,12 +15480,18 @@
       "implementation": {
         "path": null,
         "role": "unmapped",
-        "symbol": null,
+        "symbol": "NpScene::startRun",
         "file_exists": null,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?startRun@NpScene@@UAEXM@Z",
+          "address": "0x100442d0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -15544,12 +15556,18 @@
       "implementation": {
         "path": null,
         "role": "unmapped",
-        "symbol": null,
+        "symbol": "NpScene::finishRun",
         "file_exists": null,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?finishRun@NpScene@@UAEXXZ",
+          "address": "0x100424e0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -231084,7 +231102,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "0ac0048f4df1b56d0713d0d7caedaec9b40604cc3c8c34175e92689ba682b9bb",
+    "inventory_sha256": "aee89ff850a167288b1d2f7325e85e080d1054a66fa5351aa6eb84f387dcd693",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",

@@ -6549,7 +6549,14 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1053",
       "static_proof": "IDA: RVA 0x0000ca30 loads [this+0x24] and tail-jumps to NxFluidAssert; the pinned helper at VA 0x1002ea70 is a one-byte retn.",
       "dynamic_proof": "Direct NxPhysicsSimulationTests call observes zero error callbacks; an NXE_DB_WARNING mutation fails the fixture (stdout_delta=554, candidate_exit=1), and restored candidate matches the oracle exactly (stdout_delta=0, stderr_exact=True).",
-      "notes": "Public slot is an oracle-native no-op; no public headers changed."
+      "notes": "Public slot is an oracle-native no-op; no public headers changed.",
+      "implementation_symbol": "NpScene::flushStream",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?flushStream@NpScene@@UAEXXZ",
+        "address": "0x10042530",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000334",
@@ -6585,7 +6592,14 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1054",
       "static_proof": null,
       "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=4); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
-      "notes": ""
+      "notes": "",
+      "implementation_symbol": "NpScene::startRun",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?startRun@NpScene@@UAEXM@Z",
+        "address": "0x100442d0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000336",
@@ -6603,7 +6617,14 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1057",
       "static_proof": null,
       "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=4); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
-      "notes": ""
+      "notes": "",
+      "implementation_symbol": "NpScene::finishRun",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?finishRun@NpScene@@UAEXXZ",
+        "address": "0x100424e0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000337",

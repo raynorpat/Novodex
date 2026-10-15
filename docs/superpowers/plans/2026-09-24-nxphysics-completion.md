@@ -1077,3 +1077,7 @@ Recorded the existing getter implementation and its Win32 Release map symbol, `?
 ### 2026-10-15 continuation — NpScene pair-query source mappings (`phys_fn_000317`, `phys_fn_000319`)
 
 Recorded candidate map references for the already reconstructed pair-count and pair-flag-array wrappers in `NpScene.obj`. Their registered Phase 7 differential already rejects a zero count and a missing array copy, and the restored control is exact. This census update does not change phase closure counts or the full-image backlog. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-pair-query-wrappers-000317-000319.md`.
+
+### 2026-10-15 continuation — NpScene legacy-run wrapper mappings (`phys_fn_000333`, `phys_fn_000335`, `phys_fn_000336`)
+
+Recorded the Win32 Release map symbols for `flushStream`, `startRun`, and `finishRun`. The first is the oracle's no-op public slot; the legacy run wrappers already have Phase 7 mutation-falsified simulation coverage with exact restored output. These map links complete source-to-candidate census for the three rows without changing the DLL or phase closure totals. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-npscene-flush-stream-000333.md` and `docs/reconstruction/novodex-physics/evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md`.
