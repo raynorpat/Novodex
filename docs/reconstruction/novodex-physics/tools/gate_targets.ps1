@@ -4518,8 +4518,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'matrix contact_compound calls_oracle=3 calls_candidate=3 wrong=0',
         'collision trigger-pair-duplicates oracle_events=3 candidate_events=3 oracle_pairs=3 candidate_pairs=3 mismatches=0',
         'collision trigger-pair-duplicates overlap=false oracle_events=3 candidate_events=3 oracle_pairs=2 candidate_pairs=2 mismatches=0',
+        'collision trigger-pair-duplicates overlap=slot-null oracle_events=3 candidate_events=3 oracle_pairs=2 candidate_pairs=2 mismatches=0',
         'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_true',
         'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_false',
+        'collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_slot_null',
 
         'collision name=plane_sphere.random index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=4513405a6ba24fb9',
         'collision name=plane_sphere.aimed index=1 rva=0x00048a20 owner=phys_fn_001899 checks=120000 oracle=ed8746bf83b7801f',

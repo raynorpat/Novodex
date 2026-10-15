@@ -3236,9 +3236,9 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 
 	NxU8 oracleMatrix[0x124] = {};
 	NxU8 candidateMatrix[0x124] = {};
-	const unsigned boxBoxOverlap = 0x94 + (6 * 2 + 2) * sizeof(void*);
-	*(NxShapeOverlapFn*) (oracleMatrix + boxBoxOverlap) = nxTriggerPairTestOverlap;
-	*(NxShapeOverlapFn*) (candidateMatrix + boxBoxOverlap) = nxTriggerPairTestOverlap;
+	const unsigned sphereBoxOverlap = 0x94 + (6 * 1 + 2) * sizeof(void*);
+	*(NxShapeOverlapFn*) (oracleMatrix + sphereBoxOverlap) = nxTriggerPairTestOverlap;
+	*(NxShapeOverlapFn*) (candidateMatrix + sphereBoxOverlap) = nxTriggerPairTestOverlap;
 	void* const savedDispatch = NxGetCollisionDispatchMatrix();
 	NxSetCollisionDispatchMatrix(candidateMatrix);
 
@@ -3247,7 +3247,7 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 		{
 		for(unsigned shape = 0; shape != 2; ++shape)
 			{
-			*(NxU32*) (shapes[shape] + 0xd0) = 2;
+			*(NxU32*) (shapes[shape] + 0xd0) = shape == 0 ? 2u : 1u;
 			*(NxU32*) (shapes[shape] + 0xd4) = shape + 1;
 			}
 		*(NxU8*) (shapes[0] + 0xde) = 1;
@@ -3395,6 +3395,70 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 	allocator.free(candidatePrevious->begin);
 	allocator.free(oracleLeaveEvents);
 	allocator.free(candidateLeaveEvents);
+
+	// A missing mixed-type dispatcher slot is the oracle's other false-overlap
+	// path: matched current pairs stay, while the unmatched old copy leaves.
+	*(NxShapeOverlapFn*) (oracleMatrix + sphereBoxOverlap) = nullptr;
+	*(NxShapeOverlapFn*) (candidateMatrix + sphereBoxOverlap) = nullptr;
+	oraclePreviousData = allocator.malloc(4 * sizeof(void*));
+	oracleCurrentData = allocator.malloc(12 * sizeof(void*));
+	candidatePreviousData = allocator.malloc(4 * sizeof(void*));
+	candidateCurrentData = allocator.malloc(12 * sizeof(void*));
+	if(!oraclePreviousData || !oracleCurrentData ||
+		!candidatePreviousData || !candidateCurrentData)
+		return nxFail("trigger-pair missing-overlap fixture could not allocate pair arrays");
+	memset(oracleScene, 0, sizeof(oracleScene));
+	memset(oracleShapes, 0, sizeof(oracleShapes));
+	memset(candidateShapes, 0, sizeof(candidateShapes));
+	initialise(oracleScene, oracleShapes, oraclePreviousData, oracleCurrentData);
+	initialise(candidateScene.bytes(), candidateShapes,
+		candidatePreviousData, candidateCurrentData);
+	oracle(oracleMatrix, oracleScene);
+	nxSceneProcessTriggerPairs(&candidateScene);
+	NxTriggerPairTestEvent* const oracleMissingEvents =
+		*(NxTriggerPairTestEvent**) (oracleScene + 0x5fc);
+	NxTriggerPairTestEvent* const candidateMissingEvents =
+		*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x5fc);
+	const unsigned oracleMissingCount = oracleMissingEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (oracleScene + 0x600) - oracleMissingEvents) : 0;
+	const unsigned candidateMissingCount = candidateMissingEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (candidateScene.bytes() + 0x600) - candidateMissingEvents) : 0;
+	NxTriggerPairTestList* const oracleMissingCurrent =
+		*(NxTriggerPairTestList**) (oracleScene + 0x5d4);
+	NxTriggerPairTestList* const candidateMissingCurrent =
+		*(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d4);
+	const unsigned oracleMissingPairs = oracleMissingCurrent->begin
+		? (unsigned) ((oracleMissingCurrent->end - oracleMissingCurrent->begin) / 2) : 0;
+	const unsigned candidateMissingPairs = candidateMissingCurrent->begin
+		? (unsigned) ((candidateMissingCurrent->end - candidateMissingCurrent->begin) / 2) : 0;
+	unsigned missingMismatches = oracleMissingCount != 3 || candidateMissingCount != 3 ||
+		oracleMissingPairs != 2 || candidateMissingPairs != 2 ? 1u : 0u;
+	for(unsigned event = 0; event != 3; ++event)
+		{
+		const NxU32 expectedEvent = event == 2 ? 2u : 4u;
+		const bool oracleEventOk = oracleMissingCount > event &&
+			oracleMissingEvents[event].trigger == (NxShape*) oracleShapes[0] &&
+			oracleMissingEvents[event].other == (NxShape*) oracleShapes[1] &&
+			oracleMissingEvents[event].event == expectedEvent;
+		const bool candidateEventOk = candidateMissingCount > event &&
+			candidateMissingEvents[event].trigger == (NxShape*) candidateShapes[0] &&
+			candidateMissingEvents[event].other == (NxShape*) candidateShapes[1] &&
+			candidateMissingEvents[event].event == expectedEvent;
+		missingMismatches += oracleEventOk && candidateEventOk ? 0u : 1u;
+		}
+	mismatches += missingMismatches;
+	printf("collision trigger-pair-duplicates overlap=slot-null oracle_events=%u candidate_events=%u oracle_pairs=%u candidate_pairs=%u mismatches=%u\n",
+		oracleMissingCount, candidateMissingCount, oracleMissingPairs,
+		candidateMissingPairs, missingMismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=two_previous_two_current_overlap_slot_null\n");
+	oraclePrevious = *(NxTriggerPairTestList**) (oracleScene + 0x5d8);
+	candidatePrevious = *(NxTriggerPairTestList**) (candidateScene.bytes() + 0x5d8);
+	allocator.free(oracleMissingCurrent->begin);
+	allocator.free(oraclePrevious->begin);
+	allocator.free(candidateMissingCurrent->begin);
+	allocator.free(candidatePrevious->begin);
+	allocator.free(oracleMissingEvents);
+	allocator.free(candidateMissingEvents);
 	nxTriggerPairTestOverlapResult = true;
 	NxSetCollisionDispatchMatrix(savedDispatch);
 	oracleSetAllocator(savedOracleSdk);

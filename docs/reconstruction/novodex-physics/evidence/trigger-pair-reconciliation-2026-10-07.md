@@ -47,22 +47,25 @@ were `4b7db3e1...79602c` and `d846ee82...68fe86` respectively. This formal
 falsification covers lookup matching in the lifecycle fixture.
 
 The direct `NxPhysicsCollisionTests` fixture seeds two identical previous
-pairs and two identical current pairs. With overlap returning true, the oracle
-matches both current entries to the same prior entry, then rechecks the
-unmatched duplicate and appends it as a third stay (`oracle_events=3`,
-`oracle_pairs=3`). With overlap returning false, it emits two stays and one
-leave and retains two current pairs (`oracle_events=3`, `oracle_pairs=2`). The
-candidate matches both cases exactly. A temporary unconditional `return -1`
-in `nxSceneFindTriggerPair` is rejected: the overlap-true case reports four
-candidate events and four pairs, and the overlap-false case reports four
-candidate events; the fixture exits 1. After restoring the source and
-rebuilding, the full collision harness passes with `mismatches=0`
-(`build/trigger-pair-duplicates-restored-full-collision.log`). The isolated
-mutation run's expected failure was `oracle_events=3`, `candidate_events=4`,
-`mismatches=5` for overlap-true and `mismatches=3` for overlap-false.
+pairs and two identical current pairs, using a box trigger followed by a
+sphere. This exercises the oracle's type-order swap before it selects the
+sphere/box overlap slot. With overlap returning true, the oracle matches both
+current entries to the same prior entry, then rechecks the unmatched duplicate
+and appends it as a third stay (`oracle_events=3`, `oracle_pairs=3`). With the
+slot populated but returning false, it emits two stays and one leave and
+retains two current pairs. With the sphere/box slot null, it reports the same
+two stays and one leave through the missing-dispatcher branch. Candidate state
+matches all three oracle cases exactly.
 
-Unsupported overlap slots and broader allocation/list edge cases remain open,
-so the inventory row stays `discovered`.
+A temporary unconditional `return -1` in `nxSceneFindTriggerPair` is rejected:
+the overlap-true case reports four candidate events and four pairs, while the
+false and null-slot cases report four candidate events. The fixture exits 1.
+After restoring the source and rebuilding, the full collision harness passes
+with `mismatches=0`
+(`build/trigger-pair-duplicates-restored-full-collision.log`). Unsupported
+overlap slots beyond the measured sphere/box null entry, plus broader
+allocation/list edge cases, remain open, so the inventory row stays
+`discovered`.
 
 The current staged gates pass: Phase 5 at 2,264/2,264 assertions, Phase 6 at
 1,062/1,062, and Phase 7 at 1,378/1,378 (`build/phase5-compound-trigger.log`,
