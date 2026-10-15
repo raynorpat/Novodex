@@ -9796,7 +9796,8 @@
         "symbol": "?nxSceneUpdateActorCount@@YAXPAXI@Z",
         "address": "0x1006c610",
         "object": "Scene.obj"
-      }
+      },
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000504",
@@ -45053,13 +45054,21 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/908",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7508",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0005bc90"
+      "static_proof": "IDA shows the row is an 89-byte continuation inside the shared __thiscall insertion body starting at 0x0005bc90: it copies live four-byte array elements during growth, releases/rebinds storage through NxUserAllocator, advances the active-list end, appends the new ID, and returns with ret 4. Candidate correspondence is nxSceneAuxRegisterRecord.",
+      "dynamic_proof": "NxPhysicsBodyCreationTests at Phase 3 grows the record manager through 257 live bodies. Oracle/restored candidate match exactly (both exit 0, stdout_delta=0, exact stderr). Omitting only the record active-list append changes the record marker count from 1 to 0 while shape marker remains exact (both exit 0, stdout_delta=6, exact stderr); restoration is exact. Evidence: evidence/phase2-indexed-manager-continuation-002419.md and evidence/raw/phase2-indexed-manager-continuation-002419-20261015/.",
+      "notes": "Internal continuation of phys_fn_002417, not an independent public entry point; its record growth/append behavior has a separate candidate mutation and is discharged through the existing Phase 3 NxPhysicsBodyCreationTests target.",
+      "implementation_symbol": "nxSceneAuxRegisterRecord",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneAuxRegisterRecord@@YAXPAX0@Z",
+        "address": "0x1006a550",
+        "object": "Scene.obj"
+      },
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_002420",
