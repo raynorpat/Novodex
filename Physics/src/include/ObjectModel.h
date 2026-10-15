@@ -2302,5 +2302,7 @@ static_assert(offsetof(MeshShape, mWordE4) == 0xe4, "the second datum is at +0xe
 
 //! phys_fn_002377 (0x5b820): initialize the worker-record owner base.
 void* __fastcall nxLockApiWorkerBaseConstruct2377(void* self, void* edx);
+//! phys_fn_002396 (0x5b9a0): initialize the derived lock-API worker owner.
+void* __fastcall nxLockApiWorkerConstruct2396(void* self, void* edx, unsigned arg0, unsigned arg1, unsigned arg2);
 
 #endif

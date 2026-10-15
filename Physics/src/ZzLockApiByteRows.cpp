@@ -94,3 +94,17 @@ void* __fastcall nxLockApiWorkerBaseConstruct2377(void* self, void*)
 	record[8] = 0;
 	return self;
 	}
+
+// phys_fn_002396 (0x5b9a0): construct the derived worker owner with its three fields.
+void* __fastcall nxLockApiWorkerConstruct2396(
+	void* self, void*, unsigned arg0, unsigned arg1, unsigned arg2)
+	{
+	nxLockApiWorkerBaseConstruct2377(self, nullptr);
+	unsigned char* owner = static_cast<unsigned char*>(self);
+	memcpy(owner + 8, &arg0, 4);
+	void* vtable = reinterpret_cast<void*>(static_cast<size_t>(0x10108894u));
+	memcpy(owner, &vtable, 4);
+	memcpy(owner + 0xc, &arg1, 4);
+	memcpy(owner + 0x14, &arg2, 4);
+	return self;
+	}

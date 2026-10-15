@@ -44650,13 +44650,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ZzLockApiByteRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/898",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7435",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x5b9a0: call base constructor 0x5b820; store three stack arguments at this+8, this+0xc, and this+0x14; install vtable 0x10108894; return this with ret 0xc, leaving this+0x10 untouched.",
+      "dynamic_proof": "Direct oracle/source allocator-shim differential marker newreach row=002396 checks return identity, derived vptr, the delegated 0x14 allocation, all three argument stores, the untouched +0x10 word, and worker-record initialization. Flipping bit 0 of argument 3 is caught with mismatches=1; restored source reports mismatches=0.",
+      "notes": "Private derived worker-owner constructor; delegates base record construction to phys_fn_002377; public headers unchanged."
     },
     {
       "id": "phys_fn_002397",

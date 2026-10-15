@@ -11072,3 +11072,5 @@ IDA confirms the x86 scalar deleting ABI at RVA `0x5b980`: call the reconstructe
 Phase 7 row phys_fn_002394 scalar deleting thunk mutation proof: the null-return mutant reports mismatches=2; the restored candidate reports mismatches=0. See phase7-lock-api-worker-scalar-delete-002394.md.
 
 Phase 7 row phys_fn_002377 worker-owner base constructor mutation proof: changing record byte +8 from zero to one reports mismatches=1; restored source reports mismatches=0. See phase7-lock-api-worker-base-construct-002377.md.
+
+Phase 7 row phys_fn_002396 derived worker-owner constructor mutation proof: flipping bit 0 of the third argument reports mismatches=1; restored source reports mismatches=0. See phase7-lock-api-worker-construct-002396.md.
