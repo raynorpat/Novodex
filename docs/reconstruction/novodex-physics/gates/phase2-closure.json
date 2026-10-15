@@ -58,10 +58,10 @@
     "rows_reachable_through_any_phase": 499
   },
   "counts": {
-    "differential_falsified": 76,
+    "differential_falsified": 77,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 5,
-    "deferred_homeless_shared_code": 16,
+    "deferred_homeless_shared_code": 15,
     "deferred_reconstructed_not_falsified": 31,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
@@ -1076,6 +1076,22 @@
         "detected": "mismatches=714"
       },
       "note": "The Phase 4 polygon-interface oracle differential exercises 65 scratch-stamp wraps and links TriangleMeshPolygons.cpp."
+    },
+    {
+      "id": "phys_fn_000503",
+      "rva": "0x000100a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneAllocatorTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        7
+      ],
+      "falsification": {
+        "mutation": "Omitted the nxSceneEngineSetExternalBuffer(bytes + 0x624, capacity, buffer) call in nxSceneUpdateActorCount.",
+        "detected": "stdout_delta=71"
+      },
+      "note": "The restored direct oracle/candidate fixture is exact and the Pruner-rebind omission crashes the candidate. Clean committed-snapshot Phase 5 and Phase 7 gates pass (2,765/2,765 and 2,879/2,879 coverage assertions); Phase 5 discharges this cross-phase Phase 2 row. See evidence/phase7-scene-visited-buffer-growth-000503.md and evidence/raw/phase7-scene-visited-buffer-growth-000503-20261015/."
     }
   ],
   "deferred": [
@@ -1138,20 +1154,6 @@
       "translation_unit_zone": "in PhysicsSDK.cpp",
       "driving_phases": [],
       "note": "the pointer table's scalar deleting destructor, which the compiler emits at the NX_DELETE_SINGLE inside phys_fn_000480 and which has no definition of its own to mutate. Removing that construct does fail a check, but it is the same check phys_fn_000480 is already closed on and it is the same source line, so the detection does not tell the two rows apart. NxArraySDK is an immutable public header type, so there is no narrower mutation available."
-    },
-    {
-      "id": "phys_fn_000503",
-      "rva": "0x000100a0",
-      "size": 232,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap PhysicsSDK.cpp .. Scene.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        5,
-        7
-      ],
-      "callers": 5
     },
     {
       "id": "phys_fn_000509",

@@ -8,6 +8,29 @@
     "phase5-gate.log": "07dc817ba1b6837f8c1a5b7f6830d6c283f1b1042c28253acf758eead17e0486",
     "phase7-gate.log": "aff1ad373a3ee09b253e757954df7c867d6bc4208731e2be6c86cf0c2994c3ef",
     "phys_fn_000503.patch": "84d152f7f809546bf37de17e594242b72e49314e9ad413e1f344afa801d30fef",
-    "restored.log": "eeffefa3077e92737194272f04e5de82576df3919740a09aaf192972d1fec5cf"
+    "restored.log": "eeffefa3077e92737194272f04e5de82576df3919740a09aaf192972d1fec5cf",
+    "phase5-clean-mainline-9c654617.log.gz": "2e35c717def2504b49651a25d7362f59c4e6ff2794172c2eb5bd35bd386e4038",
+    "phase7-clean-mainline-9c654617.log.gz": "cf1f596dd7d035577ecee442cd21b03e437819d7c33bfb5729afb4137dd89b0f"
+  },
+  "clean_snapshot_gate_runs": {
+    "snapshot_commit": "9c654617",
+    "oracle_root": "D:\\FlamingEnt__\\Unreal_3",
+    "pairs_root": "D:\\FlamingEnt__\\novodex-analysis\\pairs",
+    "candidate_nxphysics_sha256": "f79d7f03b34ac1691884029b5bcdd7b87df7db81b2445540729229cd60dedeb6",
+    "foundation_sha256": "9dfd4448d67f361b719edc91629a83bc732a651318a35edefdff306f93996d17",
+    "phase_5": {
+      "status": "pass",
+      "coverage_assertions_evaluated": 2765,
+      "coverage_floor": 2765,
+      "log": "phase5-clean-mainline-9c654617.log.gz"
+    },
+    "phase_7": {
+      "status": "pass",
+      "coverage_assertions_evaluated": 2879,
+      "coverage_floor": 2879,
+      "scene_allocator_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+      "log": "phase7-clean-mainline-9c654617.log.gz"
+    },
+    "note": "Clean committed worktree rerun; the user-local modified PhysicsObjectLayoutTests.cpp was not included."
   }
 }
