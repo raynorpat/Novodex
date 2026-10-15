@@ -219,6 +219,23 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	if(!oraclePlane || !candidatePlane || oraclePlaneHits != 1 ||
 		candidatePlaneHits != 1 || !oraclePlaneFound || !candidatePlaneFound)
 		++mismatches;
+	const Ray worldRay(Point(0.0f, 0.5f, 0.5f), Point(1.0f, 0.0f, 0.0f));
+	Container oracleRayHits;
+	Container candidateRayHits;
+	typedef bool (__thiscall* RaycastFn)(void*, Container&, const Ray&, float, bool, NxU32);
+	const RaycastFn oracleRaycast = reinterpret_cast<RaycastFn>(oracleVtable[6]);
+	const bool oracleRay = oracleRaycast(oraclePruner, oracleRayHits, worldRay,
+		8.0f, true, 0xffffffffu);
+	const bool candidateRay = candidatePruner->Raycast(candidateRayHits, worldRay,
+		8.0f, true, 0xffffffffu);
+	bool oracleRayFound = false, candidateRayFound = false;
+	for(NxU32 i = 0; i < oracleRayHits.GetNbEntries(); ++i)
+		oracleRayFound = oracleRayFound || oracleRayHits.GetEntry(i) == reinterpret_cast<NxU32>(oracleObjects[0]);
+	for(NxU32 i = 0; i < candidateRayHits.GetNbEntries(); ++i)
+		candidateRayFound = candidateRayFound || candidateRayHits.GetEntry(i) == reinterpret_cast<NxU32>(&candidateObjects[0]);
+	if(!oracleRay || !candidateRay || oracleRayHits.GetNbEntries() != 1 ||
+		candidateRayHits.GetNbEntries() != 1 || !oracleRayFound || !candidateRayFound)
+		++mismatches;
 	printf("collision type3_pruner refit objects=2 oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
 		oracleFound ? 1u : 0u, candidateFound ? 1u : 0u, oracleHits, candidateHits, mismatches);
 	printf("collision coverage name=type3_pruner case=tree_refit_moved_leaf\n");
@@ -232,6 +249,10 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		oraclePlaneFound ? 1u : 0u, candidatePlaneFound ? 1u : 0u,
 		oraclePlaneHits, candidatePlaneHits, mismatches);
 	printf("collision coverage name=type3_pruner case=plane_query_after_refit\n");
+	printf("collision type3_pruner raycast oracle_found=%u candidate_found=%u oracle_hits=%u candidate_hits=%u mismatches=%u\n",
+		oracleRayFound ? 1u : 0u, candidateRayFound ? 1u : 0u,
+		oracleRayHits.GetNbEntries(), candidateRayHits.GetNbEntries(), mismatches);
+	printf("collision coverage name=type3_pruner case=raycast_after_refit\n");
 
 	for(unsigned i = 0; i != 2; ++i)
 		{
@@ -252,6 +273,8 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		typedef void* (__thiscall* DeleteFn)(void*, unsigned);
 		reinterpret_cast<DeleteFn>(table[0])(oracleObjects[i], 0);
 		}
+	oracleRayHits.Empty();
+	candidateRayHits.Empty();
 	*oracleOwnerAabbSlot = savedOracleOwnerAabb;
 	gPrunableOwnerWorldAABB = savedCandidateOwnerAabb;
 	oracleSetAllocator(savedOracleSdk);
