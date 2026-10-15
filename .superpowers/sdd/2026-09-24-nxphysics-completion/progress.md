@@ -514,3 +514,6 @@ Phase 7 row packet: `phys_fn_000535` (`nxSceneRemoveDynamicShape`) is mutation-f
 
 
 Phase 7 row packet: `phys_fn_000537` (x87 control-word save) is mutation-falsified through the simulation differential. Replacing the `fnstcw` save with zero makes the candidate abort with a floating-point exception (`stdout_delta=3997`); the restored control is exact. Evidence: `phase7-x87-control-word-000537.md`.
+
+
+Phase 7 row packet: `phys_fn_001639` (`nxIceIdentityPoses`) is mutation-falsified. Registered `NxPhysicsThirdPartyTests` as a Phase 7 oracle differential and raised the coverage floor by 217 assertions. The uninitialized-global mutation yields 7 mismatches; restored control yields 0. Evidence: `phase7-identity-poses-001639.md`.

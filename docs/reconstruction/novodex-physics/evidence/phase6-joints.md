@@ -11023,3 +11023,6 @@ Phase 7 continuation: phys_fn_000535 (`nxSceneRemoveDynamicShape`) is mutation-f
 
 
 Phase 7 continuation: phys_fn_000537 (x87 control-word save) is mutation-falsified through `NxPhysicsSimulationTests`. Replacing the `fnstcw` save with zero causes a floating-point exception (candidate_exit=-1073741681, stdout_delta=3997); restoring the save returns the staged-pair transcript to exact equality. See `phase7-x87-control-word-000537.md`.
+
+
+Phase 7 continuation: phys_fn_001639 (`nxIceIdentityPoses`) is mutation-falsified through the registered `NxPhysicsThirdPartyTests` oracle differential. Returning its uninitialized global block produces 7 mismatches in 127,828 pose-pair words and target exit 1; restored candidate reports zero mismatches. See `phase7-identity-poses-001639.md`.
