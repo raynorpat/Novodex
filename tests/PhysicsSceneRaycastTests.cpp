@@ -113,6 +113,42 @@ static bool nxCheckPrunerConstructorBounds(NxScene* wrapper)
 	return empty && registrations;
 	}
 
+static bool nxPrunerHandleReuseFailed = false;
+
+static bool nxCheckPrunerHandleReuse(NxScene* wrapper)
+	{
+	NxU32 sceneAddress = 0;
+	memcpy(&sceneAddress, reinterpret_cast<const NxU8*>(wrapper) + 0x24, sizeof(sceneAddress));
+	if(!sceneAddress)
+		{
+		printf("scene_pruner handle_reuse_match=0 unavailable\n");
+		return false;
+		}
+	const NxU8* const engine = reinterpret_cast<const NxU8*>(sceneAddress) + 0x624;
+	NxU32 staticAddress = 0;
+	NxU32 dynamicAddress = 0;
+	memcpy(&staticAddress, engine + 0x1c, sizeof(staticAddress));
+	memcpy(&dynamicAddress, engine + 0x24, sizeof(dynamicAddress));
+	if(!staticAddress || !dynamicAddress)
+		{
+		printf("scene_pruner handle_reuse_match=0 unavailable\n");
+		return false;
+		}
+	NxU32 staticRegistration[2];
+	NxU32 dynamicRegistration[2];
+	memcpy(staticRegistration, reinterpret_cast<const NxU8*>(staticAddress) + 0x34,
+		sizeof(staticRegistration));
+	memcpy(dynamicRegistration, reinterpret_cast<const NxU8*>(dynamicAddress) + 0x34,
+		sizeof(dynamicRegistration));
+	const bool match = staticRegistration[0] == 0x00010002 && staticRegistration[1] == 1 &&
+		dynamicRegistration[0] == 0x00010003 && dynamicRegistration[1] == 1;
+	printf("scene_pruner handle_reuse_match=%u static=%08x.%08x dynamic=%08x.%08x\n",
+		match ? 1u : 0u,
+		staticRegistration[0], staticRegistration[1],
+		dynamicRegistration[0], dynamicRegistration[1]);
+	return match;
+	}
+
 // ---------------------------------------------------------------------------
 // Pointer names.
 
@@ -1110,6 +1146,31 @@ static void nxBoundedPrunerQueryChecks(NxPhysicsSDK* sdk)
 		if(staticActors[i])
 			scene->releaseActor(*staticActors[i]);
 	sdk->releaseScene(*scene);
+	NxSceneDesc reuseDesc;
+	reuseDesc.setToDefault();
+	NxScene* const reuseScene = sdk->createScene(reuseDesc);
+	if(reuseScene)
+		{
+		NxBoxShapeDesc box;
+		box.dimensions = NxVec3(0.4f, 0.4f, 0.4f);
+		NxActorDesc staticDesc;
+		staticDesc.shapes.pushBack(&box);
+		NxActor* const staticActor = reuseScene->createActor(staticDesc);
+		NxBodyDesc body;
+		body.mass = 1.0f;
+		body.massSpaceInertia = NxVec3(1.0f, 1.0f, 1.0f);
+		NxActorDesc dynamicDesc;
+		dynamicDesc.body = &body;
+		dynamicDesc.shapes.pushBack(&box);
+		NxActor* const dynamicActor = reuseScene->createActor(dynamicDesc);
+		if(!nxCheckPrunerHandleReuse(reuseScene))
+			nxPrunerHandleReuseFailed = true;
+		if(staticActor)
+			reuseScene->releaseActor(*staticActor);
+		if(dynamicActor)
+			reuseScene->releaseActor(*dynamicActor);
+		sdk->releaseScene(*reuseScene);
+		}
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -1343,6 +1404,11 @@ int wmain(int argc, wchar_t** argv)
 		scene->releaseActor(*compounds[1]);
 	nxSphereMeshOverlapChecks(sdk, scene);
 	nxBoundedPrunerQueryChecks(sdk);
+	// The bounded-pruner helper destroys a scene containing static/dynamic
+	// pruners, then creates another scene. Their generation-tagged handles must
+	// be returned by Pruner::~Pruner and reused with incremented generations.
+	if(nxPrunerHandleReuseFailed)
+		return nxFail("destroyed Pruner handles were not reused with incremented generations");
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

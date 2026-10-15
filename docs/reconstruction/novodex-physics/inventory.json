@@ -103562,13 +103562,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/IcePruner.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2124",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19093",
       "static_proof": "reached: phys_fn_005234 calls it at 0x000e5778. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
-      "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
+      "dynamic_proof": "NxPhysicsSceneRaycastTests destroys a Scene with static and dynamic pruners, creates a replacement Scene, and requires the freed slot indices to be reused with incremented generations: static=00010002.00000001 and dynamic=00010003.00000001. Oracle and restored candidate are exact. Omitting nxPrunerUnregister from Pruner::~Pruner leaves the old handles occupied; the candidate instead reports 00000004.00000001 and 00000005.00000001 and fails (oracle_exit=0, candidate_exit=1, stdout_delta=2). Phases 4, 5 and 7 gate this marker. See evidence/phase4-pruner-destructor-005537.md.",
+      "notes": "Pruner::~Pruner now returns its process-registry handle before releasing the pool buffers. Handle generation and reuse are mutation-falsified through the actual DLL. Registry buffer-allocation failure and capacity exhaustion remain open. See evidence/phase4-pruner-destructor-005537.md.",
+      "implementation": "Physics/src/opcode/IcePruner.cpp",
+      "implementation_symbol": "Pruner::~Pruner"
     },
     {
       "id": "phys_fn_005538",

@@ -2883,6 +2883,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene_overlap bounded_tree all count=12 order=bounded_05.bounded_10.bounded_00.bounded_02.bounded_04.bounded_03.bounded_01.bounded_09.bounded_08.bounded_06.bounded_07.bounded_11',
         'scene_pruner constructor_empty_bounds=1 words=7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
         'scene_pruner registrations_match=1 static=00000000.00000006 dynamic=00000001.00000004',
+        'scene_pruner handle_reuse_match=1 static=00010002.00000001 dynamic=00010003.00000001',
         'scene_overlap sphere=10 type=2 result=1',
         'scene_overlap sphere=11 type=2 result=0',
         'scene_overlap aabb=0 type=3 result=1',
@@ -6068,14 +6069,14 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 532  # adds actual-DLL Pruner constructor bounds and registration assertions
+    '4' = 533  # adds actual-DLL Pruner constructor bounds, registration and handle-reuse assertions
                # adds the triangle-mesh creation marker for AABB-tree build rows
                # adds seven PMap query cases, their oracle digest and two mesh-release cases
                # all registered asset, PMap export, and Scene raycast coverage lines
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2739  # adds actual-DLL Pruner constructor bounds and registration assertions
+	'5' = 2740  # adds actual-DLL Pruner constructor bounds, registration and handle-reuse assertions
 	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
@@ -6181,7 +6182,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2870  # adds actual-DLL Pruner constructor bounds and registration assertions
+	'7' = 2871  # adds actual-DLL Pruner constructor bounds, registration and handle-reuse assertions
 	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions

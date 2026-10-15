@@ -1,0 +1,60 @@
+{
+  "purpose": "Actual-DLL Pruner destructor unregistration and generation-tagged handle-reuse proof for phys_fn_005537.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "1d72107c7667d7e9123d664f3b05de51d003da085fe8c1de2c5b857831f2369e",
+  "mutation_result": "Omitted nxPrunerUnregister(mRegistration); oracle reused indices 2/3 at generation 1 while candidate allocated indices 4/5. The candidate assertion failed (oracle_exit=0, candidate_exit=1, stdout_delta=2).",
+  "restored_result": "Focused staged-pair differential exact; static=00010002.00000001 dynamic=00010003.00000001.",
+  "phase_gates": {
+    "4": "phase_gate=4 status=pass; coverage_assertions_evaluated=533 floor=533",
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2740 floor=2740",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2871 floor=2871"
+  },
+  "logs": {
+    "mutation-build.log.gz": {
+      "sha256": "06a1014806fc35b24e2697410b4049f674aac99087305f20726e32dcd2018e38",
+      "compressed_bytes": 434,
+      "uncompressed_bytes": 1466
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "9c682e7402c15ca927c72bea0257b51dfee0ae35ffc1ca0b514ca3ac00f70596",
+      "compressed_bytes": 36901,
+      "uncompressed_bytes": 800357
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "f5d1b44504d71088a38e4ceed116cd44991674d9310ab1a0c23a2911c4c68339",
+      "compressed_bytes": 75018,
+      "uncompressed_bytes": 1119044
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "576d0f30b81e881ce20d728126c306760be6f53e66fd3a7fecc68f09e518eaca",
+      "compressed_bytes": 204950,
+      "uncompressed_bytes": 2807290
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "174be0227a7f6429fa8479cace5c2fcfe78b38612706ab622fcfaf18a6232c98",
+      "compressed_bytes": 368319,
+      "uncompressed_bytes": 4591710
+    },
+    "probe-build.log.gz": {
+      "sha256": "6763c268adf93558205bd4910e0f18c1b6d8aa7f97810381d5d9371228807b16",
+      "compressed_bytes": 212,
+      "uncompressed_bytes": 275
+    },
+    "probe-differential.log.gz": {
+      "sha256": "91ff900cf53f08f3146fbc2cdc78104933237a21c39db9c7353635245f1afd95",
+      "compressed_bytes": 36636,
+      "uncompressed_bytes": 800182
+    },
+    "restored-build.log.gz": {
+      "sha256": "06a1014806fc35b24e2697410b4049f674aac99087305f20726e32dcd2018e38",
+      "compressed_bytes": 434,
+      "uncompressed_bytes": 1466
+    },
+    "restored-differential.log.gz": {
+      "sha256": "e6abb54ffa7370fdca126e714dadbbba0e30ae6618c4ee9253ab245f45b36ed7",
+      "compressed_bytes": 36631,
+      "uncompressed_bytes": 800182
+    }
+  }
+}
