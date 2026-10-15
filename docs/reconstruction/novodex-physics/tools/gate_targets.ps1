@@ -89,6 +89,8 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 $NxRequiredCoverageLines = [ordered] @{
 	'NxPhysicsSceneLifecycleTests' = @(
 		'scene lifecycle cycles=8 creates=32 releases=32 stable=1 mismatches=0'
+		'scene registration growth active=6 handles=00000000.00000001.00000002.00000003.00000004.00000005 stable=1'
+		'scene registration growth reused static=00010003 dynamic=00010002 stable=1'
 	)
 	'NxPhysicsSceneAllocatorTests' = @(
 		'alloc phase=foundation_create a_allocs='
@@ -6089,7 +6091,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2741  # includes Pruner constructor bounds/registration and repeated public scene lifecycle
+	'5' = 2743  # adds explicit process-pool growth and generation-tagged slot reuse
 	           # includes candidate-DLL base shape descriptor validation
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe

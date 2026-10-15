@@ -1,0 +1,46 @@
+{
+  "packet": "phase5-pruner-process-pool-growth-20261015",
+  "base_commit": "73e7a3cdf1d2feef6a8c5307a4839d08f77fb3f8",
+  "candidate_physics_sha256": "044ca51c11fcb6d5c08f9fdeb2dcbc19934ac9a6996fcad4660c733482b398b8",
+  "mutation_candidate_physics_sha256": "8635a7529a73153eb28819868508865e9b019a2bb8b73d6b1038a54b33051565",
+  "growth_marker": "scene registration growth active=6 handles=00000000.00000001.00000002.00000003.00000004.00000005 stable=1",
+  "reuse_marker": "scene registration growth reused static=00010003 dynamic=00010002 stable=1",
+  "restored_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true",
+  "growth_noop_mutation": "oracle_exit=0 candidate_exit=-1073741819 stdout_delta=5 stderr_exact=true",
+  "phase5_gate": "status=pass coverage_assertions=2743 floor=2743",
+  "tooling_suite": "816 tests OK",
+  "artifacts": [
+    {
+      "file": "growth-noop-mutation.log.gz",
+      "source": "build/m1-scene-lifecycle/pruner-growth-noop-mutation.log",
+      "sha256_gzip": "86f9a0947000b8ef3efa6bb699cf86c4f4abde5d534a100649cd318dd8f12bcf",
+      "size_gzip": 1342,
+      "sha256_source": "5d86adb7f8664d3db87eb447467547b2ac289c226b27398fe4dcc915b2ac1a44",
+      "size_source": 8600
+    },
+    {
+      "file": "growth-restored-differential.log.gz",
+      "source": "build/m1-scene-lifecycle/pruner-growth-restored-differential.log",
+      "sha256_gzip": "042e30f27b2d230b9d116babcf011797413bed706de5d0629c87fa2940598134",
+      "size_gzip": 1255,
+      "sha256_source": "eccf8773dd61e1b054616259c567b5cfbdec885f0d89ff2c50fdab2b18144e78",
+      "size_source": 9009
+    },
+    {
+      "file": "phase5-pruner-growth-gate.log.gz",
+      "source": "build/m1-scene-lifecycle/phase5-pruner-growth-gate.log",
+      "sha256_gzip": "aab33d9767767740abb6f84524917fe18c6178b7639875b42d040db6c8b33b8e",
+      "size_gzip": 206984,
+      "sha256_source": "ef3aa6c76c28faaa18831ddbb68058ca331d5a65ba67c35fa1ee127b07a71d47",
+      "size_source": 2817946
+    },
+    {
+      "file": "tooling-tests-pruner-growth.log.gz",
+      "source": "build/m1-scene-lifecycle/tooling-tests-pruner-growth.log",
+      "sha256_gzip": "ad5d177387cee268a6e236c34f3263c9d52124d3485969b394d7c434a26c1314",
+      "size_gzip": 19002,
+      "sha256_source": "0b80c61e8e42cb64887ba7dc02168391dc300530f538ce374011772df824ce0b",
+      "size_source": 125875
+    }
+  ]
+}
