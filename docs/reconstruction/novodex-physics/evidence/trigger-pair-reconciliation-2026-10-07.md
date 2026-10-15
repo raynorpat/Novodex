@@ -76,8 +76,9 @@ old low-bit event filter produces 144. The restored matrix reports zero
 mismatches (`build/trigger-pair-duplicates-restored-full-collision.log`).
 The expanded full collision harness reports `collision=pass` with the matrix
 at 1,152/1,152 (`build/trigger-pair-event-mask-full-collision.log`). The
-registered Phase 3 gate passes at 969/969 coverage assertions, including the
-oracle-only matrix and mask lines (`build/phase3-trigger-event-mask-gate.log`).
+registered Phase 3 gate passed at 971/971 coverage assertions for the null-slot
+matrix (`build/phase3-trigger-event-mask-gate.log`); the event-growth assertion
+is included in the current 973-line Phase 3 gate run.
 The rebuilt production DLL also passes the public simulation differential with
 exact enter/stay/leave callbacks (`stdout_delta=0`, `stderr_exact=True`,
 `build/trigger-pair-event-mask-simulation-differential.log`).
@@ -89,6 +90,11 @@ retain no pair, and make one event allocation. The restored fixture reports
 21/21 matches (`build/trigger-pair-null-slot-full-collision.log`). A mutation
 that treated a missing overlap callback as a positive overlap produced 21
 mismatches, one per slot, then was reverted.
+
+An event-buffer growth case starts with one existing event and a full buffer,
+then processes one retained pair. Both implementations preserve the old
+record, append the stay event, retain one pair, and perform one allocation and
+one free. Omitting the candidate copy loop is rejected by the new assertion.
 
 A temporary unconditional `return -1` in `nxSceneFindTriggerPair` is rejected:
 the overlap-true case reports four candidate events and four pairs, while the

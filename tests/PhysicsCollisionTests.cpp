@@ -3974,6 +3974,120 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 	printf("collision trigger-pair-null-slot-matrix cases=%u oracle_cases=%u candidate_cases=%u mismatches=%u\n",
 		nullSlotCases, nullSlotCases, nullSlotCases, nullSlotMismatches);
 	printf("collision coverage name=trigger_pair_duplicates case=all_unordered_overlap_slots_null\n");
+
+	// Begin with a full one-event buffer. Processing one current pair must grow
+	// it, preserve the old record, append the stay, and release the old buffer.
+	NxU8 oracleEventGrowthScene[0x710] = {};
+	NxU8 oracleEventGrowthShapes[2][0xe0] = {};
+	NxSceneInternal candidateEventGrowthScene;
+	NxU8 candidateEventGrowthShapes[2][0xe0] = {};
+	void* const oracleEventGrowthPreviousData = allocator.malloc(2 * sizeof(void*));
+	void* const oracleEventGrowthCurrentData = allocator.malloc(2 * sizeof(void*));
+	void* const candidateEventGrowthPreviousData = allocator.malloc(2 * sizeof(void*));
+	void* const candidateEventGrowthCurrentData = allocator.malloc(2 * sizeof(void*));
+	NxTriggerPairTestEvent* const oracleEventGrowthData =
+		(NxTriggerPairTestEvent*) allocator.malloc(sizeof(NxTriggerPairTestEvent));
+	NxTriggerPairTestEvent* const candidateEventGrowthData =
+		(NxTriggerPairTestEvent*) allocator.malloc(sizeof(NxTriggerPairTestEvent));
+	if(!oracleEventGrowthPreviousData || !oracleEventGrowthCurrentData ||
+		!candidateEventGrowthPreviousData || !candidateEventGrowthCurrentData ||
+		!oracleEventGrowthData || !candidateEventGrowthData)
+		return nxFail("trigger-pair event-growth fixture could not allocate its seed buffers");
+	auto initialiseEventGrowth = [&](NxU8* scene, NxU8 (*shapes)[0xe0],
+		void* previousData, void* currentData, NxTriggerPairTestEvent* eventData)
+		{
+		*(NxU32*) (shapes[0] + 0xd0) = 2;
+		*(NxU32*) (shapes[1] + 0xd0) = 1;
+		*(NxU32*) (shapes[0] + 0xd4) = 1;
+		*(NxU32*) (shapes[1] + 0xd4) = 2;
+		*(NxU8*) (shapes[0] + 0xde) = 1;
+		NxTriggerPairTestList* const previous =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5dc);
+		NxTriggerPairTestList* const current =
+			reinterpret_cast<NxTriggerPairTestList*>(scene + 0x5ec);
+		previous->begin = (NxCollisionShape**) previousData;
+		previous->end = previous->begin + 2;
+		previous->capacity = previous->end;
+		current->begin = (NxCollisionShape**) currentData;
+		current->end = current->begin + 2;
+		current->capacity = current->end;
+		for(unsigned shape = 0; shape != 2; ++shape)
+			{
+			previous->begin[shape] = (NxCollisionShape*) shapes[shape];
+			current->begin[shape] = (NxCollisionShape*) shapes[shape];
+			}
+		eventData[0].trigger = (NxShape*) shapes[0];
+		eventData[0].other = (NxShape*) shapes[1];
+		eventData[0].event = 1;
+		*(NxTriggerPairTestEvent**) (scene + 0x5fc) = eventData;
+		*(NxTriggerPairTestEvent**) (scene + 0x600) = eventData + 1;
+		*(NxTriggerPairTestEvent**) (scene + 0x604) = eventData + 1;
+		*(NxTriggerPairTestList**) (scene + 0x5d4) = previous;
+		*(NxTriggerPairTestList**) (scene + 0x5d8) = current;
+		};
+	initialiseEventGrowth(oracleEventGrowthScene, oracleEventGrowthShapes,
+		oracleEventGrowthPreviousData, oracleEventGrowthCurrentData, oracleEventGrowthData);
+	initialiseEventGrowth(candidateEventGrowthScene.bytes(), candidateEventGrowthShapes,
+		candidateEventGrowthPreviousData, candidateEventGrowthCurrentData, candidateEventGrowthData);
+	const unsigned oracleEventGrowthAllocBefore = allocator.allocations;
+	const unsigned oracleEventGrowthFreeBefore = allocator.frees;
+	oracle(oracleMatrix, oracleEventGrowthScene);
+	const unsigned oracleEventGrowthAllocs = allocator.allocations - oracleEventGrowthAllocBefore;
+	const unsigned oracleEventGrowthFrees = allocator.frees - oracleEventGrowthFreeBefore;
+	const unsigned candidateEventGrowthAllocBefore = allocator.allocations;
+	const unsigned candidateEventGrowthFreeBefore = allocator.frees;
+	nxSceneProcessTriggerPairs(&candidateEventGrowthScene);
+	const unsigned candidateEventGrowthAllocs = allocator.allocations - candidateEventGrowthAllocBefore;
+	const unsigned candidateEventGrowthFrees = allocator.frees - candidateEventGrowthFreeBefore;
+	NxTriggerPairTestEvent* const oracleGrownEvents =
+		*(NxTriggerPairTestEvent**) (oracleEventGrowthScene + 0x5fc);
+	NxTriggerPairTestEvent* const candidateGrownEvents =
+		*(NxTriggerPairTestEvent**) (candidateEventGrowthScene.bytes() + 0x5fc);
+	const unsigned oracleGrownEventCount = oracleGrownEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (oracleEventGrowthScene + 0x600) - oracleGrownEvents) : 0;
+	const unsigned candidateGrownEventCount = candidateGrownEvents
+		? (unsigned) (*(NxTriggerPairTestEvent**) (candidateEventGrowthScene.bytes() + 0x600) - candidateGrownEvents) : 0;
+	NxTriggerPairTestList* const oracleGrownCurrent =
+		*(NxTriggerPairTestList**) (oracleEventGrowthScene + 0x5d4);
+	NxTriggerPairTestList* const candidateGrownCurrent =
+		*(NxTriggerPairTestList**) (candidateEventGrowthScene.bytes() + 0x5d4);
+	const unsigned oracleGrownPairCount = oracleGrownCurrent->begin
+		? (unsigned) ((oracleGrownCurrent->end - oracleGrownCurrent->begin) / 2) : 0;
+	const unsigned candidateGrownPairCount = candidateGrownCurrent->begin
+		? (unsigned) ((candidateGrownCurrent->end - candidateGrownCurrent->begin) / 2) : 0;
+	const bool oracleGrownState = oracleGrownEventCount == 2 &&
+		oracleGrownEvents[0].trigger == (NxShape*) oracleEventGrowthShapes[0] &&
+		oracleGrownEvents[0].other == (NxShape*) oracleEventGrowthShapes[1] &&
+		oracleGrownEvents[0].event == 1 &&
+		oracleGrownEvents[1].trigger == (NxShape*) oracleEventGrowthShapes[0] &&
+		oracleGrownEvents[1].other == (NxShape*) oracleEventGrowthShapes[1] &&
+		oracleGrownEvents[1].event == 4 && oracleGrownPairCount == 1;
+	const bool candidateGrownState = candidateGrownEventCount == 2 &&
+		candidateGrownEvents[0].trigger == (NxShape*) candidateEventGrowthShapes[0] &&
+		candidateGrownEvents[0].other == (NxShape*) candidateEventGrowthShapes[1] &&
+		candidateGrownEvents[0].event == 1 &&
+		candidateGrownEvents[1].trigger == (NxShape*) candidateEventGrowthShapes[0] &&
+		candidateGrownEvents[1].other == (NxShape*) candidateEventGrowthShapes[1] &&
+		candidateGrownEvents[1].event == 4 && candidateGrownPairCount == 1;
+	const unsigned eventGrowthMismatches = oracleGrownState && candidateGrownState &&
+		oracleEventGrowthAllocs == 1 && candidateEventGrowthAllocs == 1 &&
+		oracleEventGrowthFrees == 1 && candidateEventGrowthFrees == 1 ? 0u : 1u;
+	mismatches += eventGrowthMismatches;
+	printf("collision trigger-pair-event-growth oracle_events=%u candidate_events=%u oracle_pairs=%u candidate_pairs=%u oracle_allocs=%u candidate_allocs=%u oracle_frees=%u candidate_frees=%u mismatches=%u\n",
+		oracleGrownEventCount, candidateGrownEventCount, oracleGrownPairCount,
+		candidateGrownPairCount, oracleEventGrowthAllocs, candidateEventGrowthAllocs,
+		oracleEventGrowthFrees, candidateEventGrowthFrees, eventGrowthMismatches);
+	printf("collision coverage name=trigger_pair_duplicates case=existing_event_buffer_growth_preserves_prior_event\n");
+	NxTriggerPairTestList* const oracleGrownPrevious =
+		*(NxTriggerPairTestList**) (oracleEventGrowthScene + 0x5d8);
+	NxTriggerPairTestList* const candidateGrownPrevious =
+		*(NxTriggerPairTestList**) (candidateEventGrowthScene.bytes() + 0x5d8);
+	allocator.free(oracleGrownCurrent->begin);
+	allocator.free(oracleGrownPrevious->begin);
+	allocator.free(candidateGrownCurrent->begin);
+	allocator.free(candidateGrownPrevious->begin);
+	allocator.free(oracleGrownEvents);
+	allocator.free(candidateGrownEvents);
 	nxTriggerPairTestOverlapResult = true;
 	NxSetCollisionDispatchMatrix(savedDispatch);
 	oracleSetAllocator(savedOracleSdk);
