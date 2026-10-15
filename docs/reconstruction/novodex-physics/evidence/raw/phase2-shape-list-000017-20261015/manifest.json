@@ -1,0 +1,75 @@
+{
+  "purpose": "Direct staged-pair reconstruction and mutation proof for JointActorBody::getShapes (phys_fn_000017), followed by fresh Phase 3, 6 and 7 gates.",
+  "date": "2026-10-15",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_result": "NxPhysicsCoreDumpTests exact: oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True; shape-list marker null=1 nonmesh_member=1 compound_array=1 empty_array=1.",
+  "mutation_result": "Changed JointActorBody::getShapes compound branch to return &mShape. Candidate reports compound_array=0 and empty_array=0, exits 1; normalized stdout_delta=2241 versus oracle. Source restored byte-for-byte and NxPhysics rebuilt before restored control.",
+  "phase_gates": {
+    "3": "pass, coverage_assertions_evaluated=976 floor=976",
+    "6": "pass, coverage_assertions_evaluated=1664 floor=1664",
+    "7": "pass, coverage_assertions_evaluated=2876 floor=2876",
+    "2": "pass, coverage_assertions_evaluated=14 floor=14"
+  },
+  "files": {
+    "phase3-gate.log.gz": {
+      "sha256": "8e2fc06142887af9582a2e46717591e4716057c04491b452e2e422b5252f1b7b",
+      "compressed_bytes": 89519,
+      "uncompressed_sha256": "46190b33ef274a6281bd355587e14020bbea1fc468ba9f7562ebf7066b49e273",
+      "uncompressed_bytes": 827452
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "f4bd16c60f89e8f0e1352415f062ec05bca8145912698ff3327f3ff6713b9529",
+      "compressed_bytes": 251472,
+      "uncompressed_sha256": "1ef005f592bea293ff31af44f94c445c8f68beff14d7681f0216f168c19e3f30",
+      "uncompressed_bytes": 3094161
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "e8e3abc901d5955d0e26e1906f28d3971c8a597a96c7c6fbaae38d3c0af9fd09",
+      "compressed_bytes": 368680,
+      "uncompressed_sha256": "003709579aa52b2f6819a832e020f955e678a65b45fcb3b4346f767734d2ce3c",
+      "uncompressed_bytes": 4589661
+    },
+    "mutant-build.log.gz": {
+      "sha256": "0c1baa2bf521ddc283735940ff737a1cac88f9a90f25bbf7fdf1bc744c17f26e",
+      "compressed_bytes": 305,
+      "uncompressed_sha256": "8fa3dd87184ef29b198cba82c05eb2ef6423abba5571c25abd193eacd0c220c0",
+      "uncompressed_bytes": 767
+    },
+    "mutant-oracle.log.gz": {
+      "sha256": "efd2302632e7c3b95d4c933c6d210b886f2bf7986b6f9e7aed84f2ea3b86ec35",
+      "compressed_bytes": 20860,
+      "uncompressed_sha256": "886ba157f43120ef71d44350c057bc69cd480d4fed07ffd9a55f41dc4c5ff658",
+      "uncompressed_bytes": 190967
+    },
+    "mutant-candidate.log.gz": {
+      "sha256": "62a1474e051f676de939ce8ba3ac0201e34b724268955abf27e4303e670a2a03",
+      "compressed_bytes": 452,
+      "uncompressed_sha256": "f20bfc039dd213106871092ba4a80266105eb11c56d35a7618bc5216670810b4",
+      "uncompressed_bytes": 852
+    },
+    "restored-build.log.gz": {
+      "sha256": "0c1baa2bf521ddc283735940ff737a1cac88f9a90f25bbf7fdf1bc744c17f26e",
+      "compressed_bytes": 305,
+      "uncompressed_sha256": "8fa3dd87184ef29b198cba82c05eb2ef6423abba5571c25abd193eacd0c220c0",
+      "uncompressed_bytes": 767
+    },
+    "restored-oracle.log.gz": {
+      "sha256": "efd2302632e7c3b95d4c933c6d210b886f2bf7986b6f9e7aed84f2ea3b86ec35",
+      "compressed_bytes": 20860,
+      "uncompressed_sha256": "886ba157f43120ef71d44350c057bc69cd480d4fed07ffd9a55f41dc4c5ff658",
+      "uncompressed_bytes": 190967
+    },
+    "restored-candidate.log.gz": {
+      "sha256": "a6a15488adf78ec18434e765cc5357175980f2091629c07b6b7adf1dd4b9c558",
+      "compressed_bytes": 20867,
+      "uncompressed_sha256": "0ae2d9008cd5e5cdbb37c5ea6c9c2ea46cf94345aca1f699ab764816aec03bdf",
+      "uncompressed_bytes": 190982
+    },
+    "phase2-gate.log.gz": {
+      "sha256": "680a2b057986796fa57bb6fda47be27fa4208050a22ff467eb13ee6fb150e851",
+      "compressed_bytes": 5829,
+      "uncompressed_sha256": "487e5b7b9e42b91ec8ef5e62865d15e68fe35db3f5ba84cacc12f60f1b1b1988",
+      "uncompressed_bytes": 54146
+    }
+  }
+}

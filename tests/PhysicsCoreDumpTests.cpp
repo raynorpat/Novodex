@@ -108,6 +108,139 @@ typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*
 typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
 
+typedef NxU32 (__thiscall *JointActorBodyGetNbShapesFn)(const void*);
+
+static void* nxCoreDumpMapAddress(HMODULE module, const wchar_t* pairDirectory,
+	const char* wanted)
+	{
+	wchar_t path[MAX_PATH];
+	if(swprintf_s(path, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return 0;
+	FILE* map = 0;
+	if(_wfopen_s(&map, path, L"rb") != 0 || !map)
+		return 0;
+	char line[2048];
+	unsigned preferredBase = 0;
+	void* address = 0;
+	while(fgets(line, sizeof(line), map))
+		{
+		const char* preferred = strstr(line, "Preferred load address is ");
+		if(preferred)
+			{
+			preferredBase = strtoul(preferred + strlen("Preferred load address is "), 0, 16);
+			continue;
+			}
+		const char* symbol = strstr(line, wanted);
+		if(!symbol)
+			continue;
+		const char* addressText = symbol + strlen(wanted);
+		while(*addressText == ' ' || *addressText == '\t') ++addressText;
+		char* addressEnd = 0;
+		const unsigned mapAddress = strtoul(addressText, &addressEnd, 16);
+		if(addressEnd == addressText || !preferredBase || mapAddress < preferredBase)
+			break;
+		address = reinterpret_cast<unsigned char*>(module) + (mapAddress - preferredBase);
+		break;
+		}
+	fclose(map);
+	return address;
+	}
+
+static bool nxRunShapeCountRow(HMODULE physics, const wchar_t* pairDirectory)
+	{
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	const bool candidate = GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES;
+	JointActorBodyGetNbShapesFn getNbShapes = reinterpret_cast<JointActorBodyGetNbShapesFn>(
+		reinterpret_cast<unsigned char*>(physics) + 0x000014f0);
+	if(candidate)
+		{
+		getNbShapes = reinterpret_cast<JointActorBodyGetNbShapesFn>(nxCoreDumpMapAddress(
+			physics, pairDirectory, "?getNbShapes@JointActorBody@@QBEIXZ"));
+		if(!getNbShapes)
+			{
+			fprintf(stderr, "FAIL candidate JointActorBody::getNbShapes row missing from NxPhysics.map\n");
+			return false;
+			}
+		}
+
+	unsigned char body[0x14];
+	unsigned char shape[0xe8];
+	void* compound[4] = {};
+	memset(body, 0, sizeof(body));
+	memset(shape, 0, sizeof(shape));
+	const unsigned nullCount = getNbShapes(body);
+
+	*reinterpret_cast<void**>(body + 0x10) = shape;
+	*reinterpret_cast<unsigned*>(shape + 0xd0) = 4;
+	const unsigned nonMeshCount = getNbShapes(body);
+
+	*reinterpret_cast<unsigned*>(shape + 0xd0) = 5;
+	*reinterpret_cast<void***>(shape + 0xe0) = compound;
+	*reinterpret_cast<void***>(shape + 0xe4) = compound;
+	const unsigned emptyCompoundCount = getNbShapes(body);
+	*reinterpret_cast<void***>(shape + 0xe4) = compound + 3;
+	const unsigned threeShapeCount = getNbShapes(body);
+	*reinterpret_cast<void***>(shape + 0xe0) = compound + 2;
+	*reinterpret_cast<void***>(shape + 0xe4) = compound + 1;
+	const unsigned reversedSpanCount = getNbShapes(body);
+
+	const bool exact = nullCount == 0 && nonMeshCount == 1
+		&& emptyCompoundCount == 0 && threeShapeCount == 3
+		&& reversedSpanCount == 0xffffffffu;
+	printf("coredump row_shape_count null=%08x nonmesh=%08x mesh_empty=%08x mesh_three=%08x mesh_reversed=%08x\n",
+		nullCount, nonMeshCount, emptyCompoundCount, threeShapeCount, reversedSpanCount);
+	return exact;
+	}
+
+typedef void** (__thiscall *JointActorBodyGetShapesFn)(void*);
+
+static bool nxRunShapeListRow(HMODULE physics, const wchar_t* pairDirectory)
+	{
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	const bool candidate = GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES;
+	JointActorBodyGetShapesFn getShapes = reinterpret_cast<JointActorBodyGetShapesFn>(
+		reinterpret_cast<unsigned char*>(physics) + 0x00001520);
+	if(candidate)
+		{
+		getShapes = reinterpret_cast<JointActorBodyGetShapesFn>(nxCoreDumpMapAddress(
+			physics, pairDirectory, "?getShapes@JointActorBody@@QAEPAPAXXZ"));
+		if(!getShapes)
+			{
+			fprintf(stderr, "FAIL candidate JointActorBody::getShapes row missing from NxPhysics.map\n");
+			return false;
+			}
+		}
+
+	unsigned char body[0x14];
+	unsigned char shape[0xe8];
+	void* compound[4] = {};
+	memset(body, 0, sizeof(body));
+	memset(shape, 0, sizeof(shape));
+	const bool nullList = getShapes(body) == 0;
+
+	*reinterpret_cast<void**>(body + 0x10) = shape;
+	*reinterpret_cast<unsigned*>(shape + 0xd0) = 4;
+	void** const member = getShapes(body);
+	const bool singleShapeMember = member == reinterpret_cast<void**>(body + 0x10)
+		&& *member == shape;
+
+	*reinterpret_cast<unsigned*>(shape + 0xd0) = 5;
+	*reinterpret_cast<void***>(shape + 0xe0) = compound;
+	*reinterpret_cast<void***>(shape + 0xe4) = compound + 3;
+	const bool compoundArray = getShapes(body) == compound;
+	*reinterpret_cast<void***>(shape + 0xe4) = compound;
+	const bool emptyCompoundArray = getShapes(body) == compound;
+	const bool exact = nullList && singleShapeMember && compoundArray && emptyCompoundArray;
+	printf("coredump row_shape_list null=%u nonmesh_member=%u compound_array=%u empty_array=%u\n",
+		nullList ? 1u : 0u, singleShapeMember ? 1u : 0u,
+		compoundArray ? 1u : 0u, emptyCompoundArray ? 1u : 0u);
+	return exact;
+	}
+
 // Every report the SDK makes is printed, so a report either side makes is
 // compared too (the deadlock case below expects exactly one).
 class NxPrintingOutputStream : public NxUserOutputStream
@@ -1013,6 +1146,16 @@ int wmain(int argc, wchar_t** argv)
 		{
 		FreeLibrary(physics);
 		return nxFail("a required export is missing");
+		}
+	if(!nxRunShapeCountRow(physics, pairDirectory))
+		{
+		FreeLibrary(physics);
+		return nxFail("JointActorBody::getNbShapes differs from its pinned row contract");
+		}
+	if(!nxRunShapeListRow(physics, pairDirectory))
+		{
+		FreeLibrary(physics);
+		return nxFail("JointActorBody::getShapes differs from its pinned row contract");
 		}
 
 	// The dump files go to the pair directory.

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "path": "focused-restored.log.gz",
+      "sha256_gzip": "8455abb50e3b4e264f9cabdf711c6f8fa0ea4ca662fdfce2bac4b5831b15a644",
+      "sha256_uncompressed": "12acbcf128352385e88e211857cb1f8d1aea4ae70a1effcbc2e55d1fcdcf5e08",
+      "gzip_bytes": 41256,
+      "uncompressed_bytes": 386824
+    },
+    {
+      "path": "null-arm-mutation.log.gz",
+      "sha256_gzip": "ebe00777d25e7cee16560028f0459beb5f56e34bdf422aaf9fd6fed5fde129cf",
+      "sha256_uncompressed": "26d6196a6da2f91755eefae6ebc6c6afbe7665ffb825eed966b52b8faf62e2cd",
+      "gzip_bytes": 22011,
+      "uncompressed_bytes": 196653
+    },
+    {
+      "path": "phase3-official.log.gz",
+      "sha256_gzip": "0a6a2c3dcfd024e90299cd6b9cff51022350b356eb737ae1eda25f2c91ca7b11",
+      "sha256_uncompressed": "3e9d8b7ba4f0c11481423f8f6c564f68d640eea13695c0070a643d65a622e5d2",
+      "gzip_bytes": 90949,
+      "uncompressed_bytes": 851530
+    },
+    {
+      "path": "phase6-official.log.gz",
+      "sha256_gzip": "6924199fbf37705808bd186160a4b41e6c83e96daf933642f8ff610bb6c4ac81",
+      "sha256_uncompressed": "1f2b943000a8d28c522a44b0b75defad47f4ae3176d4e43ac8feda479862f552",
+      "gzip_bytes": 251618,
+      "uncompressed_bytes": 3095540
+    },
+    {
+      "path": "phase7-official.log.gz",
+      "sha256_gzip": "e5e0dd86b0ad10b9ecb88ee58176e2552390a980e2fef049dc29d024660dda92",
+      "sha256_uncompressed": "b3a9728219bed2f57f0c2174a845b0f38100898fedce76b5cd45dad0e21387a6",
+      "gzip_bytes": 370184,
+      "uncompressed_bytes": 4617450
+    }
+  ]
+}

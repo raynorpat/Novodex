@@ -3915,6 +3915,8 @@ $NxRequiredCoverageLines = [ordered] @{
     # count). The final-review line after it is the outstanding SDK block count
     # at the pointer-epoch reset.
     'NxPhysicsCoreDumpTests' = @(
+        'coredump row_shape_count null=00000000 nonmesh=00000001 mesh_empty=00000000 mesh_three=00000003 mesh_reversed=ffffffff',
+        'coredump row_shape_list null=1 nonmesh_member=1 compound_array=1 empty_array=1',
         'sdk materials=3 added=1,2',
         'sdk group_1_3=0 group_2_2=0',
         'scene a=created b=created',
@@ -6091,7 +6093,7 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 14  # adds the material, purge and inspector Scene-lock refusal/unwind cases
-    '3' = 974  # adds the flag-one PhysicsSDK scalar-delete assertion
+	'3' = 976  # adds the flag-one PhysicsSDK scalar-delete and shape-count/shape-list assertions
                # previous 973 includes nine populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
                # plus the two-live-scene actor-group flag wrapper case
@@ -6180,7 +6182,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1662  # adds candidate-DLL base shape descriptor validation
+	'6' = 1664  # adds candidate-DLL base shape descriptor validation and shape-count/shape-list differentials
 				# adds direct rows 000521 and 000867 probes via shared simulation target
 				# adds direct row 000859 rotated anisotropic-friction probe
 				# adds direct row 000855 material-combine probe
@@ -6222,7 +6224,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2874  # adds actual-DLL Pruner registration, constructor/growth OOM and handle-reuse assertions
+	'7' = 2876  # adds actual-DLL Pruner registration, constructor/growth OOM, handle-reuse and shape-list/count assertions
 	           # includes plane descriptor virtual validation row 000585
 				# previous 2866 includes candidate-DLL descriptor, collision, actor-shape, and third-party oracle assertions
 				# adds nine registered populated-SDK teardown assertions
