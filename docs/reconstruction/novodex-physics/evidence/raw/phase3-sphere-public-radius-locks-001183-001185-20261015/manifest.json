@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "path": "focused-differential.log.gz",
+      "sha256_gzip": "867b23b36e1529a75d5253c06d209a4a7dff7228c911931cc03521919840ae00",
+      "sha256_uncompressed": "59bca08fddd5937d66240819390d38bfda3dfaa43d2f0f1d2187947078a64ed7",
+      "gzip_bytes": 8894,
+      "uncompressed_bytes": 77973
+    },
+    {
+      "path": "getter-mutation.log.gz",
+      "sha256_gzip": "dde33245e5a9aceed046740cb2221395a2087d763984b89530800dde0e6a7740",
+      "sha256_uncompressed": "99b19bab13230bb06b84901dd333b10aef209839c48f969ad20c9a10cb255f9e",
+      "gzip_bytes": 9107,
+      "uncompressed_bytes": 78721
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "sha256_gzip": "f27e9a28f481486b092640b2c204b6682547574bcf37d13ce869965cca610eb8",
+      "sha256_uncompressed": "f57950eb519781f41fd129026abbe573a1c8231199f8dfd1c5985635993c0602",
+      "gzip_bytes": 206227,
+      "uncompressed_bytes": 2827352
+    },
+    {
+      "path": "setter-mutation.log.gz",
+      "sha256_gzip": "0e20d7afd87125f62ad92e01188b07fdb947fe1a48a8be06426252f0cda66f1e",
+      "sha256_uncompressed": "30c9012356983e9e3fa4a8392b48081cc8bf604f4f1fc071beba1fb62fbaef81",
+      "gzip_bytes": 9092,
+      "uncompressed_bytes": 78570
+    }
+  ]
+}

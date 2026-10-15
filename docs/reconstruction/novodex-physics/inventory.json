@@ -22356,13 +22356,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/NpSphereShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/481",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3312",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests: locked setRadius preserves the radius and reports line 0x29; read getter releases the read lock. Removing the setter try-lock is rejected at stdout_delta=663; removing the getter bracket is rejected at stdout_delta=2.",
+      "notes": "Public NxSphereShape setRadius lock wrapper; see evidence/phase3-sphere-public-radius-locks-001183-001185.md."
     },
     {
       "id": "phys_fn_001186",

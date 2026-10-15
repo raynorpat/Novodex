@@ -616,9 +616,17 @@ static NxTriangleMesh& __fastcall nxMeshHandleGetTriangleMesh(void* self, void*)
 	return *mesh;
 	}
 
-static NxReal __fastcall nxShapeHandleGetRadius(void* self, void*)
+static NxReal __fastcall nxSphereHandleGetRadius(void* self, void*)
 	{
-	return *reinterpret_cast<const NxReal*>(nxBoxHandleInternal(self) + 0xe0);
+	void* readLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x14);
+	nxNpSceneGuardEnter(readLock);
+	unsigned char* shape = nxBoxHandleInternal(self);
+	void** table = *reinterpret_cast<void***>(shape);
+	typedef NxReal (__thiscall* GetRadiusFn)(void*);
+	const NxReal radius = reinterpret_cast<GetRadiusFn>(table[15])(shape);
+	nxNpSceneGuardLeave(readLock);
+	return radius;
 	}
 
 static NxReal __fastcall nxCapsuleHandleGetHeight(void* self, void*)
@@ -644,10 +652,21 @@ static bool nxCapsuleHandleWriteTry(void* writeLock, int line)
 
 static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
 	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxNpSceneGuardWriteTry(writeLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpSphereShape.cpp",
+			0x29, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
 	unsigned char* shape = nxBoxHandleInternal(self);
 	*reinterpret_cast<NxReal*>(shape + 0xe0) = radius;
 	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
 	nxSceneMarkShapeDirty(shape, 0x20);
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 static void __fastcall nxCapsuleHandleSetRadius(void* self, void*, NxReal radius)
@@ -873,7 +892,7 @@ void* nxShapePublicVtable(unsigned type)
 			slots[0][31] = reinterpret_cast<void*>(&nxPlaneHandleSetPlane);
 			slots[0][32] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[1][31] = reinterpret_cast<void*>(&nxSphereHandleSetRadius);
-			slots[1][32] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
+			slots[1][32] = reinterpret_cast<void*>(&nxSphereHandleGetRadius);
 			slots[1][33] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[2][31] = reinterpret_cast<void*>(&nxCapsuleHandleSetDimensions);
 			slots[2][28] = reinterpret_cast<void*>(&nxCapsuleHandleIs);
