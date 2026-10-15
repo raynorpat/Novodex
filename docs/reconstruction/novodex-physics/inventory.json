@@ -5635,13 +5635,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
-      "source": "field getter [this+0x24] (0xc3f0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/98",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1005",
       "static_proof": "mov eax,[ecx+0x24]; ret",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSDKSceneLookupTests reaches NpScene::scene through public releaseScene while removing the first of two Scenes. Returning this instead of mScene is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=7); restored control is exact. Evidence: evidence/phase2-row-000287.md.",
+      "notes": "The noinline accessor is called by the registered public releaseScene path and returns the internal Scene pointer stored at NpScene+0x24.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::scene"
     },
     {
       "id": "phys_fn_000288",

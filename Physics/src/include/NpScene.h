@@ -44,7 +44,7 @@ class NpScene : public NxScene, public NxAllocateable, public EmbeddedHookBase
 
 	// The Scene's internal pointer, which the forwarding slots below use and which
 	// getScene reads back out of the Scene at +0x6cc.
-	NxSceneInternal* scene() { return mScene; }
+	__declspec(noinline) NxSceneInternal* scene();
 	const NxSceneInternal* scene() const { return mScene; }
 
 	// The write-lock link at +0x0c (the VALUE, not its address): what the SDK

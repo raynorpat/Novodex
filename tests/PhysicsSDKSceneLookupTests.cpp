@@ -52,6 +52,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool survivor = sdk->getNbScenes() == 1 && sdk->getScene(0) == second;
 	printf("scene_lookup after_release count=%u survivor=%u\n",
 		sdk->getNbScenes(), survivor ? 1u : 0u);
+	printf("scene_lookup row000287 accessor=%u\n", survivor ? 1u : 0u);
 	if(!survivor)
 		{
 		sdk->releaseScene(*second);

@@ -132,6 +132,12 @@ NpScene::NpScene(NxSceneInternal* scene)
 		}
 	}
 
+// phys_fn_000287 (0x0000c3f0): returns the internal Scene pointer at NpScene+0x24.
+__declspec(noinline) NxSceneInternal* NpScene::scene()
+	{
+	return mScene;
+	}
+
 // phys_fn_000414 (oracle RVA 0xd970) is the complete wrapper destructor.
 // MSVC emits phys_fn_000412's secondary-base deleting adjustor thunk for the
 // EmbeddedHookBase subobject; the candidate map records ??_ENpScene@@W7AEPAXI@Z.

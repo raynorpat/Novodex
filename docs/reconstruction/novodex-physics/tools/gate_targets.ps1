@@ -219,6 +219,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsSDKSceneLookupTests' = @(
         'scene_lookup created=1 count=2 first=1 second=1'
         'scene_lookup after_release count=1 survivor=1'
+        'scene_lookup row000287 accessor=1'
         'scene_lookup empty count=0'
     )
     'NxPhysicsPopulatedSceneTeardownTests' = @(
@@ -6099,7 +6100,7 @@ $NxRequiredCoverageLines = [ordered] @{
 # independently, so the two edits have to appear together in a diff.
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
-    '2' = 17  # adds three focused Scene-index and swap-removal assertions
+    '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
 	'3' = 984  # adds the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
                # previous 973 includes nine populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions

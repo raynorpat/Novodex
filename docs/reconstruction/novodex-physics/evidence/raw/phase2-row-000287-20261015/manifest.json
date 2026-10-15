@@ -1,0 +1,60 @@
+{
+  "purpose": "Actual-DLL row-specific mutation proof for phys_fn_000287 (NpScene::scene).",
+  "date": "2026-10-15",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "implementation_source": "Physics/src/NpScene.cpp",
+  "implementation_source_sha256": "01ff511b948c441fa694f2cc8b1113b2907230c3a69bb1d9adb96d14764fc199",
+  "test_source": "tests/PhysicsSDKSceneLookupTests.cpp",
+  "test_source_sha256": "d6770038062fe0e5cc76a8bc74244c6c8e0729b34cc550e1c8577cd3aca5291f",
+  "mutation": "Changed NpScene::scene to return this instead of the internal Scene pointer at +0x24.",
+  "mutation_result": "The Scene registry lookup differential rejects the candidate: oracle_exit=0, candidate_exit=1, stdout_delta=7; after_release reports count=2 and survivor=0, with row000287 accessor=0.",
+  "restored_result": "Both exits are zero, stdout_delta=0, stderr_exact=True.",
+  "logs": {
+    "direct-control.log.gz": {
+      "sha256": "e5ef21a30ca731be2be309102f3a33744d08d3a7d850bc451e29b8a760778d92",
+      "compressed_bytes": 1195,
+      "uncompressed_sha256": "ddda0009e3aa0cba8680efb25559d8b4064879731bcd1fa9e2b15e213ca73847",
+      "uncompressed_bytes": 7457
+    },
+    "mutant-build.log.gz": {
+      "sha256": "18069cb1c2eb91eafa8208a64971613d9a7e26c65228027b6fff1d9c197e0fbc",
+      "compressed_bytes": 478,
+      "uncompressed_sha256": "94e387860e9d7b17bc9e630e043aa33b1840dc85802321412abba4eed37841a4",
+      "uncompressed_bytes": 938
+    },
+    "mutant-differential.log.gz": {
+      "sha256": "436e295a451ff63543c2bdee45e4c5bf910649e3904f9d83a4915b51b033ff4c",
+      "compressed_bytes": 1396,
+      "uncompressed_sha256": "865d5c117f0226f4ca48cc42a950df3aef10153e4e9db6b87276b9d1196d5583",
+      "uncompressed_bytes": 7579
+    },
+    "restored-build.log.gz": {
+      "sha256": "18069cb1c2eb91eafa8208a64971613d9a7e26c65228027b6fff1d9c197e0fbc",
+      "compressed_bytes": 478,
+      "uncompressed_sha256": "94e387860e9d7b17bc9e630e043aa33b1840dc85802321412abba4eed37841a4",
+      "uncompressed_bytes": 938
+    },
+    "restored-differential.log.gz": {
+      "sha256": "462bc95b5451f225b5602a14bcb1b5ebe06221ba26c9c18749942a71a95b9de6",
+      "compressed_bytes": 1199,
+      "uncompressed_sha256": "c9c2b5338e6bc2ec4f610f16b20d2853b3f544ae7036b43cd1d95b76efe2d46e",
+      "uncompressed_bytes": 7532
+    },
+    "phase2-gate.log.gz": {
+      "sha256": "8984b543a0558543893fbe6b21236c300e87dad24c4bc5c58112822a26887b07",
+      "compressed_bytes": 6912,
+      "uncompressed_sha256": "23394c1155920ad7089419d055b1317ee33f0a429cf2ecd9a7dbe06afeb26527",
+      "uncompressed_bytes": 71966
+    },
+    "phase3-gate.log.gz": {
+      "sha256": "61e35210ca75f5088a1d2d97239bd4001cb467dfafb7586255308a38adac2854",
+      "compressed_bytes": 91224,
+      "uncompressed_sha256": "68d2b1f42423709c1c57b4034b2f6967a868d77db7f81d16bf7874e7382caed5",
+      "uncompressed_bytes": 844984
+    }
+  },
+  "mutant_candidate_sha256": "94aa07192e43e0c307c140bd7c15a75d832af40afb4ea06ec94d23ee9d0ce8cc",
+  "restored_candidate_sha256": "6405f42ce3f1cf14235fdc0c56e8ab31a2b0e1228e5574969afdb0bb38c46b62",
+  "phase2_gate": "pass, coverage_assertions_evaluated=18 floor=18",
+  "phase3_gate": "pass, coverage_assertions_evaluated=984 floor=984"
+}
