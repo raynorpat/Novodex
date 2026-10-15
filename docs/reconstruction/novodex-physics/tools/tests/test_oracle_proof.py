@@ -660,9 +660,9 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
             elif target == "NxPhysicsAssetTests":
                 self.assertEqual(phases, ["4"], "asset oracle proof belongs to Phase 4")
             elif target == "NxPhysicsThirdPartyTests":
-                self.assertEqual(phases, ["4"], "third-party oracle proof belongs to Phase 4")
+                self.assertEqual(phases, ["4", "7"], "third-party oracle proof is registered in Phases 4 and 7")
             elif target == "NxPhysicsCollisionTests":
-                self.assertEqual(phases, ["3"], "collision oracle proof belongs to Phase 3")
+                self.assertEqual(phases, ["3", "7"], "collision oracle proof is registered in Phases 3 and 7")
             else:
                 self.assertEqual(len(phases), 1, "%s must belong to exactly one phase" % target)
             self.assertIn(target, registered)

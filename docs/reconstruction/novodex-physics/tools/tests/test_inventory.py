@@ -2288,7 +2288,8 @@ class GateTargetRegistryTests(unittest.TestCase):
         targets = validate_inventory.read_gate_targets(self.REGISTRY)
         oracle = targets["by_phase"]["oracle_differential"]
         self.assertEqual(oracle[3], {"NxPhysicsCollisionTests"})
-        self.assertEqual(oracle[4], {"NxPhysicsAssetTests", "NxPhysicsThirdPartyTests"})
+        self.assertEqual(oracle[4], {"NxPhysicsAssetTests", "NxPhysicsThirdPartyTests",
+                                     "NxPhysicsType3PrunerTests"})
         self.assertEqual(oracle[5], {"NxPhysicsObjectLayoutTests", "NxPhysicsShapeVtableTests",
                                      "NxPhysicsFluidEmitterAbiTests"})
         self.assertNotIn("NxPhysicsCollisionTests", oracle[4])

@@ -1,0 +1,44 @@
+{
+  "packet": "phase5-scene-lifecycle-cycles-20261015",
+  "base_commit": "f028654a",
+  "candidate_physics_sha256": "b04154b3ef9ed2e1b6dd187947faf36c552210aa47705fae498d78f62acb68a4",
+  "lifecycle": "cycles=8 creates=32 releases=32 stable=1 mismatches=0",
+  "restored_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true",
+  "no_op_release_scene_mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=2 stderr_exact=false stable=0 mismatches=47",
+  "phase5_gate": "status=pass coverage_assertions=2741 floor=2741",
+  "tooling_suite": "816 tests OK",
+  "artifacts": [
+    {
+      "file": "release-noop-mutation.log.gz",
+      "source": "build/m1-scene-lifecycle/release-noop-mutation.log",
+      "sha256_gzip": "fe0e972f8af181da5b80612d9bedce6f332974bbb3056e3031dd3a0b40574f09",
+      "size_gzip": 1383,
+      "sha256_source": "407b145e8ddbb23f17cd0f4c424661beb61e3e4add709d6f938b1694655a2b58",
+      "size_source": 8772
+    },
+    {
+      "file": "release-restored-differential.log.gz",
+      "source": "build/m1-scene-lifecycle/release-restored-differential.log",
+      "sha256_gzip": "97ed142d931326b0a44c07901716d4fad087a571c01ccad982f02959d7be91c2",
+      "size_gzip": 1186,
+      "sha256_source": "52fa2f505bb72d4f9a8818eafbb6fa488e6b46c22713e34167b2151a44de5426",
+      "size_source": 8643
+    },
+    {
+      "file": "phase5-scene-lifecycle-gate.log.gz",
+      "source": "build/m1-scene-lifecycle/phase5-scene-lifecycle-gate.log",
+      "sha256_gzip": "a59d2966136bd50ecb7543040a49b086eb7b6678e5b91cf4e3e86962fe6b64dd",
+      "size_gzip": 209527,
+      "sha256_source": "90ba7a2c0b5ef175b920f0f84a0387dd251174e0c9bb56701acfc11a8e49dc09",
+      "size_source": 2846942
+    },
+    {
+      "file": "tooling-tests-final.log.gz",
+      "source": "build/m1-scene-lifecycle/tooling-tests-final.log",
+      "sha256_gzip": "a9c8b0c7a409fba61636cb14d63528d67cdde8b7945ebb724d0ac2978839fba6",
+      "size_gzip": 19002,
+      "sha256_source": "ad7f2f05e5beda68c91a82e9ed1b00660dfdd9fb26d6049cdea82a25a0f464f7",
+      "size_source": 125875
+    }
+  ]
+}
