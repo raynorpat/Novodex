@@ -1,0 +1,14 @@
+{
+  "purpose": "Fresh Phase 2 gate record for the existing phys_fn_000234 createScene wrapper mutation proof.",
+  "date": "2026-10-15",
+  "mutation_proof": "The prior row-specific probe changed NpPhysicsSDK::createScene to return null; NxPhysicsSDKTests rejected it (oracle exit 0, candidate exit 1, stdout_delta=10). See ../phase2-create-scene-wrapper-000234.md for restored control and candidate hashes.",
+  "gate": "Phase 2 passes at 14/14 coverage assertions after the wrapper row was moved from deferred to closed; its transitive Scene dependencies remain open.",
+  "files": {
+    "phase2-gate.log.gz": {
+      "sha256": "4f39dfc1fe34ab0a8f39db83f2aac47865d7a652bd9e40c5f08235dbdb80a6fe",
+      "compressed_bytes": 5744,
+      "uncompressed_sha256": "6cef37bc4c09a04ce1ee4828a600836dfc281e4d68965928143dd3030c69e22c",
+      "uncompressed_bytes": 53508
+    }
+  }
+}

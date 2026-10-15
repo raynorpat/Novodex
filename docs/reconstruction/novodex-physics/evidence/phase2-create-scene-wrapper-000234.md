@@ -7,3 +7,5 @@ The registered `NxPhysicsSDKTests` staged-pair fixture creates two scenes, check
 After restoring the source byte-for-byte and forcing a rebuild, the Phase 2 gate passed: `NxPhysicsSDKTests` had equal zero exits, `stdout_delta=0`, and exact stderr; all four required Phase 2 coverage assertions passed (`build/phase2-control-000234.log`). The restored candidate DLL hash was `9132ab2f4f69cd3af02415b272ea25b7a109ed8156b9b900b79d8b4891055735`.
 
 This closes the wrapper's local differential proof. Phase 2's transitive `Scene` dependency remains deferred while the remaining scene, joint, and simulation rows are reconstructed. Public headers were not changed.
+
+Ledger reconciliation (2026-10-15): the wrapper row is now closed independently; its transitive Scene rows remain deferred in their owning phases. The fresh Phase 2 gate passes at 14/14. Raw gate transcript and hash: [manifest](raw/phase2-create-scene-wrapper-000234-20261015/manifest.json).
