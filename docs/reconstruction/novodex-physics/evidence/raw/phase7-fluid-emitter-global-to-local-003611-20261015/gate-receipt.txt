@@ -1,0 +1,11 @@
+Phase 5 and Phase 7 verification receipt
+Date: 2026-10-15
+Worktree base: 04cb126b
+Branch: codex/phase7-physfn-000624
+Phase 5: exit 0; 2,768/2,768 coverage assertions
+Phase 7: exit 0; 2,882/2,882 coverage assertions
+Focused pose differential: exit 0; 3 cases, 3 callback checks, 3 stack checks, 0 mismatches
+Scene allocator differential: exit 0 on oracle and candidate; stdout delta 0, exact stderr
+Tooling tests: 831 passed, 743 subtests passed
+Candidate NxPhysics.dll SHA-256: fa7d6e53a255bbef7cbead7e099262586f007977f231e683dba2824fbe247698
+Fixture source SHA-256: 1b04aaceb891cf6b35876fb06d0942ec38a5a203c4df5bb05d8b7a8aaa3d7076

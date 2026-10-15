@@ -67853,13 +67853,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ZzFluidEmitterPose.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1359",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12553",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares oracle phys_fn_003611 at RVA 0x89410 with the candidate map-resolved nxNpFluidEmitterSetGlobalPoseInternal. Three cases cover unattached, matrix-backed actor, and quaternion-backed dynamic-body frames. The test compares the 12 local words, 12 cached world-pose words, callback tuple/payload, return, and x86 stack. Replacing the local X translation with the untransformed world delta is rejected in both attached cases (mismatches=2); restored output is exact (3/3 callback checks, 3/3 stack checks). See evidence/phase7-fluid-emitter-global-to-local-003611.md.",
+      "notes": "Converts world pose to emitter-local pose using the actor matrix or dynamic-body quaternion/translation, then republishes via nxNpFluidEmitterUpdateGlobalPose. It is kept after PhysicsSDK.cpp in the CMake source order to preserve the SDK factory RVA expected by existing layout-sensitive code. Public global setter wrappers and broader emitter behavior remain separate rows."
     },
     {
       "id": "phys_fn_003612",

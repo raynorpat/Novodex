@@ -11035,3 +11035,7 @@ Phase 7 continuation: phys_fn_000585 (`NxPlaneShapeDesc::isValid`) is mutation-f
 # Phase 7 auxiliary cleanup continuation
 
 The Phase 7 closure ledger also records the direct oracle differential for `phys_fn_000624`, the four-record Scene auxiliary array-block cleanup helper. Replacing the candidate body with an immediate return is detected with `mismatches=5`; the restored three-case oracle comparison is exact. The source reconstruction and raw transcripts are documented in `phase7-scene-auxiliary-array-block-000624.md`.
+
+### Fluid-emitter world-to-local pose helper `phys_fn_003611` (mismatches=2)
+
+The row-specific mutation changes the local X translation assignment to the untransformed world-space delta. The matrix-backed and quaternion-backed actor cases fail against the pinned oracle; restored controls match. See `phase7-fluid-emitter-global-to-local-003611.md`.

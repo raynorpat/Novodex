@@ -154,6 +154,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
         'fluid emitter flags cases=2 mismatches=0'
 		'fluid emitter global-pose rows=2 callback_checks=2 stack_checks=2 mismatches=0'
+		'fluid emitter global-to-local cases=3 callback_checks=3 stack_checks=3 mismatches=0'
 		'fluid emitter body repulsion bodyless actor=1 callbacks=3/3 order=1 vectors=1 mass=1 stack=1/1 mismatches=0'
 		'fluid post-step traversal fluids=2 oracle_callbacks=7 candidate_callbacks=7 particle_counts=3/3 particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=0'
 		'fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0'
@@ -6134,7 +6135,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2767  # adds direct row 000965 and the two pinned range-iteration coverage lines
+	'5' = 2768  # adds direct row 000965, range-iteration, and global-to-local emitter coverage
 	           # adds sphere radius setter/getter lock state and invalid-radius report rows
 	           # adds capsule type-query read-lock state
 	           # adds process-pool lifecycle plus owner, constructor-array, and growth-array OOM coverage
@@ -6244,7 +6245,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2881  # adds direct row 000624 auxiliary-block cleanup proof
+	'7' = 2882  # adds direct row 000624 cleanup and phys_fn_003611 global-to-local emitter proof
 	          # includes direct row 000965 Prunable owner-query result
 	           # adds actual-DLL Pruner registration, handle reuse, shape-row cases and joint-support root compression
 	           # includes plane descriptor virtual validation row 000585

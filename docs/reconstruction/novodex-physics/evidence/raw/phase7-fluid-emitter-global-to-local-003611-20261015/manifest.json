@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "worktree_base": "04cb126b",
+  "branch": "codex/phase7-physfn-000624",
+  "candidate_nxphysics_sha256": "fa7d6e53a255bbef7cbead7e099262586f007977f231e683dba2824fbe247698",
+  "fixture_source_sha256": "1b04aaceb891cf6b35876fb06d0942ec38a5a203c4df5bb05d8b7a8aaa3d7076",
+  "evidence": [
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "phase5-after-link-order.log",
+      "sha256": "48d6c1501d878d7bb6cf16eba477091492c2a6034d28d6254bef7cfab2f6cf56",
+      "bytes": 2842180,
+      "compressed_sha256": "f5318b2def73ffea6a3f49c0ae6616428f0ed066bb6f19221d68182ffbfa6e54",
+      "compressed_bytes": 206942
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "phase7-after-link-order.log",
+      "sha256": "197fc2824dda933d907444d0f132c63e133acaf57918cacd3537f9b56eebe20a",
+      "bytes": 4679647,
+      "compressed_sha256": "1668ce343c7d1fcdebfa4b12ac730dcdce09c50f96f74eab7bb0831db2f5df0c",
+      "compressed_bytes": 372168
+    },
+    {
+      "file": "pose-differential.log.gz",
+      "source": "pose-differential-after-order.log",
+      "sha256": "d166671278448f216fe4bc159b4262f48b88dd1e238b4bff00b5e85656848995",
+      "bytes": 15310,
+      "compressed_sha256": "41bf776eae31b4168048f29667f62513e49418a76192f7f239861851a79a2168",
+      "compressed_bytes": 2800
+    },
+    {
+      "file": "allocator-after-link-order.log.gz",
+      "source": "allocator-full-after-sdk.log",
+      "sha256": "eab3b39c8f0bae86b4f04fb4a1945d068ec1e96dd48eeab1659b48210c37d5b4",
+      "bytes": 5447,
+      "compressed_sha256": "ce78df397edae2c05c9107993d90e2473b766db87392d9c50cce54022f07673b",
+      "compressed_bytes": 1006
+    }
+  ]
+}
