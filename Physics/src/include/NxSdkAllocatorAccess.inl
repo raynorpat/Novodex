@@ -1,6 +1,7 @@
 // Shared exact production allocator definitions, included once per program.
-// The four slots of the built-in fallback. Their bodies belong to Phases 6 and 3
-// (see the header); they are here so phys_fn_004803 has an object to install.
+// The built-in fallback vtable: phys_fn_004807 malloc, phys_fn_004808 realloc,
+// and phys_fn_004810 free belong to Phase 6; phys_fn_004812 mallocDEBUG is the
+// Phase 5 null stub. These definitions give phys_fn_004803 an object to install.
 void* SdkDefaultAllocator::malloc(size_t size, NxMemoryType)
 	{
 	return ::malloc(size);
