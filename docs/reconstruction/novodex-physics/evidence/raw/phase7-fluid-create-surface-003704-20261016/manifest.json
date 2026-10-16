@@ -1,0 +1,77 @@
+{
+  "purpose": "Differential and registered gate evidence for public NxFluid::createSurfaceMesh, phys_fn_003704.",
+  "date": "2026-10-16",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "b333c9539bd00b9c2bb94fb8f210541e9e89531a21118a7d25ef239cd73b421d",
+  "mutant_candidate_sha256": "ca11ba861f2693aad73e296b84ce2a171f1c608eef69bc2f04e40484827b468e",
+  "mutation_result": "Replacing nxFluidCreateSurfaceMeshPublic with an immediate null return fails the licensed simulation fixture (candidate_exit=1, stdout_delta=77, matched=0).",
+  "restored_result": "Oracle and candidate both exit 0 with stdout_delta=0 and exact stderr after rebuilding NxPhysics.dll.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2815 floor=2815",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1704 floor=1704",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2945 floor=2945"
+  },
+  "tooling_tests": "Ran 816 tests; OK.",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "516f975f2633d09b65601f9b176c1596d62e983956d3a808137d04fc2a94f0b0",
+      "uncompressed_sha256": "cf568dbe1562a03cc5086a7a8b2e574facfdfeb66d478f5aeb0f9f675797bc68",
+      "compressed_bytes": 55784,
+      "uncompressed_bytes": 849584
+    },
+    "build-baseline.log.gz": {
+      "sha256": "3e88fae2c88c478ed0a79fa3776648afcfca041ab3bfc6f8ad88ed628dc67651",
+      "uncompressed_sha256": "be468956b47f20c54b600bdaa42fd79bed6e5dc72252d8dbf7b2e39b4a242c28",
+      "compressed_bytes": 214,
+      "uncompressed_bytes": 315
+    },
+    "no-op-mutant-build.log.gz": {
+      "sha256": "a09e4d8eac74a6f3a939e1a4d4e4243e2c0a7901823f03823e197750ac78b10a",
+      "uncompressed_sha256": "8993e5a75ed80c50308dc7bcfce704bb92fd0da993d4fdc0d3fd8e0f2979c1c9",
+      "compressed_bytes": 687,
+      "uncompressed_bytes": 1632
+    },
+    "no-op-mutant-differential.log.gz": {
+      "sha256": "ba725c9e434602783d159e40552d81b274b6d9ffbbb44c857a8f518c6375a215",
+      "uncompressed_sha256": "06c107d039ba55c76328177376e76dea66ae2eba6271378e87ed9630d66a98ac",
+      "compressed_bytes": 55013,
+      "uncompressed_bytes": 843884
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "f22ee9d1d5e4171886a9995e551a321edb1286a5b957280cf22d8a1c32085800",
+      "uncompressed_sha256": "6db73641a99d99fe2013df1d767668551c1f7715ff057d8ac88c663198dec0f3",
+      "compressed_bytes": 209301,
+      "uncompressed_bytes": 2819262
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "f1509d91c0a9da7bd611190ae1b0834990b5153d3f2f919876806f7ed3c7a5f6",
+      "uncompressed_sha256": "ae951df89d17cf313d2bf317f49c3207c42a18dec6d2e004d20012ec169b3a81",
+      "compressed_bytes": 253362,
+      "uncompressed_bytes": 3094542
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "bc19d354479e0a6c98ae212aa388ba5e931b53b3ab8becfebb40d7bd1d5a25b2",
+      "uncompressed_sha256": "7b343897e67671baad99cb57b8570b25b508330c1c5e1030dbc852bb1b2a63ca",
+      "compressed_bytes": 373274,
+      "uncompressed_bytes": 4609880
+    },
+    "restored-build.log.gz": {
+      "sha256": "e4cb53a112077dbd76dba7c4df99d660466ca91a97d1b6e3711746210974eb25",
+      "uncompressed_sha256": "2f785253eab60d62576e39ed382b48aa3adab7c51af2feaa1ab2fdf21e90a5b2",
+      "compressed_bytes": 687,
+      "uncompressed_bytes": 1632
+    },
+    "restored-differential.log.gz": {
+      "sha256": "f34d0e6b8edfd80fb0202f053c22913817ffd9e7780bd22d87bfa3dd53036299",
+      "uncompressed_sha256": "b7cdbf889e266e5cf45ddf30ee7871ef629c46efe9458aee172fa2d28cb56a59",
+      "compressed_bytes": 55784,
+      "uncompressed_bytes": 849584
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "4de63c0e1e3e0f368cf36e0a9d3d2f70631da1d275428dff4d2b5ddb5bc3cb1d",
+      "uncompressed_sha256": "acfccddfa1b1410947860ed77ac5ef589896b9163f2fd429b3e27e66c6b0e53a",
+      "compressed_bytes": 18987,
+      "uncompressed_bytes": 125876
+    }
+  }
+}

@@ -11137,3 +11137,5 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 `phys_fn_003423` initial-particle channel-order mutation detection: the registered alias-order differential rejects interleaving velocity/lifetime writes into the position pass (`stdout_delta=2`); restored oracle/candidate output matches exactly. See `phase7-fluid-particle-alias-order-003423.md` and its raw control/mutation/gate logs.
 
 `phys_fn_003497` Fluid constructor default mutation detection: setting `fluid+0x74` to one is rejected by the registered `NxPhysicsSimulationTests` staged-pair differential (`stdout_delta=2`); restored seven-fluid control is exact. See `phase7-fluid-constructor-003497.md` and its raw logs.
+
+`phys_fn_003704` public fluid surface-mesh creation mutation detection: the registered licensed API differential rejects a null-return wrapper mutant (`candidate_exit=1`, `stdout_delta=77`); the restored oracle/candidate run is exact. See `phase7-fluid-create-surface-mesh-003704.md`.

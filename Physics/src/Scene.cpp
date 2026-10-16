@@ -2529,7 +2529,7 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 	return manager;
 	}
 
-// phys_fn_003705 (0x0008b250): public, Scene-write-locked surface-mesh
+// phys_fn_003704 (0x0008b250): public, Scene-write-locked surface-mesh
 // creation. The constructor path creates the same manager, but only this public
 // wrapper attaches the Scene lock links to the returned NxImplicitMesh object.
 static NxImplicitMesh* __fastcall nxFluidCreateSurfaceMeshPublic(void* wrapper,

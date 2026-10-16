@@ -20,10 +20,10 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 275,
+    "differential_falsified": 276,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 114,
-    "deferred_not_reconstructed_in_phase": 94,
+    "deferred_not_reconstructed_in_phase": 93,
     "deferred_reconstructed_not_falsified": 76
   },
   "closed": [
@@ -3655,6 +3655,17 @@
       "note": "Public NxFluid::releaseEmitter removes a non-tail emitter from both paired arrays and calls the backend destroy callback once. Its no-op mutant is detected by the simulation differential. See evidence/phase7-npfluid-emitter-create-release-003696-003698.md."
     },
     {
+      "id": "phys_fn_003704",
+      "rva": "0x0008b250",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, replaced nxFluidCreateSurfaceMeshPublic (RVA 0x8b250) with an immediate null return, rebuilt NxPhysics.dll and NxPhysicsSimulationTests, and ran the registered staged-pair differential. The oracle succeeds; the candidate exits 1 with stdout_delta=77. The licensed fixture prints `simulation fluid licensed-surface-mesh properties row=003704 matched=0` and fails its implicit-mesh API contract. Mutant candidate SHA-256: ca11ba861f2693aad73e296b84ce2a171f1c608eef69bc2f04e40484827b468e.",
+        "detected": "stdout_delta=77"
+      },
+      "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; the registered row marker reports matched=1. Restored candidate SHA-256: b333c9539bd00b9c2bb94fb8f210541e9e89531a21118a7d25ef239cd73b421d. See evidence/phase7-fluid-create-surface-mesh-003704.md and evidence/raw/phase7-fluid-create-surface-003704-20261016/."
+    },
+    {
       "id": "phys_fn_003706",
       "rva": "0x0008b350",
       "proof": "differential_falsified",
@@ -5081,14 +5092,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003704",
-      "rva": "0x0008b250",
-      "size": 245,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_003716",

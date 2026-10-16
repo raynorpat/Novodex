@@ -5778,7 +5778,7 @@ int wmain(int argc, wchar_t** argv)
 		constructedSurfaceMeshUserDataMatches ? 1u : 0u,
 		licensedSurfaceMeshDestroyMatches ? 1u : 0u,
 		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
-	printf("simulation fluid licensed-surface-mesh properties matched=%u calls=%u.%u.%u.%u.%u.%u.%u.%u.%u reentry=%u errors=%u\n",
+	printf("simulation fluid licensed-surface-mesh properties row=003704 matched=%u calls=%u.%u.%u.%u.%u.%u.%u.%u.%u reentry=%u errors=%u\n",
 		licensedSurfaceMeshPropertiesMatch && explicitSurfaceMeshUserDataMatches ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,

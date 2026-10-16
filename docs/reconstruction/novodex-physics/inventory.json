@@ -69646,13 +69646,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1788",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12745",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8b250 shows the public createSurfaceMesh wrapper checks fluid-feature license bit 2, takes the Scene write lock, rejects shared-API reentry, validates NxImplicitMeshDesc, releases an existing manager, initializes a replacement, binds the new public mesh to Scene lock links, clears reentry, releases the lock, and returns the mesh.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests licensed product-code-804 fixture exercises constructor and explicit public createSurfaceMesh, checks the returned mesh userData and exact descriptor/backend callback values, and validates its surface properties. Replacing nxFluidCreateSurfaceMeshPublic with a no-op is rejected (candidate_exit=1, stdout_delta=77; row marker matched=0); restored oracle/candidate transcript is exact. Evidence: evidence/phase7-fluid-create-surface-mesh-003704.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidCreateSurfaceMeshPublic"
     },
     {
       "id": "phys_fn_003705",
