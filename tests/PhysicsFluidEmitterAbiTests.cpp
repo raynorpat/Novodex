@@ -5525,6 +5525,81 @@ static unsigned nxRunFluidEmitterRecordConstructor(unsigned char* image,
 	return mismatches;
 	}
 
+static unsigned nxRunFluidSolverDeletingDestructors(unsigned char* image,
+	HMODULE candidatePhysics)
+	{
+	void* candidatePrimaryVtableAddress = 0;
+	void* candidateReadLockVtableAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"?gNxFluidSolverVtable@@3PAPAXA", &candidatePrimaryVtableAddress)
+		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"?gNxFluidSolverReadLockVtable@@3PAPAXA",
+			&candidateReadLockVtableAddress))
+		{
+		fprintf(stderr, "FAIL fluid solver deleting-destructor vtables could not be resolved from the candidate map\n");
+		return 1;
+		}
+	void** const oraclePrimaryVtable =
+		reinterpret_cast<void**>(image + 0x116008);
+	void** const oracleReadLockVtable =
+		reinterpret_cast<void**>(image + 0x1160c8);
+	void** const candidatePrimaryVtable =
+		reinterpret_cast<void**>(candidatePrimaryVtableAddress);
+	void** const candidateReadLockVtable =
+		reinterpret_cast<void**>(candidateReadLockVtableAddress);
+	unsigned mismatches = 0;
+	for(unsigned route = 0; route != 2; ++route)
+		{
+		unsigned char oracleObject[0x18];
+		unsigned char candidateObject[0x18];
+		memset(oracleObject, 0xa5, sizeof(oracleObject));
+		memset(candidateObject, 0xa5, sizeof(candidateObject));
+		*reinterpret_cast<void***>(oracleObject) = oraclePrimaryVtable;
+		*reinterpret_cast<void***>(oracleObject + 8) = oracleReadLockVtable;
+		*reinterpret_cast<void***>(candidateObject) = candidatePrimaryVtable;
+		*reinterpret_cast<void***>(candidateObject + 8) = candidateReadLockVtable;
+		typedef void* (__thiscall *OracleDtor)(void*, unsigned char);
+		typedef void* (__fastcall *CandidateDtor)(void*, void*, unsigned char);
+		void* const oracleEntry = route == 0
+			? reinterpret_cast<void*>(oraclePrimaryVtable[0])
+			: reinterpret_cast<void*>(oracleReadLockVtable[0]);
+		void* const candidateEntry = route == 0
+			? candidatePrimaryVtable[0] : candidateReadLockVtable[0];
+		void* const oracleThis = route == 0
+			? static_cast<void*>(oracleObject)
+			: static_cast<void*>(oracleObject + 8);
+		void* const candidateThis = route == 0
+			? static_cast<void*>(candidateObject)
+			: static_cast<void*>(candidateObject + 8);
+		void* const oracleReturn = reinterpret_cast<OracleDtor>(oracleEntry)(
+			oracleThis, 0);
+		void* const candidateReturn = reinterpret_cast<CandidateDtor>(candidateEntry)(
+			candidateThis, 0, 0);
+		const bool oracleTransition =
+			*reinterpret_cast<void***>(oracleObject) != oraclePrimaryVtable
+			&& *reinterpret_cast<void***>(oracleObject + 8) != oracleReadLockVtable;
+		const bool candidateTransition =
+			*reinterpret_cast<void***>(candidateObject) != candidatePrimaryVtable
+			&& *reinterpret_cast<void***>(candidateObject + 8) != candidateReadLockVtable;
+		bool payloadMatch = true;
+		for(unsigned i = 0; i != sizeof(oracleObject); ++i)
+			if((i < 4 || (i >= 8 && i < 12)))
+				continue;
+			else if(oracleObject[i] != candidateObject[i])
+				payloadMatch = false;
+		const bool returnedPrimary = oracleReturn == oracleObject
+			&& candidateReturn == candidateObject;
+		if(!oracleTransition || !candidateTransition || !payloadMatch
+			|| !returnedPrimary)
+			++mismatches;
+		printf("fluid solver deleting dtor row=%s oracle_transition=%u candidate_transition=%u payload=%u return=%u mismatches=%u\n",
+			route == 0 ? "003694" : "003788", oracleTransition ? 1u : 0u,
+			candidateTransition ? 1u : 0u, payloadMatch ? 1u : 0u,
+			returnedPrimary ? 1u : 0u, mismatches);
+		}
+	return mismatches;
+	}
+
 static unsigned gFluidEmitterDtorStackBefore;
 static unsigned gFluidEmitterDtorStackAfter;
 static void* gFluidEmitterDtorResult;
@@ -6157,6 +6232,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	gFailures += nxRunFluidEmitterRecordConstructor(image, candidatePhysics);
 	gFailures += nxRunFluidEmitterRecordDestructor(image, candidatePhysics);
+	gFailures += nxRunFluidSolverDeletingDestructors(image, candidatePhysics);
 	gFailures += nxRunFluidLicenseResolver(image, candidatePhysics);
 	void* candidateFrictionPatchAssignAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,

@@ -1791,20 +1791,52 @@ static const char* __fastcall nxFluidGetName(void* wrapper, void*)
 	return name;
 	}
 
-static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*, unsigned char deleteObject)
+static void* __fastcall nxFluidSolverBaseDeletingDestructor(void* helper,
+	void*, unsigned char deleteObject)
 	{
 	if((deleteObject & 1) != 0)
 		::operator delete(helper);
 	return helper;
 	}
 
+static void* __fastcall nxFluidSolverReadLockBaseDeletingDestructor(void* base,
+	void*, unsigned char deleteObject)
+	{
+	if((deleteObject & 1) != 0)
+		::operator delete(base);
+	return base;
+	}
+
+static void* gNxFluidSolverBaseVtable[] = {
+	reinterpret_cast<void*>(nxFluidSolverBaseDeletingDestructor)
+	};
+static void* gNxFluidSolverReadLockBaseVtable[] = {
+	reinterpret_cast<void*>(nxFluidSolverReadLockBaseDeletingDestructor)
+	};
+
+// phys_fn_003694 (0x8b040) is the scalar deleting destructor for the fluid
+// solver wrapper. Its embedded read-lock base is at +8; destroying the derived
+// object first transitions both vfptrs to their base tables, then frees the
+// process-heap wrapper only when the low delete flag is set.
+static void* __fastcall nxFluidSolverDeletingDestructor(void* helper, void*,
+	unsigned char deleteObject)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(helper);
+	*reinterpret_cast<void***>(bytes + 8) = gNxFluidSolverReadLockBaseVtable;
+	*reinterpret_cast<void***>(bytes) = gNxFluidSolverBaseVtable;
+	if((deleteObject & 1) != 0)
+		::operator delete(helper);
+	return helper;
+	}
+
+// phys_fn_003788 (0x8c2a0) is the secondary-vfptr deleting-destructor thunk:
+// it adjusts the read-lock subobject back to the allocation and shares the
+// primary destructor's base-vfptr transitions and deleting behavior.
 static void* __fastcall nxFluidSolverReadLockDeletingDestructor(void* base,
 	void*, unsigned char deleteObject)
 	{
 	void* const helper = static_cast<unsigned char*>(base) - 8;
-	if((deleteObject & 1) != 0)
-		::operator delete(helper);
-	return helper;
+	return nxFluidSolverDeletingDestructor(helper, 0, deleteObject);
 	}
 
 static NxFluidEmitter* __fastcall nxFluidCreateEmitterPublic(void*, void*,

@@ -117,6 +117,8 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
+		'fluid solver deleting dtor row=003694 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
+		'fluid solver deleting dtor row=003788 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
 		'fluid license resolver cases=11 input_digest=04893d50 oracle=8d75d855 candidate=8d75d855 mismatches=0'
         'contact patch assignment cases=3 oracle_return=3 candidate_return=3 payload_equal=3 vptr_preserved=3 padding_preserved=3 stack=3/3 mismatches=0'
         'fluid collision bucket-prefix records=4 oracle_total=9 candidate_total=9 prefixes=1 return=1 stack=1/1 mismatches=0'
@@ -6219,7 +6221,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2812  # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; plus row 003970 spring-force branch matrix and row 003979 two-body force case; adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
+	'5' = 2814  # previous 2812 plus primary and secondary fluid-solver deleting-destructor rows 003694/003788
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
@@ -6337,7 +6339,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2942  # plus phys_fn_003423 sub-word stride edge assertion; plus phys_fn_000445 per-step debug-renderable clear assertion; plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
+	'7' = 2944  # previous 2942 plus primary and secondary fluid-solver deleting-destructor rows 003694/003788; plus phys_fn_003423 sub-word stride edge assertion; plus phys_fn_000445 per-step debug-renderable clear assertion; plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization

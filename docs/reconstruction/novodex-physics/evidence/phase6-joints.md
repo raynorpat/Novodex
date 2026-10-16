@@ -12,6 +12,14 @@ oracle, in-process candidate, and candidate-DLL paths.
 `phys_fn_003796` owner-fluid pointer mutation detection: `mismatches=2`.
 `phys_fn_003824` frame-actor dereference mutation detection: `mismatches=2`.
 
+Phase 7 fluid solver deleting-destructor rows `phys_fn_003694` and
+`phys_fn_003788` are mutation-falsified by `NxPhysicsFluidEmitterAbiTests`.
+`phys_fn_003694` mutation detection is `mismatches=1` when the primary base-
+vfptr store is omitted; `phys_fn_003788` mutation detection is `mismatches=1`
+when the secondary this adjustment changes from -8 to -4. The restored control is exact. See
+`evidence/phase7-fluid-solver-destructors-003694-003788.md` and
+`evidence/raw/phase7-fluid-solver-dtor-003694-003788-20261016/`.
+
 Phase 7 scene pair-flag getters `phys_fn_000311` and `phys_fn_000315` are
 mutation-falsified by `NxPhysicsPairFlagTests`. The valid actor-pair zero-return
 mutant changes the transcript by 4 bytes; the valid shape-pair zero-return

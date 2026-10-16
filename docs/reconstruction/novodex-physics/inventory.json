@@ -69462,13 +69462,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp::nxFluidSolverDeletingDestructor",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1399",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12729",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x0008b040 (VA 0x1008b040) identifies the primary scalar deleting destructor. It installs the derived primary and secondary vfptrs, calls the read-lock base destructor at this+8 (VA 0x1005ba90), installs primary base vfptr 0x10115f48, conditionally invokes operator delete when delete flag bit 0 is set, and returns the primary object. The corresponding candidate helper is ?nxFluidSolverDeletingDestructor@@YIPAXPAX0E@Z in Scene.obj.",
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests directly calls the oracle and candidate primary deleting-destructor vtable entries on scratch copies with delete flag zero, checking primary and secondary base-vfptr transitions, unchanged non-vptr payload, and the primary return pointer. Restored control reports row mismatches=0 and aggregate mismatches=0. Omitting the candidate primary base-vfptr store is caught by this direct row route (candidate_transition=0, row mismatches=1); aggregate mismatches=2 across both routes. See evidence/phase7-fluid-solver-destructors-003694-003788.md and evidence/raw/phase7-fluid-solver-dtor-003694-003788-20261016/.",
+      "notes": "Fluid solver wrapper deleting destructor; see row-specific oracle differential evidence."
     },
     {
       "id": "phys_fn_003695",
@@ -71170,13 +71170,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp::nxFluidSolverReadLockDeletingDestructor",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1830",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12869",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x0008c2a0 (VA 0x1008c2a0) identifies the secondary-vfptr deleting-destructor thunk as sub ecx, 8; jmp 0x1008b040. Its source vtable slot is 0x101160c8; the adjustment converts the embedded read-lock subobject at +8 to the primary allocation before running phys_fn_003694. The corresponding candidate helper is ?nxFluidSolverReadLockDeletingDestructor@@YIPAXPAX0E@Z in Scene.obj.",
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests calls the oracle and candidate secondary deleting-destructor vtable entries with this at object+8, then checks both base-vfptr transitions, unchanged non-vptr payload, and return of the primary pointer. Restored control reports row mismatches=0 and aggregate mismatches=0. Mutating the candidate adjustment from -8 to -4 leaves the primary route exact and is caught by this secondary route (payload=0, return=0, row mismatches=1). See evidence/phase7-fluid-solver-destructors-003694-003788.md and evidence/raw/phase7-fluid-solver-dtor-003694-003788-20261016/.",
+      "notes": "Fluid solver wrapper deleting destructor; see row-specific oracle differential evidence."
     },
     {
       "id": "phys_fn_003789",

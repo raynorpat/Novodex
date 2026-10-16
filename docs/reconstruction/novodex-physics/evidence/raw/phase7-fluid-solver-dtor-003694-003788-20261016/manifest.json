@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "scope": "Phase 7 fluid solver deleting destructors phys_fn_003694 and phys_fn_003788",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "4cc4c5b0eb1f52d95bb5d0429f56ad4d06c4795e4d3019f23661b6290f00a155",
+  "registered_assertions": {
+    "phase5": "2814/2814",
+    "phase7": "2944/2944"
+  },
+  "tooling_tests": "816 passed",
+  "artifacts": [
+    {
+      "file": "phase5-gate-oracle-baseline-red.log.gz",
+      "sha256": "5b7d3e9f63107c79d8da4b390064474b6061fedc09bd9afc5dc8eeac1b2c2420",
+      "size_bytes": 11335,
+      "uncompressed_sha256": "47eb713cce088ed8f6e34e43288fe716f598603db08a274506d79478919cf23d",
+      "uncompressed_size_bytes": 63784
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "sha256": "17ae8a5b98b91e7b7c5d5a4081600a3dd583f09ce3bb3c00e8c43ea79bbedb15",
+      "size_bytes": 208840,
+      "uncompressed_sha256": "2a1e2cf7d73c6d560d15f7ddc56780dcf9200d4baae180215f81cb7ead949b56",
+      "uncompressed_size_bytes": 2818122
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "sha256": "fd69ccd27a288f1ee1cb4d64619d1568ed3e8c79f0b4955591bd28946c3b1e2b",
+      "size_bytes": 373276,
+      "uncompressed_sha256": "518a082e2547175f3a75095e4bc7e67882c1df669c595d33d2b5525dac2b2931",
+      "uncompressed_size_bytes": 4609701
+    },
+    {
+      "file": "primary-mutant-build.log.gz",
+      "sha256": "46248d2c135f898f6418425c387f97662e078e4603a0c0e69e6e754f8acf300f",
+      "size_bytes": 726,
+      "uncompressed_sha256": "3287d7754f85e705cd4694ed76040d46f616b79c4e6434c40870beb07b1ab1f1",
+      "uncompressed_size_bytes": 1634
+    },
+    {
+      "file": "primary-mutant-differential.log.gz",
+      "sha256": "afe148a9834adb3fb66928f5b40f01688250a863db7ffe6b1acc05845bca1a5b",
+      "size_bytes": 2359,
+      "uncompressed_sha256": "5ffd4ab03d905a94882cb9a9c4511e25214a8dd5b6003c48c2d5c6f55ccc1794",
+      "uncompressed_size_bytes": 10397
+    },
+    {
+      "file": "registered-differential-runner.log.gz",
+      "sha256": "fb859ff6065f7eb40c9c4d7ac1a501732e1a0b24e5bbf67cbb2d0c5db75412f8",
+      "size_bytes": 3089,
+      "uncompressed_sha256": "f8983fb546d41bab55abd80805e38b552b6e6b3ba28f02006f9ac48aa4b15b02",
+      "uncompressed_size_bytes": 15150
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "sha256": "0bb455fc43593607fe19f3f2c885d9c1f782c3cce101e2558a75a3d5344e88fe",
+      "size_bytes": 2347,
+      "uncompressed_sha256": "b1e3ce4be5ec057589706daee17ac2881780c41e7cce6bb90e02ba00f358ea2a",
+      "uncompressed_size_bytes": 10397
+    },
+    {
+      "file": "secondary-mutant-build.log.gz",
+      "sha256": "46248d2c135f898f6418425c387f97662e078e4603a0c0e69e6e754f8acf300f",
+      "size_bytes": 726,
+      "uncompressed_sha256": "3287d7754f85e705cd4694ed76040d46f616b79c4e6434c40870beb07b1ab1f1",
+      "uncompressed_size_bytes": 1634
+    },
+    {
+      "file": "secondary-mutant-differential.log.gz",
+      "sha256": "5004c700e2ba92eff5cf02331acefba33d5d639b3987f3c5ee772806d1dfa79b",
+      "size_bytes": 2359,
+      "uncompressed_sha256": "bf348343844c84902d72968bad670a19bcdcf17b2467b8fef1173d55f94781c8",
+      "uncompressed_size_bytes": 10397
+    },
+    {
+      "file": "tooling-tests.log.gz",
+      "sha256": "2073b2f9090178e10d5d4b249a1c5991b266a87668c0d9cb52a887b858f20166",
+      "size_bytes": 18987,
+      "uncompressed_sha256": "2a4de22c5bfff6da74dab2eb943367aeac6158b5aaa65fd86c452ecea0009118",
+      "uncompressed_size_bytes": 125875
+    }
+  ]
+}
