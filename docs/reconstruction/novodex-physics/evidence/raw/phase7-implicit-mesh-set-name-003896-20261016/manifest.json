@@ -1,0 +1,82 @@
+{
+  "purpose": "Licensed public NxImplicitMesh setName mutation proof and Phase 5/6/7 gates for phys_fn_003896.",
+  "date": "2026-10-16",
+  "rows": {
+    "phys_fn_003896": "0x0008d760"
+  },
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "no_op_mutant_candidate_sha256": "b15a9a7885c762f3b1492011dff57807cc4f68459ff1f4590efc2ab9ec83b2ca",
+  "restored_differential_candidate_sha256": "30da17516e6487df19cba2ddb19080dbc0d9187902c7aecbe5849e230c564916",
+  "gated_candidate_sha256": "316bb5a4fede5acb9fd0f57f4869cc38487350257b71819239a98524d2ec605a",
+  "mutation_result": "Removed nxImplicitMeshSetName from NpImplicitMesh::setName. Candidate retained its initial name, row matched=0 (oracle_exit=0, candidate_exit=1, stdout_delta=68). Restoring the source made the oracle/candidate transcript exact.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2823 floor=2823",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1712 floor=1712; six isolated object-layout repeats also passed. One earlier full attempt hit transient allocator-probe mismatches and is retained separately.",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2953 floor=2953"
+  },
+  "tooling_tests": "Ran 816 tests; OK.",
+  "inventory_sha256": "2971c6de2ac0bb7f99ba522fae2908a93e7a7de099e40b7e3860b4fe9b57dbe0",
+  "phase7_closure_sha256": "5f6b6f95098f147db18b5b05e971fa2f40002199b60b7a68d7c35931e9dcda38",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "ec9f6adf1c342c6be895ae1c2b3623843fcb73b706313543d32745035321cd62",
+      "uncompressed_sha256": "d67715037bd10df60d05fe8cd5a9632559fe7bc48bc9fd002a8b8485123cc422",
+      "compressed_bytes": 56149,
+      "uncompressed_bytes": 851728
+    },
+    "no-op-mutant-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "no-op-mutant-differential.log.gz": {
+      "sha256": "8dc8426e0075ff3e54c18816db03e446b20ee89b78281f6fa5022da303cd8db1",
+      "uncompressed_sha256": "f94837374838d9402a885a6a4fed0758f6dd751b8daf0053bf4b17b08243385d",
+      "compressed_bytes": 55236,
+      "uncompressed_bytes": 845790
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "787d2e2cc4f212405f72dd016f8c73679c3cbaa415e68dad2a9799bf84dbf449",
+      "uncompressed_sha256": "80384b46497af95f3ef4b1db0403d73754b454701592ed6f08bd3d34e6075bdd",
+      "compressed_bytes": 210230,
+      "uncompressed_bytes": 2847203
+    },
+    "phase6-gate-transient-allocator-probe-failure.log.gz": {
+      "sha256": "0608e6122f197b2e3499ae24fc3e7b225803148db681bb7514257e0240720779",
+      "uncompressed_sha256": "72c2a072a3ac70f5b8ca1fc5051f4d3d506f33145b496bb14c8f5f29ddbcaefc",
+      "compressed_bytes": 23861,
+      "uncompressed_bytes": 355603
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "a1f9507c221a07423faf68bd10c7413ae94333f1d6d3ec3537c6b6043a610d97",
+      "uncompressed_sha256": "3a41b37b9cb4673e2cfc66c771304c3caf216c90bbfb1474edc117f31d8fa311",
+      "compressed_bytes": 253756,
+      "uncompressed_bytes": 3097444
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "8b7468723c8868c631214a6aa9615ecec90fa82f81cc4ee2b75693df95d866de",
+      "uncompressed_sha256": "465451a737fcabafa44faaac2f1fda266faacf7a8bda9e31418281ad26615d6e",
+      "compressed_bytes": 373093,
+      "uncompressed_bytes": 4611100
+    },
+    "restored-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "restored-differential.log.gz": {
+      "sha256": "23c000e0d4b219b1e1125bf1f403de73f6e812730304c77105c2fb9653c5fd43",
+      "uncompressed_sha256": "05c36f96d78f2734d628816c1605d56363204b0c1f701e046f4aad0dc5d7f08c",
+      "compressed_bytes": 56164,
+      "uncompressed_bytes": 851953
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "23b0216d4950274f7db0d32830a4b16628d6ece8192a23bd55b8a634034872c0",
+      "uncompressed_sha256": "4a501403676f3ee99ebb99bd3f8777c3faede73e49e21882c6ee29a14b088cff",
+      "compressed_bytes": 18987,
+      "uncompressed_bytes": 125875
+    }
+  }
+}

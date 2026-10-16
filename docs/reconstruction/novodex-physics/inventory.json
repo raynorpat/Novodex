@@ -73172,13 +73172,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpImplicitMesh.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1455",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13013",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8d760 identifies the public NxImplicitMesh::setName path: it takes the scene write lock through this+0x0c, checks callback re-entry, dispatches the name through the internal record at this+0x14, clears re-entry, and releases the lock; lock and re-entry reports use NpImplicitMesh.cpp:103 and :104.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests licensed surface-mesh fixture verifies the initial name and the updated name after setName. Removing the backend name update is rejected (candidate_exit=1, stdout_delta=68; row marker matched=0); the restored oracle/candidate differential is exact. Evidence: evidence/phase7-implicit-mesh-set-name-003896.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "NpImplicitMesh::setName"
     },
     {
       "id": "phys_fn_003897",

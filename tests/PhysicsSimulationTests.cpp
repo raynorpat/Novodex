@@ -5812,6 +5812,9 @@ int wmain(int argc, wchar_t** argv)
 		setSmoothingIterations,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSmoothingIterations,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
+	printf("simulation implicit-mesh set-name row=003896 matched=%u initial=%u updated=%u\n",
+		initialNameMatches && updatedNameMatches ? 1u : 0u,
+		initialNameMatches ? 1u : 0u, updatedNameMatches ? 1u : 0u);
 	printf("simulation implicit-mesh set-surface-radius row=003878 matched=%u calls=%u reentry=%u errors=%u\n",
 		licensedSurfaceMeshPropertiesMatch && setSurfaceRadius == 0.05f ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,
