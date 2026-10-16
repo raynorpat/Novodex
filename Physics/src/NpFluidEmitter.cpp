@@ -629,6 +629,15 @@ extern "C" int __cdecl nxNpFluidEmitterUpdateGlobalPose(void* internal)
 		worldPose);
 	}
 
+// phys_fn_003616 copies the local pose into the internal emitter record, then
+// republishes its cached world pose through the FluidModel callback.
+extern "C" int __cdecl nxNpFluidEmitterSetLocalPoseInternal(void* internal,
+	const float* pose)
+	{
+	memcpy(static_cast<unsigned char*>(internal) + 0x18, pose, 0x30);
+	return nxNpFluidEmitterUpdateGlobalPose(internal);
+	}
+
 // phys_fn_003624 (0x00089930) refreshes world pose, then mirrors the attached
 // body's position and velocities into the fluid emitter backend.
 extern "C" int __cdecl nxNpFluidEmitterUpdateBodyState(void* internal)
@@ -1031,8 +1040,8 @@ void NpFluidEmitter::setLocalPose(const NxMat34& pose)
 		nxFluidEmitterReportWriteLocked(0x5e);
 		return;
 		}
-	memcpy(static_cast<unsigned char*>(mInternal) + 0x18, &pose, sizeof(pose));
-	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpFluidEmitterSetLocalPoseInternal(mInternal,
+		reinterpret_cast<const float*>(&pose));
 	nxNpSceneGuardLeave(link);
 	}
 

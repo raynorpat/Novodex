@@ -1061,6 +1061,8 @@ static unsigned nxRunFluidEmitterSetGlobalPoseInternal(void* oracleAddress,
 		memset(candidateBody, 0, sizeof(candidateBody));
 		*reinterpret_cast<void**>(oracleInternal + 4) = oracleFluid;
 		*reinterpret_cast<void**>(candidateInternal + 4) = candidateFluid;
+		*reinterpret_cast<void**>(oracleInternal + 0x14) = 0;
+		*reinterpret_cast<void**>(candidateInternal + 0x14) = 0;
 		*reinterpret_cast<unsigned*>(oracleInternal + 8) = emitterHandle;
 		*reinterpret_cast<unsigned*>(candidateInternal + 8) = emitterHandle;
 		*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
@@ -1146,6 +1148,97 @@ static unsigned nxRunFluidEmitterSetGlobalPoseInternal(void* oracleAddress,
 			}
 		}
 	printf("fluid emitter global-to-local cases=3 callback_checks=%u stack_checks=%u mismatches=%u\n",
+		callbackChecks, stackChecks, mismatches);
+	return mismatches;
+	}
+
+// phys_fn_003616 copies a requested local pose before refreshing the cached
+// world pose and dispatching it to FluidModel.
+static unsigned nxRunFluidEmitterSetLocalPoseInternal(void* oracleAddress,
+	void* candidateAddress,
+	void (__cdecl *setFixturePose)(const float*),
+	void (__cdecl *resetCallbacks)(), unsigned (__cdecl *callbackCount)(),
+	int (__cdecl *getCallbackRecord)(unsigned, NxFluidEmitterFlagCallbackRecord*))
+	{
+	if(!oracleAddress || !candidateAddress || !setFixturePose || !resetCallbacks
+		|| !callbackCount || !getCallbackRecord)
+		return 1;
+	typedef int (__thiscall *OracleSetLocalPose)(void*, const float*);
+	typedef int (__cdecl *CandidateSetLocalPose)(void*, const float*);
+	OracleSetLocalPose oracleSetPose = reinterpret_cast<OracleSetLocalPose>(oracleAddress);
+	CandidateSetLocalPose candidateSetPose = reinterpret_cast<CandidateSetLocalPose>(candidateAddress);
+	static const float poses[2][12] = {
+		{ 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25f, -2.5f, 4 },
+		{ 0.812345f, -0.432109f, 0.123457f, 0.456789f, 0.901237f, -0.234567f,
+		  0.098765f, 0.345679f, 0.765431f, -0.75319f, 2.24681f, 3.51234f }
+	};
+	const unsigned context = 0x31415926u;
+	const unsigned fluidHandle = 0x27182818u;
+	const unsigned emitterHandle = 0x16180339u;
+	unsigned mismatches = 0, callbackChecks = 0, stackChecks = 0;
+	for(unsigned test = 0; test < 2; ++test)
+		{
+		unsigned char oracleInternal[0x90], candidateInternal[0x90];
+		unsigned char oracleFluid[0x84], candidateFluid[0x84];
+		unsigned char oracleBackend[0x34], candidateBackend[0x34];
+		memset(oracleInternal, 0xa5, sizeof(oracleInternal));
+		memset(candidateInternal, 0xa5, sizeof(candidateInternal));
+		memset(oracleFluid, 0, sizeof(oracleFluid));
+		memset(candidateFluid, 0, sizeof(candidateFluid));
+		memset(oracleBackend, 0, sizeof(oracleBackend));
+		memset(candidateBackend, 0, sizeof(candidateBackend));
+		*reinterpret_cast<void**>(oracleInternal + 4) = oracleFluid;
+		*reinterpret_cast<void**>(candidateInternal + 4) = candidateFluid;
+		*reinterpret_cast<void**>(oracleInternal + 0x14) = 0;
+		*reinterpret_cast<void**>(candidateInternal + 0x14) = 0;
+		*reinterpret_cast<unsigned*>(oracleInternal + 8) = emitterHandle;
+		*reinterpret_cast<unsigned*>(candidateInternal + 8) = emitterHandle;
+		*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+		*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+		*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = fluidHandle;
+		*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = fluidHandle;
+		*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = context;
+		*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = context;
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		gOracleFlagCallbackCount = 0;
+		setFixturePose(poses[test]);
+		__asm mov oracleBefore, esp
+		const int oracleResult = oracleSetPose(oracleInternal, poses[test]);
+		__asm mov oracleAfter, esp
+		NxFluidEmitterFlagCallbackRecord oracleRecord = {};
+		const unsigned oracleCallbacks = gOracleFlagCallbackCount;
+		if(oracleCallbacks == 1)
+			oracleRecord = gOracleFlagCallbacks[0];
+		resetCallbacks();
+		setFixturePose(poses[test]);
+		__asm mov candidateBefore, esp
+		const int candidateResult = candidateSetPose(candidateInternal, poses[test]);
+		__asm mov candidateAfter, esp
+		NxFluidEmitterFlagCallbackRecord candidateRecord = {};
+		const unsigned candidateCallbacks = callbackCount();
+		if(candidateCallbacks == 1)
+			getCallbackRecord(0, &candidateRecord);
+		const bool callbackMatch = oracleCallbacks == 1 && candidateCallbacks == 1
+			&& memcmp(&oracleRecord, &candidateRecord, sizeof(oracleRecord)) == 0;
+		const bool stateMatch = memcmp(oracleInternal + 0x18,
+			candidateInternal + 0x18, 0x60) == 0;
+		const bool balanced = oracleBefore == oracleAfter
+			&& candidateBefore == candidateAfter;
+		callbackChecks += callbackMatch;
+		stackChecks += balanced;
+		if(oracleResult != candidateResult || !callbackMatch || !stateMatch || !balanced
+			|| memcmp(oracleInternal + 0x60, candidateInternal + 0x60,
+				sizeof(oracleInternal) - 0x60) != 0)
+			{
+			++mismatches;
+			printf("fluid emitter local-pose case=%u oracle_ret=%d candidate_ret=%d "
+				"callbacks=%u/%u state=%u stack=%u/%u\n", test, oracleResult,
+				candidateResult, oracleCallbacks, candidateCallbacks, stateMatch,
+				oracleBefore == oracleAfter, candidateBefore == candidateAfter);
+			}
+		}
+	printf("fluid emitter local-pose setter cases=2 callback_checks=%u stack_checks=%u mismatches=%u\n",
 		callbackChecks, stackChecks, mismatches);
 	return mismatches;
 	}
@@ -5586,6 +5679,16 @@ int wmain(int argc, wchar_t** argv)
 		++gFailures;
 	gFailures += nxRunFluidEmitterSetGlobalPoseInternal(image + 0x89410,
 		candidateSetGlobalPoseInternalAddress, fluidModel, resetCallbacks,
+		callbackCount, getCallbackRecord);
+	void* candidateSetLocalPoseInternalAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterSetLocalPoseInternal", &candidateSetLocalPoseInternalAddress))
+		++gFailures;
+	typedef void (__cdecl *SetFixturePoseFn)(const float*);
+	SetFixturePoseFn setLocalFixturePose = reinterpret_cast<SetFixturePoseFn>(
+		GetProcAddress(fluidModel, "NxSetEmitterGlobalPose"));
+	gFailures += nxRunFluidEmitterSetLocalPoseInternal(image + 0x89850,
+		candidateSetLocalPoseInternalAddress, setLocalFixturePose, resetCallbacks,
 		callbackCount, getCallbackRecord);
 	gFailures += nxRunFluidCollisionTriangleCellsDifferential(image,
 		candidateTriangleCellsAddress);

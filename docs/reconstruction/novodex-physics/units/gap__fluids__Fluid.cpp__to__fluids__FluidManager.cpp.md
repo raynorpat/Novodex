@@ -3940,11 +3940,11 @@ void __thiscall FUN_100897e0(void *this,float *param_1)
 
 ```
 
-## phys_fn_003616 (0x00089850, 54 B, discovered)
+## phys_fn_003616 (0x00089850, 54 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/NpFluidEmitter.cpp
+- implementation: nxNpFluidEmitterSetLocalPoseInternal
 - prototype: undefined __thiscall FUN_10089850(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003810 (0x0008c660)
@@ -3979,6 +3979,11 @@ void __thiscall FUN_10089850(void *this,undefined4 *param_1)
 
 
 ```
+
+The direct oracle/candidate fixture covers two local poses, callback output,
+cached pose words, return value, preserved tail bytes and stack balance. A
+destination-offset mutation to `internal+0x1c` is rejected in both cases;
+see `evidence/phase7-fluid-local-pose-setter-003616.md`.
 
 ## phys_fn_003618 (0x00089890, 29 B, discovered)
 

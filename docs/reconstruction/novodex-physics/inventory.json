@@ -67975,13 +67975,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1362",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12559",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00089850 shows twelve dword copies from the argument to internal+0x18 followed by the call to phys_fn_003605 (0x00088310). Candidate boundary: nxNpFluidEmitterSetLocalPoseInternal.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares oracle RVA 0x00089850 with the map-resolved candidate helper for identity and nontrivial local poses. It checks all local/cached world-pose words, callback records, return values, preserved tail bytes and x86 stack balance. Changing the copy destination to internal+0x1c is rejected in both cases (callback_checks=0, mismatches=2, candidate exit 1); restored control is exact (callback_checks=2, stack_checks=2, mismatches=0). See evidence/phase7-fluid-local-pose-setter-003616.md.",
+      "notes": "The wrapper delegates its local-pose copy and world-pose refresh to this row-specific helper. Neighboring local-position and local-orientation setters are separate rows."
     },
     {
       "id": "phys_fn_003617",

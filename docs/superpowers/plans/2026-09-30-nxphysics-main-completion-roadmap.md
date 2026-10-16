@@ -1893,3 +1893,7 @@ The public `NxFluid::createEmitter` path now has oracle-differential coverage fo
 ### Continuation — fluid emitter initializer (`phys_fn_003609`, 2026-10-16)
 
 The oracle's 377-byte emitter initialization body is now isolated as `nxFluidEmitterInitialize` in `Physics/src/Scene.cpp`. It records wrapper metadata, backend callback arguments/handle, descriptor flags and local pose, optional frame actor, then dispatches global-pose update/store through the already reconstructed helpers. A frame-actor-store no-op is rejected by `NxPhysicsSimulationTests` (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=70`); restoring and rebuilding gives an exact differential. The full Phase 7 gate passes at 2,913/2,913 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-emitter-initialize-003609.md`.
+
+### Continuation — fluid emitter local-pose setter (`phys_fn_003616`, 2026-10-16)
+
+The 54-byte local-pose setter now has its own source boundary, `nxNpFluidEmitterSetLocalPoseInternal`. A two-case direct oracle/candidate differential checks the 12-word local-pose copy, resulting cached world pose, FluidModel callback, return value, preserved tail bytes and x86 stack balance. Changing the copy destination from `internal+0x18` to `internal+0x1c` is rejected in both cases (`mismatches=2`); the restored control is exact. The Phase 7 ledger now closes this row. Neighboring local-position and local-orientation setters remain separate open work. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-local-pose-setter-003616.md`.

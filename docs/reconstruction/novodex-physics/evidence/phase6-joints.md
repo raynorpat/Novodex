@@ -11104,3 +11104,5 @@ Phase 7 Scene fluid-creation row `phys_fn_000645` is now mutation-falsified thro
 `phys_fn_000645` enabled create mutation detection: `stdout_delta=94`.
 # Phase 7 cross-reference (2026-10-15): `phys_fn_003421` surface-mesh owner-slot release is mutation-falsified by the registered `NxPhysicsSimulationTests` differential (`stdout_delta=4083`); see `phase7-fluid-surface-mesh-release-003421-2026-10-15.md`.
 `phys_fn_003609` emitter initialization is mutation-falsified by `NxPhysicsSimulationTests`: a no-op frame-actor store changes the staged transcript by `stdout_delta=70`; restored control is exact. See `phase7-fluid-emitter-initialize-003609.md`.
+
+`phys_fn_003616` emitter local-pose setter is mutation-falsified by `NxPhysicsFluidEmitterAbiTests`: changing the copy destination from `internal+0x18` to `internal+0x1c` is rejected in both pose cases (`mismatches=2`); restored control is exact. See `phase7-fluid-local-pose-setter-003616.md`.

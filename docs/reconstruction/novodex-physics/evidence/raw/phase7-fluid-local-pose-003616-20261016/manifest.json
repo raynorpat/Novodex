@@ -1,0 +1,27 @@
+{
+  "row": "phys_fn_003616",
+  "rva": "0x00089850",
+  "target": "NxPhysicsFluidEmitterAbiTests",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "mutation_candidate_sha256": "4fdbd760848d7e4af4a075eee6201cd179bfc0fe20d9277fdb6242b59cd8e38b",
+  "restored_candidate_sha256": "469da275cc0a03667443601aa0aff9fa43a80a8450b900007857cfa4a31ff738",
+  "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
+  "fixture_source_sha256": "134eea3e45a8b835f9eba9dc9275d7b4af90d5a6ed7bb7eb7000f74f6f980c58",
+  "mutation": "Changed only the local-pose copy destination from internal+0x18 to internal+0x1c and rebuilt the registered target.",
+  "mutation_result": "The two-case differential reports callback_checks=0, mismatches=2, candidate exit 1.",
+  "restored_result": "The two-case differential reports callback_checks=2, stack_checks=2, mismatches=0, candidate exit 0.",
+  "artifacts": {
+    "mutant.log.gz": {
+      "bytes": 9327,
+      "sha256": "d60033635a068c7ed0ae6f785ef597c90a59614de49ad3f05f73c058efbe63cc",
+      "compressed_bytes": 2051,
+      "compressed_sha256": "b7bec9eacd6d9f0edfe8928f4b783213169b073027e47e11322ef5616f4516ae"
+    },
+    "restored.log.gz": {
+      "bytes": 9139,
+      "sha256": "dea08f0acb39b11ad94a692621a53ddb959dfb8b85deb855aa8bffcf22b0e661",
+      "compressed_bytes": 2018,
+      "compressed_sha256": "1b24b3de9e3bd36329eb7867f4db28987c710989ec19f128ac41d0aa41fe0ef6"
+    }
+  }
+}
