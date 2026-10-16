@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "commit": "89ed0f94eb50f96230958374d8637c663d720b7c",
+  "description": "Mainline focused differential, pinned-fixture Phase 5 blocker, mainline tool-suite result, and clean committed-worktree tool-suite result.",
+  "artifacts": [
+    {
+      "file": "mainline-phase5-gate.log.gz",
+      "source": "D:\\github\\Novodex\\build\\task7-mainline-phase5.log",
+      "source_bytes": 70339,
+      "source_sha256": "cde8c9c9e2849b8467f0351757df29b92eaa6e10a35a5f0e4b0676b2e94c794b",
+      "compressed_bytes": 11758,
+      "compressed_sha256": "5af9ca3dff40426740addc5367855ba7a90b1906b75cbea4c688058a6da16b9c"
+    },
+    {
+      "file": "mainline-focused-differential.log.gz",
+      "source": "D:\\github\\Novodex\\build\\task7-mainline-fluid-differential.log",
+      "source_bytes": 846706,
+      "source_sha256": "d2c2129c7320098052aabd6365e9769e24795c38d5bc0bc2531591a5d2c47616",
+      "compressed_bytes": 54976,
+      "compressed_sha256": "2c106d156dfecc4c5638372e3e6698b452c42e6f066e8e5c740adb8b34d1fb8f"
+    },
+    {
+      "file": "mainline-tool-suite.log.gz",
+      "source": "D:\\github\\Novodex\\build\\task7-mainline-tool-suite.log",
+      "source_bytes": 1931,
+      "source_sha256": "06c212f8afa8ba0c92b93b02f52b35405e493b4894bd94bc2b7aef5fbd3eaf8a",
+      "compressed_bytes": 471,
+      "compressed_sha256": "9c34cb005201f2da567a7e600e315358e8aac871325618c79f637a70ef0cf864"
+    },
+    {
+      "file": "committed-worktree-tool-suite.log.gz",
+      "source": "C:\\Users\\raynorpat\\.codex\\worktrees\\range-iteration-diff\\Novodex\\.superpowers\\sdd\\2026-09-24-nxphysics-completion\\task7-tool-suite-worktree.log",
+      "source_bytes": 922,
+      "source_sha256": "466d220c214d3ccaf1a013b26c4b8f84bb9fc567026b2606fc19e796b24305e4",
+      "compressed_bytes": 67,
+      "compressed_sha256": "6f11a624e17799ce7fd96951eb954e53f67e690464e19d10e0e3b81e71051c9c"
+    }
+  ]
+}
