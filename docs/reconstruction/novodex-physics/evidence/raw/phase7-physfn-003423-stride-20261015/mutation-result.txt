@@ -1,0 +1,1 @@
+oracle_exit=0 candidate_exit=1 stdout_delta=2

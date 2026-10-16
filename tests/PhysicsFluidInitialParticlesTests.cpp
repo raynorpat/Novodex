@@ -46,6 +46,9 @@
 #ifndef NX_FLUID_CELL_RECIPROCAL_TEST
 #define NX_FLUID_CELL_RECIPROCAL_TEST 0
 #endif
+#ifndef NX_FLUID_STRIDE_ALIGNMENT_TEST
+#define NX_FLUID_STRIDE_ALIGNMENT_TEST 0
+#endif
 #if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
 #undef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 1
@@ -195,6 +198,8 @@ int wmain(int argc, wchar_t** argv)
 	const char* const testName = "NxPhysicsFluidCellSizeZeroTests";
 	#elif NX_FLUID_CELL_RECIPROCAL_TEST
 	const char* const testName = "NxPhysicsFluidCellReciprocalTests";
+	#elif NX_FLUID_STRIDE_ALIGNMENT_TEST
+	const char* const testName = "NxPhysicsFluidStrideAlignmentTests";
 	#elif NX_FLUID_ADD_PARTICLES_TEST
 	const char* const testName = "NxPhysicsFluidAddParticlesTests";
 	#elif NX_FLUID_CELL_ROUNDING_TEST
@@ -412,6 +417,11 @@ int wmain(int argc, wchar_t** argv)
 	desc.initialParticleData.bufferPosByteStride = 4 * sizeof(NxF32);
 	desc.initialParticleData.bufferVelByteStride = 4 * sizeof(NxF32);
 	desc.initialParticleData.bufferLifeByteStride = 2 * sizeof(NxF32);
+	#if NX_FLUID_STRIDE_ALIGNMENT_TEST
+	desc.initialParticleData.bufferPosByteStride = 13;
+	desc.initialParticleData.bufferVelByteStride = 13;
+	desc.initialParticleData.bufferLifeByteStride = 5;
+	#endif
 	const bool descValid = desc.isValid();
 	unsigned exceptionCode = 0;
 	#if NX_FLUID_PARTICLE_ARRAY_ALLOC_FAILURE || NX_FLUID_GET_PARTICLES_NULL_FAILURE || NX_FLUID_ZERO_INITIAL_PARTICLES || NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP
@@ -695,6 +705,30 @@ int wmain(int argc, wchar_t** argv)
 	sdk->release();
 	if(!descValid || !countMatch || !cellsMatch)
 		return nxFail("reciprocal cell-size scaling differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
+	#elif NX_FLUID_STRIDE_ALIGNMENT_TEST
+	const bool countMatch = array &&
+		*reinterpret_cast<unsigned*>(array + 4) == 2;
+	const bool positionsMatch = records &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 96)) == 0x42b60000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 100)) == 0xbfc00000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 104)) == 0x40000000u;
+	const bool velocitiesMatch = records &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 108)) == 0x42ba0000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 112)) == 0x3e000000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 116)) == 0xbe800000u;
+	const bool lifetimeMatch = records &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(records + 180)) == 0x42be0000u;
+	printf("fluid initial-particles stride-align count=%u pos=%u vel=%u life=%u\n",
+		countMatch ? 2u : 0u, positionsMatch ? 1u : 0u,
+		velocitiesMatch ? 1u : 0u, lifetimeMatch ? 1u : 0u);
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !countMatch || !positionsMatch || !velocitiesMatch ||
+		!lifetimeMatch)
+		return nxFail("particle byte-stride alignment differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#else
 	const bool countMatch = array &&

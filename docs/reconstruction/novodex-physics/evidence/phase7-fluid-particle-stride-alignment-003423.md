@@ -1,0 +1,7 @@
+# `phys_fn_003423` particle byte-stride alignment
+
+IDA at oracle RVA `0x00084a80` shifts each position, velocity, and lifetime byte stride right by two and then multiplies by four before advancing its input pointer. This rounds each stride down to a multiple of four. `NxParticleData::isValid` only requires nonzero strides, so byte strides such as 13 and 5 reach the routine.
+
+`NxPhysicsFluidStrideAlignmentTests` supplies position and velocity strides of 13 and a lifetime stride of 5. For the second particle, the oracle reads each stream at offsets 12 and 4 respectively. The candidate's former raw-byte stepping disagreed on the second particle's positions, velocities, and lifetime. Masking the three private stride values with `~3u` restores exact output. A mutation back to raw byte strides is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2`); the restored stride, reciprocal-boundary, negative-cell, and zero-cell-size differentials pass exactly.
+
+The function remains partial/open because the full instruction-level audit is not complete. Public Physics headers are unchanged. Phase 5, 6, and 7 pass at 2,791/2,791, 1,692/1,692, and 2,913/2,913 coverage assertions; 835 tooling tests and 743 subtests pass. Inventory validation reports zero unexplained records. Raw mutation, restored focused controls, and gate logs are retained in `evidence/raw/phase7-physfn-003423-stride-20261015/`.
