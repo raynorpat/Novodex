@@ -4151,6 +4151,8 @@ int wmain(int argc, wchar_t** argv)
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
 	typedef void (__cdecl *SetFluidCreateNullIndexFn)(unsigned);
 	typedef unsigned (__cdecl *GetFluidCreationOrderFn)(char*, unsigned);
+	typedef unsigned (__cdecl *GetFluidEmitterCreateRecordFn)(unsigned,
+		unsigned*, unsigned);
 	typedef void (__cdecl *SetImplicitMeshReentryTargetFn)(void*);
 	typedef unsigned (__cdecl *GetFluidScalarCallsFn)();
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
@@ -4198,6 +4200,9 @@ int wmain(int argc, wchar_t** argv)
 	GetFluidCreationOrderFn getFluidCreationOrder = reinterpret_cast<
 		GetFluidCreationOrderFn>(GetProcAddress(fluidModel,
 			"NxGetFluidCreationOrder"));
+	GetFluidEmitterCreateRecordFn getFluidEmitterCreateRecord = reinterpret_cast<
+		GetFluidEmitterCreateRecordFn>(GetProcAddress(fluidModel,
+			"NxGetFluidEmitterCreateRecord"));
 	SetImplicitMeshReentryTargetFn setImplicitMeshReentryTarget = reinterpret_cast<
 		SetImplicitMeshReentryTargetFn>(GetProcAddress(fluidModel,
 			"NxSetImplicitMeshReentryTarget"));
@@ -4211,7 +4216,7 @@ int wmain(int argc, wchar_t** argv)
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex || !setFluidCreateNullIndex ||
-		!getFluidCreationOrder ||
+		!getFluidCreationOrder || !getFluidEmitterCreateRecord ||
 		!setImplicitMeshReentryTarget)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
@@ -5716,10 +5721,14 @@ int wmain(int argc, wchar_t** argv)
 		? sdk->createScene(fluidSceneDesc) : 0;
 	NxFluidDesc initializationOrderDesc;
 	initializationOrderDesc.setToDefault();
-	NxFluidEmitterDesc initializationOrderEmitter;
-	initializationOrderEmitter.setToDefault();
-	initializationOrderDesc.emitters.pushBack(initializationOrderEmitter);
-	initializationOrderDesc.emitters.pushBack(initializationOrderEmitter);
+	NxFluidEmitterDesc initializationOrderEmitterA;
+	initializationOrderEmitterA.setToDefault();
+	initializationOrderEmitterA.relPose.t.set(0.25f, -0.5f, 0.75f);
+	NxFluidEmitterDesc initializationOrderEmitterB;
+	initializationOrderEmitterB.setToDefault();
+	initializationOrderEmitterB.relPose.t.set(-1.25f, 0.5f, 0.25f);
+	initializationOrderDesc.emitters.pushBack(initializationOrderEmitterA);
+	initializationOrderDesc.emitters.pushBack(initializationOrderEmitterB);
 	NxU32 initializationOrderCount = 1;
 	NxF32 initializationOrderPosition[3] = {1.0f, 2.0f, 3.0f};
 	initializationOrderDesc.initialParticleData.numParticlesPtr =
@@ -5733,12 +5742,43 @@ int wmain(int argc, wchar_t** argv)
 	char initializationOrder[64] = {};
 	const unsigned initializationOrderLength = getFluidCreationOrder(
 		initializationOrder, sizeof(initializationOrder));
+	unsigned emitterCreateRecordA[15] = {};
+	unsigned emitterCreateRecordB[15] = {};
+	const unsigned emitterCreateRecordWordsA = getFluidEmitterCreateRecord(0,
+		emitterCreateRecordA, sizeof(emitterCreateRecordA) / sizeof(unsigned));
+	const unsigned emitterCreateRecordWordsB = getFluidEmitterCreateRecord(1,
+		emitterCreateRecordB, sizeof(emitterCreateRecordB) / sizeof(unsigned));
+	unsigned expectedEmitterPoseA[12] = {};
+	unsigned expectedEmitterPoseB[12] = {};
+	memcpy(expectedEmitterPoseA, &initializationOrderEmitterA.relPose,
+		sizeof(expectedEmitterPoseA));
+	memcpy(expectedEmitterPoseB, &initializationOrderEmitterB.relPose,
+		sizeof(expectedEmitterPoseB));
+	const float expectedEmitterRestDistance = 0.02f;
+	unsigned expectedEmitterRestDistanceBits = 0;
+	memcpy(&expectedEmitterRestDistanceBits, &expectedEmitterRestDistance,
+		sizeof(expectedEmitterRestDistanceBits));
+	const bool emitterCallbackArgumentsMatch = emitterCreateRecordWordsA == 15 &&
+		emitterCreateRecordWordsB == 15 && emitterCreateRecordA[0] != 0 &&
+		emitterCreateRecordA[1] != 0 &&
+		emitterCreateRecordA[0] == emitterCreateRecordB[0] &&
+		emitterCreateRecordA[1] == emitterCreateRecordB[1] &&
+		memcmp(&emitterCreateRecordA[2], expectedEmitterPoseA,
+			sizeof(expectedEmitterPoseA)) == 0 &&
+		memcmp(&emitterCreateRecordB[2], expectedEmitterPoseB,
+			sizeof(expectedEmitterPoseB)) == 0 &&
+		emitterCreateRecordA[14] == expectedEmitterRestDistanceBits &&
+		emitterCreateRecordB[14] == expectedEmitterRestDistanceBits;
 	fluidInitializationCallbackOrderMatches = initializationOrderLicenseOverride.ready &&
 		initializationOrderFluid && initializationOrderLength == 4 &&
 		initializationOrder[0] == 'C' && initializationOrder[1] == 'E' &&
-		initializationOrder[2] == 'E' && initializationOrder[3] == 'P';
-	printf("simulation row3649 initialization-order order=%s expected=CEEP exact=%u\n",
-		initializationOrder, fluidInitializationCallbackOrderMatches ? 1u : 0u);
+		initializationOrder[2] == 'E' && initializationOrder[3] == 'P' &&
+		emitterCallbackArgumentsMatch;
+	printf("simulation row3649 initialization-order order=%s expected=CEEP emitter-args=%u.%u rest=%08x exact=%u\n",
+		initializationOrder, emitterCreateRecordWordsA == 15 ? 1u : 0u,
+		emitterCreateRecordWordsB == 15 ? 1u : 0u,
+		emitterCreateRecordWordsB == 15 ? emitterCreateRecordB[14] : 0u,
+		fluidInitializationCallbackOrderMatches ? 1u : 0u);
 	if(initializationOrderFluid)
 		initializationOrderScene->releaseFluid(*initializationOrderFluid);
 	if(initializationOrderScene)

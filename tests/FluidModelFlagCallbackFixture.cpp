@@ -83,6 +83,7 @@ static NxFluidManagerCallbackRecord gFluidManagerRecords[8];
 static unsigned gFluidManagerRecordCount;
 static unsigned gFluidManagerGetCallCount;
 static bool gFluidManagerCallbackProbe;
+static unsigned gFluidEmitterCreateRecords[16][15];
 static unsigned gFluidGetDampingCalls;
 static unsigned gFluidSetStiffnessCalls;
 static unsigned gFluidParticleArrayAllocCalls;
@@ -320,6 +321,7 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	ZeroMemory(&gFluidManagerCallbackSummary, sizeof(gFluidManagerCallbackSummary));
 	ZeroMemory(gFluidCreationOrder, sizeof(gFluidCreationOrder));
 	gFluidCreationOrderCount = 0;
+	ZeroMemory(gFluidEmitterCreateRecords, sizeof(gFluidEmitterCreateRecords));
 	ZeroMemory(gFluidManagerRecords, sizeof(gFluidManagerRecords));
 	gFluidManagerRecordCount = 0;
 	gFluidManagerGetCallCount = 0;
@@ -409,6 +411,17 @@ extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidCreationOrder(
 		output[copied] = 0;
 		}
 	return count;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidEmitterCreateRecord(
+	unsigned index, unsigned* output, unsigned capacity)
+	{
+	const unsigned recordCapacity = sizeof(gFluidEmitterBackendHandles) /
+		sizeof(gFluidEmitterBackendHandles[0]);
+	if(!output || index >= recordCapacity || capacity < 15)
+		return 0;
+	memcpy(output, gFluidEmitterCreateRecords[index], 15 * sizeof(unsigned));
+	return 15;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxSetFluidEmitterCreateNullIndex(
@@ -920,7 +933,8 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetRestParticleDistance(
 // Keep the oracle's optional emitter path callable in differential tests. The
 // production DLL discovers these exports by name from FluidModel.dll.
 extern "C" __declspec(dllexport) void* __cdecl EmitterCreate(
-	unsigned context, unsigned fluid, ...)
+	unsigned context, unsigned fluid, const float* relativePose,
+	float restParticleDistance)
 	{
 	if(gFluidCreationOrderCount < sizeof(gFluidCreationOrder) - 1)
 		gFluidCreationOrder[gFluidCreationOrderCount++] = 'E';
@@ -928,10 +942,16 @@ extern "C" __declspec(dllexport) void* __cdecl EmitterCreate(
 	unsigned* const args = gFluidManagerCallbackSummary.emitterCreateArguments;
 	args[0] = context;
 	args[1] = fluid;
-	args[2] = 0;
-	args[3] = 0;
 	const unsigned index = (gFluidManagerCallbackSummary.emitterCreate - 1)
 		% (sizeof(gFluidEmitterBackendHandles) / sizeof(gFluidEmitterBackendHandles[0]));
+	unsigned* const record = gFluidEmitterCreateRecords[index];
+	record[0] = context;
+	record[1] = fluid;
+	if(relativePose)
+		memcpy(record + 2, relativePose, 12 * sizeof(unsigned));
+	memcpy(record + 14, &restParticleDistance, sizeof(restParticleDistance));
+	args[2] = reinterpret_cast<unsigned>(relativePose);
+	memcpy(&args[3], &restParticleDistance, sizeof(restParticleDistance));
 	if(index == gFluidEmitterCreateNullIndex)
 		return 0;
 	return gFluidEmitterBackendHandles[index];
