@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "description": "Two-dynamic-body spring force dispatch, row-specific mutation, restored differential, and fresh Phase 5/6/7 gates. The first Phase 5 run had a transient allocator-reuse probe mismatch; an isolated probe and full retry passed.",
+  "artifacts": [
+    {
+      "file": "green-restored.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-two-body-003979-20261016\\green-restored.log",
+      "source_bytes": 848924,
+      "source_sha256": "8fb99a536278707b649cafb428e1c19419053a57586150b460b2cb132b33dbe6",
+      "compressed_bytes": 55772,
+      "compressed_sha256": "2704d9ef2b32947760cdd8f03c7e08a2d4f06459577982a4ba9a991a30cd086a"
+    },
+    {
+      "file": "second-body-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-two-body-003979-20261016\\second-body-mutation.log",
+      "source_bytes": 849196,
+      "source_sha256": "d29e8309e60e4b8d58d6b0295ee6d94e84dea890dea4be46d28ed579fc686081",
+      "compressed_bytes": 55900,
+      "compressed_sha256": "0d5a57fd68fc289718813b9dfbc77df3a95a3ec4e41197a125460260441ed729"
+    },
+    {
+      "file": "phase5-gate-layout-reuse-transient.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-two-body-003979-20261016\\phase5-gate-layout-reuse-transient.log",
+      "source_bytes": 40625,
+      "source_sha256": "a9a23872ab9315fda5deda6b085ee31246a9bf3c7f03b812a17e37872cfb94a8",
+      "compressed_bytes": 6304,
+      "compressed_sha256": "0f5bf6c0a95a28eb2dfe6cd50273a14e64e361a94ac8c10c36e140376e50bb62"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-two-body-003979-20261016\\phase5-gate.log",
+      "source_bytes": 2816518,
+      "source_sha256": "781c5336678517983b9a5b84272e995fe603d4949ad28558120ce76019a86b26",
+      "compressed_bytes": 208679,
+      "compressed_sha256": "d124669d2d97dbfffa3485b4389f69733e4bb8f4af90f115ea0d87bf6e173683"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-two-body-003979-20261016\\phase6-gate.log",
+      "source_bytes": 3093407,
+      "source_sha256": "5c2e4f67bacaf826fbd14c38583c65f0df8b674250bc50e619f09ba56eec7276",
+      "compressed_bytes": 253245,
+      "compressed_sha256": "b35491137d0cfa6b12eb87eed2083e6a400c67ae1cc524593d9f4b9bef095746"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-two-body-003979-20261016\\phase7-gate.log",
+      "source_bytes": 4607222,
+      "source_sha256": "1e289088ecfd9a6d3779f596eca2ffdc28df48334cca41b8785d625a96a9b377",
+      "compressed_bytes": 372638,
+      "compressed_sha256": "64d0901a72fb31e29f7bc1ce89481b1097e3213902ddc526712c476fbb099800"
+    }
+  ],
+  "row": "phys_fn_003979",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "68afff8770aee13a1acf91a28bd64cfc5fdc9b0d84ab96d3cd3a5a9280d00312",
+  "gate_coverage": {
+    "phase5": "2808/2808",
+    "phase6": "1699/1699",
+    "phase7": "2936/2936"
+  },
+  "tool_tests": "816 passed"
+}

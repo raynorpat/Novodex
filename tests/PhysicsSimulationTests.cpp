@@ -2205,6 +2205,43 @@ int wmain(int argc, wchar_t** argv)
 				return nxFail("spring-branch effector creation failed");
 			springBranchActors[i]->wakeUp(1.0f);
 		}
+	NxBodyDesc springPairBody1;
+	springPairBody1.setToDefault();
+	NxBodyDesc springPairBody2;
+	springPairBody2.setToDefault();
+	NxActorDesc springPairActorDesc1;
+	springPairActorDesc1.setToDefault();
+	springPairActorDesc1.body = &springPairBody1;
+	springPairActorDesc1.density = 1.0f;
+	springPairActorDesc1.globalPose.t = NxVec3(100.0f, 0.0f, 0.0f);
+	springPairActorDesc1.shapes.pushBack(&springBranchShape);
+	NxActorDesc springPairActorDesc2;
+	springPairActorDesc2.setToDefault();
+	springPairActorDesc2.body = &springPairBody2;
+	springPairActorDesc2.density = 1.0f;
+	springPairActorDesc2.globalPose.t = NxVec3(102.0f, 0.0f, 0.0f);
+	springPairActorDesc2.shapes.pushBack(&springBranchShape);
+	NxActor* const springPairActor1 = springBranchScene->createActor(springPairActorDesc1);
+	NxActor* const springPairActor2 = springBranchScene->createActor(springPairActorDesc2);
+	if(!springPairActor1 || !springPairActor2)
+		return nxFail("two-body spring actor creation failed");
+	NxSpringAndDamperEffectorDesc springPairDesc;
+	springPairDesc.setToDefault();
+	springPairDesc.body1 = springPairActor1;
+	springPairDesc.body2 = springPairActor2;
+	springPairDesc.pos1 = NxVec3(100.0f, 0.5f, 0.0f);
+	springPairDesc.pos2 = NxVec3(102.0f, 0.5f, 0.0f);
+	springPairDesc.springDistCompressSaturate = 0.5f;
+	springPairDesc.springDistRelaxed = 1.0f;
+	springPairDesc.springDistStretchSaturate = 4.0f;
+	springPairDesc.springMaxCompressForce = 100.0f;
+	springPairDesc.springMaxStretchForce = 100.0f;
+	NxSpringAndDamperEffector* const springPairEffector =
+		springBranchScene->createSpringAndDamperEffector(springPairDesc);
+	if(!springPairEffector)
+		return nxFail("two-body spring effector creation failed");
+	springPairActor1->wakeUp(1.0f);
+	springPairActor2->wakeUp(1.0f);
 	springBranchScene->simulate(1.0f / 60.0f);
 	const bool springBranchReady = springBranchScene->checkResults(NX_RIGID_BODY_FINISHED, true);
 	const bool springBranchFetched = springBranchScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
@@ -2231,8 +2268,21 @@ int wmain(int argc, wchar_t** argv)
 		printf("%s%08x.%08x.%08x", i ? "/" : "", springBranchVelocityBits[i][0],
 			springBranchVelocityBits[i][1], springBranchVelocityBits[i][2]);
 	printf(" exact=%u\n", springBranchReady && springBranchFetched ? 1u : 0u);
+	NxVec3 springPairVelocity1, springPairVelocity2;
+	springPairActor1->getLinearVelocity(springPairVelocity1);
+	springPairActor2->getLinearVelocity(springPairVelocity2);
+	const bool springPairResponses = nxFloatBits(springPairVelocity1.x) != 0 &&
+		nxFloatBits(springPairVelocity2.x) != 0 &&
+		springPairVelocity1.x * springPairVelocity2.x < 0.0f;
+	printf("simulation row3979 two-body pair=1 first=%08x.%08x.%08x second=%08x.%08x.%08x opposite=%u exact=%u\n",
+		nxFloatBits(springPairVelocity1.x), nxFloatBits(springPairVelocity1.y),
+		nxFloatBits(springPairVelocity1.z), nxFloatBits(springPairVelocity2.x),
+		nxFloatBits(springPairVelocity2.y), nxFloatBits(springPairVelocity2.z),
+		springPairResponses ? 1u : 0u,
+		springPairVelocity1.x != springPairVelocity2.x ? 1u : 0u);
 	for(unsigned i = 0; i < 6; ++i)
 		springBranchScene->releaseEffector(*springBranchEffectors[i]);
+	springBranchScene->releaseEffector(*springPairEffector);
 	sdk->releaseScene(*springBranchScene);
 
 	// Isolate quaternion integration from effectors and solver impulses: the
