@@ -5541,6 +5541,63 @@ int wmain(int argc, wchar_t** argv)
 	static const char replacementMeshDataName[] = "replacement-mesh-data";
 	replacementMeshData.name = replacementMeshDataName;
 	explicitSurfaceMesh->setMeshData(replacementMeshData);
+	bool implicitMeshCopyStepMatches = false;
+	bool implicitMeshCopyReady = false;
+	bool implicitMeshCopyFetched = false;
+	bool implicitMeshCopyDataMatches = false;
+	if(explicitSurfaceMesh && surfaceMeshScene)
+		{
+		implicitMeshPositions[0] = implicitMeshPositions[1] =
+			implicitMeshPositions[2] = 0.0f;
+		implicitMeshNormals[0] = implicitMeshNormals[1] =
+			implicitMeshNormals[2] = 0.0f;
+		implicitMeshIndices[0] = implicitMeshIndices[1] =
+			implicitMeshIndices[2] = 0;
+		implicitMeshVertexCount = implicitMeshTriangleCount = 0;
+		surfaceMeshScene->simulate(1.0f / 60.0f);
+		implicitMeshCopyReady = surfaceMeshScene->checkResults(
+			NX_RIGID_BODY_FINISHED, true);
+		implicitMeshCopyFetched = surfaceMeshScene->fetchResults(
+			NX_RIGID_BODY_FINISHED, true);
+		static const unsigned expectedVertices[2][3] = {
+			{ 0x3f400001u, 0x3f400002u, 0x3f400003u },
+			{ 0x3f800001u, 0x3f800002u, 0x3f800003u }
+			};
+		static const unsigned expectedNormals[2][3] = {
+			{ 0x3fc00001u, 0x3fc00002u, 0x3fc00003u },
+			{ 0x40000001u, 0x40000002u, 0x40000003u }
+			};
+		static const unsigned expectedIndices[2][3] = {
+			{ 0x3e800001u, 0x3e800002u, 0x3e800003u },
+			{ 0x3f000001u, 0x3f000002u, 0x3f000003u }
+			};
+		bool oneFixtureMeshMatched = false;
+		for(unsigned fixture = 0; fixture != 2; ++fixture)
+			oneFixtureMeshMatched = oneFixtureMeshMatched ||
+				(memcmp(implicitMeshPositions, expectedVertices[fixture],
+					3 * sizeof(unsigned)) == 0 &&
+				 memcmp(implicitMeshNormals, expectedNormals[fixture],
+					3 * sizeof(unsigned)) == 0 &&
+				 memcmp(implicitMeshIndices, expectedIndices[fixture],
+					sizeof(implicitMeshIndices)) == 0);
+		implicitMeshCopyDataMatches = oneFixtureMeshMatched &&
+			implicitMeshVertexCount == 1 && implicitMeshTriangleCount == 1;
+		implicitMeshCopyStepMatches = implicitMeshCopyReady &&
+			implicitMeshCopyFetched && implicitMeshCopyDataMatches;
+		}
+	printf("simulation implicit-mesh post-step-copy row=003651 matched=%u ready=%u fetched=%u data-match=%u vertices=%u triangles=%u data=%08x.%08x.%08x/%08x.%08x.%08x/%08x.%08x.%08x\n",
+		implicitMeshCopyStepMatches ? 1u : 0u,
+		implicitMeshCopyReady ? 1u : 0u,
+		implicitMeshCopyFetched ? 1u : 0u,
+		implicitMeshCopyDataMatches ? 1u : 0u,
+		implicitMeshVertexCount, implicitMeshTriangleCount,
+		*reinterpret_cast<unsigned*>(implicitMeshPositions),
+		*reinterpret_cast<unsigned*>(implicitMeshPositions + 1),
+		*reinterpret_cast<unsigned*>(implicitMeshPositions + 2),
+		*reinterpret_cast<unsigned*>(implicitMeshNormals),
+		*reinterpret_cast<unsigned*>(implicitMeshNormals + 1),
+		*reinterpret_cast<unsigned*>(implicitMeshNormals + 2),
+		implicitMeshIndices[0], implicitMeshIndices[1], implicitMeshIndices[2]);
 	const NxMeshData replacedMeshData = explicitSurfaceMesh->getMeshData();
 	const bool validMeshDataSetMatches = memcmp(&replacedMeshData,
 		&replacementMeshData, sizeof(replacedMeshData)) == 0;
@@ -5562,6 +5619,7 @@ int wmain(int argc, wchar_t** argv)
 		setSmoothingIterations == 8 && initialNameMatches &&
 		updatedNameMatches && initialMeshDataMatches &&
 		validMeshDataSetMatches && invalidMeshDataPreserved &&
+		implicitMeshCopyStepMatches &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSurfaceRadius == 2 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius == 1 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius == 2 &&

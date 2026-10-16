@@ -11121,3 +11121,5 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 ## Phase 7 row 003626 — FluidKey feature resolver (2026-10-16)
 
 `phys_fn_003626` is mapped to `nxFluidResolveLicensedFeatureFlags` in `Physics/src/Scene.cpp`. The direct oracle/candidate fixture covers eleven registry inputs and matches at `input_digest=04893d50`, `oracle=candidate=8d75d855`. Returning zero from the candidate helper is caught with `mismatches=5`; restored control is exact. See `evidence/phase7-fluid-license-resolver-003626.md` and the raw gate/mutation transcripts in `evidence/raw/phase7-fluid-license-resolver-003626-20261016/`.
+
+`phys_fn_003651` implicit-mesh post-step copy mutation detection: `stdout_delta=66`. The no-op source mutation left the staged oracle output intact and candidate counts/buffers untouched; restored output was exact. See `phase7-implicit-mesh-post-step-copy-003651.md`.

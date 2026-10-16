@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003651",
+  "rva": "0x0008a9a0",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "54474146fc8cee25b68a58e070f68a4a9335ee0b43bfb46fa7a23f3e1d0d4ab8",
+  "restored_control": {
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "matched_streams": 3,
+    "vertex_count": 1,
+    "triangle_count": 1
+  },
+  "mutation": {
+    "candidate_mutation": "nxFluidCopyImplicitMeshData returns before copying outputs",
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 66,
+    "stderr_exact": false
+  },
+  "phase_gates": {
+    "phase5": "pass",
+    "phase5_assertions": "2804/2804",
+    "phase6": "pass",
+    "phase6_assertions": "1697/1697",
+    "phase7": "pass",
+    "phase7_assertions": "2926/2926"
+  },
+  "tool_tests": {
+    "result": "pass",
+    "tests": 835,
+    "subtests": 743
+  },
+  "compressed_logs": [
+    {
+      "file": "implicit-mesh-copy-control.log.gz",
+      "sha256": "413656c9b9f0da3383a4fd5120b8303d1ad89918a78fdea7d3266cad60666c36",
+      "uncompressed_sha256": "75b6401fa13ae92b6b9d0fc47a7889feee9d9086b0a457fb04d9bb02864de3b2",
+      "uncompressed_bytes": 848739
+    },
+    {
+      "file": "implicit-mesh-copy-mutant.log.gz",
+      "sha256": "aab8e7e502ab337ea6d56e9097d439ba09871549f0d09bb4463bc73b8e6a3e36",
+      "uncompressed_sha256": "66cc94f96f3e62bd3abd6ec90dc16feaf9abf8cf237fd163c09c2ddc12c3d50c",
+      "uncompressed_bytes": 843235
+    }
+  ]
+}
