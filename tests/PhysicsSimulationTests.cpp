@@ -5719,6 +5719,7 @@ int wmain(int argc, wchar_t** argv)
 	NxFluidEmitterDesc initializationOrderEmitter;
 	initializationOrderEmitter.setToDefault();
 	initializationOrderDesc.emitters.pushBack(initializationOrderEmitter);
+	initializationOrderDesc.emitters.pushBack(initializationOrderEmitter);
 	NxU32 initializationOrderCount = 1;
 	NxF32 initializationOrderPosition[3] = {1.0f, 2.0f, 3.0f};
 	initializationOrderDesc.initialParticleData.numParticlesPtr =
@@ -5733,10 +5734,10 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned initializationOrderLength = getFluidCreationOrder(
 		initializationOrder, sizeof(initializationOrder));
 	fluidInitializationCallbackOrderMatches = initializationOrderLicenseOverride.ready &&
-		initializationOrderFluid && initializationOrderLength == 3 &&
+		initializationOrderFluid && initializationOrderLength == 4 &&
 		initializationOrder[0] == 'C' && initializationOrder[1] == 'E' &&
-		initializationOrder[2] == 'P';
-	printf("simulation row3649 initialization-order order=%s expected=CEP exact=%u\n",
+		initializationOrder[2] == 'E' && initializationOrder[3] == 'P';
+	printf("simulation row3649 initialization-order order=%s expected=CEEP exact=%u\n",
 		initializationOrder, fluidInitializationCallbackOrderMatches ? 1u : 0u);
 	if(initializationOrderFluid)
 		initializationOrderScene->releaseFluid(*initializationOrderFluid);
