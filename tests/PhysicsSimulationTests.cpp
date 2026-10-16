@@ -1073,6 +1073,55 @@ static bool nxSimulationTestJointArrayPushRow780(HMODULE physics,
 	return onlyOtherJointQueued && linksCleared && bodyReset;
 	}
 
+struct NxSimulationSurfaceMeshDtorProbe
+	{
+	unsigned calls;
+	void* object;
+	unsigned flags;
+	};
+
+static NxSimulationSurfaceMeshDtorProbe gNxSimulationSurfaceMeshDtorProbe = {};
+
+static void* __fastcall nxSimulationSurfaceMeshDtorProbe(void* object,
+	void*, unsigned char flags)
+	{
+	++gNxSimulationSurfaceMeshDtorProbe.calls;
+	gNxSimulationSurfaceMeshDtorProbe.object = object;
+	gNxSimulationSurfaceMeshDtorProbe.flags = flags;
+	return reinterpret_cast<void*>(static_cast<size_t>(0x13572468u));
+	}
+
+static bool nxSimulationTestSurfaceMeshReleaseRow3421(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* rowAddress = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?releaseSurfaceMesh@NxFluidSurfaceMeshOwnerSlot24@@QAEPAXXZ",
+		0x00084a60,
+		&rowAddress))
+		return false;
+	typedef void* (__thiscall *ReleaseSurfaceMeshFn)(void*);
+	ReleaseSurfaceMeshFn const release =
+		reinterpret_cast<ReleaseSurfaceMeshFn>(rowAddress);
+	unsigned char owner[0x28] = {};
+	unsigned char object[0x10] = {};
+	void* vtable[1] = { reinterpret_cast<void*>(
+		nxSimulationSurfaceMeshDtorProbe) };
+	*reinterpret_cast<void***>(object) = vtable;
+	*reinterpret_cast<void**>(owner + 0x24) = object;
+	gNxSimulationSurfaceMeshDtorProbe = {};
+	void* const result = release(owner);
+	const bool calledOnce = gNxSimulationSurfaceMeshDtorProbe.calls == 1 &&
+		gNxSimulationSurfaceMeshDtorProbe.object == object &&
+		gNxSimulationSurfaceMeshDtorProbe.flags == 1;
+	const bool cleared = *reinterpret_cast<void**>(owner + 0x24) == 0;
+	const bool returned = result == reinterpret_cast<void*>(
+		static_cast<size_t>(0x13572468u));
+	printf("simulation row3421 surface_mesh_release called=%u cleared=%u result=%u\n",
+		calledOnce ? 1u : 0u, cleared ? 1u : 0u, returned ? 1u : 0u);
+	return calledOnce && cleared && returned;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -1107,6 +1156,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 000521 failed the direct actor owner-pair cleanup probe");
+		}
+	if(!nxSimulationTestSurfaceMeshReleaseRow3421(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 003421 failed the direct surface-mesh release probe");
 		}
 	if(!nxSimulationTestDirtyIslandRow720(physics, pairDirectory, simulationAllocator))
 		{

@@ -64369,13 +64369,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1268",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12221",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x84a60 reads the object at owner+0x24, returns zero when empty, calls its vtable slot 0 with deleting flag 1, clears the slot after the call, and returns the destructor result.",
+      "dynamic_proof": "NxPhysicsSimulationTests directly compares the oracle RVA and map-resolved candidate helper using a fake deleting destructor. Both sides call once with flag 1, clear the owner slot, and forward the return value exactly. A no-op mutation is rejected (candidate_exit=1, stdout_delta=4083); the restored staged-pair differential is exact. See evidence/phase7-fluid-surface-mesh-release-003421-2026-10-15.md.",
+      "notes": "The helper is shared by NxFluid::releaseSurfaceMesh and surface-mesh replacement. Candidate resolution uses the linker map because source additions shift the candidate RVA."
     },
     {
       "id": "phys_fn_003422",

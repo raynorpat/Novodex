@@ -11102,3 +11102,4 @@ continuations](phase7-scene-callback-dispatch-000642-000644.md).
 
 Phase 7 Scene fluid-creation row `phys_fn_000645` is now mutation-falsified through the enabled FluidModel fixture and the shipped disabled-backend path. The candidate early-return mutant is rejected (`stdout_delta=94`); restored control matches exactly. See [Scene fluid creation](phase7-scene-fluid-create-000645.md) and its raw evidence folder.
 `phys_fn_000645` enabled create mutation detection: `stdout_delta=94`.
+# Phase 7 cross-reference (2026-10-15): `phys_fn_003421` surface-mesh owner-slot release is mutation-falsified by the registered `NxPhysicsSimulationTests` differential (`stdout_delta=4083`); see `phase7-fluid-surface-mesh-release-003421-2026-10-15.md`.

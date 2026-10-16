@@ -1183,6 +1183,29 @@ static void __fastcall nxFluidSetParticlesWriteData(void* wrapper, void*,
 
 // phys_fn_003706 (0x0008b350): report the unavailable feature when unlicensed,
 // then release the internal surface-mesh object under the Scene write lock.
+class NxFluidSurfaceMeshOwnerSlot24
+	{
+	public:
+	__declspec(noinline) void* releaseSurfaceMesh();
+	};
+
+// phys_fn_003421 (0x00084a60): delete the object owned at +0x24 and clear the
+// slot. This method is shared by the public release and replacement paths.
+void* NxFluidSurfaceMeshOwnerSlot24::releaseSurfaceMesh()
+	{
+	void** const slot = reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(this) + 0x24);
+	void* const object = *slot;
+	if(!object)
+		return 0;
+	void** const vtable = *reinterpret_cast<void***>(object);
+	typedef void* (__fastcall *DeletingDestructor)(void*, void*, unsigned char);
+	void* const result = reinterpret_cast<DeletingDestructor>(vtable[0])(
+		object, 0, 1);
+	*slot = 0;
+	return result;
+	}
+
 static void __fastcall nxFluidReleaseSurfaceMesh(void* wrapper, void*)
 	{
 	if((gNxFluidLicensedFeatureFlags & 2) == 0)
@@ -1210,17 +1233,7 @@ static void __fastcall nxFluidReleaseSurfaceMesh(void* wrapper, void*)
 		}
 	gNxApiReentry = true;
 	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
-	void** const surfaceMeshSlot = reinterpret_cast<void**>(
-		static_cast<unsigned char*>(internal) + 0x24);
-	void* const surfaceMesh = *surfaceMeshSlot;
-	if(surfaceMesh)
-		{
-		void** const vtable = *reinterpret_cast<void***>(surfaceMesh);
-		typedef void* (__fastcall *DeletingDestructor)(void*, void*, unsigned char);
-		reinterpret_cast<DeletingDestructor>(vtable[0])(
-			surfaceMesh, 0, 1);
-		*surfaceMeshSlot = 0;
-		}
+	reinterpret_cast<NxFluidSurfaceMeshOwnerSlot24*>(internal)->releaseSurfaceMesh();
 	gNxApiReentry = false;
 	nxNpSceneGuardLeave(writeLock);
 	}
@@ -2451,14 +2464,7 @@ static NxImplicitMesh* __fastcall nxFluidCreateSurfaceMeshPublic(void* wrapper,
 			*reinterpret_cast<void**>(wrapperBytes + 0x14));
 		void** const surfaceMeshSlot = reinterpret_cast<void**>(fluid + 0x24);
 		if(*surfaceMeshSlot)
-			{
-			void* const oldSurfaceMesh = *surfaceMeshSlot;
-			void** const vtable = *reinterpret_cast<void***>(oldSurfaceMesh);
-			typedef void* (__fastcall *DeletingDestructor)(void*, void*, unsigned char);
-			reinterpret_cast<DeletingDestructor>(vtable[0])(
-				oldSurfaceMesh, 0, 1);
-			*surfaceMeshSlot = 0;
-			}
+			reinterpret_cast<NxFluidSurfaceMeshOwnerSlot24*>(fluid)->releaseSurfaceMesh();
 		nxFluidInitializeSurfaceMesh(fluid, &desc);
 		void* const surfaceManager = *surfaceMeshSlot;
 		if(surfaceManager)

@@ -160,21 +160,58 @@ static unsigned nxReadWord(const unsigned char* bytes, unsigned offset)
 	return value;
 	}
 
-static int nxCheckSceneVisitedBufferGrowth(HMODULE physics, NxScene* publicScene)
+static bool nxResolveMapAddress(const wchar_t* pairDirectory, HMODULE module,
+	const char* symbol, void** address)
+	{
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	FILE* map = 0;
+	if(_wfopen_s(&map, mapPath, L"r") || !map)
+		return false;
+	unsigned preferredBase = 0;
+	char line[2048];
+	bool found = false;
+	while(fgets(line, sizeof(line), map))
+		{
+		static const char marker[] = "Preferred load address is ";
+		char* basePos = strstr(line, marker);
+		if(basePos)
+			preferredBase = static_cast<unsigned>(strtoul(basePos + sizeof(marker) - 1, 0, 16));
+		char* symbolPos = strstr(line, symbol);
+		if(!symbolPos)
+			continue;
+		char* addressText = symbolPos + strlen(symbol);
+		while(*addressText == ' ' || *addressText == '\t') ++addressText;
+		char* addressEnd = 0;
+		unsigned preferredAddress = static_cast<unsigned>(strtoul(addressText, &addressEnd, 16));
+		if(addressEnd == addressText || !preferredBase || preferredAddress < preferredBase)
+			{ fclose(map); return false; }
+		*address = reinterpret_cast<unsigned char*>(module) + (preferredAddress - preferredBase);
+		found = true;
+		break;
+		}
+	fclose(map);
+	return found;
+	}
+
+static int nxCheckSceneVisitedBufferGrowth(HMODULE physics, const wchar_t* pairDirectory,
+	NxScene* publicScene)
 	{
 	wchar_t path[MAX_PATH];
 	char hash[65];
 	if(!GetModuleFileNameW(physics, path, MAX_PATH) || !nxSha256(path, hash))
 		return nxFail("cannot identify Physics DLL for the direct 000503 call");
 	static const char kOracleHash[] = "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c";
-	const unsigned entryRva = strcmp(hash, kOracleHash) == 0 ? 0x100a0 : 0x6c610;
 	typedef void (__thiscall *OracleUpdateActorCountFn)(void*, unsigned);
 	typedef void (__cdecl *CandidateUpdateActorCountFn)(void*, unsigned);
 	const bool oracle = strcmp(hash, kOracleHash) == 0;
-	OracleUpdateActorCountFn oracleUpdate = oracle
-		? reinterpret_cast<OracleUpdateActorCountFn>(reinterpret_cast<unsigned char*>(physics) + entryRva) : 0;
-	CandidateUpdateActorCountFn candidateUpdate = oracle ? 0
-		: reinterpret_cast<CandidateUpdateActorCountFn>(reinterpret_cast<unsigned char*>(physics) + entryRva);
+	void* entry = reinterpret_cast<unsigned char*>(physics) + 0x100a0;
+	if(!oracle && !nxResolveMapAddress(pairDirectory, physics,
+		"?nxSceneUpdateActorCount@@YAXPAXI@Z", &entry))
+		return nxFail("candidate row 000503 missing from NxPhysics.map");
+	OracleUpdateActorCountFn oracleUpdate = oracle ? reinterpret_cast<OracleUpdateActorCountFn>(entry) : 0;
+	CandidateUpdateActorCountFn candidateUpdate = oracle ? 0 : reinterpret_cast<CandidateUpdateActorCountFn>(entry);
 	unsigned char* wrapper = reinterpret_cast<unsigned char*>(publicScene);
 	unsigned char* scene = *reinterpret_cast<unsigned char**>(wrapper + 0x24);
 	if(!scene)
@@ -354,7 +391,7 @@ int wmain(int argc, wchar_t** argv)
 	NxActor* multiActor = scene->createActor(multiDesc);
 	if(!multiActor) return nxFail("two-box actor creation failed");
 	nxReport("multi_create", mark);
-	if(nxCheckSceneVisitedBufferGrowth(physics, scene))
+	if(nxCheckSceneVisitedBufferGrowth(physics, pairDirectory, scene))
 		return 1;
 
 	mark = nxMark();
