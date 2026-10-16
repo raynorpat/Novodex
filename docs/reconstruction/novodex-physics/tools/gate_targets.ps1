@@ -3629,7 +3629,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # Row 003649 publishes and tears down a valid fluid when FluidCreate returns null.
         'simulation row3649 backend-null published=1 arrays=1 cleanup=1 callbacks=3 exact=1'
         # phys_fn_003503 creates descriptor emitters before consuming initial particles.
-        'simulation row3649 initialization-order order=EP expected=EP exact=1'
+        'simulation row3649 initialization-order order=CEP expected=CEP exact=1'
         'simulation fluid enabled-invalid result=0 errors=1 code=1 line=140 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=Supplied NxFluidDesc is not valid. createFluid returns NULL.'
         'simulation fluid unsupported release manager-cleared=1 errors=1 code=206 line=183 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::releaseFluid(): Feature not available!'
         'simulation fluid contact-report-set errors=1 code=206 line=377 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxFluid::setUserFluidContactReport(): Feature not available!'

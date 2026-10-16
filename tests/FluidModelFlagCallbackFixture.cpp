@@ -511,6 +511,8 @@ extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
 	unsigned particleWriteData, unsigned sparse, unsigned hardware)
 	{
 	++gFluidManagerCallbackSummary.fluidCreate;
+	if(gFluidCreationOrderCount < sizeof(gFluidCreationOrder) - 1)
+		gFluidCreationOrder[gFluidCreationOrderCount++] = 'C';
 	const unsigned arguments[15] = {
 		reinterpret_cast<unsigned>(manager), restParticleDistance, maxParticles,
 		simulationMethod, restDensity, stiffness, viscosity, damping,

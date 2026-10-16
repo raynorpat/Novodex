@@ -5733,9 +5733,10 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned initializationOrderLength = getFluidCreationOrder(
 		initializationOrder, sizeof(initializationOrder));
 	fluidInitializationCallbackOrderMatches = initializationOrderLicenseOverride.ready &&
-		initializationOrderFluid && initializationOrderLength == 2 &&
-		initializationOrder[0] == 'E' && initializationOrder[1] == 'P';
-	printf("simulation row3649 initialization-order order=%s expected=EP exact=%u\n",
+		initializationOrderFluid && initializationOrderLength == 3 &&
+		initializationOrder[0] == 'C' && initializationOrder[1] == 'E' &&
+		initializationOrder[2] == 'P';
+	printf("simulation row3649 initialization-order order=%s expected=CEP exact=%u\n",
 		initializationOrder, fluidInitializationCallbackOrderMatches ? 1u : 0u);
 	if(initializationOrderFluid)
 		initializationOrderScene->releaseFluid(*initializationOrderFluid);

@@ -1881,3 +1881,7 @@ Mapped the 65-byte oracle initializer at RVA `0x0000fd10` to the inline `NxShape
 ### Continuation — Joint base scalar deleting destructor (`phys_fn_004119`, 2026-10-15)
 
 The compiler-generated `Joint` deleting thunk is now exercised through oracle RVA `0x98750` and candidate map symbol `??_GJoint@@UAEPAXI@Z`. The fixture checks flag-zero base-vptr reset and storage preservation, then flag-one allocator release. A throwaway-archive no-op `Joint::operator delete` mutation is rejected (`frees=0,0`, `mismatches=1`, `stdout_delta=87`, candidate exit 1); the restored staged pair is exact. The gate adds one coverage assertion to Phases 6 and 7. Full DLL reconstruction remains active. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-joint-base-delete-004119.md`.
+
+### Continuation — fluid constructor callback order (`phys_fn_003503`, 2026-10-16)
+
+The enabled-fluid simulation fixture now records the full tested prefix: `FluidCreate`, descriptor-emitter creation, then initial-particle array allocation (`CEP`). The prior check observed only `EP`; adding the `C` event closed that observation gap. The exact staged differential and Phase 7 gate pass at 2,913/2,913, the reconstruction-tool suite passes 835 tests / 743 subtests, and inventory validation reports zero unexplained records. This proves one callback-order case only; the full callback table and constructor body remain open. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-callback-order-003503.md`.
