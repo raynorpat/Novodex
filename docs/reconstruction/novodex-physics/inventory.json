@@ -73246,13 +73246,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1456",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13019",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8d820 saves and restores the x87 environment around LoadLibraryA(\"FluidModel.DLL\"), stores the handle, and returns whether loading succeeded.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests fluid lifecycle fixture reports the loaded-module outcome through FluidManagerCreate callback evidence. Replacing the candidate LoadLibraryA result with null is rejected (candidate_exit=1, stdout_delta=118; row marker module=0, callbacks=0); restoring the source returns an exact oracle/candidate transcript. A fresh-child-process DllMain mutation also verifies x87 restoration; replacing fldenv with fninit is rejected. The child requires resolver success and confirms the loaded module path is inside the staged pair directory. Evidence: evidence/phase7-fluid-model-load-003900.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidManagerResolveModel"
     },
     {
       "id": "phys_fn_003901",

@@ -3638,6 +3638,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid unsupported create=0 manager=1 empty=0.0 created=0.0 errors=1 code=206 line=138 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::createFluid(): Feature not available!'
         # Row 000645 preserves the shipped disabled result and the enabled callback-backed create lifecycle.
         'simulation row645 fluid-create disabled=1 enabled=1 listed=1 callbacks=1 validation=48 allocation-failures=1 exact=1'
+        'simulation fluid-model-load row=003900 module=1 callbacks=1'
+        # LoadLibraryA executes DLL_PROCESS_ATTACH callbacks; preserve caller x87 state.
+        'simulation fluid-model-load-x87 row=003900 loaded=1 initialized=1 staged=1 control_before=027f control_after=027f matched=1'
         # Row 003649 pins all non-pointer FluidCreate arguments against distinct descriptor values.
         'simulation row3649 create-args arguments=14 digest=1d2e206d manager=1 exact=1'
         # Rows 003653/003655 copy implicit-mesh vertex, normal, and index streams after simulation.
@@ -6230,7 +6233,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2823  # previous 2822 plus implicit-mesh setName row 003896
+	'5' = 2825  # previous 2824 plus FluidModel loader x87 differential
 		           # plus primary and secondary fluid-solver deleting-destructor rows 003694/003788
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
@@ -6303,7 +6306,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1712  # previous 1711 plus implicit-mesh setName row 003896
+	'6' = 1714  # previous 1713 plus FluidModel loader x87 differential
 	           # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract
@@ -6350,7 +6353,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2953  # previous 2952 plus implicit-mesh setName row 003896
+	'7' = 2955  # previous 2954 plus FluidModel loader x87 differential
 	           # plus primary and secondary fluid-solver deleting-destructor rows 003694/003788; plus phys_fn_003423 sub-word stride edge assertion; plus phys_fn_000445 per-step debug-renderable clear assertion; plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters

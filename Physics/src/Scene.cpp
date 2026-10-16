@@ -33,6 +33,7 @@
 #include "PhysicsInternal.h"
 #define NOMINMAX
 #include <windows.h>
+#include <cfenv>
 #include <math.h>
 #include <new>
 #if !NX_PHYSICS_USE_X87
@@ -883,12 +884,37 @@ static bool gNxFluidModelInitialized = false;
 
 extern "C" int __cdecl nxFluidCollisionBuildStaticCollision(void*, void*, float, float);
 
+static HMODULE nxFluidModelLoadLibrary()
+	{
+#if defined(_MSC_VER) && defined(_M_IX86)
+	unsigned char x87Environment[28];
+	__asm
+		{
+		lea eax, x87Environment
+		fstenv [eax]
+		}
+	HMODULE module = LoadLibraryA("FluidModel.DLL");
+	__asm
+		{
+		lea eax, x87Environment
+		fldenv [eax]
+		}
+#else
+	std::fenv_t floatingEnvironment;
+	const bool environmentSaved = std::fegetenv(&floatingEnvironment) == 0;
+	HMODULE module = LoadLibraryA("FluidModel.DLL");
+	if(environmentSaved)
+		std::fesetenv(&floatingEnvironment);
+#endif
+	return module;
+	}
+
 static bool nxFluidManagerResolveModel()
 	{
 	// phys_fn_003645 calls LoadLibraryA on every manager construction, then
 	// resolves the extension entrypoints. The complete table is recovered
 	// incrementally; these four callbacks are the required create/release path.
-	HMODULE module = LoadLibraryA("FluidModel.DLL");
+	HMODULE module = nxFluidModelLoadLibrary();
 	if(!module)
 		{
 		gNxFluidModelLoaded = false;

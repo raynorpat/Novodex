@@ -720,6 +720,96 @@ static bool nxSimulationResolvePrivateRow(HMODULE physics, const wchar_t* pairDi
 	return true;
 	}
 
+static unsigned short nxSimulationReadX87ControlWord()
+	{
+	unsigned short controlWord = 0;
+	__asm { fnstcw controlWord }
+	return controlWord;
+	}
+
+static bool nxSimulationTestFluidModelLoadX87(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* function = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?nxFluidManagerResolveModel@@YA_NXZ", 0x0008d820u, &function))
+		return false;
+	if(!SetEnvironmentVariableW(L"NX_TEST_FLUID_MODEL_X87_MUTATION", L"1") ||
+		!SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS))
+		return false;
+	DLL_DIRECTORY_COOKIE directoryCookie = AddDllDirectory(pairDirectory);
+	if(!directoryCookie)
+		return false;
+	const unsigned short before = nxSimulationReadX87ControlWord();
+	typedef bool (__cdecl* ResolveFluidModelFn)();
+	const bool initialized = reinterpret_cast<ResolveFluidModelFn>(function)();
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	const bool loaded = fluidModel != 0;
+	wchar_t loadedPath[MAX_PATH] = {};
+	const DWORD loadedPathLength = loaded ? GetModuleFileNameW(fluidModel,
+		loadedPath, _countof(loadedPath)) : 0;
+	const size_t pairDirectoryLength = wcslen(pairDirectory);
+	const bool staged = loadedPathLength > pairDirectoryLength &&
+		_wcsnicmp(loadedPath, pairDirectory, pairDirectoryLength) == 0 &&
+		(loadedPath[pairDirectoryLength] == L'\\' ||
+		loadedPath[pairDirectoryLength] == L'/');
+	const unsigned short after = nxSimulationReadX87ControlWord();
+	SetEnvironmentVariableW(L"NX_TEST_FLUID_MODEL_X87_MUTATION", 0);
+	RemoveDllDirectory(directoryCookie);
+	__asm { fldcw before }
+	printf("simulation fluid-model-load-x87 row=003900 loaded=%u initialized=%u staged=%u control_before=%04x control_after=%04x matched=%u\n",
+		loaded ? 1u : 0u, initialized ? 1u : 0u, staged ? 1u : 0u,
+		before, after, loaded && initialized && staged && before == after ? 1u : 0u);
+	return loaded && initialized && staged && before == after;
+	}
+
+static int nxSimulationRunFluidModelLoadX87Probe(int argc, wchar_t** argv)
+	{
+	wchar_t pairDirectory[MAX_PATH];
+	HMODULE physics = 0;
+	const int status = nxOpenPair(argc - 1, argv + 1,
+		"NxPhysicsSimulationTests --fluid-model-load-x87", pairDirectory, &physics);
+	if(status)
+		return status;
+	const bool matched = nxSimulationTestFluidModelLoadX87(physics, pairDirectory);
+	FreeLibrary(physics);
+	return matched ? 0 : 1;
+	}
+
+static bool nxSimulationRunFluidModelLoadX87Child(const wchar_t* pairDirectory)
+	{
+	wchar_t executable[MAX_PATH];
+	const DWORD executableLength = GetModuleFileNameW(0, executable, MAX_PATH);
+	if(!executableLength || executableLength >= MAX_PATH)
+		return false;
+	wchar_t commandLine[2 * MAX_PATH + 80];
+	const int commandLength = _snwprintf_s(commandLine, _countof(commandLine), _TRUNCATE,
+		L"\"%s\" --fluid-model-load-x87 \"%s\"", executable, pairDirectory);
+	if(commandLength < 0)
+		return false;
+	STARTUPINFOW startup = {};
+	startup.cb = sizeof(startup);
+	startup.dwFlags = STARTF_USESTDHANDLES;
+	startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+	startup.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+	startup.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	PROCESS_INFORMATION process = {};
+	if(!CreateProcessW(executable, commandLine, 0, 0, TRUE, CREATE_NO_WINDOW,
+		0, 0, &startup, &process))
+		return false;
+	const DWORD waitResult = WaitForSingleObject(process.hProcess, 30000);
+	if(waitResult != WAIT_OBJECT_0)
+		{
+		TerminateProcess(process.hProcess, 1);
+		WaitForSingleObject(process.hProcess, INFINITE);
+		}
+	DWORD exitCode = 1;
+	GetExitCodeProcess(process.hProcess, &exitCode);
+	CloseHandle(process.hThread);
+	CloseHandle(process.hProcess);
+	return waitResult == WAIT_OBJECT_0 && exitCode == 0;
+	}
+
 struct NxSimulationActorPairCleanupFixture
 	{
 	NxU8 scene[0x48];
@@ -1125,6 +1215,8 @@ static bool nxSimulationTestSurfaceMeshReleaseRow3421(HMODULE physics,
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
+	if(argc == 3 && wcscmp(argv[1], L"--fluid-model-load-x87") == 0)
+		return nxSimulationRunFluidModelLoadX87Probe(argc, argv);
 	if(argc != 2)
 		return nxFail("usage: NxPhysicsSimulationTests <pair directory>");
 
@@ -5357,6 +5449,9 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.managerDestroy == 1 &&
 		fluidManagerCallbacks.fluidCreate == 1 &&
 		fluidManagerCallbacks.fluidDestroy == 1;
+	printf("simulation fluid-model-load row=003900 module=%u callbacks=%u\n",
+		fluidManagerCallbacks.managerCreate == 1 ? 1u : 0u,
+		enabledFluidCallbacks ? 1u : 0u);
 	const bool enabledFluidRefreshCallbacks =
 		fluidManagerCallbacks.staticCollisionCreate == 1 &&
 		fluidManagerCallbacks.staticCollisionGet == 1 &&
@@ -7865,6 +7960,11 @@ int wmain(int argc, wchar_t** argv)
 			}
 		cycleSdk->release();
 		printf("simulation lifecycle sdk_released cycle=%u\n", sdkCycle);
+		}
+	if(!nxSimulationRunFluidModelLoadX87Child(pairDirectory))
+		{
+		FreeLibrary(physics);
+		return nxFail("FluidModel loader x87 child probe failed");
 		}
 	status = nxReportPairIdentity(pairDirectory);
 	if(deferredContactFailed)

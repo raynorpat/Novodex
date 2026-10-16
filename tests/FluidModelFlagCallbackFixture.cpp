@@ -3,6 +3,17 @@
 #include <math.h>
 #include <stdlib.h>
 
+BOOL WINAPI DllMain(HINSTANCE, DWORD reason, LPVOID)
+	{
+	if(reason == DLL_PROCESS_ATTACH &&
+		GetEnvironmentVariableA("NX_TEST_FLUID_MODEL_X87_MUTATION", 0, 0) != 0)
+		{
+		unsigned short controlWord = 0x0f7fu;
+		__asm { fldcw controlWord }
+		}
+	return TRUE;
+	}
+
 struct NxFluidCollisionArrayFixture
 	{
 	void* data;

@@ -1,0 +1,92 @@
+{
+  "purpose": "FluidModel loader row 003900 differential and mutation proof with Phase 5/6/7 gates.",
+  "date": "2026-10-16",
+  "row": {
+    "id": "phys_fn_003900",
+    "rva": "0x0008d820"
+  },
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "no_load_mutant_candidate_sha256": "bd564bcb627509254690c2d71275197ea34a3a7aeb3e95a7f2ec5ddd007dfe41",
+  "gated_candidate_sha256": "19ff4d7af3d115bd555958c546278a65ed31be43b4c06721e6d41b7434666d94",
+  "mutation_result": "Replacing LoadLibraryA(\"FluidModel.DLL\") with null produced row marker module=0 callbacks=0; enabled-fluid fixture failed (oracle_exit=0, candidate_exit=1, stdout_delta=118).",
+  "restored_result": "The missing-load mutation is rejected (stdout_delta=118); the restored module-load and x87-state differentials pass against verified staged modules with oracle_exit=0, candidate_exit=0, stdout_delta=0 and exact stderr.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2825 floor=2825",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1714 floor=1714",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2955 floor=2955"
+  },
+  "inventory_validation": "pass; functions=6338; data_objects=5138; unexplained=0.",
+  "tooling_tests": "pytest: 835 passed, 743 subtests passed; gate target registry: 39 passed.",
+  "inventory_sha256": "ce78867605dd37a67059858ee18653def32244535e28846cf66d336b431482e6",
+  "phase7_closure_sha256": "295e315cb27659a03d936e8fa69359076002de5bf1192e7e8f015982d1f2282e",
+  "source_restoration_sha256": "cf411f7373c4df23d305beb2a7760da615393e75599d3ab8ad02115031d0f277",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "8be510d4e31bb65d508485f58c02c304d10bef0169077bed256df1e0ba6c1a82",
+      "uncompressed_sha256": "7a00e54d95b1706d3f2093fbced92e0c6fac5147a52499428400b0622e803ef9",
+      "compressed_bytes": 56120,
+      "uncompressed_bytes": 850700
+    },
+    "gate-target-tests.log.gz": {
+      "sha256": "aac5720e8af4b13f399f3d95a102cf5a4de1737bfbe6d4dff93e4380f68f1f2f",
+      "uncompressed_sha256": "10a2f8d5549f84abf97e14dd0d52aad31cab93af20d84927fadcaf3fcfa71477",
+      "compressed_bytes": 54,
+      "uncompressed_bytes": 101
+    },
+    "no-load-mutant-build.log.gz": {
+      "sha256": "862f8a6fb6368a4ac02e6909ffe3d74285fdabd87fc4ce7c104702be9ac9203a",
+      "uncompressed_sha256": "40d39ee5eb43d2150341287b99691a719e74c2208b60102ee41f212517b65891",
+      "compressed_bytes": 636,
+      "uncompressed_bytes": 1347
+    },
+    "no-load-mutant-differential.log.gz": {
+      "sha256": "83037a44f7be2dfd8360fe7f9f646766633ea0000b9edf6411e20c018143459b",
+      "uncompressed_sha256": "d4da79749a97705b86a15e7af262393f505d2eeef3b74ab734e7ce49b49c941e",
+      "compressed_bytes": 54672,
+      "uncompressed_bytes": 842753
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "55231f55ecc9731effc6e70074f132a8d9c7ca94e7c5eb2613302d50ac28198c",
+      "uncompressed_sha256": "c55e818b6e9cb452aa118496ed55f27f8fb7072b28e861864440c0c3b7e71bf4",
+      "compressed_bytes": 210084,
+      "uncompressed_bytes": 2838400
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "4c185f0a0f165bc782db21a4aff1dbfa80d272c950af4919484c30b7dbaa3906",
+      "uncompressed_sha256": "68583fe942bafdfb2c7c406cbf8836dc513dbf6f4d270b1b12a86734348c9f82",
+      "compressed_bytes": 254421,
+      "uncompressed_bytes": 3106345
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "f8426336bbbc305bf1bbc4ea6beda65e10d43ee82dd0a45e3e7bd4c6813a50df",
+      "uncompressed_sha256": "8e99b3938ab0fc434540531e30a8380158a919eff2fc94e8a1476bb64f12a8f5",
+      "compressed_bytes": 374410,
+      "uncompressed_bytes": 4637607
+    },
+    "restored-build.log.gz": {
+      "sha256": "4860cc4f95402ab368222cbb9f84ad468c32914bde3a1eb12f9c424e068aa3ad",
+      "uncompressed_sha256": "29aa4131bd6bd1915857e6a5b8b323c8756a5b529ca523671903839522bc89b0",
+      "compressed_bytes": 259,
+      "uncompressed_bytes": 672
+    },
+    "restored-differential.log.gz": {
+      "sha256": "de3b49355a8c036bb4568e66a4d6a934e383613a0d781bd8e20a242781cb3d94",
+      "uncompressed_sha256": "75c9a79afca9f595fb09f093f81a7ba48585d10ecab6639aff7d01af77a0eb41",
+      "compressed_bytes": 56276,
+      "uncompressed_bytes": 852621
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "be88c2ec01e510313eebe70c2360df4054469236d9eda7a1d7e42e51327ca64e",
+      "uncompressed_sha256": "a48f89b3e7dc57063734d42f9f35d251f4832d92eff62e7dd4482ffa7ba109db",
+      "compressed_bytes": 127,
+      "uncompressed_bytes": 974
+    },
+    "x87-no-restore-mutant-differential.log.gz": {
+      "sha256": "b133e26491f84510bb4c68f935b5928ee80f4fc7de06c7b8871976421ce633bc",
+      "uncompressed_sha256": "94f564bcab24b1821569cafa655949c5a11517519a22783ee77616ae06fdf123",
+      "compressed_bytes": 56501,
+      "uncompressed_bytes": 852724
+    }
+  },
+  "x87_mutation_result": "Replacing fldenv with fninit was detected in a fresh child process using the staged FluidModel.dll (staged=1): oracle control word 027f, candidate control word 037f, oracle_exit=0, candidate_exit=1. Restored staged oracle/candidate output is exact."
+}
