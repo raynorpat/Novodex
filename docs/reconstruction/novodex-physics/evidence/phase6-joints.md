@@ -11106,3 +11106,5 @@ Phase 7 Scene fluid-creation row `phys_fn_000645` is now mutation-falsified thro
 `phys_fn_003609` emitter initialization is mutation-falsified by `NxPhysicsSimulationTests`: a no-op frame-actor store changes the staged transcript by `stdout_delta=70`; restored control is exact. See `phase7-fluid-emitter-initialize-003609.md`.
 
 `phys_fn_003616` emitter local-pose setter is mutation-falsified by `NxPhysicsFluidEmitterAbiTests`: changing the copy destination from `internal+0x18` to `internal+0x1c` is rejected in both pose cases (`mismatches=2`); restored control is exact. See `phase7-fluid-local-pose-setter-003616.md`.
+
+`phys_fn_003613` emitter world-position setter mutation detection: `mismatches=1`. `phys_fn_003614` emitter world-orientation setter mutation detection: `mismatches=1`. See [fluid emitter world-component setters](phase7-fluid-emitter-world-components-003613-003614.md).

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "rows": [
+    {
+      "id": "phys_fn_003613",
+      "rva": "0x00089740",
+      "method": "NpFluidEmitter::setGlobalPosition"
+    },
+    {
+      "id": "phys_fn_003614",
+      "rva": "0x000897e0",
+      "method": "NpFluidEmitter::setGlobalOrientation"
+    }
+  ],
+  "target": "NxPhysicsFluidEmitterAbiTests",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "3393ef3082117b6d2d8e787099b7e0e608485d2cd61b8ebbaa17b8179e44cfd9",
+  "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
+  "fixture_source_sha256": "7b761c74ba35e6bf86d0509a9757b0f873227d73d60e1e1004fb7fe35c5c135b",
+  "implementation_source_sha256": "0195da9c86601cfbdb04fcbd1ad89f6a85a75ea14b4132ccf066de89b0da624c",
+  "artifacts": {
+    "position-mutant.log.gz": {
+      "bytes": 10697,
+      "sha256": "4969df2a686e4bf74560ef3db6c15a32856c51fc24da42ba31a55677c6e1409a",
+      "compressed_bytes": 2405,
+      "compressed_sha256": "88b6228ef0c396ceeb72740346c8d31f41cba7ed349af03c72983f83a04d0a39",
+      "candidate_sha256": "3696ed1635462be7e8239100b36f1b69b993e0fb29f9d297adce99fd882e41e7",
+      "exit_code": 1,
+      "mutation": "Change only setGlobalPosition to read getLocalPoseVal instead of the backend world pose."
+    },
+    "orientation-mutant.log.gz": {
+      "bytes": 9840,
+      "sha256": "3e10f5d09c3d7e93665bd0aa9dccc66e62197e9fdd22630f14b05a266c5dcc48",
+      "compressed_bytes": 2236,
+      "compressed_sha256": "572323c3b75e620b77745cd464794e406ddb8446520f155539d52be1d3cd6fe5",
+      "candidate_sha256": "d7ab72d9ded2b0c7e40f4f05d4a7a54f63374f361f18c9e8cf3dfbe85df1b719",
+      "exit_code": 1,
+      "mutation": "Change only setGlobalOrientation to read getLocalPoseVal instead of the backend world pose."
+    },
+    "restored.log.gz": {
+      "bytes": 9215,
+      "sha256": "2f79ca47474e68f319473a823cfa11491a00f37575dfe23dd79646dbc711d845",
+      "compressed_bytes": 2012,
+      "compressed_sha256": "5edcbd038151ea1f2e667b02b5ef40f4e89858c64ce02d5b3557383870387ff6",
+      "candidate_sha256": "3393ef3082117b6d2d8e787099b7e0e608485d2cd61b8ebbaa17b8179e44cfd9",
+      "exit_code": 0,
+      "mutation": "Restore backend world-pose reads in both setters."
+    }
+  }
+}

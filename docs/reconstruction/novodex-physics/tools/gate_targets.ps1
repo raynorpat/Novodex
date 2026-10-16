@@ -149,6 +149,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter name rows=2 replacements=1 clears=1 candidate_dll=1 mismatches=0'
 		'fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0'
 		'fluid emitter local-pose setter cases=2 callback_checks=2 stack_checks=2 mismatches=0'
+		'fluid emitter global component setters cases=2 callback_checks=2 stack_checks=2 mismatches=0'
 		'fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'
@@ -6185,7 +6186,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2792  # includes phys_fn_003616 local-pose setter coverage
+	'5' = 2793  # includes phys_fn_003613/003614 global-pose component setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	           # adds row 000645 enabled/disabled create contract
 	           # adds the allocator-bridge setter differential
@@ -6301,7 +6302,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2914  # includes 003616 local-pose setter coverage
+	'7' = 2915  # includes 003613/003614 global-pose component setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential

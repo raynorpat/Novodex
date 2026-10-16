@@ -1018,16 +1018,43 @@ void NpFluidEmitter::setGlobalPose(const NxMat34& pose)
 	nxNpSceneGuardLeave(link);
 	}
 
+static NxMat34 nxNpFluidEmitterGetBackendGlobalPose(void* internal)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(internal);
+	void* fluid = *reinterpret_cast<void**>(bytes + 4);
+	unsigned char* fluidBytes = static_cast<unsigned char*>(fluid);
+	void* backend = *reinterpret_cast<void**>(fluidBytes + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluidBytes + 0x80);
+	const unsigned emitterHandle = *reinterpret_cast<unsigned*>(bytes + 8);
+	typedef const float* (__cdecl *GetGlobalPose)(unsigned, unsigned, unsigned);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	GetGlobalPose getGlobalPose = reinterpret_cast<GetGlobalPose>(
+		GetProcAddress(fluidModel, "EmitterGetGlobalPose"));
+	const float* global = getGlobalPose(context, fluidHandle, emitterHandle);
+	float poseWords[12] = {
+		global[0], global[3], global[6],
+		global[1], global[4], global[7],
+		global[2], global[5], global[8],
+		global[9], global[10], global[11] };
+	NxMat34 pose;
+	memcpy(&pose, poseWords, sizeof(poseWords));
+	return pose;
+	}
+
 void NpFluidEmitter::setGlobalPosition(const NxVec3& position)
 	{
-	NxMat34 pose = getLocalPoseVal();
+	// phys_fn_003613 preserves the backend's world-space orientation.
+	NxMat34 pose = nxNpFluidEmitterGetBackendGlobalPose(mInternal);
 	pose.t = position;
 	setGlobalPose(pose);
 	}
 
 void NpFluidEmitter::setGlobalOrientation(const NxMat33& orientation)
 	{
-	NxMat34 pose = getLocalPoseVal();
+	// phys_fn_003614 preserves the backend's world-space position.
+	NxMat34 pose = nxNpFluidEmitterGetBackendGlobalPose(mInternal);
 	pose.M = orientation;
 	setGlobalPose(pose);
 	}
