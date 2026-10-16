@@ -282,6 +282,9 @@ $stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets -or
 	'NxPhysicsFluidGetParticlesNullTests' -cin $Targets -or
 	'NxPhysicsFluidZeroInitialParticlesTests' -cin $Targets -or
 	'NxPhysicsFluidInitialParticleCapacityClipTests' -cin $Targets -or
+	'NxPhysicsFluidNullInitialParticleCountTests' -cin $Targets -or
+	'NxPhysicsFluidNullInitialOptionalBuffersTests' -cin $Targets -or
+	'NxPhysicsFluidFlagsOnlyInitialParticleFailureTests' -cin $Targets -or
 	'NxPhysicsFluidAddParticlesTests' -cin $Targets -or
 	'NxPhysicsFluidAddParticlesGrowFailureTests' -cin $Targets -or
 	'NxPhysicsFluidAddParticlesAppendTests' -cin $Targets -or

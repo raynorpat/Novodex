@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "description": "Null initial velocity/lifetime buffer differential, zero-field mutation, restored control, Phase 7 gate, tooling and public-header verification.",
+  "artifacts": [
+    {
+      "file": "restored.log.gz",
+      "source_file": "restored.log",
+      "source_bytes": 10221,
+      "source_sha256": "fcc1fbdcd47701d67c3cef627c36f9a3452545caa538b49e897ffae221c14c15",
+      "compressed_bytes": 1282,
+      "compressed_sha256": "b83fd284a2e2c2cc62ab15e60ffbbd0088da8272b57bcbe4bb39cac6e0b6ff6f"
+    },
+    {
+      "file": "mutation.log.gz",
+      "source_file": "mutation.log",
+      "source_bytes": 10315,
+      "source_sha256": "a09185bbcd45c7cc212b018575e495ab1a8056125a602e4c6ffbf7fb78a8e74c",
+      "compressed_bytes": 1484,
+      "compressed_sha256": "e53272ad92fdfe8f2728fcd3afaaaa893806f0529c6eaf4552af3f538c10c75b"
+    },
+    {
+      "file": "restored-control.log.gz",
+      "source_file": "restored-control.log",
+      "source_bytes": 10221,
+      "source_sha256": "cbe317fc9a6152d5a693eed4e9b285648d39630cf36d2fdce17460cefc1c9daf",
+      "compressed_bytes": 1282,
+      "compressed_sha256": "ca0fbf25b1759221199d54c5e32d6a93fec40b891c4aa2d63f0a3f4aed3d4d44"
+    },
+    {
+      "file": "phase7.log.gz",
+      "source_file": "phase7.log",
+      "source_bytes": 4717103,
+      "source_sha256": "e693de69e77bbce422dd8341d33d8ca7ae32b6d305c0ce1cda813b3b49897bec",
+      "compressed_bytes": 375730,
+      "compressed_sha256": "ad85d245c0803f0645ebd32474e400babcd841310e0153da1d3b286dfb3a0986"
+    },
+    {
+      "file": "tools.log.gz",
+      "source_file": "tools.log",
+      "source_bytes": 143,
+      "source_sha256": "d439dc9611ea368a825592e92379445e75843a258fec91fe263f4aa7d908716d",
+      "compressed_bytes": 61,
+      "compressed_sha256": "97169e9a47e8a61061f5eddb0745b2aab1be1220dece712de277705bf0fa3afa"
+    },
+    {
+      "file": "headers.log.gz",
+      "source_file": "headers.log",
+      "source_bytes": 31,
+      "source_sha256": "c7d96f45fd6bab772f3d2fbbbc68e09f0e47fe2af7a24ffc10da31d89c51f3e4",
+      "compressed_bytes": 51,
+      "compressed_sha256": "cc56f2156a3851beaf1da1bdb8277dd5c7cbaaf5a9ee7135898db04b9e4c4690"
+    }
+  ],
+  "row": "phys_fn_003503",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "bfd1a050ce5cd14b187058fbdcc0cf56d70b5898691be244473cc9ecb337f624",
+  "source_sha256": {
+    "Physics/src/Scene.cpp": "cf411f7373c4df23d305beb2a7760da615393e75599d3ab8ad02115031d0f277",
+    "tests/PhysicsFluidInitialParticlesTests.cpp": "41f7e86e76f742d6ee3575166f0d6ea616231ece717532275d0bbfda612b069d",
+    "CMakeLists.txt": "f2781875e0e7ab080f92f4e0faa7bf680adf71e47f593c4777ceac3c7f81431a",
+    "docs/reconstruction/novodex-physics/tools/gate_targets.ps1": "8cc650265870f7057dbf93c66503ab41cb95d71b812c112f7646e291e30e1115",
+    "docs/reconstruction/novodex-physics/tools/run_differential.ps1": "60b9440efe2d0d84f75c2168fcde613b9959977414efd1b4ff903641de25eb43"
+  },
+  "gate_coverage": {
+    "phase7": "2957/2957"
+  },
+  "tool_tests": "39 passed",
+  "public_header_files": 80
+}

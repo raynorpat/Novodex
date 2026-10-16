@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "description": "Flags-only initial-particle failure differential, rejected null-position early-return mutation, restored control, Phase 5/7 gates, and tooling verification.",
+  "artifacts": [
+    {
+      "file": "headers.log.gz",
+      "source_file": "headers.log",
+      "source_bytes": 31,
+      "source_sha256": "c7d96f45fd6bab772f3d2fbbbc68e09f0e47fe2af7a24ffc10da31d89c51f3e4",
+      "compressed_bytes": 51,
+      "compressed_sha256": "cc56f2156a3851beaf1da1bdb8277dd5c7cbaaf5a9ee7135898db04b9e4c4690"
+    },
+    {
+      "file": "inventory.log.gz",
+      "source_file": "inventory.log",
+      "source_bytes": 307,
+      "source_sha256": "d4e858504ec28f1e7e887c21e4cad6838bd14116edac306ef7c67815828d5c39",
+      "compressed_bytes": 160,
+      "compressed_sha256": "55724c23388e56249b821841f2151b2af003c628adb01e6b2ece229d2ab6eb0a"
+    },
+    {
+      "file": "mutation-build.log.gz",
+      "source_file": "mutation-build.log",
+      "source_bytes": 2608,
+      "source_sha256": "164e6d37749c976ef914277a0531b2efb9aaf89e1c66d6409400fd53132fca2d",
+      "compressed_bytes": 751,
+      "compressed_sha256": "119fb158238d68f7d140bf473db1d3c98547ce3bc1941b0c235e39f0d5dffec2"
+    },
+    {
+      "file": "mutation.log.gz",
+      "source_file": "mutation.log",
+      "source_bytes": 10496,
+      "source_sha256": "633a34612cbb847b57802b87a13b0ce336ddc629f367fffc5eaa4ce8de1f0574",
+      "compressed_bytes": 1530,
+      "compressed_sha256": "a8d71b2d522d56ce62d00b6e500e4c14bfda745c415614ef119f3be064cd5a5d"
+    },
+    {
+      "file": "phase5.log.gz",
+      "source_file": "phase5.log",
+      "source_bytes": 2892454,
+      "source_sha256": "c883bc202ec6d7704b7a12930e8e4710f8f9e4fa4509ca0abc5ed660ccb331bf",
+      "compressed_bytes": 211827,
+      "compressed_sha256": "7a94ae08cf3b776e772b59c4ecc50aa96d34d2821447722dc724f3b29d4474bc"
+    },
+    {
+      "file": "phase7.log.gz",
+      "source_file": "phase7.log",
+      "source_bytes": 4724624,
+      "source_sha256": "36b93e85ea39ef134bdabdec223744fb7fd6634d12fb2083bde24e3f074fc3b5",
+      "compressed_bytes": 375940,
+      "compressed_sha256": "f295f39e4146220bdfe3781e8bec6ce0efad394cab02870111e663dc43a92c19"
+    },
+    {
+      "file": "restored-build.log.gz",
+      "source_file": "restored-build.log",
+      "source_bytes": 2608,
+      "source_sha256": "164e6d37749c976ef914277a0531b2efb9aaf89e1c66d6409400fd53132fca2d",
+      "compressed_bytes": 751,
+      "compressed_sha256": "119fb158238d68f7d140bf473db1d3c98547ce3bc1941b0c235e39f0d5dffec2"
+    },
+    {
+      "file": "restored-control.log.gz",
+      "source_file": "restored-control.log",
+      "source_bytes": 10391,
+      "source_sha256": "c45f85fc8bae23cc58088f28545d467c7b51fe57d0ea3cf6baf7090212493f45",
+      "compressed_bytes": 1314,
+      "compressed_sha256": "399d7c6290f53b33076302025c0e8dc34247afe4863749c3baa2a3f3de048002"
+    },
+    {
+      "file": "restored.log.gz",
+      "source_file": "restored.log",
+      "source_bytes": 10391,
+      "source_sha256": "1a4edfe46c92a3b8b5f011099a2258d1cacf5ce52f97106736fb048ca6e60c16",
+      "compressed_bytes": 1313,
+      "compressed_sha256": "841af3de5c8e89c2e0b0b8971d128332bac49e6a25c3e5a11abcd2ff5b3c3deb"
+    },
+    {
+      "file": "tools.log.gz",
+      "source_file": "tools.log",
+      "source_bytes": 143,
+      "source_sha256": "eb87cc3422d285e9544d4b76580e4d932fda7c788738677979f64666b77e9b17",
+      "compressed_bytes": 61,
+      "compressed_sha256": "151b85c87601947634569cbd47021a40269cbad9450e48fa8b8dd618850a9b4f"
+    }
+  ],
+  "row": "phys_fn_003503",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "90631c9bbae11bbdec94e823662c2b2bef3f1b329afbf00c1accdd459a09c9af",
+  "source_sha256": {
+    "Physics/src/Scene.cpp": "cf411f7373c4df23d305beb2a7760da615393e75599d3ab8ad02115031d0f277",
+    "tests/PhysicsFluidInitialParticlesTests.cpp": "cb9f84e5d114e036ba1c1d40d29e8f590c1828bedb9a10c38f763d0f014d6c19",
+    "CMakeLists.txt": "3addb8878955948d04a21f4ef8ed9e837f6a5b4d1c5aac131206d076cf93f342",
+    "docs/reconstruction/novodex-physics/tools/gate_targets.ps1": "31726ab8f177d2b4567b419f339d094db5b8e9fe1b883a870d07b9efead5d885",
+    "docs/reconstruction/novodex-physics/tools/run_differential.ps1": "1ab86a488dfc73953d880d4aa3ec996605bf229616b76d2df32e72c84749ef50"
+  },
+  "gate_coverage": {
+    "phase5": "2825/2825",
+    "phase7": "2958/2958"
+  },
+  "tool_tests": "39 passed",
+  "public_header_files": 80,
+  "inventory": "pass; unexplained=0"
+}
