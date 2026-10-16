@@ -3636,8 +3636,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation row645 fluid-create disabled=1 enabled=1 listed=1 callbacks=1 validation=48 allocation-failures=1 exact=1'
         # Row 003649 pins all non-pointer FluidCreate arguments against distinct descriptor values.
         'simulation row3649 create-args arguments=14 digest=1d2e206d manager=1 exact=1'
-        # Row 003651 copies implicit-mesh vertex, normal, and index streams after simulation.
-        'simulation implicit-mesh post-step-copy row=003651 matched=1 ready=1 fetched=1 data-match=1 vertices=1 triangles=1 data=3f800001.3f800002.3f800003/40000001.40000002.40000003/3f000001.3f000002.3f000003'
+        # Rows 003653/003655 copy implicit-mesh vertex, normal, and index streams after simulation.
+        'simulation implicit-mesh post-step-copy rows=003653.003655 matched=1 ready=1 fetched=1 data-match=1 vertices=1 triangles=1 data=3f800001.3f800002.3f800003/40000001.40000002.40000003/3f000001.3f000002.3f000003'
         # Row 003649 pins combined mesh/emitter/particle initialization and fluid teardown callbacks.
         'simulation row3649 combined-init order=CMEP length=4 callbacks=1.1.1 cleanup=1.0.0 exact=1'
         # Row 003649 uses the process heap, not NxUserAllocator, for the public implicit-mesh object.
@@ -6201,7 +6201,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2804  # adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route and row 003651 mesh-copy case
+	'5' = 2804  # adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
@@ -6273,7 +6273,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1697  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and row 003651 mesh-copy case
+	'6' = 1697  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential
@@ -6319,7 +6319,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2926  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and row 003651 mesh-copy case
+	'7' = 2926  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization

@@ -1,10 +1,13 @@
 {
   "schema_version": 1,
-  "row": "phys_fn_003651",
-  "rva": "0x0008a9a0",
+  "rows": [
+    "phys_fn_003653",
+    "phys_fn_003655"
+  ],
+  "rva": "0x0008aa90-0x0008abdf",
   "date": "2026-10-16",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "candidate_restored_sha256": "54474146fc8cee25b68a58e070f68a4a9335ee0b43bfb46fa7a23f3e1d0d4ab8",
+  "candidate_restored_sha256": "f6724194def265aa8a2b23ec90efd2022abca781bc10694af86348629562ac22",
   "restored_control": {
     "oracle_exit": 0,
     "candidate_exit": 0,
@@ -34,18 +37,19 @@
     "tests": 835,
     "subtests": 743
   },
+  "particle_stream_row_003651": "remains open",
   "compressed_logs": [
     {
       "file": "implicit-mesh-copy-control.log.gz",
-      "sha256": "413656c9b9f0da3383a4fd5120b8303d1ad89918a78fdea7d3266cad60666c36",
-      "uncompressed_sha256": "75b6401fa13ae92b6b9d0fc47a7889feee9d9086b0a457fb04d9bb02864de3b2",
-      "uncompressed_bytes": 848739
+      "sha256": "2fd5d83ed16a29974ab3d90b12311ae22e1c0bd79cbb72c9c598531b4e1dbb2d",
+      "uncompressed_sha256": "e210e0868975687ca19e3ad20a4114fdfb0cce677d2e353e283eae1c4e004ff7",
+      "uncompressed_bytes": 848755
     },
     {
       "file": "implicit-mesh-copy-mutant.log.gz",
-      "sha256": "aab8e7e502ab337ea6d56e9097d439ba09871549f0d09bb4463bc73b8e6a3e36",
-      "uncompressed_sha256": "66cc94f96f3e62bd3abd6ec90dc16feaf9abf8cf237fd163c09c2ddc12c3d50c",
-      "uncompressed_bytes": 843235
+      "sha256": "9d65ae625ae415a65b916ab7cb391d2c593d715c6a4705ed176a7263c09aeff5",
+      "uncompressed_sha256": "5852e124a4a9f8de0e6ebc9b62c142ca0fa127f3198fffe65a65f164c610aaea",
+      "uncompressed_bytes": 843251
     }
   ]
 }

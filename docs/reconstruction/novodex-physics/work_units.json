@@ -3046,13 +3046,13 @@
     "phys_fn_003661"
    ],
    "rows": {
-    "discovered": 4,
-    "dynamically_gated": 1,
+    "discovered": 3,
+    "dynamically_gated": 2,
     "reconstructed": 1
    },
    "bytes": {
-    "discovered": 414,
-    "dynamically_gated": 228,
+    "discovered": 313,
+    "dynamically_gated": 329,
     "reconstructed": 4
    },
    "phases": {

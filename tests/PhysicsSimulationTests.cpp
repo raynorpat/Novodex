@@ -5585,7 +5585,7 @@ int wmain(int argc, wchar_t** argv)
 		implicitMeshCopyStepMatches = implicitMeshCopyReady &&
 			implicitMeshCopyFetched && implicitMeshCopyDataMatches;
 		}
-	printf("simulation implicit-mesh post-step-copy row=003651 matched=%u ready=%u fetched=%u data-match=%u vertices=%u triangles=%u data=%08x.%08x.%08x/%08x.%08x.%08x/%08x.%08x.%08x\n",
+	printf("simulation implicit-mesh post-step-copy rows=003653.003655 matched=%u ready=%u fetched=%u data-match=%u vertices=%u triangles=%u data=%08x.%08x.%08x/%08x.%08x.%08x/%08x.%08x.%08x\n",
 		implicitMeshCopyStepMatches ? 1u : 0u,
 		implicitMeshCopyReady ? 1u : 0u,
 		implicitMeshCopyFetched ? 1u : 0u,

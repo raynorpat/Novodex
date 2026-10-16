@@ -68680,15 +68680,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "dynamically_gated",
-      "source": "Physics/src/Scene.cpp::nxFluidCopyImplicitMeshData",
+      "state": "discovered",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1379",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12678",
-      "static_proof": "Oracle row 0x0008a9a0 reads the NxMeshData output pointers at record+0x08/+0x0c, their byte strides at +0x10/+0x14, indexed-mesh flag at +0x24, indices output at +0x20, vertex count at +0x1c, and triangle count at +0x2c. It copies mesh[3]/mesh[6] position/normal triplets using their respective output strides, and when flags equal 4 copies mesh[0] triplets to the indices buffer and stores mesh[1] as triangle count.",
-      "dynamic_proof": "The registered NxPhysicsSimulationTests staged pair creates a licensed callback-backed implicit surface mesh, sets output buffers, advances/fetches one step, and compares index, position, normal, vertex count and triangle count. Oracle and restored candidate match exactly. A candidate early-return mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=66). Restored control: stdout_delta=0, stderr_exact=True. See evidence/phase7-implicit-mesh-post-step-copy-003651.md.",
       "notes": "",
-      "implementation": "Physics/src/Scene.cpp",
-      "implementation_symbol": "nxFluidCopyImplicitMeshData"
+      "source": null,
+      "static_proof": null,
+      "dynamic_proof": null
     },
     {
       "id": "phys_fn_003652",
@@ -68718,13 +68716,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp::nxFluidCopyImplicitMeshData",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12688",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Oracle function 0x0008aa90 is called by 0x0008abe0 after ImplicitFluidMeshGetMesh. It conditionally copies mesh[0] triplets to the indices output for flags 4, then copies mesh[3]/mesh[6] position and normal triplets into outputs using independent byte strides and stores the respective counts. Its discontiguous body continues in census row 003655 at 0x0008ab10.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests staged pair creates a licensed callback-backed implicit surface mesh, sets indexed output buffers, advances/fetches one step, and compares index, position, normal, vertex-count, and triangle-count values. Oracle and restored candidate match exactly. A candidate early-return mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=66); restored control has stdout_delta=0 and exact stderr. See evidence/phase7-implicit-mesh-post-step-copy-003653-003655.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidCopyImplicitMeshData"
     },
     {
       "id": "phys_fn_003654",
@@ -68754,13 +68754,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp::nxFluidCopyImplicitMeshData",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12692",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0008aa90"
+      "static_proof": "Oracle function 0x0008aa90 is called by 0x0008abe0 after ImplicitFluidMeshGetMesh. It conditionally copies mesh[0] triplets to the indices output for flags 4, then copies mesh[3]/mesh[6] position and normal triplets into outputs using independent byte strides and stores the respective counts. Its discontiguous body continues in census row 003655 at 0x0008ab10.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests staged pair creates a licensed callback-backed implicit surface mesh, sets indexed output buffers, advances/fetches one step, and compares index, position, normal, vertex-count, and triangle-count values. Oracle and restored candidate match exactly. A candidate early-return mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=66); restored control has stdout_delta=0 and exact stderr. See evidence/phase7-implicit-mesh-post-step-copy-003653-003655.md.",
+      "notes": "continuation of the entry at 0x0008aa90",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidCopyImplicitMeshData"
     },
     {
       "id": "phys_fn_003656",

@@ -1,4 +1,4 @@
-# Implicit-mesh post-step copy (`phys_fn_003651`)
+# Implicit-mesh post-step copy (`phys_fn_003653` / `phys_fn_003655`)
 
 `NxPhysicsSimulationTests` now exercises the real licensed fluid surface-mesh path. The staged `FluidModel.dll` supplies one indexed stream, one vertex position, and one normal through `ImplicitFluidMeshGetMesh`; the test seeds the public `NxMeshData` buffers, advances and fetches one simulation step, then checks all three streams and both output counts against the oracle fixture values.
 
@@ -6,4 +6,6 @@ The control is exact: oracle and candidate each report `matched=1`, with vertex 
 
 The registered Phase 5, 6, and 7 coverage floors advance by one assertion each. This closes the row-specific behavior slice; the broader full-DLL reconstruction and Phase 8 census remain open.
 
-Raw control and mutation transcripts are retained in `evidence/raw/phase7-implicit-mesh-post-step-copy-003651-20261016/`.
+IDA shows that the directly tested copy routine begins at RVA `0x0008aa90` and spans both census rows `003653` and `003655`; row `003657` calls it after retrieving the callback mesh. The adjacent particle-stream row `003651` remains open and is not measured by this fixture.
+
+Raw control and mutation transcripts are retained in `evidence/raw/phase7-implicit-mesh-post-step-copy-003653-003655-20261016/`.
