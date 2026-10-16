@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003423",
+  "description": "Particle cell quantization red, truncation mutation, restored differential, and Phase 5/6/7 gates. Log transcripts are gzip-compressed; source and compressed hashes are recorded.",
+  "artifacts": [
+    {
+      "file": "mutation-build.log.gz",
+      "source": "mutation-build.log",
+      "source_bytes": 1557,
+      "source_sha256": "110018467dd956eab0fce81576d0749196b485d700309e0131ea2357686521eb",
+      "compressed_bytes": 681,
+      "compressed_sha256": "b1d952aebbe116f39eaf0cf0db4c886f75a1e084cb03d49c9349f91e1df98309"
+    },
+    {
+      "file": "mutation-differential.log.gz",
+      "source": "mutation-differential.log",
+      "source_bytes": 7076,
+      "source_sha256": "2b9fbb445bf67f29ca93b3784e8ea65ddd3f61690f51bd9c810e621ef0445266",
+      "compressed_bytes": 1328,
+      "compressed_sha256": "6a8cf1ce0f1c9b506c895823694c789d0fda14deb4585fd2d2548868c8550269"
+    },
+    {
+      "file": "restored-build.log.gz",
+      "source": "restored-build.log",
+      "source_bytes": 1557,
+      "source_sha256": "110018467dd956eab0fce81576d0749196b485d700309e0131ea2357686521eb",
+      "compressed_bytes": 681,
+      "compressed_sha256": "b1d952aebbe116f39eaf0cf0db4c886f75a1e084cb03d49c9349f91e1df98309"
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source": "restored-differential.log",
+      "source_bytes": 7128,
+      "source_sha256": "72d620ed9e33933c07b9230888dcd3b51f85b7f57b2f32993cdf4a20b28a1f4f",
+      "compressed_bytes": 1205,
+      "compressed_sha256": "251fb53b85aea7d8dfb300ee4742604e255ac8b41e459bdf40eb7e1cc4e28ede"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "phase5-gate.log",
+      "source_bytes": 2804608,
+      "source_sha256": "90015d8d9cb9f4d5ecc199aa3d6f7183c20328bee874f464ed6311172c18c906",
+      "compressed_bytes": 206776,
+      "compressed_sha256": "2ecde4b01257307655e0c93266c2ed7e04063391181206fb860693186d234efe"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "phase6-gate.log",
+      "source_bytes": 3089335,
+      "source_sha256": "3b48810220568cfb081b943f72d55cc11438254b09a0cb53c1a5d0bcac580e56",
+      "compressed_bytes": 252217,
+      "compressed_sha256": "d057b47cc7c0d457d7739fdf3990e0dd4f520abad377710ce0ae6051f3e1ebb7"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "phase7-gate.log",
+      "source_bytes": 4575475,
+      "source_sha256": "0c97dc7a09f76bade92d0e11ee0b54aed1a0fb9d75a42734379ca522f69f5e71",
+      "compressed_bytes": 370106,
+      "compressed_sha256": "5cba7ffaa3bfe88a87f00e2df8b22d967ffd6f11183ae23395715056715b2299"
+    },
+    {
+      "file": "mutation-result.txt",
+      "bytes": 17,
+      "sha256": "9a7b1ef65947746a80f6ace1ccc71a5bde5e56fc17afd25a6f299a61a376b028"
+    },
+    {
+      "file": "restored-result.txt",
+      "bytes": 30,
+      "sha256": "0395bdebd4cb355b3a8b05995bfb28eb9dd907173ef464d49c14891b81bf8896"
+    }
+  ]
+}

@@ -33,6 +33,7 @@
 #include "PhysicsInternal.h"
 #define NOMINMAX
 #include <windows.h>
+#include <math.h>
 #if !NX_PHYSICS_USE_X87
 #include "NxSceneContactMembers.h"
 #include "NxSceneVisitedBuffers.h"
@@ -2191,7 +2192,7 @@ struct NxFluidParticleArrayHeader
 	unsigned count;
 	};
 
-// phys_fn_003503's initial-particle branch allocates the FluidModel's
+// phys_fn_003423 allocates the FluidModel's
 // 92-byte ParticleArray records, clips to the backend's remaining capacity,
 // and copies the strided public position/velocity/lifetime channels.
 static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
@@ -2239,12 +2240,12 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 				data.bufferVel) + index * velocityStride, 3 * sizeof(unsigned));
 		if(cellSize != 0.0f)
 			{
-			*reinterpret_cast<short*>(record + 64) = static_cast<short>(
-				*reinterpret_cast<float*>(record + 4) / cellSize);
-			*reinterpret_cast<short*>(record + 66) = static_cast<short>(
-				*reinterpret_cast<float*>(record + 8) / cellSize);
-			*reinterpret_cast<short*>(record + 68) = static_cast<short>(
-				*reinterpret_cast<float*>(record + 12) / cellSize);
+			*reinterpret_cast<short*>(record + 64) = static_cast<short>(floorf(
+				*reinterpret_cast<float*>(record + 4) / cellSize));
+			*reinterpret_cast<short*>(record + 66) = static_cast<short>(floorf(
+				*reinterpret_cast<float*>(record + 8) / cellSize));
+			*reinterpret_cast<short*>(record + 68) = static_cast<short>(floorf(
+				*reinterpret_cast<float*>(record + 12) / cellSize));
 			}
 		*reinterpret_cast<short*>(record + 70) = -1;
 		*reinterpret_cast<short*>(record + 72) = -1;

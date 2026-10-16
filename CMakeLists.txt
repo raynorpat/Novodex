@@ -687,6 +687,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_compile_definitions(NxPhysicsFluidInitialParticlesTests PRIVATE
 		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1)
 	target_link_libraries(NxPhysicsFluidInitialParticlesTests bcrypt)
+	add_executable(NxPhysicsFluidCellRoundingTests tests/PhysicsFluidInitialParticlesTests.cpp)
+	target_include_directories(NxPhysicsFluidCellRoundingTests PRIVATE Foundation/include Physics/include)
+	target_compile_definitions(NxPhysicsFluidCellRoundingTests PRIVATE
+		NX_PHYSICS_ALLOW_FLUIDMODEL_SUPPORT=1 NX_FLUID_CELL_ROUNDING_TEST=1)
+	target_link_libraries(NxPhysicsFluidCellRoundingTests bcrypt)
 	add_executable(NxPhysicsFluidParticleArrayFailureTests tests/PhysicsFluidInitialParticlesTests.cpp)
 	target_include_directories(NxPhysicsFluidParticleArrayFailureTests PRIVATE Foundation/include Physics/include)
 	target_compile_definitions(NxPhysicsFluidParticleArrayFailureTests PRIVATE
@@ -997,6 +1002,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_target_properties(NxPhysicsFluidModelCallbackFixture PROPERTIES
 		OUTPUT_NAME FluidModel PREFIX "")
 	add_dependencies(NxPhysicsFluidInitialParticlesTests NxPhysics NxPhysicsFluidModelCallbackFixture)
+	add_dependencies(NxPhysicsFluidCellRoundingTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	add_dependencies(NxPhysicsFluidParticleArrayFailureTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	add_dependencies(NxPhysicsFluidGetParticlesNullTests NxPhysics NxPhysicsFluidModelCallbackFixture)
 	add_dependencies(NxPhysicsFluidZeroInitialParticlesTests NxPhysics NxPhysicsFluidModelCallbackFixture)

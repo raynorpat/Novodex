@@ -272,6 +272,7 @@ if (-not (Test-Path -LiteralPath $pairsRoot)) {
 $stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets -or
 	'NxPhysicsSimulationTests' -cin $Targets -or
 	'NxPhysicsFluidInitialParticlesTests' -cin $Targets -or
+	'NxPhysicsFluidCellRoundingTests' -cin $Targets -or
 	'NxPhysicsFluidParticleArrayFailureTests' -cin $Targets -or
 	'NxPhysicsFluidGetParticlesNullTests' -cin $Targets -or
 	'NxPhysicsFluidZeroInitialParticlesTests' -cin $Targets -or

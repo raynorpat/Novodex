@@ -34,6 +34,9 @@
 #ifndef NX_FLUID_ADD_PARTICLES_APPEND_TEST
 #define NX_FLUID_ADD_PARTICLES_APPEND_TEST 0
 #endif
+#ifndef NX_FLUID_CELL_ROUNDING_TEST
+#define NX_FLUID_CELL_ROUNDING_TEST 0
+#endif
 #if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
 #undef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 1
@@ -179,6 +182,8 @@ int wmain(int argc, wchar_t** argv)
 	const char* const testName = "NxPhysicsFluidInitialParticleCapacityClipTests";
 	#elif NX_FLUID_ADD_PARTICLES_TEST
 	const char* const testName = "NxPhysicsFluidAddParticlesTests";
+	#elif NX_FLUID_CELL_ROUNDING_TEST
+	const char* const testName = "NxPhysicsFluidCellRoundingTests";
 	#else
 	const char* const testName = "NxPhysicsFluidInitialParticlesTests";
 	#endif
@@ -339,6 +344,10 @@ int wmain(int argc, wchar_t** argv)
 		(NX_FLUID_ADD_PARTICLES_TEST && !NX_FLUID_ADD_PARTICLES_APPEND_TEST) ? 0 : 2;
 	NxF32 positions[8] = { 1.0f, -2.5f, 3.5f, 91.0f,
 		-1.5f, 2.0f, 4.0f, 92.0f };
+	#if NX_FLUID_CELL_ROUNDING_TEST
+	positions[0] = 1.375f;
+	positions[4] = -1.375f;
+	#endif
 	NxF32 velocities[8] = { -4.5f, 5.25f, -6.75f, 93.0f,
 		0.125f, -0.25f, 0.5f, 94.0f };
 	NxF32 lifetimes[4] = { 8.5f, 95.0f, 9.25f, 96.0f };
@@ -557,6 +566,23 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("initial-particle capacity clipping differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#endif
+	#elif NX_FLUID_CELL_ROUNDING_TEST
+	const bool countMatch = array &&
+		*reinterpret_cast<unsigned*>(array + 4) == 2;
+	const bool cellsMatch = records &&
+		*reinterpret_cast<short*>(records + 64) == 2 &&
+		*reinterpret_cast<short*>(records + 156) == -3;
+	printf("fluid initial-particle cell-rounding count=%u cells=%u x=%d,%d\n",
+		countMatch ? 2u : 0u, cellsMatch ? 1u : 0u,
+		records ? *reinterpret_cast<short*>(records + 64) : 0,
+		records ? *reinterpret_cast<short*>(records + 156) : 0);
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !countMatch || !cellsMatch)
+		return nxFail("particle cell quantization differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
 	#else
 	const bool countMatch = array &&
 		*reinterpret_cast<unsigned*>(array + 4) == 2;
