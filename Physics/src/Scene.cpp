@@ -2841,9 +2841,11 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		(gNxFluidLicensedFeatureFlags & 2u) != 0);
 	*reinterpret_cast<void**>(fluid + 0x80) = backendFluid;
 	nxFluidInitializeSurfaceMesh(fluid, desc.surfaceMeshDesc);
-	nxFluidInitializeParticles(fluid, desc.initialParticleData);
 	for(unsigned emitterIndex = 0; emitterIndex != desc.emitters.size(); ++emitterIndex)
 		nxFluidCreateEmitter(fluid, desc.emitters[emitterIndex]);
+	// phys_fn_003503 completes emitter construction before its initial-particle
+	// callback path (FluidGetParticles/ParticleArrayAlloc/CellSize).
+	nxFluidInitializeParticles(fluid, desc.initialParticleData);
 	nxFluidManagerArrayPush(managerBytes + 4,
 		reinterpret_cast<unsigned>(fluid));
 	nxFluidManagerArrayPush(managerBytes + 0x14,

@@ -4095,6 +4095,7 @@ int wmain(int argc, wchar_t** argv)
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
 	typedef void (__cdecl *SetFluidCreateNullIndexFn)(unsigned);
+	typedef unsigned (__cdecl *GetFluidCreationOrderFn)(char*, unsigned);
 	typedef void (__cdecl *SetImplicitMeshReentryTargetFn)(void*);
 	typedef unsigned (__cdecl *GetFluidScalarCallsFn)();
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
@@ -4139,6 +4140,9 @@ int wmain(int argc, wchar_t** argv)
 	SetFluidCreateNullIndexFn setFluidCreateNullIndex = reinterpret_cast<
 		SetFluidCreateNullIndexFn>(GetProcAddress(fluidModel,
 			"NxSetFluidCreateNullIndex"));
+	GetFluidCreationOrderFn getFluidCreationOrder = reinterpret_cast<
+		GetFluidCreationOrderFn>(GetProcAddress(fluidModel,
+			"NxGetFluidCreationOrder"));
 	SetImplicitMeshReentryTargetFn setImplicitMeshReentryTarget = reinterpret_cast<
 		SetImplicitMeshReentryTargetFn>(GetProcAddress(fluidModel,
 			"NxSetImplicitMeshReentryTarget"));
@@ -4152,6 +4156,7 @@ int wmain(int argc, wchar_t** argv)
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex || !setFluidCreateNullIndex ||
+		!getFluidCreationOrder ||
 		!setImplicitMeshReentryTarget)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
@@ -5641,6 +5646,42 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseScene(*nullBackendScene);
 	if(!fluidCreateNullBackendPublished)
 		return nxFail("null FluidCreate backend result did not preserve the oracle fluid lifecycle");
+	}
+	bool fluidInitializationCallbackOrderMatches = false;
+	{
+	NxSimulationFluidLicenseOverride initializationOrderLicenseOverride(804);
+	resetFluidManagerCallbacks();
+	NxScene* const initializationOrderScene = initializationOrderLicenseOverride.ready
+		? sdk->createScene(fluidSceneDesc) : 0;
+	NxFluidDesc initializationOrderDesc;
+	initializationOrderDesc.setToDefault();
+	NxFluidEmitterDesc initializationOrderEmitter;
+	initializationOrderEmitter.setToDefault();
+	initializationOrderDesc.emitters.pushBack(initializationOrderEmitter);
+	NxU32 initializationOrderCount = 1;
+	NxF32 initializationOrderPosition[3] = {1.0f, 2.0f, 3.0f};
+	initializationOrderDesc.initialParticleData.numParticlesPtr =
+		&initializationOrderCount;
+	initializationOrderDesc.initialParticleData.bufferPos =
+		initializationOrderPosition;
+	initializationOrderDesc.initialParticleData.bufferPosByteStride =
+		3 * sizeof(NxF32);
+	NxFluid* const initializationOrderFluid = initializationOrderScene
+		? initializationOrderScene->createFluid(initializationOrderDesc) : 0;
+	char initializationOrder[64] = {};
+	const unsigned initializationOrderLength = getFluidCreationOrder(
+		initializationOrder, sizeof(initializationOrder));
+	fluidInitializationCallbackOrderMatches = initializationOrderLicenseOverride.ready &&
+		initializationOrderFluid && initializationOrderLength == 2 &&
+		initializationOrder[0] == 'E' && initializationOrder[1] == 'P';
+	printf("simulation row3649 initialization-order order=%s expected=EP exact=%u\n",
+		initializationOrder, fluidInitializationCallbackOrderMatches ? 1u : 0u);
+	if(initializationOrderFluid)
+		initializationOrderScene->releaseFluid(*initializationOrderFluid);
+	if(initializationOrderScene)
+		sdk->releaseScene(*initializationOrderScene);
+	if(!fluidInitializationCallbackOrderMatches)
+		return nxFail("fluid initialization callback order did not match the oracle");
 	}
 	sdk->releaseScene(*enabledFluidScene);
 	bool enabledLicensedKernelGetter = false;

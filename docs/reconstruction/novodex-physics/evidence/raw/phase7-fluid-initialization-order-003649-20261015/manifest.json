@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003649",
+  "description": "Combined emitter and initial-particle callback-order red/green differential for FluidManager::createFluid.",
+  "artifacts": [
+    {
+      "file": "red-differential.log.gz",
+      "source": "build/fluid-init-order-red.log",
+      "source_bytes": 841106,
+      "source_sha256": "f8c1f958212a57bdf55b0657a15172facf3b4d6f3161bf132a24dfa9974bc169",
+      "compressed_bytes": 54404,
+      "compressed_sha256": "cbe3602ae301adb706aa71f38905c661c94b08892bf28ddc9043dd3fa4dbdcfa"
+    },
+    {
+      "file": "green-differential.log.gz",
+      "source": "build/fluid-init-order-green.log",
+      "source_bytes": 846142,
+      "source_sha256": "888b705a12513ffd03b9a0b97ef56dd48485a8cb481d1d2b9a25856773e04693",
+      "compressed_bytes": 54988,
+      "compressed_sha256": "88e5999b9bcb6f36357041e11a6914dcf068c1ed6c123b61b734f2ca359ee3c6"
+    }
+  ]
+}

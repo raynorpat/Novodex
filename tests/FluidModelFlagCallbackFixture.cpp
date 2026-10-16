@@ -76,6 +76,8 @@ struct NxFluidManagerCallbackRecord
 	};
 
 static NxFluidManagerCallbackSummary gFluidManagerCallbackSummary;
+static char gFluidCreationOrder[64];
+static unsigned gFluidCreationOrderCount;
 static NxFluidManagerCallbackRecord gFluidManagerRecords[8];
 static unsigned gFluidManagerRecordCount;
 static unsigned gFluidManagerGetCallCount;
@@ -310,6 +312,8 @@ static float gEmitterGlobalPose[12];
 extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	{
 	ZeroMemory(&gFluidManagerCallbackSummary, sizeof(gFluidManagerCallbackSummary));
+	ZeroMemory(gFluidCreationOrder, sizeof(gFluidCreationOrder));
+	gFluidCreationOrderCount = 0;
 	ZeroMemory(gFluidManagerRecords, sizeof(gFluidManagerRecords));
 	gFluidManagerRecordCount = 0;
 	gFluidManagerGetCallCount = 0;
@@ -386,6 +390,19 @@ extern "C" __declspec(dllexport) void __cdecl NxGetFluidManagerCallbackSummary(
 	{
 	if(summary)
 		*summary = gFluidManagerCallbackSummary;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidCreationOrder(
+	char* output, unsigned capacity)
+	{
+	const unsigned count = gFluidCreationOrderCount;
+	if(output && capacity)
+		{
+		const unsigned copied = count < capacity - 1 ? count : capacity - 1;
+		memcpy(output, gFluidCreationOrder, copied);
+		output[copied] = 0;
+		}
+	return count;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxSetFluidEmitterCreateNullIndex(
@@ -870,6 +887,8 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetRestParticleDistance(
 extern "C" __declspec(dllexport) void* __cdecl EmitterCreate(
 	unsigned context, unsigned fluid, ...)
 	{
+	if(gFluidCreationOrderCount < sizeof(gFluidCreationOrder) - 1)
+		gFluidCreationOrder[gFluidCreationOrderCount++] = 'E';
 	++gFluidManagerCallbackSummary.emitterCreate;
 	unsigned* const args = gFluidManagerCallbackSummary.emitterCreateArguments;
 	args[0] = context;
@@ -956,6 +975,8 @@ NxSetFluidMaxParticles(unsigned count)
 extern "C" __declspec(dllexport) NxFluidParticleArrayFixture* __cdecl
 ParticleArrayAlloc(unsigned count)
 	{
+	if(gFluidCreationOrderCount < sizeof(gFluidCreationOrder) - 1)
+		gFluidCreationOrder[gFluidCreationOrderCount++] = 'P';
 	++gFluidParticleArrayAllocCalls;
 	if(gFluidParticleArrayAllocFailure)
 		return 0;

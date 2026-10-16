@@ -3625,6 +3625,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation row645 fluid-create disabled=1 enabled=1 listed=1 callbacks=1 validation=48 allocation-failures=1 exact=1'
         # Row 003649 publishes and tears down a valid fluid when FluidCreate returns null.
         'simulation row3649 backend-null published=1 arrays=1 cleanup=1 callbacks=3 exact=1'
+        # phys_fn_003503 creates descriptor emitters before consuming initial particles.
+        'simulation row3649 initialization-order order=EP expected=EP exact=1'
         'simulation fluid enabled-invalid result=0 errors=1 code=1 line=140 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=Supplied NxFluidDesc is not valid. createFluid returns NULL.'
         'simulation fluid unsupported release manager-cleared=1 errors=1 code=206 line=183 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::releaseFluid(): Feature not available!'
         'simulation fluid contact-report-set errors=1 code=206 line=377 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=NxFluid::setUserFluidContactReport(): Feature not available!'
@@ -6162,7 +6164,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2788  # adds row 003649 null backend result lifecycle
+	'5' = 2789  # adds row 003649 initialization callback ordering
 	           # adds row 000645 enabled/disabled create contract
 	           # adds the allocator-bridge setter differential
 	           # adds sphere radius setter/getter lock state and invalid-radius report rows
@@ -6231,7 +6233,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1689  # adds row 003649 null backend result lifecycle
+	'6' = 1690  # adds row 003649 initialization callback ordering
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
@@ -6276,7 +6278,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2905  # adds row 003649 null backend result lifecycle
+	'7' = 2906  # adds row 003649 initialization callback ordering
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential
 	          # includes direct row 000965 Prunable owner-query result

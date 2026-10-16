@@ -98,7 +98,10 @@ static int nxRunFailingChild(const wchar_t* pairDirectory, const wchar_t* mode,
 	if(!started)
 		return 1;
 
-	const DWORD waited = WaitForSingleObject(process.hProcess, 30000);
+	// Full phase gates run many oracle/candidate pairs before this fixture;
+	// allow the spawned process to finish under that load before treating it
+	// as a hung allocation probe.
+	const DWORD waited = WaitForSingleObject(process.hProcess, 60000);
 	DWORD exitCode = STILL_ACTIVE;
 	if(waited == WAIT_OBJECT_0)
 		GetExitCodeProcess(process.hProcess, &exitCode);
