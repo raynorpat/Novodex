@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003423",
+  "description": "Null-particle-count guard differential, mutation, restored control, and Phase 7 gate. Logs are gzip-compressed with source and compressed hashes.",
+  "artifacts": [
+    {
+      "file": "mutation-build.log.gz",
+      "source": "mutation-build.log",
+      "source_bytes": 1567,
+      "source_sha256": "5f1ec393cb016b7f1031dbb6081ebe7a32c798f395a2d228ac10486893c929ea",
+      "compressed_bytes": 685,
+      "compressed_sha256": "01c82f0666c7efdea877abae5dd9224aa64cf5b30a8045bfdb40a6f53a76c7bd"
+    },
+    {
+      "file": "mutation-differential.log.gz",
+      "source": "mutation-differential.log",
+      "source_bytes": 7211,
+      "source_sha256": "228495b1367a363895def4bd9f0362f6ef26cd0810f8df02dc19e879d364ba91",
+      "compressed_bytes": 1352,
+      "compressed_sha256": "a07834c6ad315aa671a38e684dae173d308541a97f4cb48fcb1bb0055ed76204"
+    },
+    {
+      "file": "restored-build.log.gz",
+      "source": "restored-build.log",
+      "source_bytes": 1567,
+      "source_sha256": "5f1ec393cb016b7f1031dbb6081ebe7a32c798f395a2d228ac10486893c929ea",
+      "compressed_bytes": 685,
+      "compressed_sha256": "01c82f0666c7efdea877abae5dd9224aa64cf5b30a8045bfdb40a6f53a76c7bd"
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source": "restored-differential.log",
+      "source_bytes": 7252,
+      "source_sha256": "54717af8e42267a78f6a66dc292374ab53d35a73cc0104b0ee2f21c8eecde054",
+      "compressed_bytes": 1222,
+      "compressed_sha256": "2b430d2c07adc45325ffee9e9be2fdc5ae207e23bb11d88a2c311571359b2fab"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "phase7-gate.log",
+      "source_bytes": 4579402,
+      "source_sha256": "748b6c7bdbc08de031d541d9b651b46abaa3722fef83eed64309f3354ad25b65",
+      "compressed_bytes": 370265,
+      "compressed_sha256": "b4ab4ff6a3bd2a0dce78529edb9c92116d5b7253d8e96ab1ac572e94be717044"
+    },
+    {
+      "file": "mutation-result.txt",
+      "bytes": 17,
+      "sha256": "9a7b1ef65947746a80f6ace1ccc71a5bde5e56fc17afd25a6f299a61a376b028"
+    },
+    {
+      "file": "restored-result.txt",
+      "bytes": 30,
+      "sha256": "0395bdebd4cb355b3a8b05995bfb28eb9dd907173ef464d49c14891b81bf8896"
+    }
+  ]
+}

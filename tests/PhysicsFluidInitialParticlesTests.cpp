@@ -37,6 +37,9 @@
 #ifndef NX_FLUID_CELL_ROUNDING_TEST
 #define NX_FLUID_CELL_ROUNDING_TEST 0
 #endif
+#ifndef NX_FLUID_NULL_COUNT_TEST
+#define NX_FLUID_NULL_COUNT_TEST 0
+#endif
 #if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
 #undef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 1
@@ -180,6 +183,8 @@ int wmain(int argc, wchar_t** argv)
 	const char* const testName = "NxPhysicsFluidZeroInitialParticlesTests";
 	#elif NX_FLUID_INITIAL_PARTICLE_CAPACITY_CLIP
 	const char* const testName = "NxPhysicsFluidInitialParticleCapacityClipTests";
+	#elif NX_FLUID_NULL_COUNT_TEST
+	const char* const testName = "NxPhysicsFluidNullParticleCountTests";
 	#elif NX_FLUID_ADD_PARTICLES_TEST
 	const char* const testName = "NxPhysicsFluidAddParticlesTests";
 	#elif NX_FLUID_CELL_ROUNDING_TEST
@@ -383,9 +388,17 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned existingParticleWords[46] = {};
 	setFluidPostStepParticle(0, existingParticleWords, 2);
 	#endif
+	#if NX_FLUID_NULL_COUNT_TEST
+	NxParticleData noCountData = desc.initialParticleData;
+	noCountData.numParticlesPtr = 0;
+	if(fluid)
+		nxAddFluidParticlesWithSeh(fluid, &noCountData,
+			&addParticlesException);
+	#else
 	if(fluid)
 		nxAddFluidParticlesWithSeh(fluid, &desc.initialParticleData,
 			&addParticlesException);
+	#endif
 	internal = fluid ? static_cast<unsigned char*>(
 		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(fluid) + 0x14)) : 0;
 	array = internal ? static_cast<unsigned char*>(
@@ -446,7 +459,24 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("zero-count initial-particle behavior differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#elif NX_FLUID_ADD_PARTICLES_TEST
-	#if NX_FLUID_ADD_PARTICLES_GROW_FAILURE
+	#if NX_FLUID_NULL_COUNT_TEST
+	const unsigned particleArrayCount = array
+		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
+	const bool nullCountContract = fluid && !addParticlesException &&
+		particleArrayCount == 0 && getFluidGetParticlesCalls() == 1 &&
+		getParticleArrayAllocCalls() == 1 && getParticleArrayGrowCalls() == 0;
+	printf("fluid add-particles null-count no-op=%u array-count=%u callbacks=%u allocations=%u grows=%u\n",
+		nullCountContract ? 1u : 0u, particleArrayCount,
+		getFluidGetParticlesCalls(), getParticleArrayAllocCalls(),
+		getParticleArrayGrowCalls());
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !nullCountContract)
+		return nxFail("null particle count did not leave the ParticleArray unchanged");
+	return nxReportPairIdentity(pairDirectory);
+	#elif NX_FLUID_ADD_PARTICLES_GROW_FAILURE
 	const unsigned particleArrayCount = array
 		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
 	const bool growFailureContract = fluid && addParticlesException ==
