@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "description": "Red dirty-refresh allocation-failure mutant, restored focused oracle/candidate differentials, and fresh Phase 5/6/7 gate transcripts.",
+  "artifacts": [
+    {
+      "file": "fluid-first-create-red-mutant.log.gz",
+      "source": "D:\\github\\Novodex\\build\\fluid-first-create-red-mutant.log",
+      "source_bytes": 7421,
+      "source_sha256": "f8d6df98ac7fc99d901b0fa67fb5379b44411c8cbfc2823ac5e557899077c639",
+      "compressed_bytes": 1469,
+      "compressed_sha256": "b4250ad4b5d2820c087968ce25dfc95dd635b0e8d870a7396027822ff1674d3e"
+    },
+    {
+      "file": "fluid-first-create-green-ordinal1.log.gz",
+      "source": "D:\\github\\Novodex\\build\\fluid-first-create-green-ordinal1.log",
+      "source_bytes": 7317,
+      "source_sha256": "4c0056a7daedc3f13760ab80cf711d42691c4271854511f7b2c78cd9c6aa08d4",
+      "compressed_bytes": 1267,
+      "compressed_sha256": "1ec72a3b3962ec85b4fcf86cc0c69a9a5b1622b5450cdaa3aa873e76234f337e"
+    },
+    {
+      "file": "fluid-first-create-green-ordinal2.log.gz",
+      "source": "D:\\github\\Novodex\\build\\fluid-first-create-green-ordinal2.log",
+      "source_bytes": 7401,
+      "source_sha256": "ec7a310c180bc8835551af57eb5e822a49541349019d1736ef85d3b88617c9c1",
+      "compressed_bytes": 1273,
+      "compressed_sha256": "ae30c411bcb53762f0e3815dae74c51a60d88789467bc1f6c4b5351e4e99908e"
+    },
+    {
+      "file": "fluid-first-create-phase5.log.gz",
+      "source": "D:\\github\\Novodex\\build\\fluid-first-create-phase5.log",
+      "source_bytes": 2815436,
+      "source_sha256": "943bbe29cc81c24246a01eac06b2123046680f18ac88cf88146b6032ae4554a1",
+      "compressed_bytes": 208449,
+      "compressed_sha256": "288e0f9a3d81f71981e412ae3aff6478d77da5a607ad6958e5ef80f6ae9b9113"
+    },
+    {
+      "file": "fluid-first-create-phase6.log.gz",
+      "source": "D:\\github\\Novodex\\build\\fluid-first-create-phase6.log",
+      "source_bytes": 3092325,
+      "source_sha256": "4678d440017f21e21d00d8e45a290be7ae8b32d9e5e3dbaaec7846397d39789d",
+      "compressed_bytes": 253000,
+      "compressed_sha256": "3652fe6447c6faf16c93ce1069c5968d1db81770f07aeb37d9570f2bbb0a62c1"
+    },
+    {
+      "file": "fluid-first-create-phase7-final.log.gz",
+      "source": "D:\\github\\Novodex\\build\\fluid-first-create-phase7-final.log",
+      "source_bytes": 4602585,
+      "source_sha256": "263140a44c7b8a6371bf3a2d74d759e8d0961b28bd64e9b217d990b0d8a7e62b",
+      "compressed_bytes": 372068,
+      "compressed_sha256": "218d88f16b42e9f82b7b4f4044b7873a85a0b4560126c3ec223701a2ca80ee40"
+    }
+  ],
+  "row": "phys_fn_003649",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_mutant_sha256": "6e585aaba287290134da2763d0e5d31d645c9c58c38af5457a746cd0f48b4941",
+  "candidate_restored_sha256": "f7198a3de652c5c6d0ea11831c4b8d44aee6eafeabd581881ea805cd7bab20a8",
+  "gate_coverage": {
+    "phase5": "2806/2806",
+    "phase6": "1697/1697",
+    "phase7": "2930/2930"
+  }
+}

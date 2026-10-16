@@ -3806,9 +3806,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid initial-particles stride-align count=2 pos=1 vel=1 life=1'
     )
     'NxPhysicsFluidManagerGrowthFailureTests' = @(
+        'fluid first-create oom dirty-refresh caught=1 exception=c0000005 allocations=1 dirty=1 returned=0'
         'fluid manager-array-growth oom ordinal=1 caught=1 exception=c0000005 allocations=1 internal=2 public=2 returned=0'
     )
     'NxPhysicsFluidManagerGrowthSecondFailureTests' = @(
+        'fluid first-create oom dirty-refresh caught=1 exception=c0000005 allocations=1 dirty=1 returned=0'
         'fluid manager-array-growth oom ordinal=2 caught=1 exception=c0000005 allocations=1 internal=3 public=2 returned=0'
     )
     'NxPhysicsCcdSimulationTests' = @(
@@ -6323,7 +6325,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2928  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
+	'7' = 2930  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's first-fluid allocation/dirty-refresh failure case, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization

@@ -128,6 +128,34 @@ class NxFluidGrowthFailureAllocator : public NxUserAllocator
 	unsigned mMatchingCount;
 	};
 
+class NxFluidSingleFailureAllocator : public NxUserAllocator
+	{
+	public:
+	NxFluidSingleFailureAllocator(NxUserAllocator& inner, size_t failSize)
+		: mInner(inner), mFailSize(failSize), mFailCount(0) {}
+	void* mallocDEBUG(size_t size, const char* file, int line) override
+		{ return fail(size) ? 0 : mInner.mallocDEBUG(size, file, line); }
+	void* malloc(size_t size) override
+		{ return fail(size) ? 0 : mInner.malloc(size); }
+	void* realloc(void* memory, size_t size) override
+		{ return mInner.realloc(memory, size); }
+	void free(void* memory) override { mInner.free(memory); }
+	unsigned failCount() const { return mFailCount; }
+	private:
+	bool fail(size_t size)
+		{
+		if(size == mFailSize && !mFailCount)
+			{
+			++mFailCount;
+			return true;
+			}
+		return false;
+		}
+	NxUserAllocator& mInner;
+	size_t mFailSize;
+	unsigned mFailCount;
+	};
+
 static NxFluid* nxCreateFluidWithSeh(NxScene* scene, const NxFluidDesc* desc,
 	unsigned* exceptionCode)
 	{
@@ -177,6 +205,47 @@ int wmain(int argc, wchar_t** argv)
 		LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
 	if(!fluidModel)
 		return nxFail("staged FluidModel callback fixture failed to load");
+
+	// The manager starts with its static-collision refresh dirty. The shipped
+	// constructor continues into that refresh after a failed 0x84-byte fluid
+	// allocation and faults when it reads the backend handle through the null
+	// fluid. Keep this first-create case isolated from the growth OOM below.
+	NxSceneDesc firstFailureSceneDesc;
+	firstFailureSceneDesc.setToDefault();
+	NxScene* const firstFailureScene = sdk->createScene(firstFailureSceneDesc);
+	if(!firstFailureScene)
+		return nxFail("first-fluid allocation-failure scene creation failed");
+	NxUserAllocator** const firstFailureAllocatorSlot = reinterpret_cast<NxUserAllocator**>(
+		GetProcAddress(GetModuleHandleW(L"NxFoundation.dll"),
+			"?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A"));
+	if(!firstFailureAllocatorSlot || !*firstFailureAllocatorSlot)
+		return nxFail("Foundation allocator hook is missing");
+	NxFluidDesc firstFailureDesc;
+	firstFailureDesc.setToDefault();
+	NxUserAllocator* const firstFailureSavedAllocator = *firstFailureAllocatorSlot;
+	NxFluidSingleFailureAllocator firstFailureAllocator(*firstFailureSavedAllocator, 0x84);
+	*firstFailureAllocatorSlot = &firstFailureAllocator;
+	unsigned firstFailureException = 0;
+	NxFluid* const firstFailureResult = nxCreateFluidWithSeh(firstFailureScene,
+		&firstFailureDesc, &firstFailureException);
+	*firstFailureAllocatorSlot = firstFailureSavedAllocator;
+	unsigned char* const firstFailureSceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(firstFailureScene) + 0x24);
+	unsigned char* const firstFailureManager = firstFailureSceneInternal
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+			firstFailureSceneInternal + 0x61c)) : 0;
+	const bool firstFluidAllocationFailureExact = !firstFailureResult &&
+		firstFailureException == EXCEPTION_ACCESS_VIOLATION &&
+		firstFailureAllocator.failCount() == 1 && firstFailureManager &&
+		firstFailureManager[0x29] == 1;
+	printf("fluid first-create oom dirty-refresh caught=%u exception=%08x allocations=%u dirty=%u returned=%u\n",
+		firstFailureException == EXCEPTION_ACCESS_VIOLATION ? 1u : 0u,
+		firstFailureException, firstFailureAllocator.failCount(),
+		firstFailureManager ? firstFailureManager[0x29] : 0,
+		firstFailureResult ? 1u : 0u);
+	if(!firstFluidAllocationFailureExact)
+		return nxFail("first-fluid allocation failure did not match the dirty-refresh oracle path");
+	sdk->releaseScene(*firstFailureScene);
 
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();

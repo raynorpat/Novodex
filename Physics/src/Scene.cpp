@@ -2875,7 +2875,22 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 	unsigned char* const fluid = static_cast<unsigned char*>(
 		nxFoundationSDKAllocator->malloc(0x84, NX_MEMORY_PERSISTENT));
 	if(!fluid)
+		{
+		// phys_fn_003649 leaves v20 null after this allocation fails, then still
+		// enters its pending initial collision refresh. The backend handle load
+		// at v20+0x80 faults before FluidGetCellSize is called. Preserve that
+		// observable failure only while the refresh is pending and its callback
+		// path is available; later allocation failures return normally because
+		// the manager's initial refresh has already completed.
+		if(managerBytes[0x29] && gNxFluidGetCellSizeCallback &&
+			gNxFluidManagerGetStaticCollisionCallback)
+			{
+			volatile void* const missingFluidBackend =
+				*reinterpret_cast<void* volatile const*>(0x80);
+			(void)missingFluidBackend;
+			}
 		return 0;
+		}
 	memset(fluid, 0, 0x84);
 	*reinterpret_cast<void***>(fluid) = gNxFluidVtable;
 	*reinterpret_cast<unsigned*>(fluid + 0x5c) = 0x7f7fffff;
