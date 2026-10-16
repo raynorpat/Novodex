@@ -899,6 +899,157 @@ static bool nxResolveCandidateFluidEmitterSymbol(HMODULE module, const char* exp
 	return false;
 	}
 
+struct NxFluidLicenseRegistryOverride
+	{
+	NxFluidLicenseRegistryOverride()
+		: root(0), product(0), rootCreated(false), overridden(false), ready(false)
+		{
+	rootPath[0] = 0;
+	sprintf_s(rootPath, sizeof(rootPath),
+		"Software\\NxPhysicsFluidLicense-%lu-%lu",
+		static_cast<unsigned long>(GetCurrentProcessId()),
+		static_cast<unsigned long>(GetTickCount()));
+	DWORD disposition = 0;
+	if(RegCreateKeyExA(HKEY_CURRENT_USER, rootPath, 0, 0, 0, KEY_ALL_ACCESS,
+		0, &root, &disposition) != ERROR_SUCCESS)
+		return;
+	rootCreated = disposition == REG_CREATED_NEW_KEY;
+	if(!rootCreated || RegOverridePredefKey(HKEY_LOCAL_MACHINE, root) != ERROR_SUCCESS)
+		return;
+	overridden = true;
+	if(RegCreateKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\NovodeXSDK212", 0,
+		0, 0, KEY_ALL_ACCESS, 0, &product, &disposition) != ERROR_SUCCESS)
+		return;
+	ready = true;
+	}
+	~NxFluidLicenseRegistryOverride()
+		{
+	if(product)
+		RegCloseKey(product);
+	if(overridden)
+		RegOverridePredefKey(HKEY_LOCAL_MACHINE, 0);
+	if(root)
+		RegCloseKey(root);
+	if(rootCreated && rootPath[0])
+		{
+	char productPath[192];
+	char softwarePath[160];
+	sprintf_s(productPath, sizeof(productPath), "%s\\SOFTWARE\\NovodeXSDK212", rootPath);
+	sprintf_s(softwarePath, sizeof(softwarePath), "%s\\SOFTWARE", rootPath);
+	RegDeleteKeyA(HKEY_CURRENT_USER, productPath);
+	RegDeleteKeyA(HKEY_CURRENT_USER, softwarePath);
+	RegDeleteKeyA(HKEY_CURRENT_USER, rootPath);
+		}
+	}
+	bool set(const char* value, DWORD type)
+		{
+	if(!product)
+		return false;
+	RegDeleteValueA(product, "FluidKey");
+	const DWORD size = static_cast<DWORD>(strlen(value) + 1);
+	return RegSetValueExA(product, "FluidKey", 0, type,
+		reinterpret_cast<const BYTE*>(value), size) == ERROR_SUCCESS;
+	}
+	bool clear()
+		{
+	return product && (RegDeleteValueA(product, "FluidKey") == ERROR_SUCCESS
+			|| GetLastError() == ERROR_FILE_NOT_FOUND);
+		}
+	bool removeProduct()
+		{
+	if(product)
+		{
+	RegCloseKey(product);
+	product = 0;
+		}
+	return RegDeleteKeyA(HKEY_LOCAL_MACHINE,
+		"SOFTWARE\\NovodeXSDK212") == ERROR_SUCCESS;
+		}
+	HKEY root;
+	HKEY product;
+	bool rootCreated;
+	bool overridden;
+	bool ready;
+	char rootPath[128];
+	};
+
+static void nxFluidLicenseDigestByte(unsigned& digest, unsigned char value)
+	{
+	digest = (digest ^ value) * 16777619u;
+	}
+
+static unsigned nxRunFluidLicenseResolver(unsigned char* image,
+	HMODULE candidatePhysics)
+	{
+	void* candidateAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"?nxFluidResolveLicensedFeatureFlags@@YAIXZ", &candidateAddress))
+		{
+		fprintf(stderr, "FAIL candidate fluid license resolver could not be resolved from its map\n");
+		return 1;
+		}
+	typedef unsigned (__cdecl *FluidLicenseResolver)();
+	FluidLicenseResolver oracleResolver =
+		reinterpret_cast<FluidLicenseResolver>(image + 0x89a00);
+	FluidLicenseResolver candidateResolver =
+		reinterpret_cast<FluidLicenseResolver>(candidateAddress);
+	NxFluidLicenseRegistryOverride registry;
+	if(!registry.ready)
+		{
+		fprintf(stderr, "FAIL isolated fluid license registry setup failed\n");
+		return 1;
+		}
+	struct Case { const char* value; DWORD type; unsigned expected; bool missing; bool missingKey; };
+	static const Case cases[] = {
+		{ "a-381-:", REG_SZ, 2, false, false },
+		{ "a-465-:", REG_SZ, 1, false, false },
+		{ "a-804-:", REG_SZ, 3, false, false },
+		{ "a-999-:", REG_SZ, 0, false, false },
+		{ "b-465-:", REG_SZ, 0, false, false },
+		{ "aa-465-:", REG_SZ, 0, false, false },
+		{ "a-465x-:", REG_SZ, 1, false, false },
+		{ "a-465-:-ignored", REG_SZ, 1, false, false },
+		{ "a-465-:", REG_BINARY, 0, false, false },
+		{ 0, REG_SZ, 0, true, false },
+		{ 0, REG_SZ, 0, false, true }
+		};
+	unsigned inputDigest = 2166136261u;
+	unsigned oracleDigest = 2166136261u;
+	unsigned candidateDigest = 2166136261u;
+	unsigned mismatches = 0;
+	for(unsigned i = 0; i != sizeof(cases) / sizeof(cases[0]); ++i)
+		{
+		const Case& test = cases[i];
+		bool configured = test.missingKey ? registry.removeProduct()
+			: (test.missing ? registry.clear() : registry.set(test.value, test.type));
+		if(!configured)
+			{
+			++mismatches;
+			continue;
+			}
+		nxFluidLicenseDigestByte(inputDigest, static_cast<unsigned char>(test.type));
+		nxFluidLicenseDigestByte(inputDigest, test.missing ? 0 : 1);
+		nxFluidLicenseDigestByte(inputDigest, test.missingKey ? 1 : 0);
+		if(test.value)
+			for(const unsigned char* p = reinterpret_cast<const unsigned char*>(test.value); *p; ++p)
+				nxFluidLicenseDigestByte(inputDigest, *p);
+		const unsigned oracleValue = oracleResolver();
+		const unsigned candidateValue = candidateResolver();
+		for(unsigned byte = 0; byte != 4; ++byte)
+			{
+			nxFluidLicenseDigestByte(oracleDigest,
+				static_cast<unsigned char>(oracleValue >> (byte * 8)));
+			nxFluidLicenseDigestByte(candidateDigest,
+				static_cast<unsigned char>(candidateValue >> (byte * 8)));
+			}
+		if(oracleValue != test.expected || candidateValue != oracleValue)
+			++mismatches;
+		}
+	printf("fluid license resolver cases=11 input_digest=%08x oracle=%08x candidate=%08x mismatches=%u\n",
+		inputDigest, oracleDigest, candidateDigest, mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunFrictionPatchAssignment(void* oracleAddress,
 	void* candidateAddress)
 	{
@@ -6006,6 +6157,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	gFailures += nxRunFluidEmitterRecordConstructor(image, candidatePhysics);
 	gFailures += nxRunFluidEmitterRecordDestructor(image, candidatePhysics);
+	gFailures += nxRunFluidLicenseResolver(image, candidatePhysics);
 	void* candidateFrictionPatchAssignAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"??4NxFrictionPatch@@QAEAAV0@ABV0@@Z", &candidateFrictionPatchAssignAddress))

@@ -36,7 +36,7 @@ COLLISION_ORACLE_OUTPUT_FIELDS = frozenset((
     "name", "index", "checks", "oracle", "oracle_contacts", "oracle_stream",
     "oracle_true", "oracle_frees"))
 FLUID_ORACLE_CONTEXT_FIELDS = frozenset((
-    "cases", "records", "buckets", "cells", "indices", "fluids", "emitters",
+    "cases", "input_digest", "records", "buckets", "cells", "indices", "fluids", "emitters",
     "live-fluids"))
 
 

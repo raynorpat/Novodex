@@ -68163,12 +68163,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1367",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12565",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA confirms the 431-byte stdcall-free helper reads the FluidKey REG_SZ, decodes its third token with 0x9b-byte arithmetic, and maps product codes 381/465/804 to feature masks 2/1/3; caller is the FluidManager constructor at 0x10089f9d.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares oracle RVA 0x89a00 with nxFluidResolveLicensedFeatureFlags using an isolated registry across 11 inputs; input digest 04893d50 and oracle/candidate result digest 8d75d855 match. A zero-return candidate mutation is caught with mismatches=5. See evidence/phase7-fluid-license-resolver-003626.md.",
       "notes": ""
     },
     {

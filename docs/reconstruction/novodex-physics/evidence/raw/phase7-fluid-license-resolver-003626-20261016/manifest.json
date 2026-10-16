@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003626",
+  "rva": "0x00089a00",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "25581ea651da8b588060309d32efd9cfaa9f0f8e588ddf425a59da67e37c1f93",
+  "fixture_source_sha256": "0b157f58b066ffe3a5dbd53882f0f179028e56bcfea270a2acc8705a4190603f",
+  "oracle_proof_baseline_sha256": "52361157979a7568cab2ca7f98a13920de55cda2a0e68ea67ff1332c41ebfb88",
+  "restored_control": {
+    "cases": 11,
+    "input_digest": "04893d50",
+    "oracle_digest": "8d75d855",
+    "candidate_digest": "8d75d855",
+    "mismatches": 0
+  },
+  "mutation": {
+    "candidate_mutation": "nxFluidResolveLicensedFeatureFlags returns zero",
+    "cases": 11,
+    "input_digest": "04893d50",
+    "oracle_digest": "8d75d855",
+    "candidate_digest": "9bcfe135",
+    "mismatches": 5,
+    "exit": 1
+  },
+  "gates": {
+    "phase5": "pass",
+    "phase5_assertions": "2799/2799",
+    "phase7": "pass",
+    "phase7_assertions": "2921/2921"
+  },
+  "compressed_logs": [
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "build/fluid-license-phase5-gate.log",
+      "sha256": "c4374752c810c446c688847fe8a2896eaaf296cfc43a7d1d965f5ce086fce0a4",
+      "uncompressed_sha256": "b6daebb9353b9d52c2cd1bf2eae5aeff42474f44d94eeafd7cab2c0498a37056",
+      "uncompressed_bytes": 2808004
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "build/fluid-license-phase7-gate.log",
+      "sha256": "771c103e0e812a861071aade728941ea112c7a6034cf9d3e67b92fe04968b0c6",
+      "uncompressed_sha256": "4df0dd551cf4b99bda3b74e6bb70dec3fa604773feaf90b8b9ca1a2cecb57a52",
+      "uncompressed_bytes": 4597348
+    },
+    {
+      "file": "oracle-candidate-restored.stdout.txt.gz",
+      "source": "build/oracle-proofs/NxPhysicsFluidEmitterAbiTests.stdout.txt",
+      "sha256": "aa649d0f7fadee2136f8f864f978759ef6338ee9d0e6e6f799b7ef2b70566cee",
+      "uncompressed_sha256": "ca2048fb53a541e61ca2b3f44496a0d3c665fd077797eb62372486948cbd79d2",
+      "uncompressed_bytes": 9962
+    },
+    {
+      "file": "oracle-candidate-restored.stderr.txt.gz",
+      "source": "build/oracle-proofs/NxPhysicsFluidEmitterAbiTests.stderr.txt",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uncompressed_bytes": 0
+    },
+    {
+      "file": "zero-return-mutant.stdout.txt.gz",
+      "source": "build/oracle-proofs/NxPhysicsFluidEmitterAbiTests.mutant.stdout.txt",
+      "sha256": "c1a9481694e6a4c2df94a2ece6f074297f1e725de99eff81855776e1512ee781",
+      "uncompressed_sha256": "7143ac5aded8d132e7288f72afa92cbe73309e028fee569c60428bfb445c3c68",
+      "uncompressed_bytes": 9968
+    },
+    {
+      "file": "zero-return-mutant.stderr.txt.gz",
+      "source": "build/oracle-proofs/NxPhysicsFluidEmitterAbiTests.mutant.stderr.txt",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uncompressed_bytes": 0
+    }
+  ]
+}

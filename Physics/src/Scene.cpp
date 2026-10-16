@@ -1015,8 +1015,7 @@ static bool nxFluidManagerResolveModel()
 	return gNxFluidModelInitialized;
 	}
 
-// phys_fn_003641's constructor checks the installed FluidKey and maps the
-// decoded product code to the two licensed NxFluid feature bits.
+// phys_fn_003626 decodes FluidKey and maps its product code to NxFluid flags.
 static unsigned nxFluidResolveLicensedFeatureFlags()
 	{
 	HKEY key = 0;

@@ -11117,3 +11117,7 @@ Phase 7 Scene fluid-creation row `phys_fn_000645` is now mutation-falsified thro
 
 Phase 7 continuation: `phys_fn_003607` (fluid emitter visualization) is mutation-falsified through the registered direct oracle/candidate differential in `NxPhysicsFluidEmitterAbiTests`. The no-op candidate emits no primitives in the unattached, matrix-frame, and quaternion-frame cases and is rejected with three aggregate mismatches; the restored control matches all three cases with balanced stack. See [fluid emitter visualization](phase7-fluid-emitter-visualize-003607.md).
 Mutation result for phys_fn_003607: the immediate-return candidate emitted no lines, bases, or circles; all three case checks failed and NxPhysicsFluidEmitterAbiTests reported mismatches=3. The restored unattached digest is c284be3c and both frame-case digests match their oracle streams.
+
+## Phase 7 row 003626 — FluidKey feature resolver (2026-10-16)
+
+`phys_fn_003626` is mapped to `nxFluidResolveLicensedFeatureFlags` in `Physics/src/Scene.cpp`. The direct oracle/candidate fixture covers eleven registry inputs and matches at `input_digest=04893d50`, `oracle=candidate=8d75d855`. Returning zero from the candidate helper is caught with `mismatches=5`; restored control is exact. See `evidence/phase7-fluid-license-resolver-003626.md` and the raw gate/mutation transcripts in `evidence/raw/phase7-fluid-license-resolver-003626-20261016/`.

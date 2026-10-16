@@ -1,0 +1,7 @@
+# Phase 7 row 003626: FluidKey feature resolver
+
+IDA decompilation at RVA `0x00089a00` identifies an argument-free resolver used by the FluidManager constructor. It opens `HKLM\SOFTWARE\NovodeXSDK212`, accepts a nonempty `REG_SZ` `FluidKey`, splits the first three hyphen-delimited tokens, converts the third token bytewise with `0x9b - byte`, and compares it with the first. Product codes 381, 465, and 804 return feature masks 2, 1, and 3; all other safe inputs return zero. The sole direct caller is at `0x10089f9d`.
+
+`NxPhysicsFluidEmitterAbiTests` directly invokes the pinned oracle at RVA `0x89a00` and the candidate map symbol `nxFluidResolveLicensedFeatureFlags`. Its registry override lives under a unique HKCU key and redirects HKLM only in the test process. Eleven cases cover each licensed result, unknown code, bad token, unequal token lengths, `atol`-style numeric suffix, ignored fourth token, wrong registry type, missing value, and missing product key. The oracle and candidate match all cases (`input_digest=04893d50`, result digest `8d75d855`, `mismatches=0`).
+
+Replacing the candidate helper with a zero return is rejected on five cases (`mismatches=5`); the three licensed mappings and two additional validly tokenized inputs differ. Restoring and rebuilding the source returns the exact oracle/candidate digest. The fixture is registered in Phase 5 and Phase 7 and contributes one assertion to each gate. Public headers are unchanged.
