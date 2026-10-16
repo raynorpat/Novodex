@@ -1,0 +1,75 @@
+{
+  "purpose": "Licensed public NxImplicitMesh::setSurfaceRadius mutation proof and registered Phase 5/6/7 gates for phys_fn_003878.",
+  "date": "2026-10-16",
+  "rva": "0x0008d310",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "aaba6f00dd3d66e88d11df6f2d82e88b1eff991f69c81f65e5587fd4c6846f9d",
+  "mutant_candidate_sha256": "f2f708055c6a42c9d01583a2314df2af1211d4dc5274ac1524e72cb921a1d901",
+  "mutation_result": "Removed the NpImplicitMesh::setSurfaceRadius backend setter. The candidate reports row=003878 matched=0, callbacks=0, and reentry=0; oracle_exit=0, candidate_exit=1, stdout_delta=66.",
+  "restored_result": "Oracle and candidate both exit 0 with stdout_delta=0 and exact stderr.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2816 floor=2816",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1705 floor=1705",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2946 floor=2946"
+  },
+  "public_headers": "verify_public_headers.py passed for both Physics header roots; 80 files each.",
+  "tooling_tests": "Ran 816 tests; OK.",
+  "inventory_sha256": "b67005276fe534013fadd4c5636ee094a80b7b1200257ab425de3e2d2538ad90",
+  "phase7_closure_sha256": "196a8d816059e5deeaf3d68eb9f526e15f1e02807982015ae7c647159887b9d8",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "287247c369bbe40c5d773f186c90cff94edf4d5d1acc5747ce3c7643d041f0fa",
+      "uncompressed_sha256": "cd889e1452a8c293173d3776e626da10be2f847474ab83652da6e4b2d662cfbb",
+      "compressed_bytes": 55906,
+      "uncompressed_bytes": 850324
+    },
+    "no-op-mutant-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "no-op-mutant-differential.log.gz": {
+      "sha256": "6109c0d803d333af37b8b5c81ec6c4984f7007f8408810e2be0de04d913d5d81",
+      "uncompressed_sha256": "6b25e157fe09c0e3d7c3640c5ca0a7d979db358e2dfead2026d9af3bb7c5bdca",
+      "compressed_bytes": 54977,
+      "uncompressed_bytes": 844175
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "058d5238b0d8aa6e8c9532f9a912ae66f52eb80b5290aaeabd3794bff47e1690",
+      "uncompressed_sha256": "0fef0f0a756841927cdb61ced67a85bb60d8805847f6b9d4b36b3d2a7b701669",
+      "compressed_bytes": 209900,
+      "uncompressed_bytes": 2845335
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "fbd0a334a6231eeae354e4673cbf49601de5f42946b4eb557acb0ab270796cc0",
+      "uncompressed_sha256": "ed33759f02be3ae93aa773a15041e72f2d9ba9cd3c090c1e92a695730dd564c4",
+      "compressed_bytes": 254201,
+      "uncompressed_bytes": 3107751
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "11a687a8861931684f4bfde30c62f001b3bf5de3860b0c4f8161bf8d90632ab8",
+      "uncompressed_sha256": "5fbd32978304ade52ea31d1066e397cf86e63b4a01f5423257055742eda38f1b",
+      "compressed_bytes": 374004,
+      "uncompressed_bytes": 4648543
+    },
+    "restored-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "restored-differential.log.gz": {
+      "sha256": "7454bc02bb51f3df41112d62784f4aa6580a44b502b004543d99a34ec6cbc050",
+      "uncompressed_sha256": "1ecd66dca2dc89b222b331d497c7f4ab3a3507d350ad7b01aa7604c1b572220c",
+      "compressed_bytes": 55908,
+      "uncompressed_bytes": 850324
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "ec9175cec32d94d7df2d08afba69f61bb0804f6e0b43e2498b5c531e1e5937a8",
+      "uncompressed_sha256": "13927f9d19cc5cbafd72ce1b2f9653d15e1497abdbbb7d5fba0fe64c865a6d1e",
+      "compressed_bytes": 18986,
+      "uncompressed_bytes": 125875
+    }
+  }
+}

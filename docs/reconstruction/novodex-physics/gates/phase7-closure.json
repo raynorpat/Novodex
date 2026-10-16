@@ -20,10 +20,10 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 276,
+    "differential_falsified": 277,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 114,
-    "deferred_not_reconstructed_in_phase": 93,
+    "deferred_not_reconstructed_in_phase": 92,
     "deferred_reconstructed_not_falsified": 76
   },
   "closed": [
@@ -353,7 +353,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "For the isolated legacy fixture, change only runForâ€™s positive simulate argument from 0.02f to 0.021f in a temporary source mutation. The final moving-body observation changes from position 3cf5c28f to 3cfdf3b6; both processes exit zero with exact stderr. Restoring and rebuilding returns stdout_delta=0.",
+        "mutation": "For the isolated legacy fixture, change only runFor\u00e2\u20ac\u2122s positive simulate argument from 0.02f to 0.021f in a temporary source mutation. The final moving-body observation changes from position 3cf5c28f to 3cfdf3b6; both processes exit zero with exact stderr. Restoring and rebuilding returns stdout_delta=0.",
         "detected": "stdout_delta=2"
       },
       "note": "NpScene::runFor is mutation-falsified by observing the moving actor after the legacy timing/simulation/fetch sequence. Evidence: evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md."
@@ -1421,7 +1421,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000610â€™s call to Row000726Fixture::row000726(timestep, inverseTimestep) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6718. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000610\u00e2\u20ac\u2122s call to Row000726Fixture::row000726(timestep, inverseTimestep) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; candidate_exit=1, oracle_exit=0, stderr_exact=False, stdout_delta=6718. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
         "detected": "stdout_delta=6718"
       }
     },
@@ -1441,7 +1441,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000611â€™s row000708 copy-back dispatchâ€”the code corresponding to the 000613 continuationâ€”with a no-op, rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=6740. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
+        "mutation": "In a fresh git archive of implementation commit f3a6cc08, replaced row000611\u00e2\u20ac\u2122s row000708 copy-back dispatch\u00e2\u20ac\u201dthe code corresponding to the 000613 continuation\u00e2\u20ac\u201dwith a no-op, rebuilt and ran the registered staged-pair NxPhysicsSimulationTests differential. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=6740. The restored archive matched exactly (both exits=0, stderr_exact=True, stdout_delta=0).",
         "detected": "stdout_delta=6740"
       }
     },
@@ -1575,7 +1575,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "In a fresh git archive of implementation commit fb197743, replaced NxSceneInternal::row000636â€™s call to Row000732Fixture::row000732(timestep, 0.0f) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=7062. Restoring the exact source returned to both exits=0, stderr_exact=True, stdout_delta=0.",
+        "mutation": "In a fresh git archive of implementation commit fb197743, replaced NxSceneInternal::row000636\u00e2\u20ac\u2122s call to Row000732Fixture::row000732(timestep, 0.0f) with a no-op, rebuilt NxPhysics.dll, and ran the registered staged-pair NxPhysicsSimulationTests differential against the pinned oracle. The gate rejected the mutant; both exits=0, stderr_exact=True, stdout_delta=7062. Restoring the exact source returned to both exits=0, stderr_exact=True, stdout_delta=0.",
         "detected": "stdout_delta=7062"
       }
     },
@@ -1876,7 +1876,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSceneRaycastTests",
       "falsification": {
-        "mutation": "Suppressed nxRaycastAllShapesLoop dispatch in NxSceneInternal::raycastAllShapes(), preserving the image rowâ€™s return-zero contract. The registered Phase 7 staged-pair raycast differential rejected the mutant with oracle_exit=0, candidate_exit=0, stdout_delta=5140, and stderr_exact=True. Restoring the dispatch produced stdout_delta=0 with exact stderr.",
+        "mutation": "Suppressed nxRaycastAllShapesLoop dispatch in NxSceneInternal::raycastAllShapes(), preserving the image row\u00e2\u20ac\u2122s return-zero contract. The registered Phase 7 staged-pair raycast differential rejected the mutant with oracle_exit=0, candidate_exit=0, stdout_delta=5140, and stderr_exact=True. Restoring the dispatch produced stdout_delta=0 with exact stderr.",
         "detected": "stdout_delta=5140"
       },
       "note": "See evidence/phase7-raycast-all-shapes-public-000694.md."
@@ -2219,7 +2219,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSceneVisualizeTests",
       "falsification": {
-        "mutation": "Replaced cpmActorPairResetStream0863â€™s row 002354 forward with a no-op. The live contact fixture then retained stale contact-stream records and rendered 78 lines instead of the oracleâ€™s 3.",
+        "mutation": "Replaced cpmActorPairResetStream0863\u00e2\u20ac\u2122s row 002354 forward with a no-op. The live contact fixture then retained stale contact-stream records and rendered 78 lines instead of the oracle\u00e2\u20ac\u2122s 3.",
         "detected": "stdout_delta=87"
       },
       "note": "The registered paired fixture reaches the per-step NxPairNode body-record refresh and checks contact visualization after 60 fetched steps. Oracle/restored controls render three lines; the no-op reset mutation renders 78 and is rejected. See evidence/phase7-scene-contact-stream-reset-000863.md."
@@ -2230,7 +2230,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "Inserted an immediate return at the start of NxActorPair::row000865, omitting the contact-anchor count and both bodiesâ€™ local-anchor stores.",
+        "mutation": "Inserted an immediate return at the start of NxActorPair::row000865, omitting the contact-anchor count and both bodies\u00e2\u20ac\u2122 local-anchor stores.",
         "detected": "stdout_delta=120"
       },
       "note": "The registered public-SDK simulation target exercises persistent plane/sphere and box/plane contact, a dynamic sphere pair, and tangential friction. The row no-op mutation is rejected with both exits zero and exact stderr; restored control is exact. See evidence/phase7-contact-anchor-store-000865.md."
@@ -4157,6 +4157,17 @@
       "note": "Public NxImplicitMesh::setMeshData lock-taking wrapper at RVA 0x0008d230; see evidence/phase7-implicit-mesh-set-mesh-data-003663.md."
     },
     {
+      "id": "phys_fn_003878",
+      "rva": "0x0008d310",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, removed nxImplicitMeshSetSurfaceRadius from NpImplicitMesh::setSurfaceRadius, rebuilt NxPhysics.dll and NxPhysicsSimulationTests, and ran the staged-pair differential. The candidate reports row=003878 matched=0, setter callbacks=0 and reentry=0; oracle_exit=0, candidate_exit=1, stdout_delta=66. Mutant candidate SHA-256: f2f708055c6a42c9d01583a2314df2af1211d4dc5274ac1524e72cb921a1d901.",
+        "detected": "stdout_delta=66"
+      },
+      "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; the row marker reports matched=1. Restored candidate SHA-256: aaba6f00dd3d66e88d11df6f2d82e88b1eff991f69c81f65e5587fd4c6846f9d. See evidence/phase7-implicit-mesh-set-surface-radius-003878.md and evidence/raw/phase7-implicit-mesh-set-radius-003878-20261016/."
+    },
+    {
       "id": "phys_fn_004862",
       "rva": "0x000b52d0",
       "proof": "differential_falsified",
@@ -5439,14 +5450,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003878",
-      "rva": "0x0008d310",
-      "size": 164,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_003880",

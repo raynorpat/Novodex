@@ -11139,3 +11139,5 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 `phys_fn_003497` Fluid constructor default mutation detection: setting `fluid+0x74` to one is rejected by the registered `NxPhysicsSimulationTests` staged-pair differential (`stdout_delta=2`); restored seven-fluid control is exact. See `phase7-fluid-constructor-003497.md` and its raw logs.
 
 `phys_fn_003704` public fluid surface-mesh creation mutation detection: the registered licensed API differential rejects a null-return wrapper mutant (`candidate_exit=1`, `stdout_delta=77`); the restored oracle/candidate run is exact. See `phase7-fluid-create-surface-mesh-003704.md`.
+
+`phys_fn_003878` public implicit-mesh surface-radius setter mutation detection: the licensed API differential rejects removing the backend setter (`candidate_exit=1`, `stdout_delta=66`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-set-surface-radius-003878.md`.

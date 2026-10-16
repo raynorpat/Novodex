@@ -5763,6 +5763,11 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors == 0 &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshReentryAttempts == 1 &&
 		reentryErrors == 1;
+	printf("simulation implicit-mesh set-surface-radius row=003878 matched=%u calls=%u reentry=%u errors=%u\n",
+		licensedSurfaceMeshPropertiesMatch && setSurfaceRadius == 0.05f ? 1u : 0u,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshReentryAttempts,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
 	}
 	if(licensedSurfaceMeshFluid)
 		licensedSurfaceMeshFluid->releaseSurfaceMesh();
