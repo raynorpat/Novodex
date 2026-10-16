@@ -1905,6 +1905,45 @@ extern "C" void* __cdecl nxNpFluidEmitterStoreGlobalPose(void* internal);
 extern "C" void __cdecl nxNpFluidEmitterInitializeMetadata(void* internal,
 	void* wrapper, void* userData, const char* name, void* lockSource);
 
+// phys_fn_003609 (0x00089290) initializes the emitter's public metadata and
+// backend state after the internal record and NpFluidEmitter wrapper exist.
+// Keep this separate from phys_fn_003501 so the callback, frame, flags, and
+// pose-store sequence follows the oracle's internal initializer boundary.
+static void nxFluidEmitterInitialize(void* internal, void* wrapper,
+	const NxFluidEmitterDesc& desc, void* context, void* backendFluid,
+	void* sceneLockSource)
+	{
+	unsigned char* const internalBytes = static_cast<unsigned char*>(internal);
+	const unsigned* const words = reinterpret_cast<const unsigned*>(&desc);
+	nxNpFluidEmitterInitializeMetadata(internal, wrapper, desc.userData,
+		desc.name, sceneLockSource);
+	NxVec3 actorPosition;
+	actorPosition.set(*reinterpret_cast<const float*>(words + 18),
+		*reinterpret_cast<const float*>(words + 19),
+		*reinterpret_cast<const float*>(words + 20));
+	const float restParticleDistance = gNxFluidGetRestParticleDistanceCallback(
+		context, backendFluid,
+		*reinterpret_cast<const float*>(words + 16),
+		*reinterpret_cast<const float*>(words + 17), actorPosition,
+		words[21], words[23], words[22], words[14], words[24],
+		words[25] & 0x10, words[25] & 8, words[25] & 4,
+		words[12] != 0, words[15] & 2, words[13] & 2);
+	*reinterpret_cast<unsigned*>(internalBytes + 8) =
+		reinterpret_cast<unsigned>(gNxFluidEmitterCreateCallback(
+			reinterpret_cast<unsigned>(context),
+			reinterpret_cast<unsigned>(backendFluid),
+			reinterpret_cast<const float*>(&desc.relPose),
+			restParticleDistance));
+	if(desc.frameActor)
+		*reinterpret_cast<void**>(internalBytes + 0x14) =
+			*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
+				desc.frameActor) + 0x14);
+	memcpy(internalBytes + 0x18, &desc.relPose, 0x30);
+	*reinterpret_cast<unsigned*>(internalBytes + 0x10) = words[25];
+	nxNpFluidEmitterUpdateGlobalPose(internal);
+	nxNpFluidEmitterStoreGlobalPose(internal);
+	}
+
 static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	{
 	if(!desc.isValid())
@@ -1932,31 +1971,14 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	if(!backendManager || !backendFluid)
 		return 0;
 	void* const context = backendManager;
-	const unsigned backendFluidHandle = reinterpret_cast<unsigned>(backendFluid);
-	const unsigned* const words = reinterpret_cast<const unsigned*>(&desc);
 	unsigned char* const internal = static_cast<unsigned char*>(
 		nxFoundationSDKAllocator->malloc(0x78, NX_MEMORY_PERSISTENT));
 	if(!internal)
 		return 0;
-	NxVec3 actorPosition;
-	actorPosition.set(*reinterpret_cast<const float*>(words + 18),
-		*reinterpret_cast<const float*>(words + 19),
-		*reinterpret_cast<const float*>(words + 20));
-	const float restParticleDistance = gNxFluidGetRestParticleDistanceCallback(
-		context, backendFluid, *reinterpret_cast<const float*>(words + 16),
-		*reinterpret_cast<const float*>(words + 17), actorPosition,
-		words[21], words[23], words[22], words[14], words[24],
-		words[25] & 0x10, words[25] & 8, words[25] & 4,
-		words[12] != 0, words[15] & 2, words[13] & 2);
 	memset(internal, 0, 0x78);
 	*reinterpret_cast<void***>(internal) = gNxFluidEmitterVtable;
 	*reinterpret_cast<void**>(internal + 4) = fluid;
 	*reinterpret_cast<unsigned*>(internal + 8) = 0xffffffff;
-	*reinterpret_cast<unsigned*>(internal + 0x10) = words[25];
-	if(desc.frameActor)
-		*reinterpret_cast<void**>(internal + 0x14) = *reinterpret_cast<void**>(
-			reinterpret_cast<unsigned char*>(desc.frameActor) + 0x14);
-	memcpy(internal + 0x18, &desc.relPose, 0x30);
 	NxFluidEmitter* const wrapper = new NpFluidEmitter(internal);
 	if(!wrapper)
 		{
@@ -1967,14 +1989,9 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 		static_cast<unsigned char*>(manager) + 0x24) : 0;
 	void* const sceneLockSource = sceneOwner ? *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(sceneOwner) + 0x6cc) : 0;
-	nxNpFluidEmitterInitializeMetadata(internal, wrapper, desc.userData,
-		desc.name, sceneLockSource);
 	*reinterpret_cast<void**>(internal + 0x0c) = wrapper;
-	*reinterpret_cast<void**>(internal + 8) = gNxFluidEmitterCreateCallback(
-		reinterpret_cast<unsigned>(context), backendFluidHandle,
-		reinterpret_cast<const float*>(&desc.relPose), restParticleDistance);
-	nxNpFluidEmitterUpdateGlobalPose(internal);
-	nxNpFluidEmitterStoreGlobalPose(internal);
+	nxFluidEmitterInitialize(internal, wrapper, desc, context, backendFluid,
+		sceneLockSource);
 	nxFluidManagerArrayPush(fluidBytes + 4, reinterpret_cast<unsigned>(internal));
 	nxFluidManagerArrayPush(fluidBytes + 0x14, reinterpret_cast<unsigned>(wrapper));
 	return wrapper;

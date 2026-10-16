@@ -67849,13 +67849,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1358",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12550",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00089290 maps this 377-byte internal routine to the emitter-initialization sequence: public metadata/name registration, rest-particle-distance and emitter-create callbacks, frame actor, flags/local pose, then global-pose update/store. Candidate source boundary is nxFluidEmitterInitialize in Physics/src/Scene.cpp; direct callees 000480, 003559, and 003605 are already mapped and gated.",
+      "dynamic_proof": "NxPhysicsSimulationTests exercises descriptor-emitter metadata, callback arguments, flags, optional frame-actor binding, and resulting world pose through the registered Phase 7 staged-pair differential. A no-op mutation of the frame-actor store is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=70); the restored differential is exact (stdout_delta=0, stderr_exact=True). Full Phase 7 passes at 2,913/2,913 assertions. See evidence/phase7-fluid-emitter-initialize-003609.md.",
+      "notes": "The helper boundary follows the oracle initializer. The proof covers the public creation path and the optional frame-actor mutation; indirect FluidModel callbacks remain fixture-supplied."
     },
     {
       "id": "phys_fn_003610",

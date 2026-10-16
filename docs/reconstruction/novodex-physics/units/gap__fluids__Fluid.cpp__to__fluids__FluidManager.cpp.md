@@ -3554,11 +3554,11 @@ void __thiscall FUN_100886b0(void *this,int *param_1)
 
 ```
 
-## phys_fn_003609 (0x00089290, 377 B, discovered)
+## phys_fn_003609 (0x00089290, 377 B, dynamically_gated)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/Scene.cpp
+- implementation: nxFluidEmitterInitialize
 - prototype: undefined4 __thiscall FUN_10089290(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003501 (0x00085be0)
