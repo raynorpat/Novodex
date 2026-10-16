@@ -7961,6 +7961,40 @@ static void nxFluidCopyImplicitMeshData(unsigned char* record, unsigned* mesh)
 		*countOutput = count;
 	}
 
+// phys_fn_003651 (0x0008a9a0): copy post-step particle position, velocity,
+// and flag fields from 92-byte backend records into the caller's buffers.
+static __declspec(noinline) void* __cdecl nxFluidCopyPostStepParticleData(
+	void* particleData, unsigned* particles)
+	{
+	auto record = static_cast<unsigned char*>(particleData);
+	void* result = particleData;
+	for(unsigned channel = 0; channel != 3; ++channel)
+		{
+		unsigned* output = *reinterpret_cast<unsigned**>(record + 8 + channel * 4);
+		if(!output)
+			continue;
+		const unsigned stride = *reinterpret_cast<unsigned*>(record + 24 + channel * 4) >> 2;
+		const unsigned sourceOffset = channel == 0 ? 1 : channel == 1 ? 4 : 22;
+		const unsigned componentCount = channel == 2 ? 1 : 3;
+		unsigned count = 0;
+		while(count != *reinterpret_cast<unsigned*>(record)
+			&& count != particles[1])
+			{
+			const unsigned* source = reinterpret_cast<unsigned*>(particles[0]);
+			const unsigned* particle = source + count * 23 + sourceOffset;
+			for(unsigned component = 0; component != componentCount; ++component)
+				output[component] = particle[component];
+			output += stride;
+			++count;
+			}
+		unsigned* countOutput = *reinterpret_cast<unsigned**>(record + 4);
+		*countOutput = count;
+		if(channel == 2)
+			result = countOutput;
+		}
+	return result;
+	}
+
 // phys_fn_003475 (0x000854d0): refresh one fluid's bounds, mesh, particles, and emitters.
 static void nxFluidPostStepUpdate(void* fluid)
 	{
@@ -8002,29 +8036,7 @@ static void nxFluidPostStepUpdate(void* fluid)
 		}
 	unsigned* particles = getParticles(system, handle);
 	if(particles)
-		{
-		const unsigned count = *reinterpret_cast<unsigned*>(bytes + 0x28);
-		const unsigned available = particles[1];
-		const unsigned copyCount = count < available ? count : available;
-		unsigned* source = reinterpret_cast<unsigned*>(particles[0]);
-		unsigned* countOutput = *reinterpret_cast<unsigned**>(bytes + 0x2c);
-		for(unsigned channel = 0; channel != 3; ++channel)
-			{
-			unsigned* output = *reinterpret_cast<unsigned**>(bytes + 0x30 + channel * 4);
-			if(!output)
-				continue;
-			const unsigned stride = *reinterpret_cast<unsigned*>(bytes + 0x40 + channel * 4) / 4;
-			const unsigned sourceOffset = channel == 0 ? 1 : channel == 1 ? 4 : 22;
-			for(unsigned index = 0; index < copyCount; ++index)
-				{
-				for(unsigned component = 0; component < (channel == 2 ? 1u : 3u); ++component)
-					output[component] = source[index * 23 + sourceOffset + component];
-				output += stride;
-				}
-			if(countOutput)
-				*countOutput = copyCount;
-			}
-		}
+		nxFluidCopyPostStepParticleData(bytes + 0x28, particles);
 	void** emitters = *reinterpret_cast<void***>(bytes + 4);
 	void** emittersEnd = *reinterpret_cast<void***>(bytes + 8);
 	for(void** emitter = emitters; emitter && emitter != emittersEnd; ++emitter)

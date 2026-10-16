@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003651"
+  ],
+  "oracle_rva": "0x0008a9a0",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "3835f82a4a8610b022083b68fceb2abe3d88d3cc16cd7791db01b4101db16eda",
+  "candidate_map_symbol": "?nxFluidCopyPostStepParticleData@@YAPAXPAXPAI@Z",
+  "candidate_map_address": "0x100677d0",
+  "source_sha256": "60035202be6b90de07bf0a3af8a310f0f39b042ae7f74d03128c984169c884f0",
+  "fixture_source_sha256": "5ef2f287527549c6c1da642ab29566859097b181a53b5fafa4a124e32d54aada",
+  "restored_control": {
+    "exit": 0,
+    "row_mismatches": 0,
+    "aggregate_mismatches": 0,
+    "particle_copy_marker": "counts=2/1 source_caps=1 caller_caps=1 fields=position.velocity.flags null_buffer=1 strides=distinct"
+  },
+  "mutation": {
+    "candidate_mutation": "nxFluidCopyPostStepParticleData returns before copying",
+    "candidate_sha256": "342a6a1e76cc88c8e9abfc3d8a9b2a8a27d18fbedc382365e6b89ed3f42856a3",
+    "candidate_exit": 1,
+    "row_mismatches": 20,
+    "aggregate_mismatches": 22
+  },
+  "phase_gates": {
+    "phase5": "pass",
+    "phase5_assertions": "2805/2805",
+    "phase6": "pass",
+    "phase6_assertions": "1697/1697",
+    "phase7": "pass",
+    "phase7_assertions": "2927/2927"
+  },
+  "tool_tests": {
+    "result": "pass",
+    "tests": 835,
+    "subtests": 743
+  },
+  "compressed_logs": [
+    {
+      "file": "particle-copy-control.log.gz",
+      "sha256": "460972e69b277e591a9bc4e948d43a5f01671efd2c2ff0b355c21838c552807f",
+      "uncompressed_sha256": "77ad8f42d89747447f33b6a889ef7f10ae9c7fc557769c9afd3d96f242b88bf7",
+      "uncompressed_bytes": 10209
+    },
+    {
+      "file": "particle-copy-mutant.log.gz",
+      "sha256": "8229e8cc98027dcb7bef081c015ab4eb8e98f5b612315b07fc4482c9bab309f7",
+      "uncompressed_sha256": "3f1d87d399a9ced832c75b4b045ab08a019a0006c853f80cd0f7aa3861cbe4fc",
+      "uncompressed_bytes": 10212
+    }
+  ]
+}

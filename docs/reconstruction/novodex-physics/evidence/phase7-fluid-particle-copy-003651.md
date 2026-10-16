@@ -1,0 +1,7 @@
+# Fluid post-step particle stream copy (`phys_fn_003651`)
+
+IDA identifies the 228-byte helper at RVA `0x0008a9a0`, called from the fluid post-step traversal at `0x000854d0`. It reads the caller's maximum count, count pointer, three output pointers, and byte strides from the `NxParticleData` record. It copies position and velocity triplets from word offsets 1 and 4 of each 92-byte backend record, copies flags from word offset 22, caps the count to both the backend stream count and caller maximum, and stores the resulting count for each non-null output buffer. The helper returns the input record unless the flags output is present, when it returns the count pointer; the caller ignores that return.
+
+The registered `NxPhysicsFluidEmitterAbiTests` differential now isolates the copied fields with two fluids. It covers backend-limited and caller-limited counts, distinct output strides, preserved inter-record padding, all three source fields, and a null flags output. Oracle and restored candidate match exactly (`mismatches=0`). A no-op mutation of only `nxFluidCopyPostStepParticleData` is rejected: the row marker detects 20 output-word mismatches and the aggregate harness reports 22 mismatches (candidate exit 1). The restored control exits 0 with exact copied values.
+
+Candidate map binding: `?nxFluidCopyPostStepParticleData@@YAPAXPAXPAI@Z` in `Scene.obj` at `0x100677d0`. Raw control and mutation transcripts are retained in `evidence/raw/phase7-particle-copy-003651-20261016/`.

@@ -164,6 +164,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter global-pose rows=2 callback_checks=2 stack_checks=2 mismatches=0'
 		'fluid emitter global-to-local cases=3 callback_checks=3 stack_checks=3 mismatches=0'
 		'fluid emitter body repulsion bodyless actor=1 callbacks=3/3 order=1 vectors=1 mass=1 stack=1/1 mismatches=0'
+		'fluid particle stream row=003651 fluids=2 counts=2/1 source_caps=1 caller_caps=1 fields=position.velocity.flags null_buffer=1 strides=distinct mismatches=0'
 		'fluid post-step traversal fluids=2 oracle_callbacks=7 candidate_callbacks=7 particle_counts=3/3 particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=0'
 		'fluid emitter backend flags cases=7 callback_mismatches=0 state_mismatches=0'
 		'fluid manager actor-release fluids=1 emitters=3 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0'
@@ -6201,7 +6202,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2804  # adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
+	'5' = 2805  # adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route, row 003651 particle-copy case, and rows 003653/003655 mesh-copy case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
@@ -6319,7 +6320,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2926  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
+	'7' = 2927  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route, row 003651 particle-copy case, and rows 003653/003655 mesh-copy case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization

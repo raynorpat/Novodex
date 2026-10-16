@@ -7310,8 +7310,11 @@ int wmain(int argc, wchar_t** argv)
 				*reinterpret_cast<unsigned**>(candidateFluid[i] + 0x2c) = &candidateParticleCount[i];
 				for(unsigned channel = 0; channel != 3; ++channel)
 					{
-						*reinterpret_cast<unsigned**>(oracleFluid[i] + 0x30 + channel * 4) = oracleOutput[i][channel];
-						*reinterpret_cast<unsigned**>(candidateFluid[i] + 0x30 + channel * 4) = candidateOutput[i][channel];
+						const bool nullOutput = i == 1 && channel == 2;
+						*reinterpret_cast<unsigned**>(oracleFluid[i] + 0x30 + channel * 4) =
+							nullOutput ? 0 : oracleOutput[i][channel];
+						*reinterpret_cast<unsigned**>(candidateFluid[i] + 0x30 + channel * 4) =
+							nullOutput ? 0 : candidateOutput[i][channel];
 						*reinterpret_cast<unsigned*>(oracleFluid[i] + 0x40 + channel * 4) = outputStrideBytes[i][channel];
 						*reinterpret_cast<unsigned*>(candidateFluid[i] + 0x40 + channel * 4) = outputStrideBytes[i][channel];
 					}
@@ -7351,6 +7354,7 @@ int wmain(int argc, wchar_t** argv)
 					if(candidateRecord.values[value] != oracleRecords[i].values[value])
 						++mismatches;
 			}
+		unsigned particleCopyMismatches = 0;
 		for(unsigned i = 0; i != 2; ++i)
 			{
 				const unsigned expectedBounds[6] = {
@@ -7365,21 +7369,25 @@ int wmain(int argc, wchar_t** argv)
 					if(*reinterpret_cast<unsigned*>(oracleFluid[i] + 0x5c + word * 4) != expectedBounds[word]
 						|| *reinterpret_cast<unsigned*>(candidateFluid[i] + 0x5c + word * 4) != expectedBounds[word])
 						++mismatches;
-				for(unsigned particle = 0; particle != expectedParticleCount; ++particle)
-					for(unsigned channel = 0; channel != 3; ++channel)
-						{
+				for(unsigned channel = 0; channel != 3; ++channel)
+					{
+						unsigned expectedOutput[12];
+						for(unsigned word = 0; word != 12; ++word)
+							expectedOutput[word] = 0xa5a5a5a5u;
+						const bool nullOutput = i == 1 && channel == 2;
 						const unsigned stride = outputStrideBytes[i][channel] / 4;
 						const unsigned sourceOffset = channel == 0 ? 1 : channel == 1 ? 4 : 22;
 						const unsigned componentCount = channel == 2 ? 1u : 3u;
-						for(unsigned component = 0; component != componentCount; ++component)
-							{
-							const unsigned expected = particles[i][particle][sourceOffset + component];
-							const unsigned outputIndex = particle * stride + component;
-							if(oracleOutput[i][channel][outputIndex] != expected
-								|| candidateOutput[i][channel][outputIndex] != expected)
-								++mismatches;
-							}
-						}
+						if(!nullOutput)
+							for(unsigned particle = 0; particle != expectedParticleCount; ++particle)
+								for(unsigned component = 0; component != componentCount; ++component)
+									expectedOutput[particle * stride + component] =
+										particles[i][particle][sourceOffset + component];
+						for(unsigned word = 0; word != 12; ++word)
+							if(oracleOutput[i][channel][word] != expectedOutput[word]
+								|| candidateOutput[i][channel][word] != expectedOutput[word])
+								++particleCopyMismatches;
+					}
 				const unsigned expectedLeading[3] = {
 					0x3e800001u, 0x3e800002u, 0x3e800003u };
 				const unsigned expectedVertices[3] = {
@@ -7404,7 +7412,10 @@ int wmain(int argc, wchar_t** argv)
 						|| *reinterpret_cast<unsigned*>(candidateEmitters[i] + 0x48 + word * 4) != expectedEmitterPose[word])
 						++mismatches;
 			}
+		mismatches += particleCopyMismatches;
 		gFailures += mismatches;
+		printf("fluid particle stream row=003651 fluids=2 counts=2/1 source_caps=1 caller_caps=1 fields=position.velocity.flags null_buffer=1 strides=distinct mismatches=%u\n",
+			particleCopyMismatches);
 		printf("fluid post-step traversal fluids=2 oracle_callbacks=%u candidate_callbacks=%u particle_counts=%u/%u particle_strides=distinct emitter_tuples=2 optional_mesh_null=1 mismatches=%u\n",
 			oracleCallbacks, candidateCallbacks, oracleParticleCount[0] + oracleParticleCount[1],
 			candidateParticleCount[0] + candidateParticleCount[1], mismatches);

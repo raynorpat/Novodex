@@ -68680,13 +68680,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1379",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12678",
-      "notes": "",
-      "source": null,
-      "static_proof": null,
-      "dynamic_proof": null
+      "notes": "The post-step caller is phys_fn_003475; this row is the separate particle-stream copy helper. The caller ignores the helper return value.",
+      "source": "Physics/src/Scene.cpp::nxFluidCopyPostStepParticleData",
+      "static_proof": "IDA oracle RVA 0x0008a9a0 reads a 92-byte particle stream and an NxParticleData record. It independently copies position (source word 1, 3 words), velocity (word 4, 3 words), and flags (word 22, 1 word), caps each copy at min(record.maxParticles, stream.count), advances outputs by record byte stride >> 2, and writes the count through record.numParticlesPtr for each non-null output. It returns the record unless the flags output exists, in which case it returns the count pointer; the caller ignores the return. Candidate map binds the no-inline helper in Scene.obj at 0x100677d0.",
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests two-fluid oracle/candidate differential checks backend-limited and caller-limited counts, all three copied fields, distinct output strides, untouched padding, and a null flags buffer. Restored control reports mismatches=0. Returning before the helper copies is rejected with mismatches=22 and candidate exit 1. See evidence/phase7-fluid-particle-copy-003651.md and evidence/raw/phase7-particle-copy-003651-20261016/.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?nxFluidCopyPostStepParticleData@@YAPAXPAXPAI@Z"
     },
     {
       "id": "phys_fn_003652",
