@@ -5792,6 +5792,14 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<const unsigned*>(&blend),
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetBlend,
 		setBlendErrors, setBlendErrorCode, setBlendErrorLine);
+	printf("simulation implicit-mesh set-triangle-size row=003890 matched=%u initial=%08x updated=%08x calls=%u callback-errors=%u\n",
+		initialTriangleSize == 0.005f && setTriangleSize == 0.006f &&
+			licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize == 1 &&
+			licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors == 0 ? 1u : 0u,
+		*reinterpret_cast<const unsigned*>(&initialTriangleSize),
+		*reinterpret_cast<const unsigned*>(&setTriangleSize),
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
 	printf("simulation implicit-mesh set-surface-radius row=003878 matched=%u calls=%u reentry=%u errors=%u\n",
 		licensedSurfaceMeshPropertiesMatch && setSurfaceRadius == 0.05f ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,

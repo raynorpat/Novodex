@@ -1,0 +1,119 @@
+{
+  "purpose": "Licensed public NxImplicitMesh::setTriangleSize mutation proof and registered Phase 5/6/7 gates for phys_fn_003890.",
+  "date": "2026-10-16",
+  "rva": "0x0008d5d0",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_differential_candidate_sha256": "26b7d7095977fdaa64291f0eac6e7dddfe2639b921e8b831083467983d60a084",
+  "gated_candidate_sha256": "40bb902ebd70f4e17a26856a99caca91c3b9b91dd84a88f74d4d6948c34bd5fe",
+  "mutant_candidate_sha256": "5fbad55236b4d6e4799dbe1c324e7257676074aef7fbb3922e953e1a3e18f9bf",
+  "mutation_result": "Removed nxImplicitMeshSetTriangleSize from NpImplicitMesh::setTriangleSize. Candidate retained initial=0x3ba3d70a, reported zero setter callbacks and matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=68.",
+  "restored_result": "Oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; row reports initial=0x3ba3d70a, updated=0x3bc49ba6, one setter callback and zero callback argument errors.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2820 floor=2820",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1709 floor=1709",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2950 floor=2950"
+  },
+  "phase6_diagnostic": "The first Phase 6 attempt failed on unrelated allocator row phys_fn_004810 (oracle_reuse=1, candidate_reuse=0). Five standalone reruns passed, then a fresh Phase 6 gate passed; the failed transcript and all five reruns are preserved.",
+  "public_headers": "verify_public_headers.py passed in all three phase gates; both Physics header roots each contain 80 files.",
+  "tooling_tests": "Ran 816 tests; OK.",
+  "inventory_sha256": "6ad9d1797226acaaa5e571b09b3eee291e0c65f482247f377bebcaa7b33b0aa9",
+  "phase7_closure_sha256": "3bd243c9bb1e90ac5a0f115573fa8d1dde7894aad48f6d5ad05b01a16355d5b9",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "9b0a08058f8d952b5acbc5783ae27eaf93ee1fb63b06c30d90c56c08d09c1fc6",
+      "uncompressed_sha256": "ee0bab3c10da5d6afcef5f61be98c2c435296d660d461cce946277be7e6a3dc8",
+      "compressed_bytes": 56076,
+      "uncompressed_bytes": 851389
+    },
+    "no-op-mutant-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "no-op-mutant-differential.log.gz": {
+      "sha256": "32e4ece1b2875777c846f500c57c43364126124c99978baa7ffdd6cabe260769",
+      "uncompressed_sha256": "b43ae82a0081d765147ac2a0c8edd92b914626cbc8effdb0bfe04957faba5b6b",
+      "compressed_bytes": 55167,
+      "uncompressed_bytes": 845433
+    },
+    "object-layout-repeat-0.log.gz": {
+      "sha256": "a3bbd3eb37711830f3609c412b79a692699fbfa51b4d684bc929f63440138d28",
+      "uncompressed_sha256": "330b7f5764faabe34b81c3012550600a9c565cd85f26be54f09433f30d76fd35",
+      "compressed_bytes": 5104,
+      "uncompressed_bytes": 22505
+    },
+    "object-layout-repeat-1.log.gz": {
+      "sha256": "6f99d1c1a6491dda6a70472d336b9daec2b60fc9c5b60191eeb0716a5c843efa",
+      "uncompressed_sha256": "94391832bc42b00a9b890f73d0a601fd2183f3f250204b23995ae27ee27ba16c",
+      "compressed_bytes": 5102,
+      "uncompressed_bytes": 22505
+    },
+    "object-layout-repeat-2.log.gz": {
+      "sha256": "7037f122e7d5d30fb947ca48829a1a265f7ad340c55e843305c86b5eceb22c50",
+      "uncompressed_sha256": "c0b9c3a46ca7fb0add4aba19044049f2cb540d3aa17ed1198b0a1f849d1506fa",
+      "compressed_bytes": 5103,
+      "uncompressed_bytes": 22505
+    },
+    "object-layout-repeat-3.log.gz": {
+      "sha256": "7037f122e7d5d30fb947ca48829a1a265f7ad340c55e843305c86b5eceb22c50",
+      "uncompressed_sha256": "c0b9c3a46ca7fb0add4aba19044049f2cb540d3aa17ed1198b0a1f849d1506fa",
+      "compressed_bytes": 5103,
+      "uncompressed_bytes": 22505
+    },
+    "object-layout-repeat-4.log.gz": {
+      "sha256": "7037f122e7d5d30fb947ca48829a1a265f7ad340c55e843305c86b5eceb22c50",
+      "uncompressed_sha256": "c0b9c3a46ca7fb0add4aba19044049f2cb540d3aa17ed1198b0a1f849d1506fa",
+      "compressed_bytes": 5103,
+      "uncompressed_bytes": 22505
+    },
+    "object-layout-repro.log.gz": {
+      "sha256": "9338d6f84907d7753b1bb28a5710eeaa067c1157b1ac33b68696220f0aa0c1f4",
+      "uncompressed_sha256": "a73c8ae21d7769ccbd0777b6d4fb57a83d5fb53a750257770f8986ffaf2663ba",
+      "compressed_bytes": 5108,
+      "uncompressed_bytes": 22505
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "fdf90e218fbb2744243b5abe777b7ab5f26053e9ce972347de0360cf72f030a9",
+      "uncompressed_sha256": "442dbc0c423bf96d641e8d1613d768151ba7cb815bd6904c428e280d249abca7",
+      "compressed_bytes": 210233,
+      "uncompressed_bytes": 2849913
+    },
+    "phase6-gate-transient-failure.log.gz": {
+      "sha256": "9c6db749dc1fb76106655f629e1008239047dcb54fad88b9fb014f647ca661ad",
+      "uncompressed_sha256": "9c7baebed8d419323067159b93ee682ff0b11504130169df62964bb0b8b07250",
+      "compressed_bytes": 23865,
+      "uncompressed_bytes": 355603
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "f94f996652ed8cdd56a26328d29f0d6f2da9470a6d9ce329abb9489db2ef4d08",
+      "uncompressed_sha256": "6f83601be2e8e730f032b37634760fb1449dd3696ff02e8babc75b5627daa422",
+      "compressed_bytes": 254495,
+      "uncompressed_bytes": 3110672
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "6259b2b330cc45325af81a571235646801524c11e65e34c332f5b4dc5f361bc8",
+      "uncompressed_sha256": "1366ea2f1454bef09257788f53b83e4fd21f6aa6b1a9725e6c97a4b90537a4c0",
+      "compressed_bytes": 374319,
+      "uncompressed_bytes": 4654432
+    },
+    "restored-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "restored-differential.log.gz": {
+      "sha256": "c1e400400c34a124224c60c698426488e4ab3901df4091a6bf016d4a88a3f98e",
+      "uncompressed_sha256": "82bcdfff6a8bd07ff61eb292a6f9f5f9a4a04d5672a991af740a466421eba85d",
+      "compressed_bytes": 56091,
+      "uncompressed_bytes": 851614
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "35352cd94c637619fdda428bdfddb1db72bce06e48cdff617656ca4a4fb52b46",
+      "uncompressed_sha256": "71970946e52dbd510e33506a27256ce9f6d6376e3ffae6c4541b139acc8ea48d",
+      "compressed_bytes": 18985,
+      "uncompressed_bytes": 125875
+    }
+  }
+}
