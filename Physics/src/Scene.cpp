@@ -2223,6 +2223,7 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 		array = static_cast<NxFluidParticleArrayHeader*>(
 			gNxParticleArrayAllocCallback(count));
 	const float cellSize = gNxFluidGetCellSizeCallback(backendManager, backendFluid);
+	const float inverseCellSize = cellSize != 0.0f ? 1.0f / cellSize : 0.0f;
 	unsigned char* records = static_cast<unsigned char*>(array->records);
 	const unsigned existingArrayCount = array->count;
 	const unsigned positionStride = data.bufferPosByteStride;
@@ -2240,12 +2241,12 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 				data.bufferVel) + index * velocityStride, 3 * sizeof(unsigned));
 		if(cellSize != 0.0f)
 			{
-			*reinterpret_cast<short*>(record + 64) = static_cast<short>(floorf(
-				*reinterpret_cast<float*>(record + 4) / cellSize));
-			*reinterpret_cast<short*>(record + 66) = static_cast<short>(floorf(
-				*reinterpret_cast<float*>(record + 8) / cellSize));
-			*reinterpret_cast<short*>(record + 68) = static_cast<short>(floorf(
-				*reinterpret_cast<float*>(record + 12) / cellSize));
+			*reinterpret_cast<short*>(record + 64) = static_cast<short>(floor(
+				static_cast<double>(*reinterpret_cast<float*>(record + 4)) * inverseCellSize));
+			*reinterpret_cast<short*>(record + 66) = static_cast<short>(floor(
+				static_cast<double>(*reinterpret_cast<float*>(record + 8)) * inverseCellSize));
+			*reinterpret_cast<short*>(record + 68) = static_cast<short>(floor(
+				static_cast<double>(*reinterpret_cast<float*>(record + 12)) * inverseCellSize));
 			}
 		else
 			{

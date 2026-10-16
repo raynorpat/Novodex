@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003423",
+  "description": "Reciprocal-scaling precision-boundary differential, direct-division mutation, restored focused controls, and Phase 5/6/7 gates. Logs are gzip-compressed with source and compressed hashes.",
+  "artifacts": [
+    {
+      "file": "mutation-build.log.gz",
+      "source": "mutation-build.log",
+      "source_bytes": 1561,
+      "source_sha256": "49775f1f5f495ac0150a70137140c97a06bc377588c5e72801e59b6dd518814a",
+      "compressed_bytes": 682,
+      "compressed_sha256": "fe9ddcf8add5b91674cc3f6552b78bb5091279ec58c48a228693ee0f20676638"
+    },
+    {
+      "file": "mutation-differential.log.gz",
+      "source": "mutation-differential.log",
+      "source_bytes": 6738,
+      "source_sha256": "fa2be9b7afba049f3ea9af5538582ba8810d1bc96dec92896ab6de40375b22b3",
+      "compressed_bytes": 1211,
+      "compressed_sha256": "364922d8b56b0dc50f11e8444886224de9581473b02b6ed74981ccd584ad2c81"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "phase5-gate.log",
+      "source_bytes": 2804847,
+      "source_sha256": "fffd3372d4f1f49a306b0fef548e98eb6a8af5de42f06efc6b3a43b02d4f3548",
+      "compressed_bytes": 206851,
+      "compressed_sha256": "d95eac991c90766309ebabea2e632675f931fd663fc0b791033f5ba3947fc526"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "phase6-gate.log",
+      "source_bytes": 3089335,
+      "source_sha256": "ca1e0ecf1a3ce6337cf446c7ed71d240ca88585c8770e6103d9d2d7861a34783",
+      "compressed_bytes": 252230,
+      "compressed_sha256": "e4c70d58d96f2f11c29193a0c4c375fbd207564f6612396abc506e90f2f081b7"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "phase7-gate.log",
+      "source_bytes": 4588681,
+      "source_sha256": "21ded2a7f2619dbc45da4ff2d0c4498f2c7e9cc32c8cdda604c6ada1d6bb814c",
+      "compressed_bytes": 370629,
+      "compressed_sha256": "0c1238d6b8d65919633ed8ae6c7a9b10529b558106812e8931ea1fe4b4a341fa"
+    },
+    {
+      "file": "restored-build.log.gz",
+      "source": "restored-build.log",
+      "source_bytes": 2951,
+      "source_sha256": "f7781aae81d3bcc0ffd3dbf735ad04611bf2b376a8fffc491f9afce53df9b3fe",
+      "compressed_bytes": 775,
+      "compressed_sha256": "d5ccdc535a26a6aa33d10b5ddefa62e341a6df3b9484a32ef4ff39f541248cb2"
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source": "restored-differential.log",
+      "source_bytes": 14796,
+      "source_sha256": "578526c2c1711dfcb44e1cfac38d310d665ede55ec38dad2fb028ed59e248d59",
+      "compressed_bytes": 1439,
+      "compressed_sha256": "2cfa4811d501cb6405f22ea423df3f586782a65e1fb78e36a3f482dc492a3781"
+    },
+    {
+      "file": "mutation-result.txt",
+      "bytes": 45,
+      "sha256": "edd9f8d66af2409edaf21075af30b75586541a29f0262cd0d0601dc90ccb3383"
+    },
+    {
+      "file": "restored-result.txt",
+      "bytes": 6,
+      "sha256": "804cb8b0d0ccd96791ae5eed231de68f307bffbdf3522e93d8bc0ec856db38de"
+    }
+  ]
+}

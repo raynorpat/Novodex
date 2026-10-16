@@ -43,6 +43,9 @@
 #ifndef NX_FLUID_CELL_SIZE_ZERO_TEST
 #define NX_FLUID_CELL_SIZE_ZERO_TEST 0
 #endif
+#ifndef NX_FLUID_CELL_RECIPROCAL_TEST
+#define NX_FLUID_CELL_RECIPROCAL_TEST 0
+#endif
 #if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
 #undef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 1
@@ -190,6 +193,8 @@ int wmain(int argc, wchar_t** argv)
 	const char* const testName = "NxPhysicsFluidNullParticleCountTests";
 	#elif NX_FLUID_CELL_SIZE_ZERO_TEST
 	const char* const testName = "NxPhysicsFluidCellSizeZeroTests";
+	#elif NX_FLUID_CELL_RECIPROCAL_TEST
+	const char* const testName = "NxPhysicsFluidCellReciprocalTests";
 	#elif NX_FLUID_ADD_PARTICLES_TEST
 	const char* const testName = "NxPhysicsFluidAddParticlesTests";
 	#elif NX_FLUID_CELL_ROUNDING_TEST
@@ -243,6 +248,17 @@ int wmain(int argc, wchar_t** argv)
 		}
 	setFluidCellSizeZero(1);
 	setFluidParticleCellPoison(1);
+	#elif NX_FLUID_CELL_RECIPROCAL_TEST
+	typedef void (__cdecl *SetFluidCellSizeFn)(float);
+	SetFluidCellSizeFn setFluidCellSize =
+		reinterpret_cast<SetFluidCellSizeFn>(GetProcAddress(fluidModel,
+			"NxSetFluidCellSize"));
+	if(!setFluidCellSize)
+		{
+		sdk->release();
+		return nxFail("custom cell-size fixture control is missing");
+		}
+	setFluidCellSize(21.575782775878906f);
 	#endif
 	typedef void (__cdecl *SetFluidPostStepParticleFn)(unsigned,
 		const unsigned*, unsigned);
@@ -379,6 +395,10 @@ int wmain(int argc, wchar_t** argv)
 	#if NX_FLUID_CELL_ROUNDING_TEST
 	positions[0] = 1.375f;
 	positions[4] = -1.375f;
+	#endif
+	#if NX_FLUID_CELL_RECIPROCAL_TEST
+	positions[0] = positions[1] = positions[2] = 1531.880615234375f;
+	positions[4] = positions[5] = positions[6] = 1531.880615234375f;
 	#endif
 	NxF32 velocities[8] = { -4.5f, 5.25f, -6.75f, 93.0f,
 		0.125f, -0.25f, 0.5f, 94.0f };
@@ -659,6 +679,22 @@ int wmain(int argc, wchar_t** argv)
 	sdk->release();
 	if(!descValid || !countMatch || !cellsMatch)
 		return nxFail("zero-cell-size particle array was not populated");
+	return nxReportPairIdentity(pairDirectory);
+	#elif NX_FLUID_CELL_RECIPROCAL_TEST
+	const bool countMatch = array &&
+		*reinterpret_cast<unsigned*>(array + 4) == 2;
+	const int x = records ? *reinterpret_cast<short*>(records + 64) : 999;
+	const int y = records ? *reinterpret_cast<short*>(records + 66) : 999;
+	const int z = records ? *reinterpret_cast<short*>(records + 68) : 999;
+	const bool cellsMatch = records && x == 70 && y == 70 && z == 70;
+	printf("fluid initial-particles reciprocal-cell-scale count=%u cells=%d,%d,%d\n",
+		countMatch && cellsMatch ? 2u : 0u, x, y, z);
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !countMatch || !cellsMatch)
+		return nxFail("reciprocal cell-size scaling differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#else
 	const bool countMatch = array &&

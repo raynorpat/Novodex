@@ -93,6 +93,8 @@ static unsigned gFluidGetParticlesReturnNull;
 static unsigned gFluidMaxParticles = 0x1234u;
 static unsigned gFluidCellSizeZero;
 static unsigned gFluidParticleCellPoison;
+static unsigned gFluidCellSizeCustom;
+static float gFluidCellSize = 0.5f;
 static unsigned gFluidSetStiffnessBits;
 static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidSetViscosityCalls;
@@ -469,7 +471,7 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetCellSize(
 	if(manager != &gFluidManagerBackend || !fluid)
 		return 0.0f;
 	++gFluidManagerCallbackSummary.fluidGetCellSize;
-	return gFluidCellSizeZero ? 0.0f : 0.5f;
+	return gFluidCellSizeZero ? 0.0f : gFluidCellSizeCustom ? gFluidCellSize : 0.5f;
 	}
 
 extern "C" __declspec(dllexport) void __cdecl
@@ -482,6 +484,13 @@ extern "C" __declspec(dllexport) void __cdecl
 NxSetFluidParticleCellPoison(unsigned enabled)
 	{
 	gFluidParticleCellPoison = enabled != 0;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidCellSize(float cellSize)
+	{
+	gFluidCellSize = cellSize;
+	gFluidCellSizeCustom = 1;
 	}
 
 extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
