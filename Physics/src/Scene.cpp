@@ -34,6 +34,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <math.h>
+#include <new>
 #if !NX_PHYSICS_USE_X87
 #include "NxSceneContactMembers.h"
 #include "NxSceneVisitedBuffers.h"
@@ -2473,11 +2474,9 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 	gNxImplicitFluidMeshCreateCallback(backendManager, backendFluid,
 		desc->singleRadius, desc->surfaceRadius, desc->blend,
 		desc->triangleSize, desc->smoothingIterations);
-	void* const meshStorage = nxFoundationSDKAllocator->malloc(0x18,
-		NX_MEMORY_PERSISTENT);
-	if(meshStorage)
+	NpImplicitMesh* const mesh = new(std::nothrow) NpImplicitMesh(manager);
+	if(mesh)
 		{
-	NpImplicitMesh* const mesh = ::new (meshStorage) NpImplicitMesh(manager);
 		mesh->userData = desc->userData;
 		*reinterpret_cast<void**>(bytes + 0x38) = mesh;
 		}
@@ -2571,7 +2570,7 @@ static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void* manager,
 		{
 		NpImplicitMesh* const mesh = static_cast<NpImplicitMesh*>(publicMesh);
 		mesh->~NpImplicitMesh();
-		nxFoundationSDKAllocator->free(mesh);
+		::operator delete(mesh);
 		*reinterpret_cast<void**>(bytes + 0x38) = 0;
 		}
 	if((deleteObject & 1) != 0)

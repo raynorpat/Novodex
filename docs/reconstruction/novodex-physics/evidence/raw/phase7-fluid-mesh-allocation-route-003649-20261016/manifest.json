@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003649",
+  "description": "Differentially corrects the implicit-mesh public wrapper allocation domain: its 0x18-byte object uses the process heap rather than NxUserAllocator. The first Phase 6 run hit a transient allocator-reuse mismatch in the pre-existing object-layout oracle probe; the isolated probe and complete rerun passed.",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_before_fix_sha256": "5e9b5c1f7d2f2b854ef9f1747dfc5736f9be59f04280219798833d721822c16c",
+  "candidate_restored_sha256": "5debca790b5083fa193b2802bd0fb633cb9b1e2efd3601a5f527aeb02aabfc53",
+  "red_control": {
+    "target": "NxPhysicsSimulationTests",
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 64,
+    "oracle_marker": "returned=1 owner=1 public-mesh=1 sdk-attempts=0 callbacks=1.1.1.0 errors=0 exact=1",
+    "candidate_marker": "returned=1 owner=1 public-mesh=0 sdk-attempts=1 callbacks=1.1.1.0 errors=0 exact=0"
+  },
+  "restored_control": {
+    "target": "NxPhysicsSimulationTests",
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "marker": "returned=1 owner=1 public-mesh=1 sdk-attempts=0 callbacks=1.1.1.0 errors=0 exact=1"
+  },
+  "transient_probe": {
+    "phase6_first": "failed on pre-existing NxPhysicsObjectLayoutTests allocator reuse: oracle_reuse=1 candidate_reuse=0",
+    "isolated_rerun": "layout result=differential-pass, candidate mismatches=0",
+    "phase6_full_rerun": "pass"
+  },
+  "gates": {
+    "phase5": "pass",
+    "phase5_assertions": "2802/2802",
+    "phase6": "pass",
+    "phase6_assertions": "1695/1695",
+    "phase7": "pass",
+    "phase7_assertions": "2924/2924"
+  },
+  "tool_tests": "816 passed",
+  "inventory": "pass, unexplained=0",
+  "public_headers": "both 80-file checks pass",
+  "artifacts": [
+    {
+      "file": "allocation-route-red-differential.log.gz",
+      "source": "build/row3649-mesh-allocation-route-red.log",
+      "uncompressed_bytes": 842288,
+      "uncompressed_sha256": "d4be264147e5a469e949a505e9ada4a32d107cf793c298167d4373be3935b919",
+      "compressed_bytes": 54727,
+      "compressed_sha256": "1c3cd22f0c18b5c5612a0b1418f5671b90f3a0e5b6d44c10d3cf8256b414054a"
+    },
+    {
+      "file": "allocation-route-restored-differential.log.gz",
+      "source": "build/row3649-mesh-allocation-route-restored.log",
+      "uncompressed_bytes": 847726,
+      "uncompressed_sha256": "9ebf1eed20fd53dc876e7012efe23f079af4da0b01cb842093f6e86fe06a9831",
+      "compressed_bytes": 55419,
+      "compressed_sha256": "c4d8141c3136ae74a30e69de33cdfc4ae7b6383afc5e9d2c02db5b84d67410c1"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "build/row3649-mesh-route-phase5.log",
+      "uncompressed_bytes": 2809195,
+      "uncompressed_sha256": "087d9468b7c4178962269a3ea55291797705789f76948ab9124e63e12d03a8ac",
+      "compressed_bytes": 207827,
+      "compressed_sha256": "36cc80fdb26cff61f52346a6da3bfc214e5e9dc8ba7cebb3ecbc8ca094e1aae5"
+    },
+    {
+      "file": "phase6-transient-gate.log.gz",
+      "source": "build/row3649-mesh-route-phase6.log",
+      "uncompressed_bytes": 356070,
+      "uncompressed_sha256": "4c780f5017bb51a732f40151fae1144edd235ab4cde901466c6d338470233a33",
+      "compressed_bytes": 24046,
+      "compressed_sha256": "44f2092adfea5411929c7cb21dd2a773f602972c6e53c0fe21086b785b24cab2"
+    },
+    {
+      "file": "object-layout-isolated-rerun.log.gz",
+      "source": "build/row3649-mesh-route-object-layout-rerun.log",
+      "uncompressed_bytes": 22081,
+      "uncompressed_sha256": "e409781eb74dfcaff7247d997bea0b12549ba28f8121c934a279c969ec1509ff",
+      "compressed_bytes": 5008,
+      "compressed_sha256": "9ca5a207ec502f84f662bad25d71e52f420d0ffe225bd847399b88769486927b"
+    },
+    {
+      "file": "phase6-restored-gate.log.gz",
+      "source": "build/row3649-mesh-route-phase6-rerun.log",
+      "uncompressed_bytes": 3091286,
+      "uncompressed_sha256": "52a5c349bdce5789be4a3c93e5aaf62402b9b8bf625826894df990ff11f9d627",
+      "compressed_bytes": 252691,
+      "compressed_sha256": "82efc0306c0045cf1b7dba6c72572defe656f283274be332fc9ce51688f8230a"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "build/row3649-mesh-route-phase7.log",
+      "uncompressed_bytes": 4597556,
+      "uncompressed_sha256": "f3f8fd992b1bd232b662aeb7aadf637c8d80f4b5e0e6e9f52e71baa3497b1a63",
+      "compressed_bytes": 371713,
+      "compressed_sha256": "852bcb11709787e380b9f2e0173bcba2ed2cbc05d36c43a52333a478182b5cfb"
+    }
+  ]
+}

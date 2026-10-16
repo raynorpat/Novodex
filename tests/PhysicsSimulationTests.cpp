@@ -5650,6 +5650,50 @@ int wmain(int argc, wchar_t** argv)
 		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshCreate,
 		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshDestroy);
 	resetFluidManagerCallbacks();
+	NxSimulationFailSizeAllocator surfaceMeshBackingFailAllocator(
+		*savedFluidAllocator, 0x18);
+	*fluidFoundationAllocatorSlot = &surfaceMeshBackingFailAllocator;
+	simulationOutput.resetLast();
+	const unsigned surfaceMeshBackingErrorsBefore = simulationOutput.errors;
+	NxFluid* const surfaceMeshBackingFailureFluid = surfaceMeshScene
+		? surfaceMeshScene->createFluid(surfaceMeshConstructorAllocationFailureDesc)
+		: 0;
+	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	unsigned char* const surfaceMeshBackingInternal = surfaceMeshBackingFailureFluid
+		? *reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(
+			surfaceMeshBackingFailureFluid) + 0x14) : 0;
+	void* const surfaceMeshBackingOwner = surfaceMeshBackingInternal
+		? *reinterpret_cast<void**>(surfaceMeshBackingInternal + 0x24) : 0;
+	const bool surfaceMeshBackingAllocationRouteAccepted =
+		surfaceMeshBackingFailureFluid && surfaceMeshBackingOwner &&
+		*reinterpret_cast<void**>(static_cast<unsigned char*>(
+			surfaceMeshBackingOwner) + 0x38) &&
+		surfaceMeshBackingFailAllocator.mFailCount == 0 &&
+		simulationOutput.errors == surfaceMeshBackingErrorsBefore &&
+		simulationOutput.code == NXE_NO_ERROR;
+	if(surfaceMeshBackingFailureFluid)
+		surfaceMeshScene->releaseFluid(*surfaceMeshBackingFailureFluid);
+	FluidManagerCallbackSummary surfaceMeshBackingCallbacks = {};
+	getFluidManagerCallbackSummary(&surfaceMeshBackingCallbacks);
+	const bool surfaceMeshBackingAllocationRouteMatches =
+		surfaceMeshBackingAllocationRouteAccepted &&
+		surfaceMeshBackingCallbacks.fluidCreate == 1 &&
+		surfaceMeshBackingCallbacks.implicitFluidMeshCreate == 1 &&
+		surfaceMeshBackingCallbacks.fluidDestroy == 1 &&
+		surfaceMeshBackingCallbacks.implicitFluidMeshDestroy == 0;
+	printf("simulation row3649 surface-mesh-allocation-route returned=%u owner=%u public-mesh=%u sdk-attempts=%u callbacks=%u.%u.%u.%u errors=%u exact=%u\n",
+		surfaceMeshBackingFailureFluid ? 1u : 0u,
+		surfaceMeshBackingOwner ? 1u : 0u,
+		surfaceMeshBackingOwner && *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(surfaceMeshBackingOwner) + 0x38) ? 1u : 0u,
+		surfaceMeshBackingFailAllocator.mFailCount,
+		surfaceMeshBackingCallbacks.fluidCreate,
+		surfaceMeshBackingCallbacks.implicitFluidMeshCreate,
+		surfaceMeshBackingCallbacks.fluidDestroy,
+		surfaceMeshBackingCallbacks.implicitFluidMeshDestroy,
+		simulationOutput.errors - surfaceMeshBackingErrorsBefore,
+		surfaceMeshBackingAllocationRouteMatches ? 1u : 0u);
+	resetFluidManagerCallbacks();
 	NxFluidDesc createArgumentDesc;
 	createArgumentDesc.setToDefault();
 	createArgumentDesc.maxParticles = 0x2345;
@@ -5754,6 +5798,7 @@ int wmain(int argc, wchar_t** argv)
 		!licensedSurfaceMeshPropertiesMatch ||
 		!licensedSurfaceMeshDestroyMatches ||
 		!surfaceMeshConstructorAllocationFailureMatches ||
+		!surfaceMeshBackingAllocationRouteMatches ||
 		!createArgumentMapMatches || !combinedInitializationMatches)
 		return nxFail("licensed NxFluid implicit-mesh API did not match the fixture contract");
 	}
