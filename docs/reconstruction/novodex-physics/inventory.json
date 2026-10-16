@@ -72984,13 +72984,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpImplicitMesh.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1879",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12995",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8d4d0 identifies the public NxImplicitMesh::setBlend path: it reports NXE_DB_WARNING at NpImplicitMesh.cpp:65, then takes the write lock through this+0x0c, checks callback re-entry, dispatches the value through the record at this+0x14, clears re-entry, and releases the lock.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests licensed surface-mesh fixture verifies the unsupported-feature warning (code 206, line 65), zero blend getter result, and exactly one backend setter callback. Removing the backend setter is rejected (candidate_exit=1, stdout_delta=68; row marker matched=0); the restored oracle/candidate differential is exact. Evidence: evidence/phase7-implicit-mesh-set-blend-003886.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "NpImplicitMesh::setBlend"
     },
     {
       "id": "phys_fn_003887",

@@ -11145,3 +11145,5 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 `phys_fn_003880` public implicit-mesh single-radius getter mutation detection: the licensed API differential rejects replacing the backend result with `0.0f` (`candidate_exit=1`, `stdout_delta=68`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-get-single-radius-003880.md`.
 
 `phys_fn_003882` public implicit-mesh single-radius setter mutation detection: the licensed API differential rejects removing the backend setter (`candidate_exit=1`, `stdout_delta=70`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-set-single-radius-003882.md`.
+
+`phys_fn_003886` public implicit-mesh blend setter mutation detection: the licensed API differential rejects removing the backend setter (`candidate_exit=1`, `stdout_delta=68`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-set-blend-003886.md`.

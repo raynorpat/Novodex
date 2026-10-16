@@ -5634,7 +5634,18 @@ int wmain(int argc, wchar_t** argv)
 	const NxReal initialSingleRadius = explicitSurfaceMesh->getSingleRadius();
 	explicitSurfaceMesh->setSingleRadius(0.012f);
 	const NxReal setSingleRadius = explicitSurfaceMesh->getSingleRadius();
+	const unsigned blendErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
 	explicitSurfaceMesh->setBlend(0.03f);
+	const unsigned setBlendErrors = simulationOutput.errors -
+		blendErrorsBefore;
+	const bool setBlendErrorMatches = setBlendErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING &&
+		simulationOutput.line == 65 &&
+		strcmp(simulationOutput.message,
+			"NxImplicitMesh::setBlend(): Feature not available!") == 0;
+	const unsigned setBlendErrorCode = simulationOutput.code;
+	const int setBlendErrorLine = simulationOutput.line;
 	const NxReal blend = explicitSurfaceMesh->getBlend();
 	const NxReal initialTriangleSize = explicitSurfaceMesh->getTriangleSize();
 	explicitSurfaceMesh->setTriangleSize(0.006f);
@@ -5775,6 +5786,12 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<const unsigned*>(&initialSingleRadius),
 		*reinterpret_cast<const unsigned*>(&setSingleRadius),
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSingleRadius);
+	printf("simulation implicit-mesh set-blend row=003886 matched=%u value=%08x calls=%u errors=%u code=%u line=%d\n",
+		setBlendErrorMatches && blend == 0.0f &&
+			licensedSurfaceMeshCallbacks.implicitFluidMeshSetBlend == 1 ? 1u : 0u,
+		*reinterpret_cast<const unsigned*>(&blend),
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetBlend,
+		setBlendErrors, setBlendErrorCode, setBlendErrorLine);
 	printf("simulation implicit-mesh set-surface-radius row=003878 matched=%u calls=%u reentry=%u errors=%u\n",
 		licensedSurfaceMeshPropertiesMatch && setSurfaceRadius == 0.05f ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,

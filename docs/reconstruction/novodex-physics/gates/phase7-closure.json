@@ -20,10 +20,10 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 279,
+    "differential_falsified": 280,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 114,
-    "deferred_not_reconstructed_in_phase": 91,
+    "deferred_not_reconstructed_in_phase": 90,
     "deferred_reconstructed_not_falsified": 75
   },
   "closed": [
@@ -4190,6 +4190,17 @@
       "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; the row marker reports the expected initial/updated float bits and one setter call. Restored candidate SHA-256: 6152688838feb8c23d163c071af1dc7958ba6d88f33ec44eeb84a564fbe91353. See evidence/phase7-implicit-mesh-set-single-radius-003882.md and evidence/raw/phase7-implicit-mesh-set-single-radius-003882-20261016/."
     },
     {
+      "id": "phys_fn_003886",
+      "rva": "0x0008d4d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, removed nxImplicitMeshSetBlend from NpImplicitMesh::setBlend, rebuilt NxPhysics.dll and NxPhysicsSimulationTests, and ran the staged-pair differential. The candidate row marker reports setter calls=0 and matched=0 while preserving the unsupported warning; oracle_exit=0, candidate_exit=1, stdout_delta=68. Mutant candidate SHA-256: e1eab31f511378caed8264d68674a6fc7d6fe04b7da1fa46987be4c4947c49a3.",
+        "detected": "stdout_delta=68"
+      },
+      "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; the row marker reports value=0, setter calls=1, and the unsupported warning (code 206, line 65). Restored candidate SHA-256: efecfe586ed08fa4ddfe2e4370907b615d30f7add50d03ef39f0dde78fc12f1e. See evidence/phase7-implicit-mesh-set-blend-003886.md and evidence/raw/phase7-implicit-mesh-set-blend-003886-20261016/."
+    },
+    {
       "id": "phys_fn_004862",
       "rva": "0x000b52d0",
       "proof": "differential_falsified",
@@ -5481,14 +5492,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003886",
-      "rva": "0x0008d4d0",
-      "size": 203,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_003888",
