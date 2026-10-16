@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "purpose": "Mutation and fresh Phase 7 differential evidence for sub-word position, velocity, and lifetime byte strides in phys_fn_003423.",
+  "oracle_dll_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_dll_sha256": "3ae8be6030cb9d785d499435bf3ef3a3c65e2059c2473af596a7e25812aa8f62",
+  "candidate_foundation_sha256": "cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5",
+  "gates": {
+    "phase7": {
+      "status": "pass",
+      "coverage_assertions": 2942,
+      "floor": 2942
+    }
+  },
+  "differential": {
+    "target": "NxPhysicsFluidStrideAlignmentTests",
+    "oracle_exit": 0,
+    "restored_candidate_exit": 0,
+    "restored_stdout_delta": 0,
+    "stderr_exact": true,
+    "mutant_candidate_exit": 1,
+    "mutant_stdout_delta": 4
+  },
+  "tool_tests_passed": 816,
+  "gate_target_tests_passed": 39,
+  "inventory": {
+    "functions": 6338,
+    "data_objects": 5138,
+    "unexplained": 0
+  },
+  "artifacts": [
+    {
+      "file": "baseline-differential.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-particle-stride-subword-003423-20261016/baseline-differential.log",
+      "bytes": 7103,
+      "sha256": "03abd09ccc8c7806c11dac14de49d0390e4534f97881e32ddb09cfc1d9c0e17d",
+      "compressed_bytes": 1231,
+      "compressed_sha256": "6cfca0597b2585466634c2b6ed8b61d47b834ab3f662a43b77b349147cd61bf8"
+    },
+    {
+      "file": "gate-target-tests.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-particle-stride-subword-003423-20261016/gate-target-tests.log",
+      "bytes": 26,
+      "sha256": "338258b06299b5bf4b949d747ed657a9bf7fe08abc8b5ee60c834cbdce2f809b",
+      "compressed_bytes": 46,
+      "compressed_sha256": "f9e57171bc31ffd604fc60081f113fbbe28be64a9432e85908eba96e3cfb65d4"
+    },
+    {
+      "file": "inventory-validation.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-particle-stride-subword-003423-20261016/inventory-validation.log",
+      "bytes": 150,
+      "sha256": "92c4171a5e64d091bd2820d2d2eef6de2d216bc347c69d93d2cd2de5eaad2660",
+      "compressed_bytes": 134,
+      "compressed_sha256": "6c4ec3bc58baac5a1c9791773f66c1ec6eaf6a5ef07db67a9e17f59538cfe63f"
+    },
+    {
+      "file": "mutant-differential.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-particle-stride-subword-003423-20261016/mutant-differential.log",
+      "bytes": 7302,
+      "sha256": "e720a928c54fab67fd0565a76240d24641874981d29894f419decd17c690707e",
+      "compressed_bytes": 1429,
+      "compressed_sha256": "c0a3ea026ae5f3a20b1c1181cc36c167185d520033f630f3e3db38b81b9c3c23"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-particle-stride-subword-003423-20261016/phase7-gate.log",
+      "bytes": 4609578,
+      "sha256": "2af41d1064ca22faffde6055bb4f02807c5f7c07fbc0f566924530d457b3194e",
+      "compressed_bytes": 373030,
+      "compressed_sha256": "c4962c11f6e6782b72ee5bbbd6dab2ed58ee4d413791a624329dc6fc90bda974"
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-particle-stride-subword-003423-20261016/restored-differential.log",
+      "bytes": 7103,
+      "sha256": "03abd09ccc8c7806c11dac14de49d0390e4534f97881e32ddb09cfc1d9c0e17d",
+      "compressed_bytes": 1231,
+      "compressed_sha256": "6cfca0597b2585466634c2b6ed8b61d47b834ab3f662a43b77b349147cd61bf8"
+    },
+    {
+      "file": "tool-tests.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-particle-stride-subword-003423-20261016/tool-tests.log",
+      "bytes": 28,
+      "sha256": "823bb7a4aba2fbfb94c5dea43d9d5d063d7148d6b7660a464a2218c0221fb226",
+      "compressed_bytes": 48,
+      "compressed_sha256": "ad520f9e871c771512c03296fafb5186e6f6107386b53ea1f281ffb4c22e2101"
+    }
+  ]
+}

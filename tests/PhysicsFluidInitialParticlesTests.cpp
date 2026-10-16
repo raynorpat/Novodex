@@ -767,10 +767,56 @@ int wmain(int argc, wchar_t** argv)
 		velocitiesMatch ? 1u : 0u, lifetimeMatch ? 1u : 0u);
 	if(fluid)
 		scene->releaseFluid(*fluid);
+	NxF32 subwordPositions[6] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f };
+	NxF32 subwordVelocities[6] = { -1.0f, -2.0f, -3.0f, -4.0f, -5.0f, -6.0f };
+	NxF32 subwordLifetimes[2] = { 7.0f, 8.0f };
+	NxU32 subwordCount = 2;
+	NxFluidDesc subwordDesc;
+	subwordDesc.setToDefault();
+	subwordDesc.initialParticleData.numParticlesPtr = &subwordCount;
+	subwordDesc.initialParticleData.bufferPos = subwordPositions;
+	subwordDesc.initialParticleData.bufferVel = subwordVelocities;
+	subwordDesc.initialParticleData.bufferLife = subwordLifetimes;
+	subwordDesc.initialParticleData.bufferPosByteStride = 3;
+	subwordDesc.initialParticleData.bufferVelByteStride = 3;
+	subwordDesc.initialParticleData.bufferLifeByteStride = 3;
+	NxFluid* const subwordFluid = scene->createFluid(subwordDesc);
+	unsigned char* const subwordInternal = subwordFluid
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+			reinterpret_cast<unsigned char*>(subwordFluid) + 0x14)) : 0;
+	unsigned char* const subwordArray = subwordInternal
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(subwordInternal + 0x78)) : 0;
+	unsigned char* const subwordRecords = subwordArray
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(subwordArray)) : 0;
+	const bool subwordCountMatch = subwordArray &&
+		*reinterpret_cast<unsigned*>(subwordArray + 4) == 2;
+	const bool subwordPositionsMatch = subwordRecords &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(subwordRecords + 4)) == 0x3f800000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(subwordRecords + 8)) == 0x40000000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(subwordRecords + 12)) == 0x40400000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(subwordRecords + 96)) == 0x3f800000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(subwordRecords + 100)) == 0x40000000u &&
+		nxFluidInitialParticleBits(*reinterpret_cast<float*>(subwordRecords + 104)) == 0x40400000u;
+	const bool subwordVelocityLifetimeMatch = subwordRecords &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 16) == 0 &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 20) == 0 &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 24) == 0 &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 88) == 0 &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 108) == 0 &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 112) == 0 &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 116) == 0 &&
+		*reinterpret_cast<unsigned*>(subwordRecords + 180) == 0;
+	printf("fluid initial-particles stride-subword count=%u pos-repeat=%u vel-life-zero=%u\n",
+		subwordCountMatch ? 2u : 0u, subwordPositionsMatch ? 1u : 0u,
+		subwordVelocityLifetimeMatch ? 1u : 0u);
+	if(subwordFluid)
+		scene->releaseFluid(*subwordFluid);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	if(!descValid || !countMatch || !positionsMatch || !velocitiesMatch ||
-		!lifetimeMatch)
+		!lifetimeMatch || !subwordDesc.isValid() || !subwordFluid ||
+		!subwordCountMatch || !subwordPositionsMatch ||
+		!subwordVelocityLifetimeMatch)
 		return nxFail("particle byte-stride alignment differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#elif NX_FLUID_PARTICLE_ALIAS_ORDER_TEST

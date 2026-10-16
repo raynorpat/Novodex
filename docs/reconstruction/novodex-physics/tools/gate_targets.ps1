@@ -3807,6 +3807,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsFluidStrideAlignmentTests' = @(
         'fluid initial-particles stride-align count=2 pos=1 vel=1 life=1'
+        'fluid initial-particles stride-subword count=2 pos-repeat=1 vel-life-zero=1'
     )
     'NxPhysicsFluidManagerGrowthFailureTests' = @(
         'fluid first-create oom dirty-refresh caught=1 exception=c0000005 allocations=1 dirty=1 returned=0'
@@ -6336,7 +6337,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2941  # plus phys_fn_000445 per-step debug-renderable clear assertion; plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
+	'7' = 2942  # plus phys_fn_003423 sub-word stride edge assertion; plus phys_fn_000445 per-step debug-renderable clear assertion; plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
