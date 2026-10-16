@@ -1,0 +1,75 @@
+{
+  "purpose": "Licensed public NxImplicitMesh::setSingleRadius mutation proof and registered Phase 5/6/7 gates for phys_fn_003882.",
+  "date": "2026-10-16",
+  "rva": "0x0008d3f0",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "6152688838feb8c23d163c071af1dc7958ba6d88f33ec44eeb84a564fbe91353",
+  "mutant_candidate_sha256": "bc4ba645447b20aea285ea998f1489c9eca9439310c3a586bd66c1fe7e987003",
+  "mutation_result": "Removed the backend single-radius setter call while retaining the write-lock and callback guard. Candidate retained initial=0x3c23d70a, setter calls=0, matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=70.",
+  "restored_result": "Oracle and candidate both exit 0 with stdout_delta=0 and exact stderr.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2818 floor=2818",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1707 floor=1707",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2948 floor=2948"
+  },
+  "public_headers": "verify_public_headers.py passed in all three phase gates; both Physics header roots each contain 80 files.",
+  "tooling_tests": "Ran 816 tests; OK.",
+  "inventory_sha256": "1ab7b5dcda06f64ef0411fe74157b9f5f8c264b9bc04d27898342ac2a08bd906",
+  "phase7_closure_sha256": "6602e4ac572a5ae96fb486a917e8ef89d3a1fdac25fa8939f2b40a1acd6ab9c0",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "d8a60dfd1de642eb8541374e5027014317ed441998d1e96dbc3f5f9b79ba5f13",
+      "uncompressed_sha256": "d7dc79ac51545049c395482821e8591ebab76c37e49bf4458f2002958f3880a1",
+      "compressed_bytes": 55982,
+      "uncompressed_bytes": 850927
+    },
+    "no-op-mutant-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "no-op-mutant-differential.log.gz": {
+      "sha256": "ae416dacdade187717e5f802e2bdd755e99c13ebc1e987716fc6d3950b70e9bd",
+      "uncompressed_sha256": "a9b52fd34e93b0dcaa4cbde1e88ccb46c12f4c63b72f813f03c54801e137cf49",
+      "compressed_bytes": 55046,
+      "uncompressed_bytes": 844764
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "a2b43fb9b6fc2ef0899122a5cfc1d1266ea4c9c9a0a80cd2bc982171750e53f7",
+      "uncompressed_sha256": "145991653dd79261d5c4ca67271ba67a1198c32652df7214241c57be00b78a70",
+      "compressed_bytes": 210083,
+      "uncompressed_bytes": 2848997
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "2ac14816b0806312a395da79db28808be822061dd55808d3e0f71d97f41ec063",
+      "uncompressed_sha256": "cf6614a7a530a60eb0e4a3bf2bc7392b7b9a3bc53373d1da0b3f2fa2e7a864b5",
+      "compressed_bytes": 254360,
+      "uncompressed_bytes": 3109902
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "851626ad5ea94bffc43a8782f038653fa63fd8a6419a3f88ea6785d6bfbf1849",
+      "uncompressed_sha256": "b3d6b6523ea51b66556baa153c997fe59a7025f869a810668544c576e3d13547",
+      "compressed_bytes": 374225,
+      "uncompressed_bytes": 4653662
+    },
+    "restored-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "restored-differential.log.gz": {
+      "sha256": "5cf065760a99ebe2442bfd11a0d94c1520cf6ba1aef7df0bcccb9ba2c9de90c1",
+      "uncompressed_sha256": "b50133c7b380323ac4718f6313d30aecc190bc8c8534c0a11e1d8f9b47f0c8db",
+      "compressed_bytes": 55982,
+      "uncompressed_bytes": 850927
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "a75b487702ac7ba4e7cb80be3a5af6c554f6753e2a07e99fb6bf516e00e1c63e",
+      "uncompressed_sha256": "a5527cd4d7b813c2a09b10b5899dcf9ea8aa6d57d1fccc7dad235efb4fc87180",
+      "compressed_bytes": 18986,
+      "uncompressed_bytes": 125875
+    }
+  }
+}

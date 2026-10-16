@@ -72910,13 +72910,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1451",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12988",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8d3f0 identifies the public NxImplicitMesh::setSingleRadius path: it takes the Scene write-lock link at this+0x0c, checks API re-entry, calls the internal backend setter with the record at this+0x14, then clears re-entry and releases the lock.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests licensed surface-mesh fixture checks initial and updated single-radius float bits and exactly one backend setter call. Removing the setter is rejected (candidate_exit=1, stdout_delta=70; row marker matched=0); restored oracle/candidate differential is exact. Evidence: evidence/phase7-implicit-mesh-set-single-radius-003882.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "NpImplicitMesh::setSingleRadius"
     },
     {
       "id": "phys_fn_003883",

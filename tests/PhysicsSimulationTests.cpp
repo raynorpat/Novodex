@@ -5769,6 +5769,12 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<const unsigned*>(&initialSingleRadius),
 		*reinterpret_cast<const unsigned*>(&setSingleRadius),
 		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSingleRadius);
+	printf("simulation implicit-mesh set-single-radius row=003882 matched=%u initial=%08x updated=%08x calls=%u\n",
+		initialSingleRadius == 0.01f && setSingleRadius == 0.012f &&
+			licensedSurfaceMeshCallbacks.implicitFluidMeshSetSingleRadius == 1 ? 1u : 0u,
+		*reinterpret_cast<const unsigned*>(&initialSingleRadius),
+		*reinterpret_cast<const unsigned*>(&setSingleRadius),
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSingleRadius);
 	printf("simulation implicit-mesh set-surface-radius row=003878 matched=%u calls=%u reentry=%u errors=%u\n",
 		licensedSurfaceMeshPropertiesMatch && setSurfaceRadius == 0.05f ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,

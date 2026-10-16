@@ -20,10 +20,10 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 278,
+    "differential_falsified": 279,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 114,
-    "deferred_not_reconstructed_in_phase": 92,
+    "deferred_not_reconstructed_in_phase": 91,
     "deferred_reconstructed_not_falsified": 75
   },
   "closed": [
@@ -4179,6 +4179,17 @@
       "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; the row marker reports the expected initial/updated float bits and two getter calls. Restored candidate SHA-256: 4997880ac250cdc5b6bf8a292d5c27dbac21bae2f8fff7f8f5bb4201a2814d7b. See evidence/phase7-implicit-mesh-get-single-radius-003880.md and evidence/raw/phase7-implicit-mesh-get-single-radius-003880-20261016/."
     },
     {
+      "id": "phys_fn_003882",
+      "rva": "0x0008d3f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, removed nxImplicitMeshSetSingleRadius from NpImplicitMesh::setSingleRadius, rebuilt NxPhysics.dll and NxPhysicsSimulationTests, and ran the staged-pair differential. The candidate retains the initial value, reports setter calls=0 and matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=70. Mutant candidate SHA-256: bc4ba645447b20aea285ea998f1489c9eca9439310c3a586bd66c1fe7e987003.",
+        "detected": "stdout_delta=70"
+      },
+      "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; the row marker reports the expected initial/updated float bits and one setter call. Restored candidate SHA-256: 6152688838feb8c23d163c071af1dc7958ba6d88f33ec44eeb84a564fbe91353. See evidence/phase7-implicit-mesh-set-single-radius-003882.md and evidence/raw/phase7-implicit-mesh-set-single-radius-003882-20261016/."
+    },
+    {
       "id": "phys_fn_004862",
       "rva": "0x000b52d0",
       "proof": "differential_falsified",
@@ -5461,14 +5472,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003882",
-      "rva": "0x0008d3f0",
-      "size": 164,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_003884",
