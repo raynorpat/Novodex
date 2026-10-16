@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "description": "Exact public spring-force branch matrix, two row-specific mutations, restored oracle differential, and full Phase 5/6/7 gates.",
+  "artifacts": [
+    {
+      "file": "compression-ramp-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-branches-003970-20261016\\compression-ramp-mutation.log",
+      "source_bytes": 848952,
+      "source_sha256": "65a73fa6c932682245ae5a29133d81c3d5852fcb43ec254034b8b00dbe2d14ae",
+      "compressed_bytes": 55829,
+      "compressed_sha256": "08a01a8cee0b1291cc70b19048649a11f6eb936eb1d1f85832790a207d6c9615"
+    },
+    {
+      "file": "green-restored.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-branches-003970-20261016\\green-restored.log",
+      "source_bytes": 848680,
+      "source_sha256": "50fdc0940bbe706d0fa7431934a1e575daee3c9a9466a9cac5f8392387590ca1",
+      "compressed_bytes": 55711,
+      "compressed_sha256": "7bdccab2370986b9b88126531ca4f5b46b596bbe97e6f047e79103d8df2c588d"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-branches-003970-20261016\\phase5-gate.log",
+      "source_bytes": 2816145,
+      "source_sha256": "dda8a25c4ee92102ac8b804d4d81b1b73f69d11f6bae7e363dbd79e5e9d75cbe",
+      "compressed_bytes": 208604,
+      "compressed_sha256": "e1e2e696d7c8a9b2733567bacde04fb02d72e5918441999fe31505ee06d67ba1"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-branches-003970-20261016\\phase6-gate.log",
+      "source_bytes": 3093034,
+      "source_sha256": "6e49ece0295ca468b25d9bfc0aae297123c2210f696694841fdb6d2e12814987",
+      "compressed_bytes": 253172,
+      "compressed_sha256": "8f113de5523656e012623a0f08958b45b2ce33ce491a89634ea62183b2245a1e"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-branches-003970-20261016\\phase7-gate.log",
+      "source_bytes": 4606849,
+      "source_sha256": "8371266ebd5b0aff7861bd430032532a246ef95c54c9317e761fb6fc9516f7e5",
+      "compressed_bytes": 372590,
+      "compressed_sha256": "17c1f820fc160b8fef5d802405bf7f79f35b9d40233a42b6fa51d45e841ce5e2"
+    },
+    {
+      "file": "stretch-ramp-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase6-spring-force-branches-003970-20261016\\stretch-ramp-mutation.log",
+      "source_bytes": 848952,
+      "source_sha256": "710600681a6d4fd3b7d8755431eeaa92a8e0717a85de4997f82b32a6722053d5",
+      "compressed_bytes": 55840,
+      "compressed_sha256": "0458621d980fc62d62812fa84f088701fa31c488946e4b27c7f832740ef745f3"
+    }
+  ],
+  "row": "phys_fn_003970",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "4337969868bf9069cfe5fcb583bde78c71cd9898caccd7a00c1f374cbef349c4",
+  "gate_coverage": {
+    "phase5": "2807/2807",
+    "phase6": "1698/1698",
+    "phase7": "2935/2935"
+  },
+  "tool_tests": "816 passed"
+}

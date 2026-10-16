@@ -2154,6 +2154,87 @@ int wmain(int argc, wchar_t** argv)
 	effectorStepScene->releaseEffector(*stepEffector);
 	sdk->releaseScene(*effectorStepScene);
 
+	// Pin each branch of phys_fn_003970 through the public simulation path.
+	// A single step keeps the spring force observable without letting the
+	// resulting velocity move a case into another distance regime.  The body
+	// anchor is off-centre, matching the previously proven public effector setup
+	// that produces an observable impulse during simulation.
+	NxSceneDesc springBranchSceneDesc;
+	springBranchSceneDesc.setToDefault();
+	springBranchSceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	NxScene* const springBranchScene = sdk->createScene(springBranchSceneDesc);
+	if(!springBranchScene)
+		return nxFail("spring-branch scene creation failed");
+	springBranchScene->setTiming(1.0f / 60.0f, 1, NX_TIMESTEP_FIXED);
+	const NxReal springBranchDistances[6] = { 2.0f, 4.0f, 1.0f, 0.75f,
+		0.5f, 2.0f };
+	const NxReal springBranchMaxForces[6] = { 100.0f, 100.0f, 100.0f,
+		100.0f, 100.0f, 0.0f };
+	NxActor* springBranchActors[6] = {};
+	NxSpringAndDamperEffector* springBranchEffectors[6] = {};
+	NxBoxShapeDesc springBranchShape;
+	springBranchShape.setToDefault();
+	springBranchShape.dimensions = NxVec3(0.25f, 0.25f, 0.25f);
+	for(unsigned i = 0; i < 6; ++i)
+		{
+			NxBodyDesc body;
+			body.setToDefault();
+			NxActorDesc actorDesc;
+			actorDesc.setToDefault();
+			actorDesc.body = &body;
+			actorDesc.density = 1.0f;
+			const NxReal base = 10.0f * static_cast<NxReal>(i);
+			actorDesc.globalPose.t = NxVec3(base, 0.0f, 0.0f);
+			actorDesc.shapes.pushBack(&springBranchShape);
+			springBranchActors[i] = springBranchScene->createActor(actorDesc);
+			if(!springBranchActors[i])
+				return nxFail("spring-branch actor creation failed");
+			NxSpringAndDamperEffectorDesc desc;
+			desc.setToDefault();
+			desc.body1 = springBranchActors[i];
+			desc.pos1 = NxVec3(base, 0.5f, 0.0f);
+			desc.pos2 = NxVec3(base + springBranchDistances[i], 0.5f, 0.0f);
+			desc.springDistCompressSaturate = 0.5f;
+			desc.springDistRelaxed = 1.0f;
+			desc.springDistStretchSaturate = 4.0f;
+			desc.springMaxCompressForce = springBranchMaxForces[i];
+			desc.springMaxStretchForce = springBranchMaxForces[i];
+			springBranchEffectors[i] =
+				springBranchScene->createSpringAndDamperEffector(desc);
+			if(!springBranchEffectors[i])
+				return nxFail("spring-branch effector creation failed");
+			springBranchActors[i]->wakeUp(1.0f);
+		}
+	springBranchScene->simulate(1.0f / 60.0f);
+	const bool springBranchReady = springBranchScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool springBranchFetched = springBranchScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!springBranchReady || !springBranchFetched)
+		return nxFail("spring-branch simulation result was not ready and fetched");
+	springBranchScene->simulate(1.0f / 60.0f);
+	const bool springBranchReady2 = springBranchScene->checkResults(NX_RIGID_BODY_FINISHED, true);
+	const bool springBranchFetched2 = springBranchScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+	if(!springBranchReady2 || !springBranchFetched2)
+		return nxFail("second spring-branch result was not ready and fetched");
+	NxU32 springBranchVelocityBits[6][3] = {};
+	for(unsigned i = 0; i < 6; ++i)
+		{
+			NxVec3 velocity;
+			springBranchActors[i]->getLinearVelocity(velocity);
+			springBranchVelocityBits[i][0] = nxFloatBits(velocity.x);
+			springBranchVelocityBits[i][1] = nxFloatBits(velocity.y);
+			springBranchVelocityBits[i][2] = nxFloatBits(velocity.z);
+		}
+	printf("simulation row3970 spring branches cases=6 ready=%u fetched=%u ready2=%u fetched2=%u velocity=",
+		springBranchReady ? 1u : 0u, springBranchFetched ? 1u : 0u,
+		springBranchReady2 ? 1u : 0u, springBranchFetched2 ? 1u : 0u);
+	for(unsigned i = 0; i < 6; ++i)
+		printf("%s%08x.%08x.%08x", i ? "/" : "", springBranchVelocityBits[i][0],
+			springBranchVelocityBits[i][1], springBranchVelocityBits[i][2]);
+	printf(" exact=%u\n", springBranchReady && springBranchFetched ? 1u : 0u);
+	for(unsigned i = 0; i < 6; ++i)
+		springBranchScene->releaseEffector(*springBranchEffectors[i]);
+	sdk->releaseScene(*springBranchScene);
+
 	// Isolate quaternion integration from effectors and solver impulses: the
 	// body starts with angular velocity and advances through the public step.
 	NxSceneDesc angularStepSceneDesc;
