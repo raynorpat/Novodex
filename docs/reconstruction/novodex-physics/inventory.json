@@ -68015,13 +68015,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1363",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12560",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x00089890 copies three requested position words to the emitter local-pose translation at internal+0x3c, then calls phys_fn_003611 to refresh its world pose.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the oracle public setter, linked candidate, and candidate DLL on unattached emitters with deliberately nontrivial local orientation/position. It compares the resulting local pose and EmitterSetGlobalPose callback record and checks x86 stack balance. The setter-specific destination-offset mutant is rejected (mismatches=1); restored control reports cases=4 callback_checks=4 stack_checks=4 mismatches=0.",
+      "notes": "Local-component update path, including world-pose refresh. See evidence/phase7-fluid-emitter-local-components-003618-003620.md and evidence/raw/phase7-fluid-local-components-003618-003620-20261016/.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::setLocalPosition"
     },
     {
       "id": "phys_fn_003619",
@@ -68051,13 +68053,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1364",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12561",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x000898b0 copies the 3x3 requested orientation (0x24 bytes) to internal+0x18, then calls phys_fn_003611 to refresh its world pose.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the oracle public setter, linked candidate, and candidate DLL on unattached emitters with deliberately nontrivial local orientation/position. It compares the resulting local pose and EmitterSetGlobalPose callback record and checks x86 stack balance. The setter-specific destination-offset mutant is rejected (mismatches=1); restored control reports cases=4 callback_checks=4 stack_checks=4 mismatches=0.",
+      "notes": "Local-component update path, including world-pose refresh. See evidence/phase7-fluid-emitter-local-components-003618-003620.md and evidence/raw/phase7-fluid-local-components-003618-003620-20261016/.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "NpFluidEmitter::setLocalOrientation"
     },
     {
       "id": "phys_fn_003621",

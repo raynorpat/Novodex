@@ -1901,3 +1901,7 @@ The 54-byte local-pose setter now has its own source boundary, `nxNpFluidEmitter
 ### Continuation — fluid emitter world-pose component setters (`phys_fn_003613` / `003614`, 2026-10-16)
 
 Both small world-pose wrappers now preserve the correct component from the backend pose. `setGlobalPosition` preserves the backend orientation; `setGlobalOrientation` preserves its translation. The candidate reads the callback's column-major matrix and converts it to the `NxMat34` row-major form before delegating to the global-pose setter. The registered oracle/source/DLL fixture seeds different local and backend poses and checks local state, callback payloads and stack balance. Local-pose-read mutations in each setter are rejected; restored output matches (`cases=2 callback_checks=2 stack_checks=2 mismatches=0`). Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-emitter-world-components-003613-003614.md`.
+
+### Continuation — fluid emitter local-pose component setters (`phys_fn_003618` / `003620`, 2026-10-16)
+
+The existing local-position and local-orientation implementations now have row-specific direct oracle/candidate/DLL coverage. The fixture checks transformed world-pose callback data, resulting local pose, and x86 stack balance. A one-float destination-offset mutation in each setter is rejected (`mismatches=1`); restored output reports `cases=4 callback_checks=4 stack_checks=4 mismatches=0`. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-emitter-local-components-003618-003620.md`.

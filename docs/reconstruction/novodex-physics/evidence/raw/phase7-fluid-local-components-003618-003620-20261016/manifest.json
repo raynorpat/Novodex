@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "rows": [
+    {
+      "id": "phys_fn_003618",
+      "rva": "0x00089890",
+      "method": "NpFluidEmitter::setLocalPosition"
+    },
+    {
+      "id": "phys_fn_003620",
+      "rva": "0x000898b0",
+      "method": "NpFluidEmitter::setLocalOrientation"
+    }
+  ],
+  "target": "NxPhysicsFluidEmitterAbiTests",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "d5f577947e1d76635e04e26e0f7083b222fb6ad7117c05877bfd029d87d294c7",
+  "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
+  "fixture_source_sha256": "998536614d6580899fd6d2d8a42da848fecb19e5cd5a2c19ceb3d8ff21241ee2",
+  "implementation_source_sha256": "0195da9c86601cfbdb04fcbd1ad89f6a85a75ea14b4132ccf066de89b0da624c",
+  "artifacts": {
+    "position-mutant.log.gz": {
+      "bytes": 9967,
+      "sha256": "b4acf161a7229811a6601b2153cb099d5f4aaccf9fff3fd0c02f72b2610d969f",
+      "compressed_bytes": 2275,
+      "compressed_sha256": "068c52834b4b5305c4dd3202459d89343a29c376186448c853b4f6d3bbb0f940",
+      "candidate_sha256": "c61dc7d62b1c4ee437971049c6ed09c9a1a5c9da89fc0066981438c89394aea6",
+      "exit_code": 1,
+      "mutation": "Move only the local-position destination from internal+0x3c to internal+0x40."
+    },
+    "orientation-mutant.log.gz": {
+      "bytes": 10238,
+      "sha256": "9fe47b1ae78b95fcdf1b6c095c56af07e4a2e2b91de366147a9f572995f8e675",
+      "compressed_bytes": 2314,
+      "compressed_sha256": "3b10f8563f088c7a4256d39ca1d4c9fc9ca28a65a931ee37111fc99792dc1570",
+      "candidate_sha256": "6dd1d3597973e4246ddab0a364463802c8f6343d983b5005696478067015895c",
+      "exit_code": 1,
+      "mutation": "Move only the local-orientation destination from internal+0x18 to internal+0x1c."
+    },
+    "restored.log.gz": {
+      "bytes": 9225,
+      "sha256": "ae2198df7f64e2c8fa45d5669dd03c2b68bb470d7223198c36b9d547112759d2",
+      "compressed_bytes": 2026,
+      "compressed_sha256": "0471ae7189638f192ead7e12b2ba3f5eddeef29a9c588e0765b2fc63f73b7bc0",
+      "candidate_sha256": "d5f577947e1d76635e04e26e0f7083b222fb6ad7117c05877bfd029d87d294c7",
+      "exit_code": 0,
+      "mutation": "Restored local setter destination offsets; four-case differential control."
+    }
+  }
+}

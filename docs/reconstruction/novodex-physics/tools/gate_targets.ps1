@@ -149,7 +149,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter name rows=2 replacements=1 clears=1 candidate_dll=1 mismatches=0'
 		'fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0'
 		'fluid emitter local-pose setter cases=2 callback_checks=2 stack_checks=2 mismatches=0'
-		'fluid emitter global component setters cases=2 callback_checks=2 stack_checks=2 mismatches=0'
+		'fluid emitter global and local component setters cases=4 callback_checks=4 stack_checks=4 mismatches=0'
 		'fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'

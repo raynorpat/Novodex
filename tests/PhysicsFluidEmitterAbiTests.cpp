@@ -4593,8 +4593,10 @@ class FluidEmitterProbe : public NpFluidEmitter
 	virtual void setGlobalOrientation(const NxMat33& orientation)
 		{ NpFluidEmitter::setGlobalOrientation(orientation); }
 	virtual void setLocalPose(const NxMat34&) {}
-	virtual void setLocalPosition(const NxVec3&) {}
-	virtual void setLocalOrientation(const NxMat33&) {}
+	virtual void setLocalPosition(const NxVec3& position)
+		{ NpFluidEmitter::setLocalPosition(position); }
+	virtual void setLocalOrientation(const NxMat33& orientation)
+		{ NpFluidEmitter::setLocalOrientation(orientation); }
 	virtual void setFrameActor(NxActor*) {}
 	virtual NxActor* getFrameActor() const { return NpFluidEmitter::getFrameActor(); }
 	virtual NxReal getDimensionX() const { return NpFluidEmitter::getDimensionX(); }
@@ -4658,7 +4660,7 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 	const unsigned fluidHandle = 0x7b2c3d4eu;
 	const unsigned emitterHandle = 0x8c3d4e5fu;
 	unsigned mismatches = 0, callbackChecks = 0, stackChecks = 0;
-	for(unsigned test = 0; test < 2; ++test)
+	for(unsigned test = 0; test < 4; ++test)
 		{
 		unsigned char* internals[] = { oracleInternal, candidateInternal,
 			candidateDllInternal };
@@ -4681,8 +4683,12 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 		__asm mov oracleBefore, esp
 		if(test == 0)
 			oracle->setGlobalPosition(*reinterpret_cast<const NxVec3*>(position));
-		else
+		else if(test == 1)
 			oracle->setGlobalOrientation(*reinterpret_cast<const NxMat33*>(orientation));
+		else if(test == 2)
+			oracle->setLocalPosition(*reinterpret_cast<const NxVec3*>(position));
+		else
+			oracle->setLocalOrientation(*reinterpret_cast<const NxMat33*>(orientation));
 		__asm mov oracleAfter, esp
 		const unsigned oracleCallbacks = gOracleFlagCallbackCount;
 		bool oracleSetCallback = false;
@@ -4696,8 +4702,12 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 		__asm mov candidateBefore, esp
 		if(test == 0)
 			candidate->setGlobalPosition(*reinterpret_cast<const NxVec3*>(position));
-		else
+		else if(test == 1)
 			candidate->setGlobalOrientation(*reinterpret_cast<const NxMat33*>(orientation));
+		else if(test == 2)
+			candidate->setLocalPosition(*reinterpret_cast<const NxVec3*>(position));
+		else
+			candidate->setLocalOrientation(*reinterpret_cast<const NxMat33*>(orientation));
 		__asm mov candidateAfter, esp
 		const unsigned candidateCallbacks = callbackCount();
 		bool candidateSetCallback = false;
@@ -4714,8 +4724,12 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 		__asm mov candidateDllBefore, esp
 		if(test == 0)
 			candidateDll->setGlobalPosition(*reinterpret_cast<const NxVec3*>(position));
-		else
+		else if(test == 1)
 			candidateDll->setGlobalOrientation(*reinterpret_cast<const NxMat33*>(orientation));
+		else if(test == 2)
+			candidateDll->setLocalPosition(*reinterpret_cast<const NxVec3*>(position));
+		else
+			candidateDll->setLocalOrientation(*reinterpret_cast<const NxMat33*>(orientation));
 		__asm mov candidateDllAfter, esp
 		const unsigned candidateDllCallbacks = callbackCount();
 		bool candidateDllSetCallback = false;
@@ -4763,7 +4777,7 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 				}
 			}
 		}
-	printf("fluid emitter global component setters cases=2 callback_checks=%u stack_checks=%u mismatches=%u\n",
+	printf("fluid emitter global and local component setters cases=4 callback_checks=%u stack_checks=%u mismatches=%u\n",
 		callbackChecks, stackChecks, mismatches);
 	return mismatches;
 	}
