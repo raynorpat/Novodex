@@ -5800,6 +5800,18 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<const unsigned*>(&setTriangleSize),
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
+	printf("simulation implicit-mesh get-smoothing-iterations row=003892 matched=%u initial=%u updated=%u calls=%u\n",
+		initialSmoothingIterations == 6 && setSmoothingIterations == 8 &&
+			licensedSurfaceMeshCallbacks.implicitFluidMeshGetSmoothingIterations == 2 ? 1u : 0u,
+		initialSmoothingIterations, setSmoothingIterations,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshGetSmoothingIterations);
+	printf("simulation implicit-mesh set-smoothing-iterations row=003894 matched=%u value=%u calls=%u callback-errors=%u\n",
+		setSmoothingIterations == 8 &&
+			licensedSurfaceMeshCallbacks.implicitFluidMeshSetSmoothingIterations == 1 &&
+			licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors == 0 ? 1u : 0u,
+		setSmoothingIterations,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSmoothingIterations,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
 	printf("simulation implicit-mesh set-surface-radius row=003878 matched=%u calls=%u reentry=%u errors=%u\n",
 		licensedSurfaceMeshPropertiesMatch && setSurfaceRadius == 0.05f ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetSurfaceRadius,

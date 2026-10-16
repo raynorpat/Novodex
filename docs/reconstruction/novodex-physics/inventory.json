@@ -73096,13 +73096,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "lock-bracketed helper call (0x8d680u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1453",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13007",
-      "static_proof": "static review of the recorded shape: lock-bracketed helper call (0x8d680u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockhelper differential (3z188): failures=0 for all five rows, with the lock API, the registry global and each global function pointer bound to the same recorders the candidate uses",
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8d680 identifies the public NxImplicitMesh::getSmoothingIterations path: it enters the scene read lock through this+0x10, calls the internal helper through the record at this+0x14, releases the lock, and returns the unsigned count.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests licensed surface-mesh fixture verifies initial=6 and updated=8 with exactly two backend getter calls. Replacing the backend result with 0 is rejected (candidate_exit=1, stdout_delta=70; row marker matched=0); the restored oracle/candidate differential is exact. Evidence: evidence/phase7-implicit-mesh-smoothing-iterations-003892-003894.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "NpImplicitMesh::getSmoothingIterations"
     },
     {
       "id": "phys_fn_003893",
@@ -73132,13 +73134,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpImplicitMesh.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1454",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13008",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8d6b0 identifies the public NxImplicitMesh::setSmoothingIterations path: it tries the scene write lock through this+0x0c, checks callback re-entry, dispatches through the record at this+0x14, clears re-entry, and releases the lock; lock and re-entry reports use NpImplicitMesh.cpp:92 and :93.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests licensed surface-mesh fixture verifies updated=8, exactly one backend setter callback, and zero callback-argument errors. Removing the setter is rejected (candidate_exit=1, stdout_delta=70; row marker matched=0); the restored oracle/candidate differential is exact. Evidence: evidence/phase7-implicit-mesh-smoothing-iterations-003892-003894.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "NpImplicitMesh::setSmoothingIterations"
     },
     {
       "id": "phys_fn_003895",

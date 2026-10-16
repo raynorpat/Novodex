@@ -11149,3 +11149,7 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 `phys_fn_003886` public implicit-mesh blend setter mutation detection: the licensed API differential rejects removing the backend setter (`candidate_exit=1`, `stdout_delta=68`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-set-blend-003886.md`.
 
 `phys_fn_003890` public implicit-mesh triangle-size setter mutation detection: the licensed API differential rejects removing the backend setter (`candidate_exit=1`, `stdout_delta=68`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-set-triangle-size-003890.md`.
+
+`phys_fn_003892` public implicit-mesh smoothing-iteration getter mutation detection: the licensed API differential rejects replacing the backend result with zero (`candidate_exit=1`, `stdout_delta=70`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-smoothing-iterations-003892-003894.md`.
+
+`phys_fn_003894` public implicit-mesh smoothing-iteration setter mutation detection: the licensed API differential rejects removing the backend setter (`candidate_exit=1`, `stdout_delta=70`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-smoothing-iterations-003892-003894.md`.

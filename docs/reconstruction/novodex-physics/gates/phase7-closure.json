@@ -20,11 +20,11 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 281,
+    "differential_falsified": 283,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 114,
-    "deferred_not_reconstructed_in_phase": 89,
-    "deferred_reconstructed_not_falsified": 75
+    "deferred_not_reconstructed_in_phase": 88,
+    "deferred_reconstructed_not_falsified": 74
   },
   "closed": [
     {
@@ -4212,6 +4212,28 @@
       "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; the row marker reports initial=0x3ba3d70a, updated=0x3bc49ba6, one setter callback and zero callback-argument errors. Restored candidate SHA-256: 26b7d7095977fdaa64291f0eac6e7dddfe2639b921e8b831083467983d60a084. See evidence/phase7-implicit-mesh-set-triangle-size-003890.md and evidence/raw/phase7-implicit-mesh-set-triangle-size-003890-20261016/."
     },
     {
+      "id": "phys_fn_003892",
+      "rva": "0x0008d680",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, replaced the NpImplicitMesh::getSmoothingIterations backend result with 0. The candidate reports initial=0, updated=0, getter calls=0, and matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=70. Mutant candidate SHA-256: 9a183ecfef0a74c5b7fdef23029b5b7d323ee3f7390e8d7fe6cf1e11529d542d.",
+        "detected": "stdout_delta=70"
+      },
+      "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr. The restored row marker reports initial=6, updated=8 and two getter calls. See evidence/phase7-implicit-mesh-smoothing-iterations-003892-003894.md and evidence/raw/phase7-implicit-mesh-smoothing-iterations-003892-003894-20261016/."
+    },
+    {
+      "id": "phys_fn_003894",
+      "rva": "0x0008d6b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "In a throwaway source mutation, removed nxImplicitMeshSetSmoothingIterations from NpImplicitMesh::setSmoothingIterations. The candidate retains 6, reports setter calls=0 and matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=70. Mutant candidate SHA-256: b296c9410c4dba123393e2a13090668731df83f61822329b86585e8400593610.",
+        "detected": "stdout_delta=70"
+      },
+      "note": "Restored control: the pinned oracle and candidate both exit 0 with stdout_delta=0 and exact stderr. The restored row marker reports updated=8, one setter callback and zero callback-argument errors. See evidence/phase7-implicit-mesh-smoothing-iterations-003892-003894.md and evidence/raw/phase7-implicit-mesh-smoothing-iterations-003892-003894-20261016/."
+    },
+    {
       "id": "phys_fn_004862",
       "rva": "0x000b52d0",
       "proof": "differential_falsified",
@@ -5512,23 +5534,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003892",
-      "rva": "0x0008d680",
-      "size": 36,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003894",
-      "rva": "0x0008d6b0",
-      "size": 164,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_003896",

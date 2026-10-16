@@ -1,0 +1,95 @@
+{
+  "purpose": "Licensed public NxImplicitMesh smoothing-iteration getter/setter mutation proofs and Phase 5/6/7 gates for phys_fn_003892 and phys_fn_003894.",
+  "date": "2026-10-16",
+  "rows": {
+    "phys_fn_003892": "0x0008d680",
+    "phys_fn_003894": "0x0008d6b0"
+  },
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "getter_mutant_candidate_sha256": "9a183ecfef0a74c5b7fdef23029b5b7d323ee3f7390e8d7fe6cf1e11529d542d",
+  "setter_mutant_candidate_sha256": "b296c9410c4dba123393e2a13090668731df83f61822329b86585e8400593610",
+  "restored_differential_candidate_sha256": "a500ff4c6962f99029ac818e0f887e14b73cb0a7aa7d7dcc91f7fc9c6bd3a0b8",
+  "gated_candidate_sha256": "35c4edbb521236340571a8d210c2b9252458a92c77557cee7010e8f5ed2ce916",
+  "mutation_results": {
+    "phys_fn_003892": "Replaced the backend smoothing-iteration getter result with 0. Candidate row reports initial=0, updated=0, calls=0, matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=70.",
+    "phys_fn_003894": "Removed nxImplicitMeshSetSmoothingIterations. Candidate retains 6, reports setter calls=0 and matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=70."
+  },
+  "restored_result": "Oracle and candidate both exit 0 with stdout_delta=0 and exact stderr; getter row reports initial=6, updated=8, two calls; setter row reports updated=8, one call and zero callback-argument errors.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2822 floor=2822",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1711 floor=1711",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2952 floor=2952"
+  },
+  "public_headers": "verify_public_headers.py passed in all three phase gates; both Physics header roots each contain 80 files.",
+  "tooling_tests": "Ran 816 tests; OK.",
+  "inventory_sha256": "a66b956cafd8fd028cd977d943b159d33b98c3310d2254e9b5ef4e2b4baae63e",
+  "phase7_closure_sha256": "034e62f5323deea8f3929177a04acf8b36932a0647c10ae1ba7ad8d1990d6677",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "f4294efa3b0381aaf54be424be70c30ad6b878cb6857480af6b579513aacae3f",
+      "uncompressed_sha256": "4e95d3217ebee8ae85673203248dfd09e702570e41f9a1c4854d78acd422085d",
+      "compressed_bytes": 56141,
+      "uncompressed_bytes": 852051
+    },
+    "getter-mutant-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "getter-mutant-differential.log.gz": {
+      "sha256": "44d6553f7f548f0b8d2aef6cb71a85bcf0f6594a7bad260aca51576be67e596e",
+      "uncompressed_sha256": "4bce8b0a2136acd5eca757f5c5c5bf2abee63cba46297f8bdf780f39fd004092",
+      "compressed_bytes": 55258,
+      "uncompressed_bytes": 846236
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "275be136ceefb62b030146d3bd8d9db3d5525aabaf427b6747be73a36b54587a",
+      "uncompressed_sha256": "0ab299f35dd3e979167d06eadc4619fb604e50564a42639f6c533a10248efcaa",
+      "compressed_bytes": 210383,
+      "uncompressed_bytes": 2854825
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "75ce52b67ff9c716ae224cb1427f0a402b01e77ee86562ad49f7981dfdc11b7f",
+      "uncompressed_sha256": "fa008879fc507e609243edf4255c546f00e1a5e7c2f975a0936749690cca8359",
+      "compressed_bytes": 254664,
+      "uncompressed_bytes": 3113424
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "e32eb34a5aa4cffb37e24f51a4e21230e0b5b966842248cbefbfd8d1db4bc5c3",
+      "uncompressed_sha256": "2b0bb7a4909c3a8858254f38c24cd8119f2cb680e57124ca52cd63388a5f05c5",
+      "compressed_bytes": 374523,
+      "uncompressed_bytes": 4661424
+    },
+    "restored-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "restored-differential.log.gz": {
+      "sha256": "24bc80749f452e7a69a34ed79d64d9e2636fed511fe96febdbe7cd913f142e64",
+      "uncompressed_sha256": "9352c3114785b5c340aab19d0a61fa611a40db090be639da8508c8595bd19a5a",
+      "compressed_bytes": 56179,
+      "uncompressed_bytes": 852276
+    },
+    "setter-mutant-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "setter-mutant-differential.log.gz": {
+      "sha256": "9692f174fb2c2999bf4f4a375f7fda01f5b04077c3dec27aa40eab732c91e905",
+      "uncompressed_sha256": "fae1b103c7d9a7cc9162efc75c52c559845876abaf84f77fd4fddcd9ef0fc3a6",
+      "compressed_bytes": 55265,
+      "uncompressed_bytes": 846236
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "8a31802208c56026e6b9227bdb19f4dbcc87429ea4738299d0d67816b7574f55",
+      "uncompressed_sha256": "84b3ad4a193fab44b300c4bf4e495fd939b9124668ad169cc2d68421b46f92da",
+      "compressed_bytes": 18986,
+      "uncompressed_bytes": 125875
+    }
+  }
+}
