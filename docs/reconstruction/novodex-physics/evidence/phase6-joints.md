@@ -11112,3 +11112,5 @@ Phase 7 Scene fluid-creation row `phys_fn_000645` is now mutation-falsified thro
 `phys_fn_003618` local-position setter mutation detection: `mismatches=1`. `phys_fn_003620` local-orientation setter mutation detection: `mismatches=1`. See [fluid emitter local-component setters](phase7-fluid-emitter-local-components-003618-003620.md).
 
 `phys_fn_003557` fluid-emitter record constructor mutation detection: `mismatches=7`. The registered oracle/candidate probe compares identity local/world poses, wrapper and sentinel fields, untouched words, and x86 stack balance. See [fluid-emitter record constructor](phase7-fluid-emitter-record-constructor-003557.md).
+
+`phys_fn_003603` fluid-emitter record scalar deleting destructor mutation detection: `mismatches=1` when the SDK pointer binding clear is omitted; restored control clears the binding in both delete-flag paths and reports `mismatches=0`. See [fluid-emitter record destructor](phase7-fluid-emitter-record-destructor-003603.md).

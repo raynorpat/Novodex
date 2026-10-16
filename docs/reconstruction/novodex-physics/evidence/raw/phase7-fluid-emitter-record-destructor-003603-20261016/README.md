@@ -1,0 +1,1 @@
+These compressed logs retain the focused SDK-binding mutation and restored-control differentials and the complete official Phase 5 and Phase 7 gate runs. The manifest pins the oracle, candidate DLL, normalized source and fixture hashes, and compressed and original transcript hashes. Phase 5 passed at 2,795/2,795; Phase 7 passed at 2,917/2,917.

@@ -5372,14 +5372,51 @@ static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
 		fprintf(stderr, "FAIL candidate fluid-emitter deleting destructor could not be resolved from its map\n");
 		return 1;
 		}
+	void* candidateSetBindingAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"?nxSetSdkPointerBinding@@YA_NPAX0@Z", &candidateSetBindingAddress))
+		{
+		fprintf(stderr, "FAIL candidate SDK pointer-binding setter could not be resolved from its map\n");
+		return 1;
+		}
+	void* candidateGetBindingAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"?nxGetSdkPointerBinding@@YAPAXPAX@Z", &candidateGetBindingAddress))
+		{
+		fprintf(stderr, "FAIL candidate SDK pointer-binding getter could not be resolved from its map\n");
+		return 1;
+		}
 	typedef void* (__thiscall *OracleCtor)(void*);
 	typedef void* (__cdecl *CandidateCtor)(void*);
 	typedef void (__cdecl *CandidateMetadata)(void*, void*, void*, const char*, void*);
+	typedef bool (__cdecl *SetSdkPointerBinding)(void*, void*);
+	typedef void* (__cdecl *GetSdkPointerBinding)(void*);
 	OracleCtor oracleCtor = reinterpret_cast<OracleCtor>(image + 0x87c40);
 	CandidateCtor candidateCtor = reinterpret_cast<CandidateCtor>(candidateCtorAddress);
 	CandidateMetadata candidateMetadata =
 		reinterpret_cast<CandidateMetadata>(candidateMetadataAddress);
+	SetSdkPointerBinding oracleSetBinding =
+		reinterpret_cast<SetSdkPointerBinding>(image + 0xedc0);
+	GetSdkPointerBinding oracleGetBinding =
+		reinterpret_cast<GetSdkPointerBinding>(image + 0xdf90);
+	SetSdkPointerBinding candidateSetBinding =
+		reinterpret_cast<SetSdkPointerBinding>(candidateSetBindingAddress);
+	GetSdkPointerBinding candidateGetBinding =
+		reinterpret_cast<GetSdkPointerBinding>(candidateGetBindingAddress);
 	void* oracleDtor = image + 0x882b0;
+	HMODULE foundation = GetModuleHandleA("NxFoundation.dll");
+	typedef NxFoundationSDK* (__cdecl *CreateFoundationSDK)(NxU32,
+		NxUserOutputStream*, NxUserAllocator*);
+	CreateFoundationSDK createFoundation = foundation
+		? reinterpret_cast<CreateFoundationSDK>(GetProcAddress(foundation,
+			"NxCreateFoundationSDK")) : 0;
+	if(!createFoundation
+		|| !createFoundation(NX_FOUNDATION_SDK_VERSION, 0, 0))
+		{
+		fprintf(stderr, "FAIL fluid-emitter deleting dtor could not initialize Foundation allocator\n");
+		return 1;
+		}
+	unsigned mismatches = 0;
 	unsigned char oracleRecord[0x78] = {};
 	unsigned char candidateRecord[0x78] = {};
 	unsigned char oracleOwner[0x80] = {};
@@ -5408,6 +5445,15 @@ static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
 	candidateMetadata(candidateRecord,
 		*reinterpret_cast<void**>(candidateRecord + 0x0c), 0, emitterName,
 		candidateLockSource);
+	static const char oracleBindingName[] = "oracle-emitter-sdk-binding";
+	static const char candidateBindingName[] = "candidate-emitter-sdk-binding";
+	if(!oracleSetBinding(oracleRecord, const_cast<char*>(oracleBindingName))
+		|| !candidateSetBinding(candidateRecord,
+			const_cast<char*>(candidateBindingName)))
+		{
+		fprintf(stderr, "FAIL fluid-emitter deleting dtor SDK binding seed failed\n");
+		++mismatches;
+		}
 	void** const oracleVtable = *reinterpret_cast<void***>(oracleRecord);
 	void** const candidateVtable = *reinterpret_cast<void***>(candidateRecord);
 	if(candidateVtable[0] != candidateDtorAddress)
@@ -5438,6 +5484,8 @@ static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
 		&& oracleVtable[0] == oracleDtor;
 	const bool candidateVtablePreserved =
 		*reinterpret_cast<void***>(candidateRecord) == candidateVtable;
+	const bool oracleBindingCleared = oracleGetBinding(oracleRecord) == 0;
+	const bool candidateBindingCleared = candidateGetBinding(candidateRecord) == 0;
 	void* const candidateWrapperAfterDtor =
 		*reinterpret_cast<void**>(candidateRecord + 0x0c);
 	if(candidateWrapperAfterDtor)
@@ -5450,13 +5498,13 @@ static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
 		&candidateReadSectionLink;
 	const bool candidateNameCleared = candidateNameProbe->getName() == 0;
 	delete candidateNameProbe;
-	unsigned mismatches = 0;
 	if(gFluidEmitterOracleDtorResult != oracleRecord
 		|| gFluidEmitterCandidateDtorResult != candidateRecord
 		|| !oracleWrapperCleared || !candidateWrapperCleared
 		|| !oracleSceneDirty || !candidateSceneDirty
 		|| !oracleVtablePreserved || !candidateVtablePreserved
-		|| !candidateNameCleared
+		|| !candidateNameCleared || !oracleBindingCleared
+		|| !candidateBindingCleared
 			|| gFluidEmitterOracleDtorStackBefore != gFluidEmitterOracleDtorStackAfter
 			|| gFluidEmitterCandidateDtorStackBefore != gFluidEmitterCandidateDtorStackAfter)
 		{
@@ -5480,18 +5528,6 @@ static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
 			fprintf(stderr, "fluid emitter dtor record byte mismatch offset=%02x oracle=%02x candidate=%02x\n",
 				offset, oracleRecord[offset], candidateRecord[offset]);
 			}
-	HMODULE foundation = GetModuleHandleA("NxFoundation.dll");
-	typedef NxFoundationSDK* (__cdecl *CreateFoundationSDK)(NxU32,
-		NxUserOutputStream*, NxUserAllocator*);
-	CreateFoundationSDK createFoundation = foundation
-		? reinterpret_cast<CreateFoundationSDK>(GetProcAddress(foundation,
-			"NxCreateFoundationSDK")) : 0;
-	if(!createFoundation
-		|| !createFoundation(NX_FOUNDATION_SDK_VERSION, 0, 0))
-		{
-		fprintf(stderr, "FAIL fluid-emitter deleting dtor could not initialize Foundation allocator\n");
-		++mismatches;
-		}
 	NxUserAllocator** allocatorSlot = foundation
 		? reinterpret_cast<NxUserAllocator**>(GetProcAddress(foundation,
 			"?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")) : 0;
@@ -5535,7 +5571,8 @@ static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
 	}
 	}
 	DeleteCriticalSection(&candidateReadSection);
-	printf("fluid emitter internal dtor cases=2 wrapper_cleared=1 name_unbound=1 scene_dirty=2 vtable_preserved=1 delete_free=2 stack=1/1 mismatches=%u\n",
+	printf("fluid emitter internal dtor cases=2 wrapper_cleared=1 name_unbound=1 sdk_binding_cleared=%u/%u scene_dirty=2 vtable_preserved=1 delete_free=2 stack=1/1 mismatches=%u\n",
+		oracleBindingCleared ? 1u : 0u, candidateBindingCleared ? 1u : 0u,
 		mismatches);
 	return mismatches;
 	}

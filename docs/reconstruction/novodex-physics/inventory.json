@@ -67741,12 +67741,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1355",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12523",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA decompilation at RVA 0x882b0 confirms the scalar deleting destructor preserves the internal vtable, invokes the wrapper deleting destructor through record+0x0c, clears that wrapper pointer, clears the SDK pointer binding, marks the owning scene dirty bit 2, and frees the internal record only when delete flag bit 0 is set.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares oracle RVA 0x882b0 with the candidate implementation for non-free and free cases. It checks wrapper clearing, name removal, SDK pointer-binding cleanup, scene dirty state, preserved vtable, return pointer, conditional frees, and x86 stack balance. Omitting SDK-binding cleanup is rejected (oracle/candidate binding clear 1/0, mismatches=1); restored control reports 1/1 and mismatches=0. See evidence/phase7-fluid-emitter-record-destructor-003603.md.",
       "notes": ""
     },
     {

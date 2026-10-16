@@ -1,0 +1,57 @@
+{
+  "row": "phys_fn_003603",
+  "rva": "0x000882b0",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "source_sha256": {
+    "Physics/src/Scene.cpp": "ebe3091e0b9aa411a07e468fe97cc82e51e567f111c32c195529bab98fd10fbf",
+    "Physics/src/NpFluidEmitter.cpp": "c8ea5a08b102cd92c4de32cfdaeee414e42ddeaca8834e44a45bacf47d216a37"
+  },
+  "fixture_source_sha256": "43fc422750187208fa6ce6486ea70d6bcec18de1f13ddb370453e2ee92380f28",
+  "candidate_nxphysics_sha256": "b577785dcf80918fd0a1a689459431c3dc282c703362946ba0a204efe883c8ac",
+  "mutation": "Omitted nxSetSdkPointerBinding(internal, 0) in the candidate destructor. The oracle/candidate probe reports sdk_binding_cleared=1/0 and mismatches=1.",
+  "restored_control": "fluid emitter internal dtor cases=2 wrapper_cleared=1 name_unbound=1 sdk_binding_cleared=1/1 scene_dirty=2 vtable_preserved=1 delete_free=2 stack=1/1 mismatches=0; focused test exit 0.",
+  "phase5": {
+    "status": "pass",
+    "coverage_assertions_evaluated": 2795,
+    "floor": 2795
+  },
+  "phase7": {
+    "status": "pass",
+    "coverage_assertions_evaluated": 2917,
+    "floor": 2917
+  },
+  "transcripts": [
+    {
+      "path": "mutant.log.gz",
+      "source": "build\\fluid-emitter-dtor-tdd-20261016\\mutant.log",
+      "source_bytes": 15420,
+      "source_sha256": "1154a50e99ec85412940ac9e3de2363dc56d0f6238b7b0ee286bbc07daa83ee5",
+      "compressed_bytes": 3139,
+      "compressed_sha256": "36da3ba2ad14fb3266d816c332ebc5e16c6c2fd2a21109a793fc460d96cd3c91"
+    },
+    {
+      "path": "restored-focused.log.gz",
+      "source": "build\\fluid-emitter-dtor-tdd-20261016\\restored-focused.log",
+      "source_bytes": 14767,
+      "source_sha256": "6ae1f1cd38eb168e19ee6de90d7d8306efcc175f5de9daee6ea783284e600f17",
+      "compressed_bytes": 2897,
+      "compressed_sha256": "5af5575c92755811cbacb0b26c12c5f933207afa2ed19da804f917302b21771d"
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "build\\fluid-emitter-dtor-tdd-20261016\\phase5-gate.log",
+      "source_bytes": 2824739,
+      "source_sha256": "d758bb88f9a4ca872729bec5038d6aec3277505afd17ba756b730923c2db1e48",
+      "compressed_bytes": 207742,
+      "compressed_sha256": "2166268fd747e22b01d30016966375eaaf2964cc0818b809424d8b5ef8dc0992"
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build\\fluid-emitter-dtor-tdd-20261016\\phase7-gate.log",
+      "source_bytes": 4622548,
+      "source_sha256": "eccc74197f02f9f3cca17246db2868df6df00f2c43cb2ed29514e72d687e6772",
+      "compressed_bytes": 371951,
+      "compressed_sha256": "5db2510fc5128e1f64e18badc73a69cb155c4857079cc1a4b35bbc4f4bcf2345"
+    }
+  ]
+}
