@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003649",
+  "description": "Distinct descriptor values pin all non-pointer FluidCreate arguments; the source-word swap mutation is rejected and restored Phase 5/6/7 gates pass.",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "b08b8a5e94435529dbf23f13cb2b38b697cd04c96e3fd4ae8b16120994e366fe",
+  "candidate_mutant_sha256": "a2c4ed389da46b152598059b2524376766e3e6db82e90351b9bb165f911c856c",
+  "restored_control": {
+    "target": "NxPhysicsSimulationTests",
+    "arguments": 14,
+    "digest": "1d2e206d",
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true
+  },
+  "mutation": {
+    "change": "first FluidCreate descriptor source word 19 to word 18",
+    "candidate_digest": "de1a8fc9",
+    "candidate_exit": 1,
+    "stdout_delta": 64
+  },
+  "gates": {
+    "phase5": "pass",
+    "phase5_assertions": "2800/2800",
+    "phase6": "pass",
+    "phase6_assertions": "1693/1693",
+    "phase7": "pass",
+    "phase7_assertions": "2922/2922"
+  },
+  "artifacts": [
+    {
+      "file": "restored-differential.log.gz",
+      "source": "build/row3649-create-args-restored.log",
+      "uncompressed_bytes": 847276,
+      "uncompressed_sha256": "38ca7de60d9f65a5b9c4b3384e550e28e0e895583d5e52cec9a8d8cc99e3352e",
+      "compressed_bytes": 55284,
+      "compressed_sha256": "21888de460f148acf7005160ae86cb9534b9af03f61fbc677ff4d234e3ccd607"
+    },
+    {
+      "file": "argument-map-mutant-differential.log.gz",
+      "source": "build/row3649-create-args-mutant.log",
+      "uncompressed_bytes": 841838,
+      "uncompressed_sha256": "1d60a497895cc57eec7cebc52e6459e94a5a6314da3b977177bbcd10a3bad527",
+      "compressed_bytes": 54587,
+      "compressed_sha256": "0fd0684d7362a46fe6730af0709fdf64e638c34429477821d829a3ebec2d798f"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "build/row3649-create-args-phase5.log",
+      "uncompressed_bytes": 2808334,
+      "uncompressed_sha256": "33c228e6d9fbb4a4776f16f1f034f70238621f0669e6a803ab964b874a6384dc",
+      "compressed_bytes": 207597,
+      "compressed_sha256": "52fe7276e17e3782f9756d8fed5fd9ba39f26ddbcd1d78f522e364d71b0742a6"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "build/row3649-create-args-phase6.log",
+      "uncompressed_bytes": 3090425,
+      "uncompressed_sha256": "f6c3b5398bd6cfa4c854a4bf6e4d4caecbdec77d5961a6bf7a9cb705746f3be5",
+      "compressed_bytes": 252480,
+      "compressed_sha256": "3d2a876fe3988b3e4d4647cb2aa09f3201e6a8548c3503933a5bfdb465dc5e6a"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "build/row3649-create-args-phase7.log",
+      "uncompressed_bytes": 4596695,
+      "uncompressed_sha256": "b7f5e84c085a91d0d9b9ab6e4b91bbc97b96bf28eaa8e4c37723b0ad737a5bb0",
+      "compressed_bytes": 371491,
+      "compressed_sha256": "903ac6a0fe0da918694cf96e4313bb0e8faef2af37eaa096f0d1bbba0e4253cb"
+    }
+  ]
+}

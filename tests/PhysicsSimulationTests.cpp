@@ -5649,12 +5649,66 @@ int wmain(int argc, wchar_t** argv)
 		surfaceMeshConstructorFailAllocator.mFailCount,
 		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshCreate,
 		surfaceMeshConstructorFailureCallbacks.implicitFluidMeshDestroy);
+	resetFluidManagerCallbacks();
+	NxFluidDesc createArgumentDesc;
+	createArgumentDesc.setToDefault();
+	createArgumentDesc.maxParticles = 0x2345;
+	createArgumentDesc.restParticlesPerMeter = 57.0f;
+	createArgumentDesc.restDensity = 876.5f;
+	createArgumentDesc.kernelRadiusMultiplier = 1.75f;
+	createArgumentDesc.stiffness = 27.25f;
+	createArgumentDesc.viscosity = 13.5f;
+	createArgumentDesc.damping = 0.375f;
+	createArgumentDesc.staticCollisionRestitution = 0.625f;
+	createArgumentDesc.staticCollisionAdhesion = 0.125f;
+	createArgumentDesc.dynamicCollisionRestitution = 0.875f;
+	createArgumentDesc.dynamicCollisionAdhesion = 0.25f;
+	createArgumentDesc.simulationMethod = NX_F_NO_PARTICLE_INTERACTION;
+	createArgumentDesc.collisionMethod =
+		NX_F_STATIC | NX_F_DYNAMIC_ACTOR_REACTION;
+	NxFluid* const createArgumentFluid = surfaceMeshScene
+		? surfaceMeshScene->createFluid(createArgumentDesc) : 0;
+	FluidManagerCallbackSummary createArgumentCallbacks = {};
+	getFluidManagerCallbackSummary(&createArgumentCallbacks);
+	const unsigned expectedCreateArguments[15] = {
+		0,
+		nxFloatBits(createArgumentDesc.stiffness),
+		nxFloatBits(createArgumentDesc.restDensity),
+		nxFloatBits(createArgumentDesc.restParticlesPerMeter),
+		nxFloatBits(createArgumentDesc.kernelRadiusMultiplier),
+		nxFloatBits(createArgumentDesc.viscosity),
+		nxFloatBits(createArgumentDesc.damping),
+		nxFloatBits(createArgumentDesc.staticCollisionRestitution),
+		nxFloatBits(createArgumentDesc.staticCollisionAdhesion),
+		nxFloatBits(createArgumentDesc.dynamicCollisionRestitution),
+		nxFloatBits(createArgumentDesc.dynamicCollisionAdhesion),
+		1024u, createArgumentDesc.maxParticles, 1u, 1u
+		};
+	unsigned createArgumentDigest = 2166136261u;
+	bool createArgumentMapMatches = createArgumentFluid != 0 &&
+		createArgumentCallbacks.fluidCreate == 1 &&
+		createArgumentCallbacks.fluidCreateArguments[0] != 0 &&
+		surfaceMeshLicenseOverride.ready;
+	for(unsigned argument = 1; argument != 15; ++argument)
+		{
+		const unsigned value = createArgumentCallbacks.fluidCreateArguments[argument];
+		if(value != expectedCreateArguments[argument])
+			createArgumentMapMatches = false;
+		for(unsigned byte = 0; byte != 4; ++byte)
+			createArgumentDigest = (createArgumentDigest ^
+				static_cast<unsigned char>(value >> (byte * 8))) * 16777619u;
+		}
+	printf("simulation row3649 create-args arguments=14 digest=%08x manager=1 exact=%u\n",
+		createArgumentDigest, createArgumentMapMatches ? 1u : 0u);
+	if(createArgumentFluid)
+		surfaceMeshScene->releaseFluid(*createArgumentFluid);
 	if(surfaceMeshScene)
 		sdk->releaseScene(*surfaceMeshScene);
 	if(!surfaceMeshPublicApiMatches || !licensedSurfaceMeshConstructorMatches ||
 		!licensedSurfaceMeshPropertiesMatch ||
 		!licensedSurfaceMeshDestroyMatches ||
-		!surfaceMeshConstructorAllocationFailureMatches)
+		!surfaceMeshConstructorAllocationFailureMatches ||
+		!createArgumentMapMatches)
 		return nxFail("licensed NxFluid implicit-mesh API did not match the fixture contract");
 	}
 	bool fluidManagerArrayGrowthMatches = false;
