@@ -4094,6 +4094,7 @@ int wmain(int argc, wchar_t** argv)
 		};
 	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(FluidManagerCallbackSummary*);
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
+	typedef void (__cdecl *SetFluidCreateNullIndexFn)(unsigned);
 	typedef void (__cdecl *SetImplicitMeshReentryTargetFn)(void*);
 	typedef unsigned (__cdecl *GetFluidScalarCallsFn)();
 	ResetFluidManagerCallbacksFn resetFluidManagerCallbacks = reinterpret_cast<
@@ -4135,6 +4136,9 @@ int wmain(int argc, wchar_t** argv)
 	SetFluidEmitterCreateNullIndexFn setFluidEmitterCreateNullIndex = reinterpret_cast<
 		SetFluidEmitterCreateNullIndexFn>(GetProcAddress(fluidModel,
 			"NxSetFluidEmitterCreateNullIndex"));
+	SetFluidCreateNullIndexFn setFluidCreateNullIndex = reinterpret_cast<
+		SetFluidCreateNullIndexFn>(GetProcAddress(fluidModel,
+			"NxSetFluidCreateNullIndex"));
 	SetImplicitMeshReentryTargetFn setImplicitMeshReentryTarget = reinterpret_cast<
 		SetImplicitMeshReentryTargetFn>(GetProcAddress(fluidModel,
 			"NxSetImplicitMeshReentryTarget"));
@@ -4147,7 +4151,8 @@ int wmain(int argc, wchar_t** argv)
 		!getFluidSetDynamicCollisionAdhesionObservation ||
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
-		!setFluidEmitterCreateNullIndex || !setImplicitMeshReentryTarget)
+		!setFluidEmitterCreateNullIndex || !setFluidCreateNullIndex ||
+		!setImplicitMeshReentryTarget)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
 	HMODULE const fluidFoundationModule = GetModuleHandleW(L"NxFoundation.dll");
@@ -5419,6 +5424,69 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseScene(*fluidArrayScene);
 	if(!fluidManagerArrayGrowthMatches)
 		return nxFail("fluid manager arrays did not preserve growth and removal order");
+	}
+	bool fluidCreateNullBackendPublished = false;
+	{
+	NxSimulationFluidLicenseOverride nullBackendLicenseOverride(804);
+	resetFluidManagerCallbacks();
+	setFluidCreateNullIndex(0);
+	simulationOutput.resetLast();
+	const unsigned nullBackendErrorsBefore = simulationOutput.errors;
+	NxScene* const nullBackendScene = nullBackendLicenseOverride.ready
+		? sdk->createScene(fluidSceneDesc) : 0;
+	NxFluidDesc nullBackendDesc;
+	nullBackendDesc.setToDefault();
+	NxFluid* const nullBackendFluid = nullBackendScene
+		? nullBackendScene->createFluid(nullBackendDesc) : 0;
+	unsigned char* const nullBackendSceneInternal = nullBackendScene
+		? *reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(
+			nullBackendScene) + 0x24) : 0;
+	unsigned char* const nullBackendManager = nullBackendSceneInternal
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+			nullBackendSceneInternal + 0x61c)) : 0;
+	unsigned char* const nullBackendInternalFluid = nullBackendFluid
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+			reinterpret_cast<unsigned char*>(nullBackendFluid) + 0x14)) : 0;
+	unsigned* const nullBackendPrimary = nullBackendManager
+		? reinterpret_cast<unsigned*>(nullBackendManager + 4) : 0;
+	unsigned* const nullBackendSecondary = nullBackendManager
+		? reinterpret_cast<unsigned*>(nullBackendManager + 0x14) : 0;
+	NxFluid** const nullBackendPublishedFluids = nullBackendScene
+		? nullBackendScene->getFluids() : 0;
+	const bool nullBackendCreatePublished = nullBackendFluid &&
+		nullBackendInternalFluid &&
+		*reinterpret_cast<void**>(nullBackendInternalFluid + 0x80) == 0 &&
+		nullBackendScene->getNbFluids() == 1 && nullBackendPublishedFluids &&
+		nullBackendPublishedFluids[0] == nullBackendFluid &&
+		nullBackendPrimary && nullBackendPrimary[0] && nullBackendPrimary[1] -
+			nullBackendPrimary[0] == sizeof(unsigned) &&
+		*reinterpret_cast<void**>(nullBackendPrimary[0]) == nullBackendInternalFluid &&
+		nullBackendSecondary && nullBackendSecondary[0] &&
+		nullBackendSecondary[1] - nullBackendSecondary[0] == sizeof(unsigned) &&
+		*reinterpret_cast<void**>(nullBackendSecondary[0]) == nullBackendFluid;
+	if(nullBackendFluid)
+		nullBackendScene->releaseFluid(*nullBackendFluid);
+	FluidManagerCallbackSummary nullBackendCallbacks = {};
+	getFluidManagerCallbackSummary(&nullBackendCallbacks);
+	const bool nullBackendCleanup = nullBackendSceneInternal &&
+		*reinterpret_cast<void**>(nullBackendSceneInternal + 0x61c) == 0 &&
+		nullBackendCallbacks.managerCreate == 1 &&
+		nullBackendCallbacks.managerDestroy == 1 &&
+		nullBackendCallbacks.fluidCreate == 1 &&
+		nullBackendCallbacks.fluidDestroy == 0 &&
+		simulationOutput.errors == nullBackendErrorsBefore;
+	fluidCreateNullBackendPublished = nullBackendLicenseOverride.ready &&
+		nullBackendCreatePublished && nullBackendCleanup;
+	printf("simulation row3649 backend-null published=%u arrays=%u cleanup=%u callbacks=%u exact=%u\n",
+		nullBackendFluid ? 1u : 0u, nullBackendCreatePublished ? 1u : 0u,
+		nullBackendCleanup ? 1u : 0u,
+		nullBackendCallbacks.managerCreate + nullBackendCallbacks.fluidCreate +
+			nullBackendCallbacks.fluidDestroy + nullBackendCallbacks.managerDestroy,
+		fluidCreateNullBackendPublished ? 1u : 0u);
+	if(nullBackendScene)
+		sdk->releaseScene(*nullBackendScene);
+	if(!fluidCreateNullBackendPublished)
+		return nxFail("null FluidCreate backend result did not preserve the oracle fluid lifecycle");
 	}
 	sdk->releaseScene(*enabledFluidScene);
 	bool enabledLicensedKernelGetter = false;

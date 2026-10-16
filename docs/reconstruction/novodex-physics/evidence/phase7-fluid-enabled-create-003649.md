@@ -40,3 +40,12 @@ The enabled public fixture now creates seven fluids in one scene. This forces th
 ## Remaining work for this inventory row
 
 The row remains open. Its initial and shape-change dirty collision refreshes are covered separately by `phase7-fluid-manager-dirty-refresh-003630.md`; descriptor validation, manager/fluid/emitter allocation failures, descriptor emitters, emitter create/list/release, and fluid-array growth/order have registered cases. The complete `003649` constructor/initialization sequence and callback table still need a branch-by-branch audit, including constructor subrows `003497`/`003503`, failure ordering, and teardown interactions. Do not promote the row until those paths have row-specific oracle evidence and the full audit verifies all branches.
+
+
+## Continuation: null FluidCreate backend result
+
+The fixture can now make the first `FluidCreate` callback return null for a valid descriptor. The oracle still returns and publishes the local fluid wrapper, stores the null backend handle, and inserts the internal/public objects into the manager arrays. Releasing this sole fluid clears the manager; `FluidDestroy` is not called for the null handle. `NxPhysicsSimulationTests` verifies the wrapper identity, both one-element manager arrays, clean teardown, and the callback counts with the row-specific marker `simulation row3649 backend-null published=1 arrays=1 cleanup=1 callbacks=3 exact=1`. A candidate early-return immediately after the null callback result is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=60`); the restored staged differential matches exactly (`stdout_delta=0`, `stderr_exact=True`). The marker is registered in Phase 5/6/7. This closes only this branch; the full FluidManager body remains open pending its instruction-level audit.
+
+## Validation
+
+Fresh Phase 5, 6, and 7 gates pass at 2,788/2,788, 1,689/1,689, and 2,905/2,905 coverage assertions. The first Phase 5 run had one oracle child exceed its 30-second wait in the unrelated pruner-pool growth-allocation test; an isolated rerun of that target and a complete Phase 5 rerun passed on both oracle and candidate. Phases 6 and 7 then passed. The reconstruction-tool suite passes all 816 tests, immutable public-header checks pass, and inventory validation reports `unexplained=0`. Compressed raw logs, including the first timeout diagnostic, are in `evidence/raw/phase7-fluid-create-null-backend-003649-20261015/`.

@@ -3080,6 +3080,13 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/252",
       "reason": "IDA decompilation at RVA 0x12b80 shows lazy FluidManager installation, descriptor forwarding, successful wrapper-link attachment, and release of a fluid whose solver record is absent; the candidate map resolves the matching Scene implementation."
+    },
+    {
+      "id": "phys_fn_003649",
+      "label": "FluidManager::createFluid",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/1378",
+      "reason": "IDA identifies the 2,452-byte create path at RVA 0x0008a000; it validates the fluid descriptor, constructs and initializes Fluid, invokes FluidCreate and child-emitter/particle paths, and publishes internal and public arrays. Enabled DLL differential now covers null backend callback result and manager teardown."
     }
   ]
 }

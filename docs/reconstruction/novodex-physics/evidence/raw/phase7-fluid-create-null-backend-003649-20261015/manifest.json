@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003649",
+  "description": "Null FluidCreate result mutation, restored differential, final registered gates, tool suite, and initial transient timeout diagnostic.",
+  "artifacts": [
+    {
+      "file": "null-mutant-differential.log.gz",
+      "source": "build/row3649-null-mutant.log",
+      "source_bytes": 842814,
+      "source_sha256": "842300ff713277faaeded2fcbf372c4ab3ec4c4c03b61fb2ba7b5a2ec6642b0c",
+      "compressed_bytes": 54467,
+      "compressed_sha256": "e3c5f6ec5e6f4855dde3cd2a19d89b367d95bf37b404640511008d30b4a85ebf"
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source": "build/row3649-null-restored.log",
+      "source_bytes": 847888,
+      "source_sha256": "fe687905c9370ac468e7f79932ceb5802d175c89a530e189c6baa3cd02a191fd",
+      "compressed_bytes": 55036,
+      "compressed_sha256": "cf927cbde138adf61a1e8f186c80460479cf36f3a82fc908968dda5f3a09ad08"
+    },
+    {
+      "file": "phase5-rerun.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task6-phase5-rerun.log",
+      "source_bytes": 2833138,
+      "source_sha256": "154abaeabc642c580972c7979e8344d78e9fdcdda2af9754cbf746d9c4101abd",
+      "compressed_bytes": 207096,
+      "compressed_sha256": "eba39961f8a7bef6d948a622245c274283f4fa6a1104e6c681e5287e4b2db11f"
+    },
+    {
+      "file": "phase6-rerun.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task6-phase6-rerun.log",
+      "source_bytes": 3104329,
+      "source_sha256": "fc10bacf6d0016a867c7031af49d7893a64811902267bd4a795af4e5fa1b7f45",
+      "compressed_bytes": 252524,
+      "compressed_sha256": "364e7da032b1a53a0fe2403beb30c89983835f5085b7c6697e874368e75db083"
+    },
+    {
+      "file": "phase7-rerun.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task6-phase7-rerun.log",
+      "source_bytes": 4610539,
+      "source_sha256": "5cc4ec684e8ecba2aa6b63caf842d78d9cef61697d330990496c284081a63d2e",
+      "compressed_bytes": 370445,
+      "compressed_sha256": "b78d128d5c03206248ad7b99392c47627c30258bd8cbc82fa90b2e4cf845587e"
+    },
+    {
+      "file": "tool-suite.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task6-tool-suite.log",
+      "source_bytes": 922,
+      "source_sha256": "dc8623e000707b9353c4703d9c3062e73b6081ec6c39969489906221ff945172",
+      "compressed_bytes": 67,
+      "compressed_sha256": "00c177f455b7e4c0956c2a3d8e4b9cd47f5486622238879d5ffdb4171c4e0d17"
+    },
+    {
+      "file": "phase5-initial-timeout.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task6-phase5-gate.log",
+      "source_bytes": 2682898,
+      "source_sha256": "a15b570dfb63bd14cc8d9f54c4c097d920e9d7e95b9df875cf72dcc8d383a7bf",
+      "compressed_bytes": 194125,
+      "compressed_sha256": "c343823cea62c5bbe59fc1a812c3e327597858276c08095e899bef89cf1e6610"
+    }
+  ]
+}

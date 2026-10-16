@@ -118,6 +118,7 @@ static unsigned gFluidManagerStaticCollisionGetIndex;
 static unsigned char gFluidManagerBackend;
 static unsigned char gFluidBackendHandles[16];
 static unsigned char gFluidEmitterBackendHandles[16][16];
+static unsigned gFluidCreateNullIndex = ~0u;
 static unsigned gFluidEmitterCreateNullIndex = ~0u;
 static float gImplicitFluidMeshSurfaceRadius = 0.04f;
 static float gImplicitFluidMeshSingleRadius = 0.01f;
@@ -337,6 +338,7 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	gFluidSetDynamicCollisionAdhesionArgumentsValid = 0;
 	gFluidGetStaticCollisionRestitutionCalls = 0;
 	gFluidGetStaticCollisionAdhesionCalls = 0;
+	gFluidCreateNullIndex = ~0u;
 	gFluidEmitterCreateNullIndex = ~0u;
 	ZeroMemory(gFluidStaticCollision, sizeof(gFluidStaticCollision));
 	gFluidManagerStaticCollisionGetIndex = 0;
@@ -390,6 +392,12 @@ extern "C" __declspec(dllexport) void __cdecl NxSetFluidEmitterCreateNullIndex(
 	unsigned index)
 	{
 	gFluidEmitterCreateNullIndex = index;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxSetFluidCreateNullIndex(
+	unsigned index)
+	{
+	gFluidCreateNullIndex = index;
 	}
 
 extern "C" __declspec(dllexport) void* __cdecl FluidManagerCreate()
@@ -464,6 +472,8 @@ extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
 		return 0;
 	const unsigned index = (gFluidManagerCallbackSummary.fluidCreate - 1)
 		% (sizeof(gFluidBackendHandles) / sizeof(gFluidBackendHandles[0]));
+	if(index == gFluidCreateNullIndex)
+		return 0;
 	return &gFluidBackendHandles[index];
 	}
 
