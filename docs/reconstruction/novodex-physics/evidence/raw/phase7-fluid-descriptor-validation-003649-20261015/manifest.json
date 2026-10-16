@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003649",
+  "description": "35-case invalid NxFluidDesc oracle differential, validation bypass mutation, restored control, and worktree Phase 5 blocker transcript.",
+  "artifacts": [
+    {
+      "file": "focused-restored.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task7-validation-focused-diff2.log",
+      "source_bytes": 848292,
+      "source_sha256": "8781ee6c13d6d0588f8a831d5bc9434f685612219a13a8ca6cb5c6a2475d5350",
+      "compressed_bytes": 55071,
+      "compressed_sha256": "cceb87208dd032fd3a87adbace7c24fca64d582d2ea2d73af86d37a8d62666f9"
+    },
+    {
+      "file": "validation-bypass-mutant.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task7-validation-mutant.log",
+      "source_bytes": 841689,
+      "source_sha256": "037f827a9094800f8e9dbd4e746515fbe04c3ad2765e2eed08cc7400803f245d",
+      "compressed_bytes": 54021,
+      "compressed_sha256": "88bc772a087ee44e01654af8dd6680c9438ad9cc5e2f2ada2d9c75d57fa07086"
+    },
+    {
+      "file": "restored-after-mutation.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task7-validation-restored2.log",
+      "source_bytes": 848517,
+      "source_sha256": "28c4084ebd631dcb803c8861115f7d1654a3e55ac75ca9543bd30b0b10fd23bf",
+      "compressed_bytes": 55102,
+      "compressed_sha256": "25b6a37a23a27d3824c4b19d824a4cb20fa398ff2e19a672bd532aab450252cf"
+    },
+    {
+      "file": "worktree-phase5-object-layout-proof.log.gz",
+      "source": ".superpowers/sdd/2026-09-24-nxphysics-completion/task7-phase5-gate.log",
+      "source_bytes": 43185,
+      "source_sha256": "14fb75bef1b58dec9fbc8d6c51df6d3af8740d023b71b7f47b036c7abb355eeb",
+      "compressed_bytes": 5874,
+      "compressed_sha256": "45811dde6fcc609ee6925465a3f32ac493153f252f3f66ed814df26a2ca77722"
+    }
+  ]
+}

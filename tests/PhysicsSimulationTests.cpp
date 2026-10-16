@@ -4215,7 +4215,7 @@ int wmain(int argc, wchar_t** argv)
 	NxImplicitMeshDesc invalidSurfaceMesh;
 	invalidSurfaceMesh.setToDefault();
 	invalidSurfaceMesh.singleRadius = 0.0f;
-	for(unsigned invalidCase = 0; invalidCase != 14; ++invalidCase)
+	for(unsigned invalidCase = 0; invalidCase != 35; ++invalidCase)
 		{
 		NxFluidDesc invalidDesc;
 		invalidDesc.setToDefault();
@@ -4249,7 +4249,7 @@ int wmain(int argc, wchar_t** argv)
 				invalidDesc.emitters.pushBack(invalidEmitter);
 				break;
 				}
-			default:
+			case 13:
 				{
 				NxFluidEmitterDesc validEmitter;
 				validEmitter.setToDefault();
@@ -4257,6 +4257,60 @@ int wmain(int argc, wchar_t** argv)
 					invalidDesc.emitters.pushBack(validEmitter);
 				break;
 				}
+			case 14: invalidDesc.damping = -0.01f; break;
+			case 15: invalidDesc.dynamicCollisionAdhesion = -0.01f; break;
+			case 16: invalidDesc.dynamicCollisionAdhesion = 1.01f; break;
+			case 17: invalidDesc.dynamicCollisionRestitution = 1.01f; break;
+			case 18: invalidDesc.staticCollisionAdhesion = -0.01f; break;
+			case 19: invalidDesc.staticCollisionAdhesion = 1.01f; break;
+			case 20: invalidDesc.staticCollisionRestitution = -0.01f; break;
+			case 21: invalidDesc.staticCollisionRestitution = 1.01f; break;
+			// Bit 0 is outside the two accepted turn-action bits. The shipped
+			// XOR predicate rejects it for each of the three action fields.
+			case 22: invalidDesc.onCollision = 1; break;
+			case 23: invalidDesc.onSeparation = 1; break;
+			case 24: invalidDesc.onLifetimeExpired = 1; break;
+			case 25:
+				invalidDesc.initialParticleData.bufferPos = invalidParticlePosition;
+				break;
+			case 26:
+				invalidDesc.initialParticleData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.initialParticleData.bufferVel = invalidParticlePosition;
+				break;
+			case 27:
+				invalidDesc.initialParticleData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.initialParticleData.bufferLife = invalidParticlePosition;
+				break;
+			case 28:
+				invalidDesc.initialParticleData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.initialParticleData.bufferFlags = &invalidParticleFlags;
+				break;
+			case 29:
+				invalidDesc.particlesWriteData.bufferPos = invalidParticlePosition;
+				break;
+			case 30:
+				invalidDesc.particlesWriteData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.particlesWriteData.bufferPos = invalidParticlePosition;
+				break;
+			case 31:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.surfaceRadius = 0.0005f;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 32:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.triangleSize = 0.03f;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 33:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.blend = -0.01f;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			default:
+				invalidDesc.particlesWriteData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.particlesWriteData.bufferFlags = &invalidParticleFlags;
+				break;
 			}
 		const unsigned errorsBefore = simulationOutput.errors;
 		simulationOutput.resetLast();
@@ -4876,7 +4930,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool row645FluidCreateExact = fluidDisabledCreateExact && enabledFluid &&
 		enabledFluidListed && enabledFluidManagerArraysMatch &&
 		enabledFluidCallbacks && enabledFluidRefreshCallbacks &&
-		enabledFluidEmitterCallbacks && enabledDescriptorValidationPassed == 14 &&
+			enabledFluidEmitterCallbacks && enabledDescriptorValidationPassed == 35 &&
 		managerAllocationFailure && enabledFluidAllocationFailure &&
 		enabledEmitterAllocationFailure && enabledFluidErrors == 0;
 	printf("simulation row645 fluid-create disabled=%u enabled=%u listed=%u callbacks=%u validation=%u allocation-failures=%u exact=%u\n",
@@ -4919,7 +4973,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
-	if(!row645FluidCreateExact || !enabledInvalidRejected || enabledDescriptorValidationPassed != 14 ||
+	if(!row645FluidCreateExact || !enabledInvalidRejected || enabledDescriptorValidationPassed != 35 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
 		!managerAllocationFailure ||
 		!enabledFluidAllocationFailure ||
