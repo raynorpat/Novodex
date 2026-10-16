@@ -3,9 +3,10 @@
 
 #include "Nxp.h"
 
-// Shared 12-byte polymorphic subobject used by NpScene and the shape-owned
-// collision objects. The pinned constructor installs its base vptr and clears
-// the two words before each complete type installs its own secondary table.
+// Shared 12-byte polymorphic subobject used by NpScene, actor wrappers,
+// joints, and shape-owned collision objects. The pinned constructor installs
+// its base vptr and clears the two words before each complete type installs its
+// own secondary table.
 struct EmbeddedHookBase
 	{
 	EmbeddedHookBase() : mWord04(0), mWord08(0) {}

@@ -8988,7 +8988,16 @@ that subtracts eight from `this` and reaches the actor scalar-deleting
 destructor `phys_fn_000118` at RVA `0x3650`. With deleting flag zero, that chain
 leaves the primary pointer at the interface-wall table (`0x101043d0`) and
 restores the member pointer to its base table (`0x101088b8`); it does not free
-the wrapper. The source-language interface for this member remains unidentified.
+the wrapper. IDA decompiles `phys_fn_002404` (`0x5ba70`) as a 12-byte-base
+constructor that installs `0x101088b8` and zeros the words at `+4/+8`;
+`phys_fn_002406` (`0x5ba90`) restores that same base table. The actor
+constructor calls the former on `actor+8` (`0x2496`), and its destructor calls
+the latter (`0x3662`). The same two rows and base table are used from the Scene,
+shape, and joint construction/destruction chains, which supports one shared
+secondary-base model rather than an actor-only interface. Because the shipped
+image is stripped, `EmbeddedHookBase` is the private name used by this
+reconstruction; the original source identifier cannot be recovered from these
+rows alone.
 
 `NpActorObject::installVtable` now initializes the wrapper's private secondary
 member table, and the scene actor factory reinstalls it after the existing body

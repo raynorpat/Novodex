@@ -79,8 +79,10 @@
         "+0x14": "pointer to the 0x50-byte internal actor allocated by phys_fn_000013"
       },
       "secondary_base": {
+        "candidate_type": "EmbeddedHookBase",
         "final_vptr": "0x1010468c",
         "base_vptr": "0x101088b8",
+        "identity_evidence": "phys_fn_002404 (0x5ba70) and phys_fn_002406 (0x5ba90) are the shared 12-byte secondary-base constructor/destructor: they install/reset the same 0x101088b8 vptr and the constructor clears +4/+8. The exact same rows and base table are used by scene, shape, and joint constructors/destructors. The stripped image establishes this shared base identity; EmbeddedHookBase is the reconstruction's private type name, not a recoverable original source identifier.",
         "slot0": "phys_fn_000116: subtract 8 from member this and tail to phys_fn_000118",
         "destructor_flags_zero_state": "primary vptr becomes interface-wall table 0x101043d0; member vptr resets to base table 0x101088b8; +0x0c/+0x10 remain intact",
         "candidate_differential": "NxPhysicsActorLifecycleTests subobject_dtor=1.1.1.1 for static and dynamic actors; oracle and candidate stdout identical"
