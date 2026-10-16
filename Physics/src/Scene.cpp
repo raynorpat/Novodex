@@ -2900,15 +2900,19 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 	*reinterpret_cast<unsigned*>(fluid + 0x6c) = 0xff7fffff;
 	*reinterpret_cast<unsigned*>(fluid + 0x70) = 0xff7fffff;
 	*reinterpret_cast<void**>(fluid + 0x7c) = manager;
-	unsigned char* const solver = static_cast<unsigned char*>(::operator new(0x18));
+	unsigned char* const solver = static_cast<unsigned char*>(
+		::operator new(0x18, std::nothrow));
 	if(solver)
 		{
 		memset(solver, 0, 0x18);
 		*reinterpret_cast<void***>(solver) = gNxFluidSolverVtable;
-		*reinterpret_cast<void**>(solver + 4) = desc.userData;
 		*reinterpret_cast<void***>(solver + 8) = gNxFluidSolverReadLockVtable;
 		*reinterpret_cast<void**>(solver + 0x14) = fluid;
 		}
+	// The oracle's separate fluid initialization unconditionally writes the
+	// descriptor userData through solver+4, even when its 0x18-byte process-heap
+	// allocation returned null. Keep that failure ordering and access violation.
+	*reinterpret_cast<void**>(solver + 4) = desc.userData;
 	*reinterpret_cast<void**>(fluid + 0x54) = solver;
 	*reinterpret_cast<unsigned*>(fluid + 0x58) =
 		*reinterpret_cast<const unsigned*>(reinterpret_cast<const unsigned char*>(&desc) + 0xac);

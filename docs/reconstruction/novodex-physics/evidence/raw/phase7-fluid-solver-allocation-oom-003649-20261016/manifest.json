@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "description": "Solver allocation failure red differential, guarded-write mutation, restored focused differentials, fresh Phase 5/6/7 gates, and reconstruction tooling tests.",
+  "artifacts": [
+    {
+      "file": "red.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-solver-allocation-oom-003649-20261016\\red.log",
+      "source_bytes": 7362,
+      "source_sha256": "ca765fd7eb90b8b3f6a88ca4755f261cfad91ee9b373b774b3e74242452b167f",
+      "compressed_bytes": 1305,
+      "compressed_sha256": "fcae896f42f4c4d2f6d7f3ae839074514d73f325c97cf589cf3b93c81390a046"
+    },
+    {
+      "file": "mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-solver-allocation-oom-003649-20261016\\mutation.log",
+      "source_bytes": 7431,
+      "source_sha256": "147b276df7ef9801ff86e0c45d39a6d1117ffee455244dc15554b5bd80aaed8d",
+      "compressed_bytes": 1306,
+      "compressed_sha256": "af22478e1873defd058d18668c8c25bcadf9a0e7a795bd8a58c9f910796f6501"
+    },
+    {
+      "file": "green.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-solver-allocation-oom-003649-20261016\\green.log",
+      "source_bytes": 12606,
+      "source_sha256": "ed6204206692ec56150f4611637e2457fb570d7d78b11671e872ec9a02dc65bc",
+      "compressed_bytes": 1414,
+      "compressed_sha256": "fc81381c28fa788f0535d2c32e5530f550325c45349d7b2811f88a116a3f95d8"
+    },
+    {
+      "file": "phase5.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-solver-allocation-oom-003649-20261016\\phase5.log",
+      "source_bytes": 2822943,
+      "source_sha256": "ad584c22a85a626e64fa02200947884ed241bd547a34ca781e5c72bc84c82f31",
+      "compressed_bytes": 208744,
+      "compressed_sha256": "6e15512c7e765fedc7e6fbf60d62252c5b5d59d6d66949bfde158c480450cc77"
+    },
+    {
+      "file": "phase6.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-solver-allocation-oom-003649-20261016\\phase6.log",
+      "source_bytes": 3095943,
+      "source_sha256": "b023b3935f8a6e23f27743843123e0e70650470fc525d99914b6769590d5519b",
+      "compressed_bytes": 253226,
+      "compressed_sha256": "279b9bdf87bc6314ddf5ad18d2830cc2f5ec8c23d9c6341f9641c1a0425c2fbc"
+    },
+    {
+      "file": "phase7.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-solver-allocation-oom-003649-20261016\\phase7.log",
+      "source_bytes": 4616721,
+      "source_sha256": "96d4223f8b87f481430df50147f32ff1366ab928feffd86a7d594c8f7d04505d",
+      "compressed_bytes": 372840,
+      "compressed_sha256": "d3058478db2c74ef8d9ad50415b0f8b709a86254f74f0a195a63ca0388b740bb"
+    },
+    {
+      "file": "tools.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-solver-allocation-oom-003649-20261016\\tools.log",
+      "source_bytes": 125876,
+      "source_sha256": "e5d6b2923b79be625ca5459e450617c930b9f10ac0272e02b11ce58cf4f43396",
+      "compressed_bytes": 18987,
+      "compressed_sha256": "b2711c70609ca1b249dc3b835a2147d3d321c8d53160f0bf3d60e0567fc2bba8"
+    }
+  ],
+  "row": "phys_fn_003649",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "a298f5b9028fbacc6e280ef6b391284fdeae34f6269b73ed197352f7e3169a32",
+  "gate_coverage": {
+    "phase5": "2806/2806",
+    "phase6": "1697/1697",
+    "phase7": "2932/2932"
+  },
+  "tool_tests": "816 passed"
+}
