@@ -91,6 +91,8 @@ static unsigned gFluidParticleArrayGrowFailure;
 static unsigned gFluidGetParticlesCalls;
 static unsigned gFluidGetParticlesReturnNull;
 static unsigned gFluidMaxParticles = 0x1234u;
+static unsigned gFluidCellSizeZero;
+static unsigned gFluidParticleCellPoison;
 static unsigned gFluidSetStiffnessBits;
 static unsigned gFluidSetStiffnessArgumentsValid;
 static unsigned gFluidSetViscosityCalls;
@@ -467,7 +469,19 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetCellSize(
 	if(manager != &gFluidManagerBackend || !fluid)
 		return 0.0f;
 	++gFluidManagerCallbackSummary.fluidGetCellSize;
-	return 0.5f;
+	return gFluidCellSizeZero ? 0.0f : 0.5f;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidCellSizeZero(unsigned zero)
+	{
+	gFluidCellSizeZero = zero != 0;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidParticleCellPoison(unsigned enabled)
+	{
+	gFluidParticleCellPoison = enabled != 0;
 	}
 
 extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
@@ -991,6 +1005,14 @@ ParticleArrayAlloc(unsigned count)
 			{
 			free(array);
 			return 0;
+			}
+		if(gFluidParticleCellPoison)
+			for(unsigned index = 0; index != count; ++index)
+				{
+			unsigned char* const record = array->data + index * 92;
+			*reinterpret_cast<unsigned short*>(record + 64) = 0x5555;
+			*reinterpret_cast<unsigned short*>(record + 66) = 0x6666;
+			*reinterpret_cast<unsigned short*>(record + 68) = 0x7777;
 			}
 		}
 	array->capacity = count;

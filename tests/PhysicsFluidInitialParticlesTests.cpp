@@ -40,6 +40,9 @@
 #ifndef NX_FLUID_NULL_COUNT_TEST
 #define NX_FLUID_NULL_COUNT_TEST 0
 #endif
+#ifndef NX_FLUID_CELL_SIZE_ZERO_TEST
+#define NX_FLUID_CELL_SIZE_ZERO_TEST 0
+#endif
 #if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
 #undef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 1
@@ -185,6 +188,8 @@ int wmain(int argc, wchar_t** argv)
 	const char* const testName = "NxPhysicsFluidInitialParticleCapacityClipTests";
 	#elif NX_FLUID_NULL_COUNT_TEST
 	const char* const testName = "NxPhysicsFluidNullParticleCountTests";
+	#elif NX_FLUID_CELL_SIZE_ZERO_TEST
+	const char* const testName = "NxPhysicsFluidCellSizeZeroTests";
 	#elif NX_FLUID_ADD_PARTICLES_TEST
 	const char* const testName = "NxPhysicsFluidAddParticlesTests";
 	#elif NX_FLUID_CELL_ROUNDING_TEST
@@ -217,6 +222,28 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 	return nxFail("staged fluid model callback fixture failed to load");
 		}
+	#if NX_FLUID_CELL_SIZE_ZERO_TEST
+	typedef void (__cdecl *SetFluidCellSizeZeroFn)(unsigned);
+	SetFluidCellSizeZeroFn setFluidCellSizeZero =
+		reinterpret_cast<SetFluidCellSizeZeroFn>(GetProcAddress(fluidModel,
+			"NxSetFluidCellSizeZero"));
+	if(!setFluidCellSizeZero)
+		{
+		sdk->release();
+		return nxFail("cell-size-zero fixture control is missing");
+		}
+	typedef void (__cdecl *SetFluidParticleCellPoisonFn)(unsigned);
+	SetFluidParticleCellPoisonFn setFluidParticleCellPoison =
+		reinterpret_cast<SetFluidParticleCellPoisonFn>(GetProcAddress(fluidModel,
+			"NxSetFluidParticleCellPoison"));
+	if(!setFluidParticleCellPoison)
+		{
+		sdk->release();
+		return nxFail("particle cell poison control is missing");
+		}
+	setFluidCellSizeZero(1);
+	setFluidParticleCellPoison(1);
+	#endif
 	typedef void (__cdecl *SetFluidPostStepParticleFn)(unsigned,
 		const unsigned*, unsigned);
 	SetFluidPostStepParticleFn setFluidPostStepParticle =
@@ -612,6 +639,26 @@ int wmain(int argc, wchar_t** argv)
 	sdk->release();
 	if(!descValid || !countMatch || !cellsMatch)
 		return nxFail("particle cell quantization differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
+	#elif NX_FLUID_CELL_SIZE_ZERO_TEST
+	const bool countMatch = array &&
+		*reinterpret_cast<unsigned*>(array + 4) == 2;
+	const int x0 = records ? *reinterpret_cast<short*>(records + 64) : 999;
+	const int y0 = records ? *reinterpret_cast<short*>(records + 66) : 999;
+	const int z0 = records ? *reinterpret_cast<short*>(records + 68) : 999;
+	const int x1 = records ? *reinterpret_cast<short*>(records + 156) : 999;
+	const int y1 = records ? *reinterpret_cast<short*>(records + 158) : 999;
+	const int z1 = records ? *reinterpret_cast<short*>(records + 160) : 999;
+	const bool cellsMatch = records && x0 == 0 && y0 == 0 && z0 == 0 &&
+		x1 == 0 && y1 == 0 && z1 == 0;
+	printf("fluid initial-particles zero-cell-size count=%u cells=%d,%d,%d:%d,%d,%d\n",
+		countMatch && cellsMatch ? 2u : 0u, x0, y0, z0, x1, y1, z1);
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !countMatch || !cellsMatch)
+		return nxFail("zero-cell-size particle array was not populated");
 	return nxReportPairIdentity(pairDirectory);
 	#else
 	const bool countMatch = array &&

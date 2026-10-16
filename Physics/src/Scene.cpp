@@ -2247,6 +2247,12 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 			*reinterpret_cast<short*>(record + 68) = static_cast<short>(floorf(
 				*reinterpret_cast<float*>(record + 12) / cellSize));
 			}
+		else
+			{
+			*reinterpret_cast<short*>(record + 64) = 0;
+			*reinterpret_cast<short*>(record + 66) = 0;
+			*reinterpret_cast<short*>(record + 68) = 0;
+			}
 		*reinterpret_cast<short*>(record + 70) = -1;
 		*reinterpret_cast<short*>(record + 72) = -1;
 		*reinterpret_cast<unsigned*>(record + 88) = 0;

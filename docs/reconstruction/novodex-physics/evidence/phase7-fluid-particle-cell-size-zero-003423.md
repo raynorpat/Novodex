@@ -1,0 +1,7 @@
+# `phys_fn_003423` zero-cell-size particle coordinates
+
+IDA at oracle RVA `0x00084a80` shows the shared initial-particle initializer deriving three signed 16-bit cell coordinates from position and fluid cell size. The zero-cell-size path writes zero coordinates. Existing tests used zero-initialized particle records and could not distinguish those stores from leaving the fields untouched.
+
+`NxPhysicsFluidCellSizeZeroTests` poisons only the three cell-coordinate words before the initializer runs, then creates two particles with a zero cell size. The oracle overwrites both records with `0,0,0`. Before the production change, the candidate retained `21845,26214,30583` in both records and the differential rejected it (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2`). `nxFluidInitializeParticles` now explicitly writes zero to all three words in this branch. Removing those stores is mutation-rejected, and the restored differential matches exactly (`stdout_delta=0`, `stderr_exact=True`).
+
+The function remains partial/open because the full instruction-level audit is not complete. The public Physics headers are unchanged. Phase 5, 6, and 7 pass at 2,791/2,791, 1,692/1,692, and 2,911/2,911 coverage assertions. The reconstruction inventory validates with 6,338 function rows, 5,138 data objects, and zero unexplained records. Raw mutation, restored differential, and phase gate logs are retained in `evidence/raw/phase7-physfn-003423-zero-cell-20261015/`.
