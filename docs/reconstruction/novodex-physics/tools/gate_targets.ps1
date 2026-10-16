@@ -5562,6 +5562,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'hull sharedhook row=phys_fn_000985 stable=1 words=00000000.00000000.00000000',
         'shapebase ctor=phys_fn_001273 size=224 digest=de5f5000 zero08=00000000 pose_diag=3f800000 zero9c=00000000 zeroa0=00000000 prun24=ffffffff prun28=0000ffff sentinel_d0=7fffffff arg_d4=5a5a5a5a hw_dc=6 hw_de=8',
         'boxshape ctor=phys_fn_000977 size=552 digest=ac5ed12f sentinel_d0=2 arg_d4=5a5a5a5a dims=3f800000.3f800000.3f800000 face0_corners=00000000 face5_corners=00000000 verts_poison=cdcdcdcd floats_poison=cdcdcdcd colobj_ok=1',
+        'boxshape face_indices rows=6 corners=24 edges=24 bounds=1 digest=28d445a5',
         'sphere ctor=phys_fn_001349 size=228 digest=37ea7205 sentinel_d0=1 arg_d4=5a5a5a5a radius_e0=00000000 colobj_ok=1',
         'capsule ctor=phys_fn_000987 size=236 digest=ba7317e3 sentinel_d0=3 arg_d4=5a5a5a5a float_e0=00000000 float_e4=00000000 colobj_ok=1',
         'plane ctor=phys_fn_001247 size=268 digest=abed37e0 sentinel_d0=0 arg_d4=5a5a5a5a normal=00000000.3f800000.00000000 dist_ec=00000000 word108=1 tangent_f0=bf800000.00000000.00000000 binormal_fc=80000000.80000000.3f800000 colobj_ok=1',
@@ -5676,9 +5677,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 applydesc=1',
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1',
         'applydesc row=phys_fn_001347 result=1 digest=11e5e856 flags=1234 group=5 material=5678',
-        'layout oracle digest=774d629d',
+        'layout oracle digest=3acf0dc7',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basesave candidate ok=1 digest=bc9dc964',
@@ -6198,7 +6199,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2802  # adds phys_fn_003649 implicit-mesh process-heap allocation route
+	'5' = 2803  # adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
@@ -6270,7 +6271,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1695  # adds phys_fn_003649 implicit-mesh process-heap allocation route
+	'6' = 1696  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential
@@ -6316,7 +6317,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2924  # adds phys_fn_003649 implicit-mesh process-heap allocation route
+	'7' = 2925  # plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization

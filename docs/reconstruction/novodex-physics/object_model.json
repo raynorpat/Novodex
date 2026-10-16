@@ -232,9 +232,10 @@
     "what_it_constructs": "six 36-byte records at Shape+0x150 stride 0x24: { dword 4; const dword* listA; const dword* listB; five dwords of float data }",
     "the_pointers_are_data_not_vtables": {
       "evidence": "pe.json records NO relocations at any of the twelve addresses; raw bytes are small integer runs, not function entries",
-      "listA_family": "chained face quads over an 8-corner numbering, e.g. [0,1,2,3 | 1,5,6,2] -> [1,5,6,2 | 5,4,7,6] -> ... cycling through six faces",
-      "listB_family": "second index family reaching corner ids 8..11 (e.g. [0,1,2,3 | 1,8,5,9], [11,3,10,7]); trailing words at one address are a neighbouring object, so list lengths vary",
-      "float_data": "face normals as constants (+/-X, +/-Y, +/-Z) -- axis-aligned regardless of dims"
+      "listA_family": "Six contiguous four-word rows of corner indices with values in [0,7], exact extent 0x60 bytes at oracle RVA 0x00106998.",
+      "listB_family": "Six contiguous four-word rows of edge indices with values in [0,11], exact extent 0x60 bytes at oracle RVA 0x001069f8.",
+      "float_data": "face normals as constants (+/-X, +/-Y, +/-Z) -- axis-aligned regardless of dims",
+      "differential": "NxPhysicsObjectLayoutTests calls oracle phys_fn_000973 after construction and compares all 24 corner and 24 edge words with the candidate rebuild; oracle digest 28d445a5. Changing candidate edge 0 to 12 is rejected."
     },
     "semantic_reading": "per-face records of the box (six faces; spheres/capsules/planes never call this row); role of the two index families open -- sweep/hull candidates",
     "plus_e0_subobject": {
@@ -301,8 +302,8 @@
   },
   "open_questions": [
     "the source-language interface represented by the actor's +8 secondary base remains unidentified; its one-slot deleting-destructor thunk and reset state are reconstructed",
-    "the consumer and exact bounds of BoxHullFacade's second per-face index family at Shape+0x150",
-    "whether Shape+0x150..+0x158 trio is box-specific or common"
+    "whether Shape+0x150..+0x158 trio is box-specific or common",
+    "the direct in-DLL consumer of BoxHullFacade face-record listB (the six four-edge arrays) remains unidentified"
   ],
   "shape_final_slot_maps": {
     "source": "oracle/pe.json pointers + evidence/phase5-object-model.md sections 3h/3j",
