@@ -42,6 +42,7 @@
 #include <string.h>
 #include <vector>
 #include <stddef.h>
+#include <windows.h>
 
 // The parameter indices the rows use, pinned against the element addresses the
 // listings read (0x10123b18 + 4 * index).
@@ -759,4 +760,162 @@ void nxSceneVisualizeFluids(void* fluids, NxDebugRenderable* renderable)
 	{
 	(void)fluids;
 	(void)renderable;
+	}
+
+
+extern "C" void* __cdecl nxNpFluidEmitterStoreGlobalPose(void* internal);
+extern "C" float __cdecl nxNpFluidEmitterGetDimensionX(void* internal);
+extern "C" float __cdecl nxNpFluidEmitterGetDimensionY(void* internal);
+
+static NxVec3 nxFluidEmitterVisualPlanePoint(const float* pose, double x, double y)
+	{
+	const double px = (double)pose[0] * x + (double)pose[1] * y + pose[9];
+	const double py = (double)pose[3] * x + (double)pose[4] * y + pose[10];
+	const double pz = (double)pose[6] * x + (double)pose[7] * y + pose[11];
+	return NxVec3((NxReal)px, (NxReal)py, (NxReal)pz);
+	}
+
+extern "C" void __cdecl nxNpFluidEmitterVisualizeRecord(void* internal,
+	unsigned, unsigned, void*, NxDebugRenderable* renderable)
+	{
+	if(!internal || !renderable
+		|| (*reinterpret_cast<unsigned char*>(static_cast<unsigned char*>(internal) + 0x10) & 1) == 0)
+		return;
+	const NxReal* const parameters = nxPhysicsSDKParameters();
+	const NxReal scale = parameters[NX_VISUALIZATION_SCALE]
+		* parameters[NX_VISUALIZE_FLUID_EMITTERS];
+	if(scale == 0.0f)
+		return;
+
+	float pose[12];
+	if(!nxNpFluidEmitterStoreGlobalPose(internal))
+		return;
+	memcpy(pose, static_cast<unsigned char*>(internal) + 0x48, sizeof(pose));
+	const NxReal dimensionX = nxNpFluidEmitterGetDimensionX(internal);
+	const NxReal dimensionY = nxNpFluidEmitterGetDimensionY(internal);
+	unsigned char* const fluid = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(internal) + 4);
+	unsigned char* const backend = *reinterpret_cast<unsigned char**>(fluid + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(backend + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluid + 0x80);
+	typedef float (__cdecl *RestDistanceFn)(unsigned, unsigned, ...);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	RestDistanceFn getRestDistance = reinterpret_cast<RestDistanceFn>(
+		GetProcAddress(fluidModel, "FluidGetRestParticleDistance"));
+	if(!getRestDistance)
+		return;
+	const NxReal restDistance = getRestDistance(context, fluidHandle);
+	NxMat33 emitterRotation;
+	memcpy(&emitterRotation, pose, sizeof(emitterRotation));
+	const NxVec3 emitterPosition(pose[9], pose[10], pose[11]);
+	const NxVec3 emitterLengths(scale, scale, scale + scale);
+	NxU32 emitterColors[3] = { 0xffff0000u, 0xff00ff00u, 0xff0000ffu };
+	renderable->addBasis(emitterPosition, emitterRotation, emitterLengths,
+		1.0f, emitterColors);
+	const NxVec3 p0 = nxFluidEmitterVisualPlanePoint(pose, dimensionX, dimensionY);
+	const NxVec3 p1 = nxFluidEmitterVisualPlanePoint(pose, dimensionX, -dimensionY);
+	const NxVec3 p2 = nxFluidEmitterVisualPlanePoint(pose, -dimensionX, -dimensionY);
+	const NxVec3 p3 = nxFluidEmitterVisualPlanePoint(pose, -dimensionX, dimensionY);
+	const NxU32 lineColor = 0xff0000ffu;
+	renderable->addLine(p0, p1, lineColor);
+	renderable->addLine(p1, p2, lineColor);
+	renderable->addLine(p2, p3, lineColor);
+	renderable->addLine(p3, p0, lineColor);
+
+	NxMat33 frameRotation;
+	frameRotation.id();
+	NxVec3 framePosition(0.0f, 0.0f, 0.0f);
+	unsigned char* const frameActor = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(internal) + 0x14);
+	if(frameActor)
+		{
+		float frameWords[12];
+		unsigned char* const body = *reinterpret_cast<unsigned char**>(frameActor + 8);
+		if(body)
+			{
+			const float x = *reinterpret_cast<float*>(body + 9 * sizeof(float));
+			const float y = *reinterpret_cast<float*>(body + 10 * sizeof(float));
+			const float z = *reinterpret_cast<float*>(body + 11 * sizeof(float));
+			const float w = *reinterpret_cast<float*>(body + 12 * sizeof(float));
+			const float ySquareSum = static_cast<float>(
+				static_cast<double>(y) * y + static_cast<double>(y) * y);
+			const double zSquareSum = static_cast<double>(z) * z
+				+ static_cast<double>(z) * z;
+			const double xSquareSum = static_cast<double>(x) * x
+				+ static_cast<double>(x) * x;
+			const double ySquareWide = static_cast<double>(y) * y
+				+ static_cast<double>(y) * y;
+			frameWords[0] = static_cast<float>(1.0 - ySquareSum - zSquareSum);
+			frameWords[1] = (x * y + x * y) - (z * w + z * w);
+			frameWords[2] = (x * z + x * z) + (y * w + y * w);
+			frameWords[3] = (x * y + x * y) + (z * w + z * w);
+			frameWords[4] = static_cast<float>(1.0 - xSquareSum - zSquareSum);
+			frameWords[5] = (y * z + y * z) - (x * w + x * w);
+			frameWords[6] = (x * z + x * z) - (y * w + y * w);
+			frameWords[7] = (y * z + y * z) + (x * w + x * w);
+			const float xSquareRounded = static_cast<float>(xSquareSum);
+			const float ySquareRounded = static_cast<float>(ySquareWide);
+			frameWords[8] = (1.0f - xSquareRounded) - ySquareRounded;
+			framePosition.set(*reinterpret_cast<float*>(body + 6 * sizeof(float)),
+				*reinterpret_cast<float*>(body + 7 * sizeof(float)),
+				*reinterpret_cast<float*>(body + 8 * sizeof(float)));
+			}
+		else
+			{
+			memcpy(frameWords, frameActor + 0x20, sizeof(frameWords));
+			framePosition.set(frameWords[9], frameWords[10], frameWords[11]);
+			}
+		memcpy(&frameRotation, frameWords, sizeof(frameRotation));
+		}
+	const NxVec3 frameLengths(1.0f, 1.0f, 1.0f);
+	NxU32 frameColors[3] = { 0xffffff00u, 0xff00ffffu, 0xffff00ffu };
+	renderable->addBasis(framePosition, frameRotation, frameLengths, 1.0f,
+		frameColors);
+
+	if(restDistance <= 0.0f)
+		return;
+	const NxReal rowSpacing = static_cast<NxReal>(sqrt(3.0) * restDistance * 0.5);
+	const unsigned columns = 2 * static_cast<unsigned>(dimensionX / restDistance + 0.5);
+	const unsigned rows = 2 * static_cast<unsigned>(dimensionY / rowSpacing + 0.5f);
+	if(columns == 0 || rows == 0 || columns > 4096 || rows > 4096)
+		return;
+	const double rowFactor = static_cast<double>(rows - 1);
+	const double columnFactor = static_cast<double>(columns) - 0.5;
+	const NxReal xBaseFirst = static_cast<NxReal>(pose[0] * columnFactor
+		* restDistance * 0.5);
+	const NxReal xBase = (pose[9] - xBaseFirst)
+		- static_cast<NxReal>(pose[1] * rowFactor * rowSpacing * 0.5);
+	const NxReal yBaseFirst = static_cast<NxReal>(pose[3] * columnFactor);
+	const NxReal yBase = (pose[10] - yBaseFirst * restDistance * 0.5f)
+		- static_cast<NxReal>(pose[4] * rowFactor * rowSpacing * 0.5);
+	const NxReal zBaseFirst = static_cast<NxReal>(pose[6] * columnFactor);
+	const NxReal zBase = (pose[11] - zBaseFirst * restDistance * 0.5f)
+		- static_cast<NxReal>(pose[7] * rowFactor * rowSpacing * 0.5);
+	const NxReal radius = restDistance * 0.25f;
+	const NxU32 particleColor = 0xff0000ffu;
+	for(unsigned row = 0; row < rows; ++row)
+		{
+		const NxReal stagger = (row & 1) ? restDistance * 0.5f : 0.0f;
+		const NxReal rowDistance = static_cast<NxReal>(row) * rowSpacing;
+		for(unsigned column = 0; column < columns; ++column)
+			{
+			const double columnDistance = static_cast<double>(column)
+				* restDistance + stagger;
+			const NxReal rowX = static_cast<NxReal>(pose[1] * rowDistance);
+			const NxReal rowY = static_cast<NxReal>(pose[4] * rowDistance);
+			const NxReal rowZ = static_cast<NxReal>(pose[7] * rowDistance);
+			const NxVec3 position(
+				static_cast<NxReal>(pose[0] * columnDistance + xBase + rowX),
+				static_cast<NxReal>(pose[3] * columnDistance + yBase + rowY),
+				static_cast<NxReal>(pose[6] * columnDistance + zBase + rowZ));
+		float circleWords[12];
+		memcpy(circleWords, pose, sizeof(circleWords));
+		circleWords[9] = position.x;
+		circleWords[10] = position.y;
+		circleWords[11] = position.z;
+		NxMat34 circleMatrix;
+		memcpy(&circleMatrix, circleWords, sizeof(circleWords));
+		renderable->addCircle(10, circleMatrix, particleColor, radius, false);
+		}
+		}
 	}

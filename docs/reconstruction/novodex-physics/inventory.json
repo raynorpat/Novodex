@@ -67813,13 +67813,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1357",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12532",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly invokes oracle phys_fn_003607 at RVA 0x886b0 and the candidate map-resolved nxNpFluidEmitterVisualizeRecord with visualization scale/parameter enabled and a deterministic FluidModel fixture. The differential compares emitted basis, outline lines, particle-circle matrices/colors/radii, aggregate FNV digest, and x86 stack balance: oracle and candidate each emit 4 lines, 2 bases, 24 circles, digest c284be3c, stack=1/1. An early-return/no-op mutation emits no primitives and is rejected (mismatches=1); the restored control matches exactly. See evidence/phase7-fluid-emitter-visualize-003607.md and evidence/raw/phase7-fluid-emitter-visualize-003607-20261016/.",
+      "notes": "Reconstructs emitter visualization from the live SDK parameter array, callback-provided world pose and dimensions, optional frame actor transform, and rest-particle distance; emits the emitter basis, outlined footprint, frame basis, and staggered particle-circle grid."
     },
     {
       "id": "phys_fn_003608",

@@ -315,6 +315,9 @@ struct NxFluidEmitterFlagCallbackRecord
 static NxFluidEmitterFlagCallbackRecord gRecords[16];
 static unsigned gRecordCount;
 static float gEmitterGlobalPose[12];
+static bool gEmitterVisualDimensionsEnabled;
+static float gEmitterVisualDimensionX;
+static float gEmitterVisualDimensionY;
 
 extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	{
@@ -1603,7 +1606,15 @@ static NxFluidEmitterAttributeCallbackRecord& nxNextAttributeRecord(
 	}
 
 extern "C" __declspec(dllexport) void __cdecl NxResetFluidEmitterAttributeCallbacks()
-	{ gAttributeRecordCount = 0; }
+	{ gAttributeRecordCount = 0; gEmitterVisualDimensionsEnabled = false; }
+
+extern "C" __declspec(dllexport) void __cdecl NxSetEmitterVisualDimensions(
+	unsigned enabled, float dimensionX, float dimensionY)
+	{
+	gEmitterVisualDimensionsEnabled = enabled != 0;
+	gEmitterVisualDimensionX = dimensionX;
+	gEmitterVisualDimensionY = dimensionY;
+	}
 
 extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidEmitterAttributeCallbackCount()
 	{ return gAttributeRecordCount; }
@@ -1621,6 +1632,8 @@ extern "C" __declspec(dllexport) float __cdecl EmitterGetDimensionX(
 	unsigned context, unsigned fluid, unsigned emitter)
 	{
 	nxNextAttributeRecord(1, context, fluid, emitter);
+	if(gEmitterVisualDimensionsEnabled)
+		return gEmitterVisualDimensionX;
 	const unsigned bits = 0x40500001u;
 	return *reinterpret_cast<const float*>(&bits);
 	}
@@ -1629,6 +1642,8 @@ extern "C" __declspec(dllexport) float __cdecl EmitterGetDimensionY(
 	unsigned context, unsigned fluid, unsigned emitter)
 	{
 	nxNextAttributeRecord(2, context, fluid, emitter);
+	if(gEmitterVisualDimensionsEnabled)
+		return gEmitterVisualDimensionY;
 	const unsigned bits = 0x3fc00002u;
 	return *reinterpret_cast<const float*>(&bits);
 	}

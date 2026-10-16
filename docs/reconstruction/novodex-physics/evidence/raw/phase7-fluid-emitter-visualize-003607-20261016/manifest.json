@@ -1,0 +1,38 @@
+{
+  "row": "phys_fn_003607",
+  "oracle_rva": "0x000886b0",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "5504cd580a55c8ba74d423f4062dd5eb9c53d719a8aa5628dd89421ee5fa51f2",
+  "phase5": "pass 2798/2798",
+  "phase7": "pass 2920/2920",
+  "tool_suite": "816 tests passed",
+  "restored_differential": "pass; unattached digest=c284be3c; matrix and quaternion frame cases exact; stack=1/1; mismatches=0",
+  "mutation": "immediate return; all three cases rejected; frame mismatches=1 each; aggregate mismatches=3; exit 1",
+  "files": {
+    "phase5-gate.log.gz": {
+      "sha256": "002b2db74bda5a6ad759db8bd2fc3ec66f5113ee35dae3056c352f08ef778451",
+      "uncompressed_sha256": "c5de14a887c3103fe2558063951c72920fcc078aa569d203dcf282d48373a8bc",
+      "size": 2811311
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "e2163fcf543f43da17ac41db70f5ed722f83cfc34990c83ae9cf76e9ce1b81b2",
+      "uncompressed_sha256": "2fc5a0be9ed436ed41ef7034b28193aa66adb7174a28037f204d622acc574ac6",
+      "size": 4600761
+    },
+    "restored-differential.log.gz": {
+      "sha256": "76883ac9cf624b09b0891775fa06ec2f9101cf7645cb83a39eb465b1dae9d1f2",
+      "uncompressed_sha256": "b7a96da4c090f925897de5c09b37d5e1de7a839d51f94bbc0b1fb823b882c6eb",
+      "size": 14529
+    },
+    "immediate-return-mutant.log.gz": {
+      "sha256": "14971ab5301c5daea962eb2d3034288c9e31fc74cb8ca8eefdcb35778af60d39",
+      "uncompressed_sha256": "3be9d1e82d219fc54c81bf95225349d0f5d81cb804164f487f9e968927c004bc",
+      "size": 14416
+    },
+    "tool-suite.log.gz": {
+      "sha256": "8fa5d230db1d4c6844a6f998d76c2d6a66668d6d6c98d3f2590149dee1637271",
+      "uncompressed_sha256": "21e47e7e588d7e22f30a80c75be8ef32a28faf8161c0393c30475754f37dad18",
+      "size": 922
+    }
+  }
+}

@@ -156,6 +156,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'
 		'fluid emitter candidate_dll raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
+        'fluid emitter visualize cases=1 points=0/0 lines=4/4 bases=2/2 circles=24/24 digest=c284be3c/c284be3c stack=1/1 mismatches=0'
+        'fluid emitter visualize frame case=matrix bases=2/2 lines=4/4 circles=24/24 digest_match=1 stack=1/1 mismatches=0'
+        'fluid emitter visualize frame case=quaternion bases=2/2 lines=4/4 circles=24/24 digest_match=1 stack=1/1 mismatches=0'
         'fluid emitter flags cases=2 mismatches=0'
 		'fluid emitter global-pose rows=2 callback_checks=2 stack_checks=2 mismatches=0'
 		'fluid emitter global-to-local cases=3 callback_checks=3 stack_checks=3 mismatches=0'
@@ -6188,7 +6191,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2795  # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
+	'5' = 2798  # adds mutation-falsified phys_fn_003607 emitter visualization row and frame cases
+	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	           # adds row 000645 enabled/disabled create contract
@@ -6305,7 +6309,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2917  # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
+	'7' = 2920  # adds mutation-falsified phys_fn_003607 emitter visualization row and frame cases
+	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract

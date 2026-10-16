@@ -15,10 +15,77 @@
 #include "fluids/NpFluidEmitter.h"
 #include "fluids/NxMeshData.h"
 #include "ContactPairManager.h"
+#include "NxDebugRenderable.h"
+
+
+struct NxFluidEmitterVisualCapture
+	{
+	unsigned calls;
+	unsigned points;
+	unsigned lines;
+	unsigned triangles;
+	unsigned bases;
+	unsigned circles;
+	unsigned obbs;
+	unsigned aabbs;
+	unsigned arrows;
+	unsigned digest;
+
+	NxFluidEmitterVisualCapture()
+		: calls(0), points(0), lines(0), triangles(0), bases(0), circles(0),
+		  obbs(0), aabbs(0), arrows(0), digest(2166136261u) {}
+
+	void add(unsigned kind, const void* bytes, unsigned size)
+		{
+		const unsigned char* data = static_cast<const unsigned char*>(bytes);
+		digest = (digest ^ kind) * 16777619u;
+		for(unsigned i = 0; i < size; ++i)
+			digest = (digest ^ data[i]) * 16777619u;
+		++calls;
+		}
+	};
+
+class NxFluidEmitterVisualRenderable : public NxDebugRenderable
+	{
+	public:
+	explicit NxFluidEmitterVisualRenderable(NxFluidEmitterVisualCapture& capture)
+		: mCapture(capture) {}
+	NxU32 getNbPoints() const { return 0; }
+	const NxDebugPoint* getPoints() const { return 0; }
+	NxU32 getNbLines() const { return 0; }
+	const NxDebugLine* getLines() const { return 0; }
+	NxU32 getNbTriangles() const { return 0; }
+	const NxDebugTriangle* getTriangles() const { return 0; }
+	void clear() { mCapture = NxFluidEmitterVisualCapture(); }
+	void addPoint(const NxVec3& p, NxU32 color)
+		{ ++mCapture.points; mCapture.add(1, &p, sizeof(p)); mCapture.add(2, &color, sizeof(color)); }
+	void addLine(const NxVec3& p0, const NxVec3& p1, NxU32 color)
+		{ ++mCapture.lines; mCapture.add(3, &p0, sizeof(p0)); mCapture.add(4, &p1, sizeof(p1)); mCapture.add(5, &color, sizeof(color)); }
+	void addTriangle(const NxVec3& p0, const NxVec3& p1, const NxVec3& p2, NxU32 color)
+		{ ++mCapture.triangles; mCapture.add(6, &p0, sizeof(p0)); mCapture.add(7, &p1, sizeof(p1)); mCapture.add(8, &p2, sizeof(p2)); mCapture.add(9, &color, sizeof(color)); }
+	void addOBB(const NxBox& box, NxU32 color, bool renderFrame)
+		{ ++mCapture.obbs; mCapture.add(10, &box, sizeof(box)); mCapture.add(11, &color, sizeof(color)); mCapture.add(12, &renderFrame, sizeof(renderFrame)); }
+	void addAABB(const NxBounds3& bounds, NxU32 color, bool renderFrame)
+		{ ++mCapture.aabbs; mCapture.add(13, &bounds, sizeof(bounds)); mCapture.add(14, &color, sizeof(color)); mCapture.add(15, &renderFrame, sizeof(renderFrame)); }
+	void addArrow(const NxVec3& position, const NxVec3& direction, NxReal length,
+		NxReal scale, NxU32 color)
+		{ ++mCapture.arrows; mCapture.add(16, &position, sizeof(position)); mCapture.add(17, &direction, sizeof(direction)); mCapture.add(18, &length, sizeof(length)); mCapture.add(19, &scale, sizeof(scale)); mCapture.add(20, &color, sizeof(color)); }
+	void addBasis(const NxVec3& position, const NxMat33& columns,
+		const NxVec3& lengths, NxReal scale, NxU32 colors[3])
+		{ ++mCapture.bases; mCapture.add(21, &position, sizeof(position)); mCapture.add(22, &columns, sizeof(columns)); mCapture.add(23, &lengths, sizeof(lengths)); mCapture.add(24, &scale, sizeof(scale)); if(colors) mCapture.add(25, colors, sizeof(NxU32) * 3); }
+	void addCircle(NxU32 segments, const NxMat34& matrix, NxU32 color,
+		NxF32 radius, bool semicircle)
+		{ ++mCapture.circles; mCapture.add(26, &segments, sizeof(segments)); mCapture.add(27, &matrix, sizeof(matrix)); mCapture.add(28, &color, sizeof(color)); mCapture.add(29, &radius, sizeof(radius)); mCapture.add(30, &semicircle, sizeof(semicircle)); }
+	private:
+	NxFluidEmitterVisualCapture& mCapture;
+	};
 
 static bool nxSha256(const wchar_t* path, char output[65]);
 
 static unsigned gFailures;
+static bool gFluidEmitterVisualDimensionsEnabled;
+static float gFluidEmitterVisualDimensionX;
+static float gFluidEmitterVisualDimensionY;
 static void* gCandidateTriangleIndexBuilderAddress;
 static void* gCandidateFluidCollisionShapePackerAddress;
 static void* gCandidateFluidCollisionShapeCounterAddress;
@@ -31,6 +98,10 @@ static void* gCandidateFluidCollisionMeshAppendAddress;
 static void* gCandidateFluidCollisionShapeArrayRouterAddress;
 static void* gCandidateFluidCollisionSceneShapeCollectorAddress;
 static void* gCandidateFluidCollisionStaticRebuildAddress;
+
+extern "C" float __cdecl nxOracleEmitterGetDimensionX(unsigned, unsigned, unsigned);
+extern "C" float __cdecl nxOracleEmitterGetDimensionY(unsigned, unsigned, unsigned);
+extern "C" float __cdecl nxOracleFluidGetRestParticleDistance(unsigned, unsigned, ...);
 
 extern "C" void __cdecl nxFluidEmitterAbiUnexpectedWriteLockFailure(unsigned line)
 	{
@@ -700,7 +771,8 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
 		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0,
-		0x126408, 0x1263e0, 0x126518, 0x126524, 0x126454, 0x12658c };
+		0x126408, 0x1263e0, 0x126518, 0x126524, 0x126454, 0x12658c,
+		0x1265cc, 0x1265d4, 0x126570 };
 	static void* const replacements[] = {
 		0,
 		reinterpret_cast<void*>(&nxOracleEmitterSetBodyRepulsionFlag),
@@ -722,12 +794,15 @@ static bool nxBindOracleEmitterFlagCallbacks(unsigned char* image, void** oldVal
 		triangleBoxOverlap,
 		triangleCellGrow,
 		reinterpret_cast<void*>(&nxOracleFluidFindCell),
+		reinterpret_cast<void*>(&nxOracleEmitterGetDimensionX),
+		reinterpret_cast<void*>(&nxOracleEmitterGetDimensionY),
+		reinterpret_cast<void*>(&nxOracleFluidGetRestParticleDistance),
 		};
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	if(!VirtualProtect(page, 0x1000, PAGE_READWRITE, oldProtection))
 		return false;
-	for(unsigned i = 0; i < 20; ++i)
+	for(unsigned i = 0; i < 23; ++i)
 		{
 		void** slot = reinterpret_cast<void**>(image + slotRvas[i]);
 		oldValues[i] = *slot;
@@ -743,12 +818,13 @@ static void nxUnbindOracleEmitterFlagCallbacks(unsigned char* image, void** oldV
 		0x1263c0,
 		0x126628, 0x126404, 0x12657c, 0x12644c, 0x126614, 0x1263dc,
 		0x1263f0, 0x12664c, 0x1263e8, 0x1264f8, 0x126584, 0x126590, 0x1264d0,
-		0x126408, 0x1263e0, 0x126518, 0x126524, 0x126454, 0x12658c };
+		0x126408, 0x1263e0, 0x126518, 0x126524, 0x126454, 0x12658c,
+		0x1265cc, 0x1265d4, 0x126570 };
 	DWORD ignored = 0;
 	void* page = reinterpret_cast<void*>(reinterpret_cast<size_t>(image + 0x126000)
 		& ~static_cast<size_t>(0xfff));
 	VirtualProtect(page, 0x1000, PAGE_READWRITE, &ignored);
-	for(unsigned i = 0; i < 20; ++i)
+	for(unsigned i = 0; i < 23; ++i)
 		*reinterpret_cast<void**>(image + slotRvas[i]) = oldValues[i];
 	VirtualProtect(page, 0x1000, oldProtection, &ignored);
 	}
@@ -4869,6 +4945,8 @@ extern "C" float __cdecl nxOracleEmitterGetDimensionX(
 	unsigned context, unsigned fluid, unsigned emitter)
 	{
 	nxRecordOracleAttribute(1, context, fluid, emitter);
+	if(gFluidEmitterVisualDimensionsEnabled)
+		return gFluidEmitterVisualDimensionX;
 	const unsigned bits = 0x40500001u;
 	return *reinterpret_cast<const float*>(&bits);
 	}
@@ -4876,7 +4954,15 @@ extern "C" float __cdecl nxOracleEmitterGetDimensionY(
 	unsigned context, unsigned fluid, unsigned emitter)
 	{
 	nxRecordOracleAttribute(2, context, fluid, emitter);
+	if(gFluidEmitterVisualDimensionsEnabled)
+		return gFluidEmitterVisualDimensionY;
 	const unsigned bits = 0x3fc00002u;
+	return *reinterpret_cast<const float*>(&bits);
+	}
+extern "C" float __cdecl nxOracleFluidGetRestParticleDistance(
+	unsigned, unsigned, ...)
+	{
+	const unsigned bits = 0x3ca3d70au; // 0.02f
 	return *reinterpret_cast<const float*>(&bits);
 	}
 extern "C" int __cdecl nxOracleEmitterSetRandomPos(unsigned context,
@@ -5577,6 +5663,241 @@ static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
 	return mismatches;
 	}
 
+static __declspec(naked) void __cdecl nxCallOracleFluidEmitterVisualize(
+	void*, void*, unsigned, unsigned, void*, NxDebugRenderable*, unsigned*, unsigned*)
+	{
+	__asm
+		{
+		push ebp
+		push esi
+		push edi
+		push ebx
+		mov eax, [esp+14h]
+		mov ecx, [esp+18h]
+		mov ebp, [esp+1ch]
+		mov edi, [esp+20h]
+		mov esi, [esp+24h]
+		mov edx, [esp+28h]
+		mov ebx, [esp+2ch]
+		mov [ebx], esp
+		push edx
+		call eax
+		mov edx, [esp+30h]
+		mov [edx], esp
+		pop ebx
+		pop edi
+		pop esi
+		pop ebp
+		ret
+		}
+	}
+
+static unsigned nxRunFluidEmitterVisualizeDifferential(unsigned char* oracleImage,
+	HMODULE candidatePhysics, HMODULE fluidModel)
+	{
+	void* candidateVisualizeAddress = 0;
+	void* candidateParametersAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterVisualizeRecord", &candidateVisualizeAddress))
+		{
+		fprintf(stderr, "FAIL candidate fluid-emitter visualizer could not be resolved from its map\n");
+		return 1;
+		}
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"?nxPhysicsSDKParameters@@YAPBMXZ", &candidateParametersAddress))
+		return 1;
+	if(!fluidModel)
+		return 1;
+	typedef void (__cdecl *SetPoseFn)(const float*);
+	typedef void (__cdecl *SetDimensionsFn)(unsigned, float, float);
+	SetPoseFn setFixturePose = reinterpret_cast<SetPoseFn>(
+		GetProcAddress(fluidModel, "NxSetEmitterGlobalPose"));
+	SetDimensionsFn setFixtureDimensions = reinterpret_cast<SetDimensionsFn>(
+		GetProcAddress(fluidModel, "NxSetEmitterVisualDimensions"));
+	if(!setFixturePose || !setFixtureDimensions)
+		{
+		fprintf(stderr, "FAIL fluid-emitter visualization fixture setters missing\n");
+		return 1;
+		}
+	static const unsigned poseBits[12] = {
+		0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0, 0x3f800000u,
+		0x3f800000u, 0x40000000u, 0x40400000u };
+	memcpy(gOracleEmitterGlobalPose, poseBits, sizeof(poseBits));
+	setFixturePose(reinterpret_cast<const float*>(poseBits));
+	gFluidEmitterVisualDimensionsEnabled = true;
+	gFluidEmitterVisualDimensionX = 0.06f;
+	gFluidEmitterVisualDimensionY = 0.04f;
+	setFixtureDimensions(1, gFluidEmitterVisualDimensionX,
+		gFluidEmitterVisualDimensionY);
+	unsigned char oracleRecord[0x78] = {};
+	unsigned char candidateRecord[0x78] = {};
+	unsigned char oracleFluid[0x84] = {};
+	unsigned char candidateFluid[0x84] = {};
+	unsigned char oracleBackend[0x34] = {};
+	unsigned char candidateBackend[0x34] = {};
+	*reinterpret_cast<void**>(oracleRecord + 4) = oracleFluid;
+	*reinterpret_cast<void**>(candidateRecord + 4) = candidateFluid;
+	*reinterpret_cast<unsigned*>(oracleRecord + 8) = 0x32u;
+	*reinterpret_cast<unsigned*>(candidateRecord + 8) = 0x32u;
+	*reinterpret_cast<unsigned*>(oracleRecord + 0x10) = 1u;
+	*reinterpret_cast<unsigned*>(candidateRecord + 0x10) = 1u;
+	memcpy(oracleRecord + 0x48, poseBits, sizeof(poseBits));
+	memcpy(candidateRecord + 0x48, poseBits, sizeof(poseBits));
+	*reinterpret_cast<void**>(oracleFluid + 0x7c) = oracleBackend;
+	*reinterpret_cast<void**>(candidateFluid + 0x7c) = candidateBackend;
+	*reinterpret_cast<unsigned*>(oracleFluid + 0x80) = 0x44u;
+	*reinterpret_cast<unsigned*>(candidateFluid + 0x80) = 0x44u;
+	*reinterpret_cast<unsigned*>(oracleBackend + 0x30) = 0x11u;
+	*reinterpret_cast<unsigned*>(candidateBackend + 0x30) = 0x11u;
+	DWORD oldOracleScale = 0, oldOracleFluidVisual = 0;
+	DWORD oldCandidateScale = 0, oldCandidateFluidVisual = 0;
+	void* oracleScaleAddress = oracleImage + 0x123b4c;
+	void* oracleFluidVisualAddress = oracleImage + 0x123bec;
+	typedef const float* (__cdecl *GetCandidateParameters)();
+	const float* candidateParameters = reinterpret_cast<GetCandidateParameters>(
+		candidateParametersAddress)();
+	void* candidateScaleAddress = const_cast<float*>(
+		candidateParameters + NX_VISUALIZATION_SCALE);
+	void* candidateFluidVisualAddress = const_cast<float*>(
+		candidateParameters + NX_VISUALIZE_FLUID_EMITTERS);
+	memcpy(&oldOracleScale, oracleScaleAddress, sizeof(oldOracleScale));
+	memcpy(&oldOracleFluidVisual, oracleFluidVisualAddress, sizeof(oldOracleFluidVisual));
+	memcpy(&oldCandidateScale, candidateScaleAddress, sizeof(oldCandidateScale));
+	memcpy(&oldCandidateFluidVisual, candidateFluidVisualAddress, sizeof(oldCandidateFluidVisual));
+	DWORD protect = 0;
+	void* oraclePage = reinterpret_cast<void*>(reinterpret_cast<size_t>(oracleScaleAddress) & ~static_cast<size_t>(0xfff));
+	void* candidatePage = reinterpret_cast<void*>(reinterpret_cast<size_t>(candidateScaleAddress) & ~static_cast<size_t>(0xfff));
+	if(!VirtualProtect(oraclePage, 0x1000, PAGE_READWRITE, &protect))
+		return 1;
+	DWORD candidateProtect = 0;
+	if(!VirtualProtect(candidatePage, 0x1000, PAGE_READWRITE, &candidateProtect))
+		{
+		DWORD ignored = 0; VirtualProtect(oraclePage, 0x1000, protect, &ignored);
+		return 1;
+		}
+	const float enabled = 1.0f;
+	memcpy(oracleScaleAddress, &enabled, sizeof(enabled));
+	memcpy(oracleFluidVisualAddress, &enabled, sizeof(enabled));
+	memcpy(candidateScaleAddress, &enabled, sizeof(enabled));
+	memcpy(candidateFluidVisualAddress, &enabled, sizeof(enabled));
+	DWORD ignored = 0;
+	VirtualProtect(oraclePage, 0x1000, protect, &ignored);
+	VirtualProtect(candidatePage, 0x1000, candidateProtect, &ignored);
+	NxFluidEmitterVisualCapture oracleCapture, candidateCapture;
+	NxFluidEmitterVisualRenderable oracleRenderable(oracleCapture);
+	NxFluidEmitterVisualRenderable candidateRenderable(candidateCapture);
+	unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+	unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+	nxCallOracleFluidEmitterVisualize(oracleImage + 0x886b0, oracleRecord,
+		0, 2, oracleFluid, &oracleRenderable, &oracleEspBefore, &oracleEspAfter);
+	typedef void (__cdecl *CandidateVisualize)(void*, unsigned, unsigned,
+		void*, NxDebugRenderable*);
+	CandidateVisualize candidateVisualize = reinterpret_cast<CandidateVisualize>(
+		candidateVisualizeAddress);
+	__asm mov candidateEspBefore, esp
+	candidateVisualize(candidateRecord, 0, 2, candidateFluid, &candidateRenderable);
+	__asm mov candidateEspAfter, esp
+	unsigned mismatches = 0;
+	if(oracleEspBefore != oracleEspAfter || candidateEspBefore != candidateEspAfter
+		|| oracleCapture.calls != candidateCapture.calls
+		|| oracleCapture.points != candidateCapture.points
+		|| oracleCapture.lines != candidateCapture.lines
+		|| oracleCapture.triangles != candidateCapture.triangles
+		|| oracleCapture.bases != candidateCapture.bases
+		|| oracleCapture.circles != candidateCapture.circles
+		|| oracleCapture.digest != candidateCapture.digest)
+		++mismatches;
+	const unsigned visualizePointsOracle = oracleCapture.points;
+	const unsigned visualizePointsCandidate = candidateCapture.points;
+	const unsigned visualizeLinesOracle = oracleCapture.lines;
+	const unsigned visualizeLinesCandidate = candidateCapture.lines;
+	const unsigned visualizeBasesOracle = oracleCapture.bases;
+	const unsigned visualizeBasesCandidate = candidateCapture.bases;
+	const unsigned visualizeCirclesOracle = oracleCapture.circles;
+	const unsigned visualizeCirclesCandidate = candidateCapture.circles;
+	const unsigned visualizeDigestOracle = oracleCapture.digest;
+	const unsigned visualizeDigestCandidate = candidateCapture.digest;
+	unsigned frameMismatches = 0;
+	unsigned char frameActor[0x50] = {};
+	static const float frameMatrix[12] = {
+		0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 4.0f, 5.0f, 6.0f };
+	memcpy(frameActor + 0x20, frameMatrix, sizeof(frameMatrix));
+	*reinterpret_cast<void**>(oracleRecord + 0x14) = frameActor;
+	*reinterpret_cast<void**>(candidateRecord + 0x14) = frameActor;
+	oracleCapture = NxFluidEmitterVisualCapture();
+	candidateCapture = NxFluidEmitterVisualCapture();
+	oracleEspBefore = oracleEspAfter = candidateEspBefore = candidateEspAfter = 0;
+	nxCallOracleFluidEmitterVisualize(oracleImage + 0x886b0, oracleRecord,
+		0, 2, oracleFluid, &oracleRenderable, &oracleEspBefore, &oracleEspAfter);
+	__asm mov candidateEspBefore, esp
+	candidateVisualize(candidateRecord, 0, 2, candidateFluid, &candidateRenderable);
+	__asm mov candidateEspAfter, esp
+	const unsigned matrixFrameMismatch = oracleEspBefore != oracleEspAfter
+		|| candidateEspBefore != candidateEspAfter
+		|| oracleCapture.bases != candidateCapture.bases
+		|| oracleCapture.lines != candidateCapture.lines
+		|| oracleCapture.circles != candidateCapture.circles
+		|| oracleCapture.digest != candidateCapture.digest;
+	frameMismatches += matrixFrameMismatch;
+	printf("fluid emitter visualize frame case=matrix bases=%u/%u lines=%u/%u circles=%u/%u digest_match=%u stack=1/1 mismatches=%u\n",
+		oracleCapture.bases, candidateCapture.bases,
+		oracleCapture.lines, candidateCapture.lines,
+		oracleCapture.circles, candidateCapture.circles,
+		oracleCapture.digest == candidateCapture.digest,
+		matrixFrameMismatch);
+
+	unsigned char quaternionFrameActor[0x50] = {};
+	unsigned char quaternionBody[0x40] = {};
+	*reinterpret_cast<void**>(quaternionFrameActor + 8) = quaternionBody;
+	float* const quaternionState = reinterpret_cast<float*>(quaternionBody);
+	quaternionState[6] = 4.0f;
+	quaternionState[7] = 5.0f;
+	quaternionState[8] = 6.0f;
+	quaternionState[11] = 0.382683432f;
+	quaternionState[12] = 0.923879533f;
+	*reinterpret_cast<void**>(oracleRecord + 0x14) = quaternionFrameActor;
+	*reinterpret_cast<void**>(candidateRecord + 0x14) = quaternionFrameActor;
+	oracleCapture = NxFluidEmitterVisualCapture();
+	candidateCapture = NxFluidEmitterVisualCapture();
+	oracleEspBefore = oracleEspAfter = candidateEspBefore = candidateEspAfter = 0;
+	nxCallOracleFluidEmitterVisualize(oracleImage + 0x886b0, oracleRecord,
+		0, 2, oracleFluid, &oracleRenderable, &oracleEspBefore, &oracleEspAfter);
+	__asm mov candidateEspBefore, esp
+	candidateVisualize(candidateRecord, 0, 2, candidateFluid, &candidateRenderable);
+	__asm mov candidateEspAfter, esp
+	const unsigned quaternionFrameMismatch = oracleEspBefore != oracleEspAfter
+		|| candidateEspBefore != candidateEspAfter
+		|| oracleCapture.bases != candidateCapture.bases
+		|| oracleCapture.lines != candidateCapture.lines
+		|| oracleCapture.circles != candidateCapture.circles
+		|| oracleCapture.digest != candidateCapture.digest;
+	frameMismatches += quaternionFrameMismatch;
+	printf("fluid emitter visualize frame case=quaternion bases=%u/%u lines=%u/%u circles=%u/%u digest_match=%u stack=1/1 mismatches=%u\n",
+		oracleCapture.bases, candidateCapture.bases,
+		oracleCapture.lines, candidateCapture.lines,
+		oracleCapture.circles, candidateCapture.circles,
+		oracleCapture.digest == candidateCapture.digest,
+		quaternionFrameMismatch);
+	VirtualProtect(oraclePage, 0x1000, PAGE_READWRITE, &ignored);
+	VirtualProtect(candidatePage, 0x1000, PAGE_READWRITE, &ignored);
+	memcpy(oracleScaleAddress, &oldOracleScale, sizeof(oldOracleScale));
+	memcpy(oracleFluidVisualAddress, &oldOracleFluidVisual, sizeof(oldOracleFluidVisual));
+	memcpy(candidateScaleAddress, &oldCandidateScale, sizeof(oldCandidateScale));
+	memcpy(candidateFluidVisualAddress, &oldCandidateFluidVisual, sizeof(oldCandidateFluidVisual));
+	VirtualProtect(oraclePage, 0x1000, protect, &ignored);
+	VirtualProtect(candidatePage, 0x1000, candidateProtect, &ignored);
+	gFluidEmitterVisualDimensionsEnabled = false;
+	setFixtureDimensions(0, 0.0f, 0.0f);
+	printf("fluid emitter visualize cases=1 points=%u/%u lines=%u/%u bases=%u/%u circles=%u/%u digest=%08x/%08x stack=1/1 mismatches=%u\n",
+		visualizePointsOracle, visualizePointsCandidate,
+		visualizeLinesOracle, visualizeLinesCandidate,
+		visualizeBasesOracle, visualizeBasesCandidate,
+		visualizeCirclesOracle, visualizeCirclesCandidate,
+		visualizeDigestOracle, visualizeDigestCandidate, mismatches);
+	return mismatches + frameMismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -6191,7 +6512,7 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL FluidModel fixture lacks triangle-cell reference exports\n");
 		return 1;
 		}
-	void* oldCallbackValues[20] = {};
+	void* oldCallbackValues[23] = {};
 	DWORD callbackPageProtection = 0;
 	if(!nxBindOracleEmitterFlagCallbacks(image, oldCallbackValues,
 		&callbackPageProtection, reinterpret_cast<void*>(triangleBoxOverlap),
@@ -6201,6 +6522,7 @@ int wmain(int argc, wchar_t** argv)
 		return 1;
 		}
 	gFailures += nxRunFluidEmitterAttributeRows(image, fluidModel, candidatePhysics);
+	gFailures += nxRunFluidEmitterVisualizeDifferential(image, candidatePhysics, fluidModel);
 	void* candidateStoreGlobalPoseAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"nxNpFluidEmitterStoreGlobalPose", &candidateStoreGlobalPoseAddress))
