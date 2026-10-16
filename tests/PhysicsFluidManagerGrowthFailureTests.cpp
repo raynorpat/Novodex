@@ -156,6 +156,10 @@ class NxFluidSingleFailureAllocator : public NxUserAllocator
 	unsigned mFailCount;
 	};
 
+typedef void (__cdecl *NxResetFluidManagerCallbacksFn)();
+typedef void (__cdecl *NxSetStaticCollisionNullCallIndexFn)(unsigned);
+typedef unsigned (__cdecl *NxGetStaticCollisionGetCallsFn)();
+
 typedef void* (__cdecl *NxFluidMallocFn)(size_t);
 static NxFluidMallocFn gNxFluidSolverOriginalMalloc = 0;
 static unsigned gNxFluidSolverMallocFailures = 0;
@@ -326,6 +330,60 @@ int wmain(int argc, wchar_t** argv)
 		LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
 	if(!fluidModel)
 		return nxFail("staged FluidModel callback fixture failed to load");
+	NxResetFluidManagerCallbacksFn resetFluidManagerCallbacks =
+		reinterpret_cast<NxResetFluidManagerCallbacksFn>(GetProcAddress(fluidModel,
+			"NxResetFluidManagerCallbacks"));
+	NxSetStaticCollisionNullCallIndexFn setStaticCollisionNullCallIndex =
+		reinterpret_cast<NxSetStaticCollisionNullCallIndexFn>(GetProcAddress(
+			fluidModel, "NxSetFluidManagerStaticCollisionNullCallIndex"));
+	NxGetStaticCollisionGetCallsFn getStaticCollisionGetCalls =
+		reinterpret_cast<NxGetStaticCollisionGetCallsFn>(GetProcAddress(fluidModel,
+			"NxGetFluidManagerStaticCollisionGetCalls"));
+	if(!resetFluidManagerCallbacks || !setStaticCollisionNullCallIndex ||
+		!getStaticCollisionGetCalls)
+		return nxFail("static-collision null-result controls are missing");
+
+	// In the oracle, the pending first-fluid refresh forwards the first
+	// FluidManagerGetStaticCollision result directly to StaticCollisionCreate.
+	// Returning null there faults after both manager arrays have been updated.
+	NxSceneDesc nullCollisionSceneDesc;
+	nullCollisionSceneDesc.setToDefault();
+	NxScene* const nullCollisionScene = sdk->createScene(nullCollisionSceneDesc);
+	if(!nullCollisionScene)
+		return nxFail("null static-collision scene creation failed");
+	NxFluidDesc nullCollisionDesc;
+	nullCollisionDesc.setToDefault();
+	resetFluidManagerCallbacks();
+	setStaticCollisionNullCallIndex(0);
+	unsigned nullCollisionException = 0;
+	NxFluid* const nullCollisionResult = nxCreateFluidWithSeh(nullCollisionScene,
+		&nullCollisionDesc, &nullCollisionException);
+	setStaticCollisionNullCallIndex(0xffffffffu);
+	unsigned char* const nullCollisionSceneInternal =
+		*reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(
+			nullCollisionScene) + 0x24);
+	unsigned char* const nullCollisionManager = nullCollisionSceneInternal
+		? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+			nullCollisionSceneInternal + 0x61c)) : 0;
+	const unsigned nullCollisionInternalCount = nullCollisionManager
+		? nxFluidArrayCount(nullCollisionManager, 4) : 0;
+	const unsigned nullCollisionPublicCount = nullCollisionManager
+		? nxFluidArrayCount(nullCollisionManager, 0x14) : 0;
+	const unsigned nullCollisionDirty = nullCollisionManager
+		? nullCollisionManager[0x29] : 0;
+	const unsigned nullCollisionGetCalls = getStaticCollisionGetCalls();
+	const bool nullCollisionExact = !nullCollisionResult &&
+		nullCollisionException == EXCEPTION_ACCESS_VIOLATION &&
+		nullCollisionInternalCount == 1 && nullCollisionPublicCount == 1 &&
+		nullCollisionDirty == 1 && nullCollisionGetCalls == 1;
+	printf("fluid dirty-refresh null-collision caught=%u exception=%08x internal=%u public=%u dirty=%u get-calls=%u returned=%u\n",
+		nullCollisionException == EXCEPTION_ACCESS_VIOLATION ? 1u : 0u,
+		nullCollisionException, nullCollisionInternalCount,
+		nullCollisionPublicCount, nullCollisionDirty, nullCollisionGetCalls,
+		nullCollisionResult ? 1u : 0u);
+	if(!nullCollisionExact)
+		return nxFail("null static-collision result differs from the oracle refresh path");
+	sdk->releaseScene(*nullCollisionScene);
 
 	// The manager starts with its static-collision refresh dirty. The shipped
 	// constructor continues into that refresh after a failed 0x84-byte fluid

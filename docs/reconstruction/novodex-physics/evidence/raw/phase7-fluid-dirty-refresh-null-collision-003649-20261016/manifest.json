@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "description": "Null static-collision result guard mutation, restored ordinal differentials, complete Phase 7 gate, and reconstruction-tool suite.",
+  "artifacts": [
+    {
+      "file": "guard-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-dirty-refresh-null-collision-003649-20261016\\guard-mutation.log",
+      "source_bytes": 7245,
+      "source_sha256": "d73af9f99276bf1766926922473d4b1823968e10dc78cf6ae1cbdbd1a96db50f",
+      "compressed_bytes": 1329,
+      "compressed_sha256": "879bc087fb4c4f7efcc2f5edb306ba369d16a1cbec5006f565d5e95b3ee6751e"
+    },
+    {
+      "file": "green-first-ordinal.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-dirty-refresh-null-collision-003649-20261016\\green-first-ordinal.log",
+      "source_bytes": 7988,
+      "source_sha256": "48f4d5c1dabe18beb330adf2382650f079419282d026728ea23bdd650803deb0",
+      "compressed_bytes": 1322,
+      "compressed_sha256": "aec29179f427e6c6c1b1e51343d2dacf9a08990bad27882cbc230f8a9940594d"
+    },
+    {
+      "file": "green-second-ordinal.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-dirty-refresh-null-collision-003649-20261016\\green-second-ordinal.log",
+      "source_bytes": 8072,
+      "source_sha256": "0575dd833bd1074248ddeddafa12fcf29c9ee8e32d4897a7d7402f060bbd727a",
+      "compressed_bytes": 1327,
+      "compressed_sha256": "932c3f880fbb2d415d3fe7060c3275f844a3e323b0e4c4e918f65a48dad2134c"
+    },
+    {
+      "file": "phase7-full-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-dirty-refresh-null-collision-003649-20261016\\phase7-full-gate.log",
+      "source_bytes": 4604852,
+      "source_sha256": "86fb08c3534d2f0f5f48540f35f6350c3493b8fe754baba9de3ef767e914808f",
+      "compressed_bytes": 372211,
+      "compressed_sha256": "8a89726fbaa1461e20004bc2547fa7346d666ae45e5349b8b435a3eab861c553"
+    },
+    {
+      "file": "tools.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-dirty-refresh-null-collision-003649-20261016\\tools.log",
+      "source_bytes": 125876,
+      "source_sha256": "dad41974bc6f257dcd78e28d5353fb04d704fb2ba246dec07d7d07e0f3720f40",
+      "compressed_bytes": 18988,
+      "compressed_sha256": "1b3ecc2d9da1eecfcc6a1b9f9f95c5880ff38e8b52bb8080bf470a59b3313114"
+    }
+  ],
+  "row": "phys_fn_003649",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "cbbb88df209744737fb77aa0c533e7cc0926e88dfbb52f9a87d2d9555b40a8d8",
+  "gate_coverage": {
+    "phase7": "2934/2934"
+  },
+  "tool_tests": "816 passed",
+  "candidate_phase7_gate_sha256": "dd3192bf4fe371459f482eae29b1c33bc7f79687014ea07082f4a97e781c9045"
+}

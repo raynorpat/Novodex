@@ -969,7 +969,9 @@ extern "C" int __cdecl nxFluidCollisionBuildStaticCollision(void* collision,
 		nxFluidCollisionResolveCallback<HashDestroy>("CDHashDestroy");
 	Int16ArrayDestroy const int16Destroy =
 		nxFluidCollisionResolveCallback<Int16ArrayDestroy>("Int16Vector3ArrayDestroy");
-	if(!collision || !scene || !create || !meshGrow || !planeGrow || !sphereGrow
+	// The oracle does not guard StaticCollisionCreate's collision argument;
+	// preserve its access violation when the dirty-refresh callback returns null.
+	if(!scene || !create || !meshGrow || !planeGrow || !sphereGrow
 		|| !capsuleGrow || !boxGrow || !bucketCreate || !bucketInit || !cellCreate
 		|| !indexCreate || !int16Create || !hashDestroy || !int16Destroy)
 		return 0;

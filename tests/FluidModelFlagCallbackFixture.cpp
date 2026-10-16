@@ -82,6 +82,7 @@ static unsigned gFluidCreationOrderCount;
 static NxFluidManagerCallbackRecord gFluidManagerRecords[8];
 static unsigned gFluidManagerRecordCount;
 static unsigned gFluidManagerGetCallCount;
+static unsigned gFluidManagerStaticCollisionNullCallIndex = 0xffffffffu;
 static bool gFluidManagerCallbackProbe;
 static unsigned gFluidEmitterCreateRecords[16][15];
 static unsigned gFluidGetDampingCalls;
@@ -329,6 +330,7 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	ZeroMemory(gFluidManagerRecords, sizeof(gFluidManagerRecords));
 	gFluidManagerRecordCount = 0;
 	gFluidManagerGetCallCount = 0;
+	gFluidManagerStaticCollisionNullCallIndex = 0xffffffffu;
 	gFluidManagerCallbackProbe = false;
 	gFluidGetDampingCalls = 0;
 	gFluidSetStiffnessCalls = 0;
@@ -434,6 +436,18 @@ extern "C" __declspec(dllexport) void __cdecl NxSetFluidEmitterCreateNullIndex(
 	gFluidEmitterCreateNullIndex = index;
 	}
 
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidManagerStaticCollisionNullCallIndex(unsigned index)
+	{
+	gFluidManagerStaticCollisionNullCallIndex = index;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl
+NxGetFluidManagerStaticCollisionGetCalls()
+	{
+	return gFluidManagerGetCallCount;
+	}
+
 extern "C" __declspec(dllexport) void __cdecl NxSetFluidCreateNullIndex(
 	unsigned index)
 	{
@@ -461,6 +475,8 @@ static void* __cdecl nxFluidManagerGetStaticCollisionDispatch(void* manager,
 		argument1 = argument2 = argument3 = 0;
 	nxRecordFluidManagerCallback(1, reinterpret_cast<unsigned>(manager),
 		argument1, argument2, argument3);
+	if(call == gFluidManagerStaticCollisionNullCallIndex)
+		return 0;
 	if(manager != &gFluidManagerBackend && !gFluidManagerCallbackProbe)
 		return 0;
 	return gFluidManagerStaticCollisionGetIndex++ == 0
