@@ -2821,6 +2821,7 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 		{
 		memset(solver, 0, 0x18);
 		*reinterpret_cast<void***>(solver) = gNxFluidSolverVtable;
+		*reinterpret_cast<void**>(solver + 4) = desc.userData;
 		*reinterpret_cast<void***>(solver + 8) = gNxFluidSolverReadLockVtable;
 		*reinterpret_cast<void**>(solver + 0x14) = fluid;
 		}

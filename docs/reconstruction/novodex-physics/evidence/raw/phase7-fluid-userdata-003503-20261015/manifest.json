@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003503",
+  "description": "Descriptor userData no-copy mutant and restored NxPhysicsSimulationTests oracle/candidate differential.",
+  "artifacts": [
+    {
+      "file": "no-copy-mutant.log.gz",
+      "source": "build/fluid-userdata-noop-mutant.log",
+      "source_bytes": 846542,
+      "source_sha256": "7e2decb0b1a3f1ae80d4977671d1ec8eeabb51fa5c84064d2988b4fc836cab2c",
+      "compressed_bytes": 55176,
+      "compressed_sha256": "21f2525d2e79aba001690d47b8fbf982ea234a11cc196c86bb06109b6e82d412"
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source": "build/fluid-userdata-restored.log",
+      "source_bytes": 846035,
+      "source_sha256": "218c755555850ddbb56a77df9ab8a1b7348ddb47258325229c40b52586f685a0",
+      "compressed_bytes": 54968,
+      "compressed_sha256": "4a274e661b0d761c28cc69c23f1e5b3005ee3abc2f9b4a26ed98922aa9b5b681"
+    }
+  ]
+}

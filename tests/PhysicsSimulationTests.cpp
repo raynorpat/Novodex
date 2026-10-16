@@ -4433,6 +4433,8 @@ int wmain(int argc, wchar_t** argv)
 	enabledFluidManager[0x28] = 0;
 	NxFluidDesc enabledFluidDesc;
 	enabledFluidDesc.setToDefault();
+	static unsigned enabledFluidUserDataMarker = 0x51f10u;
+	enabledFluidDesc.userData = &enabledFluidUserDataMarker;
 	NxBodyDesc fluidFrameBodyDesc;
 	fluidFrameBodyDesc.setToDefault();
 	fluidFrameBodyDesc.mass = 1.0f;
@@ -4483,6 +4485,10 @@ int wmain(int argc, wchar_t** argv)
 	*fluidFoundationAllocatorSlot = &emitterFailAllocator;
 	NxFluid* const enabledFluid = enabledFluidScene->createFluid(enabledFluidDesc);
 	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	const bool enabledFluidUserDataCopied = enabledFluid &&
+		enabledFluid->userData == &enabledFluidUserDataMarker;
+	printf("simulation fluid public-api descriptor-user-data copied=%u\n",
+		enabledFluidUserDataCopied ? 1u : 0u);
 	unsigned fluidBoundsExpected[6] = {
 		0x3f000001u, 0xbf000002u, 0x3f800003u,
 		0x40000004u, 0xc0000005u, 0x40400006u

@@ -3677,6 +3677,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'simulation fluid public-api world-bounds matched=1 output=3f000001.bf000002.3f800003.40000004.c0000005.40400006'
 		'simulation fluid public-api flags initial=1 cleared=1 set=1'
 		'simulation fluid public-api particle-write-data initial=1 stored=1 roundtrip=1'
+		'simulation fluid public-api descriptor-user-data copied=1'
 		'simulation fluid public-api name stored=1 cleared=1'
 		'simulation fluid public-api surface-mesh get=1 released=1 calls=1 flags=1 errors=0 unlicensed=1.1 create-warning=1'
 		'simulation fluid shape-change static-add-dirty=1 dynamic-add-clean=1 dynamic-remove-clean=1 static-remove-dirty=1'
@@ -6164,7 +6165,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2789  # adds row 003649 initialization callback ordering
+	'5' = 2790  # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	           # adds row 000645 enabled/disabled create contract
 	           # adds the allocator-bridge setter differential
 	           # adds sphere radius setter/getter lock state and invalid-radius report rows
@@ -6233,7 +6234,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1690  # adds row 003649 initialization callback ordering
+	'6' = 1691  # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential
 	          # plus the direct row 000022 body-pose and slot-6 callback probe
@@ -6278,7 +6279,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2906  # adds row 003649 initialization callback ordering
+	'7' = 2907  # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential
 	          # includes direct row 000965 Prunable owner-query result
