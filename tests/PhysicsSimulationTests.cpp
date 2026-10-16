@@ -4211,11 +4211,18 @@ int wmain(int argc, wchar_t** argv)
 	bool enabledDescriptorValidationDiagnosticsExact = true;
 	NxU32 invalidParticleCount = 0;
 	NxF32 invalidParticlePosition[3] = {};
+	NxF32 invalidParticleVelocity[3] = {};
+	NxF32 invalidParticleLife = 1.0f;
 	NxU32 invalidParticleFlags = 0;
+	NxU32 invalidMeshVertexCount = 0;
+	NxU32 invalidMeshTriangleCount = 0;
+	NxU16 invalidMeshIndex = 0;
+	NxF32 invalidMeshPositions[3] = {};
+	NxF32 invalidMeshNormals[3] = {};
 	NxImplicitMeshDesc invalidSurfaceMesh;
 	invalidSurfaceMesh.setToDefault();
 	invalidSurfaceMesh.singleRadius = 0.0f;
-	for(unsigned invalidCase = 0; invalidCase != 35; ++invalidCase)
+	for(unsigned invalidCase = 0; invalidCase != 48; ++invalidCase)
 		{
 		NxFluidDesc invalidDesc;
 		invalidDesc.setToDefault();
@@ -4307,9 +4314,102 @@ int wmain(int argc, wchar_t** argv)
 				invalidSurfaceMesh.blend = -0.01f;
 				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
 				break;
-			default:
+			case 34:
 				invalidDesc.particlesWriteData.numParticlesPtr = &invalidParticleCount;
 				invalidDesc.particlesWriteData.bufferFlags = &invalidParticleFlags;
+				break;
+			case 35:
+				invalidDesc.particlesWriteData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.particlesWriteData.bufferVel = invalidParticleVelocity;
+				break;
+			case 36:
+				invalidDesc.particlesWriteData.numParticlesPtr = &invalidParticleCount;
+				invalidDesc.particlesWriteData.bufferLife = &invalidParticleLife;
+				break;
+			case 37:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.triangleSize = 0.0f;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 38:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.numVerticesPtr = &invalidMeshVertexCount;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 39:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.verticesPosBegin = invalidMeshPositions;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 40:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.numVerticesPtr = &invalidMeshVertexCount;
+				invalidSurfaceMesh.meshData.verticesPosBegin = invalidMeshPositions;
+				invalidSurfaceMesh.meshData.verticesNormalBegin = invalidMeshNormals;
+				invalidSurfaceMesh.meshData.verticesPosByteStride = sizeof(NxF32) * 3;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 41:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.numVerticesPtr = &invalidMeshVertexCount;
+				invalidSurfaceMesh.meshData.verticesPosBegin = invalidMeshPositions;
+				invalidSurfaceMesh.meshData.verticesNormalBegin = invalidMeshNormals;
+				invalidSurfaceMesh.meshData.verticesPosByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.verticesNormalByteStride = sizeof(NxF32) * 3;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 42:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.numVerticesPtr = &invalidMeshVertexCount;
+				invalidSurfaceMesh.meshData.verticesPosBegin = invalidMeshPositions;
+				invalidSurfaceMesh.meshData.verticesNormalBegin = invalidMeshNormals;
+				invalidSurfaceMesh.meshData.verticesPosByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.verticesNormalByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.numTrianglesPtr = &invalidMeshTriangleCount;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 43:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.numVerticesPtr = &invalidMeshVertexCount;
+				invalidSurfaceMesh.meshData.verticesPosBegin = invalidMeshPositions;
+				invalidSurfaceMesh.meshData.verticesNormalBegin = invalidMeshNormals;
+				invalidSurfaceMesh.meshData.verticesPosByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.verticesNormalByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.numTrianglesPtr = &invalidMeshTriangleCount;
+				invalidSurfaceMesh.meshData.indicesBegin = &invalidMeshIndex;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 44:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.flags = 0;
+				invalidSurfaceMesh.meshData.numVerticesPtr = &invalidMeshVertexCount;
+				invalidSurfaceMesh.meshData.verticesPosBegin = invalidMeshPositions;
+				invalidSurfaceMesh.meshData.verticesNormalBegin = invalidMeshNormals;
+				invalidSurfaceMesh.meshData.verticesPosByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.verticesNormalByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.numTrianglesPtr = &invalidMeshTriangleCount;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 45:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.numTrianglesPtr = &invalidMeshTriangleCount;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			case 46:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.indicesBegin = &invalidMeshIndex;
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
+				break;
+			default:
+				invalidSurfaceMesh.setToDefault();
+				invalidSurfaceMesh.meshData.numVerticesPtr = &invalidMeshVertexCount;
+				invalidSurfaceMesh.meshData.verticesPosBegin = invalidMeshPositions;
+				invalidSurfaceMesh.meshData.verticesNormalBegin = invalidMeshNormals;
+				invalidSurfaceMesh.meshData.verticesNormalByteStride = sizeof(NxF32) * 3;
+				invalidSurfaceMesh.meshData.numTrianglesPtr = &invalidMeshTriangleCount;
+				invalidSurfaceMesh.meshData.indicesBegin = &invalidMeshIndex;
+				invalidSurfaceMesh.meshData.indicesByteStride = sizeof(NxU16);
+				invalidDesc.surfaceMeshDesc = &invalidSurfaceMesh;
 				break;
 			}
 		const unsigned errorsBefore = simulationOutput.errors;
@@ -4930,7 +5030,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool row645FluidCreateExact = fluidDisabledCreateExact && enabledFluid &&
 		enabledFluidListed && enabledFluidManagerArraysMatch &&
 		enabledFluidCallbacks && enabledFluidRefreshCallbacks &&
-			enabledFluidEmitterCallbacks && enabledDescriptorValidationPassed == 35 &&
+			enabledFluidEmitterCallbacks && enabledDescriptorValidationPassed == 48 &&
 		managerAllocationFailure && enabledFluidAllocationFailure &&
 		enabledEmitterAllocationFailure && enabledFluidErrors == 0;
 	printf("simulation row645 fluid-create disabled=%u enabled=%u listed=%u callbacks=%u validation=%u allocation-failures=%u exact=%u\n",
@@ -4973,7 +5073,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
-	if(!row645FluidCreateExact || !enabledInvalidRejected || enabledDescriptorValidationPassed != 35 ||
+	if(!row645FluidCreateExact || !enabledInvalidRejected || enabledDescriptorValidationPassed != 48 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
 		!managerAllocationFailure ||
 		!enabledFluidAllocationFailure ||

@@ -3622,7 +3622,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # and returns null; the scene is released without stepping that manager.
         'simulation fluid unsupported create=0 manager=1 empty=0.0 created=0.0 errors=1 code=206 line=138 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=NxScene::createFluid(): Feature not available!'
         # Row 000645 preserves the shipped disabled result and the enabled callback-backed create lifecycle.
-        'simulation row645 fluid-create disabled=1 enabled=1 listed=1 callbacks=1 validation=35 allocation-failures=1 exact=1'
+        'simulation row645 fluid-create disabled=1 enabled=1 listed=1 callbacks=1 validation=48 allocation-failures=1 exact=1'
         # Row 003649 publishes and tears down a valid fluid when FluidCreate returns null.
         'simulation row3649 backend-null published=1 arrays=1 cleanup=1 callbacks=3 exact=1'
         'simulation fluid enabled-invalid result=0 errors=1 code=1 line=140 file=\Epic\Novodex\SDKs\Physics\src\fluids\FluidManager.cpp message=Supplied NxFluidDesc is not valid. createFluid returns NULL.'
@@ -3639,7 +3639,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid manager-vtable deleting-destructor=1'
         # The optional manager's enabled create path validates, builds and
         # lists one fluid and three emitters, then dispatches teardown.
-        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=35.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=6 emitter=4.1.4.4 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
+        'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=48.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=6 emitter=4.1.4.4 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
         # Licensed create calls forward the product's sparse and hardware
         # flags to FluidModel, with sparse additionally gated by method 2.
         'simulation fluid create license=465 sparse=1 hardware=0 matched=1'
