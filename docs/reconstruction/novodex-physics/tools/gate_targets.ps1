@@ -5584,6 +5584,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'basesave row=phys_fn_001277 saved=1 digest=bc9dc964 pose_diag=3f800000 word38=00000008 word3c=00000000 word40=00000000 poison_head=cdcdcdcd',
         'boxrow slot10=phys_fn_000937 out=3fa00000.c0200000.3f400000.40c38275',
         'boxslot4 candidate cases=64 failures=0 provisional=1',
+        'massframe scale row=phys_fn_000837 cases=6 failures=0 digest=4a90e1ae',
+        'massframe merge row=phys_fn_000839 cases=17 failures=0 digest=91e369ad',
+        'massframe dll scale row=phys_fn_000837 cases=6 failures=0 digest=4a90e1ae',
+        'massframe dll merge row=phys_fn_000839 cases=17 failures=0 digest=91e369ad',
         'boxrow2 slot11=phys_fn_000939 out=00000000.00000000.00000000.3fddb3d7 slot13=phys_fn_000927 saved=1 digest=853c971d dims_at_4c=3f800000',
         'boxrow3 slot8=phys_fn_000941 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000 slot9=phys_fn_000935 minmax=bf800000.bf800000.bf800000.3f800000.3f800000.3f800000',
         'boxrow4 slots14-16=phys_fn_001391 stable=1',
@@ -6213,7 +6217,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2808  # plus row 003970 spring-force branch matrix and row 003979 two-body force case; adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
+	'5' = 2812  # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; plus row 003970 spring-force branch matrix and row 003979 two-body force case; adds registered BoxHullFacade face-index contents for all six faces; adds phys_fn_003649 implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
@@ -6285,7 +6289,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1699  # plus rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
+	'6' = 1703  # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
 	          # adds row 000645 enabled/disabled create contract
 	          # adds the Joint scalar deleting destructor differential
@@ -6331,7 +6335,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2936  # plus rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
+	'7' = 2940  # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
            # includes phys_fn_003557 record constructor and 003613/003614 global-pose setters
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization

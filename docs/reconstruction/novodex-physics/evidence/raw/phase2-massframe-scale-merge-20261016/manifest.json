@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "purpose": "Mutation and gate evidence for direct candidate-DLL mass-frame rows phys_fn_000837 and phys_fn_000839.",
+  "candidate_dll_sha256": "1d9e763450442a131fb033ed79929b1e8fe30a2428351d3a25a98752c4bdad26",
+  "oracle_dll_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "gates": {
+    "phase5_coverage_assertions": 2812,
+    "phase6_coverage_assertions": 1703,
+    "phase7_coverage_assertions": 2940
+  },
+  "tool_tests_passed": 816,
+  "artifacts": [
+    {
+      "file": "dll-restored.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\dll-restored.log",
+      "bytes": 26412,
+      "sha256": "940a8e0d128a218956e731352918e898d17e5773b36e7f5eb828ee6d01802dd3",
+      "compressed_bytes": 5917,
+      "compressed_sha256": "8548a276483dcfa1a5846f87e3b6ffd0dcf19026b0cba539dc1c01ed9d859b2a"
+    },
+    {
+      "file": "merge-dll-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\merge-dll-mutation.log",
+      "bytes": 12111,
+      "sha256": "febc81d32ba18fafe89858653a7da58bcb9cd9fb80f6fdf202f98f2a1b50df28",
+      "compressed_bytes": 3213,
+      "compressed_sha256": "02f318b0e168a551de3a288ecf38c7ea2e346b8ef25407a24e5e1207357f3f68"
+    },
+    {
+      "file": "merge-row-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\merge-row-mutation.log",
+      "bytes": 11447,
+      "sha256": "8684041ce39503cabeb764fb473eb7f092ba7f97f1f2bd53d425253687b9c343",
+      "compressed_bytes": 3080,
+      "compressed_sha256": "d67ae752dce832ec3b5ebf13cd9f1801985d35aa128c58094320deab400a601f"
+    },
+    {
+      "file": "objectlayout-oracle-transcript.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\objectlayout-oracle-transcript.log",
+      "bytes": 21929,
+      "sha256": "09e30a1ddac6f2befa75c5c9edf510bf9ea62e60a8349d5615b9dd8ad9e07a99",
+      "compressed_bytes": 4992,
+      "compressed_sha256": "d373021c9839aa9bf0d76703ba516abb3b69685dc9b5a50c364bc9edf8b0836a"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\phase5-gate.log",
+      "bytes": 2819852,
+      "sha256": "f5d760ceb1de7453e26fba4fe9fc2d863eb4f1a19725b82660ca1dda125f24c6",
+      "compressed_bytes": 209416,
+      "compressed_sha256": "50bdfa5e53540e1e6abea4ff4d39a8f52396f2e826a970ec42827d3c267c7fdd"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\phase6-gate.log",
+      "bytes": 3094356,
+      "sha256": "ada91872716269b9640fa1034b8a5bccd61c01d82d58b274c110408a2d39df89",
+      "compressed_bytes": 253305,
+      "compressed_sha256": "e32e199822b16ee7f24353ab1bb890f86f1baa7622f4ad4475b000ab20a8db77"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\phase7-gate.log",
+      "bytes": 4607618,
+      "sha256": "9d3b36d7d6fbc8928711c02aabfcfb4e9e94f42be0359c9d47709ae4bc09b433",
+      "compressed_bytes": 372617,
+      "compressed_sha256": "f958bc2db447f1add8bc80fb328c5921290149d6978d89c7b30fe44e67c1959d"
+    },
+    {
+      "file": "scale-dll-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\scale-dll-mutation.log",
+      "bytes": 11693,
+      "sha256": "f4e26cb530b388f33db5be65e8f7a3fbc8fbcb610ff3dd408cebab0618f7535b",
+      "compressed_bytes": 3160,
+      "compressed_sha256": "6a06ad58fe761d654d9af64be3ccae02ee79acec80437245b2686f34662f50e9"
+    },
+    {
+      "file": "scale-inertia-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\scale-inertia-mutation.log",
+      "bytes": 11351,
+      "sha256": "d879efc3147c4025501e861be9a7bc6a41bc862c0cbde92bba05f57878cdd622",
+      "compressed_bytes": 1800,
+      "compressed_sha256": "4016451355cba0bc1c026109357ae479237829539c7b4d27654b34743dd7cfca"
+    },
+    {
+      "file": "scale-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\scale-mutation.log",
+      "bytes": 11351,
+      "sha256": "60eee50375aadd1cff30c304793e7095bbc2293a91a8d56d88cb59b3229dc0d1",
+      "compressed_bytes": 1800,
+      "compressed_sha256": "29818f4d771b54a32f79be1dec3d1b38173a75e646b5a74949bc77d9efd34679"
+    },
+    {
+      "file": "scale-row-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\scale-row-mutation.log",
+      "bytes": 11358,
+      "sha256": "5aa1a223282976a291c412919bf308b7f8030f383f5b864445ccaead8ff97948",
+      "compressed_bytes": 3063,
+      "compressed_sha256": "99c486203e4f79a6b943dfd77dd376190e864f836164154de2c38cc9e57905d6"
+    },
+    {
+      "file": "scale-shape-mutation.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\scale-shape-mutation.log",
+      "bytes": 7108,
+      "sha256": "5f05bcb23d6a27840be64ad8bf04e637e0b400f71ae7e48b1963d94b1bfb5e0f",
+      "compressed_bytes": 1448,
+      "compressed_sha256": "e4ba44edffd45cf3cdbbfd5c5f7dfa7b21267b0e985600a24195d69b10efcec7"
+    },
+    {
+      "file": "source-restored.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\source-restored.log",
+      "bytes": 26261,
+      "sha256": "0bc241e8634038ff273b5f99a18859963b5fc47cbd96079f203cf010ddb9f473",
+      "compressed_bytes": 5910,
+      "compressed_sha256": "f80e6eda5a2d8696f1836a75e7d10e6d8b02c25288c534d6c72357a718d49696"
+    },
+    {
+      "file": "tool-tests.log.gz",
+      "source": "D:\\github\\Novodex\\docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase2-massframe-scale-merge-20261016\\tool-tests.log",
+      "bytes": 125876,
+      "sha256": "a5320ae0fb3fcd929952bf8721727dd97b49348880dc140b5ed8031e92518f43",
+      "compressed_bytes": 18987,
+      "compressed_sha256": "2b64c2d5b8b4015d873163a480975e8de1fe726a91010b68477cdd4e0f505698"
+    }
+  ]
+}

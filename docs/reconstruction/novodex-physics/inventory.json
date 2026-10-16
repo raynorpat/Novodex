@@ -16045,8 +16045,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/344",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2551",
       "static_proof": "scales the nine inertia words (+0x00..+0x20) and the mass (+0x30) by its float argument through ten fld/fmul/fstp triples; the COM offset at +0x24..+0x2c does not participate",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly compares six scale factors against oracle RVA 0x1c5c0 and the actual candidate DLL function resolved from build/Release/NxPhysics.map. The source-helper and loaded-DLL digests match (4a90e1ae); the candidate DLL scale mutation that omitted mass scaling is rejected (oracle word12=40d00000, candidate=40500000, target exit 1). Restored candidate NxPhysics.dll sha256 1d9e763450442a131fb033ed79929b1e8fe30a2428351d3a25a98752c4bdad26; pinned oracle sha256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Evidence: evidence/phase2-massframe-scale-merge-000837-000839.md and evidence/raw/phase2-massframe-scale-merge-20261016/.",
+      "notes": "The direct candidate-DLL probe resolves the candidate map symbol rather than applying an oracle RVA. Existing ActorMass public scenarios did not reject this helper mutation, so direct row coverage is retained; broader public routing remains open.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -16082,8 +16082,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/345",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2552",
       "static_proof": "merges the argument mass frame into this: masses sum, the offset becomes the mass-weighted average divided through the .rdata 0x101041ec literal (1.0f) by a full x87 fdiv, inertia accumulates componentwise",
-      "dynamic_proof": null,
-      "notes": "",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly compares 17 nonzero-inertia merge cases against oracle RVA 0x1c630 and the actual candidate DLL function resolved from build/Release/NxPhysics.map; all 13 words match (digest 91e369ad). A candidate DLL mutation that omitted all nine inertia accumulations is rejected on case 0 (target exit 1). Restored candidate NxPhysics.dll sha256 1d9e763450442a131fb033ed79929b1e8fe30a2428351d3a25a98752c4bdad26; pinned oracle sha256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Evidence: evidence/phase2-massframe-scale-merge-000837-000839.md and evidence/raw/phase2-massframe-scale-merge-20261016/.",
+      "notes": "The matrix spans a reciprocal-store regression and 16 fractional positive-mass merges with nonzero inertia and offsets. The direct candidate-DLL probe resolves the candidate map symbol; complete exceptional-state and public routing audits remain open.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
