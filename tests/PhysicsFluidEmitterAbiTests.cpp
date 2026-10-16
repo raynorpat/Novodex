@@ -5210,6 +5210,84 @@ cleanup:
 	return mismatches;
 	}
 
+static unsigned nxRunFluidEmitterRecordConstructor(unsigned char* image,
+	HMODULE candidatePhysics)
+	{
+	void* candidateAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterConstructRecord", &candidateAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter record constructor could not be resolved from its map\n");
+		return 1;
+		}
+	typedef void* (__thiscall *OracleCtor)(void*);
+	typedef void* (__cdecl *CandidateCtor)(void*);
+	typedef void* (__thiscall *OracleDtor)(void*, unsigned char);
+	OracleCtor oracleCtor = reinterpret_cast<OracleCtor>(image + 0x87c40);
+	CandidateCtor candidateCtor = reinterpret_cast<CandidateCtor>(candidateAddress);
+	unsigned char oracleRecord[0x78];
+	unsigned char candidateRecord[0x78];
+	memset(oracleRecord, 0xa5, sizeof(oracleRecord));
+	memset(candidateRecord, 0xa5, sizeof(candidateRecord));
+	unsigned oracleBefore = 0, oracleAfter = 0;
+	unsigned candidateBefore = 0, candidateAfter = 0;
+	void* oracleResult = 0;
+	void* candidateResult = 0;
+	__asm mov oracleBefore, esp
+	oracleResult = oracleCtor(oracleRecord);
+	__asm mov oracleAfter, esp
+	__asm mov candidateBefore, esp
+	candidateResult = candidateCtor(candidateRecord);
+	__asm mov candidateAfter, esp
+	unsigned mismatches = 0;
+	const unsigned identity[9] = { 0x3f800000u, 0, 0, 0,
+		0x3f800000u, 0, 0, 0, 0x3f800000u };
+	const bool returnsMatch = oracleResult == oracleRecord
+		&& candidateResult == candidateRecord;
+	const bool ctorFieldsMatch =
+		*reinterpret_cast<unsigned*>(oracleRecord + 4) == 0
+		&& *reinterpret_cast<unsigned*>(candidateRecord + 4) == 0
+		&& *reinterpret_cast<unsigned*>(oracleRecord + 8) == 0xffffffffu
+		&& *reinterpret_cast<unsigned*>(candidateRecord + 8) == 0xffffffffu
+		&& *reinterpret_cast<void**>(oracleRecord + 0x0c) != 0
+		&& *reinterpret_cast<void**>(candidateRecord + 0x0c) != 0
+		&& *reinterpret_cast<void***>(oracleRecord) != 0
+		&& *reinterpret_cast<void***>(candidateRecord) != 0
+		&& memcmp(oracleRecord + 0x18, identity, sizeof(identity)) == 0
+		&& memcmp(candidateRecord + 0x18, identity, sizeof(identity)) == 0
+		&& memcmp(oracleRecord + 0x48, identity, sizeof(identity)) == 0
+		&& memcmp(candidateRecord + 0x48, identity, sizeof(identity)) == 0
+		&& memcmp(oracleRecord + 0x3c, "\0\0\0\0\0\0\0\0\0\0\0\0", 12) == 0
+		&& memcmp(candidateRecord + 0x3c, "\0\0\0\0\0\0\0\0\0\0\0\0", 12) == 0
+		&& memcmp(oracleRecord + 0x6c, "\0\0\0\0\0\0\0\0\0\0\0\0", 12) == 0
+		&& memcmp(candidateRecord + 0x6c, "\0\0\0\0\0\0\0\0\0\0\0\0", 12) == 0
+		&& *reinterpret_cast<unsigned*>(oracleRecord + 0x10) == 0xa5a5a5a5u
+		&& *reinterpret_cast<unsigned*>(candidateRecord + 0x10) == 0xa5a5a5a5u
+		&& *reinterpret_cast<unsigned*>(oracleRecord + 0x14) == 0xa5a5a5a5u
+		&& *reinterpret_cast<unsigned*>(candidateRecord + 0x14) == 0xa5a5a5a5u;
+	if(!returnsMatch || !ctorFieldsMatch || oracleBefore != oracleAfter
+		|| candidateBefore != candidateAfter)
+		++mismatches;
+	for(unsigned offset = 0; offset < sizeof(oracleRecord); ++offset)
+		if((offset < 4 || (offset >= 0x0c && offset < 0x10)))
+			continue;
+		else if(oracleRecord[offset] != candidateRecord[offset])
+			++mismatches;
+	void* const oracleWrapper = *reinterpret_cast<void**>(oracleRecord + 0x0c);
+	void* const candidateWrapper = *reinterpret_cast<void**>(candidateRecord + 0x0c);
+	if(oracleWrapper)
+		{
+		OracleDtor destroyOracle = reinterpret_cast<OracleDtor>(
+			*reinterpret_cast<void***>(oracleRecord)[0]);
+		destroyOracle(oracleRecord, 0);
+		}
+	if(candidateWrapper)
+		delete static_cast<NpFluidEmitter*>(candidateWrapper);
+	printf("fluid emitter internal ctor cases=1 identity_local=1 identity_world=1 wrapper=1 untouched=1 stack=1/1 mismatches=%u\n",
+		mismatches);
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -5316,6 +5394,7 @@ int wmain(int argc, wchar_t** argv)
 			expectedCandidateHash, actualCandidateHash);
 		return 1;
 		}
+	gFailures += nxRunFluidEmitterRecordConstructor(image, candidatePhysics);
 	void* candidateFrictionPatchAssignAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"??4NxFrictionPatch@@QAEAAV0@ABV0@@Z", &candidateFrictionPatchAssignAddress))

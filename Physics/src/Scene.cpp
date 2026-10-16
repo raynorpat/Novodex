@@ -1870,6 +1870,26 @@ static void* gNxFluidEmitterVtable[] = {
 	reinterpret_cast<void*>(nxFluidEmitterDeletingDestructor)
 	};
 
+// phys_fn_003557 (0x00087c40) constructs the 0x78-byte per-emitter state
+// record. The fluid factory clears the allocation first; this row writes the
+// vtable, wrapper, emitter sentinel, and identity local/world poses.
+extern "C" void* __cdecl nxNpFluidEmitterConstructRecord(void* internal)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(internal);
+	*reinterpret_cast<void***>(bytes) = gNxFluidEmitterVtable;
+	static const unsigned identity[9] = {
+		0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0, 0x3f800000u };
+	memcpy(bytes + 0x18, identity, sizeof(identity));
+	memset(bytes + 0x3c, 0, 12);
+	memcpy(bytes + 0x48, identity, sizeof(identity));
+	memset(bytes + 0x6c, 0, 12);
+	NxFluidEmitter* const wrapper = new NpFluidEmitter(internal);
+	*reinterpret_cast<void**>(bytes + 4) = 0;
+	*reinterpret_cast<void**>(bytes + 0x0c) = wrapper;
+	*reinterpret_cast<unsigned*>(bytes + 8) = 0xffffffffu;
+	return internal;
+	}
+
 static void nxFluidManagerArrayPush(void* arrayHeader, unsigned value)
 	{
 	unsigned* array = static_cast<unsigned*>(arrayHeader);
@@ -1976,10 +1996,10 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	if(!internal)
 		return 0;
 	memset(internal, 0, 0x78);
-	*reinterpret_cast<void***>(internal) = gNxFluidEmitterVtable;
+	nxNpFluidEmitterConstructRecord(internal);
 	*reinterpret_cast<void**>(internal + 4) = fluid;
-	*reinterpret_cast<unsigned*>(internal + 8) = 0xffffffff;
-	NxFluidEmitter* const wrapper = new NpFluidEmitter(internal);
+	NxFluidEmitter* const wrapper = static_cast<NxFluidEmitter*>(
+		*reinterpret_cast<void**>(internal + 0x0c));
 	if(!wrapper)
 		{
 		nxFoundationSDKAllocator->free(internal);
@@ -1989,7 +2009,6 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 		static_cast<unsigned char*>(manager) + 0x24) : 0;
 	void* const sceneLockSource = sceneOwner ? *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(sceneOwner) + 0x6cc) : 0;
-	*reinterpret_cast<void**>(internal + 0x0c) = wrapper;
 	nxFluidEmitterInitialize(internal, wrapper, desc, context, backendFluid,
 		sceneLockSource);
 	nxFluidManagerArrayPush(fluidBytes + 4, reinterpret_cast<unsigned>(internal));

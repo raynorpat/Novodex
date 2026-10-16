@@ -11110,3 +11110,5 @@ Phase 7 Scene fluid-creation row `phys_fn_000645` is now mutation-falsified thro
 `phys_fn_003613` emitter world-position setter mutation detection: `mismatches=1`. `phys_fn_003614` emitter world-orientation setter mutation detection: `mismatches=1`. See [fluid emitter world-component setters](phase7-fluid-emitter-world-components-003613-003614.md).
 
 `phys_fn_003618` local-position setter mutation detection: `mismatches=1`. `phys_fn_003620` local-orientation setter mutation detection: `mismatches=1`. See [fluid emitter local-component setters](phase7-fluid-emitter-local-components-003618-003620.md).
+
+`phys_fn_003557` fluid-emitter record constructor mutation detection: `mismatches=7`. The registered oracle/candidate probe compares identity local/world poses, wrapper and sentinel fields, untouched words, and x86 stack balance. See [fluid-emitter record constructor](phase7-fluid-emitter-record-constructor-003557.md).

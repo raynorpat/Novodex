@@ -1,0 +1,54 @@
+{
+  "row": "phys_fn_003557",
+  "rva": "0x00087c40",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "source_sha256": "e4749ba958c56b3502230c3dc71b6533139e3779dd84ee5b61c14ce83323d2bf",
+  "fixture_source_sha256": "afd9f09281d0b12802e8e78f7d4437ecfd08561a1d9ee72eb25f748748bed5ac",
+  "candidate_nxphysics_sha256": "be74a3646f2ec6d4292f95fd5aaf5a0f0efcba23b4b52bec3aa993ee5c960531",
+  "mutation": "Zeroed the candidate world-pose identity matrix in nxNpFluidEmitterConstructRecord; the direct oracle/candidate differential reported mismatches=7 and exited 1.",
+  "restored_control": "fluid emitter internal ctor cases=1 identity_local=1 identity_world=1 wrapper=1 untouched=1 stack=1/1 mismatches=0; focused test exit 0.",
+  "phase5": {
+    "status": "pass",
+    "coverage_assertions_evaluated": 2794,
+    "floor": 2794
+  },
+  "phase7": {
+    "status": "pass",
+    "coverage_assertions_evaluated": 2916,
+    "floor": 2916
+  },
+  "transcripts": [
+    {
+      "path": "focused-mutant.log.gz",
+      "source": "D:\\github\\Novodex\\build\\record-constructor-mutant.log",
+      "source_bytes": 9335,
+      "source_sha256": "37408f17378d4c36835238fb70366e8d7be60d2f5d8b48fd6ee27e4db84713fc",
+      "compressed_bytes": 2092,
+      "compressed_sha256": "05671d78895bcad4a2d34d1999b62ed160afca9031a57d7a8867a879e29fec7c"
+    },
+    {
+      "path": "focused-restored.log.gz",
+      "source": "D:\\github\\Novodex\\build\\record-constructor-restored.log",
+      "source_bytes": 9335,
+      "source_sha256": "774a04cd91e7c1ffdd718675fde05de0834e8954d888ab51a30a76f2de0644e3",
+      "compressed_bytes": 2085,
+      "compressed_sha256": "d5740cc0434f33a1d911ad3cfedcf7bb88db134298bf050934948fbaafeec933"
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "D:\\github\\Novodex\\build\\phase5-fluid-emitter-constructor.log",
+      "source_bytes": 2806270,
+      "source_sha256": "e5ed139d2356bf0885346c8273a69bb1fffee978e565022cd3adc90169eae95e",
+      "compressed_bytes": 207105,
+      "compressed_sha256": "4023d212401bcba679ebdaa756cbb97e6a7b4d652c7e0914d3144253d896a7ba"
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "D:\\github\\Novodex\\build\\phase7-fluid-emitter-constructor.log",
+      "source_bytes": 4594631,
+      "source_sha256": "913060b57f3eb9cec9b0730a681ad727309c824e1283f0248f2218e198f3c497",
+      "compressed_bytes": 371035,
+      "compressed_sha256": "b4b1d589767fefdbc8dd9fd63c09a23942a8c8ee94a571ff333a6ad60ee3ba59"
+    }
+  ]
+}

@@ -10,7 +10,7 @@
     "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt"
   ],
   "proof_lines_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f",
-  "baseline_sha256": "67c273a1dffb36bfd8e0145f4f5adbae834069a0d3f0553fa3a8be3415362508",
+  "baseline_sha256": "5c89188a4f58a839d84c17a4c727a99e964feeb3e5ea2a513a90cbb07ee4029e",
   "cases": 32,
   "accepted": 15,
   "rejected": 16,
@@ -18,5 +18,5 @@
   "oracle_output_digest_fnv32": "1daa095e",
   "oracle_output_digest_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f",
   "coverage_line": "asset coverage driven=32 accepted=15 rejected=16 errors=10",
-  "proof_sha256": "540fbc2e6e1c976cebccb1eb124ab29685a33b287cdc0f26e4c91ba4a83a6e95"
+  "proof_sha256": "17a2dbdd34647c550a58d483f0dd92e9eda1bd20d91d03f8d60e95c66d1b9e7b"
 }
