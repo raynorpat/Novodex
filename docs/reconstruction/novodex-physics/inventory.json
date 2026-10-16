@@ -72872,13 +72872,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8d3c0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/fluids/NpImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1876",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12987",
-      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8d3c0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "static_proof": "IDA at RVA 0x8d3c0 identifies the public NxImplicitMesh::getSingleRadius path: it enters the Scene read lock through the link at this+0x10, reads the internal record at this+0x14, calls the backend getter, releases the lock, and returns the float.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests licensed surface-mesh fixture checks the initial and updated single-radius float bits and two backend getter calls. Mutating the getter result to 0.0f is rejected (candidate_exit=1, stdout_delta=68; row marker matched=0); the restored oracle/candidate differential is exact. Evidence: evidence/phase7-implicit-mesh-get-single-radius-003880.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "NpImplicitMesh::getSingleRadius"
     },
     {
       "id": "phys_fn_003881",

@@ -1,0 +1,75 @@
+{
+  "purpose": "Licensed public NxImplicitMesh::getSingleRadius mutation proof and registered Phase 5/6/7 gates for phys_fn_003880.",
+  "date": "2026-10-16",
+  "rva": "0x0008d3c0",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "4997880ac250cdc5b6bf8a292d5c27dbac21bae2f8fff7f8f5bb4201a2814d7b",
+  "mutant_candidate_sha256": "bd93d6ccd64ffa5969717fd9781092aff9ea515d17d9b0aa654e07ae5c996810",
+  "mutation_result": "Replaced the NpImplicitMesh::getSingleRadius backend result with 0.0f while retaining the read-lock bracket. The candidate reports initial=0, updated=0, calls=0, matched=0; oracle_exit=0, candidate_exit=1, stdout_delta=68.",
+  "restored_result": "Oracle and candidate both exit 0 with stdout_delta=0 and exact stderr.",
+  "phase_gates": {
+    "5": "phase_gate=5 status=pass; coverage_assertions_evaluated=2817 floor=2817",
+    "6": "phase_gate=6 status=pass; coverage_assertions_evaluated=1706 floor=1706",
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=2947 floor=2947"
+  },
+  "public_headers": "verify_public_headers.py passed for both Physics header roots; 80 files each.",
+  "tooling_tests": "Ran 816 tests; OK.",
+  "inventory_sha256": "7578b3381d912032ab060417c2475fd93fd2c874e14133755b5e76895159a792",
+  "phase7_closure_sha256": "9504aa27f6c82dc6969ce528364ac7165711ecafacfbacbbed7aa73713e5e021",
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "5fe2e406a3942f6df6ab4f9ae79c4ca9b145f98a86428634e983814a4d54d2c4",
+      "uncompressed_sha256": "19c1a447fc3bed3c3ca93fcd2e56cf77a14b6969942a6b27173b3e3f87e6c01f",
+      "compressed_bytes": 55969,
+      "uncompressed_bytes": 850713
+    },
+    "no-op-mutant-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "no-op-mutant-differential.log.gz": {
+      "sha256": "9af5a44b108ef7cd1e093d3ca1a2084b37106583c7475f954fe14f67f9f43756",
+      "uncompressed_sha256": "3363759b50dcd00fffba006f81bc1e7f0e095039a1554585606e858b7a7c0ccc",
+      "compressed_bytes": 55028,
+      "uncompressed_bytes": 844550
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "755bb594835d889d2ccbf5606efcd8da689feeb277c3fdce73fe5a40879763b4",
+      "uncompressed_sha256": "698076ba5ebb69a7cd5d2b0adf2b9c31713acdf33c6f10de6a1e15117f05747e",
+      "compressed_bytes": 210059,
+      "uncompressed_bytes": 2848625
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "fe10a7c81d05e53d918af6833801c732877f6c4c0283875b845a8a4b5488f63d",
+      "uncompressed_sha256": "3fae0a208589828a7f566a235d4efde869bbc660422a91302d8dbe88766e3a34",
+      "compressed_bytes": 254315,
+      "uncompressed_bytes": 3109530
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "0f2c68be24d27bccbff6acebcfd6eb5722b4ebd6d7f6832db3befccd54ba1b62",
+      "uncompressed_sha256": "21f0caecbe4a50faa0a494a620494dcafaf5586d8502573c7de670b470937f9d",
+      "compressed_bytes": 374209,
+      "uncompressed_bytes": 4653290
+    },
+    "restored-build.log.gz": {
+      "sha256": "2cd10a39e0e876ce11f0c11cc32e527f159e3d42f4fb92991aeb1935d2e92ce7",
+      "uncompressed_sha256": "b43f0f72d152d1a2ba2c0e94eb06b43712e9e8fcfb26f2553e6190c12b54bb59",
+      "compressed_bytes": 318,
+      "uncompressed_bytes": 818
+    },
+    "restored-differential.log.gz": {
+      "sha256": "1f3dae36cddd44b1752a89535e66f91600d56689aee36851a7af528f0f81be15",
+      "uncompressed_sha256": "efd9759969bd128ef355bc960f9ad3a4c3961766a8402be1f186668098de9931",
+      "compressed_bytes": 55968,
+      "uncompressed_bytes": 850713
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "2ef66ae9eb8f45d2167d78cf49438ad3371adc87e3614950f8a7e82695ae4384",
+      "uncompressed_sha256": "9f9275873d360cdb862f14af09fc010c612d5b9ee0e85ad2254a849280309e75",
+      "compressed_bytes": 18986,
+      "uncompressed_bytes": 125875
+    }
+  }
+}

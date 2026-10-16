@@ -3307,13 +3307,13 @@
    "ambiguous_rows": [],
    "rows": {
     "discovered": 5,
-    "dynamically_gated": 2,
-    "reconstructed": 7
+    "dynamically_gated": 3,
+    "reconstructed": 6
    },
    "bytes": {
     "discovered": 859,
-    "dynamically_gated": 328,
-    "reconstructed": 427
+    "dynamically_gated": 370,
+    "reconstructed": 385
    },
    "phases": {
     "7": 14
