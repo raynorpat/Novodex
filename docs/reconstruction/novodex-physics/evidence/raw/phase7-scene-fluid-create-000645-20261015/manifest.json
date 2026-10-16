@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "purpose": "Mutation and restored differential evidence for NxSceneInternal::createFluid (phys_fn_000645).",
+  "source_revision": "854ba2faa052dcd264051675da37b51a13a4dc71",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "oracle_size": 1253376,
+  "candidate_sha256": "07614e14e6b90ddcb734d7514ab44f8c6505cd08393227377b282724c86af4cd",
+  "candidate_size": 1398272,
+  "candidate_map_entry": "1819: 0001:0005ef10       ?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z 1005ff10 f   Scene.obj",
+  "mutation_result": "Enabled-path early return rejected: oracle_exit=0 candidate_exit=1 stdout_delta=94.",
+  "restored_result": "Both sides report disabled=1 enabled=1 listed=1 callbacks=1 validation=14 allocation-failures=1 exact=1; oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True.",
+  "gate_results": {
+    "phase5": "pass 2787/2787",
+    "phase6": "pass 1688/1688",
+    "phase7": "pass 2904/2904"
+  },
+  "tool_suite": "816 tests passed.",
+  "header_checks": "both oracle and candidate roots: 80 files match the pinned manifest.",
+  "inventory": "6338 functions, 5138 data objects, unexplained=0; regenerated backlog has 2786 open code rows.",
+  "files": {
+    "phase5-gate.log.gz": {
+      "sha256": "e881af92c0c04ddaeafadaa980784f50412381462b85d89f1199f87798fa1816",
+      "source_bytes": 2832793,
+      "compressed_bytes": 207026
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "af025664715d05b383ebe3932a4f734811add4b06064eb057b14b10923205992",
+      "source_bytes": 3103984,
+      "compressed_bytes": 252446
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "eb26031b3fb8838416a7f0245a141bec09ea47853c511bfb41fb47670355b3b8",
+      "source_bytes": 4607508,
+      "compressed_bytes": 370084
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "5c633be5694d4050e30a791dcca92315f983a82c4c6d36b31175272384212e18",
+      "source_bytes": 840580,
+      "compressed_bytes": 54147
+    },
+    "restored-differential.log.gz": {
+      "sha256": "0928d94bfa9293f7b9fe29aa36be1f6f2b902accd50f9e03bf0b23b31d1fdfc3",
+      "source_bytes": 846445,
+      "compressed_bytes": 54969
+    },
+    "mutant-build.log.gz": {
+      "sha256": "728db303e1d222d356a4ba42179cf2a28b73cae9722b30663cf3211cfca045a0",
+      "source_bytes": 409,
+      "compressed_bytes": 241
+    },
+    "mutant-physics-build.log.gz": {
+      "sha256": "ddaedcf431bf8b4671a5377cb0b32f907d2de010bb250b892961b852e6a3d6e0",
+      "source_bytes": 1864,
+      "compressed_bytes": 679
+    },
+    "restored-build.log.gz": {
+      "sha256": "ddaedcf431bf8b4671a5377cb0b32f907d2de010bb250b892961b852e6a3d6e0",
+      "source_bytes": 1864,
+      "compressed_bytes": 679
+    },
+    "tool-suite.log.gz": {
+      "sha256": "7ba9fe257a1e1b7c4bdd8ce6778900af2b12cb428ac8e0ab04fc0a739df882a3",
+      "source_bytes": 922,
+      "compressed_bytes": 67
+    }
+  },
+  "offline_checks": {
+    "sha256": "17280cb5ce4a3ae96e9fb8180d96a2b37d09ca0313195e972b741d00dba0ec7e",
+    "bytes": 1122
+  },
+  "restored_diff_sha256": "122d4c8b9d509ae508d17866b5b965a3554350d16125182df6d7add489a5252c",
+  "restored_diff_bytes": 172072,
+  "mutation_patch_sha256": "9c369d5aa5b4e0e05cebba2cbc4ff64c4cd6ef8582299124bc9e07eba472a986",
+  "mutation_patch_bytes": 284,
+  "restored_diff_artifact": "restored-working-tree.diff.gz",
+  "restored_diff_compressed_bytes": 37150
+}

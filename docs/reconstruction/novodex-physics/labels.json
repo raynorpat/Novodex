@@ -3073,6 +3073,13 @@
       "confidence": "semantic",
       "evidence": "evidence/phase6-joint-base-delete-004119.md",
       "reason": "the oracle scalar deleting wrapper resets the Joint vptr and frees through the Foundation allocator only for flag 1; a paired scratch-object fixture verifies flags 0/1 and catches an isolated no-op operator-delete mutant"
+    },
+    {
+      "id": "phys_fn_000645",
+      "label": "NxSceneInternal::createFluid",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/252",
+      "reason": "IDA decompilation at RVA 0x12b80 shows lazy FluidManager installation, descriptor forwarding, successful wrapper-link attachment, and release of a fluid whose solver record is absent; the candidate map resolves the matching Scene implementation."
     }
   ]
 }

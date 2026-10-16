@@ -1,0 +1,5 @@
+Applied only to a throwaway candidate build, after NxSceneInternal::createFluid obtains its FluidManager and before the enabled create path:
+
+    if(managerBytes[0x2b] != 0) return 0;
+
+The mutation forced enabled create to return null. It was fully removed before the restored build.

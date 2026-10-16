@@ -3731,6 +3731,11 @@ int wmain(int argc, wchar_t** argv)
 	unsigned char* const fluidSceneInternal = *reinterpret_cast<unsigned char**>(
 		reinterpret_cast<unsigned char*>(fluidScene) + 0x24);
 	const bool fluidManagerCreated = *reinterpret_cast<void**>(fluidSceneInternal + 0x61c) != 0;
+	const unsigned fluidCreateErrorCount = simulationOutput.errors - fluidErrorsBefore;
+	const bool fluidDisabledCreateExact = !createdFluid && fluidManagerCreated &&
+		emptyFluidCount == 0 && !emptyFluidList && createdFluidCount == 0 &&
+		!createdFluidList && fluidCreateErrorCount == 1 &&
+		simulationOutput.code == NXE_DB_WARNING && simulationOutput.line == 0x8a;
 	printf("simulation fluid unsupported create=%u manager=%u empty=%u.%u created=%u.%u errors=%u code=%u line=%d file=%s message=%s\n",
 		createdFluid != 0, fluidManagerCreated ? 1u : 0u,
 		emptyFluidCount, emptyFluidList ? 1u : 0u,
@@ -3738,6 +3743,8 @@ int wmain(int argc, wchar_t** argv)
 		simulationOutput.errors - fluidErrorsBefore,
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
+	if(!fluidDisabledCreateExact)
+		return nxFail("disabled Scene::createFluid contract did not match");
 	unsigned char* const enabledValidationFluidManager = static_cast<unsigned char*>(
 		*reinterpret_cast<void**>(fluidSceneInternal + 0x61c));
 	if(!enabledValidationFluidManager)
@@ -4861,6 +4868,21 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.emitterDestroy == 1 &&
 		fluidManagerCallbacks.emitterSetGlobalPose == 4 &&
 		fluidManagerCallbacks.emitterGetGlobalPose == 4;
+	const bool row645FluidCreateExact = fluidDisabledCreateExact && enabledFluid &&
+		enabledFluidListed && enabledFluidManagerArraysMatch &&
+		enabledFluidCallbacks && enabledFluidRefreshCallbacks &&
+		enabledFluidEmitterCallbacks && enabledDescriptorValidationPassed == 14 &&
+		managerAllocationFailure && enabledFluidAllocationFailure &&
+		enabledEmitterAllocationFailure && enabledFluidErrors == 0;
+	printf("simulation row645 fluid-create disabled=%u enabled=%u listed=%u callbacks=%u validation=%u allocation-failures=%u exact=%u\n",
+		fluidDisabledCreateExact ? 1u : 0u, enabledFluid ? 1u : 0u,
+		enabledFluidListed ? 1u : 0u,
+		enabledFluidCallbacks && enabledFluidRefreshCallbacks &&
+			enabledFluidEmitterCallbacks ? 1u : 0u,
+		enabledDescriptorValidationPassed,
+		managerAllocationFailure && enabledFluidAllocationFailure &&
+			enabledEmitterAllocationFailure ? 1u : 0u,
+		row645FluidCreateExact ? 1u : 0u);
 	printf("simulation fluid enabled valid=%u invalid=%u.%d.%d descriptor-validation=%u.%u manager-allocation-failure=%u.%u allocation-failure=%u.%u emitter-allocation-failure=%u.%u frame-actor=%u frame-pose=%u manager-flags=%u listed=%u count=%u arrays-match=%u manager-cleared=%u callbacks=%u.%u.%u.%u refresh=%u.%u.%u.%u distance=%u emitter=%u.%u.%u.%u emitter-arrays=%u.%u growth=%u null-backend-retained=%u dirty-cleared=%u cell-size=%u errors=%u\n",
 		enabledFluid != 0, enabledInvalidRejected ? 1u : 0u,
 		static_cast<unsigned>(enabledInvalidCode), enabledInvalidLine,
@@ -4892,7 +4914,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidDirtyFlagsCleared ? 1u : 0u,
 		enabledFluidCellSizeStored ? 1u : 0u,
 		enabledFluidErrors);
-	if(!enabledInvalidRejected || enabledDescriptorValidationPassed != 14 ||
+	if(!row645FluidCreateExact || !enabledInvalidRejected || enabledDescriptorValidationPassed != 14 ||
 		!enabledDescriptorValidationDiagnosticsExact ||
 		!managerAllocationFailure ||
 		!enabledFluidAllocationFailure ||

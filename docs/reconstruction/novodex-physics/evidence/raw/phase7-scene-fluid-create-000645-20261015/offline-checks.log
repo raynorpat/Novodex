@@ -1,0 +1,22 @@
+COMMAND: C:\Users\raynorpat\AppData\Local\Programs\Python\Python313\python.exe -B docs/reconstruction/novodex-physics/tools/verify_public_headers.py --root Physics/include --manifest docs/reconstruction/novodex-physics/public_header_hashes.json
+public_headers=pass
+files=80
+EXIT: 0
+
+COMMAND: C:\Users\raynorpat\AppData\Local\Programs\Python\Python313\python.exe -B docs/reconstruction/novodex-physics/tools/verify_public_headers.py --root D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include --manifest docs/reconstruction/novodex-physics/public_header_hashes.json
+public_headers=pass
+files=80
+EXIT: 0
+
+COMMAND: C:\Users\raynorpat\AppData\Local\Programs\Python\Python313\python.exe -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json
+inventory=pass
+closure phase=2 closed=88 deferred=55
+closure phase=3 closed=87 deferred=305
+closure phase=4 closed=43 deferred=1010
+closure phase=5 closed=205 deferred=0
+closure phase=6 closed=169 deferred=264
+closure phase=7 closed=372 deferred=188
+functions=6338
+data_objects=5138
+unexplained=0
+EXIT: 0
