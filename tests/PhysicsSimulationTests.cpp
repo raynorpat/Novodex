@@ -4953,7 +4953,6 @@ int wmain(int argc, wchar_t** argv)
 			? enabledPublicEmitterList[2] : 0
 		};
 	FluidManagerCallbackSummary emitterMutationBefore = {};
-	getFluidManagerCallbackSummary(&emitterMutationBefore);
 	static const char publicEmitterName[] = "simulation-public-emitter";
 	static unsigned publicEmitterUserData = 0x6a71c0deu;
 	NxFluidEmitterDesc publicEmitterDesc = enabledEmitterDesc;
@@ -5019,6 +5018,86 @@ int wmain(int argc, wchar_t** argv)
 			emitterAllocationFailureBefore.fluidGetRestParticleDistance &&
 			emitterAllocationFailureAfter.emitterCreate ==
 				emitterAllocationFailureBefore.emitterCreate ? 1u : 0u);
+	// phys_fn_003501 rejects a twenty-first emitter before allocation or backend
+	// callbacks. Fill to the documented 0x50-byte maximum, probe the rejected
+	// call with an allocator that would fail the emitter record, then release
+	// the added tail in reverse order so the surrounding fixture is unchanged.
+	NxFluidEmitter* capacityEmitters[17] = {};
+	unsigned capacityEmittersCreated = 0;
+	for(; enabledFluid && capacityEmittersCreated < 17;
+		++capacityEmittersCreated)
+		{
+		capacityEmitters[capacityEmittersCreated] =
+			enabledFluid->createEmitter(publicEmitterDesc);
+		if(!capacityEmitters[capacityEmittersCreated])
+			break;
+		}
+	unsigned capacityEmitterBackendHandles = 0;
+	for(unsigned i = 0; i < capacityEmittersCreated; ++i)
+		{
+	unsigned char* const emitterBytes = capacityEmitters[i]
+			? static_cast<unsigned char*>(*reinterpret_cast<void**>(
+				reinterpret_cast<unsigned char*>(capacityEmitters[i]) + 0x14)) : 0;
+	if(emitterBytes && *reinterpret_cast<unsigned*>(emitterBytes + 8))
+		++capacityEmitterBackendHandles;
+		}
+	const unsigned emitterCountAtCapacity = enabledFluid
+		? enabledFluid->getNbEmitters() : 0;
+	FluidManagerCallbackSummary emitterCapacityBefore = {};
+	getFluidManagerCallbackSummary(&emitterCapacityBefore);
+	NxSimulationFailSizeAllocator emitterCapacityFailAllocator(
+		*savedFluidAllocator, 0x78);
+	*fluidFoundationAllocatorSlot = &emitterCapacityFailAllocator;
+	NxFluidEmitter* const overCapacityEmitter = enabledFluid
+		? enabledFluid->createEmitter(publicEmitterDesc) : 0;
+	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	FluidManagerCallbackSummary emitterCapacityAfter = {};
+	getFluidManagerCallbackSummary(&emitterCapacityAfter);
+	NxFluidEmitter** const emitterArrayAtCapacity = enabledFluid
+		? enabledFluid->getEmitters() : 0;
+	bool emitterArrayAtCapacityMatches = capacityEmittersCreated == 17 &&
+		emitterCountAtCapacity == 20 && emitterArrayAtCapacity;
+	if(emitterArrayAtCapacityMatches)
+		{
+		for(unsigned i = 0; i < 3; ++i)
+			if(emitterArrayAtCapacity[i] != initialEmitters[i])
+				emitterArrayAtCapacityMatches = false;
+		for(unsigned i = 0; i < 17; ++i)
+			if(emitterArrayAtCapacity[i + 3] != capacityEmitters[i])
+				emitterArrayAtCapacityMatches = false;
+		}
+	const bool publicEmitterCapacityMatch = emitterArrayAtCapacityMatches &&
+		!overCapacityEmitter && emitterCapacityFailAllocator.mFailCount == 0 &&
+		emitterCapacityAfter.fluidGetRestParticleDistance ==
+			emitterCapacityBefore.fluidGetRestParticleDistance &&
+		emitterCapacityAfter.emitterCreate == emitterCapacityBefore.emitterCreate;
+	printf("simulation fluid public-api emitter-capacity created=%u count=%u rejected=%u allocation-attempts=%u array-match=%u callbacks-unchanged=%u\n",
+		capacityEmittersCreated, emitterCountAtCapacity,
+		overCapacityEmitter == 0 ? 1u : 0u,
+		emitterCapacityFailAllocator.mFailCount,
+		emitterArrayAtCapacityMatches ? 1u : 0u,
+		emitterCapacityAfter.fluidGetRestParticleDistance ==
+			emitterCapacityBefore.fluidGetRestParticleDistance &&
+			emitterCapacityAfter.emitterCreate ==
+				emitterCapacityBefore.emitterCreate ? 1u : 0u);
+	if(overCapacityEmitter)
+		enabledFluid->releaseEmitter(*overCapacityEmitter);
+	for(unsigned i = capacityEmittersCreated; i > 0; --i)
+		if(capacityEmitters[i - 1])
+			enabledFluid->releaseEmitter(*capacityEmitters[i - 1]);
+	NxFluidEmitter** const emittersAfterCapacityProbe = enabledFluid
+		? enabledFluid->getEmitters() : 0;
+	const bool emitterCapacityRestored = enabledFluid &&
+		enabledFluid->getNbEmitters() == 3 && emittersAfterCapacityProbe &&
+		emittersAfterCapacityProbe[0] == initialEmitters[0] &&
+		emittersAfterCapacityProbe[1] == initialEmitters[1] &&
+		emittersAfterCapacityProbe[2] == initialEmitters[2];
+	const bool publicEmitterCapacityExact = publicEmitterCapacityMatch &&
+		emitterCapacityRestored;
+	printf("simulation fluid public-api emitter-capacity restored=%u exact=%u\n",
+		emitterCapacityRestored ? 1u : 0u,
+		publicEmitterCapacityExact ? 1u : 0u);
+	getFluidManagerCallbackSummary(&emitterMutationBefore);
 	NxFluidEmitter* const publiclyCreatedEmitter = enabledFluid
 		? enabledFluid->createEmitter(publicEmitterDesc) : 0;
 	NxFluidEmitter** const emittersAfterCreate = enabledFluid
@@ -5153,17 +5232,20 @@ int wmain(int argc, wchar_t** argv)
 		fluidManagerCallbacks.fluidGetCellSize == 1 &&
 		fluidManagerCallbacks.staticCollisionDestroy == 0;
 	const bool enabledFluidEmitterCallbacks =
-		fluidManagerCallbacks.fluidGetRestParticleDistance == 6 &&
-		fluidManagerCallbacks.emitterCreate == 4 &&
-		fluidManagerCallbacks.emitterDestroy == 1 &&
-		fluidManagerCallbacks.emitterSetGlobalPose == 4 &&
-		fluidManagerCallbacks.emitterGetGlobalPose == 4;
+		fluidManagerCallbacks.fluidGetRestParticleDistance ==
+			6 + capacityEmittersCreated &&
+		fluidManagerCallbacks.emitterCreate == 4 + capacityEmittersCreated &&
+		fluidManagerCallbacks.emitterDestroy ==
+			1 + capacityEmitterBackendHandles &&
+		fluidManagerCallbacks.emitterSetGlobalPose == 4 + capacityEmittersCreated &&
+		fluidManagerCallbacks.emitterGetGlobalPose == 4 + capacityEmittersCreated;
 	const bool row645FluidCreateExact = fluidDisabledCreateExact && enabledFluid &&
 		enabledFluidListed && enabledFluidManagerArraysMatch &&
 		enabledFluidCallbacks && enabledFluidRefreshCallbacks &&
 			enabledFluidEmitterCallbacks && enabledDescriptorValidationPassed == 48 &&
 		managerAllocationFailure && enabledFluidAllocationFailure &&
 		enabledEmitterAllocationFailure && publicEmitterAllocationFailureMatch &&
+		publicEmitterCapacityExact &&
 		enabledFluidErrors == 0;
 	printf("simulation row645 fluid-create disabled=%u enabled=%u listed=%u callbacks=%u validation=%u allocation-failures=%u exact=%u\n",
 		fluidDisabledCreateExact ? 1u : 0u, enabledFluid ? 1u : 0u,
@@ -5220,6 +5302,7 @@ int wmain(int argc, wchar_t** argv)
 		!enabledFluidEmitterCallbacks || !publicEmitterCreateMatch ||
 		!publicEmitterReleaseMatch || !publicEmitterCallbackMatch ||
 		!publicEmitterAllocationFailureMatch ||
+		!publicEmitterCapacityExact ||
 		!enabledNullBackendEmitterRetained ||
 		!enabledFluidWorldBoundsMatch ||
 		!enabledFluidPublicFlagsMatch ||
