@@ -1102,8 +1102,10 @@
       "reason": "unreachable_in_phase_2",
       "phase_provenance": "translation_unit",
       "translation_unit_zone": "in PhysicsSDK.cpp",
-      "driving_phases": [],
-      "note": "clearDebugRenderable: reconstructed, but its only caller phys_fn_000608 is Phase 7"
+      "driving_phases": [
+        7
+      ],
+      "note": "clearDebugRenderable: reconstructed, but its only caller phys_fn_000608 is Phase 7; Phase 7 public-DLL falsification added 2026-10-16: NxPhysicsSceneVisualizeTests checks exactly 3 contact lines after 60 fetched frames; suppressing only clearDebugRenderable causes 99 lines, oracle_exit=0, candidate_exit=1, stdout_delta=262. Evidence: evidence/phase2-debug-renderable-clear-000445.md. This remains deferred here until the Phase 7 gate reaches closed and records the cross-phase discharge."
     },
     {
       "id": "phys_fn_000460",

@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "purpose": "Mutation and fresh Phase 5/6/7 gate evidence for phys_fn_000445 per-step debug-renderable clearing.",
+  "candidate_dll_sha256": "f2c641cfc0f2814b0be189941cb7fa95af984b359b0fa13c1cd8ac74525d6343",
+  "oracle_dll_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_foundation_sha256": "cd3f8238aed53e10a1c0f62d548e7a3d7035e3a57f2ddf739efb86f53ba850d5",
+  "oracle_foundation_sha256": "7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990",
+  "gates": {
+    "phase5": {
+      "status": "pass",
+      "coverage_assertions": 2812,
+      "floor": 2812
+    },
+    "phase6": {
+      "status": "pass",
+      "coverage_assertions": 1703,
+      "floor": 1703
+    },
+    "phase7": {
+      "status": "pass",
+      "coverage_assertions": 2941,
+      "floor": 2941
+    },
+    "phase5_floor_diagnostic": {
+      "status": "expected_failure_before_correction",
+      "coverage_assertions": 2812,
+      "incorrect_floor": 2813
+    }
+  },
+  "tool_tests_passed": 816,
+  "gate_target_tests_passed": 39,
+  "inventory": {
+    "functions": 6338,
+    "data_objects": 5138,
+    "unexplained": 0
+  },
+  "artifacts": [
+    {
+      "file": "gate-target-tests.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/gate-target-tests.log",
+      "bytes": 26,
+      "sha256": "c6dfda51f7bb241cda77aac132972b3ddbd2b8a9f2ae0afdafa773d564afdf6d",
+      "compressed_bytes": 46,
+      "compressed_sha256": "5f9f1c7da50be92bb310a17f3f32b6306d39f37aca4bfd36e35dfd5c56b6ad78"
+    },
+    {
+      "file": "inventory-validation.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/inventory-validation.log",
+      "bytes": 150,
+      "sha256": "92c4171a5e64d091bd2820d2d2eef6de2d216bc347c69d93d2cd2de5eaad2660",
+      "compressed_bytes": 134,
+      "compressed_sha256": "6c4ec3bc58baac5a1c9791773f66c1ec6eaf6a5ef07db67a9e17f59538cfe63f"
+    },
+    {
+      "file": "mutant-build.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/mutant-build.log",
+      "bytes": 1805,
+      "sha256": "e7514257387103759ee7f922e213af9fff1e63f989c0e44f7da1dee4a1d71926",
+      "compressed_bytes": 517,
+      "compressed_sha256": "c3d58b0bf071e9fc734c0421eef91c5d7cfe99f2ec58ef861b4542ac3354228b"
+    },
+    {
+      "file": "mutant-differential.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/mutant-differential.log",
+      "bytes": 471940,
+      "sha256": "05f58a6400d6fb2e0eb5200be89a97b2dd70b1953479d4b32eb152f4fd3abb49",
+      "compressed_bytes": 35627,
+      "compressed_sha256": "77c0601269a17e30d351e7158dc9ef8d9a1721c4b2a7f8e60fd7e779c88fa1e1"
+    },
+    {
+      "file": "phase5-gate-floor-diagnostic.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/phase5-gate-floor-diagnostic.log",
+      "bytes": 2818012,
+      "sha256": "a022909e438eb2dba38a37b888c9da67c637060ee7dd66d6d693790706931f93",
+      "compressed_bytes": 209024,
+      "compressed_sha256": "5b2e8316d4efe6e866c8ff04c2ae0ca3636211915bb18d3f7fc1f705bcf05542"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/phase5-gate.log",
+      "bytes": 2817467,
+      "sha256": "cbca8936fddaea0f04fd1f1d21d573c32e1bb3f2e64d51c27b5d0b0959485e42",
+      "compressed_bytes": 208788,
+      "compressed_sha256": "f9d13c084850ab3752c17206e5e6939a52b1779d09fdd8f5bc14cb1cfaf99773"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/phase6-gate.log",
+      "bytes": 3094355,
+      "sha256": "d9a62d078b14b7c8af8953ed4efe9fdf3927ac909fd9fae9dc5177e4223d552d",
+      "compressed_bytes": 253325,
+      "compressed_sha256": "e5c1d2c88e7cc9336127d1f93ea668a8f62285fa4c0280d7b139ba242a4530f2"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/phase7-gate.log",
+      "bytes": 4609654,
+      "sha256": "da82be4dd92ac28313094bbd2a60f68d918af042260a091ea61dd92f894ba779",
+      "compressed_bytes": 372835,
+      "compressed_sha256": "475dfbc88e14762e0adce87ec9165f304c47200f6709886fba0601d7cd999ef6"
+    },
+    {
+      "file": "restored-after-mutation.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/restored-after-mutation.log",
+      "bytes": 447364,
+      "sha256": "3be221d740591a375edc1c1e88f0199594c725fc4abf4f8ba08af1600271389f",
+      "compressed_bytes": 34571,
+      "compressed_sha256": "c38a1c22e798ec82cdc758e15c8ffa7105590749dd14e29c069200778fea3452"
+    },
+    {
+      "file": "restored-before-mutation.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/restored-before-mutation.log",
+      "bytes": 447364,
+      "sha256": "81113c99c1b9766c2d49b5dadce15f501cb934d81d52ea783da753535420766a",
+      "compressed_bytes": 34567,
+      "compressed_sha256": "197a0ecd84123f1caa7c5bea449917271abb910efe7335fc37c637ecbbaa8f23"
+    },
+    {
+      "file": "restored-build.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/restored-build.log",
+      "bytes": 2002,
+      "sha256": "e4176a17334bedad379ebc53b45bbb326724d4a4c6560d75051053b8db02978e",
+      "compressed_bytes": 544,
+      "compressed_sha256": "c2a588240abe79fd0a13c28dfe14cdb95231e1fbd1c42d27bbf5fb0ad4c82ad6"
+    },
+    {
+      "file": "tool-tests.log.gz",
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase2-clear-debug-renderable-000445-20261016/tool-tests.log",
+      "bytes": 28,
+      "sha256": "96a2cd831715aba105831e0829ecf01f240021eef2d861c78eefd96cf9ba6083",
+      "compressed_bytes": 48,
+      "compressed_sha256": "cd9f1898f349404b2c9954eb5525cf043b4a14e6938c9a33fdf85a6402f474cb"
+    }
+  ]
+}

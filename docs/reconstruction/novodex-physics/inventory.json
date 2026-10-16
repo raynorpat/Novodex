@@ -8692,8 +8692,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/161",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1208",
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-fluid-visualization.md: \"| `phys_fn_000445` | `0x0000ded0` | 16 | Visualization | `PhysicsSDK::clearDebugRenderable` |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSceneVisualizeTests directly exercises PhysicsSDK::clearDebugRenderable through the actual staged candidate DLL and shipped oracle: after 60 simulated/fetched frames, the renderer contains exactly 3 contact lines on both sides (restored candidate exit=0, stdout_delta=0, stderr_exact=True). Suppressing only gDebugRenderable->clear() in a CMake-rebuilt candidate causes the same fixture to accumulate 99 lines instead of 3 and fail (oracle_exit=0, candidate_exit=1, stdout_delta=262). Oracle NxPhysics.dll sha256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c; restored candidate NxPhysics.dll sha256 f2c641cfc0f2814b0be189941cb7fa95af984b359b0fa13c1cd8ac74525d6343. Evidence: evidence/phase2-debug-renderable-clear-000445.md and evidence/raw/phase2-clear-debug-renderable-000445-20261016/.",
+      "notes": "This Phase 2-owned helper is reached through Phase 7 simulation row phys_fn_000608. The 60-frame staged public-DLL differential now rejects a row-only clear suppression (99 accumulated contact lines versus the oracle 3); keep Phase 2 deferral until the driving Phase 7 gate closes and records the cross-phase discharge."
     },
     {
       "id": "phys_fn_000446",

@@ -1,0 +1,10 @@
+# Per-step debug-renderable clear (`phys_fn_000445`)
+
+`PhysicsSDK::clearDebugRenderable` is called from the scene step path but was deferred by Phase 2 because its caller belongs to Phase 7. The registered `NxPhysicsSceneVisualizeTests` public-DLL case creates an overlapping plane/sphere pair, performs 60 simulate/fetch steps, then renders contact points. The oracle emits exactly three contact lines. The restored candidate emits the same three lines (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`).
+
+The row-only mutation suppresses `gDebugRenderable->clear()` and rebuilds `NxPhysics.dll` through CMake. The same fixture then accumulates 99 contact lines; the candidate exits 1 while the oracle exits 0 (`stdout_delta=262`). This proves the clear operation affects a registered actual-DLL observation. The Phase 2 ownership and deferral remain intact until the driving Phase 7 gate closes; no public headers changed.
+
+The pinned oracle `NxPhysics.dll` is `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`. The restored candidate built by CMake is `f2c641cfc0f2814b0be189941cb7fa95af984b359b0fa13c1cd8ac74525d6343`. Raw baseline, mutation, and restoration logs are retained under `evidence/raw/phase2-clear-debug-renderable-000445-20261016/`.
+The fresh Phase 5/6/7 CMake Release gates now pass at 2,812/2,812, 1,703/1,703, and 2,941/2,941 assertions. The new visualization coverage line is counted by Phase 7, the phase that registers `NxPhysicsSceneVisualizeTests`; Phase 5 and 6 floors therefore remain at their existing values. The initial Phase 5 run against an incorrect 2,813 floor is retained as a compressed diagnostic alongside the corrected green run.
+
+The complete reconstruction tooling suite passes 816 tests, the gate-target suite passes 39 tests, and inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained records. Raw gate, mutation, restoration, and validation transcripts plus DLL identities and hashes are recorded in the adjacent manifest.

@@ -349,9 +349,12 @@ static bool nxRunContactStage(NxPhysicsSDK* sdk)
 	sdk->visualize(renderer);
 	printf("visualize contacts stage=after_step contact_lines=%s count=%u\n",
 		renderer.mLines ? "observed" : "missing", renderer.mLines);
+	const bool perStepClear = renderer.mLines == 3;
+	printf("visualize row445 per-step-clear frames=60 contact-lines=%u exact=%u\n",
+		renderer.mLines, perStepClear ? 1u : 0u);
 	nxStage = "";
 	sdk->releaseScene(*scene);
-	return fetched && renderer.mLines != 0;
+	return fetched && perStepClear;
 	}
 
 static bool nxRunBoundedDynamicStage(NxPhysicsSDK* sdk)
