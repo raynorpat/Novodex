@@ -2582,15 +2582,6 @@ static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void* manager,
 static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(fluid);
-	void* const surfaceManager = *reinterpret_cast<void**>(bytes + 0x24);
-	if(surfaceManager)
-		{
-		void** const vtable = *reinterpret_cast<void***>(surfaceManager);
-		typedef void* (__fastcall *DeletingDestructor)(void*, void*, unsigned char);
-		reinterpret_cast<DeletingDestructor>(vtable[0])(
-			surfaceManager, 0, 1);
-		*reinterpret_cast<void**>(bytes + 0x24) = 0;
-		}
 	void* const particleArray = *reinterpret_cast<void**>(bytes + 0x78);
 	if(particleArray && gNxParticleArrayReleaseCallback)
 		gNxParticleArrayReleaseCallback(particleArray);

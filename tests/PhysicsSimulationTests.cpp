@@ -5702,13 +5702,59 @@ int wmain(int argc, wchar_t** argv)
 		createArgumentDigest, createArgumentMapMatches ? 1u : 0u);
 	if(createArgumentFluid)
 		surfaceMeshScene->releaseFluid(*createArgumentFluid);
+	resetFluidManagerCallbacks();
+	NxFluidDesc combinedInitializationDesc;
+	combinedInitializationDesc.setToDefault();
+	combinedInitializationDesc.surfaceMeshDesc = &licensedSurfaceMeshDesc;
+	NxFluidEmitterDesc combinedInitializationEmitter;
+	combinedInitializationEmitter.setToDefault();
+	combinedInitializationDesc.emitters.pushBack(
+		combinedInitializationEmitter);
+	NxU32 combinedParticleCount = 1;
+	NxF32 combinedParticlePosition[3] = { 0.25f, -0.5f, 0.75f };
+	combinedInitializationDesc.initialParticleData.numParticlesPtr =
+		&combinedParticleCount;
+	combinedInitializationDesc.initialParticleData.bufferPos =
+		combinedParticlePosition;
+	combinedInitializationDesc.initialParticleData.bufferPosByteStride =
+		sizeof(combinedParticlePosition);
+	NxFluid* const combinedInitializationFluid = surfaceMeshScene
+		? surfaceMeshScene->createFluid(combinedInitializationDesc) : 0;
+	FluidManagerCallbackSummary combinedCreateCallbacks = {};
+	getFluidManagerCallbackSummary(&combinedCreateCallbacks);
+	char combinedCreationOrder[16] = {};
+	const unsigned combinedCreationOrderLength = getFluidCreationOrder(
+		combinedCreationOrder, sizeof(combinedCreationOrder));
+	if(combinedInitializationFluid)
+		surfaceMeshScene->releaseFluid(*combinedInitializationFluid);
+	FluidManagerCallbackSummary combinedDestroyCallbacks = {};
+	getFluidManagerCallbackSummary(&combinedDestroyCallbacks);
+	const bool combinedInitializationMatches = combinedInitializationFluid &&
+		surfaceMeshLicenseOverride.ready &&
+		combinedCreationOrderLength == 4 &&
+		strcmp(combinedCreationOrder, "CMEP") == 0 &&
+		combinedCreateCallbacks.fluidCreate == 1 &&
+		combinedCreateCallbacks.implicitFluidMeshCreate == 1 &&
+		combinedCreateCallbacks.emitterCreate == 1 &&
+		combinedDestroyCallbacks.fluidDestroy == 1 &&
+		combinedDestroyCallbacks.implicitFluidMeshDestroy == 0 &&
+		combinedDestroyCallbacks.emitterDestroy == 0;
+	printf("simulation row3649 combined-init order=%s length=%u callbacks=%u.%u.%u cleanup=%u.%u.%u exact=%u\n",
+		combinedCreationOrder, combinedCreationOrderLength,
+		combinedCreateCallbacks.fluidCreate,
+		combinedCreateCallbacks.implicitFluidMeshCreate,
+		combinedCreateCallbacks.emitterCreate,
+		combinedDestroyCallbacks.fluidDestroy,
+		combinedDestroyCallbacks.implicitFluidMeshDestroy,
+		combinedDestroyCallbacks.emitterDestroy,
+		combinedInitializationMatches ? 1u : 0u);
 	if(surfaceMeshScene)
 		sdk->releaseScene(*surfaceMeshScene);
 	if(!surfaceMeshPublicApiMatches || !licensedSurfaceMeshConstructorMatches ||
 		!licensedSurfaceMeshPropertiesMatch ||
 		!licensedSurfaceMeshDestroyMatches ||
 		!surfaceMeshConstructorAllocationFailureMatches ||
-		!createArgumentMapMatches)
+		!createArgumentMapMatches || !combinedInitializationMatches)
 		return nxFail("licensed NxFluid implicit-mesh API did not match the fixture contract");
 	}
 	bool fluidManagerArrayGrowthMatches = false;

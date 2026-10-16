@@ -556,6 +556,8 @@ extern "C" __declspec(dllexport) void __cdecl ImplicitFluidMeshCreate(
 	float blend, float triangleSize, unsigned smoothingIterations)
 	{
 	++gFluidManagerCallbackSummary.implicitFluidMeshCreate;
+	if(gFluidCreationOrderCount < sizeof(gFluidCreationOrder) - 1)
+		gFluidCreationOrder[gFluidCreationOrderCount++] = 'M';
 	const unsigned arguments[7] = {
 		reinterpret_cast<unsigned>(manager), reinterpret_cast<unsigned>(fluid),
 		*reinterpret_cast<unsigned*>(&singleRadius),

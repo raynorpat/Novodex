@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003649",
+  "description": "Combined licensed fluid initialization order and teardown callback differential; omission-of-mesh-initialization mutant rejected; restored Phase 5/6/7 gates pass.",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "5e9b5c1f7d2f2b854ef9f1747dfc5736f9be59f04280219798833d721822c16c",
+  "candidate_mutant_sha256": "6c1c7fe8038e105989adc676b2a6ba15f92db7f14124cfcd0c3eb6a081c16621",
+  "restored_control": {
+    "target": "NxPhysicsSimulationTests",
+    "order": "CMEP",
+    "create_callbacks": "1.1.1",
+    "cleanup_callbacks": "1.0.0",
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true
+  },
+  "mutation": {
+    "change": "omit nxFluidInitializeSurfaceMesh from the candidate createFluid path",
+    "marker": "simulation row3649 combined-init order=CEP length=3 callbacks=1.0.1 cleanup=1.0.0 exact=0",
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 72
+  },
+  "gates": {
+    "phase5": "pass",
+    "phase5_assertions": "2801/2801",
+    "phase6": "pass",
+    "phase6_assertions": "1694/1694",
+    "phase7": "pass",
+    "phase7_assertions": "2923/2923"
+  },
+  "artifacts": [
+    {
+      "file": "restored-differential.log.gz",
+      "source": "build/row3649-combined-init-restored.log",
+      "uncompressed_bytes": 847460,
+      "uncompressed_sha256": "9a419fe8d6f9456e32edb85f19a340c5861d1370ba4daedd3426da34816fa49c",
+      "compressed_bytes": 55348,
+      "compressed_sha256": "083d68f922825f8a9b83c284e5e186b4998f70ba24b110484c7f721b37749570"
+    },
+    {
+      "file": "combined-init-mutant-differential.log.gz",
+      "source": "build/row3649-combined-init-mutant.log",
+      "uncompressed_bytes": 842021,
+      "uncompressed_sha256": "87b7a6b73f401241dab21fff9ace756746b64c48397dec056f27c0904889cc6a",
+      "compressed_bytes": 54672,
+      "compressed_sha256": "89410e5cd7b0891ff629f55db124b4daf5393a2ef95c5b0ff42328f3c97e9d1b"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "build/row3649-combined-init-phase5.log",
+      "uncompressed_bytes": 2808703,
+      "uncompressed_sha256": "507c7b4a2e1419179c7ff6e85ed79bd66500e5fd7b0e5c865ec980f6467bee17",
+      "compressed_bytes": 207717,
+      "compressed_sha256": "fb39adce584a28a17b9bc738a8e76a44de32ee00e8f7ce34eb8cd5aa9299fbf0"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "build/row3649-combined-init-phase6.log",
+      "uncompressed_bytes": 3090794,
+      "uncompressed_sha256": "ffe9bb71a64abf162ef373f49d8359acd4c129e40cd314fc5fbd213638b2539c",
+      "compressed_bytes": 252570,
+      "compressed_sha256": "048e32fd42b7ba8eb554953347c06effc68d54220353febe479b91966e7a36ec"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "build/row3649-combined-init-phase7.log",
+      "uncompressed_bytes": 4597064,
+      "uncompressed_sha256": "b6f4a4509b2e8e8e988f609f36d9f7f40e1af03ca3a460b1a3f3d740f1ff9144",
+      "compressed_bytes": 371610,
+      "compressed_sha256": "77aee396af23a77fc91af3a9fd467ee637bc232b84f5505dbe62212c5bf14540"
+    }
+  ]
+}
