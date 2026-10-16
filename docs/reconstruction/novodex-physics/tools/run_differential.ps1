@@ -274,6 +274,7 @@ $stageFluidModel = 'NxPhysicsFluidEmitterBodyRepulsionTests' -cin $Targets -or
 	'NxPhysicsFluidInitialParticlesTests' -cin $Targets -or
 	'NxPhysicsFluidCellRoundingTests' -cin $Targets -or
 	'NxPhysicsFluidCellReciprocalTests' -cin $Targets -or
+	'NxPhysicsFluidParticleAliasOrderTests' -cin $Targets -or
 	'NxPhysicsFluidStrideAlignmentTests' -cin $Targets -or
 	'NxPhysicsFluidNullParticleCountTests' -cin $Targets -or
 	'NxPhysicsFluidCellSizeZeroTests' -cin $Targets -or

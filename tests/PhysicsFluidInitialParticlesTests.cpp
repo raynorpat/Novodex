@@ -50,6 +50,9 @@
 #ifndef NX_FLUID_STRIDE_ALIGNMENT_TEST
 #define NX_FLUID_STRIDE_ALIGNMENT_TEST 0
 #endif
+#ifndef NX_FLUID_PARTICLE_ALIAS_ORDER_TEST
+#define NX_FLUID_PARTICLE_ALIAS_ORDER_TEST 0
+#endif
 #if NX_FLUID_ADD_PARTICLES_GROW_FAILURE && !NX_FLUID_ADD_PARTICLES_TEST
 #undef NX_FLUID_ADD_PARTICLES_TEST
 #define NX_FLUID_ADD_PARTICLES_TEST 1
@@ -199,6 +202,8 @@ int wmain(int argc, wchar_t** argv)
 	const char* const testName = "NxPhysicsFluidCellSizeZeroTests";
 	#elif NX_FLUID_CELL_RECIPROCAL_TEST
 	const char* const testName = "NxPhysicsFluidCellReciprocalTests";
+	#elif NX_FLUID_PARTICLE_ALIAS_ORDER_TEST
+	const char* const testName = "NxPhysicsFluidParticleAliasOrderTests";
 	#elif NX_FLUID_STRIDE_ALIGNMENT_TEST
 	const char* const testName = "NxPhysicsFluidStrideAlignmentTests";
 	#elif NX_FLUID_ADD_PARTICLES_TEST
@@ -275,6 +280,17 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("custom cell-size fixture control is missing");
 		}
 	setFluidCellSize(21.575782775878906f);
+	#endif
+	#if NX_FLUID_PARTICLE_ALIAS_ORDER_TEST
+	typedef void (__cdecl *SetParticleArrayBackingAliasFn)(void*);
+	SetParticleArrayBackingAliasFn setParticleArrayBackingAlias =
+		reinterpret_cast<SetParticleArrayBackingAliasFn>(GetProcAddress(fluidModel,
+			"NxSetFluidParticleArrayBackingAlias"));
+	if(!setParticleArrayBackingAlias)
+		{
+		sdk->release();
+		return nxFail("particle-array alias control is missing");
+		}
 	#endif
 	typedef void (__cdecl *SetFluidPostStepParticleFn)(unsigned,
 		const unsigned*, unsigned);
@@ -419,10 +435,18 @@ int wmain(int argc, wchar_t** argv)
 	NxF32 velocities[8] = { -4.5f, 5.25f, -6.75f, 93.0f,
 		0.125f, -0.25f, 0.5f, 94.0f };
 	NxF32 lifetimes[4] = { 8.5f, 95.0f, 9.25f, 96.0f };
+	unsigned char particleAliasStorage[184] = {};
+	#if NX_FLUID_PARTICLE_ALIAS_ORDER_TEST
+	const NxF32 aliasPositions[6] = { 10.0f, 20.0f, 30.0f,
+		40.0f, 50.0f, 60.0f };
+	memcpy(particleAliasStorage + 12, aliasPositions, sizeof(aliasPositions));
+	setParticleArrayBackingAlias(particleAliasStorage);
+	#endif
 	NxFluidDesc desc;
 	desc.setToDefault();
 	desc.initialParticleData.numParticlesPtr = &particleCount;
-	desc.initialParticleData.bufferPos = positions;
+	desc.initialParticleData.bufferPos = NX_FLUID_PARTICLE_ALIAS_ORDER_TEST
+		? reinterpret_cast<NxF32*>(particleAliasStorage + 12) : positions;
 	desc.initialParticleData.bufferVel = velocities;
 	desc.initialParticleData.bufferLife = lifetimes;
 	desc.initialParticleData.bufferPosByteStride = 4 * sizeof(NxF32);
@@ -432,6 +456,11 @@ int wmain(int argc, wchar_t** argv)
 	desc.initialParticleData.bufferPosByteStride = 13;
 	desc.initialParticleData.bufferVelByteStride = 13;
 	desc.initialParticleData.bufferLifeByteStride = 5;
+	#endif
+	#if NX_FLUID_PARTICLE_ALIAS_ORDER_TEST
+	desc.initialParticleData.bufferPosByteStride = 12;
+	desc.initialParticleData.bufferVelByteStride = 12;
+	desc.initialParticleData.bufferLifeByteStride = 4;
 	#endif
 	const bool descValid = desc.isValid();
 	unsigned exceptionCode = 0;
@@ -743,6 +772,22 @@ int wmain(int argc, wchar_t** argv)
 	if(!descValid || !countMatch || !positionsMatch || !velocitiesMatch ||
 		!lifetimeMatch)
 		return nxFail("particle byte-stride alignment differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
+	#elif NX_FLUID_PARTICLE_ALIAS_ORDER_TEST
+	const unsigned aliasBatchCount = array
+		? *reinterpret_cast<unsigned*>(array + 4) : ~0u;
+	const unsigned secondPositionX = records
+		? *reinterpret_cast<unsigned*>(records + 92 + 4) : ~0u;
+	const bool aliasOrderMatches = fluid && aliasBatchCount == 2 &&
+		secondPositionX == 0u;
+	printf("fluid initial-particles alias-order count=%u second-x=%08x\n",
+		aliasBatchCount, secondPositionX);
+	if(fluid)
+		scene->releaseFluid(*fluid);
+	sdk->releaseScene(*scene);
+	sdk->release();
+	if(!descValid || !aliasOrderMatches)
+		return nxFail("aliased particle channel ordering differs from the oracle");
 	return nxReportPairIdentity(pairDirectory);
 	#else
 	const bool countMatch = array &&

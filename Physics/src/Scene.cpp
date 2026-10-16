@@ -2296,9 +2296,6 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 			data.bufferPos) + index * positionStride;
 		memcpy(record + 4, position, 3 * sizeof(unsigned));
 		memset(record + 16, 0, 3 * sizeof(unsigned));
-		if(data.bufferVel && velocityStride)
-			memcpy(record + 16, reinterpret_cast<const unsigned char*>(
-				data.bufferVel) + index * velocityStride, 3 * sizeof(unsigned));
 		if(cellSize != 0.0f)
 			{
 			*reinterpret_cast<short*>(record + 64) = static_cast<short>(floor(
@@ -2317,10 +2314,25 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 		*reinterpret_cast<short*>(record + 70) = -1;
 		*reinterpret_cast<short*>(record + 72) = -1;
 		*reinterpret_cast<unsigned*>(record + 88) = 0;
-		if(data.bufferLife && lifetimeStride)
+		}
+	// The oracle completes the position/cell/sentinel pass before copying either
+	// optional stream. Preserve that order because valid caller buffers can alias
+	// the ParticleArray storage, making the first pass's stores visible to later
+	// position reads while velocity and lifetime stores must remain deferred.
+	if(data.bufferVel && velocityStride)
+		for(unsigned index = 0; index != count; ++index)
+			{
+			unsigned char* const record = records + 92 * (existingArrayCount + index);
+			memcpy(record + 16, reinterpret_cast<const unsigned char*>(
+				data.bufferVel) + index * velocityStride, 3 * sizeof(unsigned));
+			}
+	if(data.bufferLife && lifetimeStride)
+		for(unsigned index = 0; index != count; ++index)
+			{
+			unsigned char* const record = records + 92 * (existingArrayCount + index);
 			memcpy(record + 88, reinterpret_cast<const unsigned char*>(
 				data.bufferLife) + index * lifetimeStride, sizeof(unsigned));
-		}
+			}
 	array->count = count;
 	}
 

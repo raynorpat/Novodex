@@ -11125,3 +11125,5 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 `phys_fn_003653` and `phys_fn_003655` implicit-mesh post-step copy mutation detection: `stdout_delta=66`. The no-op source mutation left the staged oracle output intact and candidate counts/buffers untouched; restored output was exact. The 8aa90 routine spans both census rows. See `phase7-implicit-mesh-post-step-copy-003653-003655.md`.
 
 `phys_fn_003651` fluid post-step particle stream copy mutation detection: the dedicated no-op helper mutation is rejected with `mismatches=22`, while the restored two-fluid control reports zero mismatches. The fixture distinguishes backend and caller count caps, source fields, independent strides, untouched padding, and a null output channel. See `phase7-fluid-particle-copy-003651.md`.
+
+`phys_fn_003423` initial-particle channel-order mutation detection: the registered alias-order differential rejects interleaving velocity/lifetime writes into the position pass (`stdout_delta=2`); restored oracle/candidate output matches exactly. See `phase7-fluid-particle-alias-order-003423.md` and its raw control/mutation/gate logs.

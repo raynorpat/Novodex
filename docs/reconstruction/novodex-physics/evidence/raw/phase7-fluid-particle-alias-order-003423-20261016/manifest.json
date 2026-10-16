@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003423"
+  ],
+  "oracle_rva": "0x00084a80",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "a664d1f6dab9c07c15365985667079332374a03ad1e8d9f095b36495739b7517",
+  "candidate_map_symbol": "?nxFluidInitializeParticles@@YAXPAXABVNxParticleData@@@Z",
+  "candidate_map_address": "0x10067fb0 (RVA 0x00066fb0)",
+  "source_sha256": "bf8c9e40442347d6d15ccdb5e98959f8b2e1a4bf8b1317976d44e97518d97ddf",
+  "fixture_source_sha256": "a4257d006b0067e77124e3ee88f9ec006315f636ad1f1f5177751fbf1a1e9303",
+  "test_source_sha256": "8cc977f964594a6d7dad31a694d1bd906963045aa1bb5171dfe17821a69c0974",
+  "restored_control": {
+    "exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "marker": "fluid initial-particles alias-order count=2 second-x=00000000"
+  },
+  "mutation": {
+    "candidate_mutation": "moved velocity/lifetime copies back inside the per-particle position pass",
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 2,
+    "oracle_second_x": "00000000",
+    "candidate_second_x": "c0d80000"
+  },
+  "phase_gates": {
+    "phase5": {
+      "status": "pass",
+      "assertions": "2806/2806"
+    },
+    "phase6": {
+      "status": "pass",
+      "assertions": "1697/1697"
+    },
+    "phase7": {
+      "status": "pass",
+      "assertions": "2928/2928"
+    }
+  },
+  "compressed_logs": [
+    {
+      "file": "control.log.gz",
+      "sha256": "e4f0248a1261ace1e5365fab9438209fe96bbc2433570fd93bb08520e9aafc5d",
+      "uncompressed_sha256": "a7ddf9d2ed8d6c01822e1deb39848499049febe751cfbb0901e38b1db82e96fa",
+      "uncompressed_bytes": 7212
+    },
+    {
+      "file": "mutation.log.gz",
+      "sha256": "afb3d5e379d5feddb0335faae13e9847429b4a42a44a7fed378b1aa2b4b57e55",
+      "uncompressed_sha256": "4a271588495d48d8148ee752c793bd0ef3829d177bdcc390369c8655d78b9b6c",
+      "uncompressed_bytes": 7396
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "sha256": "05db8becac74972c1c9e5e52a0d05a1f9158b37a9a1daa42f9316f344a0e86f4",
+      "uncompressed_sha256": "89671679145d8ecea9a254bbff52a0129ef5dd721894694af1e4fae9d8954322",
+      "uncompressed_bytes": 2815732
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "sha256": "e7020f7a2ad06d5a732cc067863c9a8d087c26cf17b1300aae0fad54075113e7",
+      "uncompressed_sha256": "2c314c6ece91f7991283b16a0030f6680fb4bb80990e18b56e97e35c6f6fa23c",
+      "uncompressed_bytes": 3092325
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "sha256": "af9af7f93b38551f0125c6712d64b58e83a41a8b44de1eb0cc6a3e3a5669fb86",
+      "uncompressed_sha256": "677102b0506b953293ac98515df4020ec5f27d6ad23f098e7a49911a5e96a4b8",
+      "uncompressed_bytes": 4604289
+    }
+  ]
+}

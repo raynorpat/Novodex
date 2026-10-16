@@ -88,6 +88,7 @@ static unsigned gFluidGetDampingCalls;
 static unsigned gFluidSetStiffnessCalls;
 static unsigned gFluidParticleArrayAllocCalls;
 static unsigned gFluidParticleArrayAllocFailure;
+static unsigned char* gFluidParticleArrayBackingAlias;
 static unsigned gFluidParticleArrayGrowCalls;
 static unsigned gFluidParticleArrayGrowFailure;
 static unsigned gFluidGetParticlesCalls;
@@ -996,6 +997,12 @@ NxSetFluidParticleArrayAllocFailure(unsigned enabled)
 	gFluidParticleArrayAllocFailure = enabled != 0;
 	}
 
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidParticleArrayBackingAlias(void* data)
+	{
+	gFluidParticleArrayBackingAlias = static_cast<unsigned char*>(data);
+	}
+
 extern "C" __declspec(dllexport) unsigned __cdecl
 NxGetFluidParticleArrayAllocCalls()
 	{
@@ -1046,13 +1053,15 @@ ParticleArrayAlloc(unsigned count)
 		return 0;
 	if(count)
 		{
-		array->data = static_cast<unsigned char*>(calloc(count, 92));
+		array->data = gFluidParticleArrayBackingAlias
+			? gFluidParticleArrayBackingAlias
+			: static_cast<unsigned char*>(calloc(count, 92));
 		if(!array->data)
 			{
 			free(array);
 			return 0;
 			}
-		if(gFluidParticleCellPoison)
+		if(gFluidParticleCellPoison && !gFluidParticleArrayBackingAlias)
 			for(unsigned index = 0; index != count; ++index)
 				{
 			unsigned char* const record = array->data + index * 92;
@@ -1091,7 +1100,8 @@ extern "C" __declspec(dllexport) void __cdecl ParticleArrayRelease(
 	{
 	if(!array)
 		return;
-	free(array->data);
+	if(array->data != gFluidParticleArrayBackingAlias)
+		free(array->data);
 	free(array);
 	}
 
