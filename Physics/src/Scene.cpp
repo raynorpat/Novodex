@@ -2223,7 +2223,9 @@ static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data)
 		array = static_cast<NxFluidParticleArrayHeader*>(
 			gNxParticleArrayAllocCallback(count));
 	const float cellSize = gNxFluidGetCellSizeCallback(backendManager, backendFluid);
-	const float inverseCellSize = cellSize != 0.0f ? 1.0f / cellSize : 0.0f;
+	float inverseCellSize = 0.0f;
+	if(count != 0)
+		inverseCellSize = 1.0f / cellSize;
 	unsigned char* records = static_cast<unsigned char*>(array->records);
 	const unsigned existingArrayCount = array->count;
 	const unsigned positionStride = data.bufferPosByteStride & ~3u;

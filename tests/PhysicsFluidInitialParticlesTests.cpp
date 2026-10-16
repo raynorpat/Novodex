@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
+#include <float.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -253,6 +254,16 @@ int wmain(int argc, wchar_t** argv)
 		}
 	setFluidCellSizeZero(1);
 	setFluidParticleCellPoison(1);
+	typedef void (__cdecl *SetFluidClearFpuStatusFn)(unsigned);
+	SetFluidClearFpuStatusFn setFluidClearFpuStatus =
+		reinterpret_cast<SetFluidClearFpuStatusFn>(GetProcAddress(fluidModel,
+			"NxSetFluidClearFpuStatusAtCellSize"));
+	if(!setFluidClearFpuStatus)
+		{
+		sdk->release();
+		return nxFail("cell-size floating-point status control is missing");
+		}
+	setFluidClearFpuStatus(1);
 	#elif NX_FLUID_CELL_RECIPROCAL_TEST
 	typedef void (__cdecl *SetFluidCellSizeFn)(float);
 	SetFluidCellSizeFn setFluidCellSize =
@@ -681,8 +692,11 @@ int wmain(int argc, wchar_t** argv)
 	const int z1 = records ? *reinterpret_cast<short*>(records + 160) : 999;
 	const bool cellsMatch = records && x0 == 0 && y0 == 0 && z0 == 0 &&
 		x1 == 0 && y1 == 0 && z1 == 0;
-	printf("fluid initial-particles zero-cell-size count=%u cells=%d,%d,%d:%d,%d,%d\n",
-		countMatch && cellsMatch ? 2u : 0u, x0, y0, z0, x1, y1, z1);
+	const unsigned fpuStatus = static_cast<unsigned>(_statusfp());
+	const bool divideByZeroRaised = (fpuStatus & _SW_ZERODIVIDE) != 0;
+	printf("fluid initial-particles zero-cell-size count=%u cells=%d,%d,%d:%d,%d,%d fpu-status=%04x divzero=%u\n",
+		countMatch && cellsMatch ? 2u : 0u, x0, y0, z0, x1, y1, z1,
+		fpuStatus, divideByZeroRaised ? 1u : 0u);
 	if(fluid)
 		scene->releaseFluid(*fluid);
 	sdk->releaseScene(*scene);

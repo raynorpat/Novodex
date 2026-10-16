@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <float.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -93,6 +94,7 @@ static unsigned gFluidGetParticlesReturnNull;
 static unsigned gFluidMaxParticles = 0x1234u;
 static unsigned gFluidCellSizeZero;
 static unsigned gFluidParticleCellPoison;
+static unsigned gFluidClearFpuStatusAtCellSize;
 static unsigned gFluidCellSizeCustom;
 static float gFluidCellSize = 0.5f;
 static unsigned gFluidSetStiffnessBits;
@@ -471,6 +473,8 @@ extern "C" __declspec(dllexport) float __cdecl FluidGetCellSize(
 	if(manager != &gFluidManagerBackend || !fluid)
 		return 0.0f;
 	++gFluidManagerCallbackSummary.fluidGetCellSize;
+	if(gFluidClearFpuStatusAtCellSize)
+		_clearfp();
 	return gFluidCellSizeZero ? 0.0f : gFluidCellSizeCustom ? gFluidCellSize : 0.5f;
 	}
 
@@ -491,6 +495,12 @@ NxSetFluidCellSize(float cellSize)
 	{
 	gFluidCellSize = cellSize;
 	gFluidCellSizeCustom = 1;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl
+NxSetFluidClearFpuStatusAtCellSize(unsigned enabled)
+	{
+	gFluidClearFpuStatusAtCellSize = enabled != 0;
 	}
 
 extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
