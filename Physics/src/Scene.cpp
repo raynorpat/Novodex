@@ -1859,8 +1859,30 @@ static void* gNxFluidSolverReadLockVtable[] = {
 	};
 
 static void* __fastcall nxFluidEmitterDeletingDestructor(void* internal,
+	void*, unsigned char deleteObject);
+
+extern "C" void __cdecl nxNpFluidEmitterRemoveName(void* internal);
+
+static void* __fastcall nxFluidEmitterDeletingDestructor(void* internal,
 	void*, unsigned char deleteObject)
 	{
+	unsigned char* const bytes = static_cast<unsigned char*>(internal);
+	NpFluidEmitter* const wrapper = *reinterpret_cast<NpFluidEmitter**>(bytes + 0x0c);
+	if(wrapper)
+		{
+		delete wrapper;
+		*reinterpret_cast<NpFluidEmitter**>(bytes + 0x0c) = 0;
+		}
+	nxSetSdkPointerBinding(internal, 0);
+	nxNpFluidEmitterRemoveName(internal);
+	void* const owner = *reinterpret_cast<void**>(bytes + 4);
+	if(owner)
+		{
+		unsigned char* const manager = *reinterpret_cast<unsigned char**>(
+			static_cast<unsigned char*>(owner) + 0x7c);
+		unsigned char* const scene = *reinterpret_cast<unsigned char**>(manager + 0x24);
+		*reinterpret_cast<unsigned*>(scene + 0x70c) |= 2u;
+		}
 	if((deleteObject & 1) != 0)
 		nxFoundationSDKAllocator->free(internal);
 	return internal;
@@ -2584,12 +2606,6 @@ static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned c
 		void* const internalEmitter = reinterpret_cast<void*>(emitters[i]);
 		if(!internalEmitter)
 			continue;
-		void* const wrapper = *reinterpret_cast<void**>(
-			static_cast<unsigned char*>(internalEmitter) + 0x0c);
-		if(wrapper)
-			{
-			delete static_cast<NpFluidEmitter*>(wrapper);
-			}
 		void** const vtable = *reinterpret_cast<void***>(internalEmitter);
 		typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
 		reinterpret_cast<DeletingDestructor>(vtable[0])(internalEmitter, 1);

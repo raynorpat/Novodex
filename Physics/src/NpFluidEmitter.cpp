@@ -39,6 +39,11 @@ static void nxSetFluidEmitterName(void* internal, const char* name)
 		}
 	}
 
+extern "C" void __cdecl nxNpFluidEmitterRemoveName(void* internal)
+	{
+	nxSetFluidEmitterName(internal, 0);
+	}
+
 extern "C" void __cdecl nxNpFluidEmitterInitializeMetadata(void* internal,
 	void* wrapper, void* userData, const char* name, void* lockSource)
 	{

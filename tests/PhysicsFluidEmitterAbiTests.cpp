@@ -5288,6 +5288,258 @@ static unsigned nxRunFluidEmitterRecordConstructor(unsigned char* image,
 	return mismatches;
 	}
 
+static unsigned gFluidEmitterDtorStackBefore;
+static unsigned gFluidEmitterDtorStackAfter;
+static void* gFluidEmitterDtorResult;
+static void* gFluidEmitterOracleDtorResult;
+static void* gFluidEmitterCandidateDtorResult;
+static unsigned gFluidEmitterOracleDtorStackBefore;
+static unsigned gFluidEmitterOracleDtorStackAfter;
+static unsigned gFluidEmitterCandidateDtorStackBefore;
+static unsigned gFluidEmitterCandidateDtorStackAfter;
+
+class FluidEmitterDtorAllocatorSpy : public NxUserAllocator
+	{
+	public:
+	explicit FluidEmitterDtorAllocatorSpy(NxUserAllocator* allocator)
+		: underlying(allocator), freeCalls(0) {}
+	void* mallocDEBUG(size_t size, const char* file, int line)
+		{ return underlying->mallocDEBUG(size, file, line); }
+	void* mallocDEBUG(size_t size, const char* file, int line,
+		const char* name, NxMemoryType type)
+		{ return underlying->mallocDEBUG(size, file, line, name, type); }
+	void* malloc(size_t size) { return underlying->malloc(size); }
+	void* malloc(size_t size, NxMemoryType type)
+		{ return underlying->malloc(size, type); }
+	void* realloc(void* memory, size_t size)
+		{ return underlying->realloc(memory, size); }
+	void free(void* memory)
+		{ ++freeCalls; underlying->free(memory); }
+	NxUserAllocator* underlying;
+	unsigned freeCalls;
+	};
+
+__declspec(naked) static void* __cdecl nxCallFluidEmitterRecordDestructor(
+	void*, void*, unsigned)
+	{
+	__asm
+		{
+		push ebp
+		mov ebp, esp
+		push ebx
+		push esi
+		push edi
+		mov eax, [ebp + 8]
+		mov ecx, [ebp + 12]
+		xor edx, edx
+		mov gFluidEmitterDtorStackBefore, esp
+		push dword ptr [ebp + 16]
+		call eax
+		mov gFluidEmitterDtorResult, eax
+		mov gFluidEmitterDtorStackAfter, esp
+		mov eax, gFluidEmitterDtorResult
+		mov ebx, [ebp - 4]
+		mov esi, [ebp - 8]
+		mov edi, [ebp - 12]
+		mov esp, ebp
+		pop ebp
+		ret
+		}
+	}
+
+static unsigned nxRunFluidEmitterRecordDestructor(unsigned char* image,
+	HMODULE candidatePhysics)
+	{
+	void* candidateCtorAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterConstructRecord", &candidateCtorAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter record constructor could not be resolved from its map\n");
+		return 1;
+		}
+	void* candidateMetadataAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"nxNpFluidEmitterInitializeMetadata", &candidateMetadataAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter metadata initializer could not be resolved from its map\n");
+		return 1;
+		}
+	void* candidateDtorAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"?nxFluidEmitterDeletingDestructor@@YIPAXPAX0E@Z",
+		&candidateDtorAddress))
+		{
+		fprintf(stderr, "FAIL candidate fluid-emitter deleting destructor could not be resolved from its map\n");
+		return 1;
+		}
+	typedef void* (__thiscall *OracleCtor)(void*);
+	typedef void* (__cdecl *CandidateCtor)(void*);
+	typedef void (__cdecl *CandidateMetadata)(void*, void*, void*, const char*, void*);
+	OracleCtor oracleCtor = reinterpret_cast<OracleCtor>(image + 0x87c40);
+	CandidateCtor candidateCtor = reinterpret_cast<CandidateCtor>(candidateCtorAddress);
+	CandidateMetadata candidateMetadata =
+		reinterpret_cast<CandidateMetadata>(candidateMetadataAddress);
+	void* oracleDtor = image + 0x882b0;
+	unsigned char oracleRecord[0x78] = {};
+	unsigned char candidateRecord[0x78] = {};
+	unsigned char oracleOwner[0x80] = {};
+	unsigned char candidateOwner[0x80] = {};
+	unsigned char oracleManager[0x28] = {};
+	unsigned char candidateManager[0x28] = {};
+	unsigned char oracleScene[0x710] = {};
+	unsigned char candidateScene[0x710] = {};
+	CRITICAL_SECTION candidateReadSection;
+	InitializeCriticalSection(&candidateReadSection);
+	void* candidateReadSectionLink = &candidateReadSection;
+	unsigned char candidateLockSource[0x14] = {};
+	*reinterpret_cast<void**>(candidateLockSource + 0x10) =
+		&candidateReadSectionLink;
+	*reinterpret_cast<void**>(oracleOwner + 0x7c) = oracleManager;
+	*reinterpret_cast<void**>(candidateOwner + 0x7c) = candidateManager;
+	*reinterpret_cast<void**>(oracleManager + 0x24) = oracleScene;
+	*reinterpret_cast<void**>(candidateManager + 0x24) = candidateScene;
+	*reinterpret_cast<unsigned*>(oracleScene + 0x70c) = 0x40;
+	*reinterpret_cast<unsigned*>(candidateScene + 0x70c) = 0x40;
+	oracleCtor(oracleRecord);
+	candidateCtor(candidateRecord);
+	*reinterpret_cast<void**>(oracleRecord + 4) = oracleOwner;
+	*reinterpret_cast<void**>(candidateRecord + 4) = candidateOwner;
+	static const char emitterName[] = "destructor-name-binding";
+	candidateMetadata(candidateRecord,
+		*reinterpret_cast<void**>(candidateRecord + 0x0c), 0, emitterName,
+		candidateLockSource);
+	void** const oracleVtable = *reinterpret_cast<void***>(oracleRecord);
+	void** const candidateVtable = *reinterpret_cast<void***>(candidateRecord);
+	if(candidateVtable[0] != candidateDtorAddress)
+		fprintf(stderr, "fluid emitter dtor map/vtable mismatch map=%p vtable=%p\n",
+			candidateDtorAddress, candidateVtable[0]);
+	typedef void* (__thiscall *OracleRecordDtor)(void*, unsigned char);
+	typedef void* (__thiscall *CandidateRecordDtor)(void*, unsigned char);
+	gFluidEmitterOracleDtorResult = reinterpret_cast<OracleRecordDtor>(oracleDtor)(
+		oracleRecord, 0);
+	gFluidEmitterCandidateDtorResult = reinterpret_cast<CandidateRecordDtor>(
+		candidateVtable[0])(candidateRecord, 0);
+	(void)nxCallFluidEmitterRecordDestructor(oracleDtor, oracleRecord, 0);
+	gFluidEmitterOracleDtorStackBefore = gFluidEmitterDtorStackBefore;
+	gFluidEmitterOracleDtorStackAfter = gFluidEmitterDtorStackAfter;
+	(void)nxCallFluidEmitterRecordDestructor(candidateVtable[0], candidateRecord, 0);
+	gFluidEmitterCandidateDtorStackBefore = gFluidEmitterDtorStackBefore;
+	gFluidEmitterCandidateDtorStackAfter = gFluidEmitterDtorStackAfter;
+	const bool oracleWrapperCleared =
+		*reinterpret_cast<void**>(oracleRecord + 0x0c) == 0;
+	const bool candidateWrapperCleared =
+		*reinterpret_cast<void**>(candidateRecord + 0x0c) == 0;
+	const bool oracleSceneDirty =
+		*reinterpret_cast<unsigned*>(oracleScene + 0x70c) == 0x42;
+	const bool candidateSceneDirty =
+		*reinterpret_cast<unsigned*>(candidateScene + 0x70c) == 0x42;
+	const bool oracleVtablePreserved =
+		*reinterpret_cast<void***>(oracleRecord) == oracleVtable
+		&& oracleVtable[0] == oracleDtor;
+	const bool candidateVtablePreserved =
+		*reinterpret_cast<void***>(candidateRecord) == candidateVtable;
+	void* const candidateWrapperAfterDtor =
+		*reinterpret_cast<void**>(candidateRecord + 0x0c);
+	if(candidateWrapperAfterDtor)
+		{
+		delete static_cast<NpFluidEmitter*>(candidateWrapperAfterDtor);
+		*reinterpret_cast<void**>(candidateRecord + 0x0c) = 0;
+		}
+	NpFluidEmitter* const candidateNameProbe = new NpFluidEmitter(candidateRecord);
+	*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(candidateNameProbe) + 0x10) =
+		&candidateReadSectionLink;
+	const bool candidateNameCleared = candidateNameProbe->getName() == 0;
+	delete candidateNameProbe;
+	unsigned mismatches = 0;
+	if(gFluidEmitterOracleDtorResult != oracleRecord
+		|| gFluidEmitterCandidateDtorResult != candidateRecord
+		|| !oracleWrapperCleared || !candidateWrapperCleared
+		|| !oracleSceneDirty || !candidateSceneDirty
+		|| !oracleVtablePreserved || !candidateVtablePreserved
+		|| !candidateNameCleared
+			|| gFluidEmitterOracleDtorStackBefore != gFluidEmitterOracleDtorStackAfter
+			|| gFluidEmitterCandidateDtorStackBefore != gFluidEmitterCandidateDtorStackAfter)
+		{
+		++mismatches;
+		fprintf(stderr, "fluid emitter dtor details return=%p/%p expected=%p/%p wrapper=%u/%u scene=%08x/%08x vtable=%u/%u name=%u stack=%08x/%08x %08x/%08x\n",
+			gFluidEmitterOracleDtorResult, gFluidEmitterCandidateDtorResult,
+			oracleRecord, candidateRecord,
+			oracleWrapperCleared, candidateWrapperCleared,
+			*reinterpret_cast<unsigned*>(oracleScene + 0x70c),
+			*reinterpret_cast<unsigned*>(candidateScene + 0x70c),
+			oracleVtablePreserved, candidateVtablePreserved, candidateNameCleared,
+			gFluidEmitterOracleDtorStackBefore, gFluidEmitterOracleDtorStackAfter,
+			gFluidEmitterCandidateDtorStackBefore, gFluidEmitterCandidateDtorStackAfter);
+		}
+	for(unsigned offset = 0; offset < sizeof(oracleRecord); ++offset)
+		if(offset < 8 || (offset >= 0x0c && offset < 0x10))
+			continue;
+		else if(oracleRecord[offset] != candidateRecord[offset])
+			{
+			++mismatches;
+			fprintf(stderr, "fluid emitter dtor record byte mismatch offset=%02x oracle=%02x candidate=%02x\n",
+				offset, oracleRecord[offset], candidateRecord[offset]);
+			}
+	HMODULE foundation = GetModuleHandleA("NxFoundation.dll");
+	typedef NxFoundationSDK* (__cdecl *CreateFoundationSDK)(NxU32,
+		NxUserOutputStream*, NxUserAllocator*);
+	CreateFoundationSDK createFoundation = foundation
+		? reinterpret_cast<CreateFoundationSDK>(GetProcAddress(foundation,
+			"NxCreateFoundationSDK")) : 0;
+	if(!createFoundation
+		|| !createFoundation(NX_FOUNDATION_SDK_VERSION, 0, 0))
+		{
+		fprintf(stderr, "FAIL fluid-emitter deleting dtor could not initialize Foundation allocator\n");
+		++mismatches;
+		}
+	NxUserAllocator** allocatorSlot = foundation
+		? reinterpret_cast<NxUserAllocator**>(GetProcAddress(foundation,
+			"?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")) : 0;
+	if(!allocatorSlot || !*allocatorSlot)
+		{
+		fprintf(stderr, "FAIL fluid-emitter deleting dtor allocator global could not be resolved\n");
+		++mismatches;
+		}
+	else
+		{
+	NxUserAllocator* const allocator = *allocatorSlot;
+	unsigned char* const oracleDeleteRecord = static_cast<unsigned char*>(
+		allocator->malloc(0x78, NX_MEMORY_PERSISTENT));
+	unsigned char* const candidateDeleteRecord = static_cast<unsigned char*>(
+		allocator->malloc(0x78, NX_MEMORY_PERSISTENT));
+	if(!oracleDeleteRecord || !candidateDeleteRecord)
+		++mismatches;
+	else
+		{
+	memset(oracleDeleteRecord, 0, 0x78);
+	memset(candidateDeleteRecord, 0, 0x78);
+	oracleCtor(oracleDeleteRecord);
+	candidateCtor(candidateDeleteRecord);
+	*reinterpret_cast<void**>(oracleDeleteRecord + 4) = oracleOwner;
+	*reinterpret_cast<void**>(candidateDeleteRecord + 4) = candidateOwner;
+	*reinterpret_cast<unsigned*>(oracleScene + 0x70c) = 0x40;
+	*reinterpret_cast<unsigned*>(candidateScene + 0x70c) = 0x40;
+	FluidEmitterDtorAllocatorSpy allocatorSpy(allocator);
+	*allocatorSlot = &allocatorSpy;
+	void* const oracleDeleteResult = reinterpret_cast<OracleRecordDtor>(oracleDtor)(
+		oracleDeleteRecord, 1);
+	void* const candidateDeleteResult = reinterpret_cast<CandidateRecordDtor>(
+		candidateDtorAddress)(candidateDeleteRecord, 1);
+	*allocatorSlot = allocator;
+	if(oracleDeleteResult != oracleDeleteRecord
+		|| candidateDeleteResult != candidateDeleteRecord
+		|| allocatorSpy.freeCalls != 2
+		|| *reinterpret_cast<unsigned*>(oracleScene + 0x70c) != 0x42
+		|| *reinterpret_cast<unsigned*>(candidateScene + 0x70c) != 0x42)
+		++mismatches;
+	}
+	}
+	DeleteCriticalSection(&candidateReadSection);
+	printf("fluid emitter internal dtor cases=2 wrapper_cleared=1 name_unbound=1 scene_dirty=2 vtable_preserved=1 delete_free=2 stack=1/1 mismatches=%u\n",
+		mismatches);
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -5395,6 +5647,7 @@ int wmain(int argc, wchar_t** argv)
 		return 1;
 		}
 	gFailures += nxRunFluidEmitterRecordConstructor(image, candidatePhysics);
+	gFailures += nxRunFluidEmitterRecordDestructor(image, candidatePhysics);
 	void* candidateFrictionPatchAssignAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"??4NxFrictionPatch@@QAEAAV0@ABV0@@Z", &candidateFrictionPatchAssignAddress))
