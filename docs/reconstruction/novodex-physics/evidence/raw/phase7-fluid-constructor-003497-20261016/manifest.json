@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003497"
+  ],
+  "oracle_rva": "0x00085b00",
+  "date": "2026-10-16",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_sha256": "1f6871d917e95d07cb21a26687852c8b443b25c40bafcf735d35720b82e7a1d0",
+  "candidate_map_symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+  "candidate_map_address": "0x10060050",
+  "source_sha256": "bf8c9e40442347d6d15ccdb5e98959f8b2e1a4bf8b1317976d44e97518d97ddf",
+  "test_source_sha256": "f5ababb89f3b1d942782f5da86b54b63c9d708a7f7ecc01d3e1975835b3cec54",
+  "restored_control": {
+    "exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true,
+    "marker": "simulation fluid constructor initialized=1 fluids=7 arrays=1 bounds=1 solver-links=1"
+  },
+  "mutation": {
+    "candidate_mutation": "Set fluid constructor +0x74 to one after zero-initializing the 0x84-byte object",
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 2,
+    "stderr_exact": true
+  },
+  "gate": "NxPhysicsSimulationTests registered in Phase 7",
+  "compressed_logs": [
+    {
+      "file": "control.log.gz",
+      "sha256": "8ff2daffd750b9ef49f7d1c5443a89fc0dfd1ae9296a82a92a30e57af4b4986f",
+      "uncompressed_sha256": "133157daa35d59611b7d0be9f49120bc7f43ae937d929045554442a7f6534ddc",
+      "uncompressed_bytes": 848146
+    },
+    {
+      "file": "mutation.log.gz",
+      "sha256": "18aaa7ed905c396e80359d107fe43c54defc1c199bea0fda4f04d1bb7a4136c6",
+      "uncompressed_sha256": "8395b4d7f0ea103626bf4ecd52054c72b01426d8ff20316d3a0321ce95eb9a5f",
+      "uncompressed_bytes": 848653
+    }
+  ]
+}

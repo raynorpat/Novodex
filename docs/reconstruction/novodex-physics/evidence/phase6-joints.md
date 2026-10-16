@@ -11127,3 +11127,5 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 `phys_fn_003651` fluid post-step particle stream copy mutation detection: the dedicated no-op helper mutation is rejected with `mismatches=22`, while the restored two-fluid control reports zero mismatches. The fixture distinguishes backend and caller count caps, source fields, independent strides, untouched padding, and a null output channel. See `phase7-fluid-particle-copy-003651.md`.
 
 `phys_fn_003423` initial-particle channel-order mutation detection: the registered alias-order differential rejects interleaving velocity/lifetime writes into the position pass (`stdout_delta=2`); restored oracle/candidate output matches exactly. See `phase7-fluid-particle-alias-order-003423.md` and its raw control/mutation/gate logs.
+
+`phys_fn_003497` Fluid constructor default mutation detection: setting `fluid+0x74` to one is rejected by the registered `NxPhysicsSimulationTests` staged-pair differential (`stdout_delta=2`); restored seven-fluid control is exact. See `phase7-fluid-constructor-003497.md` and its raw logs.
