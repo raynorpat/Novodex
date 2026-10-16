@@ -1,6 +1,7 @@
 """Regression tests for decoding row-local x86 stack cleanup."""
 
 import importlib.util
+import json
 from pathlib import Path
 
 import capstone
@@ -34,6 +35,27 @@ def test_audited_indirect_tail_rows_require_exact_pinned_bytes():
     assert AUDIT.audited_indirect_tail_cleanup(b"\xff\x25\x00\x00\x00\x00", 0x12345) is None
 
 
+def test_audited_direct_tail_decodes_its_bounded_destination_row():
+    source_rva = 0x13000
+    target_rva = 0x116b0
+    tail, expected_target = AUDIT.AUDITED_DIRECT_TAILS[source_rva]
+    assert expected_target == target_rva
+    code = b"\x90" * (107 - len(tail)) + tail
+    image_base = 0x10000000
+    instruction = list(MD.disasm(code, image_base + source_rva))[-1]
+    raw = b"\xc3"
+    sizes = {target_rva: len(raw)}
+    offset = lambda rva: 0 if rva == target_rva else None
+    assert AUDIT.audited_direct_tail_cleanup(
+        code, source_rva, instruction, raw, sizes, MD, image_base, offset) == 0
+
+    mutated = code[:-1] + bytes([code[-1] ^ 1])
+    bad_instruction = list(MD.disasm(mutated, image_base + source_rva))[-1]
+    assert AUDIT.audited_direct_tail_cleanup(
+        mutated, source_rva, bad_instruction, raw, sizes, MD, image_base,
+        offset) is None
+
+
 def test_row_cleanup_stops_at_register_tail_jump():
     # jmp eax; ret. The ret is unreachable in this row.
     assert AUDIT.row_cleanup(b"\xff\xe0\xc3", MD, 0) is None
@@ -60,6 +82,15 @@ def test_row_cleanup_keeps_out_of_row_direct_jumps_undecidable():
     # the bounded function bytes and cannot establish this row's cleanup.
     assert AUDIT.row_cleanup(b"\xeb\x01\x90\xc2\x04\x00", MD, 0,
                              function_size=2) is None
+
+
+def test_row_cleanup_can_resolve_a_pinned_direct_tail_cleanup():
+    # jmp +0 leaves this exact five-byte row for a separately audited target.
+    code = b"\xe9\x00\x00\x00\x00"
+    resolver = lambda ins: 0 if ins.bytes == code else None
+    assert AUDIT.row_cleanup(code, MD, 0, function_size=len(code),
+                             direct_tail_reader=resolver) == 0
+    assert AUDIT.row_cleanup(code, MD, 0, function_size=len(code)) is None
 
 
 def test_row_cleanup_uses_only_explicitly_resolved_indirect_switch_targets():
@@ -108,3 +139,21 @@ def test_audit_inputs_follow_the_selected_repository_and_oracle_roots(tmp_path):
     assert harness == tmp_path / "tests" / "PhysicsObjectLayoutTests.cpp"
     assert dll == tmp_path / "oracle" / "NxPhysics.dll"
     assert pe == tmp_path / "docs" / "reconstruction" / "novodex-physics" / "oracle" / "pe.json"
+
+
+def test_unresolved_cleanup_rows_fail_the_audit_gate():
+    assert AUDIT.audit_exit_code([], []) == 0
+    assert AUDIT.audit_exit_code([("f", 1)], []) == 1
+    assert AUDIT.audit_exit_code([], [("f", 1)]) == 1
+
+
+def test_phase_gate_runs_the_convention_audit_against_the_oracle_binary():
+    evidence = TOOL.parent.parent
+    program = json.loads((evidence / "program.json").read_text(encoding="utf-8"))
+    gates = {gate["name"]: gate for gate in program["global_gates"]}
+    assert "audit_call_conventions" in gates
+    assert gates["audit_call_conventions"]["status"] == "pass"
+
+    runner = (TOOL.parent / "run_phase_gate.ps1").read_text(encoding="utf-8")
+    assert "audit_call_conventions.py" in runner
+    assert "(Join-Path $OracleRoot 'Binaries')" in runner

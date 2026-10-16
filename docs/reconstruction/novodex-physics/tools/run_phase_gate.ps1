@@ -79,6 +79,8 @@ Assert-True ($oracleProofManifest.schema_version -eq 1) 'oracle-only proof basel
 $configureGate = @($program.global_gates | Where-Object { $_.name -ceq 'build_configure' })
 Assert-True ($configureGate.Count -eq 1) 'program.json registers exactly one build_configure gate'
 Assert-True ($configureGate[0].command -cnotmatch '(^|\s)-G(\s|$)') 'build_configure names no generator, leaving this runner the only authority'
+$callingConventionGate = @($program.global_gates | Where-Object { $_.name -ceq 'audit_call_conventions' })
+Assert-True ($callingConventionGate.Count -eq 1) 'program.json registers exactly one audit_call_conventions gate'
 Assert-True ($identityTestTarget -cin $NxRegisteredTestTargets) "the export/identity target is registered to a phase: $identityTestTarget"
 
 $targets = @()
@@ -174,6 +176,12 @@ foreach ($root in $headerRoots) {
 Write-Host ''
 Write-Host '=== inventory ==='
 Invoke-Gate 'validate_inventory' 'python.exe' @('-B', (Join-Path $toolsRoot 'validate_inventory.py'), $inventoryPath)
+
+Write-Host ''
+Write-Host '=== x86 calling-convention adapters ==='
+Invoke-Gate 'audit_call_conventions' 'python.exe' @(
+    '-B', (Join-Path $toolsRoot 'audit_call_conventions.py'),
+    '--repo-root', $novodexRepo, '--oracle-root', (Join-Path $OracleRoot 'Binaries'))
 
 # The vendored third-party trees, on every phase and not only Phase 4.
 #

@@ -169,6 +169,11 @@
       "status": "pass"
     },
     {
+      "name": "audit_call_conventions",
+      "command": "python docs\\reconstruction\\novodex-physics\\tools\\audit_call_conventions.py --repo-root D:\\github\\Novodex --oracle-root D:\\FlamingEnt__\\Unreal_3\\Binaries",
+      "status": "pass"
+    },
+    {
       "name": "phase_gate_completed",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs\\reconstruction\\novodex-physics\\tools\\run_phase_gate.ps1 -Phase completed",
       "status": "pass"

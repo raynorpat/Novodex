@@ -41,6 +41,13 @@ AUDITED_INDIRECT_TAILS = {
     0xaf2c4: (bytes.fromhex('ff2598411010'), 8),
 }
 
+# phys_fn_000649 ends with this exact direct jump to phys_fn_000624. The
+# destination is separately decoded within its inventory bounds, rather than
+# trusting a manually transcribed cleanup value.
+AUDITED_DIRECT_TAILS = {
+    0x13000: (bytes.fromhex('e945e6ffff'), 0x116b0),
+}
+
 TD = re.compile(
     r'typedef\s+[\w\s\*]+\(\s*(__cdecl|__stdcall|__fastcall|__thiscall)\s*\*\s*(\w+)\s*\)'
     r'\s*\(([^)]*)\)\s*;')
@@ -101,12 +108,16 @@ def bounded_switch_targets(ins, code, md, rva, raw, sections, image_base):
     return targets
 
 
-def row_cleanup(code, md, rva, function_size=None, jump_table_reader=None):
+def row_cleanup(code, md, rva, function_size=None, jump_table_reader=None,
+                direct_tail_reader=None):
     """Return a row's common callee cleanup across reachable return paths.
 
     The byte range must be bounded to the inventory's exact function size.
     Direct branches are followed only while their targets remain inside that
-    range. Indirect branches and external tail calls remain undecidable.
+    range. A direct external tail call can be resolved by a caller-supplied
+    reader that has independently bounded and audited its destination.
+    Indirect branches remain undecidable unless the bounded switch reader
+    resolves them.
     """
     if function_size is not None:
         code = code[:function_size]
@@ -135,9 +146,13 @@ def row_cleanup(code, md, rva, function_size=None, jump_table_reader=None):
         if ins.mnemonic == 'jmp':
             if ins.operands and ins.operands[0].type == capstone.x86.X86_OP_IMM:
                 target = ins.operands[0].imm
-                if not start <= target < end:
+                if start <= target < end:
+                    pending.append(target)
+                    continue
+                cleanup = direct_tail_reader(ins) if direct_tail_reader else None
+                if cleanup is None:
                     return None
-                pending.append(target)
+                cleanups.add(cleanup)
                 continue
             targets = jump_table_reader(ins) if jump_table_reader else None
             if not targets or any(not start <= target < end for target in targets):
@@ -173,6 +188,30 @@ def audited_indirect_tail_cleanup(code, rva, function_size=None):
     return cleanup if bounded == expected_bytes else None
 
 
+def audited_direct_tail_cleanup(code, rva, ins, raw, function_sizes, md,
+                                image_base, rva_to_off):
+    """Resolve one exact direct tail by decoding its bounded destination row."""
+    record = AUDITED_DIRECT_TAILS.get(rva)
+    if record is None:
+        return None
+    expected_bytes, target_rva = record
+    tail_offset = len(code) - len(expected_bytes)
+    if (tail_offset < 0 or ins.address != image_base + rva + tail_offset or
+            ins.size != len(expected_bytes) or
+            code[tail_offset:] != expected_bytes or
+            not ins.operands or
+            ins.operands[0].type != capstone.x86.X86_OP_IMM or
+            ins.operands[0].imm != image_base + target_rva):
+        return None
+    target_size = function_sizes.get(target_rva)
+    target_offset = rva_to_off(target_rva)
+    if target_size is None or target_offset is None:
+        return None
+    target_code = raw[target_offset:target_offset + target_size]
+    return row_cleanup(target_code, md, target_rva,
+                       function_size=target_size)
+
+
 def expected_cleanup(conv, nargs):
     """Argument bytes popped by the callee for a 32-bit function pointer.
 
@@ -189,6 +228,11 @@ def expected_cleanup(conv, nargs):
     if conv == '__thiscall':
         return 4 * max(nargs - 1, 0)
     raise ValueError('unsupported x86 calling convention: %s' % conv)
+
+
+def audit_exit_code(mismatches, undecided):
+    """Fail closed: an unproved call site is a failed ABI audit."""
+    return 1 if mismatches or undecided else 0
 
 
 def resolve_inputs(repo_root=None, oracle_root=None):
@@ -290,8 +334,11 @@ def main(argv=None):
             code = raw[off:off + function_size]
             table_reader = lambda ins: bounded_switch_targets(
                 ins, code, md, rva, raw, secs, image_base)
+            tail_reader = lambda ins: audited_direct_tail_cleanup(
+                code, rva, ins, raw, function_sizes, md, image_base, rva_to_off)
             pops = row_cleanup(code, md, rva, function_size=function_size,
-                               jump_table_reader=table_reader)
+                               jump_table_reader=table_reader,
+                               direct_tail_reader=tail_reader)
             if pops is None:
                 pops = audited_indirect_tail_cleanup(
                     code, rva, function_size=function_size)
@@ -314,7 +361,7 @@ def main(argv=None):
         print('--- rows whose cleanup could not be read ---')
         for name, rva, uline, why in undecided:
             print('  %-20s rva=0x%-7x use line %d (%s)' % (name, rva, uline, why))
-    return 1 if mismatches else 0
+    return audit_exit_code(mismatches, undecided)
 
 
 if __name__ == '__main__':
