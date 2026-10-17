@@ -1,0 +1,55 @@
+{
+  "row": "phys_fn_003501",
+  "date": "2026-10-17",
+  "candidate_nxphysics_sha256": "0f7f1bab7c61f8163fd0951ce3937ab7a819e65850be2dee5d6b9e53794ae9e4",
+  "export_clear_contract": "Oracle and candidate both fault with c0000005 after exports are cleared; candidate export clearing is now followed by emitter create dispatch in oracle order.",
+  "null_backend_contract": "Null backend-fluid and backend-manager contexts still allocate and dispatch rest/create/set/get callbacks; null manager faults with c0000005 after one 0x78 emitter allocation and before callbacks.",
+  "phase5": "pass; 2878/2878 registered coverage assertions.",
+  "phase6": "failed before phase differential completion in NxPhysicsObjectLayoutTests; existing SDK allocator heap reallocation and free-reuse rows mismatch (phys_fn_004807/004808/004810). This slice does not change allocator behavior.",
+  "phase7": "pass; 3017/3017 registered coverage assertions.",
+  "focused_differential": "restored NxPhysicsSimulationTests oracle/candidate transcript exact; oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true.",
+  "logs": [
+    {
+      "name": "export-clear-red-before-fix.log.gz",
+      "sha256": "a39851eb07e60455a3724c65ecc30ac3d60bddda3c92a93d6700c793acbc8c4b",
+      "bytes": 29847,
+      "source_bytes": 440191
+    },
+    {
+      "name": "export-clear-restored-differential.log.gz",
+      "sha256": "70145ab3b55772fb34ffbe060bda6c9296c859c850278a5b783921817b366e46",
+      "bytes": 57434,
+      "source_bytes": 865024
+    },
+    {
+      "name": "null-backend-red-differential.log.gz",
+      "sha256": "eebce9f6d895665ddfdf9a3c3dbed5b4be05c245a4449a358a326115f2b76557",
+      "bytes": 29993,
+      "source_bytes": 447046
+    },
+    {
+      "name": "null-backend-restored-differential.log.gz",
+      "sha256": "62fc620a6eed28f232a137ea143022fc2df3f2834c16af53b2ed80a21b31d8ef",
+      "bytes": 57688,
+      "source_bytes": 872856
+    },
+    {
+      "name": "phase5-gate.log.gz",
+      "sha256": "b861f095c0129b0a67fbbed5ae818c00d07761083b87024b420ef87d1c372001",
+      "bytes": 214005,
+      "source_bytes": 2893894
+    },
+    {
+      "name": "phase6-gate.log.gz",
+      "sha256": "9bd0c34d0be72db73f1cc28a62af4a1ac92ff33fb6c65f1f230aa45aa3022920",
+      "bytes": 23976,
+      "source_bytes": 359034
+    },
+    {
+      "name": "phase7-gate.log.gz",
+      "sha256": "748e466bed58a0ceed676ca425b5e1d54fb06c9b615bdf1d4b325591cf034c7b",
+      "bytes": 380234,
+      "source_bytes": 4739178
+    }
+  ]
+}

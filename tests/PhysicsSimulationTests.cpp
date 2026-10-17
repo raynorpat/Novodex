@@ -1230,6 +1230,257 @@ static bool nxSimulationRunFluidEmitterArrayGrowthOomChild(
 	return waitResult == WAIT_OBJECT_0 && exitCode == 0;
 	}
 
+static int nxSimulationRunFluidEmitterAfterExportClearProbe(
+	const wchar_t* pairArgument)
+	{
+	wchar_t pairDirectory[MAX_PATH];
+	wchar_t* pairArgs[2] = { L"NxPhysicsSimulationTests", const_cast<wchar_t*>(pairArgument) };
+	HMODULE physics = 0;
+	const int openStatus = nxOpenPair(2, pairArgs,
+		"NxPhysicsSimulationTests --fluid-emitter-create-after-export-clear",
+		pairDirectory, &physics);
+	if(openStatus)
+		return openStatus;
+	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
+		GetProcAddress(physics, "NxCreatePhysicsSDK"));
+	if(!createSDK)
+		return nxFail("export-clear emitter child NxCreatePhysicsSDK is missing");
+	NxSimulationOutputStream output;
+	NxPhysicsSDK* const sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &output);
+	NxSimulationFluidLicenseOverride licenseOverride(465);
+	if(!sdk || !licenseOverride.ready)
+		return nxFail("export-clear emitter child SDK or fluid license setup failed");
+	if(!SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 |
+		LOAD_LIBRARY_SEARCH_USER_DIRS))
+		return nxFail("export-clear emitter child could not set DLL search policy");
+	DLL_DIRECTORY_COOKIE const directoryCookie = AddDllDirectory(pairDirectory);
+	if(!directoryCookie)
+		return nxFail("export-clear emitter child could not add pair directory");
+	wchar_t fluidModelPath[MAX_PATH];
+	if(swprintf_s(fluidModelPath, L"%s\\FluidModel.dll", pairDirectory) < 0)
+		return nxFail("export-clear emitter child FluidModel path construction failed");
+	HMODULE const fluidModel = LoadLibraryExW(fluidModelPath, 0,
+		LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!fluidModel)
+		return nxFail("export-clear emitter child FluidModel fixture failed to load");
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* const scene = sdk->createScene(sceneDesc);
+	NxFluidDesc fluidDesc;
+	fluidDesc.setToDefault();
+	NxFluid* const fluid = scene ? scene->createFluid(fluidDesc) : 0;
+	if(!fluid)
+		return nxFail("export-clear emitter child could not create its licensed fluid");
+	void* clearAddress = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"_nxFluidModelClearResolvedExports", 0x0008e4e0u, &clearAddress))
+		return nxFail("export-clear emitter child could not resolve row 003905");
+	typedef void (__cdecl *ClearFluidModelExportsFn)();
+	reinterpret_cast<ClearFluidModelExportsFn>(clearAddress)();
+	NxFluidEmitterDesc emitterDesc;
+	emitterDesc.setToDefault();
+	NxFluidEmitter* failedEmitter = 0;
+	const unsigned exceptionCode = nxSimulationTryCreateFluidEmitter(fluid,
+		&emitterDesc, &failedEmitter);
+	const bool exact = exceptionCode == EXCEPTION_ACCESS_VIOLATION &&
+		failedEmitter == 0;
+	printf("simulation fluid-emitter-create-after-export-clear row=003501 clear_row=003905 caught=%u exception=%08x returned=%u exact=%u\n",
+		exceptionCode == EXCEPTION_ACCESS_VIOLATION ? 1u : 0u,
+		exceptionCode, failedEmitter ? 1u : 0u, exact ? 1u : 0u);
+	if(!exact)
+		return nxFail("emitter create after FluidModel export clear differs from oracle");
+	return nxReportPairIdentity(pairDirectory);
+	}
+
+static bool nxSimulationRunFluidEmitterAfterExportClearChild(
+	const wchar_t* pairDirectory)
+	{
+	wchar_t executable[MAX_PATH];
+	const DWORD executableLength = GetModuleFileNameW(0, executable, MAX_PATH);
+	if(!executableLength || executableLength >= MAX_PATH)
+		return false;
+	wchar_t commandLine[2 * MAX_PATH + 128];
+	const int commandLength = _snwprintf_s(commandLine, _countof(commandLine),
+		_TRUNCATE, L"\"%s\" --fluid-emitter-create-after-export-clear \"%s\"",
+		executable, pairDirectory);
+	if(commandLength < 0)
+		return false;
+	STARTUPINFOW startup = {};
+	startup.cb = sizeof(startup);
+	startup.dwFlags = STARTF_USESTDHANDLES;
+	startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+	startup.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+	startup.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	PROCESS_INFORMATION process = {};
+	if(!CreateProcessW(executable, commandLine, 0, 0, TRUE, CREATE_NO_WINDOW,
+		0, 0, &startup, &process))
+		return false;
+	const DWORD waitResult = WaitForSingleObject(process.hProcess, 30000);
+	if(waitResult != WAIT_OBJECT_0)
+		{
+		TerminateProcess(process.hProcess, 1);
+		WaitForSingleObject(process.hProcess, INFINITE);
+		}
+	DWORD exitCode = 1;
+	GetExitCodeProcess(process.hProcess, &exitCode);
+	CloseHandle(process.hThread);
+	CloseHandle(process.hProcess);
+	return waitResult == WAIT_OBJECT_0 && exitCode == 0;
+	}
+
+static int nxSimulationRunFluidEmitterNullBackendProbe(
+	const wchar_t* pairArgument, unsigned mode)
+	{
+	wchar_t pairDirectory[MAX_PATH];
+	wchar_t* pairArgs[2] = { L"NxPhysicsSimulationTests", const_cast<wchar_t*>(pairArgument) };
+	HMODULE physics = 0;
+	const int openStatus = nxOpenPair(2, pairArgs,
+		"NxPhysicsSimulationTests --fluid-emitter-null-backend",
+		pairDirectory, &physics);
+	if(openStatus)
+		return openStatus;
+	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
+		GetProcAddress(physics, "NxCreatePhysicsSDK"));
+	if(!createSDK)
+		return nxFail("null-backend emitter child NxCreatePhysicsSDK is missing");
+	NxSimulationOutputStream output;
+	NxPhysicsSDK* const sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &output);
+	NxSimulationFluidLicenseOverride licenseOverride(465);
+	if(!sdk || !licenseOverride.ready)
+		return nxFail("null-backend emitter child SDK or fluid license setup failed");
+	if(!SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 |
+		LOAD_LIBRARY_SEARCH_USER_DIRS))
+		return nxFail("null-backend emitter child could not set DLL search policy");
+	DLL_DIRECTORY_COOKIE const directoryCookie = AddDllDirectory(pairDirectory);
+	if(!directoryCookie)
+		return nxFail("null-backend emitter child could not add pair directory");
+	wchar_t fluidModelPath[MAX_PATH];
+	if(swprintf_s(fluidModelPath, L"%s\\FluidModel.dll", pairDirectory) < 0)
+		return nxFail("null-backend emitter child FluidModel path construction failed");
+	HMODULE const fluidModel = LoadLibraryExW(fluidModelPath, 0,
+		LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!fluidModel)
+		return nxFail("null-backend emitter child FluidModel fixture failed to load");
+	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(void*);
+	GetFluidManagerCallbackSummaryFn getCallbacks = reinterpret_cast<
+		GetFluidManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
+			"NxGetFluidManagerCallbackSummary"));
+	if(!getCallbacks)
+		return nxFail("null-backend emitter child callback summary is missing");
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* const scene = sdk->createScene(sceneDesc);
+	NxFluidDesc fluidDesc;
+	fluidDesc.setToDefault();
+	NxFluid* const fluid = scene ? scene->createFluid(fluidDesc) : 0;
+	if(!fluid)
+		return nxFail("null-backend emitter child could not create its licensed fluid");
+	unsigned char* const fluidInternal = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(fluid) + 0x14));
+	unsigned char* const manager = fluidInternal
+		? *reinterpret_cast<unsigned char**>(fluidInternal + 0x7c) : 0;
+	void** const backendFluidSlot = fluidInternal
+		? reinterpret_cast<void**>(fluidInternal + 0x80) : 0;
+	void** const backendManagerSlot = manager
+		? reinterpret_cast<void**>(manager + 0x30) : 0;
+	void** const managerSlot = fluidInternal
+		? reinterpret_cast<void**>(fluidInternal + 0x7c) : 0;
+	if(!fluidInternal || !manager || !backendFluidSlot || !backendManagerSlot ||
+		!managerSlot)
+		return nxFail("null-backend emitter child could not locate backend fields");
+	void* const savedManager = *managerSlot;
+	void* const savedBackendFluid = *backendFluidSlot;
+	void* const savedBackendManager = *backendManagerSlot;
+	if(mode == 1)
+		*backendFluidSlot = 0;
+	else if(mode == 2)
+		*backendManagerSlot = 0;
+	else if(mode == 3)
+		*managerSlot = 0;
+	else
+		return nxFail("null-backend emitter child received an invalid mode");
+	NxUserAllocator** const allocatorSlot = reinterpret_cast<NxUserAllocator**>(
+		GetProcAddress(GetModuleHandleW(L"NxFoundation.dll"),
+			"?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A"));
+	if(!allocatorSlot || !*allocatorSlot)
+		return nxFail("null-backend emitter child allocator hook is missing");
+	NxUserAllocator* const savedAllocator = *allocatorSlot;
+	NxSimulationFailNthSizeAllocator allocationCounter(*savedAllocator, 0x78,
+		0xffffffffu);
+	*allocatorSlot = &allocationCounter;
+	unsigned callbackWordsBefore[128] = {};
+	getCallbacks(callbackWordsBefore);
+	NxFluidEmitterDesc emitterDesc;
+	emitterDesc.setToDefault();
+	NxFluidEmitter* emitter = 0;
+	const unsigned exceptionCode = nxSimulationTryCreateFluidEmitter(fluid,
+		&emitterDesc, &emitter);
+	*allocatorSlot = savedAllocator;
+	unsigned callbackWordsAfter[128] = {};
+	getCallbacks(callbackWordsAfter);
+	const unsigned restDelta = callbackWordsAfter[23] - callbackWordsBefore[23];
+	const unsigned createDelta = callbackWordsAfter[24] - callbackWordsBefore[24];
+	const unsigned setPoseDelta = callbackWordsAfter[26] - callbackWordsBefore[26];
+	const unsigned getPoseDelta = callbackWordsAfter[27] - callbackWordsBefore[27];
+	const bool exact = mode == 3
+		? exceptionCode == EXCEPTION_ACCESS_VIOLATION && !emitter &&
+			allocationCounter.mMatchingCount == 1 &&
+			restDelta == 0 && createDelta == 0 && setPoseDelta == 0 &&
+			getPoseDelta == 0
+		: exceptionCode == 0 && emitter && restDelta == 0 && createDelta == 1 &&
+			allocationCounter.mMatchingCount == 1 &&
+			setPoseDelta == 1 && getPoseDelta == 1;
+	printf("simulation fluid-emitter-null-backend row=003501 mode=%u caught=%u exception=%08x returned=%u allocations=%u callbacks=%u.%u.%u.%u exact=%u\n",
+		mode, exceptionCode == EXCEPTION_ACCESS_VIOLATION ? 1u : 0u,
+		exceptionCode, emitter ? 1u : 0u, allocationCounter.mMatchingCount,
+		restDelta, createDelta,
+		setPoseDelta, getPoseDelta, exact ? 1u : 0u);
+	*managerSlot = savedManager;
+	*backendFluidSlot = savedBackendFluid;
+	*backendManagerSlot = savedBackendManager;
+	if(emitter)
+		fluid->releaseEmitter(*emitter);
+	if(!exact)
+		return nxFail("emitter create null-backend contract differs from oracle");
+	return nxReportPairIdentity(pairDirectory);
+	}
+
+static bool nxSimulationRunFluidEmitterNullBackendChild(
+	const wchar_t* pairDirectory, unsigned mode)
+	{
+	wchar_t executable[MAX_PATH];
+	const DWORD executableLength = GetModuleFileNameW(0, executable, MAX_PATH);
+	if(!executableLength || executableLength >= MAX_PATH)
+		return false;
+	wchar_t commandLine[2 * MAX_PATH + 128];
+	const int commandLength = _snwprintf_s(commandLine, _countof(commandLine),
+		_TRUNCATE, L"\"%s\" --fluid-emitter-null-backend \"%s\" %u",
+		executable, pairDirectory, mode);
+	if(commandLength < 0)
+		return false;
+	STARTUPINFOW startup = {};
+	startup.cb = sizeof(startup);
+	startup.dwFlags = STARTF_USESTDHANDLES;
+	startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+	startup.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+	startup.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	PROCESS_INFORMATION process = {};
+	if(!CreateProcessW(executable, commandLine, 0, 0, TRUE, CREATE_NO_WINDOW,
+		0, 0, &startup, &process))
+		return false;
+	const DWORD waitResult = WaitForSingleObject(process.hProcess, 30000);
+	if(waitResult != WAIT_OBJECT_0)
+		{
+		TerminateProcess(process.hProcess, 1);
+		WaitForSingleObject(process.hProcess, INFINITE);
+		}
+	DWORD exitCode = 1;
+	GetExitCodeProcess(process.hProcess, &exitCode);
+	CloseHandle(process.hThread);
+	CloseHandle(process.hProcess);
+	return waitResult == WAIT_OBJECT_0 && exitCode == 0;
+	}
+
 static bool nxSimulationTestFluidModelLoadX87(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -1805,6 +2056,11 @@ int wmain(int argc, wchar_t** argv)
 	if(argc == 4 && wcscmp(argv[1], L"--fluid-emitter-array-growth-oom") == 0)
 		return nxSimulationRunFluidEmitterArrayGrowthOomProbe(argv[2],
 			static_cast<unsigned>(wcstoul(argv[3], 0, 10)));
+	if(argc == 3 && wcscmp(argv[1], L"--fluid-emitter-create-after-export-clear") == 0)
+		return nxSimulationRunFluidEmitterAfterExportClearProbe(argv[2]);
+	if(argc == 4 && wcscmp(argv[1], L"--fluid-emitter-null-backend") == 0)
+		return nxSimulationRunFluidEmitterNullBackendProbe(argv[2],
+			static_cast<unsigned>(wcstoul(argv[3], 0, 10)));
 	if(argc == 3 && wcscmp(argv[1], L"--fluid-public-surface-invalid-child") == 0)
 		{
 		argv[1] = argv[2];
@@ -1833,6 +2089,30 @@ int wmain(int argc, wchar_t** argv)
 		{
 		FreeLibrary(physics);
 		return nxFail("Fluid emitter array growth OOM child differential failed");
+		}
+	const bool emitterAfterExportClear =
+		nxSimulationRunFluidEmitterAfterExportClearChild(pairDirectory);
+	printf("simulation fluid-emitter-create-after-export-clear row=003501 children=1 exact=%u\n",
+		emitterAfterExportClear ? 1u : 0u);
+	if(!emitterAfterExportClear)
+		{
+		FreeLibrary(physics);
+		return nxFail("Fluid emitter after export clear child differential failed");
+		}
+	const bool emitterNullBackendFluid =
+		nxSimulationRunFluidEmitterNullBackendChild(pairDirectory, 1);
+	const bool emitterNullBackendManager =
+		nxSimulationRunFluidEmitterNullBackendChild(pairDirectory, 2);
+	const bool emitterNullManager =
+		nxSimulationRunFluidEmitterNullBackendChild(pairDirectory, 3);
+	printf("simulation fluid-emitter-null-backend row=003501 children=3 exact=%u\n",
+		emitterNullBackendFluid && emitterNullBackendManager &&
+		emitterNullManager ? 1u : 0u);
+	if(!emitterNullBackendFluid || !emitterNullBackendManager ||
+		!emitterNullManager)
+		{
+		FreeLibrary(physics);
+		return nxFail("Fluid emitter null backend child differential failed");
 		}
 	if(!nxSimulationRunFluidModelExportResolutionChild(pairDirectory))
 		{

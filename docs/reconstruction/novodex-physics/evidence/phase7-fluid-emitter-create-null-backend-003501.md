@@ -1,0 +1,9 @@
+# Fluid emitter create with cleared exports and null backend state (`phys_fn_003501`)
+
+The emitter-create reconstruction now follows the oracle when FluidModel exports are cleared and when backend state is absent. The export-clear child probe confirms that the oracle and candidate both reach the same access violation (`c0000005`) after the export table is cleared. Three null-backend child probes distinguish the remaining cases: a null backend-fluid pointer and a null backend-manager context still produce an emitter and invoke the same create/set/get callbacks; a null manager faults only after one 0x78-byte emitter allocation and before those callbacks. All four contracts match exactly in the restored `NxPhysicsSimulationTests` differential (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`).
+
+The new conditions were first run against the candidate's prior early-return guards and failed the differential; the guards were then removed or moved after metadata initialization so the fault and callback ordering matches the oracle. The focused restored differential and the full Phase 5 and Phase 7 gates pass. Phase 5 observed 2,878/2,878 registered coverage assertions; Phase 7 observed 3,017/3,017.
+
+Phase 6 currently fails before phase coverage completes in the existing `NxPhysicsObjectLayoutTests` allocator differential: SDK allocator heap rows `phys_fn_004807`/`phys_fn_004808` report a realloc mismatch, and `phys_fn_004810` reports a free-reuse mismatch. The allocator behavior is outside this emitter slice; the complete failed gate transcript is preserved with the passing logs in [evidence/raw/phase7-fluid-emitter-create-null-backend-003501-20261017](raw/phase7-fluid-emitter-create-null-backend-003501-20261017/).
+
+This evidence closes only the export-clear and null-backend create-order cases. `phys_fn_003501` remains open for the rest of its body and dependencies. Public Physics headers are unchanged.

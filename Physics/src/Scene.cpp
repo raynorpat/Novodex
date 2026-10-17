@@ -2165,13 +2165,18 @@ extern "C" void __cdecl nxNpFluidEmitterInitializeMetadata(void* internal,
 // Keep this separate from phys_fn_003501 so the callback, frame, flags, and
 // pose-store sequence follows the oracle's internal initializer boundary.
 static void nxFluidEmitterInitialize(void* internal, void* wrapper,
-	const NxFluidEmitterDesc& desc, void* context, void* backendFluid,
-	void* sceneLockSource)
+	const NxFluidEmitterDesc& desc, void* sceneLockSource)
 	{
 	unsigned char* const internalBytes = static_cast<unsigned char*>(internal);
 	const unsigned* const words = reinterpret_cast<const unsigned*>(&desc);
 	nxNpFluidEmitterInitializeMetadata(internal, wrapper, desc.userData,
 		desc.name, sceneLockSource);
+	unsigned char* const fluid = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(internalBytes + 4));
+	unsigned char* const manager = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(fluid + 0x7c));
+	void* const context = *reinterpret_cast<void**>(manager + 0x30);
+	void* const backendFluid = *reinterpret_cast<void**>(fluid + 0x80);
 	NxVec3 actorPosition;
 	actorPosition.set(*reinterpret_cast<const float*>(words + 18),
 		*reinterpret_cast<const float*>(words + 19),
@@ -2215,17 +2220,6 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 	if(emitterLast >= emitterFirst &&
 		((emitterLast - emitterFirst) & ~3u) == 0x50u)
 		return 0;
-	if(!gNxFluidGetRestParticleDistanceCallback || !gNxFluidEmitterCreateCallback ||
-		!gNxFluidEmitterSetGlobalPoseCallback ||
-		!gNxFluidEmitterGetGlobalPoseCallback)
-		return 0;
-	void* const manager = *reinterpret_cast<void**>(fluidBytes + 0x7c);
-	void* const backendManager = manager ? *reinterpret_cast<void**>(
-		static_cast<unsigned char*>(manager) + 0x30) : 0;
-	void* const backendFluid = *reinterpret_cast<void**>(fluidBytes + 0x80);
-	if(!backendManager || !backendFluid)
-		return 0;
-	void* const context = backendManager;
 	unsigned char* const internal = static_cast<unsigned char*>(
 		nxFoundationSDKAllocator->malloc(0x78, NX_MEMORY_PERSISTENT));
 	if(!internal)
@@ -2240,12 +2234,12 @@ static void* nxFluidCreateEmitter(void* fluid, const NxFluidEmitterDesc& desc)
 		nxFoundationSDKAllocator->free(internal);
 		return 0;
 		}
+	void* const manager = *reinterpret_cast<void**>(fluidBytes + 0x7c);
 	void* const sceneOwner = manager ? *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(manager) + 0x24) : 0;
 	void* const sceneLockSource = sceneOwner ? *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(sceneOwner) + 0x6cc) : 0;
-	nxFluidEmitterInitialize(internal, wrapper, desc, context, backendFluid,
-		sceneLockSource);
+	nxFluidEmitterInitialize(internal, wrapper, desc, sceneLockSource);
 	nxFluidManagerArrayPush(fluidBytes + 4, reinterpret_cast<unsigned>(internal));
 	nxFluidManagerArrayPush(fluidBytes + 0x14, reinterpret_cast<unsigned>(wrapper));
 	return wrapper;
