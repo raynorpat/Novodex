@@ -1350,7 +1350,7 @@ Reconstructed the 0x3c-byte manager constructor and wired it into surface-mesh i
 
 Made the existing free-pruner blue-AABB loop explicit as `nxVisualizeFreePrunerWorldBoxes` and tied it to IDA's 0x4b9f0 contract. `NxPhysicsSceneVisualizeTests` now requires 60 blue lines in its populated `collision_free` scene. Suppressing the candidate's `addAABB` call is caught by the staged-pair runner (`stdout_delta=1478`, candidate exit 1); restored oracle/candidate output matches exactly. Fresh Phase 7 passed at 2,983/2,983, inventory validation reports zero unexplained rows, and all 836 reconstruction-tool tests pass. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-free-pruner-visualize-001937.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-free-pruner-visualize-001937-20261017/`.
 
-The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). Task 16 records the `NpScene` constructor mapping for `000285`, Task 17 records six run/timing mappings, Task 18 records pair-query links `000317`/`000319`, and Task 19 records callback links `000352`–`000364`. The regenerated backlog next selects rows `000394`, `000396`, and `000400`–`000410`. Full DLL reconstruction remains open.
+The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). Tasks 16–20 record verified `NpScene` mappings for `000285`, `000317`–`000410`. The regenerated backlog next selects the inline `NxPlaneShapeDesc::setToDefault` mapping for `000499`. Full DLL reconstruction remains open.
 
 ### Task 15 — Scene scalar-deleting thunk (`phys_fn_000668`)
 
@@ -1393,3 +1393,9 @@ Status: complete. Rows `000352`, `000356`, `000360`, `000362`, and `000364` now 
 The next generated packet contains the simulation/check-results wrappers and disabled-fluid/implicit-mesh public wrappers. Their behaviors already have registered row-specific differentials; add the missing source paths and fresh candidate map references from a CMake Release build. Preserve the existing behavior evidence and do not claim additional semantic closure.
 
 Status: complete. Rows `000394`, `000396`, and `000400`–`000410` now point to `Physics/src/NpScene.cpp` and verified `NpScene.obj` symbols. See `docs/reconstruction/novodex-physics/evidence/phase7-npscene-simulation-fluid-mappings-000394-000410.md`; behavior proof remains in each inventory row. Full DLL reconstruction remains open.
+
+### Task 21 — Inline plane descriptor default mapping (`phys_fn_000499`)
+
+The next backlog item is implemented in the public inline `NxPlaneShapeDesc::setToDefault`. Record the header as its candidate source and resolve the emitted method from a fresh CMake Release map. Do not edit the public header; the existing object-layout differential and no-op mutation already cover its initialized bytes.
+
+Status: complete. Inventory now links `phys_fn_000499` to the unchanged `Physics/include/NxPlaneShapeDesc.h` definition and fresh `Scene.obj` symbol `?setToDefault@NxPlaneShapeDesc@@UAEXXZ` at VA `0x1006e3b0`. Existing differential evidence is updated with the fresh map location. Full DLL reconstruction remains open.

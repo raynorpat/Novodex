@@ -9852,12 +9852,20 @@
       "phase": 7,
       "phase_provenance": "callers",
       "state": "dynamically_gated",
-      "source": "template init (0xfec0)",
+      "source": "Physics/include/NxPlaneShapeDesc.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/245",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1388",
       "static_proof": "as 003983 but +0x50=1.0f and zeros through +0x58; ret",
       "dynamic_proof": "The oracle row 0xfec0 and the CMake-built candidate DLL method ?setToDefault@NxPlaneShapeDesc@@UAEXXZ (resolved from NxPhysics.map) produce identical initialized bytes +8..+0x5b. The registered candidate-DLL mutation replaces the loaded method entry with ret; the fixture reports 80 differing bytes and exits 1. Restored control reports mismatches=0. See evidence/phase7-shape-desc-default-000499.md.",
-      "notes": ""
+      "notes": "Candidate code is emitted from the unchanged public inline definition; the fresh CMake Release map resolves the emitted method in Scene.obj. Public header was not modified.",
+      "implementation": "Physics/include/NxPlaneShapeDesc.h",
+      "implementation_symbol": "NxPlaneShapeDesc::setToDefault",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setToDefault@NxPlaneShapeDesc@@UAEXXZ",
+        "address": "0x1006e3b0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000500",

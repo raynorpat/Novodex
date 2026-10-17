@@ -7,8 +7,8 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1925,
-    "source_correspondence_only_rows": 424,
+    "mapped_code_rows": 1926,
+    "source_correspondence_only_rows": 423,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
     "artifact_bytes": 116213,
@@ -176,7 +176,7 @@
         "rows": 560,
         "bytes": 113976,
         "open_rows": 560,
-        "rows_without_implementation_mapping": 239,
+        "rows_without_implementation_mapping": 238,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "discovered": 62,
@@ -22431,14 +22431,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000499",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "template init (0xfec0)",
+        "path": "Physics/include/NxPlaneShapeDesc.h",
+        "role": "reconstruction",
+        "symbol": "NxPlaneShapeDesc::setToDefault",
+        "file_exists": true,
+        "oracle_source": "Physics/include/NxPlaneShapeDesc.h",
         "source_correspondence_recorded": true,
         "candidate_map_reference_recorded": true,
-        "candidate_map_reference_basis": "dynamic_proof"
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?setToDefault@NxPlaneShapeDesc@@UAEXXZ",
+          "address": "0x1006e3b0",
+          "object": "Scene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -22479,10 +22485,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000499",
         "rva": "0x0000fec0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -231395,7 +231401,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "22097c4c304e55ea49a49942a384377323067a852b133ae322c68920f2c973d8",
+    "inventory_sha256": "58146fdbdca554000e6b40c3bd9bdb854dff728d6535f5da59790222a185487f",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
