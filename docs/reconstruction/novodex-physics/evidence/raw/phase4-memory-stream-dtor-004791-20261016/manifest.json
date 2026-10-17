@@ -33,10 +33,10 @@
     },
     "phase4-gate.log.gz": {
       "source_log": "phase4-row4791-gate-20261016.log",
-      "sha256": "4d1cf42322c557cad885386e5ae20ac7ca3b74951d484134aef17069150d3153",
-      "uncompressed_sha256": "afab157f911243c0c4ec03c0e8d65103ee304aade7f89d5da60d84879fb47d03",
-      "compressed_bytes": 76312,
-      "uncompressed_bytes": 1133304
+      "sha256": "c11c535020dc4013f4ba5ad5b35f9949e58467a0426d160e348eeaab803806ce",
+      "uncompressed_sha256": "0f09ee9168bf0c423e06f455f0fe6055b192760dd87f2b66b8ac6a81fa14acde",
+      "compressed_bytes": 76345,
+      "uncompressed_bytes": 1134107
     }
   },
   "phase4_gate": "phase_gate=4 status=pass; coverage_assertions_evaluated=543 floor=543"

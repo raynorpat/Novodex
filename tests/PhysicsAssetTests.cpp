@@ -120,8 +120,8 @@ static const unsigned kPMapSampleRva    = 0x0004f070;	// phys_fn_002029, Penetra
 static const unsigned kStreamCtorRva    = 0x000b3ce0;	// phys_fn_004788, (size, buffer)
 static const unsigned kStreamSeekRva    = 0x000b3b30;	// phys_fn_004780
 static const unsigned kStreamDtorRva    = 0x000b3db0;	// phys_fn_004791, jmp to phys_fn_004784
+static const unsigned kSdkAllocatorGetterRva = 0x000b4000;	// phys_fn_004803
 static const unsigned kSdkAllocatorSetRva = 0x000b4020;	// phys_fn_004805
-static const unsigned kSdkAllocatorSlotRva = 0x0012845c;
 static const unsigned kMeshHeaderRva    = 0x00055cb0;	// phys_fn_002262, the NxStream mesh loader
 static const unsigned kReleasePMapRva   = 0x00051040;	// phys_fn_002051, NxReleasePMap
 
@@ -130,6 +130,8 @@ static const unsigned kReleasePMapRva   = 0x00051040;	// phys_fn_002051, NxRelea
 // for BaseModel slot 5 on the oracle side.
 static const unsigned kMeshWriterRva    = 0x000539d0;	// phys_fn_002162, TriangleMesh slot 18
 static const unsigned kStoreDwordRva    = 0x000b3f00;	// phys_fn_004797, the row Model::Save calls
+static const char kPinnedNxPhysicsSha256[] =
+	"4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c";
 
 // sizeof, from the allocation sites rather than from a guess:
 //   0x78 -- `push 0x78` at 0x00053d35 in TriangleMesh::loadPMap
@@ -1315,7 +1317,7 @@ static bool nxSha256(const wchar_t* path, char* text)
 // The table carries the rows whose symbol the census records AND whose candidate address the map
 // knows. An RVA it does not carry keeps the old arithmetic, and that is reported once rather than
 // silently, because a silent fallback is the fault this resolves.
-static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* base,
+static const unsigned char* nxOracleTarget(bool candidateSelf, const unsigned char* base,
                                            unsigned rva, const char* what)
 	{
 	// The decision is the MODULE's, not the flag's. A module loaded at its preferred image base is
@@ -1326,9 +1328,7 @@ static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* b
 	// Measuring this rather than trusting the flag is what round 74 found: the oracle pair directory
 	// passes exactly the same argument shape as a staged-pair run, and applying the table to the
 	// oracle put the CANDIDATE's offset into the ORACLE's image, which faulted at NxPhysics+0xa240.
-	const bool atPreferredBase =
-		(reinterpret_cast<unsigned>(base) == kNxRvaPreferredImageBase);
-	if(!selfOnly || atPreferredBase)
+	if(!candidateSelf)
 		return base + rva;
 	for(unsigned i = 0; i < kNxRvaTranslationCount; ++i)
 		{
@@ -1345,6 +1345,60 @@ static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* b
 	fprintf(stderr, "WARNING: no translation for %s at oracle rva 0x%08x; "
 		"this target is not in the rebuilt module's map\n", what, rva);
 	return base + rva;
+	}
+
+// Resolve a private helper from the loaded candidate's linker map. These allocator
+// accessors are test seams rather than inventory rows, so they are not in the
+// generated oracle-RVA translation table. The map records preferred-base addresses;
+// rebase them just like nxOracleTarget does for translated rows.
+static const unsigned char* nxOracleMapTarget(const unsigned char* base,
+											 const char* decoratedName, const char* what)
+	{
+	char modulePath[MAX_PATH];
+	DWORD pathLength = GetModuleFileNameA((HMODULE)base, modulePath, MAX_PATH);
+	if(pathLength == 0 || pathLength >= MAX_PATH)
+		{
+		fprintf(stderr, "FAIL could not locate loaded module for %s\n", what);
+		return 0;
+		}
+	char* slash = strrchr(modulePath, '\\');
+	char* forwardSlash = strrchr(modulePath, '/');
+	if(forwardSlash && (!slash || forwardSlash > slash))
+		slash = forwardSlash;
+	if(!slash)
+		slash = modulePath;
+	else
+		++slash;
+	strcpy_s(slash, MAX_PATH - (size_t)(slash - modulePath), "NxPhysics.map");
+	FILE* map = 0;
+	if(fopen_s(&map, modulePath, "r") != 0 || !map)
+		{
+		fprintf(stderr, "FAIL could not open candidate map %s to resolve %s\n",
+			modulePath, what);
+		return 0;
+		}
+	unsigned preferredAddress = 0;
+	char line[2048];
+	while(fgets(line, sizeof(line), map))
+		{
+		unsigned segment = 0, offset = 0, address = 0;
+		char symbol[512];
+		if(sscanf_s(line, " %x:%x %511s %x", &segment, &offset,
+			symbol, (unsigned)_countof(symbol), &address) == 4 &&
+			strcmp(symbol, decoratedName) == 0)
+			{
+			preferredAddress = address;
+			break;
+			}
+		}
+	fclose(map);
+	if(preferredAddress < kNxRvaPreferredImageBase)
+		{
+		fprintf(stderr, "FAIL candidate map has no preferred address for %s (%s)\n",
+			what, decoratedName);
+		return 0;
+		}
+	return base + (preferredAddress - kNxRvaPreferredImageBase);
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -1397,6 +1451,7 @@ int wmain(int argc, wchar_t** argv)
 	char loadedHash[65];
 	if(!GetModuleFileNameW(physics, loadedPath, MAX_PATH) || !nxSha256(loadedPath, loadedHash))
 		return nxFail("cannot identify the loaded oracle");
+	const bool candidateSelf = selfOnly && strcmp(loadedHash, kPinnedNxPhysicsSha256) != 0;
 
 	char expected[65];
 	size_t converted = 0;
@@ -1454,32 +1509,47 @@ int wmain(int argc, wchar_t** argv)
 	SdkAllocatorBridge assetCandidateAllocator;
 	assetCandidateAllocator.mAllocator = &gAssetAllocator;
 	nxSetSdkAllocatorBridge(&assetCandidateAllocator);
-	typedef bool (__cdecl* NxOracleSetAllocatorFn)(void*);
+	typedef bool (__cdecl* NxOracleSetAllocatorFn)(SdkAllocator*);
+	typedef SdkAllocator* (__cdecl* NxOracleGetAllocatorFn)();
 	NxOracleSetAllocatorFn oracleSetAllocator = (NxOracleSetAllocatorFn)
-		(oracle.base + kSdkAllocatorSetRva);
-	SdkAllocator* savedOracleAllocator = *(SdkAllocator**)
-		(oracle.base + kSdkAllocatorSlotRva);
+		(candidateSelf
+			? nxOracleMapTarget(oracle.base, "?nxSetSdkAllocatorBridge@@YA_NPAVSdkAllocator@@@Z",
+				"phys_fn_004805 SDK allocator setter")
+			: oracle.base + kSdkAllocatorSetRva);
+	NxOracleGetAllocatorFn oracleGetAllocator = (NxOracleGetAllocatorFn)
+		(candidateSelf
+			? nxOracleMapTarget(oracle.base, "?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ",
+				"phys_fn_004803 SDK allocator getter")
+			: oracle.base + kSdkAllocatorGetterRva);
+	if(!oracleSetAllocator || !oracleGetAllocator)
+		return 1;
+	SdkAllocator* savedOracleAllocator = oracleGetAllocator();
 	SdkAllocatorBridge assetOracleAllocator;
 	assetOracleAllocator.mAllocator = &gAssetAllocator;
 	if(!oracleSetAllocator(&assetOracleAllocator))
 		return nxFail("could not install counting allocator in the oracle module");
 	// Every one of these is a row the census names, so each is a translation-table lookup rather
 	// than an addition. `selfOnly` is what decides which the resolver does.
-	oracle.pmapCtor = (NxPMapCtorFn) nxOracleTarget(selfOnly, oracle.base, kPMapCtorRva,
+	oracle.pmapCtor = (NxPMapCtorFn) nxOracleTarget(candidateSelf, oracle.base, kPMapCtorRva,
 		"phys_fn_002045 PenetrationMap::PenetrationMap");
-	oracle.pmapDtor = (NxPMapDtorFn) nxOracleTarget(selfOnly, oracle.base, kPMapDtorRva,
+	oracle.pmapDtor = (NxPMapDtorFn) nxOracleTarget(candidateSelf, oracle.base, kPMapDtorRva,
 		"phys_fn_001984 PenetrationMap::~PenetrationMap");
-	oracle.pmapCreate = (NxPMapCreateFn) nxOracleTarget(selfOnly, oracle.base, kPMapCreateRva,
+	oracle.pmapCreate = (NxPMapCreateFn) nxOracleTarget(candidateSelf, oracle.base, kPMapCreateRva,
 		"phys_fn_002047 PenetrationMap::create");
-	oracle.pmapSample = (NxPMapSampleFn) nxOracleTarget(selfOnly, oracle.base, kPMapSampleRva,
-		"phys_fn_002029 PenetrationMap cell query");
-	oracle.streamCtor = (NxStreamCtorFn) nxOracleTarget(selfOnly, oracle.base, kStreamCtorRva,
+	oracle.pmapSample = (NxPMapSampleFn)
+		(candidateSelf
+			? nxOracleMapTarget(oracle.base,
+				"?sampleCell@PenetrationMap@@QBE_NIIIPAMPBM11@Z",
+				"phys_fn_002029 PenetrationMap cell query")
+			: nxOracleTarget(candidateSelf, oracle.base, kPMapSampleRva,
+				"phys_fn_002029 PenetrationMap cell query"));
+	oracle.streamCtor = (NxStreamCtorFn) nxOracleTarget(candidateSelf, oracle.base, kStreamCtorRva,
 		"phys_fn_004788 MemoryStream::MemoryStream");
-	oracle.streamSeek = (NxStreamSeekFn) nxOracleTarget(selfOnly, oracle.base, kStreamSeekRva,
+	oracle.streamSeek = (NxStreamSeekFn) nxOracleTarget(candidateSelf, oracle.base, kStreamSeekRva,
 		"phys_fn_004780 MemoryStream::seek");
-	oracle.streamDtor = (NxStreamDtorFn) nxOracleTarget(selfOnly, oracle.base, kStreamDtorRva,
+	oracle.streamDtor = (NxStreamDtorFn) nxOracleTarget(candidateSelf, oracle.base, kStreamDtorRva,
 		"phys_fn_004791 MemoryStream::~MemoryStream");
-	oracle.meshHeader = (NxMeshHeaderFn) nxOracleTarget(selfOnly, oracle.base, kMeshHeaderRva,
+	oracle.meshHeader = (NxMeshHeaderFn) nxOracleTarget(candidateSelf, oracle.base, kMeshHeaderRva,
 		"phys_fn_002262 the NxStream mesh loader");
 	oracle.releasePMap = (NxReleasePMapFn) GetProcAddress(physics, "NxReleasePMap");
 	if(!oracle.releasePMap)
@@ -1491,9 +1561,9 @@ int wmain(int argc, wchar_t** argv)
 	// by name either way, so nothing about which function is called changes.
 	if(!selfOnly && (unsigned char*) oracle.releasePMap - oracle.base != kReleasePMapRva)
 		return nxFail("NxReleasePMap is not at the censused RVA");
-	oracle.meshWriter = (NxMeshWriterFn) nxOracleTarget(selfOnly, oracle.base, kMeshWriterRva,
+	oracle.meshWriter = (NxMeshWriterFn) nxOracleTarget(candidateSelf, oracle.base, kMeshWriterRva,
 		"phys_fn_002162 the TriangleMesh writer");
-	nxOracleStoreDword = (NxStoreDwordFn) nxOracleTarget(selfOnly, oracle.base, kStoreDwordRva,
+	nxOracleStoreDword = (NxStoreDwordFn) nxOracleTarget(candidateSelf, oracle.base, kStoreDwordRva,
 		"phys_fn_004797 MemoryStream::storeDword");
 
 	// Every target, against zero, before any is called. Round 78's fault was a call to address zero and
