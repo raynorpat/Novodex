@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003905",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "1cd12d4c51b6f994686a21fd9af105010d94c7d07e3d3ab90aa2f3c56cfa7cc1",
+  "mutation": "retained gNxFluidManagerCreateCallback during export clear",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=4104",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "raw_logs": [
+    "mutation-differential.log.gz",
+    "restored-differential.log.gz"
+  ]
+}

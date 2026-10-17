@@ -11160,3 +11160,4 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 
 
 Phase 7 FluidModel resolver `phys_fn_003903`: candidate first-slot lookup mutation is caught by `NxPhysicsSimulationTests` (`stdout_delta=4104`, oracle exit 0, candidate exit 1); the restored resolver matches all 169 oracle globals. Details: `evidence/phase7-fluid-model-export-resolution-003903.md`.
+Phase 7 FluidModel export-clear `phys_fn_003905`: retaining `gNxFluidManagerCreateCallback` is caught by `NxPhysicsSimulationTests` (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=4104`); the restored run clears all 169 exports and matches exactly. See `phase7-fluid-model-export-clear-003905.md` and `evidence/raw/phase7-fluid-model-export-clear-003905-20261016/`.

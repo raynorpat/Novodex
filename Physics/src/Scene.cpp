@@ -1053,6 +1053,115 @@ static bool nxFluidManagerResolveModel()
 	return gNxFluidModelInitialized;
 	}
 
+// phys_fn_003905 clears the 169 FluidModel function-pointer globals after the
+// manager has released its backend objects. The typed callbacks below mirror
+// entries in that recovered export table and must not outlive it.
+extern "C" __declspec(noinline) unsigned __cdecl
+nxFluidModelClearResolvedExports()
+	{
+	for(unsigned i = 0; i != sizeof(gNxFluidModelExports) /
+		sizeof(gNxFluidModelExports[0]); ++i)
+		gNxFluidModelExports[i].address = 0;
+	gNxFluidManagerCreateCallback = 0;
+	gNxFluidManagerDestroyCallback = 0;
+	gNxFluidCreateCallback = 0;
+	gNxFluidDestroyCallback = 0;
+	gNxFluidManagerGetStaticCollisionCallback = 0;
+	gNxFluidGetCellSizeCallback = 0;
+	gNxStaticCollisionDestroyCallback = 0;
+	gNxFluidGetRestParticleDistanceCallback = 0;
+	gNxFluidEmitterCreateCallback = 0;
+	gNxFluidEmitterDestroyCallback = 0;
+	gNxFluidEmitterSetGlobalPoseCallback = 0;
+	gNxFluidEmitterGetGlobalPoseCallback = 0;
+	gNxFluidGetStiffnessCallback = 0;
+	gNxFluidGetViscosityCallback = 0;
+	gNxFluidGetDampingCallback = 0;
+	gNxFluidSetStiffnessCallback = 0;
+	gNxFluidSetViscosityCallback = 0;
+	gNxFluidSetDampingCallback = 0;
+	gNxFluidSetStaticCollisionRestitutionCallback = 0;
+	gNxFluidSetStaticCollisionAdhesionCallback = 0;
+	gNxFluidSetDynamicCollisionRestitutionCallback = 0;
+	gNxFluidSetDynamicCollisionAdhesionCallback = 0;
+	gNxFluidGetStaticCollisionRestitutionCallback = 0;
+	gNxFluidGetStaticCollisionAdhesionCallback = 0;
+	gNxFluidGetKernelRadiusMultiplierCallback = 0;
+	gNxFluidGetRestDensityCallback = 0;
+	gNxFluidGetRestParticleDistanceScalarCallback = 0;
+	gNxFluidGetParticleMassCallback = 0;
+	gNxFluidGetMaxParticlesCallback = 0;
+	gNxFluidGetSimulationMethodCallback = 0;
+	gNxFluidGetParticlesCallback = 0;
+	gNxImplicitFluidMeshCreateCallback = 0;
+	gNxImplicitFluidMeshDestroyCallback = 0;
+	gNxImplicitFluidMeshGetSurfaceRadiusCallback = 0;
+	gNxImplicitFluidMeshSetSurfaceRadiusCallback = 0;
+	gNxImplicitFluidMeshGetSingleRadiusCallback = 0;
+	gNxImplicitFluidMeshSetSingleRadiusCallback = 0;
+	gNxImplicitFluidMeshSetBlendCallback = 0;
+	gNxImplicitFluidMeshGetTriangleSizeCallback = 0;
+	gNxImplicitFluidMeshSetTriangleSizeCallback = 0;
+	gNxImplicitFluidMeshGetSmoothingIterationsCallback = 0;
+	gNxImplicitFluidMeshSetSmoothingIterationsCallback = 0;
+	gNxParticleArrayAllocCallback = 0;
+	gNxParticleArrayGrowCallback = 0;
+	gNxParticleArrayReleaseCallback = 0;
+	gNxFluidModelLoaded = false;
+	gNxFluidModelInitialized = false;
+	return 1;
+	}
+
+extern "C" __declspec(noinline) unsigned __cdecl
+nxFluidModelCountResolvedCallbacks()
+	{
+	return (gNxFluidManagerCreateCallback != 0) +
+		(gNxFluidManagerDestroyCallback != 0) +
+		(gNxFluidCreateCallback != 0) +
+		(gNxFluidDestroyCallback != 0) +
+		(gNxFluidManagerGetStaticCollisionCallback != 0) +
+		(gNxFluidGetCellSizeCallback != 0) +
+		(gNxStaticCollisionDestroyCallback != 0) +
+		(gNxFluidGetRestParticleDistanceCallback != 0) +
+		(gNxFluidEmitterCreateCallback != 0) +
+		(gNxFluidEmitterDestroyCallback != 0) +
+		(gNxFluidEmitterSetGlobalPoseCallback != 0) +
+		(gNxFluidEmitterGetGlobalPoseCallback != 0) +
+		(gNxFluidGetStiffnessCallback != 0) +
+		(gNxFluidGetViscosityCallback != 0) +
+		(gNxFluidGetDampingCallback != 0) +
+		(gNxFluidSetStiffnessCallback != 0) +
+		(gNxFluidSetViscosityCallback != 0) +
+		(gNxFluidSetDampingCallback != 0) +
+		(gNxFluidSetStaticCollisionRestitutionCallback != 0) +
+		(gNxFluidSetStaticCollisionAdhesionCallback != 0) +
+		(gNxFluidSetDynamicCollisionRestitutionCallback != 0) +
+		(gNxFluidSetDynamicCollisionAdhesionCallback != 0) +
+		(gNxFluidGetStaticCollisionRestitutionCallback != 0) +
+		(gNxFluidGetStaticCollisionAdhesionCallback != 0) +
+		(gNxFluidGetKernelRadiusMultiplierCallback != 0) +
+		(gNxFluidGetRestDensityCallback != 0) +
+		(gNxFluidGetRestParticleDistanceScalarCallback != 0) +
+		(gNxFluidGetParticleMassCallback != 0) +
+		(gNxFluidGetMaxParticlesCallback != 0) +
+		(gNxFluidGetSimulationMethodCallback != 0) +
+		(gNxFluidGetParticlesCallback != 0) +
+		(gNxImplicitFluidMeshCreateCallback != 0) +
+		(gNxImplicitFluidMeshDestroyCallback != 0) +
+		(gNxImplicitFluidMeshGetSurfaceRadiusCallback != 0) +
+		(gNxImplicitFluidMeshSetSurfaceRadiusCallback != 0) +
+		(gNxImplicitFluidMeshGetSingleRadiusCallback != 0) +
+		(gNxImplicitFluidMeshSetSingleRadiusCallback != 0) +
+		(gNxImplicitFluidMeshSetBlendCallback != 0) +
+		(gNxImplicitFluidMeshGetTriangleSizeCallback != 0) +
+		(gNxImplicitFluidMeshSetTriangleSizeCallback != 0) +
+		(gNxImplicitFluidMeshGetSmoothingIterationsCallback != 0) +
+		(gNxImplicitFluidMeshSetSmoothingIterationsCallback != 0) +
+		(gNxParticleArrayAllocCallback != 0) +
+		(gNxParticleArrayGrowCallback != 0) +
+		(gNxParticleArrayReleaseCallback != 0);
+	}
+
 // phys_fn_003626 decodes FluidKey and maps its product code to NxFluid flags.
 static unsigned nxFluidResolveLicensedFeatureFlags()
 	{
@@ -2301,6 +2410,7 @@ static void nxFluidManagerDestroyArrays(void* manager)
 		if(bytes[0x2b] && gNxFluidManagerDestroyCallback &&
 			*reinterpret_cast<void**>(bytes + 0x30))
 			gNxFluidManagerDestroyCallback(*reinterpret_cast<void**>(bytes + 0x30));
+		nxFluidModelClearResolvedExports();
 		}
 	}
 

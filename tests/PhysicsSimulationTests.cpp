@@ -761,16 +761,26 @@ static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 	unsigned resolved = 0;
 	void* resolverAddress = 0;
 	void* exportAccessorAddress = 0;
+	void* clearAddress = 0;
+	void* callbackCountAddress = 0;
 	if(candidate)
 		{
 		if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
 			"?nxFluidManagerResolveModel@@YA_NXZ", 0x0008d870u,
 			&resolverAddress) ||
 			!nxSimulationResolvePrivateRow(physics, pairDirectory,
-				"_nxFluidModelGetResolvedExport", 0, &exportAccessorAddress))
+				"_nxFluidModelGetResolvedExport", 0, &exportAccessorAddress) ||
+			!nxSimulationResolvePrivateRow(physics, pairDirectory,
+				"_nxFluidModelClearResolvedExports", 0x0008e4e0u,
+				&clearAddress) ||
+			!nxSimulationResolvePrivateRow(physics, pairDirectory,
+				"_nxFluidModelCountResolvedCallbacks", 0,
+				&callbackCountAddress))
 			return false;
 		typedef bool (__cdecl *ResolveFluidModelFn)();
 		typedef FARPROC (__cdecl *GetResolvedExportFn)(unsigned);
+		typedef unsigned (__cdecl *ClearResolvedExportsFn)();
+		typedef unsigned (__cdecl *CountResolvedCallbacksFn)();
 		resolved = reinterpret_cast<ResolveFluidModelFn>(resolverAddress)() ? 1u : 0u;
 		GetResolvedExportFn const getResolvedExport =
 			reinterpret_cast<GetResolvedExportFn>(exportAccessorAddress);
@@ -796,11 +806,26 @@ static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 			digest = (digest ^ (equal ? 1u : 0u)) * 16777619u;
 			digest = (digest ^ (actual != 0 ? 1u : 0u)) * 16777619u;
 			}
+		const unsigned clearResult = reinterpret_cast<ClearResolvedExportsFn>(
+			clearAddress)();
+		const unsigned callbacksRemaining = reinterpret_cast<
+			CountResolvedCallbacksFn>(callbackCountAddress)();
+		unsigned cleared = 0;
+		for(unsigned i = 0; i != exportCount; ++i)
+			cleared += getResolvedExport(i) == 0 ? 1u : 0u;
+		const unsigned clearMatched = clearResult == 1 &&
+			cleared == exportCount && callbacksRemaining == 0 ?
+			static_cast<unsigned>(exportCount) : 0u;
 		FreeLibrary(fluidModel);
 		RemoveDllDirectory(directoryCookie);
 		printf("simulation fluid-model-export-resolve row=003903 slots=%u present=%u matched=%u digest=%08x\n",
 			static_cast<unsigned>(exportCount), present, matched, digest);
-		return loaded && resolved && matched == exportCount;
+		printf("simulation fluid-model-export-clear row=003905 slots=%u result=%u cleared=%u callbacks_remaining=%u matched=%u mismatches=%u\n",
+			static_cast<unsigned>(exportCount), clearResult, cleared,
+			callbacksRemaining, clearMatched,
+			clearMatched == exportCount ? 0u : 1u);
+		return loaded && resolved && matched == exportCount && clearResult == 1 &&
+			cleared == exportCount && callbacksRemaining == 0;
 		}
 	void* loadAddress = reinterpret_cast<unsigned char*>(physics) + 0x0008d820u;
 	void* resolveAddress = reinterpret_cast<unsigned char*>(physics) + 0x0008d870u;
@@ -831,13 +856,27 @@ static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 		digest = (digest ^ (equal ? 1u : 0u)) * 16777619u;
 		digest = (digest ^ (actual != 0 ? 1u : 0u)) * 16777619u;
 		}
+	typedef unsigned (__stdcall *OracleClearFn)();
+	const unsigned clearResult = reinterpret_cast<OracleClearFn>(
+		reinterpret_cast<unsigned char*>(physics) + 0x0008e4e0u)() & 0xffu;
+	unsigned cleared = 0;
+	for(unsigned i = 0; i != exportCount; ++i)
+		cleared += *reinterpret_cast<FARPROC*>(
+			reinterpret_cast<unsigned char*>(physics) +
+			nxFluidModelExportManifest[i].oracleGlobalRva) == 0 ? 1u : 0u;
 	typedef unsigned (__stdcall *OracleUnloadFn)();
 	const unsigned unloaded = reinterpret_cast<OracleUnloadFn>(
 		reinterpret_cast<unsigned char*>(physics) + 0x0008d850u)() & 0xffu;
+	const unsigned clearMatched = clearResult == 1 && cleared == exportCount ?
+		static_cast<unsigned>(exportCount) : 0u;
 	RemoveDllDirectory(directoryCookie);
 	printf("simulation fluid-model-export-resolve row=003903 slots=%u present=%u matched=%u digest=%08x\n",
 		static_cast<unsigned>(exportCount), present, matched, digest);
-	return loaded && resolved && unloaded && matched == exportCount;
+	printf("simulation fluid-model-export-clear row=003905 slots=%u result=%u cleared=%u callbacks_remaining=0 matched=%u mismatches=%u\n",
+		static_cast<unsigned>(exportCount), clearResult, cleared,
+		clearMatched, clearMatched == exportCount ? 0u : 1u);
+	return loaded && resolved && unloaded && matched == exportCount &&
+		clearResult == 1 && cleared == exportCount;
 	}
 
 static int nxSimulationRunFluidModelExportResolutionProbe(int argc,
