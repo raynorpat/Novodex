@@ -11268,3 +11268,5 @@ The NxFluid solver constructor at RVA `0x0008b000` is reconstructed and mutation
 Phase 7 closure evidence: phys_fn_003507 static fluid-collision index-tail mutation changes the one-mesh grid (grid=0), and the registered probe detects mismatches=1; restored output reports mismatches=0. See evidence/phase7-fluid-static-collision-index-tail-003507.md and evidence/raw/phase7-fluid-static-collision-index-tail-003507-20261017/.
 
 Phase 7 closure evidence: phys_fn_003501 emitter-create capacity mutation is detected (created=16, count=19, stdout_delta=89, candidate_exit=1); restored capacity fixture matches at 20 emitters. See evidence/phase7-fluid-emitter-create-003501.md and evidence/raw/phase7-fluid-emitter-create-003501-20261017/.
+
+Phase 7 closure evidence: phys_fn_003493 internal emitter release swap-index mutation is detected (internal-array=0, public-array=1, callback=1, mismatches=1, stdout_delta=88); restored result matches. See evidence/phase7-fluid-emitter-release-003493.md and evidence/raw/phase7-fluid-emitter-release-003493-20261017/.

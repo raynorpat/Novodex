@@ -65983,13 +65983,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/Fluid.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1302",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12310",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x00085950 locates the internal emitter in the live array; on a match it calls EmitterDestroy with manager/backend-fluid/backend-emitter values, then removes the same index from internal and public arrays using the last live entry. Empty and missing-emitter paths report NXE_INVALID_PARAMETER. Candidate map resolves the implementation in Scene.obj at 0x10069100.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests releases emitter index 0 from a four-entry list and checks count=3, matching internal/public swap-removal and one destroy callback. Mutating the internal swap source from internalCount-1 to internalCount-2 yields internal-array=0, public-array=1, mismatches=1 and normalized stdout_delta=88; restored oracle/candidate output matches exactly. See evidence/phase7-fluid-emitter-release-003493.md.",
+      "notes": "Internal Fluid::releaseEmitter body. The public lock/reentry wrapper is separately mapped to phys_fn_003698.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidReleaseEmitterInternal"
     },
     {
       "id": "phys_fn_003494",

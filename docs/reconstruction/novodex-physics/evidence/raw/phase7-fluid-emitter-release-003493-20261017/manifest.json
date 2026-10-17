@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003493",
+  "date": "2026-10-17",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256_mutant": "13bde126dd9c684dc198fd059f855c837c7f2c2a3c4a94bcf37ab25590cd1eb5",
+  "candidate_sha256_restored": "51e8b7ce35be7ca5d124cdd7febd1408dc1dca71c6bac3f7ca3d36cf372f9bc0",
+  "source": "Physics/src/Scene.cpp::nxFluidReleaseEmitterInternal",
+  "candidate_map": {
+    "path": "build/approved-five-family-current/Release/NxPhysics.map",
+    "symbol": "?nxFluidReleaseEmitterInternal@@YAXPAX0@Z",
+    "address": "0x10069100",
+    "object": "Scene.obj"
+  },
+  "mutation": "In the paired-array swap-removal path, changed the internal emitter source index from internalCount - 1 (the last live element) to internalCount - 2.",
+  "mutation_result": "The fixture reports simulation fluid-internal-emitter-release row=003493 removed-index=0 count=3 internal-array=0 public-array=1 callback=1 mismatches=1. The corrupted candidate subsequently exits with access violation 0xC0000005; oracle exit=0; normalized stdout_delta=88.",
+  "restored_result": "simulation fluid-internal-emitter-release row=003493 removed-index=0 count=3 internal-array=1 public-array=1 callback=1 mismatches=0. oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=true.",
+  "fixture": "Registered NxPhysicsSimulationTests releases the first of four emitters, then checks count=3 and the last emitter moved into index 0 in both internal and public arrays, plus one backend destroy callback.",
+  "mutation_patch": {
+    "name": "mutation-003493.patch.gz",
+    "sha256": "933f63e8407a2b5e97179df2643b79444cb0fea14a45f3f2598f26dc7d3a2833",
+    "bytes": 269,
+    "source_bytes": 361073,
+    "source_sha256": "f9c3ea91fcff354cdf46f294e4961f21e2d8a4daa5f34657849dc447a08809b6"
+  },
+  "logs": [
+    {
+      "name": "baseline-differential.log.gz",
+      "sha256": "592d671b1a4d950831083a36558850b8864747a7acb7c25e489f6b47c6aeefe2",
+      "bytes": 57690,
+      "source_bytes": 870731
+    },
+    {
+      "name": "mutant-candidate.stdout.gz",
+      "sha256": "35ec85412aad0c83b507d087818c64f9168e66d1d41d56c873a8481b8bea6a1b",
+      "bytes": 26574,
+      "source_bytes": 422975
+    },
+    {
+      "name": "mutant-candidate.stderr.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "source_bytes": 0
+    },
+    {
+      "name": "restored-oracle.stdout.gz",
+      "sha256": "db04f4c820e1325dcee7ad0dc9138fc5ea3b34d1a25bdb623df356412bd5754e",
+      "bytes": 28448,
+      "source_bytes": 432294
+    },
+    {
+      "name": "restored-oracle.stderr.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "source_bytes": 0
+    },
+    {
+      "name": "restored-candidate.stdout.gz",
+      "sha256": "1d7acc4df5fb487999958c447f403dbdd176c6fa6398a3c4bd268dc823800f64",
+      "bytes": 28447,
+      "source_bytes": 432417
+    },
+    {
+      "name": "restored-candidate.stderr.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "source_bytes": 0
+    }
+  ],
+  "baseline_retries": "The first staged differential attempt had one oracle-side access violation during broadphase setup. Two direct oracle retries and the subsequent official staged baseline passed (0/0 exits, stdout_delta=0, exact stderr).",
+  "phase_gates": {
+    "5": "pass 2879/2879",
+    "6": "pass 1739/1739",
+    "7": "pass 3018/3018"
+  },
+  "phase7_gate_log": {
+    "name": "phase7-gate.log.gz",
+    "sha256": "31d089d83e36d22da2a25787bc85ac568194aef8fb841638ae6aa566093238e0",
+    "bytes": 379666,
+    "source_bytes": 4722913
+  },
+  "phase5_gate_log": {
+    "name": "phase5-gate.log.gz",
+    "sha256": "219cf82015dd858f9ed8a22c98222738c28cd8b9a2ad0eb16b7ee31c75b0ba5f",
+    "bytes": 213713,
+    "source_bytes": 2881780
+  },
+  "phase6_gate_log": {
+    "name": "phase6-gate.log.gz",
+    "sha256": "f2834a13c91f76e0c37d87b9382496cb65412c3c08b0e673399fbfb9fbc57740",
+    "bytes": 256840,
+    "source_bytes": 3134894
+  }
+}

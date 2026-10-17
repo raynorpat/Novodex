@@ -6483,11 +6483,13 @@ int wmain(int argc, wchar_t** argv)
 	unsigned* const internalEmittersAfterRelease = fluidBytesForEmitterMutation
 		? *reinterpret_cast<unsigned**>(static_cast<unsigned char*>(
 			fluidBytesForEmitterMutation) + 4) : 0;
-	const bool publicEmitterReleaseMatch = publicEmitterCreateMatch &&
+	const bool publicEmitterArrayReleaseMatch =
 		emitterCountAfterRelease == 3 && emittersAfterRelease &&
 		emittersAfterRelease[0] == publiclyCreatedEmitter &&
 		emittersAfterRelease[1] == initialEmitters[1] &&
-		emittersAfterRelease[2] == initialEmitters[2] &&
+		emittersAfterRelease[2] == initialEmitters[2];
+	const bool internalEmitterArrayReleaseMatch =
+		publicEmitterCreateMatch && emitterCountAfterRelease == 3 &&
 		internalEmittersAfterRelease &&
 		*reinterpret_cast<void**>(internalEmittersAfterRelease) ==
 			*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
@@ -6498,6 +6500,8 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<void**>(internalEmittersAfterRelease + 2) ==
 			*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(
 				initialEmitters[2]) + 0x14);
+	const bool publicEmitterReleaseMatch = publicEmitterCreateMatch &&
+		publicEmitterArrayReleaseMatch && internalEmitterArrayReleaseMatch;
 	FluidManagerCallbackSummary emitterMutationAfter = {};
 	getFluidManagerCallbackSummary(&emitterMutationAfter);
 	const bool publicEmitterCallbackMatch =
@@ -6515,6 +6519,13 @@ int wmain(int argc, wchar_t** argv)
 		emittersAfterRelease ? 1u : 0u,
 		publicEmitterCallbackMatch ? 1u : 0u,
 		publicEmitterCreateMatch && publicEmitterReleaseMatch &&
+			publicEmitterCallbackMatch ? 0u : 1u);
+	printf("simulation fluid-internal-emitter-release row=003493 removed-index=0 count=%u internal-array=%u public-array=%u callback=%u mismatches=%u\n",
+		emitterCountAfterRelease,
+		internalEmitterArrayReleaseMatch ? 1u : 0u,
+		publicEmitterArrayReleaseMatch ? 1u : 0u,
+		publicEmitterCallbackMatch ? 1u : 0u,
+		internalEmitterArrayReleaseMatch && publicEmitterArrayReleaseMatch &&
 			publicEmitterCallbackMatch ? 0u : 1u);
 	printf("simulation fluid public-api scalars stiffness=%08x.%u viscosity=%08x.%u diagnostics=%u.%u\n",
 		enabledPublicStiffnessBits, enabledPublicStiffnessErrors,

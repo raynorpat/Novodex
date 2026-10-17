@@ -2278,7 +2278,7 @@ static NxFluidEmitter* __fastcall nxFluidCreateEmitterPublic(void* wrapper,
 	return result;
 	}
 
-// phys_fn_003698 (0x0008b140) releases a backend emitter and removes matching
+// phys_fn_003493 (0x00085950) releases a backend emitter and removes matching
 // entries from the internal and public arrays using the same swap index.
 static void nxFluidReleaseEmitterInternal(void* fluid, void* emitter)
 	{
@@ -2332,6 +2332,8 @@ static void nxFluidReleaseEmitterInternal(void* fluid, void* emitter)
 		*reinterpret_cast<unsigned**>(bytes + 0x18) = wrapperLast - 1;
 	}
 
+// phys_fn_003698 (0x0008b140) guards the public release call and forwards to
+// the internal release operation above.
 static void __fastcall nxFluidReleaseEmitterPublic(void* wrapper, void*,
 	NxFluidEmitter& emitter)
 	{
