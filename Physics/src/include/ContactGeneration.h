@@ -148,6 +148,11 @@ const NxCollisionShape* __fastcall NxShapeRaycastCapsule(const NxCollisionShape*
 	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
 	NxU32 hintFlags, NxRaycastHit* hit);
 
+// phys_fn_001405 (0x00029230), slot 5 of a MESH shape's internal vtable.
+const NxCollisionShape* __fastcall NxShapeRaycastMesh(const NxCollisionShape* mesh,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit);
+
 // phys_fn_001775 at 0x0003d9d0, matrix A slot [CAPSULE][CAPSULE].
 //
 // Its swept half is NOT a function of its arguments: it passes hintFlags = 4 and

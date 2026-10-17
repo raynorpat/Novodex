@@ -788,7 +788,7 @@ static void nxSpatialOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
 	const NxPoint meshVertices[] = {
 		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, -2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
 		NxPoint(2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, 2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
-		NxPoint(38.0f, 0.0f, -2.0f), NxPoint(42.0f, 0.0f, -2.0f), NxPoint(38.0f, 0.0f, 2.0f)
+		NxPoint(38.0f, 0.0f, -2.0f), NxPoint(42.0f, 1.0f, -2.0f), NxPoint(38.0f, 0.0f, 2.0f)
 		};
 	const NxU32 meshIndices[] = { 0, 2, 1, 3, 5, 4, 6, 8, 7 };
 	NxTriangleMeshDesc meshDesc;
@@ -815,6 +815,29 @@ static void nxSpatialOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
 		sdk->releaseTriangleMesh(*queryMesh);
 		return;
 		}
+	nxSymbolAdd(meshActor->getShapes()[0], "query_mesh");
+	NxRay meshRay;
+	meshRay.orig = NxVec3(39.0f, 5.0f, -1.0f);
+	meshRay.dir = NxVec3(0.0f, -1.0f, 0.0f);
+	NxRaycastHit meshHit;
+	memset(&meshHit, 0xcd, sizeof(meshHit));
+	NxShape* meshHitShape = scene->raycastClosestShape(meshRay, NX_ALL_SHAPES,
+		meshHit, 0xffffffffu, 10.0f, NX_RAYCAST_NORMAL);
+	printf("raycast mesh down result=%u", meshHitShape ? 1u : 0u);
+	nxPrintClosestHit(meshHit);
+	printf("\n");
+	memset(&meshHit, 0xcd, sizeof(meshHit));
+	meshHitShape = scene->raycastClosestShape(meshRay, NX_ALL_SHAPES,
+		meshHit, 1u, 10.0f, 0);
+	printf("raycast mesh no_normal result=%u", meshHitShape ? 1u : 0u);
+	nxPrintClosestHit(meshHit);
+	printf("\n");
+	memset(&meshHit, 0xcd, sizeof(meshHit));
+	meshHitShape = scene->raycastClosestShape(meshRay, NX_ALL_SHAPES,
+		meshHit, 1u, 4.0f, NX_RAYCAST_NORMAL);
+	printf("raycast mesh cutoff result=%u", meshHitShape ? 1u : 0u);
+	nxPrintClosestHit(meshHit);
+	printf("\n");
 	NxActorDesc translatedMeshDesc;
 	translatedMeshDesc.shapes.pushBack(&meshShape);
 	translatedMeshDesc.globalPose.t = NxVec3(20.0f, 0.0f, 0.0f);
@@ -826,6 +849,53 @@ static void nxSpatialOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
 		sdk->releaseTriangleMesh(*queryMesh);
 		return;
 		}
+	nxSymbolAdd(translatedMeshActor->getShapes()[0], "query_mesh_translated");
+	meshRay.orig = NxVec3(19.0f, 5.0f, 0.0f);
+	memset(&meshHit, 0xcd, sizeof(meshHit));
+	meshHitShape = scene->raycastClosestShape(meshRay, NX_ALL_SHAPES,
+		meshHit, 1u, 10.0f, NX_RAYCAST_NORMAL);
+	printf("raycast mesh translated result=%u", meshHitShape ? 1u : 0u);
+	nxPrintClosestHit(meshHit);
+	printf("\n");
+	meshRay.orig = NxVec3(25.0f, 5.0f, 0.0f);
+	memset(&meshHit, 0xcd, sizeof(meshHit));
+	meshHitShape = scene->raycastClosestShape(meshRay, NX_ALL_SHAPES,
+		meshHit, 1u, 10.0f, NX_RAYCAST_NORMAL);
+	printf("raycast mesh miss result=%u", meshHitShape ? 1u : 0u);
+	nxPrintClosestHit(meshHit);
+	printf("\n");
+	meshRay.orig = NxVec3(39.0f, -5.0f, -1.0f);
+	meshRay.dir = NxVec3(0.0f, 1.0f, 0.0f);
+	memset(&meshHit, 0xcd, sizeof(meshHit));
+	meshHitShape = scene->raycastClosestShape(meshRay, NX_ALL_SHAPES,
+		meshHit, 1u, 10.0f, NX_RAYCAST_NORMAL);
+	printf("raycast mesh backface result=%u", meshHitShape ? 1u : 0u);
+	nxPrintClosestHit(meshHit);
+	printf("\n");
+	NxActorDesc rotatedMeshDesc;
+	rotatedMeshDesc.shapes.pushBack(&meshShape);
+	rotatedMeshDesc.globalPose.t = NxVec3(60.0f, 0.0f, 0.0f);
+	rotatedMeshDesc.globalPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
+	rotatedMeshDesc.globalPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
+	rotatedMeshDesc.globalPose.M.setRow(2, NxVec3(0.0f, 0.0f, 1.0f));
+	NxActor* const rotatedMeshActor = scene->createActor(rotatedMeshDesc);
+	if(!rotatedMeshActor)
+		{
+		printf("scene_overlap triangles rotated_actor_create=failed\n");
+		scene->releaseActor(*translatedMeshActor);
+		scene->releaseActor(*meshActor);
+		sdk->releaseTriangleMesh(*queryMesh);
+		return;
+		}
+	nxSymbolAdd(rotatedMeshActor->getShapes()[0], "query_mesh_rotated");
+	meshRay.orig = NxVec3(55.0f, -1.0f, -1.0f);
+	meshRay.dir = NxVec3(1.0f, 0.0f, 0.0f);
+	memset(&meshHit, 0xcd, sizeof(meshHit));
+	meshHitShape = scene->raycastClosestShape(meshRay, NX_ALL_SHAPES,
+		meshHit, 1u, 10.0f, NX_RAYCAST_NORMAL);
+	printf("raycast mesh rotated result=%u", meshHitShape ? 1u : 0u);
+	nxPrintClosestHit(meshHit);
+	printf("\n");
 	NxBounds3 triangleBounds;
 	triangleBounds.set(NxVec3(-2.1f, -0.1f, -2.1f), NxVec3(0.0f, 0.1f, 2.1f));
 	// The SDK array owns its storage through an allocator global in the loaded
@@ -885,6 +955,7 @@ static void nxSpatialOverlapChecks(NxPhysicsSDK* sdk, NxScene* scene)
 				nxU((*triangles)[i].verts[vertex].z));
 	printf("\n");
 	scene->releaseActor(*translatedMeshActor);
+	scene->releaseActor(*rotatedMeshActor);
 	scene->releaseActor(*meshActor);
 	nxSphereQueryMesh = queryMesh;
 

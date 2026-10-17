@@ -11,6 +11,9 @@
 #include "NxIntersectionRayPlane.h"
 #include "NxPlane.h"
 #include "NxPhysicsBackend.h"
+#include "NxInternalTriangleMesh.h"
+#include "OPC_RayCollider.h"
+#include "TriangleMesh.h"
 #include <math.h>
 
 // The original row executes x87 fsqrt. Its result must follow the live
@@ -174,6 +177,109 @@ const NxCollisionShape* __fastcall NxShapeRaycastCapsule(const NxCollisionShape*
 	hit->flags = 0x13;
 	// hit->worldNormal is deliberately not written. See above.
 	return capsule;
+	}
+
+// phys_fn_001405 at 0x00029230: MESH's slot-5 raycast. OPCODE collects the
+// closest stabbed face in mesh-local space; the result is then expanded to a
+// world-space hit record with the mesh's optional face remap and lazily-built
+// smooth vertex normals.
+const NxCollisionShape* __fastcall NxShapeRaycastMesh(const NxCollisionShape* shape,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit)
+	{
+	(void) edxUnused;
+	(void) unread;
+	const TriangleMesh* const mesh = reinterpret_cast<const TriangleMesh*>(
+		static_cast<size_t>(*reinterpret_cast<const NxU32*>(&shape->geometry[0])));
+	if(!mesh || !mesh->mInternal.mModel || !mesh->mInternal.mVertices || !mesh->mInternal.mTriangles)
+		return 0;
+
+	IceMaths::Matrix4x4 world;
+	const NxReal* const r = shape->rotation;
+	world.Set(r[0], r[3], r[6], 0.0f,
+		r[1], r[4], r[7], 0.0f,
+		r[2], r[5], r[8], 0.0f,
+		shape->translation[0], shape->translation[1], shape->translation[2], 1.0f);
+	const IceMaths::Ray ray(
+		IceMaths::Point(worldRay->orig.x, worldRay->orig.y, worldRay->orig.z),
+		IceMaths::Point(worldRay->dir.x, worldRay->dir.y, worldRay->dir.z));
+	Opcode::RayCollider collider;
+	Opcode::CollisionFaces faces;
+	collider.SetFirstContact(false);
+	collider.SetTemporalCoherence(false);
+	collider.SetClosestHit(true);
+	collider.SetMaxDist(maxDistance);
+	collider.SetDestination(&faces);
+	if(!collider.Collide(ray, *static_cast<const Opcode::Model*>(mesh->mInternal.mModel), &world)
+		|| faces.GetNbFaces() == 0)
+		return 0;
+
+	const Opcode::CollisionFace& face = faces.GetFaces()[0];
+	hit->distance = face.mDistance;
+	if(face.mDistance > maxDistance)
+		return 0;
+	const NxU32* const indices = static_cast<const NxU32*>(mesh->mInternal.mTriangles)
+		+ 3 * face.mFaceID;
+	const NxVec3* const vertices = static_cast<const NxVec3*>(mesh->mInternal.mVertices);
+	const NxVec3& v0 = vertices[indices[0]];
+	const NxVec3& v1 = vertices[indices[1]];
+	const NxVec3& v2 = vertices[indices[2]];
+	const NxReal u = face.mU;
+	const NxReal v = face.mV;
+	const NxReal w = (NxReal)(1.0 - (double)u - (double)v);
+	const NxReal localX = (NxReal)((double)w * v0.x + (double)u * v1.x + (double)v * v2.x);
+	const NxReal localY = (NxReal)((double)w * v0.y + (double)v * v2.y + (double)u * v1.y);
+	const NxReal localZ = (NxReal)((double)w * v0.z + (double)v * v2.z + (double)u * v1.z);
+	hit->worldImpact.x = (NxReal)((double)localX * r[0] + (double)localY * r[1] + (double)localZ * r[2] + shape->translation[0]);
+	hit->worldImpact.y = (NxReal)((double)localX * r[3] + (double)localY * r[4] + (double)localZ * r[5] + shape->translation[1]);
+	hit->worldImpact.z = (NxReal)((double)localX * r[6] + (double)localY * r[7] + (double)localZ * r[8] + shape->translation[2]);
+	hit->shape = reinterpret_cast<NxShape*>(shape->collisionObject);
+	hit->faceID = mesh->mInternal.mFaceRemap
+		? mesh->mInternal.mFaceRemap[face.mFaceID] : face.mFaceID;
+	hit->u = u;
+	hit->v = v;
+	hit->flags = NX_RAYCAST_SHAPE | NX_RAYCAST_IMPACT | NX_RAYCAST_DISTANCE
+		| NX_RAYCAST_FACE_INDEX | NX_RAYCAST_UV;
+	if(hintFlags & NX_RAYCAST_NORMAL)
+		{
+		if(!mesh->mInternal.mVertexNormals)
+			{
+			InternalTriangleMesh* const internal =
+				const_cast<InternalTriangleMesh*>(&mesh->mInternal);
+#if NX_PHYSICS_USE_X87
+			__asm
+				{
+				mov ecx, internal
+				call nxMeshComputeVertexNormals
+				}
+#else
+			nxMeshComputeVertexNormals(internal);
+#endif
+			}
+		const NxVec3* const normals = static_cast<const NxVec3*>(mesh->mInternal.mVertexNormals);
+		const NxVec3& n0 = normals[indices[0]];
+		const NxVec3& n1 = normals[indices[1]];
+		const NxVec3& n2 = normals[indices[2]];
+		NxVec3 normal;
+		normal.x = (NxReal)((double)w * n0.x + (double)v * n2.x + (double)u * n1.x);
+		normal.y = (NxReal)((double)w * n0.y + (double)v * n2.y + (double)u * n1.y);
+		normal.z = (NxReal)((double)w * n0.z + (double)v * n2.z + (double)u * n1.z);
+		hit->worldNormal.x = (NxReal)((double)normal.x * r[0] + (double)normal.y * r[1] + (double)normal.z * r[2]);
+		hit->worldNormal.y = (NxReal)((double)normal.x * r[3] + (double)normal.y * r[4] + (double)normal.z * r[5]);
+		hit->worldNormal.z = (NxReal)((double)normal.x * r[6] + (double)normal.y * r[7] + (double)normal.z * r[8]);
+		const double length = sqrt((double)hit->worldNormal.x * hit->worldNormal.x
+			+ (double)hit->worldNormal.y * hit->worldNormal.y
+			+ (double)hit->worldNormal.z * hit->worldNormal.z);
+		if(length != 0.0)
+			{
+			const double inverse = 1.0 / length;
+			hit->worldNormal.x = (NxReal)(inverse * hit->worldNormal.x);
+			hit->worldNormal.y = (NxReal)(inverse * hit->worldNormal.y);
+			hit->worldNormal.z = (NxReal)(inverse * hit->worldNormal.z);
+			}
+		hit->flags |= NX_RAYCAST_NORMAL;
+		}
+	return shape;
 	}
 
 // phys_fn_001261 at 0x00025350: what a PLANE shape puts in vtable slot 5.

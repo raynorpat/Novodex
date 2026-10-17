@@ -2108,12 +2108,12 @@ void __thiscall FUN_10029190(void *this,float *param_1)
 
 ```
 
-## phys_fn_001405 (0x00029230, 978 B, discovered)
+## phys_fn_001405 (0x00029230, 978 B, reconstructed candidate; closure deferred)
 
 - ambiguous: yes
-- source: None
-- implementation: None
-- prototype: void * __thiscall FUN_10029230(float * param_1, float param_2, undefined4 param_3, byte param_4, undefined4 * param_5)
+- source: `Physics/src/ShapeRaycast.cpp`
+- implementation: `NxShapeRaycastMesh`
+- prototype: `const NxCollisionShape* __thiscall(mesh, ray, maxDistance, unread, hintFlags, hit)`
 - calling convention: __thiscall, stack purge: 20
 - callers: phys_fn_001379 (0x00027db0)
 - callees: phys_fn_002081 (0x00052240), phys_fn_004836 (0x000b4d70), phys_fn_004846 (0x000b4f50), phys_fn_004847 (0x000b4f90), phys_fn_004932 (0x000ba6f0)

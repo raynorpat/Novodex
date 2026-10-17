@@ -4459,8 +4459,8 @@ static void** nxPlaneShapeInternalVtable()
 	}
 
 // MESH's 18-entry primary table at .rdata:0x00107630. The actor construction
-// path needs slots 0/1/6/9/12/13/17; the debug and raycast rows remain explicit
-// unsupported entries until their Phase 3 implementations are wired here.
+// path needs slots 0/1/6/9/12/13/17; the debug row remains unsupported, while
+// slot 5 dispatches the reconstructed mesh raycast.
 static void __fastcall nxUnsupportedMeshShapeMethod(void*, void*)
 	{
 	abort();
@@ -4480,7 +4480,7 @@ static void** nxMeshShapeInternalVtable()
 			slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
 			slot[3] = reinterpret_cast<void*>(&nxUnsupportedMeshShapeMethod);
 			slot[4] = nxShapeMethodAddress(&MeshShape::nxMeshAccumulateMassCached);
-			slot[5] = reinterpret_cast<void*>(&nxUnsupportedMeshShapeMethod);
+			slot[5] = reinterpret_cast<void*>(&NxShapeRaycastMesh);
 			slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
 			slot[7] = nxShapeMethodAddress(&MeshShape::nxMeshSweepPrepared);
 			slot[8] = nxShapeMethodAddress(&MeshShape::nxMeshGetWords44);

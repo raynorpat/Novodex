@@ -2913,6 +2913,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene_overlap triangles corner_miss_count=0 array_count=0',
         'scene_overlap triangles all_count=5 array_count=5',
         'scene_overlap triangles translated_count=2 array_count=2',
+        # Actual closest-face raycast through the mesh shape's slot 5, including
+        # face index, barycentrics, world impact and interpolated normal.
+        'raycast mesh down result=1 flags=0000003f shape=query_mesh impact=421c0000.00000000.bf800000 normal=00000000.3f800000.00000000 face=00000002 distance=40a00000 uv=3e800000.3e800000',
+        'raycast mesh no_normal result=1 flags=0000003b shape=query_mesh impact=421c0000.00000000.bf800000 face=00000002 distance=40a00000 uv=3e800000.3e800000',
+        'raycast mesh cutoff result=0 flags=00000001 shape=00000000 distance_word=7f7fffff',
+        'raycast mesh translated result=1 flags=0000003f shape=query_mesh_translated impact=41980000.00000000.00000000 normal=00000000.3f800000.00000000 face=00000000 distance=40a00000 uv=3f000000.3e800000',
+        'raycast mesh miss result=0 flags=00000001 shape=00000000 distance_word=7f7fffff',
+        'raycast mesh backface result=0 flags=00000001 shape=00000000 distance_word=7f7fffff',
+        'raycast mesh rotated result=1 flags=0000003f shape=query_mesh_rotated impact=42700000.bf800000.bf800000 normal=bf800000.00000000.00000000 face=00000000 distance=40a00000 uv=3e800000.3e800000',
         'raycast create s_box created=1 shapes=1',
         'raycast create s_sphere created=1 shapes=1',
         'raycast create s_capsule created=1 shapes=1',
@@ -6269,7 +6278,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 543  # adds direct row 004791 MemoryStream destructor allocator-free differential
+    '4' = 550  # adds actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
+	           # plus hit, no-normal, cutoff, translation and miss coverage
+               # adds direct row 004791 MemoryStream destructor allocator-free differential
                # adds direct row 000965 Prunable owner-query result
                # adds actual-DLL Pruner constructor bounds, registration, handle-reuse and type-3 query/update/add/remove assertions
                # adds the triangle-mesh creation marker for AABB-tree build rows
@@ -6278,7 +6289,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2852  # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
+	'5' = 2859  # adds actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
+	           # plus hit, no-normal, cutoff, translation and miss coverage
+	           # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2837 plus the fluid-emitter deleting-destructor differential
 	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
@@ -6407,7 +6420,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2986  # previous 2984 plus the single-body and compound-body phys_fn_001943 assertions
+	'7' = 2993  # adds actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
+	           # plus hit, no-normal, cutoff, translation and miss coverage
+	           # previous 2984 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential
