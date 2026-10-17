@@ -1,0 +1,43 @@
+{
+  "purpose": "phys_fn_004791 MemoryStream destructor differential and no-op mutation proof",
+  "date": "2026-10-16",
+  "row": {
+    "id": "phys_fn_004791",
+    "rva": "0x000b3db0"
+  },
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "control": "16 cases; oracle_frees=32; candidate_frees=32; asset oracle digest=1daa095e; candidate mismatches=0; exit=0",
+  "mutation": "MemoryStream destructor body disabled; 16 cases; oracle_frees=32; candidate_frees=0; candidate mismatches=16; exit=1",
+  "restored": "16 cases; oracle_frees=32; candidate_frees=32; asset oracle digest=1daa095e; candidate mismatches=0; exit=0",
+  "logs": {
+    "control.log.gz": {
+      "source_log": "asset-row4791-control.log",
+      "sha256": "dcc92a14b45fe190898e6d53a26c282c6928c6a6b77c76c093e6b46a9288f762",
+      "uncompressed_sha256": "a970895cae6e3742eefd1a9a19e13cb18103ef7976407070f46392db46e6bc4d",
+      "compressed_bytes": 1961,
+      "uncompressed_bytes": 18443
+    },
+    "mutant.log.gz": {
+      "source_log": "asset-row4791-mutant.log",
+      "sha256": "a26cce38f39dcbc8d0be87f00afe704a372c43d785f5350b862126fa6b9a28cd",
+      "uncompressed_sha256": "e14a1e4ce569f97ae0e841712bc821ed540fc88d0d3c71f35547093b16fbd406",
+      "compressed_bytes": 2221,
+      "uncompressed_bytes": 21034
+    },
+    "restored.log.gz": {
+      "source_log": "asset-row4791-restored.log",
+      "sha256": "9e1bc78d4a62d3f4d8bc7a78906613675b01eb9584e6542af1cc5eb5c493cc36",
+      "uncompressed_sha256": "0496abb73b59f415b7b77cc384d76b912d88f949a93dcca1012e2644e6825cde",
+      "compressed_bytes": 1976,
+      "uncompressed_bytes": 18470
+    },
+    "phase4-gate.log.gz": {
+      "source_log": "phase4-row4791-gate-20261016.log",
+      "sha256": "4d1cf42322c557cad885386e5ae20ac7ca3b74951d484134aef17069150d3153",
+      "uncompressed_sha256": "afab157f911243c0c4ec03c0e8d65103ee304aade7f89d5da60d84879fb47d03",
+      "compressed_bytes": 76312,
+      "uncompressed_bytes": 1133304
+    }
+  },
+  "phase4_gate": "phase_gate=4 status=pass; coverage_assertions_evaluated=543 floor=543"
+}

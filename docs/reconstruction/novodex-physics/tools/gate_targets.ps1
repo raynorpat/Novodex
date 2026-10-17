@@ -5497,7 +5497,8 @@ $NxRequiredCoverageLines = [ordered] @{
 
     'NxPhysicsAssetTests' = @(
         'asset fixtures pmap=16 mesh=6 writer=9 release=1',
-        'asset rows pmap_create=phys_fn_002047 pmap_sample=phys_fn_002029 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051',
+        'asset rows pmap_create=phys_fn_002047 pmap_sample=phys_fn_002029 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051 stream_dtor=phys_fn_004791',
+        'asset row4791 row=phys_fn_004791 cases=16 oracle_frees=32 candidate_frees=32 mode=differential',
         'asset coverage driven=32 accepted=15 rejected=16 errors=10',
         'asset oracle digest=1daa095e',
 
@@ -6234,7 +6235,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 542  # adds direct row 000965 Prunable owner-query result
+    '4' = 543  # adds direct row 004791 MemoryStream destructor allocator-free differential
+               # adds direct row 000965 Prunable owner-query result
                # adds actual-DLL Pruner constructor bounds, registration, handle-reuse and type-3 query/update/add/remove assertions
                # adds the triangle-mesh creation marker for AABB-tree build rows
                # adds seven PMap query cases, their oracle digest and two mesh-release cases

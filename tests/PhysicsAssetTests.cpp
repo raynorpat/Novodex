@@ -52,6 +52,7 @@
 #include "NxUserOutputStream.h"
 class NxTriangleMesh;
 #include "NxPMap.h"
+#include "NxSdkAllocator.h"
 
 // The oracle-RVA to candidate-address table, generated from the census's recorded symbols joined to
 // the rebuilt module's linker map. It is what lets this harness drive a module that is not the pinned
@@ -71,6 +72,8 @@ namespace
 	{
 	struct NxAssetAllocator : public NxUserAllocator
 		{
+		unsigned freeCalls;
+		NxAssetAllocator() : freeCalls(0) {}
 		// The four pure virtuals, and the two that carry default bodies are left alone. Named by
 		// C2259 on the first attempt, then read from the header.
 		void* malloc(size_t size) override
@@ -82,7 +85,7 @@ namespace
 		void* realloc(void* memory, size_t size) override
 			{ return ::realloc(memory, size); }
 		void free(void* memory) override
-			{ ::free(memory); }
+			{ if(memory) ++freeCalls; ::free(memory); }
 		};
 
 	NxAssetAllocator gAssetAllocator;
@@ -117,6 +120,8 @@ static const unsigned kPMapSampleRva    = 0x0004f070;	// phys_fn_002029, Penetra
 static const unsigned kStreamCtorRva    = 0x000b3ce0;	// phys_fn_004788, (size, buffer)
 static const unsigned kStreamSeekRva    = 0x000b3b30;	// phys_fn_004780
 static const unsigned kStreamDtorRva    = 0x000b3db0;	// phys_fn_004791, jmp to phys_fn_004784
+static const unsigned kSdkAllocatorSetRva = 0x000b4020;	// phys_fn_004805
+static const unsigned kSdkAllocatorSlotRva = 0x0012845c;
 static const unsigned kMeshHeaderRva    = 0x00055cb0;	// phys_fn_002262, the NxStream mesh loader
 static const unsigned kReleasePMapRva   = 0x00051040;	// phys_fn_002051, NxReleasePMap
 
@@ -381,6 +386,7 @@ struct NxPMapResult
 	unsigned cells;
 	unsigned grid;			// FNV-1a over the decoded grid
 	unsigned resolution;	// what the object ended up holding
+	unsigned streamFrees;	// SDK allocator frees performed by phys_fn_004791
 	};
 
 struct NxMeshResult
@@ -795,7 +801,9 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 
 	oracle->pmapDtor(object);
 	printf("  step pmapDtor done\n"); fflush(stdout);
+	unsigned streamFreesBefore = gAssetAllocator.freeCalls;
 	oracle->streamDtor(stream);
+	result->streamFrees = gAssetAllocator.freeCalls - streamFreesBefore;
 	printf("  step streamDtor done\n"); fflush(stdout);
 	}
 
@@ -1085,10 +1093,14 @@ static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, N
 	// phys_fn_004788 builds the stream FULL over given bytes (the block starts
 	// at offset = size), so the rewind is part of the construction sequence,
 	// exactly as it is on the oracle side above.
+	unsigned streamFreesBefore = 0;
+	unsigned streamFreesAfter = 0;
+	{
 	MemoryStream stream(length, storage);
 	printf("  cand streamCtor done\n"); fflush(stdout);
 	stream.seek(0);
 	printf("  cand streamSeek done\n"); fflush(stdout);
+	{
 	PenetrationMap pmap;
 	printf("  cand pmapCtor done\n"); fflush(stdout);
 
@@ -1113,6 +1125,11 @@ static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, N
 		result->grid = digest;
 		}
 	printf("  cand digest done\n"); fflush(stdout);
+	}
+	streamFreesBefore = gAssetAllocator.freeCalls;
+	}
+	streamFreesAfter = gAssetAllocator.freeCalls;
+	result->streamFrees = streamFreesAfter - streamFreesBefore;
 	return true;
 	}
 
@@ -1430,6 +1447,22 @@ int wmain(int argc, wchar_t** argv)
 
 	NxOracle oracle;
 	oracle.base = (unsigned char*) physics;
+	// Route each module's SDK allocator through the same counting NxUserAllocator.
+	// This makes the private MemoryStream destructor's frees observable without
+	// inferring them from CRT heap state.
+	SdkAllocator* savedCandidateAllocator = nxGetSdkAllocator();
+	SdkAllocatorBridge assetCandidateAllocator;
+	assetCandidateAllocator.mAllocator = &gAssetAllocator;
+	nxSetSdkAllocatorBridge(&assetCandidateAllocator);
+	typedef bool (__cdecl* NxOracleSetAllocatorFn)(void*);
+	NxOracleSetAllocatorFn oracleSetAllocator = (NxOracleSetAllocatorFn)
+		(oracle.base + kSdkAllocatorSetRva);
+	SdkAllocator* savedOracleAllocator = *(SdkAllocator**)
+		(oracle.base + kSdkAllocatorSlotRva);
+	SdkAllocatorBridge assetOracleAllocator;
+	assetOracleAllocator.mAllocator = &gAssetAllocator;
+	if(!oracleSetAllocator(&assetOracleAllocator))
+		return nxFail("could not install counting allocator in the oracle module");
 	// Every one of these is a row the census names, so each is a translation-table lookup rather
 	// than an addition. `selfOnly` is what decides which the resolver does.
 	oracle.pmapCtor = (NxPMapCtorFn) nxOracleTarget(selfOnly, oracle.base, kPMapCtorRva,
@@ -1499,7 +1532,8 @@ int wmain(int argc, wchar_t** argv)
 	printf("asset fixtures pmap=%u mesh=%u writer=%u release=1\n",
 		kPMapFixtureCount, kMeshFixtureCount, kWriterFixtureCount);
 	printf("asset rows pmap_create=phys_fn_002047 pmap_sample=phys_fn_002029 pmap_load=phys_fn_002035 "
-		"mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051\n");
+		"mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051 "
+		"stream_dtor=phys_fn_004791\n");
 
 	unsigned expectMismatch = 0;
 	unsigned candidateMismatch = 0;
@@ -1507,6 +1541,9 @@ int wmain(int argc, wchar_t** argv)
 	unsigned drivenAccepted = 0;
 	unsigned drivenRejected = 0;
 	unsigned drivenErrors = 0;
+	unsigned streamDtorOracleFrees = 0;
+	unsigned streamDtorCandidateFrees = 0;
+	unsigned streamDtorCases = 0;
 
 	// Directly exercise phys_fn_002029 with a private-layout map and one triangle. The two flag
 	// patterns distinguish the map's classification split; the direction and matrix rows cover both
@@ -1672,14 +1709,23 @@ int wmain(int argc, wchar_t** argv)
 				// identical on both sides and said nothing about why it failed.
 				++candidateMismatch;
 				printf("pmap CANDIDATE-MISMATCH case=%s accepted=%u/%u errors=%u/%u line=0x%03x/0x%03x "
-					"cells=%u/%u grid=%08x/%08x resolution=%u/%u\n",
+					"cells=%u/%u grid=%08x/%08x resolution=%u/%u stream_frees=%u/%u\n",
 					fixture->name, candidate.accepted, actual.accepted,
 					candidate.errors, actual.errors, candidate.errorLine, actual.errorLine,
 					candidate.cells, actual.cells, candidate.grid, actual.grid,
-					candidate.resolution, actual.resolution);
+					candidate.resolution, actual.resolution,
+					candidate.streamFrees, actual.streamFrees);
 				}
+			streamDtorOracleFrees += actual.streamFrees;
+			streamDtorCandidateFrees += candidate.streamFrees;
+			++streamDtorCases;
+			printf("pmap stream-dtor row=phys_fn_004791 case=%s oracle_frees=%u candidate_frees=%u\n",
+				fixture->name, actual.streamFrees, candidate.streamFrees);
 			}
 		}
+	if(!selfOnly)
+		printf("asset row4791 row=phys_fn_004791 cases=%u oracle_frees=%u candidate_frees=%u mode=differential\n",
+			streamDtorCases, streamDtorOracleFrees, streamDtorCandidateFrees);
 
 	// -----------------------------------------------------------------------
 	// The triangle-mesh stream header.
@@ -1854,9 +1900,19 @@ int wmain(int argc, wchar_t** argv)
 		candidateMismatch, selfOnly ? "self" : "differential");
 
 	if(expectMismatch)
+		{
+		oracleSetAllocator(savedOracleAllocator);
+		nxSetSdkAllocatorBridge(savedCandidateAllocator);
 		return nxFail("the oracle did not answer what the recorded cases say it answered");
+		}
 	if(candidateMismatch)
+		{
+		oracleSetAllocator(savedOracleAllocator);
+		nxSetSdkAllocatorBridge(savedCandidateAllocator);
 		return nxFail("the reconstruction does not agree with the pinned oracle");
+		}
+	oracleSetAllocator(savedOracleAllocator);
+	nxSetSdkAllocatorBridge(savedCandidateAllocator);
 	printf("asset result=pass\n");
 	return 0;
 	}

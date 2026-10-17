@@ -523,3 +523,7 @@ The `Pruner::~Pruner` row `phys_fn_005537` is independently mutation-falsified t
 ## 26. 2026-10-15 SDK pruner-pool release shim
 
 `nxOpcodeReleasePool` (`phys_fn_005446`, RVA `0x000ef660`) is mutation-falsified through `NxPhysicsSceneAllocatorTests`, discharged by Phase 5. Replacing the shim with a no-op removes all five process-pool SDK-allocator frees (`b_free_sizes=none`) and changes the staged transcript (`stdout_delta=6`, both exits 0, exact stderr). Restored output matches exactly. See [phase4-pruner-release-pool-005446.md](phase4-pruner-release-pool-005446.md).
+
+## 27. 2026-10-16 MemoryStream destructor row
+
+`MemoryStream::~MemoryStream` (`phys_fn_004791`, RVA `0x000b3db0`) now has a row-specific allocator differential in `NxPhysicsAssetTests`. For each of the 16 PMap fixtures, both the pinned oracle and reconstructed stream free the two allocations owned by the stream; the registered aggregate marker requires 32 frees per side. Disabling the candidate destructor body produces 16 mismatches (32 oracle frees, zero candidate frees) and exits 1. Restoring the source returns the asset differential to zero mismatches with the same oracle digest `1daa095e`. The focused control, mutation, and restored transcripts are archived in [phase4-memory-stream-dtor-004791.md](phase4-memory-stream-dtor-004791.md).
