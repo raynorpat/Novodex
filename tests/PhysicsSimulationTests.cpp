@@ -769,6 +769,44 @@ static bool nxSimulationTestSdkPointerBindingThunk(HMODULE physics,
 	return mismatches == 0;
 	}
 
+static bool nxSimulationTestFluidSurfaceManagerConstructor(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* rowAddress = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"??0NxFluidSurfaceMeshManager@@QAE@XZ", 0x0008aec0u,
+		&rowAddress))
+		return false;
+	typedef void* (__thiscall *SurfaceManagerConstructor)(void*);
+	SurfaceManagerConstructor const construct =
+		reinterpret_cast<SurfaceManagerConstructor>(rowAddress);
+	alignas(4) unsigned char manager[0x3c];
+	memset(manager, 0xa5, sizeof(manager));
+	void* const returned = construct(manager);
+	const unsigned type = *reinterpret_cast<unsigned*>(manager + 0x30);
+	const bool prefixCleared = *reinterpret_cast<unsigned*>(manager + 0x08) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x0c) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x10) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x14) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x18) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x1c) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x20) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x24) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x28) == 0 &&
+		*reinterpret_cast<unsigned*>(manager + 0x2c) == 0;
+	const bool suffixCleared = *reinterpret_cast<unsigned*>(manager + 0x34) == 0;
+	const bool storageAllocated = *reinterpret_cast<void**>(manager + 0x38) != 0;
+	const unsigned mismatches = !(returned == manager &&
+		*reinterpret_cast<void**>(manager) != 0 && prefixCleared &&
+		type == 4 && suffixCleared && storageAllocated);
+	printf("simulation fluid-surface-manager-ctor row=003685 returned=%u vptr=%u fields=%u type=%u storage=%u mismatches=%u\n",
+		returned == manager ? 1u : 0u,
+		*reinterpret_cast<void**>(manager) != 0 ? 1u : 0u,
+		prefixCleared && suffixCleared ? 1u : 0u, type,
+		storageAllocated ? 1u : 0u, mismatches);
+	return mismatches == 0;
+	}
+
 static unsigned short nxSimulationReadX87ControlWord()
 	{
 	unsigned short controlWord = 0;
@@ -1601,6 +1639,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 003683 failed the SDK pointer-binding thunk probe");
+		}
+	if(!nxSimulationTestFluidSurfaceManagerConstructor(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 003685 failed the fluid surface-manager constructor probe");
 		}
 	if(!nxSimulationTestActorOwnerPairCleanupRow521(physics, pairDirectory))
 		{

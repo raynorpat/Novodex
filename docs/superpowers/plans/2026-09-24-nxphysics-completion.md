@@ -1340,3 +1340,8 @@ Two additional branches in the initial-particle helper now have exact oracle dif
 ### Phase 7 continuation — SDK pointer-binding thunk (`phys_fn_003683`, 2026-10-17)
 
 Reconstructed the thiscall bridge to the existing SDK pointer map and routed existing internal binding call sites through its private MSVC member entry. The registered simulation probe verifies map insertion, replacement, removal, and clearing. A return-false mutation is rejected (`mismatches=1`, `stdout_delta=4106`); cleanly rebuilt restored output matches the oracle exactly. The row is now dynamically gated and mutation-falsified; Phase 7 closes one additional function. Full Phase 5/6/7 gates pass at 2,849/2,849, 1,723/1,723, and 2,982/2,982 assertions, and all 817 reconstruction-tool tests pass. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-sdk-pointer-binding-thunk-003683.md`. Continue with the next open row selected by the completion backlog; this slice does not complete the full DLL reconstruction.
+
+
+### Phase 7 continuation — fluid surface-mesh manager constructor (`phys_fn_003685`, 2026-10-17)
+
+Reconstructed the 0x3c-byte manager constructor and wired it into surface-mesh initialization, including its default type word and 0x18-byte public mesh allocation. The registered simulation probe checks poisoned storage against the oracle; changing the type from 4 to 5 is mutation-rejected (`mismatches=1`, `stdout_delta=4106`), while restored output is exact. The existing licensed mesh creation and allocation-failure route remains oracle-exact. Fresh Phase 5/6/7 gates pass at 2,850/2,850, 1,724/1,724, and 2,983/2,983 assertions. All 817 reconstruction-tool tests pass after regenerating the row-level work-unit map.

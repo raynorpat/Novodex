@@ -2538,6 +2538,26 @@ static void* gNxFluidSurfaceMeshVtable[] = {
 	reinterpret_cast<void*>(nxFluidSurfaceMeshDeletingDestructor)
 	};
 
+// phys_fn_003685 constructs the private fluid surface-mesh manager in its
+// caller-provided 0x3c-byte allocation. Its public mesh storage is a separate
+// persistent 0x18-byte allocation held at +0x38.
+class NxFluidSurfaceMeshManager
+	{
+	public:
+	NxFluidSurfaceMeshManager();
+	};
+
+NxFluidSurfaceMeshManager::NxFluidSurfaceMeshManager()
+	{
+	unsigned char* const bytes = reinterpret_cast<unsigned char*>(this);
+	*reinterpret_cast<void***>(bytes) = gNxFluidSurfaceMeshVtable;
+	memset(bytes + 8, 0, 0x28);
+	*reinterpret_cast<unsigned*>(bytes + 0x30) = 4;
+	*reinterpret_cast<unsigned*>(bytes + 0x34) = 0;
+	*reinterpret_cast<void**>(bytes + 0x38) =
+		::operator new(0x18, std::nothrow);
+	}
+
 static void nxImplicitMeshResolveBackend(void* record, void** manager,
 	void** fluid)
 	{
@@ -2677,8 +2697,7 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 		NX_MEMORY_PERSISTENT);
 	if(!manager)
 		return 0;
-	memset(manager, 0, 0x3c);
-	*reinterpret_cast<void***>(manager) = gNxFluidSurfaceMeshVtable;
+	new(manager) NxFluidSurfaceMeshManager();
 	unsigned char* const bytes = static_cast<unsigned char*>(manager);
 	*reinterpret_cast<void**>(bytes + 4) = fluid;
 	memcpy(bytes + 8, reinterpret_cast<const unsigned char*>(desc) + 0x14,
@@ -2690,7 +2709,9 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 	gNxImplicitFluidMeshCreateCallback(backendManager, backendFluid,
 		desc->singleRadius, desc->surfaceRadius, desc->blend,
 		desc->triangleSize, desc->smoothingIterations);
-	NpImplicitMesh* const mesh = new(std::nothrow) NpImplicitMesh(manager);
+	void* const meshStorage = *reinterpret_cast<void**>(bytes + 0x38);
+	NpImplicitMesh* const mesh = meshStorage
+		? new(meshStorage) NpImplicitMesh(manager) : 0;
 	if(mesh)
 		{
 		mesh->userData = desc->userData;

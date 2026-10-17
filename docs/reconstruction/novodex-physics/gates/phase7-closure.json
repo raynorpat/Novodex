@@ -20,10 +20,10 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 290,
+    "differential_falsified": 291,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 138,
-    "deferred_not_reconstructed_in_phase": 69,
+    "deferred_not_reconstructed_in_phase": 68,
     "deferred_reconstructed_not_falsified": 62
   },
   "closed": [
@@ -4615,6 +4615,17 @@
         "detected": "stdout_delta=4106"
       },
       "note": "The thunk forwards this plus the value to phys_fn_000480 and is used by existing internal SDK pointer-binding paths. See evidence/phase7-sdk-pointer-binding-thunk-003683.md."
+    },
+    {
+      "id": "phys_fn_003685",
+      "rva": "0x0008aec0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSimulationTests",
+      "falsification": {
+        "mutation": "Changed the candidate surface-manager constructor's default type word from 4 to 5. The registered oracle/candidate probe reported type=5 and mismatches=1; the staged differential rejected the candidate (oracle_exit=0, candidate_exit=1, stdout_delta=4106). Restoring the constructor returned both probes to type=4 and exact output.",
+        "detected": "stdout_delta=4106"
+      },
+      "note": "The constructor initializes the private fluid surface-mesh manager and allocates its 0x18-byte public mesh storage. See evidence/phase7-fluid-surface-manager-constructor-003685.md."
     }
   ],
   "deferred": [
@@ -5443,14 +5454,6 @@
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003685",
-      "rva": "0x0008aec0",
-      "size": 90,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_003687",

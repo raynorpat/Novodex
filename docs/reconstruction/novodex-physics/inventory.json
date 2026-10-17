@@ -69308,13 +69308,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1395",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12720",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x0008aec0 shows the 0x3c-byte fluid surface-mesh manager constructor: install its vtable, clear +0x08..+0x2c and +0x34, set +0x30 to 4, and allocate 0x18 bytes into +0x38.",
+      "dynamic_proof": "NxPhysicsSimulationTests calls oracle RVA 0x0008aec0 and the candidate constructor symbol on 0xa5-poisoned 0x3c-byte storage; it verifies returned this, non-null vptr and nested storage, cleared fields, and type 4. A type-5 mutation is rejected (mismatches=1; candidate_exit=1; stdout_delta=4106); restored differential is exact.",
+      "notes": "The constructor is used by nxFluidInitializeSurfaceMesh; the existing licensed surface-mesh allocator-failure route remains exact. Public headers are unchanged.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "??0NxFluidSurfaceMeshManager@@QAE@XZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??0NxFluidSurfaceMeshManager@@QAE@XZ",
+        "address": "0x1005d660",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003686",

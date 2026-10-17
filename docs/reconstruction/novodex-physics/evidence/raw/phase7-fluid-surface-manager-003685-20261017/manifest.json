@@ -1,0 +1,47 @@
+{
+  "row": "phys_fn_003685",
+  "date": "2026-10-17",
+  "description": "Oracle/candidate constructor probe, type-field mutation rejection, and restored exact control.",
+  "files": {
+    "phase7-fluid-surface-manager-003685-red.log.gz": {
+      "sha256": "6218e85cccfe104c517ee4584b07407115ebce6c5ce134a47257fe3c64ff125e",
+      "uncompressed_sha256": "d9159226fb5232e9842f34336c19389e9ee036927b6901dce4e6af20b3f7f830",
+      "source": "build/phase7-fluid-surface-manager-003685-red.log"
+    },
+    "phase7-fluid-surface-manager-003685-green2.log.gz": {
+      "sha256": "a3b67ab74a6ce99827c8ff32864ae927234d7ac75f0a64e425bb0f81768d9c73",
+      "uncompressed_sha256": "bf7ddb9054645c4ecb1edfb260fff31408dcaee2b5fd02cd668898494d160e69",
+      "source": "build/phase7-fluid-surface-manager-003685-green2.log"
+    },
+    "phase7-fluid-surface-manager-003685-mutation.log.gz": {
+      "sha256": "64db0f37615dc6ceb3e978e5d3ac8e85f2d15ed5b44121d40b041d78bcad065c",
+      "uncompressed_sha256": "e95c45fc23a10d4901bb444c57ec48da24147ab5018d722b815cd65d88a46c9f",
+      "source": "build/phase7-fluid-surface-manager-003685-mutation.log"
+    },
+    "phase7-fluid-surface-manager-003685-restored.log.gz": {
+      "sha256": "f2dbce2529f695ca836c1cd7b36a2d0181772e8428651289c80a1d4c9e8d82d6",
+      "uncompressed_sha256": "02dd0c105920cc140184b26ce285dca91292e4906ab53c2782ecd9a7cbbff0d7",
+      "source": "build/phase7-fluid-surface-manager-003685-restored.log"
+    },
+    "phase7-fluid-surface-manager-003685-phase5.log.gz": {
+      "sha256": "fa0e4cec47cbdb92f79d4a22c5210a928239447d3232b94b1110f3b405426c6a",
+      "uncompressed_sha256": "600c167a0b1e39ebde454d223de7848c988810fb93a9adb19cf9d10f05ddb356",
+      "source": "build/phase7-fluid-surface-manager-003685-phase5.log"
+    },
+    "phase7-fluid-surface-manager-003685-phase6.log.gz": {
+      "sha256": "e3bdcc42a199bfe0590e73844b3365bc350a7d37eba018c041773a3ae33b0132",
+      "uncompressed_sha256": "993a469cda422560257cf62ed3b1c7fc2c59e171e5e11a377156c2703098c19a",
+      "source": "build/phase7-fluid-surface-manager-003685-phase6.log"
+    },
+    "phase7-fluid-surface-manager-003685-phase7.log.gz": {
+      "sha256": "0568fd105abc3e67c13e3560a1b4c2763f5cb7b8a0a2d318306fea38aa20807e",
+      "uncompressed_sha256": "213bb08765ede880c0ecff683fa2457de56d3ef57dca4e13ce13e0676c21446d",
+      "source": "build/phase7-fluid-surface-manager-003685-phase7.log"
+    },
+    "phase7-fluid-surface-manager-003685-tool-tests-rerun.log.gz": {
+      "sha256": "a082d5bd018184b146f868926a9930b0e8a855ba95893738ac6f45fc2df2342e",
+      "uncompressed_sha256": "3f267c1077e6608a8fe7b794b502cef5555d07a1ca8c64001a11aadebec309fc",
+      "source": "build/phase7-fluid-surface-manager-003685-tool-tests-rerun.log"
+    }
+  }
+}
