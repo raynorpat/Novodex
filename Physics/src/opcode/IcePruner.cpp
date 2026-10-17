@@ -712,6 +712,15 @@ BoundedDynamicPruner::BoundedDynamicPruner()
 
 BoundedDynamicPruner::~BoundedDynamicPruner()
 {
+	if(mTree)
+		{
+		void** const fields = static_cast<void**>(mTree);
+		void* const nodes = fields[0x4c / sizeof(void*)];
+		if(nodes)
+			opcNovodeXFree(static_cast<char*>(nodes) - sizeof(udword));
+		opcNovodeXFree(mTree);
+		mTree = 0;
+		}
 }
 
 struct BoundedTreeQuery
@@ -847,6 +856,152 @@ static void nxBoundedTreeChildBounds(const Point& nodeMin, const Point& nodeMax,
 	const float childCenterZ = center.z + ((octant & 1u) ? offset : -offset);
 	childMin = Point(childCenterX - half, childCenterY - half, childCenterZ - half);
 	childMax = Point(childCenterX + half, childCenterY + half, childCenterZ + half);
+}
+
+// phys_fn_005244 (0x000e58a0) lazily creates the tree that
+// phys_fn_001967 (0x0004c020) walks for bounded-pruner visualization. The
+// allocation and field offsets below follow that tree's 0x50-byte header and
+// 32-byte node records. The node array has its count word immediately before
+// the pointer stored at tree+0x4c.
+struct BoundedVisualizationTree
+	{
+	unsigned char bytes[0x50];
+	};
+
+struct BoundedVisualizationNode
+	{
+	AABB bounds;
+	udword occupiedSubtreeCount;
+	udword firstObject;
+	};
+
+static_assert(sizeof(BoundedVisualizationTree) == 0x50,
+	"bounded visualization tree header matches phys_fn_005244");
+static_assert(sizeof(BoundedVisualizationNode) == 0x20,
+	"bounded visualization tree node matches phys_fn_005244");
+
+bool BoundedDynamicPruner::BuildVisualizationTree()
+{
+	if(mTree)
+		return true;
+	const udword objectCount = mPool.mNbObjects[0] + mPool.mNbObjects[1];
+	if(!objectCount)
+		return true;
+
+	Point rootMin, rootMax;
+	mBounds.GetMin(rootMin);
+	mBounds.GetMax(rootMax);
+	float treeScale = rootMax.x - rootMin.x;
+	if(rootMax.y - rootMin.y > treeScale) treeScale = rootMax.y - rootMin.y;
+	if(rootMax.z - rootMin.z > treeScale) treeScale = rootMax.z - rootMin.z;
+	if(!(treeScale > 0.0f))
+		return true;
+	const Point rootCenter((rootMin.x + rootMax.x) * 0.5f,
+		(rootMin.y + rootMax.y) * 0.5f, (rootMin.z + rootMax.z) * 0.5f);
+	const float rootSide = treeScale * 2.0f;
+	const float halfRootSide = rootSide * 0.5f;
+	rootMin = Point(rootCenter.x - halfRootSide, rootCenter.y - halfRootSide,
+		rootCenter.z - halfRootSide);
+	rootMax = Point(rootCenter.x + halfRootSide, rootCenter.y + halfRootSide,
+		rootCenter.z + halfRootSide);
+	const udword nodeCount = 37449u;
+	const size_t nodeBytes = sizeof(udword) + size_t(nodeCount) * sizeof(BoundedVisualizationNode);
+	BoundedVisualizationTree* const tree = static_cast<BoundedVisualizationTree*>(
+		opcNovodeXAlloc(sizeof(BoundedVisualizationTree)));
+	udword* const allocation = static_cast<udword*>(opcNovodeXAlloc(nodeBytes));
+	if(!tree || !allocation)
+		{
+		if(tree) opcNovodeXFree(tree);
+		if(allocation) opcNovodeXFree(allocation);
+		return false;
+		}
+	memset(tree, 0, sizeof(*tree));
+	*allocation = nodeCount;
+	BoundedVisualizationNode* const nodes = reinterpret_cast<BoundedVisualizationNode*>(allocation + 1);
+	memset(nodes, 0, sizeof(BoundedVisualizationNode) * nodeCount);
+	memcpy(tree->bytes, &rootMin, sizeof(Point));
+	memcpy(tree->bytes + 0x0c, &rootMax, sizeof(Point));
+	const float origin[3] = { -rootCenter.x, -rootCenter.y, -rootCenter.z };
+	memcpy(tree->bytes + 0x18, origin, sizeof(origin));
+	memcpy(tree->bytes + 0x24, &rootSide, sizeof(rootSide));
+	const float levelScale[6] = { rootSide * 0.5f, rootSide * 0.25f,
+		rootSide * 0.125f, rootSide * 0.0625f, rootSide * 0.03125f,
+		rootSide * 0.015625f };
+	memcpy(tree->bytes + 0x28, levelScale, sizeof(levelScale));
+	const udword depth = 5;
+	memcpy(tree->bytes + 0x44, &depth, sizeof(depth));
+	memcpy(tree->bytes + 0x48, &nodeCount, sizeof(nodeCount));
+	BoundedVisualizationNode* nodePointer = nodes;
+	memcpy(tree->bytes + 0x4c, &nodePointer, sizeof(nodePointer));
+
+	for(udword node = 0; node < nodeCount; ++node)
+		{
+		Point nodeMin, nodeMax;
+		nxBoundedTreeNodeBounds(node, rootMin, rootMax, nodeMin, nodeMax);
+		nodes[node].bounds.SetMinMax(nodeMin, nodeMax);
+		}
+	for(udword i = 0; i < objectCount; ++i)
+		{
+		Prunable* const object = mPool.mObjects[i];
+		if(object->mHandle == PRUNABLE_INVALID_HANDLE || !object->mOwner)
+			continue;
+		float centerRadius[4];
+		void** const ownerVtable = *reinterpret_cast<void***>(object->mOwner);
+		typedef void (__thiscall* CenterRadiusFn)(void*, float*);
+		reinterpret_cast<CenterRadiusFn>(ownerVtable[10])(object->mOwner, centerRadius);
+		const float objectRadius = centerRadius[3];
+		udword objectDepth = 0;
+		while(objectDepth < depth && treeScale / float(1u << (objectDepth + 1)) >= objectRadius * 2.0f)
+			++objectDepth;
+		Point nodeCenter = rootCenter;
+		float nodeSide = rootSide;
+		udword node = 0;
+		for(udword level = 0; level < objectDepth; ++level)
+			{
+			const udword octant = (centerRadius[0] >= nodeCenter.x ? 4u : 0u)
+				| (centerRadius[1] >= nodeCenter.y ? 2u : 0u)
+				| (centerRadius[2] >= nodeCenter.z ? 1u : 0u);
+			node = node * 8u + octant + 1u;
+			const float offset = nodeSide * 0.125f;
+			nodeCenter.x += (octant & 4u) ? offset : -offset;
+			nodeCenter.y += (octant & 2u) ? offset : -offset;
+			nodeCenter.z += (octant & 1u) ? offset : -offset;
+			nodeSide *= 0.5f;
+			}
+		for(;;)
+			{
+			++nodes[node].occupiedSubtreeCount;
+			if(!node) break;
+			node = (node - 1u) / 8u;
+			}
+		}
+	mTree = tree;
+	return true;
+}
+
+static void nxWalkBoundedVisualizationNode(BoundedVisualizationNode* nodes,
+	udword nodeCount, udword node, void (*callback)(const AABB&, void*), void* userData)
+{
+	if(node >= nodeCount || !nodes[node].occupiedSubtreeCount)
+		return;
+	callback(nodes[node].bounds, userData);
+	for(udword child = 1; child <= 8; ++child)
+		nxWalkBoundedVisualizationNode(nodes, nodeCount, node * 8u + child,
+			callback, userData);
+}
+
+void BoundedDynamicPruner::WalkVisualizationTree(
+	void (*callback)(const AABB&, void*), void* userData)
+{
+	if(!callback || !BuildVisualizationTree() || !mTree)
+		return;
+	unsigned char* const bytes = static_cast<unsigned char*>(mTree);
+	udword nodeCount = 0;
+	BoundedVisualizationNode* nodes = 0;
+	memcpy(&nodeCount, bytes + 0x48, sizeof(nodeCount));
+	memcpy(&nodes, bytes + 0x4c, sizeof(nodes));
+	if(nodes)
+		nxWalkBoundedVisualizationNode(nodes, nodeCount, 0, callback, userData);
 }
 
 static void nxBoundedTreeQueryNode(BoundedTreeQuery& query, udword node,

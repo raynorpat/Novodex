@@ -1,0 +1,11 @@
+# Bounded dynamic pruner visualization (`phys_fn_001967`)
+
+IDA decompilation at RVA `0x0004c020` shows that this row lazily constructs the bounded pruner's cached fixed-depth tree, traverses occupied nodes in child-slot order, submits each node AABB in red, then submits the configured pruner bounds in magenta. The candidate previously generated matching line output from a temporary occupancy array but left the oracle-visible tree pointer at `BoundedDynamicPruner+0x3c` null.
+
+`BoundedDynamicPruner::BuildVisualizationTree` now creates the oracle's 0x50-byte tree header and 37,449 0x20-byte node records, stores the allocation at `+0x3c`, and records occupied-subtree counts from registered objects. The pruner destructor releases both allocations. `NxPhysicsSceneVisualizeTests` reads the private tree pointer after the public visualization call and requires it to be populated for the two-shape fixture. No public headers changed.
+
+The Release candidate and pinned oracle both exit zero. Each reports `bounded_dynamic_tree_cached=1 expected=1 matched=1`, and their 108 bounded-dynamic AABB lines match exactly: 96 red occupied-node lines followed by 12 magenta bounds lines. The same test is registered to the Phase 7 coverage gate.
+
+Two candidate mutations were falsified. Removing the lazy tree-build call makes the fixture report `bounded_dynamic_tree_cached=0 expected=1 matched=0` and exit 1 while the oracle passes. Removing the cached-node walk changes the registered staged-pair transcript by `stdout_delta=3748` (both processes exit zero, exact stderr); the Phase 7 differential rejects it. Restoring and rebuilding returns both exits to zero and exact output. The full Phase 7 gate passes at `2,998/2,998` assertions.
+
+The larger DLL moved the CRT `free` import slot used by several FluidEmitter ABI checks. `PhysicsFluidEmitterAbiTests` now locates that import in the loaded PE instead of patching a fixed candidate RVA; its oracle-only output digest remains `8118a314a96b9fa9cb4c0cb9a125eb01843b193bbf343fdf4bafa54ba4c6df5f`, and its candidate differential passes with zero mismatches. Restored, mutant, and full-gate logs are under [evidence/raw/phase7-bounded-pruner-visualize-001967-20261017](raw/phase7-bounded-pruner-visualize-001967-20261017/).

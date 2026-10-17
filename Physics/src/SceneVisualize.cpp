@@ -540,107 +540,30 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 		BoundedDynamicPruner* const pruner = static_cast<BoundedDynamicPruner*>(pruners[1]);
 		if(pruner)
 			{
+			pruner->BuildVisualizationTree();
 			const udword count = pruner->mPool.mNbObjects[0] + pruner->mPool.mNbObjects[1];
 			if(count)
 				{
-				Point rootMin, rootMax;
-				pruner->mBounds.GetMin(rootMin);
-				pruner->mBounds.GetMax(rootMax);
-				float treeScale = rootMax.x - rootMin.x;
-				if(rootMax.y - rootMin.y > treeScale) treeScale = rootMax.y - rootMin.y;
-				if(rootMax.z - rootMin.z > treeScale) treeScale = rootMax.z - rootMin.z;
-				const Point rootCenter((rootMin.x + rootMax.x) * 0.5f,
-					(rootMin.y + rootMax.y) * 0.5f, (rootMin.z + rootMax.z) * 0.5f);
-				const float rootSide = treeScale * 2.0f;
-
-				const udword nodeCount = 37449u;
-				std::vector<unsigned char> occupied(nodeCount, 0);
-				for(udword i = 0; i < count; ++i)
-					{
-					Prunable* const object = pruner->mPool.mObjects[i];
-					if(object->mHandle == PRUNABLE_INVALID_HANDLE)
-						continue;
-					if(!(object->mFlags & PRUNABLE_FLAG_WORLD_AABB_VALID))
-						object->UpdateWorldAABB(&pruner->mPool.mWorldBoxes[object->mHandle]);
-					float centerRadius[4];
-					void* const owner = object->mOwner;
-					if(!owner)
-						continue;
-					void** const ownerVtable = *reinterpret_cast<void***>(owner);
-					typedef void (__thiscall* CenterRadiusFn)(void*, float*);
-					reinterpret_cast<CenterRadiusFn>(ownerVtable[10])(owner, centerRadius);
-					const float radius = centerRadius[3];
-					const float objectSize = radius + radius;
-					udword depth = 0;
-					while(depth < 5 && treeScale / float(1u << (depth + 1)) >= objectSize)
-						++depth;
-					udword node = 0;
-					Point nodeCenter = rootCenter;
-					float nodeSide = rootSide;
-					for(udword level = 0; level < depth; ++level)
-						{
-						const udword octant = (centerRadius[0] >= nodeCenter.x ? 4u : 0u)
-							| (centerRadius[1] >= nodeCenter.y ? 2u : 0u)
-							| (centerRadius[2] >= nodeCenter.z ? 1u : 0u);
-						node = node * 8u + octant + 1u;
-						const float offset = nodeSide * 0.125f;
-						nodeCenter.x += (octant & 4u) ? offset : -offset;
-						nodeCenter.y += (octant & 2u) ? offset : -offset;
-						nodeCenter.z += (octant & 1u) ? offset : -offset;
-						nodeSide *= 0.5f;
-						}
-					for(;;)
-						{
-						occupied[node] = 1;
-						if(!node)
-							break;
-						node = (node - 1u) / 8u;
-						}
-					}
 				NxDebugRenderable* const prunerRenderable = PhysicsSDK::instance
 					? PhysicsSDK::instance->getDebugRenderable() : 0;
-				std::vector<udword> pending;
-				if(occupied[0])
-					pending.push_back(0);
-				while(prunerRenderable && !pending.empty())
+				if(prunerRenderable)
 					{
-					const udword node = pending.back();
-					pending.pop_back();
-					udword depth = 0;
-					udword firstAtDepth = 0;
-					udword levelCount = 1;
-					while(depth < 5 && node >= firstAtDepth + levelCount)
+					struct WalkContext
 						{
-						firstAtDepth += levelCount;
-						levelCount *= 8;
-						++depth;
-						}
-					const udword path = node - firstAtDepth;
-					Point center = rootCenter;
-					float side = rootSide;
-					for(udword level = 0; level < depth; ++level)
+						NxDebugRenderable* renderable;
+						};
+					WalkContext context = { prunerRenderable };
+					const auto drawNode = [](const AABB& node, void* userData)
 						{
-						const udword shift = 3 * (depth - level - 1);
-						const udword octant = (path >> shift) & 7u;
-						const float offset = side * 0.125f;
-						center.x += (octant & 4u) ? offset : -offset;
-						center.y += (octant & 2u) ? offset : -offset;
-						center.z += (octant & 1u) ? offset : -offset;
-						side *= 0.5f;
-						}
-					const float half = side * 0.5f;
-					NxBounds3 bounds;
-					bounds.set(NxVec3(center.x - half, center.y - half, center.z - half),
-						NxVec3(center.x + half, center.y + half, center.z + half));
-					prunerRenderable->addAABB(bounds, 0xffff0000u, false);
-					// The oracle invokes the node callback before visiting children 1..8.
-					// Push in reverse so this LIFO walk preserves that preorder.
-					for(udword child = 8; child != 0; --child)
-						{
-						const udword childNode = node * 8u + child;
-						if(childNode < nodeCount && occupied[childNode])
-							pending.push_back(childNode);
-						}
+						WalkContext* const context = static_cast<WalkContext*>(userData);
+						NxBounds3 bounds;
+						Point min, max;
+						node.GetMin(min);
+						node.GetMax(max);
+						bounds.set(NxVec3(min.x, min.y, min.z), NxVec3(max.x, max.y, max.z));
+						context->renderable->addAABB(bounds, 0xffff0000u, false);
+						};
+					pruner->WalkVisualizationTree(drawNode, &context);
 					}
 				NxDebugRenderable* const boundsRenderable = PhysicsSDK::instance
 					? PhysicsSDK::instance->getDebugRenderable() : 0;

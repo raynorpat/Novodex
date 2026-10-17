@@ -20,10 +20,10 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 297,
+    "differential_falsified": 298,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 138,
-    "deferred_not_reconstructed_in_phase": 62,
+    "deferred_not_reconstructed_in_phase": 61,
     "deferred_reconstructed_not_falsified": 62
   },
   "closed": [
@@ -2541,6 +2541,17 @@
       }
     },
     {
+      "id": "phys_fn_001967",
+      "rva": "0x0004c020",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneVisualizeTests",
+      "falsification": {
+        "mutation": "Two candidate mutations were falsified. Removing the lazy tree build reports cached=0 and fails against the passing oracle. Removing the cached-node walk changes the registered NxPhysicsSceneVisualizeTests staged-pair transcript; the Phase 7 differential rejects the mutant with oracle_exit=0, candidate_exit=0, stdout_delta=3748, and exact stderr. Restoring and rebuilding returns both exits to zero with exact output.",
+        "detected": "stdout_delta=3748"
+      },
+      "note": "The lazy bounded-pruner tree is stored at +0x3c and its occupied nodes are traversed depth-first in child-slot order. See evidence/phase7-bounded-pruner-visualize-001967.md."
+    },
+    {
       "id": "phys_fn_001974",
       "rva": "0x0004c260",
       "proof": "differential_falsified",
@@ -4712,14 +4723,6 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001967",
-      "rva": "0x0004c020",
-      "size": 68,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_001969",

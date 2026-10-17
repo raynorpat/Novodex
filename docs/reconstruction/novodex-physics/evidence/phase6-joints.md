@@ -11236,3 +11236,7 @@ Phase 7 Scene scalar-deleting thunk `phys_fn_000668`: `NxPhysicsSceneScalarDelet
 
 Phase 7 pruner rows `phys_fn_001949` and `phys_fn_001951` are mutation-falsified through `NxPhysicsSimulationTests`. Omitting the coherent `UpdateObject` refresh changes moved-apart pairs from the oracle's 1 to 2 (`stdout_delta=674`); zeroing pool counts breaks trigger lifecycle (`stdout_delta=4099`). Restored controls are exact. Details and compressed raw logs: `evidence/phase7-pruner-pair-refresh-001949-001951.md`.
 Fresh Phase 5/6/7 gates pass at 2,861/2,861, 1,728/1,728, and 2,997/2,997. All 817 reconstruction-tool tests pass, inventory validation reports zero unexplained rows, and both public-header manifests match 80 files.
+
+Phase 7 bounded-pruner visualization phys_fn_001967: the cached-tree walk mutation is rejected by NxPhysicsSceneVisualizeTests (stdout_delta=3748, oracle_exit=0, candidate_exit=0, stderr_exact=True); the restored differential has stdout_delta=0. The tree-cache omission separately fails its explicit pointer assertion. See [phase7-bounded-pruner-visualize-001967.md](phase7-bounded-pruner-visualize-001967.md).
+
+Fresh Phase 7 gate after phys_fn_001967 closes passes at 2,998/2,998 registered assertions; the bounded-pruner visualization candidate/oracle transcript is exact. Evidence and the compressed gate log: vidence/phase7-bounded-pruner-visualize-001967.md and vidence/raw/phase7-bounded-pruner-visualize-001967-20261017/.

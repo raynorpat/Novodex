@@ -84,6 +84,7 @@ class NxRecordingOutput : public NxUserOutputStream
 static const char* nxStage = "";
 static bool nxFreePrunerBlueAabbsObserved = false;
 static bool nxType3PrunerRedAabbsObserved = false;
+static bool nxBoundedDynamicTreeCached = false;
 
 static void nxPrintVec(const char* name, const NxVec3& v)
 	{
@@ -194,6 +195,21 @@ static void nxRunStage(NxPhysicsSDK* sdk, NxScene* scene, const NxStage& stage, 
 			sdk->getParameter(NX_VISUALIZE_COLLISION_DYNAMIC),
 			sdk->getParameter(NX_VISUALIZE_COLLISION_FREE));
 	scene->visualize();
+	if(strcmp(stage.name, "bounded_dynamic") == 0)
+		{
+		void* internalScene = 0;
+		memcpy(&internalScene, reinterpret_cast<unsigned char*>(scene) + 0x24,
+			sizeof(internalScene));
+		unsigned char* const sceneBytes = static_cast<unsigned char*>(internalScene);
+		void** const pruners = reinterpret_cast<void**>(sceneBytes + 0x624 + 0x1c);
+		void* const boundedDynamicPruner = pruners[1];
+		void* const tree = boundedDynamicPruner
+			? *reinterpret_cast<void**>(static_cast<unsigned char*>(boundedDynamicPruner) + 0x3c) : 0;
+		nxBoundedDynamicTreeCached = tree != 0;
+		printf("visualize row001967 bounded_dynamic_tree_cached=%u expected=1 matched=%u\n",
+			nxBoundedDynamicTreeCached ? 1u : 0u,
+			nxBoundedDynamicTreeCached ? 1u : 0u);
+		}
 	NxRecordingRenderer renderer;
 	sdk->visualize(renderer);
 	printf("visualize %s renderables=%u\n", label, renderer.mCalls);
@@ -400,6 +416,11 @@ static bool nxRunBoundedDynamicStage(NxPhysicsSDK* sdk)
 	NxStage stage = { "bounded_dynamic", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f } };
 	nxRunStage(sdk, scene, stage, "bounded");
+	if(!nxBoundedDynamicTreeCached)
+		{
+		sdk->releaseScene(*scene);
+		return false;
+		}
 	sdk->releaseScene(*scene);
 	scene = sdk->createScene(desc);
 	if(!scene)

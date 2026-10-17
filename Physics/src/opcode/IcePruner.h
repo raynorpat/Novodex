@@ -105,6 +105,9 @@ class BoundedDynamicPruner : public DynamicPruner
 								udword mask, bool sphereQuery, const Point& sphereCenter,
 								float sphereRadius, const float* planes = 0,
 								udword nbPlanes = 0);
+			bool				BuildVisualizationTree();
+			void				WalkVisualizationTree(void (*callback)(const AABB&, void*),
+								void* userData);
 
 		void*					mTree;				//!< +0x3c
 };

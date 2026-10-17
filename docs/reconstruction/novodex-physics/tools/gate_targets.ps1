@@ -3227,6 +3227,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize created stage=collision_aabbs renderables=1'
         'visualize created stage=collision_sap renderables=1'
         'visualize bounded stage=bounded_dynamic parameters sap=0 static=0 dynamic=1 free=0'
+        'visualize row001967 bounded_dynamic_tree_cached=1 expected=1 matched=1'
         'visualize bounded stage=bounded_dynamic renderable=2 points=0 lines=108 triangles=0'
         'visualize bounded stage=bounded_dynamic line=0 p0=c2800000.c2800000.c2800000 p1=42800000.c2800000.c2800000 color=ffff0000'
         'visualize bounded stage=bounded_dynamic line=96 p0=c2000000.c1800000.c1800000 p1=42000000.c1800000.c1800000 color=ffff00ff'
@@ -6430,7 +6431,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2997  # adds invalid broadphase selector diagnostic coverage for row 000544
+	'7' = 2998  # adds bounded-pruner tree-cache coverage for row 001967
+	           # plus invalid broadphase selector diagnostic coverage for row 000544
                # plus the full invalid fluid-emitter descriptor corpus assertion
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage

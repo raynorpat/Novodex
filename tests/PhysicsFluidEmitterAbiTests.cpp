@@ -1852,7 +1852,7 @@ static void __cdecl nxObserveCandidateFree(void* block)
 static bool nxReplaceImportSlot(HMODULE module, unsigned rva,
 	void* replacement, void** original)
 	{
-	if(!module || !replacement || !original)
+	if(!module || !rva || !replacement || !original)
 		return false;
 	void** const slot = reinterpret_cast<void**>(
 		reinterpret_cast<unsigned char*>(module) + rva);
@@ -1868,7 +1868,7 @@ static bool nxReplaceImportSlot(HMODULE module, unsigned rva,
 
 static bool nxRestoreImportSlot(HMODULE module, unsigned rva, void* original)
 	{
-	if(!module || !original)
+	if(!module || !rva || !original)
 		return false;
 	void** const slot = reinterpret_cast<void**>(
 		reinterpret_cast<unsigned char*>(module) + rva);
@@ -1879,6 +1879,45 @@ static bool nxRestoreImportSlot(HMODULE module, unsigned rva, void* original)
 	DWORD ignoredProtection = 0;
 	return VirtualProtect(slot, sizeof(*slot), oldProtection,
 		&ignoredProtection) != FALSE;
+	}
+
+// Candidate section growth moves its IAT between CMake builds. Resolve the
+// imported CRT free slot from the loaded PE instead of pinning yesterday's RVA.
+static unsigned nxFindCrtFreeImportRva(HMODULE module)
+	{
+	if(!module)
+		return 0;
+	unsigned char* const base = reinterpret_cast<unsigned char*>(module);
+	IMAGE_DOS_HEADER* const dos = reinterpret_cast<IMAGE_DOS_HEADER*>(base);
+	if(dos->e_magic != IMAGE_DOS_SIGNATURE)
+		return 0;
+	IMAGE_NT_HEADERS32* const nt = reinterpret_cast<IMAGE_NT_HEADERS32*>(base + dos->e_lfanew);
+	if(nt->Signature != IMAGE_NT_SIGNATURE)
+		return 0;
+	const IMAGE_DATA_DIRECTORY imports =
+		nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+	if(!imports.VirtualAddress || !imports.Size)
+		return 0;
+	IMAGE_IMPORT_DESCRIPTOR* descriptor = reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR*>(
+		base + imports.VirtualAddress);
+	for(; descriptor->Name; ++descriptor)
+		{
+		const DWORD lookupRva = descriptor->OriginalFirstThunk
+			? descriptor->OriginalFirstThunk : descriptor->FirstThunk;
+		IMAGE_THUNK_DATA32* const lookup = reinterpret_cast<IMAGE_THUNK_DATA32*>(base + lookupRva);
+		IMAGE_THUNK_DATA32* const slots = reinterpret_cast<IMAGE_THUNK_DATA32*>(
+			base + descriptor->FirstThunk);
+		for(unsigned i = 0; lookup[i].u1.AddressOfData; ++i)
+			{
+			if(IMAGE_SNAP_BY_ORDINAL32(lookup[i].u1.Ordinal))
+				continue;
+			IMAGE_IMPORT_BY_NAME* const name = reinterpret_cast<IMAGE_IMPORT_BY_NAME*>(
+				base + lookup[i].u1.AddressOfData);
+			if(strcmp(reinterpret_cast<const char*>(name->Name), "free") == 0)
+				return static_cast<unsigned>(reinterpret_cast<unsigned char*>(&slots[i]) - base);
+			}
+		}
+	return 0;
 	}
 
 static unsigned nxRunNpFluidEmitterSecondaryDeletingThunkDifferential(
@@ -1994,7 +2033,7 @@ static unsigned nxRunNpFluidEmitterSecondaryDeletingThunkDifferential(
 		0x0001040b4u, reinterpret_cast<void*>(&nxObserveOracleHeapFree),
 		&originalOracleHeapFree);
 	const bool candidateFreeHooked = nxReplaceImportSlot(candidateModule,
-		0x0012d14cu, reinterpret_cast<void*>(&nxObserveCandidateFree),
+		nxFindCrtFreeImportRva(candidateModule), reinterpret_cast<void*>(&nxObserveCandidateFree),
 		&originalCandidateFree);
 	gNxOriginalOracleHeapFree =
 		reinterpret_cast<NxObservedHeapFree>(originalOracleHeapFree);
@@ -2014,7 +2053,7 @@ static unsigned nxRunNpFluidEmitterSecondaryDeletingThunkDifferential(
 		nxRestoreImportSlot(oracleModule, 0x0001040b4u,
 			originalOracleHeapFree);
 	const bool candidateFreeRestored = !originalCandidateFree ||
-		nxRestoreImportSlot(candidateModule, 0x0012d14cu,
+		nxRestoreImportSlot(candidateModule, nxFindCrtFreeImportRva(candidateModule),
 			originalCandidateFree);
 	flagOneFreed = oracleFreeHooked && candidateFreeHooked &&
 		oracleDeleteResult == oracleDeleteObject &&
@@ -2136,7 +2175,7 @@ static unsigned nxRunNxFluidEmitterDeletingDestructorDifferential(
 		0x0001040b4u, reinterpret_cast<void*>(&nxObserveOracleHeapFree),
 		&originalOracleHeapFree);
 	const bool candidateFreeHooked = nxReplaceImportSlot(candidateModule,
-		0x0012d14cu, reinterpret_cast<void*>(&nxObserveCandidateFree),
+		nxFindCrtFreeImportRva(candidateModule), reinterpret_cast<void*>(&nxObserveCandidateFree),
 		&originalCandidateFree);
 	gNxOriginalOracleHeapFree =
 		reinterpret_cast<NxObservedHeapFree>(originalOracleHeapFree);
@@ -2153,7 +2192,7 @@ static unsigned nxRunNxFluidEmitterDeletingDestructorDifferential(
 	const bool oracleFreeRestored = !originalOracleHeapFree ||
 		nxRestoreImportSlot(oracleModule, 0x0001040b4u, originalOracleHeapFree);
 	const bool candidateFreeRestored = !originalCandidateFree ||
-		nxRestoreImportSlot(candidateModule, 0x0012d14cu, originalCandidateFree);
+		nxRestoreImportSlot(candidateModule, nxFindCrtFreeImportRva(candidateModule), originalCandidateFree);
 	flagOneFreed = oracleFreeHooked && candidateFreeHooked &&
 		oracleDeleteResult == oracleDeleteObject &&
 		candidateDeleteResult == candidateDeleteObject &&
@@ -2308,7 +2347,7 @@ static unsigned nxRunNpImplicitMeshSecondaryDeletingThunkDifferential(
 				0x0001040b4u, reinterpret_cast<void*>(&nxObserveOracleHeapFree),
 				&originalOracleHeapFree);
 			const bool candidateFreeHooked = nxReplaceImportSlot(candidateModule,
-				0x0012d14cu, reinterpret_cast<void*>(&nxObserveCandidateFree),
+				nxFindCrtFreeImportRva(candidateModule), reinterpret_cast<void*>(&nxObserveCandidateFree),
 				&originalCandidateFree);
 			gNxOriginalOracleHeapFree =
 				reinterpret_cast<NxObservedHeapFree>(originalOracleHeapFree);
@@ -2332,7 +2371,7 @@ static unsigned nxRunNpImplicitMeshSecondaryDeletingThunkDifferential(
 				nxRestoreImportSlot(oracleModule, 0x0001040b4u,
 					originalOracleHeapFree);
 			const bool candidateFreeRestored = !candidateFreeHooked ||
-				nxRestoreImportSlot(candidateModule, 0x0012d14cu,
+				nxRestoreImportSlot(candidateModule, nxFindCrtFreeImportRva(candidateModule),
 					originalCandidateFree);
 			flagOneFreed = flagOneFreed && oracleFreeHooked && candidateFreeHooked
 				&& oracleFreeRestored && candidateFreeRestored
@@ -2461,7 +2500,7 @@ static unsigned nxRunNpImplicitMeshLockBaseDeletingDestructorDifferential(
 			0x0001040b4u, reinterpret_cast<void*>(&nxObserveOracleHeapFree),
 			&originalOracleHeapFree);
 		const bool candidateFreeHooked = nxReplaceImportSlot(candidateModule,
-			0x0012d14cu, reinterpret_cast<void*>(&nxObserveCandidateFree),
+			nxFindCrtFreeImportRva(candidateModule), reinterpret_cast<void*>(&nxObserveCandidateFree),
 			&originalCandidateFree);
 		gNxOriginalOracleHeapFree =
 			reinterpret_cast<NxObservedHeapFree>(originalOracleHeapFree);
@@ -2488,7 +2527,7 @@ static unsigned nxRunNpImplicitMeshLockBaseDeletingDestructorDifferential(
 			nxRestoreImportSlot(oracleModule, 0x0001040b4u,
 				originalOracleHeapFree);
 		const bool candidateFreeRestored = !originalCandidateFree ||
-			nxRestoreImportSlot(candidateModule, 0x0012d14cu,
+			nxRestoreImportSlot(candidateModule, nxFindCrtFreeImportRva(candidateModule),
 				originalCandidateFree);
 		flagOneFreed = flagOneFreed && oracleFreeRestored &&
 			candidateFreeRestored;

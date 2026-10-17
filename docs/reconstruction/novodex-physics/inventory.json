@@ -37064,13 +37064,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/770",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5943",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0004c020: lazily build the bounded pruner 8-way tree when +0x3c is null, traverse occupied nodes in child-slot order and submit each node AABB red, then submit the configured bounds magenta.",
+      "dynamic_proof": "NxPhysicsSceneVisualizeTests observes the cached tree pointer after public visualization and checks exact output: 96 red node lines followed by 12 magenta bounds lines. A candidate mutation that skips the lazy tree build is rejected (candidate_exit=1, oracle_exit=0); a mutation that skips the cached-tree walk removes the 96 red lines and fails the registered line markers. Restored candidate and oracle both exit zero with exact bounded-dynamic output. See evidence/phase7-bounded-pruner-visualize-001967.md.",
+      "notes": "The bounded dynamic pruner stores the lazily built visualization tree at +0x3c; WalkVisualizationTree follows occupied-subtree counts in depth-first child-slot order."
     },
     {
       "id": "phys_fn_001968",
