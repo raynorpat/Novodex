@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "source_commit": "c01fd7e8",
+  "phase": 5,
+  "result": "pass",
+  "coverage_assertions_evaluated": 2850,
+  "coverage_assertion_floor": 2850,
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 5 -BuildRoot D:\\github\\Novodex\\build\\phase5-current-goal -PairsRoot D:\\github\\Novodex\\build\\phase5-current-goal-pairs",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_nxphysics_sha256": "db9d22e89c7c44d5d1e9047008c53b3db704e66d1114632b1b2cb48beb6c1f27",
+  "candidate_nxfoundation_sha256": "e7a72a921f8c6c94332b4a50fe92388710d6641cc49904a7f6057799c8329fff",
+  "log_sha256": "e561e73df2adf52301815840743bdbdebfe3767f5105b126b54f33071fef1a8a",
+  "compressed_log_sha256": "a5e32eac15505e2897cc1a8e223b80ce83ff9368bf8b9422d2ae2d871e1dc146",
+  "raw_log": "phase5-gate.log.gz"
+}
