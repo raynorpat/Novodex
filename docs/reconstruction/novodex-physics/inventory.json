@@ -71369,13 +71369,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1419",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12876",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x0008c380 shows the write-locked setGlobalPose path, including write-lock rejection, reentry guard, mutation of the emitter pose, and the backend callback dispatch. Candidate map emits ?setGlobalPose@NpFluidEmitter@@UAEXABVNxMat34@@@Z at 0x1003ed00.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares oracle, candidate-source, and candidate-DLL behavior in the registered world-pose component-setter fixture; it checks callback records, resulting pose state, and x86 stack balance. A candidate-only no-op mutation is rejected (mismatches=2); the restored control reports mismatches=0. See evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md.",
+      "notes": "setGlobalPose implementation and oracle row; no public header changes.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "?setGlobalPose@NpFluidEmitter@@UAEXABVNxMat34@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setGlobalPose@NpFluidEmitter@@UAEXABVNxMat34@@@Z",
+        "address": "0x1003ed00",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003799",
@@ -71405,13 +71413,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1420",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12881",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x0008c430 shows the write-locked setGlobalPosition path, including write-lock rejection, reentry guard, mutation of the emitter pose, and the backend callback dispatch. Candidate map emits ?setGlobalPosition@NpFluidEmitter@@UAEXABVNxVec3@@@Z at 0x1003edd0.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares oracle, candidate-source, and candidate-DLL behavior in the registered world-pose component-setter fixture; it checks callback records, resulting pose state, and x86 stack balance. A candidate-only no-op mutation is rejected (mismatches=1); the restored control reports mismatches=0. See evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md.",
+      "notes": "setGlobalPosition implementation and oracle row; no public header changes.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "?setGlobalPosition@NpFluidEmitter@@UAEXABVNxVec3@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setGlobalPosition@NpFluidEmitter@@UAEXABVNxVec3@@@Z",
+        "address": "0x1003edd0",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003801",
@@ -71441,13 +71457,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/fluids/NpFluidEmitter.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1421",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12886",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x0008c4e0 shows the write-locked setGlobalOrientation path, including write-lock rejection, reentry guard, mutation of the emitter pose, and the backend callback dispatch. Candidate map emits ?setGlobalOrientation@NpFluidEmitter@@UAEXABVNxMat33@@@Z at 0x1003ecb0.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests compares oracle, candidate-source, and candidate-DLL behavior in the registered world-pose component-setter fixture; it checks callback records, resulting pose state, and x86 stack balance. A candidate-only no-op mutation is rejected (mismatches=1); the restored control reports mismatches=0. See evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md.",
+      "notes": "setGlobalOrientation implementation and oracle row; no public header changes.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "?setGlobalOrientation@NpFluidEmitter@@UAEXABVNxMat33@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setGlobalOrientation@NpFluidEmitter@@UAEXABVNxMat33@@@Z",
+        "address": "0x1003ecb0",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003803",

@@ -117,6 +117,9 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
+		'fluid emitter setGlobalPose row=003798 cases=2 mismatches=0'
+		'fluid emitter setGlobalPosition row=003800 cases=1 mismatches=0'
+		'fluid emitter setGlobalOrientation row=003802 cases=1 mismatches=0'
 		'fluid base deleting dtor row=003790 oracle_vptr=1 candidate_vptr=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'fluid emitter deleting dtor row=003794 oracle_primary=1 candidate_primary=1 oracle_secondary=1 candidate_secondary=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'fluid emitter secondary deleting-thunk row=003862 oracle_slot=1 candidate_slot=1 oracle_primary=1 candidate_primary=1 oracle_secondary=1 candidate_secondary=1 words=1 return=1 stack=1 flag1_free=1 mismatches=0'
@@ -6258,7 +6261,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2839  # previous 2838 plus the NxFluidEmitter deleting-destructor differential
+	'5' = 2842  # previous 2839 plus the three world-pose setter differentials
+	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2837 plus the fluid-emitter deleting-destructor differential
 	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
 	           # previous 2835 plus the implicit-mesh lock-base deleting-destructor differential
@@ -6386,7 +6390,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2972  # previous 2971 plus the NxFluidEmitter deleting-destructor differential
+	'7' = 2975  # previous 2972 plus the three world-pose setter differentials
+	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential
 	           # previous 2968 plus the implicit-mesh lock-base deleting-destructor differential

@@ -5893,6 +5893,7 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 	const unsigned fluidHandle = 0x7b2c3d4eu;
 	const unsigned emitterHandle = 0x8c3d4e5fu;
 	unsigned mismatches = 0, callbackChecks = 0, stackChecks = 0;
+	unsigned caseFailures[4] = {};
 	for(unsigned test = 0; test < 4; ++test)
 		{
 		unsigned char* internals[] = { oracleInternal, candidateInternal,
@@ -5989,6 +5990,7 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 		stackChecks += balanced;
 		if(!callbacksMatch || !stateMatch || !balanced)
 			{
+		++caseFailures[test];
 			++mismatches;
 			printf("fluid emitter global component setter case=%u callbacks=%u/%u/%u state=%u stack=%u/%u/%u\n",
 				test, oracleCallbacks, candidateCallbacks, candidateDllCallbacks,
@@ -6012,6 +6014,12 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 		}
 	printf("fluid emitter global and local component setters cases=4 callback_checks=%u stack_checks=%u mismatches=%u\n",
 		callbackChecks, stackChecks, mismatches);
+	printf("fluid emitter setGlobalPose row=003798 cases=2 mismatches=%u\n",
+		caseFailures[0] + caseFailures[1]);
+	printf("fluid emitter setGlobalPosition row=003800 cases=1 mismatches=%u\n",
+		caseFailures[0]);
+	printf("fluid emitter setGlobalOrientation row=003802 cases=1 mismatches=%u\n",
+		caseFailures[1]);
 	return mismatches;
 	}
 

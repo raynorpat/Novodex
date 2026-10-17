@@ -1,0 +1,119 @@
+{
+  "rows": [
+    "phys_fn_003798",
+    "phys_fn_003800",
+    "phys_fn_003802"
+  ],
+  "rvas": [
+    "0x0008c380",
+    "0x0008c430",
+    "0x0008c4e0"
+  ],
+  "date": "2026-10-17",
+  "candidate_dll_sha256": "89896772111dcc32e2372e1fbde35598618b7f719e8ea46f9e7c6da944ebada9",
+  "oracle_dll_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "phase5_coverage": "2842/2842",
+  "phase7_coverage": "2975/2975",
+  "tool_tests": "817 passed",
+  "artifacts": [
+    {
+      "path": "mutation-003798.stdout.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003798-mutant.stdout.txt",
+      "sha256": "30186ad3c456a2ae60e96abf78344dced1b0d276c64049c0d61d8dbfb9ea174b",
+      "bytes": 13658
+    },
+    {
+      "path": "mutation-003798.stderr.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003798-mutant.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "mutation-003798.exit.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003798-mutant.exit.txt",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+      "bytes": 3
+    },
+    {
+      "path": "mutation-003800.stdout.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003800-mutant.stdout.txt",
+      "sha256": "c65a6cc94e5720356b8ef115f27292da27b8928907702fea05237d68b31ab6f3",
+      "bytes": 12683
+    },
+    {
+      "path": "mutation-003800.stderr.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003800-mutant.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "mutation-003800.exit.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003800-mutant.exit.txt",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+      "bytes": 3
+    },
+    {
+      "path": "mutation-003802.stdout.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003802-mutant.stdout.txt",
+      "sha256": "8abe7a863dfeeafedd35a83aeb566cd33d3166c28f631edecadcc7dd18916da0",
+      "bytes": 12683
+    },
+    {
+      "path": "mutation-003802.stderr.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003802-mutant.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "mutation-003802.exit.txt",
+      "source": "build/NxPhysicsFluidEmitterAbiTests.003802-mutant.exit.txt",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+      "bytes": 3
+    },
+    {
+      "path": "build.log.gz",
+      "source": "build/phase7-fluid-emitter-world-setters-build.log",
+      "sha256": "6a2b6ca3a8076f84381ba2a06a862dc5546430605302d9a9a0964ec85543a32e",
+      "uncompressed_sha256": "9782e72661e5914533f239361fc1c6e0c9bd4d94b5f360aecb7704cf5284ca3d",
+      "bytes": 709,
+      "compressed_bytes": 321
+    },
+    {
+      "path": "restored-differential.log.gz",
+      "source": "build/phase7-fluid-emitter-world-setters-restored.log",
+      "sha256": "cc5b3b2f4eebd087aeb6442f5aecfd03f7e4f98125b0bb80211b62aa56adf387",
+      "uncompressed_sha256": "6a091e5351461aebb2310be838aee88fbed1c3541da28d8a0bb13e520b8468a5",
+      "bytes": 16352,
+      "compressed_bytes": 3338
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "build/phase5-fluid-emitter-world-setters.log",
+      "sha256": "19c6a5bda03ee82acebb1c58cb5fa37235e73b0948c86c57ab7a831d3a09c84c",
+      "uncompressed_sha256": "e773a74e0fbb74c3e76dd64e21ddf40504b4a8ed07f5ed4cdc2a725f4adab782",
+      "bytes": 2829564,
+      "compressed_bytes": 210426
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build/phase7-fluid-emitter-world-setters.log",
+      "sha256": "d897f27b690cce731ba6d5f92ddb4084f1b2e89ae0186594eea54589af907f55",
+      "uncompressed_sha256": "719b633086170d93880a31c95fd166c9886541fd63536cedde3cddca05b8a807",
+      "bytes": 4634427,
+      "compressed_bytes": 374683
+    },
+    {
+      "path": "tool-tests.log.gz",
+      "source": "build/phase7-fluid-emitter-world-setters-tool-tests.log",
+      "sha256": "5d892a9abdd77f3f4f1ef4e3435807388b19f07de5c3ad2b29da6a388146fe99",
+      "uncompressed_sha256": "68801c658ccac00bfc3f7362d337aadd3bfe60e52f67733caeb776b9dbafa113",
+      "bytes": 126048,
+      "compressed_bytes": 19072
+    },
+    {
+      "path": "mutation.patch.txt",
+      "sha256": "724e6961da2f8a4b99e3a61e86d9ed4204b845d9d72ee7705cc6edf8766d5d49",
+      "bytes": 691
+    }
+  ]
+}
