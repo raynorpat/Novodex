@@ -1905,3 +1905,9 @@ Both small world-pose wrappers now preserve the correct component from the backe
 ### Continuation — fluid emitter local-pose component setters (`phys_fn_003618` / `003620`, 2026-10-16)
 
 The existing local-position and local-orientation implementations now have row-specific direct oracle/candidate/DLL coverage. The fixture checks transformed world-pose callback data, resulting local pose, and x86 stack balance. A one-float destination-offset mutation in each setter is rejected (`mismatches=1`); restored output reports `cases=4 callback_checks=4 stack_checks=4 mismatches=0`. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-emitter-local-components-003618-003620.md`.
+
+### Continuation — current-main standalone and consumer checkpoint (2026-10-16)
+
+Fresh Phase 5 and Phase 7 gates pass at 2,825/2,825 and 2,958/2,958. The public simulation oracle/candidate differential is exact (`stdout_delta=0`, `stderr_exact=True`) and the required 1,000-step, lifecycle, broadphase-selector, result-state, kinematic, trigger, and deferred-contact cases are present. Release CTest ran all 48 registered Viewer selections: 43 passed, including every available scene and both focused physics tests; five pinned-oracle cases skipped under their existing exact-signature rules. This meets the roadmap's T1 standalone-test entry criteria, not full M1 joint-matrix closure or M6 reconstruction acceptance. Evidence: `docs/reconstruction/novodex-physics/evidence/main-standalone-and-consumer-checkpoint-2026-10-16.md`.
+
+The subsequent staged `DemoGame PhysTest` attempt stopped in the oracle before engine initialization because D3D returned `D3DERR_NOTAVAILABLE`; the candidate was not run. The installed oracle pair remained unchanged. T2 is pending an interactive D3D run, while M2–M4 reconstruction continues.
