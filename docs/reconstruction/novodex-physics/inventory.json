@@ -66261,13 +66261,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/FluidCollision.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1308",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12360",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000861b0"
+      "static_proof": "IDA listing at RVA 0x00086390 identifies the final mesh-index pass, completed static descriptor copy, temporary hash destruction, and signed-16-bit cell-array destruction/return within the builder beginning at 0x000861b0.",
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests static-rebuild cases compare empty and one-mesh grid/arrays/parameters/return/stack. Incrementing meshIndex only in the final triangle-index pass is rejected (case=1 grid=0 mismatches=1); restored output has mismatches=0.",
+      "notes": "This 89-byte continuation is contained in nxFluidCollisionBuildStaticCollision; the CMake map resolves that candidate body. Phase 8 must still audit the containing image instructions, relocations, globals, and callback ownership.",
+      "implementation": "Physics/src/FluidCollision.cpp",
+      "implementation_symbol": "nxFluidCollisionBuildStaticCollision",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_nxFluidCollisionBuildStaticCollision",
+        "address": "0x10024630",
+        "object": "FluidCollision.obj"
+      }
     },
     {
       "id": "phys_fn_003508",

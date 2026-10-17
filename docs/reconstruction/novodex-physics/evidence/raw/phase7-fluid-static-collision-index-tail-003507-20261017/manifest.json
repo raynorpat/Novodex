@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003507",
+  "date": "2026-10-17",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256_restored": "88fd098f6302fbe994a22c637b63ba3fbdf447fb6dbfec837f8c40d1f440c1bb",
+  "candidate_sha256_mutant": "926d13abc0055cd89e41a0f9558a9d64447236468e9139360684c59122c0626d",
+  "source": "Physics/src/FluidCollision.cpp::nxFluidCollisionBuildStaticCollision",
+  "mutation": "In the final mesh-index pass, changed meshIndex to meshIndex + 1u before nxFluidCollisionBuildTriangleIndices.",
+  "mutation_result": "NxPhysicsFluidEmitterAbiTests rejected the candidate: static-rebuild case=1 grid=0 mismatches=1; target exit=1.",
+  "restored_result": "static-rebuild cases=2 empty=1 nonempty_mesh=1 candidate_present=1 mismatches=0; target exit=0.",
+  "candidate_map": {
+    "path": "build/Release/NxPhysics.map",
+    "symbol": "_nxFluidCollisionBuildStaticCollision",
+    "address": "0x10024630",
+    "object": "FluidCollision.obj"
+  },
+  "mutation_patch": {
+    "name": "mutation-003507.patch.gz",
+    "sha256": "9bd609b3c5ad576fabbd2b4863fdc82d830374681a0e0f1b21781216cea337d0",
+    "bytes": 302,
+    "source_bytes": 613,
+    "source_sha256": "562eef1dddc7f59f301c9546917fac1c45030171112739f2cd95951e54e95c97"
+  },
+  "logs": [
+    {
+      "name": "row3507-mutation.log.gz",
+      "sha256": "3af8f6dbc0bd05d955085282248c05cd9fafd2c99b8cd52272e8c7e3c54377f7",
+      "bytes": 2687,
+      "source_bytes": 12389
+    },
+    {
+      "name": "row3507-restored.log.gz",
+      "sha256": "fb04713e9c8545bfcef6a48239e7576353bfb503f1ff2e41179c3710a216d33a",
+      "bytes": 2675,
+      "source_bytes": 12389
+    }
+  ],
+  "phase_gates": {
+    "7": "pass 3017/3017"
+  },
+  "phase7_gate_log": {
+    "name": "phase7-gate.log.gz",
+    "sha256": "b3c310533bf2113d28c849a496de24e5cf2ddfe3e6fd8c5e69822e8055e3d97d",
+    "bytes": 377836,
+    "source_bytes": 4674785
+  }
+}

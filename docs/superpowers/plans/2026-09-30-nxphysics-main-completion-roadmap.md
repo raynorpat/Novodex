@@ -1,3 +1,7 @@
+### Continuation — static fluid-collision index tail (`phys_fn_003507`, 2026-10-17)
+
+Closed the final 89-byte continuation of `nxFluidCollisionBuildStaticCollision`. The registered empty/one-mesh static-rebuild differential detects a wrong final mesh ordinal (`grid=0`, `mismatches=1`); the restored output matches, and the fresh Phase 7 gate passes at 3,017/3,017. Inventory and closure now map the row to the containing candidate builder while leaving the Phase 8 image, relocation, and data-ownership audit open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-static-collision-index-tail-003507.md` and its raw archive.
+
 ### Continuation — stable SDK allocator free observation (`phys_fn_004810`, 2026-10-17)
 
 The Phase 6 `NxPhysicsObjectLayoutTests` gate had an intermittent failure because it treated immediate CRT address reuse as the `free` contract. A 12-run fresh-process reproduction showed one candidate miss among otherwise passing runs. The fixture now hooks only the candidate DLL's imported CRT `free`, verifies the exact block is forwarded, and calls the original CRT routine. A no-op candidate mutation is rejected; the restored observation passes. Fresh Phase 5/6/7 gates pass at 2,878/2,878, 1,738/1,738, and 3,017/3,017 assertions, with all 39 gate-registry tests green. Evidence: `docs/reconstruction/novodex-physics/evidence/phase6-default-allocator-free-stable-probe-004810.md` and its raw log archive. This restores a reliable harness gate; full DLL reconstruction and the Phase 8 audit remain open.
