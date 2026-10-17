@@ -36269,13 +36269,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/756",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5876",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0004b9f0: receiver is the free Pruner; read PruningPool::mNbTotal at receiver+0x10 and mWorldBoxes at +0x14, submit each 24-byte AABB through PhysicsSDK::getDebugRenderable()->addAABB(bounds, 0xff0000ff, false), return 1.",
+      "dynamic_proof": "NxPhysicsSceneVisualizeTests exercises the populated collision_free scene and requires 60 blue debug lines (five AABBs). The no-addAABB candidate mutation reports 0/60 and exits 1; the restored oracle/candidate marker is 60/60 and their staged transcript is exact (stdout_delta=0, stderr_exact=True). Fresh Phase 7 passed at 2,983/2,983. See evidence/phase7-free-pruner-visualize-001937.md and evidence/raw/phase7-free-pruner-visualize-001937-20261017/.",
+      "notes": "Owning unit: gap:ContactPlaneMesh.cpp..PenetrationMap.cpp; row-specific free-pruner visualization helper.",
+      "implementation": "Physics/src/SceneVisualize.cpp",
+      "implementation_symbol": "nxVisualizeFreePrunerWorldBoxes",
+      "candidate_map_reference": {
+        "path": "build/phase7-physfn-001937-fullgate/Release/NxPhysics.map",
+        "symbol": "?nxVisualizeFreePrunerWorldBoxes@@YAEPAVPruner@@@Z",
+        "address": "0x10074740",
+        "object": "SceneVisualize.obj"
+      }
     },
     {
       "id": "phys_fn_001938",

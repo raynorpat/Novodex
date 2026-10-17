@@ -44,6 +44,25 @@
 #include <stddef.h>
 #include <windows.h>
 
+// phys_fn_001937 (0x0004b9f0): submit each free-pruner world AABB to the
+// PhysicsSDK's cached renderable in blue. The record is 24 bytes, matching
+// NxBounds3's six contiguous float words.
+static __declspec(noinline) unsigned char nxVisualizeFreePrunerWorldBoxes(Pruner* pruner)
+	{
+	const PruningPool& pool = pruner->mPool;
+	const unsigned count = pool.mNbTotal;
+	if(!count)
+		return 1;
+	NxDebugRenderable* const renderable = PhysicsSDK::instance->getDebugRenderable();
+	for(unsigned i = 0; i < count; ++i)
+		{
+		NxBounds3 bounds;
+		memcpy(&bounds, &pool.mWorldBoxes[i], sizeof(bounds));
+		renderable->addAABB(bounds, 0xff0000ffu, false);
+		}
+	return 1;
+	}
+
 // The parameter indices the rows use, pinned against the element addresses the
 // listings read (0x10123b18 + 4 * index).
 static_assert(NX_VISUALIZATION_SCALE == 13, "0x10123b4c");
@@ -665,24 +684,13 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 			}
 		}
 
-	// phys_fn_001978's free-pruner path draws the pool's world boxes in blue.
+	// phys_fn_001978 selects the free pruner; phys_fn_001937 submits its
+	// world-box records to PhysicsSDK's renderable in blue.
 	if(visualizeFree)
 		{
 		Pruner* const pruner = pruners[2];
 		if(pruner)
-			{
-			const PruningPool& pool = pruner->mPool;
-			const unsigned count = pool.mNbObjects[0] + pool.mNbObjects[1];
-			NxDebugRenderable* const prunerRenderable = count && PhysicsSDK::instance
-				? PhysicsSDK::instance->getDebugRenderable() : 0;
-			for(unsigned i = 0; i < count; ++i)
-				{
-				NxBounds3 bounds;
-				memcpy(&bounds, &pool.mWorldBoxes[i], sizeof(bounds));
-				if(prunerRenderable)
-					prunerRenderable->addAABB(bounds, 0xff0000ffu, false);
-				}
-			}
+			nxVisualizeFreePrunerWorldBoxes(pruner);
 		}
 	}
 

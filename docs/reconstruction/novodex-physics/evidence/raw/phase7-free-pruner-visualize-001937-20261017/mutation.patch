@@ -1,0 +1,5 @@
+--- a/Physics/src/SceneVisualize.cpp
++++ b/Physics/src/SceneVisualize.cpp
+@@
+-\trenderable->addAABB(bounds, 0xff0000ffu, false);
++\t(void)bounds;

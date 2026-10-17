@@ -1,0 +1,7 @@
+# Free-pruner world-box visualization (`phys_fn_001937`)
+
+IDA at RVA `0x0004b9f0` shows a one-byte-success helper that reads the `Pruner`'s `PruningPool::mNbTotal` word and `mWorldBoxes` pointer, walks 24-byte AABB records, obtains `PhysicsSDK::getDebugRenderable()`, and submits each box with color `0xff0000ff` and `renderFrame=false`. The candidate now expresses this row as `nxVisualizeFreePrunerWorldBoxes` in `Physics/src/SceneVisualize.cpp`; the `phys_fn_001978` free-pruner dispatch calls it when `NX_VISUALIZE_COLLISION_FREE` is enabled.
+
+The registered `NxPhysicsSceneVisualizeTests` fixture now checks that its populated `collision_free` scene produces exactly 60 blue lines (five AABBs) for the row. Oracle and restored candidate both report `free_pruner_blue_lines=60 expected=60 matched=1`; the full staged transcripts match (`stdout_delta=0`, `stderr_exact=True`). A candidate-only mutation that removes the `addAABB` call is caught: the target reports `free_pruner_blue_lines=0 expected=60 matched=0` and exits 1; the staged-pair differential rejects it (`candidate_exit=1`, `stdout_delta=1478`, `stderr_exact=False` on the expected candidate failure path).
+
+The fresh Phase 7 gate passed at `2,983/2,983` coverage assertions, including the scene differential. Raw oracle/candidate logs, the caught mutation, and the compressed gate transcript are under [evidence/raw/phase7-free-pruner-visualize-001937-20261017](raw/phase7-free-pruner-visualize-001937-20261017/).

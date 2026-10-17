@@ -82,6 +82,7 @@ class NxRecordingOutput : public NxUserOutputStream
 	};
 
 static const char* nxStage = "";
+static bool nxFreePrunerBlueAabbsObserved = false;
 
 static void nxPrintVec(const char* name, const NxVec3& v)
 	{
@@ -91,7 +92,7 @@ static void nxPrintVec(const char* name, const NxVec3& v)
 class NxRecordingRenderer : public NxUserDebugRenderer
 	{
 	public:
-	NxRecordingRenderer() : mCalls(0), mLines(0) {}
+	NxRecordingRenderer() : mCalls(0), mLines(0), mBlueLines(0) {}
 	virtual void renderData(const NxDebugRenderable& data) const
 		{
 		mCalls++;
@@ -111,6 +112,8 @@ class NxRecordingRenderer : public NxUserDebugRenderer
 		const NxDebugLine* l = data.getLines();
 		for(NxU32 i = 0; i < lines; i++)
 			{
+			if(l[i].color == NX_ARGB_BLUE)
+				++mBlueLines;
 			printf("visualize %s line=%u", nxStage, static_cast<unsigned>(i));
 			nxPrintVec("p0", l[i].p0);
 			nxPrintVec("p1", l[i].p1);
@@ -128,6 +131,7 @@ class NxRecordingRenderer : public NxUserDebugRenderer
 		}
 	mutable unsigned mCalls;
 	mutable unsigned mLines;
+	mutable unsigned mBlueLines;
 	};
 
 // The visualisation parameters the stages set; everything else stays at its
@@ -186,6 +190,12 @@ static void nxRunStage(NxPhysicsSDK* sdk, NxScene* scene, const NxStage& stage, 
 	NxRecordingRenderer renderer;
 	sdk->visualize(renderer);
 	printf("visualize %s renderables=%u\n", label, renderer.mCalls);
+	if(strcmp(stage.name, "collision_free") == 0)
+		{
+		nxFreePrunerBlueAabbsObserved = renderer.mBlueLines == 60;
+		printf("visualize row001937 free_pruner_blue_lines=%u expected=60 matched=%u\n",
+			renderer.mBlueLines, nxFreePrunerBlueAabbsObserved ? 1u : 0u);
+		}
 	nxStage = "";
 	}
 
@@ -469,6 +479,8 @@ int wmain(int argc, wchar_t** argv)
 
 	for(unsigned s = 0; s < kStageCount; s++)
 		nxRunStage(sdk, scene, nxStages[s], "created");
+	if(!nxFreePrunerBlueAabbsObserved)
+		return nxFail("free-pruner AABB visualization did not match phys_fn_001937");
 
 	// Twice with the same parameters: the renderable is cleared first, so the
 	// second call's lines replace the first's.

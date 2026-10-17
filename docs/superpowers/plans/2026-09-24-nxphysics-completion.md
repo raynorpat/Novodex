@@ -1345,3 +1345,9 @@ Reconstructed the thiscall bridge to the existing SDK pointer map and routed exi
 ### Phase 7 continuation — fluid surface-mesh manager constructor (`phys_fn_003685`, 2026-10-17)
 
 Reconstructed the 0x3c-byte manager constructor and wired it into surface-mesh initialization, including its default type word and 0x18-byte public mesh allocation. The registered simulation probe checks poisoned storage against the oracle; changing the type from 4 to 5 is mutation-rejected (`mismatches=1`, `stdout_delta=4106`), while restored output is exact. The existing licensed mesh creation and allocation-failure route remains oracle-exact. Fresh Phase 5/6/7 gates pass at 2,850/2,850, 1,724/1,724, and 2,983/2,983 assertions. All 817 reconstruction-tool tests pass after regenerating the row-level work-unit map.
+
+### Phase 7 continuation — free-pruner world-box visualization (`phys_fn_001937`, 2026-10-17)
+
+Made the existing free-pruner blue-AABB loop explicit as `nxVisualizeFreePrunerWorldBoxes` and tied it to IDA's 0x4b9f0 contract. `NxPhysicsSceneVisualizeTests` now requires 60 blue lines in its populated `collision_free` scene. Suppressing the candidate's `addAABB` call is caught by the staged-pair runner (`stdout_delta=1478`, candidate exit 1); restored oracle/candidate output matches exactly. Fresh Phase 7 passed at 2,983/2,983, inventory validation reports zero unexplained rows, and all 836 reconstruction-tool tests pass. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-free-pruner-visualize-001937.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-free-pruner-visualize-001937-20261017/`.
+
+The generated backlog's next Phase 7 reconstruction packet is `phys_fn_001939` (RVA 0x4ba30), the free/static pruning-tree AABB walk. Full DLL reconstruction remains open.
