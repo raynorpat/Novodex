@@ -2915,8 +2915,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene_overlap triangles translated_count=2 array_count=2',
         # Actual closest-face raycast through the mesh shape's slot 5, including
         # face index, barycentrics, world impact and interpolated normal.
-        'raycast mesh down result=1 flags=0000003f shape=query_mesh impact=421c0000.00000000.bf800000 normal=00000000.3f800000.00000000 face=00000002 distance=40a00000 uv=3e800000.3e800000',
-        'raycast mesh no_normal result=1 flags=0000003b shape=query_mesh impact=421c0000.00000000.bf800000 face=00000002 distance=40a00000 uv=3e800000.3e800000',
+        'raycast mesh down result=1 flags=0000003f shape=query_mesh impact=421c0000.3e800000.bf800000 normal=be785b42.3f785b42.00000000 face=00000002 distance=40980000 uv=3e800000.3e800000',
+        'raycast mesh no_normal result=1 flags=0000003b shape=query_mesh impact=421c0000.3e800000.bf800000 face=00000002 distance=40980000 uv=3e800000.3e800000',
         'raycast mesh cutoff result=0 flags=00000001 shape=00000000 distance_word=7f7fffff',
         'raycast mesh translated result=1 flags=0000003f shape=query_mesh_translated impact=41980000.00000000.00000000 normal=00000000.3f800000.00000000 face=00000000 distance=40a00000 uv=3f000000.3e800000',
         'raycast mesh miss result=0 flags=00000001 shape=00000000 distance_word=7f7fffff',
@@ -3718,6 +3718,9 @@ $NxRequiredCoverageLines = [ordered] @{
         # Public NxFluid emitter count and list must expose the same three
         # retained wrappers as the internal arrays through the wrapper vtable.
         'simulation fluid public-api emitter-count=3 count-match=1 array-match=1'
+		# Invalid emitter descriptors fail before allocation or backend callbacks,
+		# while preserving the exact public diagnostic and both emitter arrays.
+		'simulation fluid public-api emitter-invalid-descriptor null=1 errors=1 code=1 line=206 diagnostic=1 allocation-attempts=0 array-match=1 callbacks-unchanged=1 exact=1'
 		'simulation fluid public-api emitter-create-release created=1.4.1.1 metadata=1 released=1.3.1.1 callback=1 mismatches=0'
 		# The unlicensed scalar getters return zero and report their precise
 		# feature-unavailable diagnostics through the public NxFluid vtable.
@@ -6289,7 +6292,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2859  # adds actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
+	'5' = 2860  # adds invalid fluid-emitter descriptor diagnostic and no-side-effect assertion
+	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage
 	           # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
@@ -6371,7 +6375,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1726  # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
+	'6' = 1727  # adds invalid fluid-emitter descriptor diagnostic and no-side-effect assertion
+	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
 	           # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
@@ -6420,7 +6425,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2993  # adds actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
+	'7' = 2994  # adds invalid fluid-emitter descriptor diagnostic and no-side-effect assertion
+	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage
 	           # previous 2984 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential

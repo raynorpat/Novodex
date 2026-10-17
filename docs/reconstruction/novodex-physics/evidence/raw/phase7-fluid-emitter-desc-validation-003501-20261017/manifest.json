@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003501",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "69f9482b2f837aa98c7586ff6601a17674f73b769167ea338efaf5faa5c87da1",
+  "mutation_candidate_sha256": "5a1d7e6498e79ff974d70bc67916ce59173da96510a24f61566d731215c8f1ae",
+  "mutation": "changed the invalid NxFluidEmitterDesc diagnostic code from NXE_INVALID_PARAMETER to NXE_NO_ERROR",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=87 stderr_exact=False; candidate code=0 diagnostic=0",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; both report null=1 errors=1 code=1 line=206 diagnostic=1 allocation-attempts=0 array-match=1 callbacks-unchanged=1 exact=1",
+  "phase_gates": {
+    "5": "pass 2860/2860",
+    "6": "pass 1727/1727",
+    "7": "pass 2994/2994"
+  },
+  "gate_target_unit_tests": "39 passed",
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}

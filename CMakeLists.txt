@@ -1113,6 +1113,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/PhysicsObjectModelSceneStubs.cpp
 		Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
+		Physics/src/TriangleMeshTopology.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		tests/PhysicsInternalContactStubs.cpp tests/PhysicsInternalMeshContactStubs.cpp
@@ -1152,7 +1153,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/Containers.cpp
 		tests/PhysicsObjectModelSceneStubs.cpp
 		Physics/src/MemoryStream.cpp Physics/src/Geometry.cpp
-		Physics/src/ShapeRaycast.cpp
+		Physics/src/ShapeRaycast.cpp Physics/src/TriangleMeshTopology.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		tests/PhysicsInternalContactStubs.cpp tests/PhysicsInternalMeshContactStubs.cpp

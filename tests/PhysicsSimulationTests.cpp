@@ -5592,6 +5592,70 @@ int wmain(int argc, wchar_t** argv)
 	if(enabledEmitterInternalArray && enabledEmitterCount == 3)
 		memcpy(initialEmitterInternalHandles, enabledEmitterInternalArray,
 			sizeof(initialEmitterInternalHandles));
+	// phys_fn_003501 validates the public descriptor before it reads the fluid
+	// arrays, allocates its private record, or calls into FluidModel.
+	NxFluidEmitterDesc invalidPublicEmitterDesc = publicEmitterDesc;
+	invalidPublicEmitterDesc.dimensionX = -1.0f;
+	FluidManagerCallbackSummary invalidPublicEmitterBefore = {};
+	getFluidManagerCallbackSummary(&invalidPublicEmitterBefore);
+	NxSimulationFailSizeAllocator invalidPublicEmitterFailAllocator(
+		*savedFluidAllocator, 0x78);
+	*fluidFoundationAllocatorSlot = &invalidPublicEmitterFailAllocator;
+	const unsigned invalidPublicEmitterErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	NxFluidEmitter* const invalidPublicEmitter = enabledFluid
+		? enabledFluid->createEmitter(invalidPublicEmitterDesc) : 0;
+	*fluidFoundationAllocatorSlot = savedFluidAllocator;
+	const unsigned invalidPublicEmitterErrorCount = simulationOutput.errors -
+		invalidPublicEmitterErrorsBefore;
+	NxFluidEmitter** const emittersAfterInvalidDescriptor = enabledFluid
+		? enabledFluid->getEmitters() : 0;
+	const unsigned emitterCountAfterInvalidDescriptor = enabledFluid
+		? enabledFluid->getNbEmitters() : 0;
+	unsigned* const emitterInternalArrayAfterInvalidDescriptor =
+		enabledFluidInternal ? *reinterpret_cast<unsigned**>(
+			static_cast<unsigned char*>(enabledFluidInternal) + 4) : 0;
+	FluidManagerCallbackSummary invalidPublicEmitterAfter = {};
+	getFluidManagerCallbackSummary(&invalidPublicEmitterAfter);
+	const bool invalidPublicEmitterDiagnostic = invalidPublicEmitterErrorCount == 1 &&
+		simulationOutput.code == NXE_INVALID_PARAMETER &&
+		simulationOutput.line == 206 &&
+		strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp") == 0 &&
+		strcmp(simulationOutput.message,
+			"Supplied NxFluidEmitterDesc is not valid. createEmitter returns NULL.") == 0;
+	const bool invalidPublicEmitterStateUnchanged = !invalidPublicEmitter &&
+		invalidPublicEmitterFailAllocator.mFailCount == 0 &&
+		emitterCountAfterInvalidDescriptor == 3 &&
+		emitterInternalArrayAfterInvalidDescriptor == enabledEmitterInternalArray &&
+		invalidPublicEmitterAfter.fluidGetRestParticleDistance ==
+			invalidPublicEmitterBefore.fluidGetRestParticleDistance &&
+		invalidPublicEmitterAfter.emitterCreate ==
+			invalidPublicEmitterBefore.emitterCreate;
+	const bool invalidPublicEmitterArrayUnchanged = emittersAfterInvalidDescriptor &&
+		emittersAfterInvalidDescriptor[0] == initialEmitters[0] &&
+		emittersAfterInvalidDescriptor[1] == initialEmitters[1] &&
+		emittersAfterInvalidDescriptor[2] == initialEmitters[2] &&
+		emitterInternalArrayAfterInvalidDescriptor &&
+		memcmp(emitterInternalArrayAfterInvalidDescriptor,
+			initialEmitterInternalHandles,
+			sizeof(initialEmitterInternalHandles)) == 0;
+	const bool publicEmitterInvalidDescriptorMatch =
+		invalidPublicEmitterDiagnostic && invalidPublicEmitterStateUnchanged &&
+		invalidPublicEmitterArrayUnchanged;
+	printf("simulation fluid public-api emitter-invalid-descriptor null=%u errors=%u code=%u line=%d diagnostic=%u allocation-attempts=%u array-match=%u callbacks-unchanged=%u exact=%u\n",
+		invalidPublicEmitter == 0 ? 1u : 0u,
+		invalidPublicEmitterErrorCount,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		invalidPublicEmitterDiagnostic ? 1u : 0u,
+		invalidPublicEmitterFailAllocator.mFailCount,
+		invalidPublicEmitterArrayUnchanged ? 1u : 0u,
+		invalidPublicEmitterAfter.fluidGetRestParticleDistance ==
+			invalidPublicEmitterBefore.fluidGetRestParticleDistance &&
+			invalidPublicEmitterAfter.emitterCreate ==
+				invalidPublicEmitterBefore.emitterCreate ? 1u : 0u,
+		publicEmitterInvalidDescriptorMatch ? 1u : 0u);
+	simulationOutput.resetLast();
 	FluidManagerCallbackSummary emitterAllocationFailureBefore = {};
 	getFluidManagerCallbackSummary(&emitterAllocationFailureBefore);
 	NxSimulationFailSizeAllocator publicEmitterFailAllocator(
@@ -5847,6 +5911,7 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidErrorsBefore - enabledPublicStiffnessErrors -
 		enabledPublicViscosityErrors - enabledDynamicRestitutionErrors -
 		enabledDynamicAdhesionErrors - enabledKernelErrors -
+		invalidPublicEmitterErrorCount -
 		enabledCollisionMethodErrors;
 	const bool enabledFluidCallbacks = fluidManagerCallbacks.managerCreate == 1 &&
 		fluidManagerCallbacks.managerDestroy == 1 &&
@@ -5873,7 +5938,8 @@ int wmain(int argc, wchar_t** argv)
 		enabledFluidCallbacks && enabledFluidRefreshCallbacks &&
 			enabledFluidEmitterCallbacks && enabledDescriptorValidationPassed == 48 &&
 		managerAllocationFailure && enabledFluidAllocationFailure &&
-		enabledEmitterAllocationFailure && publicEmitterAllocationFailureMatch &&
+		enabledEmitterAllocationFailure && publicEmitterInvalidDescriptorMatch &&
+		publicEmitterAllocationFailureMatch &&
 		publicEmitterCapacityExact &&
 		enabledFluidErrors == 0;
 	printf("simulation row645 fluid-create disabled=%u enabled=%u listed=%u callbacks=%u validation=%u allocation-failures=%u exact=%u\n",
@@ -5921,6 +5987,7 @@ int wmain(int argc, wchar_t** argv)
 		!managerAllocationFailure ||
 		!enabledFluidAllocationFailure ||
 		!enabledEmitterAllocationFailure ||
+		!publicEmitterInvalidDescriptorMatch ||
 		!enabledEmitterFrameActorBound ||
 		!enabledEmitterFrameWorldPoseMatches ||
 		!enabledFluidManagerFlags || !enabledFluid ||
