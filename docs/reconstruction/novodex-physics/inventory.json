@@ -73302,13 +73302,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1458",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13021",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests direct oracle/candidate DLL probe resolves all 169 names and compares every slot with GetProcAddress; restored matched=169, present=83, digest=cbb94fff. A candidate first-slot name mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4104, candidate matched=168). See evidence/phase7-fluid-model-export-resolution-003903.md.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidManagerResolveModel"
     },
     {
       "id": "phys_fn_003904",

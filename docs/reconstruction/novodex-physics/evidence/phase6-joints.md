@@ -11157,3 +11157,6 @@ Mutation result for phys_fn_003607: the immediate-return candidate emitted no li
 `phys_fn_003896` public implicit-mesh name setter mutation detection: the licensed API differential rejects removing the backend name update (`candidate_exit=1`, `stdout_delta=68`); the restored oracle/candidate run is exact. See `phase7-implicit-mesh-set-name-003896.md`.
 
 `phys_fn_003900` FluidModel loader mutation detection: replacing the candidate `LoadLibraryA("FluidModel.DLL")` result with null is rejected by the staged fluid lifecycle differential (`candidate_exit=1`, `stdout_delta=118`; row marker module=0, callbacks=0). A fresh-child-process `DllMain` mutation also rejects omitting x87 restoration; the restored loader matches both checks exactly. See `phase7-fluid-model-load-003900.md`.
+
+
+Phase 7 FluidModel resolver `phys_fn_003903`: candidate first-slot lookup mutation is caught by `NxPhysicsSimulationTests` (`stdout_delta=4104`, oracle exit 0, candidate exit 1); the restored resolver matches all 169 oracle globals. Details: `evidence/phase7-fluid-model-export-resolution-003903.md`.

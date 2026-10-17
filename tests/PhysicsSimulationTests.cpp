@@ -43,6 +43,19 @@
 #include "NxUserAllocator.h"
 #include "../Physics/src/include/NpSceneGuard.h"
 
+struct NxFluidModelExportManifestEntry
+	{
+	const char* name;
+	unsigned oracleGlobalRva;
+	};
+
+#define NX_FLUID_MODEL_EXPORT(name, oracleGlobalRva) { #name, oracleGlobalRva },
+static const NxFluidModelExportManifestEntry nxFluidModelExportManifest[] =
+	{
+#include "../Physics/src/FluidModelExports.inc"
+	};
+#undef NX_FLUID_MODEL_EXPORT
+
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 typedef NxFoundationSDK* (NX_CALL_CONV *CreateFoundationSDKFn)(NxU32, NxUserOutputStream*, NxUserAllocator*);
 typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
@@ -727,6 +740,158 @@ static unsigned short nxSimulationReadX87ControlWord()
 	return controlWord;
 	}
 
+static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	const size_t exportCount = sizeof(nxFluidModelExportManifest) /
+		sizeof(nxFluidModelExportManifest[0]);
+	if(exportCount != 169)
+		return false;
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	const bool candidate = GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES;
+	if(!SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 |
+		LOAD_LIBRARY_SEARCH_USER_DIRS))
+		return false;
+	DLL_DIRECTORY_COOKIE const directoryCookie = AddDllDirectory(pairDirectory);
+	if(!directoryCookie)
+		return false;
+	unsigned loaded = 0;
+	unsigned resolved = 0;
+	void* resolverAddress = 0;
+	void* exportAccessorAddress = 0;
+	if(candidate)
+		{
+		if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+			"?nxFluidManagerResolveModel@@YA_NXZ", 0x0008d870u,
+			&resolverAddress) ||
+			!nxSimulationResolvePrivateRow(physics, pairDirectory,
+				"_nxFluidModelGetResolvedExport", 0, &exportAccessorAddress))
+			return false;
+		typedef bool (__cdecl *ResolveFluidModelFn)();
+		typedef FARPROC (__cdecl *GetResolvedExportFn)(unsigned);
+		resolved = reinterpret_cast<ResolveFluidModelFn>(resolverAddress)() ? 1u : 0u;
+		GetResolvedExportFn const getResolvedExport =
+			reinterpret_cast<GetResolvedExportFn>(exportAccessorAddress);
+		HMODULE const fluidModel = GetModuleHandleA("FluidModel.DLL");
+		if(fluidModel)
+			loaded = 1;
+		if(!fluidModel)
+			return false;
+		unsigned matched = 0;
+		unsigned present = 0;
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i != exportCount; ++i)
+			{
+			FARPROC const expected = GetProcAddress(fluidModel,
+				nxFluidModelExportManifest[i].name);
+			FARPROC const actual = getResolvedExport(i);
+			const bool equal = actual == expected;
+			if(!equal)
+				printf("fluid-model-export-mismatch side=candidate index=%u name=%s expected=%p actual=%p\n",
+					i, nxFluidModelExportManifest[i].name, expected, actual);
+			matched += equal ? 1u : 0u;
+			present += actual != 0 ? 1u : 0u;
+			digest = (digest ^ (equal ? 1u : 0u)) * 16777619u;
+			digest = (digest ^ (actual != 0 ? 1u : 0u)) * 16777619u;
+			}
+		FreeLibrary(fluidModel);
+		RemoveDllDirectory(directoryCookie);
+		printf("simulation fluid-model-export-resolve row=003903 slots=%u present=%u matched=%u digest=%08x\n",
+			static_cast<unsigned>(exportCount), present, matched, digest);
+		return loaded && resolved && matched == exportCount;
+		}
+	void* loadAddress = reinterpret_cast<unsigned char*>(physics) + 0x0008d820u;
+	void* resolveAddress = reinterpret_cast<unsigned char*>(physics) + 0x0008d870u;
+	typedef unsigned (__stdcall *OracleLoadFn)();
+	typedef unsigned (__stdcall *OracleResolveFn)();
+	loaded = reinterpret_cast<OracleLoadFn>(loadAddress)() & 0xffu;
+	resolved = reinterpret_cast<OracleResolveFn>(resolveAddress)() & 0xffu;
+	HMODULE const fluidModel = GetModuleHandleA("FluidModel.DLL");
+	if(!fluidModel)
+		return false;
+	unsigned matched = 0;
+	unsigned present = 0;
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i != exportCount; ++i)
+		{
+		FARPROC const expected = GetProcAddress(fluidModel,
+			nxFluidModelExportManifest[i].name);
+		FARPROC const actual = *reinterpret_cast<FARPROC*>(
+			reinterpret_cast<unsigned char*>(physics) +
+			nxFluidModelExportManifest[i].oracleGlobalRva);
+		const bool equal = actual == expected;
+		if(!equal)
+			printf("fluid-model-export-mismatch side=oracle index=%u name=%s expected=%p actual=%p rva=%08x\n",
+				i, nxFluidModelExportManifest[i].name, expected, actual,
+				nxFluidModelExportManifest[i].oracleGlobalRva);
+		matched += equal ? 1u : 0u;
+		present += actual != 0 ? 1u : 0u;
+		digest = (digest ^ (equal ? 1u : 0u)) * 16777619u;
+		digest = (digest ^ (actual != 0 ? 1u : 0u)) * 16777619u;
+		}
+	typedef unsigned (__stdcall *OracleUnloadFn)();
+	const unsigned unloaded = reinterpret_cast<OracleUnloadFn>(
+		reinterpret_cast<unsigned char*>(physics) + 0x0008d850u)() & 0xffu;
+	RemoveDllDirectory(directoryCookie);
+	printf("simulation fluid-model-export-resolve row=003903 slots=%u present=%u matched=%u digest=%08x\n",
+		static_cast<unsigned>(exportCount), present, matched, digest);
+	return loaded && resolved && unloaded && matched == exportCount;
+	}
+
+static int nxSimulationRunFluidModelExportResolutionProbe(int argc,
+	wchar_t** argv)
+	{
+	wchar_t pairDirectory[MAX_PATH];
+	HMODULE physics = 0;
+	const int status = nxOpenPair(argc - 1, argv + 1,
+		"NxPhysicsSimulationTests --fluid-model-export-resolution",
+		pairDirectory, &physics);
+	if(status)
+		return status;
+	const bool matched = nxSimulationTestFluidModelExportResolution(physics,
+		pairDirectory);
+	FreeLibrary(physics);
+	return matched ? 0 : 1;
+	}
+
+static bool nxSimulationRunFluidModelExportResolutionChild(
+	const wchar_t* pairDirectory)
+	{
+	wchar_t executable[MAX_PATH];
+	const DWORD executableLength = GetModuleFileNameW(0, executable, MAX_PATH);
+	if(!executableLength || executableLength >= MAX_PATH)
+		return false;
+	wchar_t commandLine[2 * MAX_PATH + 100];
+	const int commandLength = _snwprintf_s(commandLine, _countof(commandLine),
+		_TRUNCATE, L"\"%s\" --fluid-model-export-resolution \"%s\"",
+		executable, pairDirectory);
+	if(commandLength < 0)
+		return false;
+	STARTUPINFOW startup = {};
+	startup.cb = sizeof(startup);
+	startup.dwFlags = STARTF_USESTDHANDLES;
+	startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+	startup.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+	startup.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	PROCESS_INFORMATION process = {};
+	if(!CreateProcessW(executable, commandLine, 0, 0, TRUE, CREATE_NO_WINDOW,
+		0, 0, &startup, &process))
+		return false;
+	const DWORD waitResult = WaitForSingleObject(process.hProcess, 30000);
+	if(waitResult != WAIT_OBJECT_0)
+		{
+		TerminateProcess(process.hProcess, 1);
+		WaitForSingleObject(process.hProcess, INFINITE);
+		}
+	DWORD exitCode = 1;
+	GetExitCodeProcess(process.hProcess, &exitCode);
+	CloseHandle(process.hThread);
+	CloseHandle(process.hProcess);
+	return waitResult == WAIT_OBJECT_0 && exitCode == 0;
+	}
+
 static bool nxSimulationTestFluidModelLoadX87(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -1217,6 +1382,8 @@ int wmain(int argc, wchar_t** argv)
 	setvbuf(stdout, 0, _IONBF, 0);
 	if(argc == 3 && wcscmp(argv[1], L"--fluid-model-load-x87") == 0)
 		return nxSimulationRunFluidModelLoadX87Probe(argc, argv);
+	if(argc == 3 && wcscmp(argv[1], L"--fluid-model-export-resolution") == 0)
+		return nxSimulationRunFluidModelExportResolutionProbe(argc, argv);
 	if(argc != 2)
 		return nxFail("usage: NxPhysicsSimulationTests <pair directory>");
 
@@ -1225,6 +1392,11 @@ int wmain(int argc, wchar_t** argv)
 	int status = nxOpenPair(argc, argv, "NxPhysicsSimulationTests", pairDirectory, &physics);
 	if(status)
 		return status;
+	if(!nxSimulationRunFluidModelExportResolutionChild(pairDirectory))
+		{
+		FreeLibrary(physics);
+		return nxFail("FluidModel export-table child differential failed");
+		}
 	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK)
 		{

@@ -882,6 +882,37 @@ static unsigned gNxFluidLicensedFeatureFlags = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
 
+struct NxFluidModelExportEntry
+	{
+	const char* name;
+	FARPROC address;
+	};
+
+#define NX_FLUID_MODEL_EXPORT(name, oracleGlobalRva) { #name, 0 },
+static NxFluidModelExportEntry gNxFluidModelExports[] =
+	{
+#include "FluidModelExports.inc"
+	};
+#undef NX_FLUID_MODEL_EXPORT
+
+static FARPROC nxFluidModelGetResolvedExportByName(const char* name)
+	{
+	for(unsigned i = 0; i != sizeof(gNxFluidModelExports) /
+		sizeof(gNxFluidModelExports[0]); ++i)
+		if(strcmp(gNxFluidModelExports[i].name, name) == 0)
+			return gNxFluidModelExports[i].address;
+	return 0;
+	}
+
+extern "C" __declspec(noinline) FARPROC __cdecl
+	nxFluidModelGetResolvedExport(unsigned index)
+	{
+	if(index >= sizeof(gNxFluidModelExports) /
+		sizeof(gNxFluidModelExports[0]))
+		return 0;
+	return gNxFluidModelExports[index].address;
+	}
+
 extern "C" int __cdecl nxFluidCollisionBuildStaticCollision(void*, void*, float, float);
 
 static HMODULE nxFluidModelLoadLibrary()
@@ -921,120 +952,100 @@ static bool nxFluidManagerResolveModel()
 		gNxFluidModelInitialized = false;
 		return false;
 		}
+	for(unsigned i = 0; i != sizeof(gNxFluidModelExports) /
+		sizeof(gNxFluidModelExports[0]); ++i)
+		gNxFluidModelExports[i].address = GetProcAddress(module,
+			gNxFluidModelExports[i].name);
 	gNxFluidManagerCreateCallback = reinterpret_cast<NxFluidManagerCreateCallback>(
-		GetProcAddress(module, "FluidManagerCreate"));
+		nxFluidModelGetResolvedExportByName("FluidManagerCreate"));
 	gNxFluidManagerDestroyCallback = reinterpret_cast<NxFluidManagerDestroyCallback>(
-		GetProcAddress(module, "FluidManagerDestroy"));
+		nxFluidModelGetResolvedExportByName("FluidManagerDestroy"));
 	gNxFluidManagerGetStaticCollisionCallback = reinterpret_cast<
-		NxFluidManagerGetStaticCollisionCallback>(GetProcAddress(module,
-			"FluidManagerGetStaticCollision"));
+		NxFluidManagerGetStaticCollisionCallback>(nxFluidModelGetResolvedExportByName("FluidManagerGetStaticCollision"));
 	gNxFluidCreateCallback = reinterpret_cast<NxFluidCreateCallback>(
-		GetProcAddress(module, "FluidCreate"));
+		nxFluidModelGetResolvedExportByName("FluidCreate"));
 	gNxFluidDestroyCallback = reinterpret_cast<NxFluidDestroyCallback>(
-		GetProcAddress(module, "FluidDestroy"));
+		nxFluidModelGetResolvedExportByName("FluidDestroy"));
 	gNxFluidGetCellSizeCallback = reinterpret_cast<NxFluidGetCellSizeCallback>(
-		GetProcAddress(module, "FluidGetCellSize"));
+		nxFluidModelGetResolvedExportByName("FluidGetCellSize"));
 	gNxStaticCollisionDestroyCallback = reinterpret_cast<NxStaticCollisionDestroyCallback>(
-		GetProcAddress(module, "StaticCollisionDestroy"));
+		nxFluidModelGetResolvedExportByName("StaticCollisionDestroy"));
 	gNxFluidGetRestParticleDistanceCallback = reinterpret_cast<
-		NxFluidGetRestParticleDistanceCallback>(GetProcAddress(module,
-			"FluidGetRestParticleDistance"));
+		NxFluidGetRestParticleDistanceCallback>(nxFluidModelGetResolvedExportByName("FluidGetRestParticleDistance"));
 	gNxFluidEmitterCreateCallback = reinterpret_cast<NxFluidEmitterCreateCallback>(
-		GetProcAddress(module, "EmitterCreate"));
+		nxFluidModelGetResolvedExportByName("EmitterCreate"));
 	gNxFluidEmitterDestroyCallback = reinterpret_cast<NxFluidEmitterDestroyCallback>(
-		GetProcAddress(module, "EmitterDestroy"));
+		nxFluidModelGetResolvedExportByName("EmitterDestroy"));
 	gNxFluidEmitterSetGlobalPoseCallback = reinterpret_cast<
-		NxFluidEmitterSetGlobalPoseCallback>(GetProcAddress(module,
-			"EmitterSetGlobalPose"));
+		NxFluidEmitterSetGlobalPoseCallback>(nxFluidModelGetResolvedExportByName("EmitterSetGlobalPose"));
 	gNxFluidEmitterGetGlobalPoseCallback = reinterpret_cast<
-		NxFluidEmitterGetGlobalPoseCallback>(GetProcAddress(module,
-			"EmitterGetGlobalPose"));
+		NxFluidEmitterGetGlobalPoseCallback>(nxFluidModelGetResolvedExportByName("EmitterGetGlobalPose"));
 	gNxFluidGetStiffnessCallback = reinterpret_cast<NxFluidScalarGetCallback>(
-		GetProcAddress(module, "FluidGetStiffness"));
+		nxFluidModelGetResolvedExportByName("FluidGetStiffness"));
 	gNxFluidGetViscosityCallback = reinterpret_cast<NxFluidScalarGetCallback>(
-		GetProcAddress(module, "FluidGetViscosity"));
+		nxFluidModelGetResolvedExportByName("FluidGetViscosity"));
 	gNxFluidGetDampingCallback = reinterpret_cast<NxFluidScalarGetCallback>(
-		GetProcAddress(module, "FluidGetDamping"));
+		nxFluidModelGetResolvedExportByName("FluidGetDamping"));
 	gNxFluidSetStiffnessCallback = reinterpret_cast<NxFluidScalarSetCallback>(
-		GetProcAddress(module, "FluidSetStiffness"));
+		nxFluidModelGetResolvedExportByName("FluidSetStiffness"));
 	gNxFluidSetViscosityCallback = reinterpret_cast<NxFluidScalarSetCallback>(
-		GetProcAddress(module, "FluidSetViscosity"));
+		nxFluidModelGetResolvedExportByName("FluidSetViscosity"));
 	gNxFluidSetDampingCallback = reinterpret_cast<NxFluidScalarSetCallback>(
-		GetProcAddress(module, "FluidSetDamping"));
+		nxFluidModelGetResolvedExportByName("FluidSetDamping"));
 	gNxFluidSetStaticCollisionRestitutionCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"FluidSetStaticCollisionRestitution"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("FluidSetStaticCollisionRestitution"));
 	gNxFluidSetStaticCollisionAdhesionCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"FluidSetStaticCollisionAdhesion"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("FluidSetStaticCollisionAdhesion"));
 	gNxFluidSetDynamicCollisionRestitutionCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"FluidSetDynamicCollisionRestitution"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("FluidSetDynamicCollisionRestitution"));
 	gNxFluidSetDynamicCollisionAdhesionCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"FluidSetDynamicCollisionAdhesion"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("FluidSetDynamicCollisionAdhesion"));
 	gNxFluidGetStaticCollisionRestitutionCallback = reinterpret_cast<
-		NxFluidScalarGetCallback>(GetProcAddress(module,
-			"FluidGetStaticCollisionRestitution"));
+		NxFluidScalarGetCallback>(nxFluidModelGetResolvedExportByName("FluidGetStaticCollisionRestitution"));
 	gNxFluidGetStaticCollisionAdhesionCallback = reinterpret_cast<
-		NxFluidScalarGetCallback>(GetProcAddress(module,
-			"FluidGetStaticCollisionAdhesion"));
+		NxFluidScalarGetCallback>(nxFluidModelGetResolvedExportByName("FluidGetStaticCollisionAdhesion"));
 	gNxFluidGetKernelRadiusMultiplierCallback = reinterpret_cast<
-		NxFluidScalarGetCallback>(GetProcAddress(module,
-			"FluidGetKernelRadiusMultiplier"));
+		NxFluidScalarGetCallback>(nxFluidModelGetResolvedExportByName("FluidGetKernelRadiusMultiplier"));
 	gNxFluidGetRestDensityCallback = reinterpret_cast<NxFluidScalarGetCallback>(
-		GetProcAddress(module, "FluidGetRestDensity"));
+		nxFluidModelGetResolvedExportByName("FluidGetRestDensity"));
 	gNxFluidGetRestParticleDistanceScalarCallback = reinterpret_cast<
-		NxFluidScalarGetCallback>(GetProcAddress(module,
-			"FluidGetRestParticleDistance"));
+		NxFluidScalarGetCallback>(nxFluidModelGetResolvedExportByName("FluidGetRestParticleDistance"));
 	gNxFluidGetParticleMassCallback = reinterpret_cast<NxFluidScalarGetCallback>(
-		GetProcAddress(module, "FluidGetParticleMass"));
+		nxFluidModelGetResolvedExportByName("FluidGetParticleMass"));
 	gNxFluidGetMaxParticlesCallback = reinterpret_cast<NxFluidUnsignedGetCallback>(
-		GetProcAddress(module, "FluidGetMaxParticles"));
+		nxFluidModelGetResolvedExportByName("FluidGetMaxParticles"));
 	gNxFluidGetParticlesCallback = reinterpret_cast<NxFluidParticlesGetCallback>(
-		GetProcAddress(module, "FluidGetParticles"));
+		nxFluidModelGetResolvedExportByName("FluidGetParticles"));
 	gNxParticleArrayAllocCallback = reinterpret_cast<NxParticleArrayAllocCallback>(
-		GetProcAddress(module, "ParticleArrayAlloc"));
+		nxFluidModelGetResolvedExportByName("ParticleArrayAlloc"));
 	gNxParticleArrayGrowCallback = reinterpret_cast<NxParticleArrayGrowCallback>(
-		GetProcAddress(module, "ParticleArrayGrow"));
+		nxFluidModelGetResolvedExportByName("ParticleArrayGrow"));
 	gNxParticleArrayReleaseCallback = reinterpret_cast<NxParticleArrayReleaseCallback>(
-		GetProcAddress(module, "ParticleArrayRelease"));
+		nxFluidModelGetResolvedExportByName("ParticleArrayRelease"));
 	gNxFluidGetSimulationMethodCallback = reinterpret_cast<
-		NxFluidUnsignedGetCallback>(GetProcAddress(module,
-			"FluidGetSimulationMethod"));
+		NxFluidUnsignedGetCallback>(nxFluidModelGetResolvedExportByName("FluidGetSimulationMethod"));
 	gNxImplicitFluidMeshCreateCallback = reinterpret_cast<
-		NxImplicitFluidMeshCreateCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshCreate"));
+		NxImplicitFluidMeshCreateCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshCreate"));
 	gNxImplicitFluidMeshDestroyCallback = reinterpret_cast<
-		NxImplicitFluidMeshDestroyCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshDestroy"));
+		NxImplicitFluidMeshDestroyCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshDestroy"));
 	gNxImplicitFluidMeshGetSurfaceRadiusCallback = reinterpret_cast<
-		NxFluidScalarGetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshGetSurfaceRadius"));
+		NxFluidScalarGetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshGetSurfaceRadius"));
 	gNxImplicitFluidMeshSetSurfaceRadiusCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshSetSurfaceRadius"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshSetSurfaceRadius"));
 	gNxImplicitFluidMeshGetSingleRadiusCallback = reinterpret_cast<
-		NxFluidScalarGetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshGetSingleRadius"));
+		NxFluidScalarGetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshGetSingleRadius"));
 	gNxImplicitFluidMeshSetSingleRadiusCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshSetSingleRadius"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshSetSingleRadius"));
 	gNxImplicitFluidMeshSetBlendCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshSetBlend"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshSetBlend"));
 	gNxImplicitFluidMeshGetTriangleSizeCallback = reinterpret_cast<
-		NxFluidScalarGetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshGetTriangleSize"));
+		NxFluidScalarGetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshGetTriangleSize"));
 	gNxImplicitFluidMeshSetTriangleSizeCallback = reinterpret_cast<
-		NxFluidScalarSetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshSetTriangleSize"));
+		NxFluidScalarSetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshSetTriangleSize"));
 	gNxImplicitFluidMeshGetSmoothingIterationsCallback = reinterpret_cast<
-		NxFluidUnsignedGetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshGetSmoothingIterations"));
+		NxFluidUnsignedGetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshGetSmoothingIterations"));
 	gNxImplicitFluidMeshSetSmoothingIterationsCallback = reinterpret_cast<
-		NxImplicitFluidMeshUnsignedSetCallback>(GetProcAddress(module,
-			"ImplicitFluidMeshSetSmoothingIterations"));
+		NxImplicitFluidMeshUnsignedSetCallback>(nxFluidModelGetResolvedExportByName("ImplicitFluidMeshSetSmoothingIterations"));
 	gNxFluidModelLoaded = true;
 	gNxFluidModelInitialized = gNxFluidManagerCreateCallback &&
 		gNxFluidManagerDestroyCallback && gNxFluidCreateCallback &&
