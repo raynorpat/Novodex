@@ -5603,9 +5603,17 @@
       "source": "Physics/src/NpScene.cpp#NpScene::NpScene",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/97",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/998",
-      "static_proof": null,
+      "static_proof": "IDA decompilation at VA 0x1000c310 identifies the 216-byte NpScene __thiscall constructor taking NxSceneInternal* and returning this with ret 4. It constructs the embedded hook/locks/events, stores the internal Scene at wrapper+0x24, allocates two 4-byte lock links and a 0x18-byte condition through nxFoundationSDKAllocator, and starts the condition worker when state allocation succeeds.",
       "dynamic_proof": "NxPhysicsSceneConstructorTests is registered in Phase 7 and checks the NpScene internal-scene back-link at wrapper +0x24 immediately after NxPhysicsSDK::createScene. The oracle and clean candidate both report internal_link=1 (stdout_delta=0, stderr_exact=True). In a throwaway source mutation replacing `mScene = scene` with `mScene = 0`, the candidate reports internal_link=0 and exits 1; the registered differential catches it with stdout_delta=2 while both DLL identities are reported. After byte-exact restoration and rebuild, the clean differential returns stdout_delta=0, stderr_exact=True. Evidence: evidence/phase6-joints.md, Phase 7 Scene constructor addendum.",
-      "notes": "Constructor mapping verified against the pinned image at RVA 0x0000c310 and candidate map; the source correspondence previously pointed to an unrelated trigger-pair function."
+      "notes": "The source correspondence and direct map symbol agree on NpScene::NpScene; the constructor is reached from NxSceneInternal construction at candidate Scene.cpp:791. Its 0x28-byte wrapper layout and nested lock/condition allocations are documented in NpScene.h.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "??0NpScene@@QAE@PAVNxSceneInternal@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??0NpScene@@QAE@PAVNxSceneInternal@@@Z",
+        "address": "0x10041b70",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000286",
