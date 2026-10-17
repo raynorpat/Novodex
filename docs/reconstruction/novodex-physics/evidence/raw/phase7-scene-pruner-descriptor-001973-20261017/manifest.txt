@@ -1,0 +1,7 @@
+Phase 7 differential evidence: phys_fn_001973
+Oracle: oracle/NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Restored candidate: build/Release/NxPhysics.dll sha256=e11e305312134b7b70a06e660e6987dc8b790387f769d5272379930fda231d07
+Mutation: NX_BROADPHASE_FULL engine mode changed from 2 to 3
+Mutation detector: oracle_exit=0 candidate_exit=0 stdout_delta=2 stderr_exact=True
+Restored control: oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True
+Fresh Phase 7 gate: 3001/3001

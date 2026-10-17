@@ -1,0 +1,7 @@
+# Scene pruner descriptor setup (`phys_fn_001973`)
+
+IDA's oracle function at RVA `0x0004c1b0` maps public broad-phase selectors to pruning-engine modes 1, 2, and 3; copies optional scene bounds to both engine bounds records; initializes the cache pointer and index; and marks the engine bounded or unbounded. The candidate implementation is `nxSceneApplyDescriptorFlags` in `Physics/src/Scene.cpp`, linked at `0x1006a570` in `Scene.obj`.
+
+The existing registered `NxPhysicsSimulationTests` markers assert selector mappings 0→1, 1→2, and 2→3. A candidate-only mutation changed the `NX_BROADPHASE_FULL` engine mode from 2 to 3. The staged differential rejected it with `oracle_exit=0`, `candidate_exit=0`, and `stdout_delta=2`; the selector-1 marker was `mode=2` in the oracle and `mode=3` in the mutant. Restoring the mapping returned an exact differential (`stdout_delta=0`, `stderr_exact=True`).
+
+The restored candidate DLL SHA-256 is `e11e305312134b7b70a06e660e6987dc8b790387f769d5272379930fda231d07`; the pinned oracle SHA-256 is `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`. The fresh Phase 7 gate passes at 3,001/3,001 assertions, and the reconstruction tooling suite passes all 817 tests. Focused mutation, restored, and gate transcripts are compressed under [evidence/raw/phase7-scene-pruner-descriptor-001973-20261017](raw/phase7-scene-pruner-descriptor-001973-20261017/).

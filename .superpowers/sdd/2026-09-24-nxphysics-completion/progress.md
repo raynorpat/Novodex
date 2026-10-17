@@ -618,3 +618,10 @@ Ruling: the ledger's earlier M7.7 pointers are stale; current inventory rows, Ph
 Completed on main. IDA oracle RVA 0x4c100 maps to candidate helper `cpmRefreshPairCandidate` at 0x10017220. The new isolated coherent-broadphase simulation checks retained pair nodes and current-frame stamps across two fetched frames. Mutating the candidate stamp to `frame ^ 1u` is caught by the registered simulation differential (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=4100`); restored output is exact. Phase 7 closes 439 rows / defers 121; fresh Phase 5/6/7 gates pass at 2,862, 1,729, and 3,001 assertions. Inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained rows. Full DLL reconstruction remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-pruner-pair-candidate-refresh-001971.md` and its raw archive.
 
 Maintenance verification: refreshed the shared oracle-proof baseline bindings and regenerated `work_units.json` after the current mainline baseline/inventory changes; the complete reconstruction-tool suite now passes 817/817 tests.
+
+
+### Phase 7 continuation — scene pruner descriptor setup (`phys_fn_001973`)
+
+Mapped to `nxSceneApplyDescriptorFlags` at `0x1006a570` in Scene.obj. The existing simulation markers cover all selector mappings; changing only `NX_BROADPHASE_FULL` from engine mode 2 to 3 is caught (`stdout_delta=2`), and restoring returns an exact differential. Phase 7 closes 440 rows / defers 120. Inventory validation reports zero unexplained rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-pruner-descriptor-001973.md` and its raw archive. Full DLL reconstruction remains open.
+
+Verification for `phys_fn_001973`: full Phase 7 passed 3,001/3,001; all 817 reconstruction tooling tests passed; inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained rows.

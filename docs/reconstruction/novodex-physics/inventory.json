@@ -37180,13 +37180,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/773",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5962",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at oracle RVA 0x0004c1b0 maps public broad-phase selectors to engine modes 1/2/3, copies optional scene bounds into both engine bounds records, sets the bounded/unbounded flag, initializes the cache pointer, and clears the cache index. Physics/src/Scene.cpp implements the contract as nxSceneApplyDescriptorFlags, linked at 0x1006a570 in Scene.obj.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests differential asserts selector mappings 0->1, 1->2, and 2->3. Mutating only the NX_BROADPHASE_FULL branch to engine mode 3 is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=2); restored output matches exactly (stdout_delta=0, stderr_exact=True).",
+      "notes": "The same public scene setup path copies optional maxBounds and initializes the pruner bounds mode; the selector outputs are existing Phase 5/6/7 coverage markers.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxSceneApplyDescriptorFlags",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneApplyDescriptorFlags@@YAXPAVNxSceneInternal@@IPBVNxBounds3@@@Z",
+        "address": "0x1006a570",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_001974",
