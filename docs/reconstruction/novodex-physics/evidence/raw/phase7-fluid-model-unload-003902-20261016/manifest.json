@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003902",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "7f39653423fc8d59268b838f8f3fa209d97ac297002d0da33ef6e303c5f4950a",
+  "mutation": "replaced FreeLibrary(gNxFluidModelModule) with FALSE while preserving cached-handle clear",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=4104; candidate result=0 module_after=1",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; both result=1 module_after=0",
+  "phase_gates": {
+    "5": "pass 2828/2828",
+    "6": "pass 1717/1717",
+    "7": "pass 2961/2961"
+  },
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}

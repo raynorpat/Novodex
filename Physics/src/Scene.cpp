@@ -881,6 +881,7 @@ static NxParticleArrayReleaseCallback gNxParticleArrayReleaseCallback = 0;
 static unsigned gNxFluidLicensedFeatureFlags = 0;
 static bool gNxFluidModelLoaded = false;
 static bool gNxFluidModelInitialized = false;
+static HMODULE gNxFluidModelModule = 0;
 
 struct NxFluidModelExportEntry
 	{
@@ -948,10 +949,12 @@ static bool nxFluidManagerResolveModel()
 	HMODULE module = nxFluidModelLoadLibrary();
 	if(!module)
 		{
+		gNxFluidModelModule = 0;
 		gNxFluidModelLoaded = false;
 		gNxFluidModelInitialized = false;
 		return false;
 		}
+	gNxFluidModelModule = module;
 	for(unsigned i = 0; i != sizeof(gNxFluidModelExports) /
 		sizeof(gNxFluidModelExports[0]); ++i)
 		gNxFluidModelExports[i].address = GetProcAddress(module,
@@ -1110,6 +1113,16 @@ nxFluidModelClearResolvedExports()
 	gNxFluidModelLoaded = false;
 	gNxFluidModelInitialized = false;
 	return 1;
+	}
+
+// phys_fn_003902 releases the cached FluidModel module and clears its global
+// handle regardless of FreeLibrary's return value.
+extern "C" __declspec(noinline) unsigned __cdecl
+nxFluidModelUnloadLibrary()
+	{
+	const BOOL unloaded = FreeLibrary(gNxFluidModelModule);
+	gNxFluidModelModule = 0;
+	return unloaded != FALSE;
 	}
 
 extern "C" __declspec(noinline) unsigned __cdecl
@@ -2411,6 +2424,7 @@ static void nxFluidManagerDestroyArrays(void* manager)
 			*reinterpret_cast<void**>(bytes + 0x30))
 			gNxFluidManagerDestroyCallback(*reinterpret_cast<void**>(bytes + 0x30));
 		nxFluidModelClearResolvedExports();
+		nxFluidModelUnloadLibrary();
 		}
 	}
 

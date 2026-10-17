@@ -73284,13 +73284,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "cached flag consumer (0x8d850)",
+    "state": "dynamically_gated",
+    "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1457",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13020",
-      "static_proof": "static review of the recorded shape: cached flag consumer (0x8d850); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the extrarows differential (3z208): failures=0 over three consecutive runs for both rows, comparing the object, the hook hit count and argument, the returned flag and the cleared cache, with both globals bound",
-      "notes": ""
+    "static_proof": "IDA decompilation at 0x0008d850 calls FreeLibrary with the cached HMODULE, clears the cached handle unconditionally, and returns whether FreeLibrary succeeded.",
+    "dynamic_proof": "NxPhysicsSimulationTests calls oracle RVA 0x0008d850 and the candidate nxFluidModelUnloadLibrary row after export clearing, then checks the return value and GetModuleHandleA state; omitting FreeLibrary is rejected with stdout_delta=4104, and restored output matches exactly.",
+    "notes": "Candidate handle is captured from nxFluidModelLoadLibrary and released after the export table is cleared during FluidManager array teardown."
     },
     {
       "id": "phys_fn_003903",
