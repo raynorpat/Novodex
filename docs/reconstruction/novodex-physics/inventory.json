@@ -89784,7 +89784,13 @@
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed as a tail-call alias of phys_fn_004784.",
       "implementation": "Physics/src/MemoryStream.cpp",
-      "implementation_symbol": "MemoryStream::~MemoryStream"
+      "implementation_symbol": "MemoryStream::~MemoryStream",
+      "candidate_map_reference": {
+        "path": "build/phase5-mainline-check-20261016/Release/NxPhysics.map",
+        "symbol": "??1MemoryStream@@QAE@XZ",
+        "address": "0x10030d80",
+        "object": "MemoryStream.obj"
+      }
     },
     {
       "id": "phys_fn_004792",
