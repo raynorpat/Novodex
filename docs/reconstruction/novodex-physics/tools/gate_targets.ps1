@@ -3453,6 +3453,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation broadphase selector=0 mode=1'
         'simulation broadphase selector=1 mode=2'
         'simulation broadphase selector=2 mode=3'
+        'simulation broadphase invalid selector=3 created=1 errors=1 code=1 line=1598'
         # Scene stats and limits must expose empty-scene and populated-scene
         # counters consistently across every broadphase implementation.
         'simulation scene-stats phase=created selector=0 present=1 contacts=0 max_contacts=0 actors=0 joints=0 awake=0 asleep=0 static_shapes=0'
@@ -6429,7 +6430,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2996  # adds the Scene scalar-deleting thunk flag 0/1 assertions
+	'7' = 2997  # adds invalid broadphase selector diagnostic coverage for row 000544
                # plus the full invalid fluid-emitter descriptor corpus assertion
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage

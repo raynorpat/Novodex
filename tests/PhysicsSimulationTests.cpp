@@ -2348,6 +2348,30 @@ int wmain(int argc, wchar_t** argv)
 			sdk->releaseScene(*planeScene);
 			}
 		}
+	NxSceneDesc invalidBroadPhaseDesc;
+	invalidBroadPhaseDesc.setToDefault();
+	invalidBroadPhaseDesc.broadPhase = static_cast<NxBroadPhaseType>(3);
+	const unsigned invalidBroadPhaseErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
+	NxScene* const invalidBroadPhaseScene = sdk->createScene(invalidBroadPhaseDesc);
+	const unsigned invalidBroadPhaseErrors =
+		simulationOutput.errors - invalidBroadPhaseErrorsBefore;
+	const bool invalidBroadPhaseDiagnosticMatches = invalidBroadPhaseErrors == 1
+		&& simulationOutput.code == NXE_INVALID_PARAMETER
+		&& simulationOutput.line == 0x63e
+		&& strcmp(simulationOutput.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp") == 0
+		&& strcmp(simulationOutput.message,
+			"Scene::createBroadPhase: invalid broad phase type!") == 0;
+	printf("simulation broadphase invalid selector=3 created=%u errors=%u code=%u line=%d file=%s message=%s matched=%u\n",
+		invalidBroadPhaseScene ? 1u : 0u, invalidBroadPhaseErrors,
+		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
+		simulationOutput.file, simulationOutput.message,
+		invalidBroadPhaseDiagnosticMatches ? 1u : 0u);
+	if(invalidBroadPhaseScene)
+		sdk->releaseScene(*invalidBroadPhaseScene);
+	if(!invalidBroadPhaseScene || !invalidBroadPhaseDiagnosticMatches)
+		return nxFail("invalid broadphase selector diagnostic changed");
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();
 	sceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);
