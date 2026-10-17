@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_001939",
+  "candidate_sha256": "4f892f233100e505765cfeeda2a8d1eda7c7c9bd618f4491c266e38d59a78338",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "mapping": {
+    "path": "Physics/src/SceneVisualize.cpp",
+    "symbol": "nxSceneVisualizeCollisionPruners",
+    "rva": "0x0004ba30"
+  },
+  "mutation": "Suppress the type-3 drawTree call under the dynamic visualization flag.",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=46; type3_red_lines=36 vs 0",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; both type3_red_lines=36",
+  "phase_gates": {
+    "7": "pass 2984/2984"
+  },
+  "raw_logs": [
+    "mutation-differential.log.gz",
+    "restored-differential.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}

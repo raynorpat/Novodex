@@ -655,6 +655,17 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 					}
 				}
 			}
+
+		// phys_fn_001939 is also reached from the dynamic visualization flag
+		// for the fourth pruner slot. Its caller lazily builds this static-base
+		// tree, then the row visits every node in preorder and draws it red.
+		Type3StaticPruner* const type3Pruner = static_cast<Type3StaticPruner*>(pruners[3]);
+		if(type3Pruner)
+			{
+			if(!type3Pruner->mTree)
+				type3Pruner->BuildTree();
+			drawTree(type3Pruner->mTree, 0xffff0000u);
+			}
 		}
 
 	// The broad-phase SAP hook stores its entry count and pointer array at

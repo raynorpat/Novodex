@@ -83,6 +83,7 @@ class NxRecordingOutput : public NxUserOutputStream
 
 static const char* nxStage = "";
 static bool nxFreePrunerBlueAabbsObserved = false;
+static bool nxType3PrunerRedAabbsObserved = false;
 
 static void nxPrintVec(const char* name, const NxVec3& v)
 	{
@@ -92,7 +93,7 @@ static void nxPrintVec(const char* name, const NxVec3& v)
 class NxRecordingRenderer : public NxUserDebugRenderer
 	{
 	public:
-	NxRecordingRenderer() : mCalls(0), mLines(0), mBlueLines(0) {}
+	NxRecordingRenderer() : mCalls(0), mLines(0), mBlueLines(0), mRedLines(0) {}
 	virtual void renderData(const NxDebugRenderable& data) const
 		{
 		mCalls++;
@@ -114,6 +115,8 @@ class NxRecordingRenderer : public NxUserDebugRenderer
 			{
 			if(l[i].color == NX_ARGB_BLUE)
 				++mBlueLines;
+			if(l[i].color == 0xffff0000u)
+				++mRedLines;
 			printf("visualize %s line=%u", nxStage, static_cast<unsigned>(i));
 			nxPrintVec("p0", l[i].p0);
 			nxPrintVec("p1", l[i].p1);
@@ -132,6 +135,7 @@ class NxRecordingRenderer : public NxUserDebugRenderer
 	mutable unsigned mCalls;
 	mutable unsigned mLines;
 	mutable unsigned mBlueLines;
+	mutable unsigned mRedLines;
 	};
 
 // The visualisation parameters the stages set; everything else stays at its
@@ -171,6 +175,9 @@ static const NxStage nxStages[] =
 	{ "collision_free", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } },
 	{ "all", { 0.5f, 1.0f, 2.0f, 1.25f, 3.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f } },
 	};
+static const NxStage nxType3PrunerStage =
+	{ "collision_type3_pruner", { 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f } };
 static const unsigned kStageCount = sizeof(nxStages) / sizeof(nxStages[0]);
 
 static void nxRunStage(NxPhysicsSDK* sdk, NxScene* scene, const NxStage& stage, const char* tag)
@@ -195,6 +202,13 @@ static void nxRunStage(NxPhysicsSDK* sdk, NxScene* scene, const NxStage& stage, 
 		nxFreePrunerBlueAabbsObserved = renderer.mBlueLines == 60;
 		printf("visualize row001937 free_pruner_blue_lines=%u expected=60 matched=%u\n",
 			renderer.mBlueLines, nxFreePrunerBlueAabbsObserved ? 1u : 0u);
+		}
+	if(strcmp(stage.name, "collision_type3_pruner") == 0)
+		{
+		const bool matched = renderer.mRedLines == 36;
+		printf("visualize row001939 type3_red_lines=%u expected=36 matched=%u\n",
+			renderer.mRedLines, matched ? 1u : 0u);
+		nxType3PrunerRedAabbsObserved = matched;
 		}
 	nxStage = "";
 	}
@@ -476,7 +490,6 @@ int wmain(int argc, wchar_t** argv)
 	const bool boundsCacheWarmHit = scene->raycastAnyShape(boundsCacheWarmRay, NX_ALL_SHAPES,
 		0xffffffff, 500.0f);
 	printf("visualize bounds_cache_warm hit=%u\n", boundsCacheWarmHit ? 1u : 0u);
-
 	for(unsigned s = 0; s < kStageCount; s++)
 		nxRunStage(sdk, scene, nxStages[s], "created");
 	if(!nxFreePrunerBlueAabbsObserved)
@@ -516,6 +529,27 @@ int wmain(int argc, wchar_t** argv)
 	}
 	if(!nxRunContactStage(sdk))
 		return nxFail("contact visualization did not produce rendered contact points");
+	// Run the private-slot fixture last so its SDK-cached renderable cannot
+	// contaminate the existing stage-by-stage output above. A fresh scene has
+	// the default plane plus two static boxes, yielding the same three-node tree.
+	NxSceneDesc type3SceneDesc;
+	type3SceneDesc.setToDefault();
+	NxScene* type3Scene = sdk->createScene(type3SceneDesc);
+	if(!type3Scene)
+		return nxFail("type-3 visualization scene creation failed");
+	if(!nxCreateCase(type3Scene, 0) || !nxCreateCase(type3Scene, 1))
+		return nxFail("type-3 visualization static boxes could not be created");
+	void* internalScene;
+	memcpy(&internalScene, reinterpret_cast<unsigned char*>(type3Scene) + 0x24, sizeof(internalScene));
+	unsigned char* const sceneBytes = static_cast<unsigned char*>(internalScene);
+	void** const scenePruners = reinterpret_cast<void**>(sceneBytes + 0x624 + 0x1c);
+	void* const savedType3Pruner = scenePruners[3];
+	scenePruners[3] = scenePruners[0];
+	nxRunStage(sdk, type3Scene, nxType3PrunerStage, "created");
+	scenePruners[3] = savedType3Pruner;
+	if(!nxType3PrunerRedAabbsObserved)
+		return nxFail("type-3 pruner AABB visualization did not match phys_fn_001939");
+	sdk->releaseScene(*type3Scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

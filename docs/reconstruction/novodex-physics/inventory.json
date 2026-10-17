@@ -36313,13 +36313,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/757",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5879",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0004ba30: for each AABBTree node, submit its 24-byte bounds to the SDK debug renderable with color 0xffff0000 and frame=false; recursively visit the low-bit-masked child pointer, then the contiguous sibling at child+36. The indirect call is NxDebugRenderable::addAABB at vtable slot 11.",
+      "dynamic_proof": "NxPhysicsSceneVisualizeTests aliases the fresh scene's already-built static tree into pruner slot 3 and enables dynamic collision visualization. The oracle emits exactly 36 red lines (three AABBs); a candidate-only no-op emits 0 and is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=46). Restored oracle/candidate output is exact (both exits 0, stdout_delta=0, stderr_exact=True). Fresh Phase 7 passed at 2,984/2,984. See evidence/phase7-type3-pruner-visualize-001939.md.",
+      "notes": "Reached by phys_fn_001978 under NX_VISUALIZE_COLLISION_DYNAMIC for pruner slot 3. The existing AABBTree::Walk callback provides the recursive preorder node traversal; this row supplies the type-3 tree call path. The fixture aliases the type-0 static tree only to reach the shared tree contract without fabricating a Type3StaticPruner object.",
+      "implementation": "Physics/src/SceneVisualize.cpp",
+      "implementation_symbol": "?nxSceneVisualizeCollisionPruners@@YAXPAXPAVNxDebugRenderable@@@Z",
+      "candidate_map_reference": {
+        "path": "build/phase7-physfn-001939-fullgate/Release/NxPhysics.map",
+        "symbol": "?nxSceneVisualizeCollisionPruners@@YAXPAXPAVNxDebugRenderable@@@Z",
+        "address": "0x10073aa0",
+        "object": "SceneVisualize.obj"
+      }
     },
     {
       "id": "phys_fn_001940",

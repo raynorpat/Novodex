@@ -11227,3 +11227,6 @@ Phase 7 SDK pointer-binding thunk `phys_fn_003683` is mutation-falsified by the 
 Phase 7 fluid surface-mesh manager constructor `phys_fn_003685` is mutation-falsified by the registered `NxPhysicsSimulationTests` row probe. Changing its type field from 4 to 5 is caught with `mismatches=1` and `stdout_delta=4106`; restored output is exact. See `phase7-fluid-surface-manager-constructor-003685.md`.
 
 Phase 7 free-pruner visualizer `phys_fn_001937`: suppressing the blue `addAABB` submission is rejected by `NxPhysicsSceneVisualizeTests` (`stdout_delta=1478`, candidate_exit=1); restored transcript is exact. See `phase7-free-pruner-visualize-001937.md`.
+
+
+Phase 7 type-3 pruner visualization `phys_fn_001939`: the candidate-only no-op is rejected by `NxPhysicsSceneVisualizeTests` (`stdout_delta=46`; type3 red lines 36 vs 0); restored oracle/candidate output is exact; fresh Phase 7 passes at 2,984/2,984. See [phase7-type3-pruner-visualize-001939.md](phase7-type3-pruner-visualize-001939.md).

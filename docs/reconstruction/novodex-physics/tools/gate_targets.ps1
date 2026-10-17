@@ -3181,6 +3181,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsSceneVisualizeTests' = @(
         'visualize contacts stage=after_step contact_lines=observed'
         'visualize row445 per-step-clear frames=60 contact-lines=3 exact=1'
+        'visualize row001939 type3_red_lines=36 expected=36 matched=1'
         'visualize empty renderables=0'
         'visualize empty_no_pruners stage=collision_aabbs renderable=1 points=0 lines=0 triangles=0'
         'visualize empty_no_pruners stage=collision_aabbs renderables=1'
@@ -6402,7 +6403,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2983  # previous 2982 plus the fluid surface-manager constructor assertion
+	'7' = 2984  # previous 2983 plus the type-3 pruner visualization assertion
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential
