@@ -5831,7 +5831,8 @@ class FluidEmitterProbe : public NpFluidEmitter
 		{ NpFluidEmitter::setLocalPosition(position); }
 	virtual void setLocalOrientation(const NxMat33& orientation)
 		{ NpFluidEmitter::setLocalOrientation(orientation); }
-	virtual void setFrameActor(NxActor*) {}
+	virtual void setFrameActor(NxActor* actor)
+		{ NpFluidEmitter::setFrameActor(actor); }
 	virtual NxActor* getFrameActor() const { return NpFluidEmitter::getFrameActor(); }
 	virtual NxReal getDimensionX() const { return NpFluidEmitter::getDimensionX(); }
 	virtual NxReal getDimensionY() const { return NpFluidEmitter::getDimensionY(); }
@@ -6033,6 +6034,168 @@ static unsigned nxRunFluidEmitterWorldComponentSetters(NxFluidEmitter* oracle,
 		caseFailures[2]);
 	printf("fluid emitter setLocalOrientation row=003814 cases=1 mismatches=%u\n",
 		caseFailures[3]);
+	return mismatches;
+	}
+
+static unsigned nxRunFluidEmitterSetFrameActorWrapper(unsigned char* image,
+	NxFluidEmitter* oracle,
+	NxFluidEmitter* candidate,
+	NxFluidEmitter* candidateDll, void* oracleBytes, void* candidateBytes,
+	void* candidateDllBytes, void* fluidModel)
+	{
+	if(!image || !oracle || !candidate || !candidateDll || !fluidModel)
+		return 1;
+	typedef void (__cdecl *SetPoseFn)(const float*);
+	typedef void (__cdecl *ResetFn)();
+	typedef unsigned (__cdecl *CountFn)();
+	typedef int (__cdecl *GetFn)(unsigned, NxFluidEmitterFlagCallbackRecord*);
+	SetPoseFn setFixturePose = reinterpret_cast<SetPoseFn>(GetProcAddress(
+		static_cast<HMODULE>(fluidModel), "NxSetEmitterGlobalPose"));
+	ResetFn resetCallbacks = reinterpret_cast<ResetFn>(GetProcAddress(
+		static_cast<HMODULE>(fluidModel), "NxResetFluidEmitterFlagCallbacks"));
+	CountFn callbackCount = reinterpret_cast<CountFn>(GetProcAddress(
+		static_cast<HMODULE>(fluidModel), "NxGetFluidEmitterFlagCallbackCount"));
+	GetFn getCallback = reinterpret_cast<GetFn>(GetProcAddress(
+		static_cast<HMODULE>(fluidModel), "NxGetFluidEmitterFlagCallbackRecord"));
+	if(!setFixturePose || !resetCallbacks || !callbackCount || !getCallback)
+		return 1;
+	struct EmitterState
+		{
+		unsigned char internal[0x90];
+		unsigned char fluid[0x84];
+		unsigned char backend[0x34];
+		};
+	EmitterState states[3] = {};
+	unsigned char actor[0x50] = {};
+	unsigned char actorBody[0x50] = {};
+	static const unsigned worldPose[12] = {
+		0x3f800000u, 0, 0, 0, 0x3f800000u, 0,
+		0, 0, 0x3f800000u, 0x41200000u, 0xc0400000u, 0x40400000u };
+	static const unsigned initialLocalPose[12] = {
+		0x3f000001u, 0x3e800002u, 0xbf000003u,
+		0xbe800004u, 0x3f200005u, 0x3e800006u,
+		0x3f400007u, 0xbf400008u, 0x3e400009u,
+		0x3f90000au, 0xc010000bu, 0x4010000cu };
+	static const unsigned staleCache[12] = {
+		0xdead0000u, 0xdead0001u, 0xdead0002u, 0xdead0003u,
+		0xdead0004u, 0xdead0005u, 0xdead0006u, 0xdead0007u,
+		0xdead0008u, 0xdead0009u, 0xdead000au, 0xdead000bu };
+	static const float actorPose[12] = {
+		0, -1, 0, 1, 0, 0, 0, 0, 1, 2, -3, 1.5f };
+	*reinterpret_cast<void**>(actor + 0x14) = actorBody;
+	memcpy(actor + 0x20, actorPose, sizeof(actorPose));
+	memcpy(actorBody + 0x20, actorPose, sizeof(actorPose));
+	unsigned char* const internals[3] = {
+		states[0].internal, states[1].internal, states[2].internal };
+	for(unsigned side = 0; side < 3; ++side)
+		{
+		*reinterpret_cast<void**>(internals[side] + 4) = states[side].fluid;
+		*reinterpret_cast<unsigned*>(internals[side] + 8) = 0x8c3d4e5fu;
+		*reinterpret_cast<void**>(states[side].fluid + 0x7c) = states[side].backend;
+		*reinterpret_cast<unsigned*>(states[side].fluid + 0x80) = 0x7b2c3d4eu;
+		*reinterpret_cast<unsigned*>(states[side].backend + 0x30) = 0x6a1b2c3du;
+		}
+	void* const oldOracleInternal = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(oracleBytes) + 0x14);
+	void* const oldCandidateInternal = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(candidateBytes) + 0x14);
+	void* const oldCandidateDllInternal = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(candidateDllBytes) + 0x14);
+	void** const oracleLockLink = *reinterpret_cast<void***>(
+		reinterpret_cast<unsigned char*>(oracle) + 0x0c);
+	unsigned char* const oracleLockStorage =
+		static_cast<unsigned char*>(*oracleLockLink);
+	unsigned char oldOracleLockStorage[0x20];
+	memcpy(oldOracleLockStorage, oracleLockStorage, sizeof(oldOracleLockStorage));
+	*reinterpret_cast<unsigned*>(oracleLockStorage + 0x18) = 1;
+	*reinterpret_cast<unsigned*>(oracleLockStorage + 0x1c) = 0x2222;
+	unsigned* const oracleReentry = reinterpret_cast<unsigned*>(image + 0x123c10);
+	const unsigned oldOracleReentry = *oracleReentry;
+	*oracleReentry = 0;
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(oracleBytes) + 0x14) = internals[0];
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(candidateBytes) + 0x14) = internals[1];
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(candidateDllBytes) + 0x14) = internals[2];
+	unsigned mismatches = 0;
+	unsigned callbackChecks = 0;
+	unsigned cacheChecks = 0;
+	unsigned actorChecks = 0;
+	unsigned stackChecks = 0;
+	for(unsigned test = 0; test != 2; ++test)
+		{
+		for(unsigned side = 0; side < 3; ++side)
+			{
+			*reinterpret_cast<void**>(internals[side] + 0x14) = actorBody;
+			memcpy(internals[side] + 0x18, initialLocalPose, sizeof(initialLocalPose));
+			memcpy(internals[side] + 0x48, staleCache, sizeof(staleCache));
+			}
+		memcpy(gOracleEmitterGlobalPose, worldPose, sizeof(worldPose));
+		setFixturePose(reinterpret_cast<const float*>(worldPose));
+		gOracleFlagCallbackCount = 0;
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		__asm mov oracleBefore, esp
+		oracle->setFrameActor(test == 0 ? reinterpret_cast<NxActor*>(actor) : 0);
+		__asm mov oracleAfter, esp
+		const unsigned oracleCount = gOracleFlagCallbackCount;
+		NxFluidEmitterFlagCallbackRecord oracleCallbacks[4] = {};
+		if(oracleCount <= 4)
+			memcpy(oracleCallbacks, gOracleFlagCallbacks,
+				oracleCount * sizeof(oracleCallbacks[0]));
+		resetCallbacks();
+		setFixturePose(reinterpret_cast<const float*>(worldPose));
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov candidateBefore, esp
+		candidate->setFrameActor(test == 0 ? reinterpret_cast<NxActor*>(actor) : 0);
+		__asm mov candidateAfter, esp
+		const unsigned candidateCount = callbackCount();
+		NxFluidEmitterFlagCallbackRecord candidateCallbacks[4] = {};
+		for(unsigned i = 0; i < candidateCount && i < 4; ++i)
+			getCallback(i, &candidateCallbacks[i]);
+		resetCallbacks();
+		setFixturePose(reinterpret_cast<const float*>(worldPose));
+		unsigned candidateDllBefore = 0, candidateDllAfter = 0;
+		__asm mov candidateDllBefore, esp
+		candidateDll->setFrameActor(test == 0 ? reinterpret_cast<NxActor*>(actor) : 0);
+		__asm mov candidateDllAfter, esp
+		const unsigned candidateDllCount = callbackCount();
+		NxFluidEmitterFlagCallbackRecord candidateDllCallbacks[4] = {};
+		for(unsigned i = 0; i < candidateDllCount && i < 4; ++i)
+			getCallback(i, &candidateDllCallbacks[i]);
+		const unsigned expectedCallbacks[] = { 32, 64, 128, 32 };
+		bool callbacksMatch = oracleCount == 4 && candidateCount == 4
+			&& candidateDllCount == 4;
+		for(unsigned i = 0; i < 4; ++i)
+			{
+			if(oracleCallbacks[i].kind != expectedCallbacks[i]
+				|| memcmp(&oracleCallbacks[i], &candidateCallbacks[i], sizeof(oracleCallbacks[i])) != 0
+				|| memcmp(&oracleCallbacks[i], &candidateDllCallbacks[i], sizeof(oracleCallbacks[i])) != 0)
+				callbacksMatch = false;
+			}
+		const void* const expectedBody = test == 0 ? actorBody : 0;
+		const bool actorMatch = *reinterpret_cast<void**>(internals[0] + 0x14) == expectedBody
+			&& *reinterpret_cast<void**>(internals[1] + 0x14) == expectedBody
+			&& *reinterpret_cast<void**>(internals[2] + 0x14) == expectedBody;
+		const bool stateMatch = memcmp(internals[0] + 0x18,
+			internals[1] + 0x18, 0x60) == 0
+			&& memcmp(internals[0] + 0x18, internals[2] + 0x18, 0x60) == 0;
+		const bool balanced = oracleBefore == oracleAfter
+			&& candidateBefore == candidateAfter
+			&& candidateDllBefore == candidateDllAfter;
+		callbackChecks += callbacksMatch;
+		cacheChecks += stateMatch;
+		actorChecks += actorMatch;
+		stackChecks += balanced;
+		if(!callbacksMatch || !stateMatch || !actorMatch || !balanced)
+			{
+			++mismatches;
+			}
+		}
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(oracleBytes) + 0x14) = oldOracleInternal;
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(candidateBytes) + 0x14) = oldCandidateInternal;
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(candidateDllBytes) + 0x14) = oldCandidateDllInternal;
+	memcpy(oracleLockStorage, oldOracleLockStorage, sizeof(oldOracleLockStorage));
+	*oracleReentry = oldOracleReentry;
+	printf("fluid emitter setFrameActor row=003822 cases=2 callback_checks=%u cache_checks=%u actor_checks=%u stack_checks=%u mismatches=%u\n",
+		callbackChecks, cacheChecks, actorChecks, stackChecks, mismatches);
 	return mismatches;
 	}
 
@@ -7776,6 +7939,9 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL oracle FluidModel callback slots could not be bound\n");
 		return 1;
 		}
+	gFailures += nxRunFluidEmitterSetFrameActorWrapper(image, oracle,
+		candidateInterface, candidateDllInterface, oracleBytes, &candidate,
+		candidateDllBytes, fluidModel);
 	gFailures += nxRunFluidEmitterAttributeRows(image, fluidModel, candidatePhysics);
 	gFailures += nxRunFluidEmitterVisualizeDifferential(image, candidatePhysics, fluidModel);
 	void* candidateStoreGlobalPoseAddress = 0;

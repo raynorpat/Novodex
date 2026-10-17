@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003822",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "660dc1a4fa73da78baa13884c085ecb4f7abbaaa7e072ef485eed8fb9cd702c",
+  "mutant_candidate_sha256": "e6b17e8aa8946395e302e8b6f9ec00f83eef2f551aad208188094b5b0b8d4b73",
+  "fixture_source_sha256": "335d3b8fb974e38502b25ad88508ef6360b69f55b0c5ab38e2ef0f2df4113ce3",
+  "phase_gates": {
+    "5": "pass; coverage_assertions=2846",
+    "7": "pass; coverage_assertions=2979"
+  },
+  "tooling_tests": "836 passed; 743 subtests passed",
+  "files": {
+    "mutation-build.log.gz": {
+      "sha256": "e4a97dfe85ff849dd4523281248f5b9d54dbcfa46d97bcfb00ae3e9b727f71f3",
+      "bytes": 359
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "316b2547faca678279f3f2f86bcecffb8ea85dd284cb9dd4198914223bdfaa48",
+      "bytes": 3483
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "11ad2e9b04e36430f38f571d2cc6c31db59d257b9c19ab88d9af86ffa3800351",
+      "bytes": 211036
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "acd0e965eca71eb5ac21086e8c3e279c0202fad89c3b143f10c1be17b45f9619",
+      "bytes": 375557
+    },
+    "restored-build.log.gz": {
+      "sha256": "e4a97dfe85ff849dd4523281248f5b9d54dbcfa46d97bcfb00ae3e9b727f71f3",
+      "bytes": 359
+    },
+    "restored-differential.log.gz": {
+      "sha256": "0b0b5074c3a163dcf1eba53c30147d8b3fd3dee67607733588d75bcc2f8d8cad",
+      "bytes": 3385
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "40d4fe846f5faa4402cee93f451808d71472dec61a6f66d7c131feafc75b0e32",
+      "bytes": 127
+    }
+  }
+}

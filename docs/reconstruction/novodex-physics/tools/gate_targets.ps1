@@ -117,6 +117,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
+		'fluid emitter setFrameActor row=003822 cases=2 callback_checks=2 cache_checks=2 actor_checks=2 stack_checks=2 mismatches=0'
 		'fluid emitter global and local component setters cases=5 callback_checks=5 stack_checks=5 mismatches=0'
 		'fluid emitter setGlobalPose row=003798 cases=2 mismatches=0'
 		'fluid emitter setGlobalPosition row=003800 cases=1 mismatches=0'
@@ -6265,7 +6266,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2845  # previous 2842 plus the three local-pose setter row differentials
+	'5' = 2846  # previous 2845 plus the setFrameActor wrapper differential
 	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2837 plus the fluid-emitter deleting-destructor differential
 	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
@@ -6394,7 +6395,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2978  # previous 2975 plus the three local-pose setter row differentials
+	'7' = 2979  # previous 2978 plus the setFrameActor wrapper differential
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential

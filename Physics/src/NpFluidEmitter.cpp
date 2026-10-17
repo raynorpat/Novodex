@@ -815,10 +815,21 @@ void NpFluidEmitter::setFrameActor(NxActor* actor)
 	void* link = mUnknown0c;
 	if(!nxNpSceneGuardWriteTry(link))
 		{
-		nxFluidEmitterReportWriteLocked(0xdd);
+		nxFluidEmitterReportWriteLocked(121);
 		return;
 		}
-	nxNpFluidEmitterSetActor(mInternal, actor);
+	if(nxFluidEmitterReentryIsActive())
+		{
+		nxFluidEmitterReportReentry(122);
+		nxNpSceneGuardLeave(link);
+		return;
+		}
+	nxFluidEmitterSetReentryActive(true);
+	void* actorBody = actor ? *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14) : 0;
+	nxNpFluidEmitterSetActor(mInternal, actorBody);
+	nxNpFluidEmitterStoreGlobalPose(mInternal);
+	nxFluidEmitterSetReentryActive(false);
 	nxNpSceneGuardLeave(link);
 	}
 

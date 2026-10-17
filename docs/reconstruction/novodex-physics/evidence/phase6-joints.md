@@ -11196,6 +11196,8 @@ Phase 7 continuation: `phys_fn_003798`, `phys_fn_003800`, and `phys_fn_003802` (
 
 FluidEmitter setter rows `phys_fn_003798`, `phys_fn_003800`, `phys_fn_003802`, `phys_fn_003810`, `phys_fn_003812`, and `phys_fn_003814` now compare full local and cached world-pose state. The three local-pose rows and their mutation results are recorded in [phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md](phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md); world-setter cache-refresh hardening is recorded in [phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md](phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md).
 
+Phase 7 continuation (2026-10-17): `phys_fn_003822` (`NpFluidEmitter::setFrameActor`) now matches the oracle's write-lock/reentry, actor-body extraction, binding, and cached-pose refresh sequence. The registered two-case oracle/candidate-DLL differential compares callback order, actor pointer, local/cache state, and stack balance. Passing the public actor pointer directly is caught with `mismatches=1`; the restored differential has zero mismatches. See [the frame-actor setter evidence](phase7-fluid-emitter-set-frame-actor-003822.md).
+
 phys_fn_003798: candidate-only ret-4 mutation rejected in two component cases; mismatches=2.
 phys_fn_003800: candidate-only ret-4 mutation rejected; mismatches=1.
 phys_fn_003802: candidate-only ret-4 mutation rejected; mismatches=1.

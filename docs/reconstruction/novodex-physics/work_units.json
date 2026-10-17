@@ -3244,13 +3244,11 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 1,
-    "dynamically_gated": 22,
+    "dynamically_gated": 23,
     "reconstructed": 8
    },
    "bytes": {
-    "discovered": 183,
-    "dynamically_gated": 2593,
+    "dynamically_gated": 2776,
     "reconstructed": 338
    },
    "phases": {
