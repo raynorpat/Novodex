@@ -6754,6 +6754,80 @@ static unsigned nxRunFluidEmitterRecordConstructor(unsigned char* image,
 	return mismatches;
 	}
 
+static unsigned nxRunFluidSolverConstructor(unsigned char* image,
+	HMODULE candidatePhysics)
+	{
+	void* candidateConstructorAddress = 0;
+	void* candidatePrimaryVtableAddress = 0;
+	void* candidateReadLockVtableAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"@nxFluidSolverConstructor@12", &candidateConstructorAddress)
+		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"?gNxFluidSolverVtable@@3PAPAXA", &candidatePrimaryVtableAddress)
+		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"?gNxFluidSolverReadLockVtable@@3PAPAXA",
+			&candidateReadLockVtableAddress))
+		{
+		fprintf(stderr, "FAIL fluid solver constructor or candidate vtables could not be resolved from the candidate map\n");
+		printf("fluid solver constructor row=003692 oracle_primary=0 candidate_primary=0 oracle_secondary=0 candidate_secondary=0 zero_fields=0 user_data=0 return=0 stack=0 mismatches=1\n");
+		return 1;
+		}
+	void** const oraclePrimaryVtable =
+		reinterpret_cast<void**>(image + 0x116008);
+	void** const oracleReadLockVtable =
+		reinterpret_cast<void**>(image + 0x1160c8);
+	void** const candidatePrimaryVtable =
+		reinterpret_cast<void**>(candidatePrimaryVtableAddress);
+	void** const candidateReadLockVtable =
+		reinterpret_cast<void**>(candidateReadLockVtableAddress);
+	unsigned char oracleObject[0x18];
+	unsigned char candidateObject[0x18];
+	memset(oracleObject, 0xa5, sizeof(oracleObject));
+	memset(candidateObject, 0xa5, sizeof(candidateObject));
+	void* const internalFluid = reinterpret_cast<void*>(0x12345678u);
+	unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+	unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+	__asm mov oracleEspBefore, esp
+	void* const oracleReturn = reinterpret_cast<void* (__thiscall *)(
+		void*, void*)>(image + 0x0008b000u)(oracleObject, internalFluid);
+	__asm mov oracleEspAfter, esp
+	__asm mov candidateEspBefore, esp
+	void* const candidateReturn = reinterpret_cast<void* (__fastcall *)(
+		void*, void*, void*)>(candidateConstructorAddress)(candidateObject,
+			0, internalFluid);
+	__asm mov candidateEspAfter, esp
+	const bool oraclePrimary =
+		*reinterpret_cast<void***>(oracleObject) == oraclePrimaryVtable;
+	const bool candidatePrimary =
+		*reinterpret_cast<void***>(candidateObject) == candidatePrimaryVtable;
+	const bool oracleSecondary =
+		*reinterpret_cast<void***>(oracleObject + 8) == oracleReadLockVtable;
+	const bool candidateSecondary =
+		*reinterpret_cast<void***>(candidateObject + 8) == candidateReadLockVtable;
+	const bool zeroFields = *reinterpret_cast<unsigned*>(oracleObject + 4) == 0
+		&& *reinterpret_cast<unsigned*>(candidateObject + 4) == 0
+		&& *reinterpret_cast<unsigned*>(oracleObject + 0x0c) == 0
+		&& *reinterpret_cast<unsigned*>(candidateObject + 0x0c) == 0
+		&& *reinterpret_cast<unsigned*>(oracleObject + 0x10) == 0
+		&& *reinterpret_cast<unsigned*>(candidateObject + 0x10) == 0;
+	const bool userData = *reinterpret_cast<void**>(oracleObject + 0x14)
+		== internalFluid && *reinterpret_cast<void**>(candidateObject + 0x14)
+		== internalFluid;
+	const bool returnedThis = oracleReturn == oracleObject
+		&& candidateReturn == candidateObject;
+	const bool balancedStack = oracleEspBefore == oracleEspAfter
+		&& candidateEspBefore == candidateEspAfter;
+	const unsigned mismatches = oraclePrimary && candidatePrimary
+		&& oracleSecondary && candidateSecondary && zeroFields && userData
+		&& returnedThis && balancedStack ? 0u : 1u;
+	printf("fluid solver constructor row=003692 oracle_primary=%u candidate_primary=%u oracle_secondary=%u candidate_secondary=%u zero_fields=%u user_data=%u return=%u stack=%u mismatches=%u\n",
+		oraclePrimary ? 1u : 0u, candidatePrimary ? 1u : 0u,
+		oracleSecondary ? 1u : 0u, candidateSecondary ? 1u : 0u,
+		zeroFields ? 1u : 0u, userData ? 1u : 0u,
+		returnedThis ? 1u : 0u, balancedStack ? 1u : 0u, mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunFluidSolverDeletingDestructors(unsigned char* image,
 	HMODULE candidatePhysics)
 	{
@@ -7571,6 +7645,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	gFailures += nxRunFluidEmitterRecordConstructor(image, candidatePhysics);
 	gFailures += nxRunFluidEmitterRecordDestructor(image, candidatePhysics);
+	gFailures += nxRunFluidSolverConstructor(image, candidatePhysics);
 	gFailures += nxRunFluidSolverDeletingDestructors(image, candidatePhysics);
 	gFailures += nxRunFluidLicenseResolver(image, candidatePhysics);
 	void* candidateFrictionPatchAssignAddress = 0;

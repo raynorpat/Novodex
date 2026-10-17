@@ -6,8 +6,8 @@
   "fixture_source_sha256": "b29cb9ef1d547bf27538149df5c2034504e36276337a48c33fdd842298d39fca",
   "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
   "proof_lines_sha256": "c7fb2db8ebb6503cc2b4b2dd8dcaa877dab7fd0e896f876976a9def09e69a92e",
-  "baseline_sha256": "c4dd85ebef06afc4e9462cb44db02d146f5c987cf7d619cb5865c680a859ed3e",
+  "baseline_sha256": "68490d69e7bb558666baaf27c2fc64a64f9ca7c28bd353cc8fe0ee9fa9ade06b",
   "oracle_digest_fnv32": "3acf0dc7",
   "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1",
-  "proof_sha256": "fd4b4e000dde89c56f14046e5a5229aca955209bd3cdbc268eaa2f4658127c29"
+  "proof_sha256": "17f2f438f9e047abed5c426ba25f4d978d967f21fc855bfe26d131913e91654b"
 }

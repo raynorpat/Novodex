@@ -2053,6 +2053,24 @@ static void* gNxFluidSolverReadLockVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockDeletingDestructor)
 	};
 
+// phys_fn_003692 (0x8b000) constructs the NpFluid solver wrapper. The oracle
+// initializes the two base subobjects, then installs the concrete NxFluid and
+// read-lock vtables and records the owning internal fluid at +0x14.
+extern "C" void* __fastcall nxFluidSolverConstructor(void* helper, void*,
+	void* internalFluid)
+	{
+	unsigned char* const bytes = static_cast<unsigned char*>(helper);
+	*reinterpret_cast<void***>(bytes) = gNxFluidSolverBaseVtable;
+	*reinterpret_cast<unsigned*>(bytes + 4) = 0;
+	*reinterpret_cast<void***>(bytes + 8) = gNxFluidSolverReadLockBaseVtable;
+	*reinterpret_cast<unsigned*>(bytes + 0x0c) = 0;
+	*reinterpret_cast<unsigned*>(bytes + 0x10) = 0;
+	*reinterpret_cast<void***>(bytes + 8) = gNxFluidSolverReadLockVtable;
+	*reinterpret_cast<void**>(bytes + 0x14) = internalFluid;
+	*reinterpret_cast<void***>(bytes) = gNxFluidSolverVtable;
+	return helper;
+	}
+
 static void* __fastcall nxFluidEmitterDeletingDestructor(void* internal,
 	void*, unsigned char deleteObject);
 
@@ -3116,12 +3134,7 @@ NxFluid* NxSceneInternal::createFluid(const NxFluidDesc& desc)
 	unsigned char* const solver = static_cast<unsigned char*>(
 		::operator new(0x18, std::nothrow));
 	if(solver)
-		{
-		memset(solver, 0, 0x18);
-		*reinterpret_cast<void***>(solver) = gNxFluidSolverVtable;
-		*reinterpret_cast<void***>(solver + 8) = gNxFluidSolverReadLockVtable;
-		*reinterpret_cast<void**>(solver + 0x14) = fluid;
-		}
+		nxFluidSolverConstructor(solver, 0, fluid);
 	// The oracle's separate fluid initialization unconditionally writes the
 	// descriptor userData through solver+4, even when its 0x18-byte process-heap
 	// allocation returned null. Keep that failure ordering and access violation.
