@@ -2652,6 +2652,14 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 	{
 	if(!desc)
 		return 0;
+	if(!desc->isValid())
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
+			278, 0,
+			"Supplied NxImplicitMeshDesc is not valid. createSurfaceMesh returns NULL.");
+		return 0;
+		}
 	if((gNxFluidLicensedFeatureFlags & 2u) == 0)
 		{
 		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
@@ -2661,6 +2669,10 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 		}
 	if(!gNxImplicitFluidMeshCreateCallback || !gNxImplicitFluidMeshDestroyCallback)
 		return 0;
+	unsigned char* const fluidBytes = static_cast<unsigned char*>(fluid);
+	void** const surfaceMeshSlot = reinterpret_cast<void**>(fluidBytes + 0x24);
+	if(*surfaceMeshSlot)
+		reinterpret_cast<NxFluidSurfaceMeshOwnerSlot24*>(fluid)->releaseSurfaceMesh();
 	void* const manager = nxFoundationSDKAllocator->malloc(0x3c,
 		NX_MEMORY_PERSISTENT);
 	if(!manager)
@@ -2671,7 +2683,6 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 	*reinterpret_cast<void**>(bytes + 4) = fluid;
 	memcpy(bytes + 8, reinterpret_cast<const unsigned char*>(desc) + 0x14,
 		0x30);
-	unsigned char* const fluidBytes = static_cast<unsigned char*>(fluid);
 	unsigned char* const sceneManager = *reinterpret_cast<unsigned char**>(
 		fluidBytes + 0x7c);
 	void* const backendManager = *reinterpret_cast<void**>(sceneManager + 0x30);
@@ -2723,33 +2734,17 @@ static NxImplicitMesh* __fastcall nxFluidCreateSurfaceMeshPublic(void* wrapper,
 		return 0;
 		}
 	gNxApiReentry = true;
-	NxImplicitMesh* result = 0;
-	if(!desc.isValid())
-		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
-			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\Fluid.cpp",
-			278, 0,
-			"Supplied NxImplicitMeshDesc is not valid. createSurfaceMesh returns NULL.");
-	else
+	unsigned char* const fluid = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(wrapperBytes + 0x14));
+	void* const surfaceManager = nxFluidInitializeSurfaceMesh(fluid, &desc);
+	NxImplicitMesh* const result = *reinterpret_cast<NxImplicitMesh**>(
+		static_cast<unsigned char*>(surfaceManager) + 0x38);
+	if(result)
 		{
-		unsigned char* const fluid = static_cast<unsigned char*>(
-			*reinterpret_cast<void**>(wrapperBytes + 0x14));
-		void** const surfaceMeshSlot = reinterpret_cast<void**>(fluid + 0x24);
-		if(*surfaceMeshSlot)
-			reinterpret_cast<NxFluidSurfaceMeshOwnerSlot24*>(fluid)->releaseSurfaceMesh();
-		nxFluidInitializeSurfaceMesh(fluid, &desc);
-		void* const surfaceManager = *surfaceMeshSlot;
-		if(surfaceManager)
-			{
-			result = *reinterpret_cast<NxImplicitMesh**>(
-				static_cast<unsigned char*>(surfaceManager) + 0x38);
-			if(result)
-				{
-				unsigned char* const meshBytes = reinterpret_cast<unsigned char*>(result);
-				*reinterpret_cast<void**>(meshBytes + 0x10) =
-					*reinterpret_cast<void**>(wrapperBytes + 0x10);
-				*reinterpret_cast<void**>(meshBytes + 0x0c) = writeLock;
-				}
-			}
+		unsigned char* const meshBytes = reinterpret_cast<unsigned char*>(result);
+		*reinterpret_cast<void**>(meshBytes + 0x10) =
+			*reinterpret_cast<void**>(wrapperBytes + 0x10);
+		*reinterpret_cast<void**>(meshBytes + 0x0c) = writeLock;
 		}
 	gNxApiReentry = false;
 	nxNpSceneGuardLeave(writeLock);

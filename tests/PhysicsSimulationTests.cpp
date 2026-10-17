@@ -79,6 +79,7 @@ class NxControllerProbe
 static unsigned gNxSimulationFluidDestructorCalls = 0;
 static unsigned gNxSimulationFluidDestructorFlags = 0;
 static void* gNxSimulationFluidDestructorObject = 0;
+static bool gNxSimulationRunInvalidSurfaceMeshProbe = false;
 
 class NxSimulationCountingAllocator : public NxUserAllocator
 	{
@@ -1432,9 +1433,99 @@ static bool nxSimulationTestSurfaceMeshReleaseRow3421(HMODULE physics,
 	return calledOnce && cleared && returned;
 	}
 
+static bool nxSimulationRunInvalidSurfaceMeshProbeChild(
+	const wchar_t* pairDirectory, DWORD& exitCode, bool& reached, bool& returned)
+	{
+	WCHAR tempDirectory[MAX_PATH] = {};
+	WCHAR logPath[MAX_PATH] = {};
+	WCHAR executable[MAX_PATH] = {};
+	const DWORD tempLength = GetTempPathW(_countof(tempDirectory), tempDirectory);
+	const DWORD executableLength = GetModuleFileNameW(0, executable,
+		_countof(executable));
+	if(!tempLength || tempLength >= _countof(tempDirectory) ||
+		!executableLength || executableLength >= _countof(executable) ||
+		!GetTempFileNameW(tempDirectory, L"nxim", 0, logPath))
+		return false;
+	SECURITY_ATTRIBUTES security = {};
+	security.nLength = sizeof(security);
+	security.bInheritHandle = TRUE;
+	HANDLE const output = CreateFileW(logPath, GENERIC_READ | GENERIC_WRITE,
+		FILE_SHARE_READ | FILE_SHARE_WRITE, &security, CREATE_ALWAYS,
+		FILE_ATTRIBUTE_TEMPORARY, 0);
+	if(output == INVALID_HANDLE_VALUE)
+		{
+		DeleteFileW(logPath);
+		return false;
+		}
+	WCHAR commandLine[2 * MAX_PATH + 96];
+	const int commandLength = _snwprintf_s(commandLine, _countof(commandLine),
+		_TRUNCATE, L"\"%s\" --fluid-public-surface-invalid-child \"%s\"",
+		executable, pairDirectory);
+	if(commandLength < 0)
+		{
+		CloseHandle(output);
+		DeleteFileW(logPath);
+		return false;
+		}
+	STARTUPINFOW startup = {};
+	startup.cb = sizeof(startup);
+	startup.dwFlags = STARTF_USESTDHANDLES;
+	startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+	startup.hStdOutput = output;
+	startup.hStdError = output;
+	PROCESS_INFORMATION process = {};
+	const BOOL created = CreateProcessW(executable, commandLine, 0, 0, TRUE,
+		CREATE_NO_WINDOW, 0, 0, &startup, &process);
+	if(!created)
+		{
+		CloseHandle(output);
+		DeleteFileW(logPath);
+		return false;
+		}
+	const DWORD waitResult = WaitForSingleObject(process.hProcess, 30000);
+	if(waitResult != WAIT_OBJECT_0)
+		{
+		TerminateProcess(process.hProcess, 1);
+		WaitForSingleObject(process.hProcess, INFINITE);
+		}
+	exitCode = 1;
+	GetExitCodeProcess(process.hProcess, &exitCode);
+	CloseHandle(process.hThread);
+	CloseHandle(process.hProcess);
+	FlushFileBuffers(output);
+	SetFilePointer(output, 0, 0, FILE_BEGIN);
+	LARGE_INTEGER size = {};
+	const bool sizeOk = GetFileSizeEx(output, &size) && size.QuadPart >= 0 &&
+		size.QuadPart < 0x01000000;
+	char* const transcript = sizeOk
+		? static_cast<char*>(malloc(static_cast<size_t>(size.QuadPart) + 1)) : 0;
+	DWORD read = 0;
+	const bool readOk = transcript && ReadFile(output, transcript,
+		static_cast<DWORD>(size.QuadPart), &read, 0) &&
+		read == static_cast<DWORD>(size.QuadPart);
+	if(readOk)
+		{
+		transcript[read] = 0;
+		reached = strstr(transcript,
+			"simulation fluid public-surface-mesh invalid-enter row=003704") != 0;
+		returned = strstr(transcript,
+			"simulation fluid public-surface-mesh invalid-return row=003704") != 0;
+		}
+	free(transcript);
+	CloseHandle(output);
+	DeleteFileW(logPath);
+	return waitResult == WAIT_OBJECT_0 && readOk;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
+	if(argc == 3 && wcscmp(argv[1], L"--fluid-public-surface-invalid-child") == 0)
+		{
+		argv[1] = argv[2];
+		argc = 2;
+		gNxSimulationRunInvalidSurfaceMeshProbe = true;
+		}
 	if(argc == 3 && wcscmp(argv[1], L"--fluid-model-load-x87") == 0)
 		return nxSimulationRunFluidModelLoadX87Probe(argc, argv);
 	if(argc == 3 && wcscmp(argv[1], L"--fluid-model-export-resolution") == 0)
@@ -5940,6 +6031,35 @@ int wmain(int argc, wchar_t** argv)
 		? licensedSurfaceMeshFluid->createSurfaceMesh(licensedSurfaceMeshDesc) : 0;
 	const bool explicitSurfaceMeshUserDataMatches = explicitSurfaceMesh &&
 		explicitSurfaceMesh->userData == &licensedSurfaceMeshUserData;
+	if(gNxSimulationRunInvalidSurfaceMeshProbe)
+		{
+	NxImplicitMeshDesc invalidDesc;
+	invalidDesc.setToDefault();
+	invalidDesc.singleRadius = -1.0f;
+	printf("simulation fluid public-surface-mesh invalid-enter row=003704\n");
+	fflush(stdout);
+	NxImplicitMesh* const result = licensedSurfaceMeshFluid
+		? licensedSurfaceMeshFluid->createSurfaceMesh(invalidDesc) : 0;
+	printf("simulation fluid public-surface-mesh invalid-return row=003704 returned=%u\n",
+		result ? 1u : 0u);
+	return 0;
+	}
+	DWORD invalidSurfaceMeshExit = 1;
+	bool invalidSurfaceMeshReached = false;
+	bool invalidSurfaceMeshReturned = false;
+	const bool invalidSurfaceMeshProbeRan =
+		nxSimulationRunInvalidSurfaceMeshProbeChild(pairDirectory,
+			invalidSurfaceMeshExit, invalidSurfaceMeshReached,
+			invalidSurfaceMeshReturned);
+	const bool invalidSurfaceMeshProbeMatches = invalidSurfaceMeshProbeRan &&
+		invalidSurfaceMeshExit == 0xc0000005u &&
+		invalidSurfaceMeshReached && !invalidSurfaceMeshReturned;
+	printf("simulation fluid public-surface-mesh invalid-child row=003704 exit=%08x reached=%u returned=%u exact=%u\n",
+		invalidSurfaceMeshExit, invalidSurfaceMeshReached ? 1u : 0u,
+		invalidSurfaceMeshReturned ? 1u : 0u,
+		invalidSurfaceMeshProbeMatches ? 1u : 0u);
+	if(!invalidSurfaceMeshProbeMatches)
+		return nxFail("invalid licensed surface-mesh descriptor did not match oracle termination");
 	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
 	bool licensedSurfaceMeshPropertiesMatch = false;
 	if(explicitSurfaceMesh)

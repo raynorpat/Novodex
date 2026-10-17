@@ -1,0 +1,67 @@
+{
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "schema_version": 1,
+  "candidate_sha256": "c703d27f1059f4cc250b5fd6f5f589fa37f58470ec87e670049eb5d64474c95e",
+  "artifacts": [
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "build/phase5-fluid-invalid-surface-003704.log",
+      "sha256": "fbbaf74c888f46b3dc00431114807a056ba1c854eda6e1c92b2b3b7b44247d91",
+      "uncompressed_sha256": "b68c5dae3fe07de2b9e2cb506f03645336ada627da3cfd6cb4c7cfccaf6a2e0d",
+      "bytes": 2874870,
+      "compressed_bytes": 213525
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build/phase7-fluid-invalid-surface-003704.log",
+      "sha256": "2651bcec92e0260a4894dc4e6238b4968a5f22a8aa493d4e7c598db727b037b6",
+      "uncompressed_sha256": "311623f786eb9c97a37670c23ad3e9dfb368dd6c5b8058b4d67d87238260d6b5",
+      "bytes": 4714508,
+      "compressed_bytes": 384886
+    },
+    {
+      "path": "phase6-first-attempt.log.gz",
+      "source": "build/phase6-fluid-invalid-surface-003704.log",
+      "sha256": "8343782bf475240d9d63486101a1e86f5b591fb7c6005f35e8f23cdf039921c8",
+      "uncompressed_sha256": "b2f56225bcfed9194e637797a6209b7ca942266d2b3fb260353a2b8fa2603954",
+      "bytes": 359399,
+      "compressed_bytes": 24810
+    },
+    {
+      "path": "safe-null-mutation.log.gz",
+      "source": "build/fluid-invalid-surface-003704-mutation.log",
+      "sha256": "f378b0874b2b6509ad3e292afaa1d7b6cdf58531b2fced4fca8fd15d5a67102c",
+      "uncompressed_sha256": "94a80d73bf4e4f969bffcb7a9416f32ba317b4cdf1b3ea945d9941e4f2dda2ba",
+      "bytes": 848585,
+      "compressed_bytes": 54885
+    },
+    {
+      "path": "phase6-gate-rerun.log.gz",
+      "source": "build/phase6-fluid-invalid-surface-003704-retry.log",
+      "sha256": "69bd908ba6f46628802ce27c2b051ed2341e63d45049f8c59d0589d3b077bcd7",
+      "uncompressed_sha256": "d902f0dcefe8d35c50b6af34507df17c075ab06336b5614fe9ee9c711f5e615b",
+      "bytes": 3128354,
+      "compressed_bytes": 261128
+    },
+    {
+      "path": "restored-differential.log.gz",
+      "source": "build/fluid-invalid-surface-003704-differential-final.log",
+      "sha256": "f796868cf805afa3bcc8021e0e20c10dfa049266ecda8fd653eeba11fc1a980a",
+      "uncompressed_sha256": "784c993a20106ff16f6f501d8bad9e212ad8409e208a43c75ffefb81d67e64fd",
+      "bytes": 857372,
+      "compressed_bytes": 56359
+    }
+  ],
+  "phase_gates": {
+    "7": "pass 2968/2967",
+    "5": "pass 2835/2834",
+    "6": "pass 1720/1719 after transient first-run allocator mismatch; direct target retry and full rerun passed"
+  },
+  "date": "2026-10-17",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; both child exit c0000005",
+  "row": "phys_fn_003704",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=82; oracle child c0000005, mutant child normal return",
+  "mutation_candidate_sha256": "b01714bcd1cdcc2e2e0933d40f1265565e44ccea6497b5c5011d04fe2bfbc34c",
+  "mutation": "Safe-null public-wrapper guard changes oracle child access violation into normal return",
+  "rva": "0x0008b250"
+}

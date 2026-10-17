@@ -3676,6 +3676,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # lists one fluid and three descriptor emitters, proves the 20-emitter
         # cap with temporary additions, restores the arrays, then tears down.
         'simulation fluid enabled valid=1 invalid=1.1.140 descriptor-validation=48.1 manager-allocation-failure=1.1 allocation-failure=1.1 emitter-allocation-failure=1.1 frame-actor=1 frame-pose=1 manager-flags=1 listed=1 count=1 arrays-match=1 manager-cleared=1 callbacks=1.1.1.1 refresh=1.1.0.1 distance=23 emitter=21.17.21.21 emitter-arrays=3.3 growth=1 null-backend-retained=1 dirty-cleared=1 cell-size=1 errors=0'
+        'simulation fluid public-surface-mesh invalid-child row=003704 exit=c0000005 reached=1 returned=0 exact=1'
         # Licensed create calls forward the product's sparse and hardware
         # flags to FluidModel, with sparse additionally gated by method 2.
         'simulation fluid create license=465 sparse=1 hardware=0 matched=1'
