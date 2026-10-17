@@ -72650,13 +72650,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1446",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12968",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at 0x0008d100 identifies the NpImplicitMesh scalar deleting destructor: it transitions the primary vptr, invokes the secondary NpImplicitMeshLockBase destructor, preserves mInternalRecord when delete flag is zero, and conditionally frees the object when flag bit zero is set.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests invokes oracle RVA 0x0008d100 and the candidate map-resolved ??_GNpImplicitMesh@@UAEPAXI@Z on scratch objects. It verifies primary and secondary vptr ownership, cleared lock links, internal-record preservation, return identity, and x86 stack balance for flag zero. Both DLLs allocate flag-one scratch objects through their own scalar operator new before invoking the deleting destructor. Mutating NpImplicitMesh::~NpImplicitMesh to clear mInternalRecord is rejected (mismatches=1; oracle exit 0, candidate exit 1).",
+      "notes": "The CMake-generated scalar deleting destructor is emitted from the existing NpImplicitMesh destructor and secondary-base definition; public headers are unchanged."
     },
     {
       "id": "phys_fn_003869",
@@ -73284,13 +73284,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-    "state": "dynamically_gated",
-    "source": "Physics/src/Scene.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1457",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13020",
-    "static_proof": "IDA decompilation at 0x0008d850 calls FreeLibrary with the cached HMODULE, clears the cached handle unconditionally, and returns whether FreeLibrary succeeded.",
-    "dynamic_proof": "NxPhysicsSimulationTests calls oracle RVA 0x0008d850 and the candidate nxFluidModelUnloadLibrary row after export clearing, then checks the return value and GetModuleHandleA state; omitting FreeLibrary is rejected with stdout_delta=4104, and restored output matches exactly.",
-    "notes": "Candidate handle is captured from nxFluidModelLoadLibrary and released after the export table is cleared during FluidManager array teardown."
+      "static_proof": "IDA decompilation at 0x0008d850 calls FreeLibrary with the cached HMODULE, clears the cached handle unconditionally, and returns whether FreeLibrary succeeded.",
+      "dynamic_proof": "NxPhysicsSimulationTests calls oracle RVA 0x0008d850 and the candidate nxFluidModelUnloadLibrary row after export clearing, then checks the return value and GetModuleHandleA state; omitting FreeLibrary is rejected with stdout_delta=4104, and restored output matches exactly.",
+      "notes": "Candidate handle is captured from nxFluidModelLoadLibrary and released after the export table is cleared during FluidManager array teardown."
     },
     {
       "id": "phys_fn_003903",

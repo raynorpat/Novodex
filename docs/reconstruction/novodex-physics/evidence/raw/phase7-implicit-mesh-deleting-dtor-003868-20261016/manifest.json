@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003868",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "2e5ddefeff1d6ad240de84e77ccfd8543410c68d5dddfa32c675c8e7f2dd2b18",
+  "mutation_candidate_sha256": "560e863d99df8a3c402a0bb42a5e018745b59761b4318242debfd2c03bca2911",
+  "mutation": "Changed NpImplicitMesh::~NpImplicitMesh to clear mInternalRecord; the probe detected record=0 and mismatches=1 (oracle exit 0, candidate exit 1).",
+  "restored_result": "oracle/candidate differential passed: primary=1 secondary=1 links=1 record=1 return=1 stack=1 flag1_free=1 mismatches=0.",
+  "phase_gates": {
+    "5": "pass 2829/2829",
+    "6": "pass 1717/1717",
+    "7": "pass 2962/2962"
+  },
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ],
+  "sha256": {
+    "restored-differential.log.gz": "045bc59e1bd25a4720064baef0ada2814c2d55bfc49ae8e08aa8a86b933e468a",
+    "mutation-differential.log.gz": "d798d7018dc01bef6391955b512d1ed17523c112d587e9bd78d7a3bdb8b0e09a",
+    "phase5-gate.log.gz": "d6188c9d04066e6a8981250fa48396fb40617d8c3a92b1936b28d17bdb5109db",
+    "phase6-gate.log.gz": "e9f85af440b4a86d801ea96012f5b01beb1dc9c8217fcd68904af06cc14e131f",
+    "phase7-gate.log.gz": "b51159884c10275ee2166da1dea3a0fa0a41a7cb36fb19f3edf1cdba711f5067"
+  }
+}

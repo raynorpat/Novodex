@@ -1512,6 +1512,158 @@ static bool nxCandidateAddressBelongsToModule(HMODULE module, const void* addres
 	return value >= base && value < base + nt->OptionalHeader.SizeOfImage;
 	}
 
+static bool nxAddressBelongsToModule(HMODULE module, const void* address)
+	{
+	if(!module)
+		return false;
+	IMAGE_DOS_HEADER* dos = reinterpret_cast<IMAGE_DOS_HEADER*>(module);
+	if(dos->e_magic != IMAGE_DOS_SIGNATURE)
+		return false;
+	IMAGE_NT_HEADERS32* nt = reinterpret_cast<IMAGE_NT_HEADERS32*>(
+		reinterpret_cast<unsigned char*>(module) + dos->e_lfanew);
+	if(nt->Signature != IMAGE_NT_SIGNATURE)
+		return false;
+	const size_t base = reinterpret_cast<size_t>(module);
+	const size_t value = reinterpret_cast<size_t>(address);
+	return value >= base && value < base + nt->OptionalHeader.SizeOfImage;
+	}
+
+static unsigned nxRunNpImplicitMeshDeletingDestructorDifferential(
+	HMODULE oracleModule, unsigned char* oracleImage, HMODULE candidateModule,
+	void* candidateDestructorAddress, void* candidateAllocateAddress,
+	void* candidatePrimaryVtable,
+	void* candidateSecondaryVtable)
+	{
+	if(!oracleModule || !oracleImage || !candidateModule ||
+		!candidateDestructorAddress || !candidateAllocateAddress ||
+		!candidatePrimaryVtable ||
+		!candidateSecondaryVtable)
+		return 1;
+	typedef void* (__thiscall* ScalarDeletingDestructor)(void*, unsigned);
+	typedef void* (__cdecl* ScalarAllocate)(unsigned);
+	ScalarDeletingDestructor const oracleDestructor =
+		reinterpret_cast<ScalarDeletingDestructor>(oracleImage + 0x0008d100u);
+	ScalarDeletingDestructor const candidateDestructor =
+		reinterpret_cast<ScalarDeletingDestructor>(candidateDestructorAddress);
+	ScalarAllocate const oracleAllocate =
+		reinterpret_cast<ScalarAllocate>(oracleImage + 0x000f467bu);
+	ScalarAllocate const candidateAllocate =
+		reinterpret_cast<ScalarAllocate>(candidateAllocateAddress);
+	unsigned char oracleObject[0x18];
+	unsigned char candidateObject[0x18];
+	unsigned char internalRecord[0x38];
+	memset(oracleObject, 0xcc, sizeof(oracleObject));
+	memset(candidateObject, 0xcc, sizeof(candidateObject));
+	memset(internalRecord, 0x5a, sizeof(internalRecord));
+	void* const expectedRecord = internalRecord;
+	*reinterpret_cast<void**>(oracleObject) = oracleImage + 0x001167d8u;
+	*reinterpret_cast<void**>(oracleObject + 8) = oracleImage + 0x00116818u;
+	*reinterpret_cast<void**>(oracleObject + 0x0c) = 0;
+	*reinterpret_cast<void**>(oracleObject + 0x10) = 0;
+	*reinterpret_cast<void**>(oracleObject + 0x14) = expectedRecord;
+	*reinterpret_cast<void**>(candidateObject) = candidatePrimaryVtable;
+	*reinterpret_cast<void**>(candidateObject + 8) = candidateSecondaryVtable;
+	*reinterpret_cast<void**>(candidateObject + 0x0c) = 0;
+	*reinterpret_cast<void**>(candidateObject + 0x10) = 0;
+	*reinterpret_cast<void**>(candidateObject + 0x14) = expectedRecord;
+	const bool oracleInitialVptrs =
+		nxAddressBelongsToModule(oracleModule,
+			*reinterpret_cast<void**>(oracleObject)) &&
+		nxAddressBelongsToModule(oracleModule,
+			*reinterpret_cast<void**>(oracleObject + 8));
+	const bool candidateInitialVptrs =
+		nxCandidateAddressBelongsToModule(candidateModule,
+			*reinterpret_cast<void**>(candidateObject)) &&
+		nxCandidateAddressBelongsToModule(candidateModule,
+			*reinterpret_cast<void**>(candidateObject + 8));
+	void* oraclePrimaryBefore = *reinterpret_cast<void**>(oracleObject);
+	void* candidatePrimaryBefore = *reinterpret_cast<void**>(candidateObject);
+	unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+	unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+	void* oracleResult = 0;
+	void* candidateResult = 0;
+	__asm mov oracleEspBefore, esp
+	oracleResult = oracleDestructor(oracleObject, 0);
+	__asm mov oracleEspAfter, esp
+	__asm mov candidateEspBefore, esp
+	candidateResult = candidateDestructor(candidateObject, 0);
+	__asm mov candidateEspAfter, esp
+	const bool oracleFinalVptrs =
+		nxAddressBelongsToModule(oracleModule,
+			*reinterpret_cast<void**>(oracleObject)) &&
+		nxAddressBelongsToModule(oracleModule,
+			*reinterpret_cast<void**>(oracleObject + 8));
+	const bool candidateFinalVptrs =
+		nxCandidateAddressBelongsToModule(candidateModule,
+			*reinterpret_cast<void**>(candidateObject)) &&
+		nxCandidateAddressBelongsToModule(candidateModule,
+			*reinterpret_cast<void**>(candidateObject + 8));
+	const bool oracleLinksCleared =
+		*reinterpret_cast<void**>(oracleObject + 0x0c) == 0 &&
+		*reinterpret_cast<void**>(oracleObject + 0x10) == 0;
+	const bool candidateLinksCleared =
+		*reinterpret_cast<void**>(candidateObject + 0x0c) == 0 &&
+		*reinterpret_cast<void**>(candidateObject + 0x10) == 0;
+	const bool oracleRecordPreserved =
+		*reinterpret_cast<void**>(oracleObject + 0x14) == expectedRecord;
+	const bool candidateRecordPreserved =
+		*reinterpret_cast<void**>(candidateObject + 0x14) == expectedRecord;
+	const bool returnMatched = oracleResult == oracleObject &&
+		candidateResult == candidateObject;
+	const bool stackBalanced = oracleEspBefore == oracleEspAfter &&
+		candidateEspBefore == candidateEspAfter;
+	const bool primaryChanged = *reinterpret_cast<void**>(oracleObject) !=
+		oraclePrimaryBefore && *reinterpret_cast<void**>(candidateObject) !=
+		candidatePrimaryBefore;
+	// Allocate through each image's own scalar operator new so the matching
+	// deleting destructor releases memory from the allocator that created it.
+	unsigned char* oracleDeleteObject = static_cast<unsigned char*>(
+		oracleAllocate(0x18));
+	unsigned char* candidateDeleteObject = static_cast<unsigned char*>(
+		candidateAllocate(0x18));
+	bool flagOneMatched = oracleDeleteObject && candidateDeleteObject;
+	if(flagOneMatched)
+		{
+		*reinterpret_cast<void**>(oracleDeleteObject) =
+			oracleImage + 0x001167d8u;
+		*reinterpret_cast<void**>(oracleDeleteObject + 8) =
+			oracleImage + 0x00116818u;
+		*reinterpret_cast<void**>(oracleDeleteObject + 0x14) = expectedRecord;
+		*reinterpret_cast<void**>(candidateDeleteObject) = candidatePrimaryVtable;
+		*reinterpret_cast<void**>(candidateDeleteObject + 8) =
+			candidateSecondaryVtable;
+		*reinterpret_cast<void**>(candidateDeleteObject + 0x14) = expectedRecord;
+		void* const oracleDeleteResult = oracleDestructor(oracleDeleteObject, 1);
+		void* const candidateDeleteResult = candidateDestructor(
+			candidateDeleteObject, 1);
+		flagOneMatched = oracleDeleteResult == oracleDeleteObject &&
+			candidateDeleteResult == candidateDeleteObject;
+		}
+	else
+		{
+		if(oracleDeleteObject)
+			oracleDestructor(oracleDeleteObject, 1);
+		if(candidateDeleteObject)
+			candidateDestructor(candidateDeleteObject, 1);
+		}
+	unsigned mismatches = 0;
+	mismatches += oracleInitialVptrs && candidateInitialVptrs ? 0u : 1u;
+	mismatches += oracleFinalVptrs && candidateFinalVptrs && primaryChanged ? 0u : 1u;
+	mismatches += oracleLinksCleared && candidateLinksCleared ? 0u : 1u;
+	mismatches += oracleRecordPreserved && candidateRecordPreserved ? 0u : 1u;
+	mismatches += returnMatched ? 0u : 1u;
+	mismatches += stackBalanced ? 0u : 1u;
+	mismatches += flagOneMatched ? 0u : 1u;
+	printf("implicit mesh deleting-dtor row=003868 primary=%u secondary=%u links=%u record=%u return=%u stack=%u flag1_free=%u mismatches=%u\n",
+		oracleFinalVptrs && candidateFinalVptrs && primaryChanged ? 1u : 0u,
+		oracleInitialVptrs && candidateInitialVptrs ? 1u : 0u,
+		oracleLinksCleared && candidateLinksCleared ? 1u : 0u,
+		oracleRecordPreserved && candidateRecordPreserved ? 1u : 0u,
+		returnMatched ? 1u : 0u, stackBalanced ? 1u : 0u,
+		flagOneMatched ? 1u : 0u, mismatches);
+	return mismatches;
+	}
+
 struct NxFluidCollisionBucketRecord
 	{
 	unsigned kind;
@@ -8316,6 +8468,36 @@ int wmain(int argc, wchar_t** argv)
 			"stack_checks=0 mismatches=1\n");
 		++gFailures;
 		}
+	}
+
+	{
+	void* candidateImplicitMeshDestructor = 0;
+	void* candidateScalarAllocate = 0;
+	void* candidateImplicitMeshPrimaryVtable = 0;
+	void* candidateImplicitMeshSecondaryVtable = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_GNpImplicitMesh@@UAEPAXI@Z",
+			&candidateImplicitMeshDestructor) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??2@YAPAXI@Z", &candidateScalarAllocate) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NpImplicitMesh@@6BNxImplicitMesh@@@",
+			&candidateImplicitMeshPrimaryVtable) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NpImplicitMesh@@6BNpImplicitMeshLockBase@@@",
+			&candidateImplicitMeshSecondaryVtable))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll implicit-mesh ctor/dtor rows could not be resolved\n");
+		printf("implicit mesh deleting-dtor row=003868 primary=0 secondary=0 links=0 record=0 return=0 stack=0 flag1_free=0 mismatches=1\n");
+		++gFailures;
+		}
+	else
+		gFailures += nxRunNpImplicitMeshDeletingDestructorDifferential(
+			oracleImage, image, candidatePhysics,
+			candidateImplicitMeshDestructor,
+			candidateScalarAllocate,
+			candidateImplicitMeshPrimaryVtable,
+			candidateImplicitMeshSecondaryVtable);
 	}
 
 	// Run this last because the oracle constructor installs process-global
