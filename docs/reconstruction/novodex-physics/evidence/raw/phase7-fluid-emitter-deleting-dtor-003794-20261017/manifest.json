@@ -1,0 +1,72 @@
+{
+  "row": "phys_fn_003794",
+  "rva": "0x0008c310",
+  "date": "2026-10-17",
+  "candidate_dll_sha256": "89896772111dcc32e2372e1fbde35598618b7f719e8ea46f9e7c6da944ebada9",
+  "oracle_dll_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "phase5_coverage": "2838/2838",
+  "phase7_coverage": "2971/2971",
+  "tool_tests": "817 passed",
+  "artifacts": [
+    {
+      "path": "build.log.gz",
+      "source": "build/phase7-fluid-emitter-dtor-003794-build.log",
+      "sha256": "b223823cba20c9d6ae3ff54ba0aa7e7e5a2500d1b6252aff0a39e344b9d88f95",
+      "uncompressed_sha256": "9782e72661e5914533f239361fc1c6e0c9bd4d94b5f360aecb7704cf5284ca3d",
+      "bytes": 709,
+      "compressed_bytes": 321
+    },
+    {
+      "path": "restored-differential.log.gz",
+      "source": "build/phase7-fluid-emitter-dtor-003794-restored.log",
+      "sha256": "edb144e7798b1a31850c0e31a6b88875980059b7c5a7cd455b75c2ce9d316e18",
+      "uncompressed_sha256": "a2b16d99f06e03d1dd7d55258f6dc0c1c3434e569f4e70ccd34f22db2d826141",
+      "bytes": 16047,
+      "compressed_bytes": 3287
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "build/phase5-fluid-emitter-dtor-003794.log",
+      "sha256": "91022359d988001e5eaedeea99dbd84467df1832699140dddee6f0575194962c",
+      "uncompressed_sha256": "8d53595937024c82629f7fdc9e86434f1c4615dc1eaf11e09c252723c6361896",
+      "bytes": 2828570,
+      "compressed_bytes": 210320
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build/phase7-fluid-emitter-dtor-003794.log",
+      "sha256": "222abe887de71d4f0c6efb6209f204c863ad9545a132611dad8fe22cddd16de8",
+      "uncompressed_sha256": "d10128d9023a9b0fa3cf16ae580b5f95af0d65ec7e77c7e8ad50ccedfa2fd227",
+      "bytes": 4633433,
+      "compressed_bytes": 374590
+    },
+    {
+      "path": "tool-tests.log.gz",
+      "source": "build/phase7-fluid-emitter-dtor-003794-tool-tests.log",
+      "sha256": "205721afc192bcb715418b0a65529fc7e65a5086fc5ce1b9c989779329bcfe3a",
+      "uncompressed_sha256": "a9d5cecb028c592f22bb18d2cd12d090725f87ad9d6a1fddc09ab68ad653f837",
+      "bytes": 126048,
+      "compressed_bytes": 19072
+    },
+    {
+      "path": "mutation.stdout.txt",
+      "sha256": "f215ed4341c1295c34c3eabfb181c35271585e089d81286eae170444cca6aa6b",
+      "bytes": 11403
+    },
+    {
+      "path": "mutation.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "mutation.exit.txt",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+      "bytes": 3
+    },
+    {
+      "path": "mutation.patch.txt",
+      "sha256": "92b8a907d921388252cc2d4e3264a924eacf9ab36d2392ea3fdc89ff18587dd5",
+      "bytes": 427
+    }
+  ]
+}

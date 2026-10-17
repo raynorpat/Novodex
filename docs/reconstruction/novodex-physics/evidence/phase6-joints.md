@@ -11183,3 +11183,6 @@ Continuation 2026-10-17: `phys_fn_003864` (`NpImplicitMeshLockBase` scalar delet
 
 
 Phase 7 continuation: `phys_fn_003862` (`NpFluidEmitter` secondary scalar deleting thunk) is registered in `NxPhysicsFluidEmitterAbiTests`. The 8-to-4 this-adjustor mutation is rejected with `mismatches=4`; restored controls match the oracle. Details and raw proof are in `phase7-fluid-emitter-secondary-thunk-003862.md` and `raw/phase7-fluid-emitter-secondary-thunk-003862-20261017/`.
+
+
+Phase 7 continuation: `phys_fn_003794` (`NpFluidEmitter` scalar deleting destructor) is mutation-falsified by the registered `NxPhysicsFluidEmitterAbiTests` differential. A wrong primary-base vptr immediate is rejected (`candidate_primary=0`, `mismatches=1`); see `phase7-fluid-emitter-deleting-dtor-003794.md` and `raw/phase7-fluid-emitter-deleting-dtor-003794-20261017/`.

@@ -2064,6 +2064,13 @@ static unsigned nxRunNpFluidEmitterSecondaryDeletingThunkDifferential(
 		oracleSecondaryMatches ? 1u : 0u, candidateSecondaryMatches ? 1u : 0u,
 		objectWordsPreserved ? 1u : 0u, returnMatched ? 1u : 0u,
 		stackBalanced ? 1u : 0u, flagOneFreed ? 1u : 0u, mismatches);
+	printf("fluid emitter deleting dtor row=003794 oracle_primary=%u "
+		"candidate_primary=%u oracle_secondary=%u candidate_secondary=%u "
+		"return=%u stack=%u flag1_free=%u mismatches=%u\n",
+		oraclePrimaryMatches ? 1u : 0u, candidatePrimaryMatches ? 1u : 0u,
+		oracleSecondaryMatches ? 1u : 0u, candidateSecondaryMatches ? 1u : 0u,
+		returnMatched ? 1u : 0u, stackBalanced ? 1u : 0u,
+		flagOneFreed ? 1u : 0u, mismatches);
 	return mismatches;
 	}
 
@@ -9234,6 +9241,7 @@ int wmain(int argc, wchar_t** argv)
 		{
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid-emitter secondary deleting thunk could not be resolved\n");
 		printf("fluid emitter secondary deleting-thunk row=003862 oracle_slot=0 candidate_slot=0 oracle_primary=0 candidate_primary=0 oracle_secondary=0 candidate_secondary=0 words=0 return=0 stack=0 flag1_free=0 mismatches=1\n");
+		printf("fluid emitter deleting dtor row=003794 oracle_primary=0 candidate_primary=0 oracle_secondary=0 candidate_secondary=0 return=0 stack=0 flag1_free=0 mismatches=1\n");
 		++gFailures;
 		}
 	else

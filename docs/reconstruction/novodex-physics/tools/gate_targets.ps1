@@ -117,6 +117,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
+		'fluid emitter deleting dtor row=003794 oracle_primary=1 candidate_primary=1 oracle_secondary=1 candidate_secondary=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'fluid emitter secondary deleting-thunk row=003862 oracle_slot=1 candidate_slot=1 oracle_primary=1 candidate_primary=1 oracle_secondary=1 candidate_secondary=1 words=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'implicit mesh constructor row=003866 primary=1 secondary=1 links=1 record=1 return=1 stack=1 mismatches=0'
 		'implicit mesh deleting-dtor row=003868 primary=1 secondary=1 links=1 record=1 return=1 stack=1 flag1_free=1 mismatches=0'
@@ -6256,7 +6257,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2837  # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
+	'5' = 2838  # previous 2837 plus the fluid-emitter deleting-destructor differential
+	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
 	           # previous 2835 plus the implicit-mesh lock-base deleting-destructor differential
 	           # previous 2832 plus the implicit-mesh secondary deleting-thunk differential
 	           # previous 2830 plus the implicit-mesh getMeshData differential
@@ -6382,7 +6384,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2970  # previous 2969 plus the fluid-emitter secondary deleting-thunk differential
+	'7' = 2971  # previous 2970 plus the fluid-emitter deleting-destructor differential
+	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential
 	           # previous 2968 plus the implicit-mesh lock-base deleting-destructor differential
 	           # previous 2965 plus the implicit-mesh secondary deleting-thunk differential
 	           # previous 2963 plus the implicit-mesh getMeshData differential

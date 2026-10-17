@@ -71282,13 +71282,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1417",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12873",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle body at RVA 0x8c310 resets the primary and NpFluidEmitterReadLock vptrs, invokes the read-lock base destructor, restores the primary NxFluidEmitter vptr, and frees the complete 0x18-byte object when flag bit 0 is set. The candidate map emits the primary scalar deleting destructor at 0x1003ce40.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests invokes the pinned oracle and candidate scalar deleting destructor through the NpFluidEmitterReadLock secondary slot with deleting flags 0 and 1. The row marker checks primary/secondary base-vptr transitions, returned primary pointer, x86 stack balance, and flag-one frees. A candidate-only mutation of the primary-base vptr immediate is rejected with candidate_primary=0 and mismatches=1; the restored control reports mismatches=0.",
+      "notes": "compiler-generated scalar deleting destructor for NpFluidEmitter; full object size 0x18.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "??_ENpFluidEmitter@@UAEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ENpFluidEmitter@@UAEPAXI@Z",
+        "address": "0x1003ce40",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003795",
