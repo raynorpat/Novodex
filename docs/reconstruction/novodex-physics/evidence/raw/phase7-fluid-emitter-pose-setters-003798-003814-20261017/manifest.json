@@ -1,0 +1,49 @@
+{
+  "rows": [
+    "phys_fn_003798",
+    "phys_fn_003800",
+    "phys_fn_003802",
+    "phys_fn_003810",
+    "phys_fn_003812",
+    "phys_fn_003814"
+  ],
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901",
+  "phase5_coverage": "2845/2845",
+  "phase7_coverage": "2978/2978",
+  "mutations": {
+    "003798": {
+      "candidate_mutant_sha256": "12435963f02f97efb04c4a23a50bb1fa7ce9e511c2d3918882e9518e47db0afa",
+      "exit": 1,
+      "marker": "fluid emitter setGlobalPose row=003798 cases=2 mismatches=2"
+    },
+    "003800": {
+      "candidate_mutant_sha256": "c835525b1ebcd33676a43a09ab2db73dc4c6a8b29e49187e6325badc6fed083e",
+      "exit": 1,
+      "marker": "fluid emitter setGlobalPosition row=003800 cases=1 mismatches=1"
+    },
+    "003802": {
+      "candidate_mutant_sha256": "956426da2807680a69b247640ba09410c322b696df19723407ef8f076f108f22",
+      "exit": 1,
+      "marker": "fluid emitter setGlobalOrientation row=003802 cases=1 mismatches=1"
+    },
+    "003810": {
+      "candidate_mutant_sha256": "399010592470ec584eeb4e100a74e83aa178f80cf854f7ef7512a3a2aa0116b1",
+      "exit": 1,
+      "marker": "fluid emitter setLocalPose row=003810 cases=1 mismatches=1"
+    },
+    "003812": {
+      "candidate_mutant_sha256": "a5fe0fb85c1f5f851af1e6ab90702e6b602ff744e9ee39a343e91c33b06b852a",
+      "exit": 1,
+      "marker": "fluid emitter setLocalPosition row=003812 cases=1 mismatches=1"
+    },
+    "003814": {
+      "candidate_mutant_sha256": "bfb28fdc4f1cbf7d5e3ba1203a484dd0128e645a6af3e5f0d07e2064b17ddb41",
+      "exit": 1,
+      "marker": "fluid emitter setLocalOrientation row=003814 cases=1 mismatches=1"
+    }
+  },
+  "tool_tests": "817 passed",
+  "inventory": "pass: 6338 functions, 5138 data objects, 0 unexplained",
+  "public_headers": "pass: 80 files"
+}

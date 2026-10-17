@@ -11192,3 +11192,13 @@ Phase 7 continuation: `phys_fn_003790` (`NxFluidEmitter` base scalar deleting de
 
 
 Phase 7 continuation: `phys_fn_003798`, `phys_fn_003800`, and `phys_fn_003802` (`NpFluidEmitter` world-pose setters) are independently mutation-falsified by the registered component-setter differential. Immediate-return mutations are caught with 2, 1, and 1 mismatches; see `phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md` and its raw evidence folder.
+
+
+FluidEmitter setter rows `phys_fn_003798`, `phys_fn_003800`, `phys_fn_003802`, `phys_fn_003810`, `phys_fn_003812`, and `phys_fn_003814` now compare full local and cached world-pose state. The three local-pose rows and their mutation results are recorded in [phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md](phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md); world-setter cache-refresh hardening is recorded in [phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md](phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md).
+
+phys_fn_003798: candidate-only ret-4 mutation rejected in two component cases; mismatches=2.
+phys_fn_003800: candidate-only ret-4 mutation rejected; mismatches=1.
+phys_fn_003802: candidate-only ret-4 mutation rejected; mismatches=1.
+phys_fn_003810: candidate-only ret-4 mutation rejected; mismatches=1.
+phys_fn_003812: candidate-only ret-4 mutation rejected; mismatches=1.
+phys_fn_003814: candidate-only ret-4 mutation rejected; mismatches=1.

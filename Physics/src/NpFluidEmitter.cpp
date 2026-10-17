@@ -1020,6 +1020,7 @@ void NpFluidEmitter::setGlobalPose(const NxMat34& pose)
 		}
 	memcpy(static_cast<unsigned char*>(mInternal) + 0x18, &pose, sizeof(pose));
 	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpFluidEmitterStoreGlobalPose(mInternal);
 	nxNpSceneGuardLeave(link);
 	}
 
@@ -1074,6 +1075,7 @@ void NpFluidEmitter::setLocalPose(const NxMat34& pose)
 		}
 	nxNpFluidEmitterSetLocalPoseInternal(mInternal,
 		reinterpret_cast<const float*>(&pose));
+	nxNpFluidEmitterStoreGlobalPose(mInternal);
 	nxNpSceneGuardLeave(link);
 	}
 
@@ -1087,6 +1089,7 @@ void NpFluidEmitter::setLocalPosition(const NxVec3& position)
 		}
 	memcpy(static_cast<unsigned char*>(mInternal) + 0x3c, &position, sizeof(position));
 	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpFluidEmitterStoreGlobalPose(mInternal);
 	nxNpSceneGuardLeave(link);
 	}
 
@@ -1101,6 +1104,7 @@ void NpFluidEmitter::setLocalOrientation(const NxMat33& orientation)
 	memcpy(static_cast<unsigned char*>(mInternal) + 0x18, &orientation,
 		sizeof(orientation));
 	nxNpFluidEmitterUpdateGlobalPose(mInternal);
+	nxNpFluidEmitterStoreGlobalPose(mInternal);
 	nxNpSceneGuardLeave(link);
 	}
 

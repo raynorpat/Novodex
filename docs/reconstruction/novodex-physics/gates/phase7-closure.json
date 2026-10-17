@@ -22,8 +22,8 @@
   "counts": {
     "differential_falsified": 289,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 126,
-    "deferred_not_reconstructed_in_phase": 74,
+    "oracle_differential_falsified": 129,
+    "deferred_not_reconstructed_in_phase": 71,
     "deferred_reconstructed_not_falsified": 70
   },
   "closed": [
@@ -3986,10 +3986,10 @@
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsFluidEmitterAbiTests",
       "falsification": {
-        "mutation": "Patched the candidate setGlobalPose entry at 0x1003ed00 to return immediately with `ret 4`, bypassing its body.",
+        "mutation": "Patched the candidate-only NpFluidEmitter entry at RVA 0x0003ed00, replacing its three-byte MSVC prologue with ret 4 (c2 04 00). The mutation was applied to matching NxPhysics.dll and NxPhysicsCandidate.dll copies and both were restored before the next row.",
         "detected": "mismatches=2"
       },
-      "note": "The no-op candidate `setGlobalPose` body is caught in both world-position and world-orientation cases. Restored candidate bytes match the pre-mutation hash. See evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
+      "note": "The row fixture checks oracle/source/candidate-DLL local and cached world pose words, backend callback records, and x86 stack balance; the candidate-only no-op mutation is rejected in 2 case(s). Restored candidate hash is c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901. See evidence/phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md and evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
     },
     {
       "id": "phys_fn_003800",
@@ -3997,10 +3997,10 @@
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsFluidEmitterAbiTests",
       "falsification": {
-        "mutation": "Patched the candidate setGlobalPosition entry at 0x1003edd0 to return immediately with `ret 4`, bypassing its body.",
+        "mutation": "Patched the candidate-only NpFluidEmitter entry at RVA 0x0003ede0, replacing its three-byte MSVC prologue with ret 4 (c2 04 00). The mutation was applied to matching NxPhysics.dll and NxPhysicsCandidate.dll copies and both were restored before the next row.",
         "detected": "mismatches=1"
       },
-      "note": "The no-op candidate `setGlobalPosition` body is caught in the world-position case. Restored candidate bytes match the pre-mutation hash. See evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
+      "note": "The row fixture checks oracle/source/candidate-DLL local and cached world pose words, backend callback records, and x86 stack balance; the candidate-only no-op mutation is rejected in 1 case(s). Restored candidate hash is c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901. See evidence/phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md and evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
     },
     {
       "id": "phys_fn_003802",
@@ -4008,10 +4008,10 @@
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsFluidEmitterAbiTests",
       "falsification": {
-        "mutation": "Patched the candidate setGlobalOrientation entry at 0x1003ecb0 to return immediately with `ret 4`, bypassing its body.",
+        "mutation": "Patched the candidate-only NpFluidEmitter entry at RVA 0x0003ecb0, replacing its three-byte MSVC prologue with ret 4 (c2 04 00). The mutation was applied to matching NxPhysics.dll and NxPhysicsCandidate.dll copies and both were restored before the next row.",
         "detected": "mismatches=1"
       },
-      "note": "The no-op candidate `setGlobalOrientation` body is caught in the world-orientation case. Restored candidate bytes match the pre-mutation hash. See evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
+      "note": "The row fixture checks oracle/source/candidate-DLL local and cached world pose words, backend callback records, and x86 stack balance; the candidate-only no-op mutation is rejected in 1 case(s). Restored candidate hash is c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901. See evidence/phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md and evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
     },
     {
       "id": "phys_fn_003804",
@@ -4045,6 +4045,39 @@
         "detected": "mismatches=2"
       },
       "note": "Direct public NxFluidEmitter aggregate-return ABI and wrapper-layout coverage; details in evidence/fluid-emitter-aggregate-abi-2026-10-09.md."
+    },
+    {
+      "id": "phys_fn_003810",
+      "rva": "0x0008c660",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Patched the candidate-only NpFluidEmitter entry at RVA 0x0003ef10, replacing its three-byte MSVC prologue with ret 4 (c2 04 00). The mutation was applied to matching NxPhysics.dll and NxPhysicsCandidate.dll copies and both were restored before the next row.",
+        "detected": "mismatches=1"
+      },
+      "note": "The row fixture checks oracle/source/candidate-DLL local and cached world pose words, backend callback records, and x86 stack balance; the candidate-only no-op mutation is rejected in 1 case(s). Restored candidate hash is c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901. See evidence/phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md and evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
+    },
+    {
+      "id": "phys_fn_003812",
+      "rva": "0x0008c710",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Patched the candidate-only NpFluidEmitter entry at RVA 0x0003eff0, replacing its three-byte MSVC prologue with ret 4 (c2 04 00). The mutation was applied to matching NxPhysics.dll and NxPhysicsCandidate.dll copies and both were restored before the next row.",
+        "detected": "mismatches=1"
+      },
+      "note": "The row fixture checks oracle/source/candidate-DLL local and cached world pose words, backend callback records, and x86 stack balance; the candidate-only no-op mutation is rejected in 1 case(s). Restored candidate hash is c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901. See evidence/phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md and evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
+    },
+    {
+      "id": "phys_fn_003814",
+      "rva": "0x0008c7c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsFluidEmitterAbiTests",
+      "falsification": {
+        "mutation": "Patched the candidate-only NpFluidEmitter entry at RVA 0x0003ee30, replacing its three-byte MSVC prologue with ret 4 (c2 04 00). The mutation was applied to matching NxPhysics.dll and NxPhysicsCandidate.dll copies and both were restored before the next row.",
+        "detected": "mismatches=1"
+      },
+      "note": "The row fixture checks oracle/source/candidate-DLL local and cached world pose words, backend callback records, and x86 stack balance; the candidate-only no-op mutation is rejected in 1 case(s). Restored candidate hash is c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901. See evidence/phase7-fluid-emitter-local-pose-setters-003810-003812-003814.md and evidence/phase7-fluid-emitter-world-pose-setters-003798-003800-003802.md."
     },
     {
       "id": "phys_fn_003816",
@@ -5510,30 +5543,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_003810",
-      "rva": "0x0008c660",
-      "size": 172,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003812",
-      "rva": "0x0008c710",
-      "size": 172,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003814",
-      "rva": "0x0008c7c0",
-      "size": 172,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_003822",

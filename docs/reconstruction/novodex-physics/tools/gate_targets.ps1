@@ -117,9 +117,13 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
+		'fluid emitter global and local component setters cases=5 callback_checks=5 stack_checks=5 mismatches=0'
 		'fluid emitter setGlobalPose row=003798 cases=2 mismatches=0'
 		'fluid emitter setGlobalPosition row=003800 cases=1 mismatches=0'
 		'fluid emitter setGlobalOrientation row=003802 cases=1 mismatches=0'
+		'fluid emitter setLocalPose row=003810 cases=1 mismatches=0'
+		'fluid emitter setLocalPosition row=003812 cases=1 mismatches=0'
+		'fluid emitter setLocalOrientation row=003814 cases=1 mismatches=0'
 		'fluid base deleting dtor row=003790 oracle_vptr=1 candidate_vptr=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'fluid emitter deleting dtor row=003794 oracle_primary=1 candidate_primary=1 oracle_secondary=1 candidate_secondary=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'fluid emitter secondary deleting-thunk row=003862 oracle_slot=1 candidate_slot=1 oracle_primary=1 candidate_primary=1 oracle_secondary=1 candidate_secondary=1 words=1 return=1 stack=1 flag1_free=1 mismatches=0'
@@ -165,7 +169,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid emitter name rows=2 replacements=1 clears=1 candidate_dll=1 mismatches=0'
 		'fluid emitter local pose-copy rows=3 candidate_cases=3 candidate_retptr=3 candidate_stack=3 dll_cases=3 dll_retptr=3 dll_stack=3 mismatches=0'
 		'fluid emitter local-pose setter cases=2 callback_checks=2 stack_checks=2 mismatches=0'
-		'fluid emitter global and local component setters cases=4 callback_checks=4 stack_checks=4 mismatches=0'
+
 		'fluid emitter attribute rows=12 cases=12 candidate_dll_cases=12 callbacks=24 mismatches=0'
         'fluid emitter raw_abi cases=6 retptr=6 stack_balanced=6 mismatches=0'
 		'fluid emitter candidate_dll ctor size=24 vptr_in_module=1 mismatches=0'
@@ -6261,7 +6265,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2842  # previous 2839 plus the three world-pose setter differentials
+	'5' = 2845  # previous 2842 plus the three local-pose setter row differentials
 	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2837 plus the fluid-emitter deleting-destructor differential
 	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
@@ -6390,7 +6394,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2975  # previous 2972 plus the three world-pose setter differentials
+	'7' = 2978  # previous 2975 plus the three local-pose setter row differentials
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential

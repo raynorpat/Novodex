@@ -1,0 +1,6 @@
+Exception: D:\github\Novodex\docs\reconstruction\novodex-physics\tools\run_differential.ps1:62
+Line |
+  62 |          throw "GATE FAILED: requirement not met: $Requirement"
+     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | GATE FAILED: requirement not met: every requested target passes its registered oracle/candidate differential
+     | contract

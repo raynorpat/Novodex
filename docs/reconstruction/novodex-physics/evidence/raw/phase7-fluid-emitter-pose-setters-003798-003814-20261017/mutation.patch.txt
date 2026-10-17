@@ -1,0 +1,1 @@
+Candidate-only entry mutations replaced each setter prologue with ret 4 (c2 04 00) at the candidate map RVA. Mutant DLL copies were restored before every subsequent run; both NxPhysics.dll and NxPhysicsCandidate.dll returned to baseline SHA-256 c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901.
