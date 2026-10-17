@@ -1,0 +1,54 @@
+{
+  "row": "phys_fn_003898",
+  "rva": "0x0008d810",
+  "date": "2026-10-17",
+  "candidate_dll_sha256": "e2327e83bc9befe186fdda6f6a40ec5cfecf8a1bffb0bb1838cc636172d6de06",
+  "oracle_dll_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "artifacts": [
+    {
+      "path": "build.log.gz",
+      "source": "build/phase7-implicit-mesh-secondary-thunk-003898-build-verified.log",
+      "sha256": "4c796218b4f8a2dd02ead6dd5bac0f3015a5f07981d1db4919606ce6fc36ea8a",
+      "uncompressed_sha256": "db8dd86933badf8e89fb2cab28b7d3af6e908ffca7b3de52fabb29a22d09446f",
+      "bytes": 986,
+      "compressed_bytes": 336
+    },
+    {
+      "path": "free-mutation.log.gz",
+      "source": "build/phase7-implicit-mesh-secondary-thunk-003898-free-mutation-verified.log",
+      "sha256": "8cafb61f947c5dc79bc30f3b68c2027df91033dbddc9de0e02d3a9115c465801",
+      "uncompressed_sha256": "96325e5702f59eb47e84b29041a5344cf78d0565b6bafebd6a8cc9827c860e2d",
+      "bytes": 10927,
+      "compressed_bytes": 2474
+    },
+    {
+      "path": "restored.log.gz",
+      "source": "build/phase7-implicit-mesh-secondary-thunk-003898-restored-verified-final.log",
+      "sha256": "aab3ffad04404c1b4fa3b52885a739b5314ae403afa28cac17392ac3d2bff413",
+      "uncompressed_sha256": "57d7d4e4f15868f568ce90ab97682e1864b60125625a0606c161f983c6a87768",
+      "bytes": 10927,
+      "compressed_bytes": 2469
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "build/phase7-implicit-mesh-secondary-thunk-003898-phase5-verified.log",
+      "sha256": "0e3f8c1c060fadbc37b14416a2a6183eb2ce34c347981443ac1297e3b4fdd24a",
+      "uncompressed_sha256": "d0284a2ac33ef9e045920280469fabc3556bb209fc38141b5cc0ba8db2a441e9",
+      "bytes": 2866426,
+      "compressed_bytes": 210894
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build/phase7-implicit-mesh-secondary-thunk-003898-phase7-verified.log",
+      "sha256": "63cff53330030b52001fa34b57f1811391b17afd6fa97ad909a0dff42339d582",
+      "uncompressed_sha256": "3d93e75afa3ffaf060da39f81f783834c27a88a45fbba5589f6948b83aa26a08",
+      "bytes": 4698701,
+      "compressed_bytes": 375757
+    },
+    {
+      "path": "mutation.patch.txt",
+      "sha256": "e206f68c6d80a4d3c6d79587fe7f37a46523edd53d85af347a422fd2961b6004",
+      "bytes": 538
+    }
+  ]
+}

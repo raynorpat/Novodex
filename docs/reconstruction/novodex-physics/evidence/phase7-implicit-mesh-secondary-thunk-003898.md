@@ -1,0 +1,11 @@
+# Implicit-mesh secondary deleting thunk (`phys_fn_003898`)
+
+The secondary `NpImplicitMeshLockBase` vtable's slot 0 points to an MSVC this-adjusting deleting thunk. The oracle bytes at RVA `0x0008d810` are `sub ecx, 8; jmp sub_1008D100`; the candidate map resolves `??_ENpImplicitMesh@@W7AEPAXI@Z` from `ImplicitMesh.obj` at `0x1002e0f3`. No implementation body change is needed: CMake/MSVC emits the correct thunk from the per-shape derived class layout already in the source tree.
+
+The registered `NxPhysicsFluidEmitterAbiTests` probe invokes slot 0 through the secondary base pointer and checks oracle/candidate slot identity, primary and secondary vptr transitions, internal-record preservation, returned object identity, and x86 stack balance. For flag-one calls it hooks the oracle `HeapFree` and candidate CRT `free` import slots, forwards each call to the original function, and records whether the exact scratch object was released. The scratch blocks are initialized with valid primary and secondary vptrs before either destructor can run, including allocation-failure cleanup. The normal restored candidate reports `oracle_slot=1 candidate_slot=1 primary=1 secondary=1 record=1 return=1 stack=1 flag1_free=1 mismatches=0`.
+
+A candidate-DLL-only sensitivity mutation changed the thunk's adjustment from `sub ecx,8` to `sub ecx,4`. The flag-zero-only probe reported `primary=0 secondary=0 record=1 return=0 stack=1 flag1_free=0 mismatches=4` and exited 1. A second mutation NOPed the sized-delete call at RVA `0x0002e11c`; the probe reported `flag1_free=0 mismatches=1` and exited 1. After both runs, the candidate DLL was restored byte-for-byte to SHA-256 `e2327e83bc9befe186fdda6f6a40ec5cfecf8a1bffb0bb1838cc636172d6de06`, and a restored differential passed.
+
+Fresh Phase 5 and Phase 7 gates pass with 2,833/2,833 and 2,966/2,966 recorded coverage assertions. All 817 reconstruction-tool tests pass. The oracle-only proof baseline includes the added slot observation while filtering candidate-only fields. Phase 7 records 408 closed and 152 deferred rows. Full DLL reconstruction remains open.
+
+Raw build, both mutation runs, restored-control, Phase 5, and Phase 7 logs (gzip-compressed), hashes, and the mutation patch note are in `evidence/raw/phase7-implicit-mesh-secondary-thunk-003898-20261017/`.

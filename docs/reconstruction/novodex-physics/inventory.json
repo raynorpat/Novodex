@@ -73226,14 +73226,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1885",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13018",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
-    },
+      "static_proof": "IDA at oracle RVA 0x0008d810 shows the secondary deleting thunk subtracting 8 from ECX and tail-jumping to 0x0008d100. The CMake Release map resolves ??_ENpImplicitMesh@@W7AEPAXI@Z at preferred address 0x1002e0f3 in ImplicitMesh.obj.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests reads slot 0 from each secondary vtable and calls the pinned oracle thunk and map-resolved candidate thunk. It checks slot identities, both base-vptr transitions, preserved internal-record pointer, returned primary-object identity, x86 stack balance, and flag-one release. A candidate-only mutation from sub ecx,8 to sub ecx,4 is rejected by the flag-zero-only probe with primary=0, secondary=0, return=0, mismatches=4 (candidate exit 1); the restored probe reports mismatches=0.",
+      "notes": "Candidate map: build/Release/NxPhysics.map, ??_ENpImplicitMesh@@W7AEPAXI@Z at 0x1002e0f3 in ImplicitMesh.obj; no public-header changes.",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "??_ENpImplicitMesh@@W7AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ENpImplicitMesh@@W7AEPAXI@Z",
+        "address": "0x1002e0f3",
+        "object": "ImplicitMesh.obj"
+      }    },
     {
       "id": "phys_fn_003899",
       "rva": "0x0008d818",

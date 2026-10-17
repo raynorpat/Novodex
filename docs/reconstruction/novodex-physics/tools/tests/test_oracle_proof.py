@@ -145,7 +145,8 @@ class OracleProofTests(unittest.TestCase):
         normalized = (
             "fluid collision triangle-cells cases=3 oracle_digest=86d21a58 oracle_cells=14\n"
             "fluid license resolver cases=11 input_digest=04893d50 oracle=8d75d855\n"
-            "fluid emitter owner/frame cases=2 oracle_owner=1 oracle_frame_actor=1\n")
+            "fluid emitter owner/frame cases=2 oracle_owner=1 oracle_frame_actor=1\n"
+            "implicit mesh secondary deleting-thunk oracle_slot=1\n")
         expected_digest = hashlib.sha256(normalized.encode("ascii")).hexdigest()
         manifest = {
             "schema_version": 1,
@@ -155,7 +156,7 @@ class OracleProofTests(unittest.TestCase):
                     "oracle_sha256": ORACLE_SHA,
                     "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
                     "fixture_source_sha256": hashlib.sha256(source_bytes).hexdigest(),
-                    "oracle_output_lines": 3,
+                    "oracle_output_lines": 4,
                     "oracle_output_digest_sha256": expected_digest,
                 }
             },
@@ -167,12 +168,14 @@ class OracleProofTests(unittest.TestCase):
             "candidate=8d75d855 mismatches=0",
             "fluid emitter owner/frame cases=2 oracle_owner=1 candidate_owner=1 "
             "candidate_frame_actor=1 oracle_frame_actor=1 dll_owner=1 mismatches=0",
+            "implicit mesh secondary deleting-thunk oracle_slot=1 candidate_slot=1 "
+                "primary=1 secondary=1 record=1 return=1 stack=1 flag1_free=1 mismatches=0",
         ]
 
         failures, proof = oracle_proof.verify_oracle_transcript(
             manifest, "NxPhysicsFluidEmitterAbiTests", lines, ORACLE_SHA, self.root)
         self.assertEqual(failures, [])
-        self.assertEqual(proof["oracle_output_lines"], 3)
+        self.assertEqual(proof["oracle_output_lines"], 4)
         self.assertEqual(proof["oracle_output_digest_sha256"], expected_digest)
 
         candidate_changed = [
@@ -183,6 +186,8 @@ class OracleProofTests(unittest.TestCase):
             lines[2].replace("candidate_owner=1", "candidate_owner=0")
                 .replace("candidate_frame_actor=1", "candidate_frame_actor=0")
                 .replace("dll_owner=1", "dll_owner=0"),
+            lines[3].replace("candidate_slot=1", "candidate_slot=0")
+                .replace("mismatches=0", "mismatches=4"),
         ]
         failures, candidate_proof = oracle_proof.verify_oracle_transcript(
             manifest, "NxPhysicsFluidEmitterAbiTests", candidate_changed,
@@ -195,6 +200,14 @@ class OracleProofTests(unittest.TestCase):
             "oracle_digest=86d21a58", "oracle_digest=00000000")
         failures, _ = oracle_proof.verify_oracle_transcript(
             manifest, "NxPhysicsFluidEmitterAbiTests", changed_oracle,
+            ORACLE_SHA, self.root)
+        self.assertTrue(any("oracle output digest" in failure for failure in failures), failures)
+
+        changed_row_oracle = list(lines)
+        changed_row_oracle[3] = changed_row_oracle[3].replace(
+            "oracle_slot=1", "oracle_slot=0")
+        failures, _ = oracle_proof.verify_oracle_transcript(
+            manifest, "NxPhysicsFluidEmitterAbiTests", changed_row_oracle,
             ORACLE_SHA, self.root)
         self.assertTrue(any("oracle output digest" in failure for failure in failures), failures)
 
@@ -707,7 +720,7 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(sum(line == expected["coverage_line"] for line in lines), 1)
             elif expected["format"] == "fluid_oracle_lines":
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsFluidEmitterAbiTests.cpp")
-                self.assertEqual(expected["oracle_output_lines"], 28)
+                self.assertEqual(expected["oracle_output_lines"], 29)
                 self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
             elif expected["format"] == "asset_oracle_digest":
                 self.assertEqual(expected["fixture_sources"], [

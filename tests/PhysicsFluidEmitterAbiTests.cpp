@@ -1760,6 +1760,259 @@ static unsigned nxRunNpImplicitMeshDeletingDestructorDifferential(
 	return mismatches;
 	}
 
+typedef BOOL (WINAPI* NxObservedHeapFree)(HANDLE, DWORD, LPVOID);
+typedef void (__cdecl* NxObservedCrtFree)(void*);
+static NxObservedHeapFree gNxOriginalOracleHeapFree = 0;
+static NxObservedCrtFree gNxOriginalCandidateFree = 0;
+static void* gNxOracleDeleteTarget = 0;
+static void* gNxCandidateDeleteTarget = 0;
+static volatile LONG gNxOracleDeleteObserved = 0;
+static volatile LONG gNxCandidateDeleteObserved = 0;
+
+static BOOL WINAPI nxObserveOracleHeapFree(HANDLE heap, DWORD flags,
+	LPVOID block)
+	{
+	if(block == gNxOracleDeleteTarget)
+		InterlockedExchange(&gNxOracleDeleteObserved, 1);
+	return gNxOriginalOracleHeapFree(heap, flags, block);
+	}
+
+static void __cdecl nxObserveCandidateFree(void* block)
+	{
+	if(block == gNxCandidateDeleteTarget)
+		InterlockedExchange(&gNxCandidateDeleteObserved, 1);
+	gNxOriginalCandidateFree(block);
+	}
+
+static bool nxReplaceImportSlot(HMODULE module, unsigned rva,
+	void* replacement, void** original)
+	{
+	if(!module || !replacement || !original)
+		return false;
+	void** const slot = reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(module) + rva);
+	DWORD oldProtection = 0;
+	if(!VirtualProtect(slot, sizeof(*slot), PAGE_READWRITE, &oldProtection))
+		return false;
+	*original = *slot;
+	*slot = replacement;
+	DWORD ignoredProtection = 0;
+	return VirtualProtect(slot, sizeof(*slot), oldProtection,
+		&ignoredProtection) != FALSE;
+	}
+
+static bool nxRestoreImportSlot(HMODULE module, unsigned rva, void* original)
+	{
+	if(!module || !original)
+		return false;
+	void** const slot = reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(module) + rva);
+	DWORD oldProtection = 0;
+	if(!VirtualProtect(slot, sizeof(*slot), PAGE_READWRITE, &oldProtection))
+		return false;
+	*slot = original;
+	DWORD ignoredProtection = 0;
+	return VirtualProtect(slot, sizeof(*slot), oldProtection,
+		&ignoredProtection) != FALSE;
+	}
+
+static unsigned nxRunNpImplicitMeshSecondaryDeletingThunkDifferential(
+	HMODULE oracleModule, unsigned char* oracleImage, HMODULE candidateModule,
+	void* candidateSecondaryVtable, void* candidateThunkAddress,
+	void* candidateAllocateAddress,
+	void* candidatePrimaryVtable,
+	void* candidateBasePrimaryVtable, void* candidateBaseSecondaryVtable)
+	{
+	if(!oracleModule || !oracleImage || !candidateModule ||
+		!candidateSecondaryVtable || !candidateThunkAddress ||
+		!candidateAllocateAddress || !candidatePrimaryVtable ||
+		!candidateBasePrimaryVtable || !candidateBaseSecondaryVtable)
+		return 1;
+	typedef void* (__thiscall* ScalarDeletingDestructor)(void*, unsigned);
+	typedef void* (__cdecl* ScalarAllocate)(unsigned);
+	void** const oracleSecondaryVtable = reinterpret_cast<void**>(
+		oracleImage + 0x00116818u);
+	void** const candidateSecondaryTable =
+		reinterpret_cast<void**>(candidateSecondaryVtable);
+	void* const oracleThunk = oracleSecondaryVtable[0];
+	void* const candidateThunk = candidateSecondaryTable[0];
+	const bool oracleSlotMatches = oracleThunk == oracleImage + 0x0008d810u
+		&& nxAddressBelongsToModule(oracleModule, oracleThunk);
+	const bool candidateSlotMatches = candidateThunk == candidateThunkAddress
+		&& nxCandidateAddressBelongsToModule(candidateModule, candidateThunk);
+	ScalarDeletingDestructor const oracleDestructor =
+		reinterpret_cast<ScalarDeletingDestructor>(oracleThunk);
+	ScalarDeletingDestructor const candidateDestructor =
+		reinterpret_cast<ScalarDeletingDestructor>(candidateThunk);
+	ScalarAllocate const oracleAllocate =
+		reinterpret_cast<ScalarAllocate>(oracleImage + 0x000f467bu);
+	ScalarAllocate const candidateAllocate =
+		reinterpret_cast<ScalarAllocate>(candidateAllocateAddress);
+	unsigned char oracleObject[0x18];
+	unsigned char candidateObject[0x18];
+	unsigned char internalRecord[0x38];
+	memset(oracleObject, 0xcc, sizeof(oracleObject));
+	memset(candidateObject, 0xcc, sizeof(candidateObject));
+	memset(internalRecord, 0x5a, sizeof(internalRecord));
+	void* const expectedRecord = internalRecord;
+	*reinterpret_cast<void**>(oracleObject) = oracleImage + 0x001167d8u;
+	*reinterpret_cast<void**>(oracleObject + 8) = oracleSecondaryVtable;
+	*reinterpret_cast<void**>(oracleObject + 0x0c) = 0;
+	*reinterpret_cast<void**>(oracleObject + 0x10) = 0;
+	*reinterpret_cast<void**>(oracleObject + 0x14) = expectedRecord;
+	*reinterpret_cast<void**>(candidateObject) = candidatePrimaryVtable;
+	*reinterpret_cast<void**>(candidateObject + 8) = candidateSecondaryVtable;
+	*reinterpret_cast<void**>(candidateObject + 0x0c) = 0;
+	*reinterpret_cast<void**>(candidateObject + 0x10) = 0;
+	*reinterpret_cast<void**>(candidateObject + 0x14) = expectedRecord;
+	unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+	unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+	void* oracleResult = 0;
+	void* candidateResult = 0;
+	__asm mov oracleEspBefore, esp
+	oracleResult = oracleDestructor(oracleObject + 8, 0);
+	__asm mov oracleEspAfter, esp
+	__asm mov candidateEspBefore, esp
+	candidateResult = candidateDestructor(candidateObject + 8, 0);
+	__asm mov candidateEspAfter, esp
+	void* const oracleFinalPrimary = *reinterpret_cast<void**>(oracleObject);
+	void* const candidateFinalPrimary =
+		*reinterpret_cast<void**>(candidateObject);
+	void* const oracleFinalSecondary =
+		*reinterpret_cast<void**>(oracleObject + 8);
+	void* const candidateFinalSecondary =
+		*reinterpret_cast<void**>(candidateObject + 8);
+	const bool primaryVptrsMatch =
+		nxAddressBelongsToModule(oracleModule, oracleFinalPrimary) &&
+		nxCandidateAddressBelongsToModule(candidateModule,
+			candidateFinalPrimary) &&
+		oracleFinalPrimary == oracleImage + 0x00116798u &&
+		candidateFinalPrimary == candidateBasePrimaryVtable;
+	const bool secondaryVptrsMatch =
+		nxAddressBelongsToModule(oracleModule, oracleFinalSecondary) &&
+		nxCandidateAddressBelongsToModule(candidateModule,
+			candidateFinalSecondary) &&
+		oracleFinalSecondary == oracleImage + 0x001088b8u &&
+		candidateFinalSecondary == candidateBaseSecondaryVtable;
+	const bool recordsMatch =
+		*reinterpret_cast<void**>(oracleObject + 0x14) == expectedRecord &&
+		*reinterpret_cast<void**>(candidateObject + 0x14) == expectedRecord;
+	const bool linksMatch =
+		*reinterpret_cast<void**>(oracleObject + 0x0c) ==
+			*reinterpret_cast<void**>(candidateObject + 0x0c) &&
+		*reinterpret_cast<void**>(oracleObject + 0x10) ==
+			*reinterpret_cast<void**>(candidateObject + 0x10);
+	const bool returnMatched = oracleResult == oracleObject
+		&& candidateResult == candidateObject;
+	const bool stackBalanced = oracleEspBefore == oracleEspAfter
+		&& candidateEspBefore == candidateEspAfter;
+	char flagOneMode[2];
+	const bool runFlagOne = GetEnvironmentVariableA(
+		"NX_IMPLICIT_MESH_003898_FLAG0_ONLY", flagOneMode,
+		sizeof(flagOneMode)) == 0;
+	bool flagOneFreed = false;
+	if(runFlagOne)
+		{
+		unsigned char* const oracleDeleteObject = static_cast<unsigned char*>(
+			oracleAllocate(0x18));
+		unsigned char* const candidateDeleteObject = static_cast<unsigned char*>(
+			candidateAllocate(0x18));
+		flagOneFreed = oracleDeleteObject && candidateDeleteObject;
+		if(flagOneFreed)
+			{
+			memset(oracleDeleteObject, 0, 0x18);
+			memset(candidateDeleteObject, 0, 0x18);
+			*reinterpret_cast<void**>(oracleDeleteObject) =
+				oracleImage + 0x001167d8u;
+			*reinterpret_cast<void**>(oracleDeleteObject + 8) =
+				oracleSecondaryVtable;
+			*reinterpret_cast<void**>(oracleDeleteObject + 0x14) = expectedRecord;
+			*reinterpret_cast<void**>(candidateDeleteObject) = candidatePrimaryVtable;
+			*reinterpret_cast<void**>(candidateDeleteObject + 8) =
+				candidateSecondaryVtable;
+			*reinterpret_cast<void**>(candidateDeleteObject + 0x14) = expectedRecord;
+			gNxOracleDeleteTarget = oracleDeleteObject;
+			gNxCandidateDeleteTarget = candidateDeleteObject;
+			InterlockedExchange(&gNxOracleDeleteObserved, 0);
+			InterlockedExchange(&gNxCandidateDeleteObserved, 0);
+			void* originalOracleHeapFree = 0;
+			void* originalCandidateFree = 0;
+			const bool oracleFreeHooked = nxReplaceImportSlot(oracleModule,
+				0x0001040b4u, reinterpret_cast<void*>(&nxObserveOracleHeapFree),
+				&originalOracleHeapFree);
+			const bool candidateFreeHooked = nxReplaceImportSlot(candidateModule,
+				0x0012d14cu, reinterpret_cast<void*>(&nxObserveCandidateFree),
+				&originalCandidateFree);
+			gNxOriginalOracleHeapFree =
+				reinterpret_cast<NxObservedHeapFree>(originalOracleHeapFree);
+			gNxOriginalCandidateFree =
+				reinterpret_cast<NxObservedCrtFree>(originalCandidateFree);
+			unsigned oracleDeleteEspBefore = 0, oracleDeleteEspAfter = 0;
+			unsigned candidateDeleteEspBefore = 0, candidateDeleteEspAfter = 0;
+			void* oracleDeleteResult = 0;
+			void* candidateDeleteResult = 0;
+			__asm mov oracleDeleteEspBefore, esp
+			oracleDeleteResult = oracleDestructor(oracleDeleteObject + 8, 1);
+			__asm mov oracleDeleteEspAfter, esp
+			__asm mov candidateDeleteEspBefore, esp
+			candidateDeleteResult = candidateDestructor(candidateDeleteObject + 8, 1);
+			__asm mov candidateDeleteEspAfter, esp
+			flagOneFreed = oracleDeleteResult == oracleDeleteObject
+				&& candidateDeleteResult == candidateDeleteObject
+				&& oracleDeleteEspBefore == oracleDeleteEspAfter
+				&& candidateDeleteEspBefore == candidateDeleteEspAfter;
+			const bool oracleFreeRestored = !oracleFreeHooked ||
+				nxRestoreImportSlot(oracleModule, 0x0001040b4u,
+					originalOracleHeapFree);
+			const bool candidateFreeRestored = !candidateFreeHooked ||
+				nxRestoreImportSlot(candidateModule, 0x0012d14cu,
+					originalCandidateFree);
+			flagOneFreed = flagOneFreed && oracleFreeHooked && candidateFreeHooked
+				&& oracleFreeRestored && candidateFreeRestored
+				&& InterlockedCompareExchange(&gNxOracleDeleteObserved, 0, 0) == 1
+				&& InterlockedCompareExchange(&gNxCandidateDeleteObserved, 0, 0) == 1;
+			}
+		else
+			{
+			if(oracleDeleteObject)
+				{
+				memset(oracleDeleteObject, 0, 0x18);
+				*reinterpret_cast<void**>(oracleDeleteObject) =
+					oracleImage + 0x001167d8u;
+				*reinterpret_cast<void**>(oracleDeleteObject + 8) =
+					oracleSecondaryVtable;
+				oracleDestructor(oracleDeleteObject + 8, 1);
+				}
+			if(candidateDeleteObject)
+				{
+				memset(candidateDeleteObject, 0, 0x18);
+				*reinterpret_cast<void**>(candidateDeleteObject) =
+					candidatePrimaryVtable;
+				*reinterpret_cast<void**>(candidateDeleteObject + 8) =
+					candidateSecondaryVtable;
+				candidateDestructor(candidateDeleteObject + 8, 1);
+				}
+			}
+		}
+	unsigned mismatches = 0;
+	mismatches += oracleSlotMatches ? 0u : 1u;
+	mismatches += candidateSlotMatches ? 0u : 1u;
+	mismatches += primaryVptrsMatch ? 0u : 1u;
+	mismatches += secondaryVptrsMatch ? 0u : 1u;
+	mismatches += recordsMatch ? 0u : 1u;
+	mismatches += linksMatch ? 0u : 1u;
+	mismatches += returnMatched ? 0u : 1u;
+	mismatches += stackBalanced ? 0u : 1u;
+	if(runFlagOne)
+		mismatches += flagOneFreed ? 0u : 1u;
+	printf("implicit mesh secondary deleting-thunk row=003898 oracle_slot=%u candidate_slot=%u primary=%u secondary=%u record=%u return=%u stack=%u flag1_free=%u mismatches=%u\n",
+		oracleSlotMatches ? 1u : 0u, candidateSlotMatches ? 1u : 0u,
+		primaryVptrsMatch ? 1u : 0u, secondaryVptrsMatch ? 1u : 0u,
+		recordsMatch ? 1u : 0u, returnMatched ? 1u : 0u,
+		stackBalanced ? 1u : 0u, flagOneFreed ? 1u : 0u, mismatches);
+	return mismatches;
+	}
+
 struct NxFluidCollisionBucketRecord
 	{
 	unsigned kind;
@@ -8594,6 +8847,46 @@ int wmain(int argc, wchar_t** argv)
 			candidateScalarAllocate,
 			candidateImplicitMeshPrimaryVtable,
 			candidateImplicitMeshSecondaryVtable);
+	}
+
+	{
+	void* candidateSecondaryDeletingThunk = 0;
+	void* candidateScalarAllocate = 0;
+	void* candidateImplicitMeshPrimaryVtable = 0;
+	void* candidateImplicitMeshSecondaryVtable = 0;
+	void* candidateImplicitMeshBaseVtable = 0;
+	void* candidateLockBaseVtable = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_ENpImplicitMesh@@W7AEPAXI@Z",
+			&candidateSecondaryDeletingThunk) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??2@YAPAXI@Z", &candidateScalarAllocate) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NpImplicitMesh@@6BNxImplicitMesh@@@",
+			&candidateImplicitMeshPrimaryVtable) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NpImplicitMesh@@6BNpImplicitMeshLockBase@@@",
+			&candidateImplicitMeshSecondaryVtable) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NxImplicitMesh@@6B@",
+			&candidateImplicitMeshBaseVtable) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NpImplicitMeshLockBase@@6B@",
+			&candidateLockBaseVtable))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll implicit-mesh secondary deleting thunk could not be resolved\n");
+		printf("implicit mesh secondary deleting-thunk row=003898 oracle_slot=0 candidate_slot=0 primary=0 secondary=0 record=0 return=0 stack=0 flag1_free=0 mismatches=1\n");
+		++gFailures;
+		}
+	else
+		gFailures += nxRunNpImplicitMeshSecondaryDeletingThunkDifferential(
+			oracleImage, image, candidatePhysics,
+			candidateImplicitMeshSecondaryVtable,
+			candidateSecondaryDeletingThunk,
+			candidateScalarAllocate,
+			candidateImplicitMeshPrimaryVtable,
+			candidateImplicitMeshBaseVtable,
+			candidateLockBaseVtable);
 	}
 
 	{
