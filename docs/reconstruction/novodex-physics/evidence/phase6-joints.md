@@ -11186,3 +11186,6 @@ Phase 7 continuation: `phys_fn_003862` (`NpFluidEmitter` secondary scalar deleti
 
 
 Phase 7 continuation: `phys_fn_003794` (`NpFluidEmitter` scalar deleting destructor) is mutation-falsified by the registered `NxPhysicsFluidEmitterAbiTests` differential. A wrong primary-base vptr immediate is rejected (`candidate_primary=0`, `mismatches=1`); see `phase7-fluid-emitter-deleting-dtor-003794.md` and `raw/phase7-fluid-emitter-deleting-dtor-003794-20261017/`.
+
+
+Phase 7 continuation: `phys_fn_003790` (`NxFluidEmitter` base scalar deleting destructor) is mutation-falsified through direct oracle/candidate calls with flags 0 and 1. A wrong base-vptr immediate is rejected (`candidate_vptr=0`, `mismatches=1`); see `phase7-fluid-base-deleting-dtor-003790.md` and `raw/phase7-fluid-base-deleting-dtor-003790-20261017/`.

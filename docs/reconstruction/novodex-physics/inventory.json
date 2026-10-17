@@ -71208,13 +71208,20 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/include/fluids/NxFluidEmitter.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1831",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12870",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle body at RVA 0x8c2b0 is the scalar deleting destructor for the NxFluidEmitter base: install the NxFluidEmitter base vptr, return without freeing for flag 0, or release the 8-byte base object for flag 1. The CMake linker map emits `??_ENxFluidEmitter@@MAEPAXI@Z` at 0x1003cea0 from NpFluidEmitter.obj.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly calls the pinned oracle and map-resolved candidate NxFluidEmitter scalar deleting destructors on scratch objects with flags 0 and 1. It checks the base vptr, returned object, x86 stack balance, and that each DLL frees its own allocation. A candidate-only mutation of the base-vptr immediate is rejected with candidate_vptr=0 and mismatches=1; the restored control reports mismatches=0.",
+      "notes": "compiler-generated deleting destructor emitted for the inline abstract NxFluidEmitter base; public header is unchanged.",
+      "implementation_symbol": "??_ENxFluidEmitter@@MAEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ENxFluidEmitter@@MAEPAXI@Z",
+        "address": "0x1003cea0",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003791",
