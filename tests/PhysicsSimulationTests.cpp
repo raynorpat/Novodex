@@ -5968,7 +5968,20 @@ int wmain(int argc, wchar_t** argv)
 			"NxImplicitMesh::setBlend(): Feature not available!") == 0;
 	const unsigned setBlendErrorCode = simulationOutput.code;
 	const int setBlendErrorLine = simulationOutput.line;
+	const unsigned getBlendErrorsBefore = simulationOutput.errors;
+	simulationOutput.resetLast();
 	const NxReal blend = explicitSurfaceMesh->getBlend();
+	const unsigned getBlendErrors = simulationOutput.errors -
+		getBlendErrorsBefore;
+	const bool getBlendDiagnosticMatches = getBlendErrors == 1 &&
+		simulationOutput.code == NXE_DB_WARNING &&
+		simulationOutput.line == 58 &&
+		strcmp(simulationOutput.message,
+			"NxImplicitMesh::getBlend(): Feature not available!") == 0;
+	const NxErrorCode getBlendErrorCode = simulationOutput.code;
+	const int getBlendErrorLine = simulationOutput.line;
+	const bool getBlendMatches = blend == 0.0f &&
+		getBlendDiagnosticMatches;
 	const NxReal initialTriangleSize = explicitSurfaceMesh->getTriangleSize();
 	explicitSurfaceMesh->setTriangleSize(0.006f);
 	const NxReal setTriangleSize = explicitSurfaceMesh->getTriangleSize();
@@ -6079,6 +6092,7 @@ int wmain(int argc, wchar_t** argv)
 		initialSurfaceRadius == 0.04f && setSurfaceRadius == 0.05f &&
 		initialSingleRadius == 0.01f && setSingleRadius == 0.012f &&
 		blend == 0.0f && initialTriangleSize == 0.005f &&
+		getBlendMatches &&
 		setTriangleSize == 0.006f && initialSmoothingIterations == 6 &&
 		setSmoothingIterations == 8 && initialNameMatches &&
 		updatedNameMatches && initialMeshDataMatches &&
@@ -6114,6 +6128,11 @@ int wmain(int argc, wchar_t** argv)
 		*reinterpret_cast<const unsigned*>(&blend),
 		licensedSurfaceMeshCallbacks.implicitFluidMeshSetBlend,
 		setBlendErrors, setBlendErrorCode, setBlendErrorLine);
+	printf("simulation implicit-mesh get-blend row=003884 matched=%u value=%08x errors=%u code=%u line=%d diagnostic=%u\n",
+		getBlendMatches ? 1u : 0u,
+		*reinterpret_cast<const unsigned*>(&blend), getBlendErrors,
+		static_cast<unsigned>(getBlendErrorCode), getBlendErrorLine,
+		getBlendDiagnosticMatches ? 1u : 0u);
 	printf("simulation implicit-mesh set-triangle-size row=003890 matched=%u initial=%08x updated=%08x calls=%u callback-errors=%u\n",
 		initialTriangleSize == 0.005f && setTriangleSize == 0.006f &&
 			licensedSurfaceMeshCallbacks.implicitFluidMeshSetTriangleSize == 1 &&

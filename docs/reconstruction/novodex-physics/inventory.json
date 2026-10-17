@@ -72956,13 +72956,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/NpImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1878",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12993",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0008d4a0 identifies NpImplicitMesh::getBlend: report NXE_DB_WARNING at NpImplicitMesh.cpp line 58 with the feature-unavailable message, then return 0.0f. Candidate map resolves ?getBlend@NpImplicitMesh@@UBEMXZ at preferred address 0x1002e190 in ImplicitMesh.obj.",
+      "dynamic_proof": "NxPhysicsSimulationTests checks the candidate/oracle public getBlend return bits, one warning with code 206, source line 58, and exact feature-unavailable text. Mutating only the candidate return from 0.0f to 1.0f reports value=3f800000 and matched=0, then the staged differential rejects the candidate (oracle_exit=0, candidate_exit=1, stdout_delta=71); restored output is exact.",
+      "notes": "Candidate map: build/Release/NxPhysics.map, preferred address 0x1002e190, ImplicitMesh.obj; public headers unchanged.",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "?getBlend@NpImplicitMesh@@UBEMXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getBlend@NpImplicitMesh@@UBEMXZ",
+        "address": "0x1002e190",
+        "object": "ImplicitMesh.obj"
+      }
     },
     {
       "id": "phys_fn_003885",

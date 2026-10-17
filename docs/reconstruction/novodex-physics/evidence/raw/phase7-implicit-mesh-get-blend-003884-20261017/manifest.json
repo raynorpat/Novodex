@@ -1,0 +1,18 @@
+{
+  "row": "phys_fn_003884",
+  "rva": "0x0008d4a0",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "e2327e83bc9befe186fdda6f6a40ec5cfecf8a1bffb0bb1838cc636172d6de06",
+  "mutant_candidate_sha256": "8a600c6efe664b3c2b5a2e8fc5c23e4c38ae61b587929f9d621a7371b0c0f477",
+  "simulation_test_source_sha256": "44fc9cdace9f61ebf309dab0f2c3f8c48539bec6bf6437bbf9302ebbdd2115be",
+  "restored_marker": "simulation implicit-mesh get-blend row=003884 matched=1 value=00000000 errors=1 code=206 line=58 diagnostic=1",
+  "mutation_marker": "simulation implicit-mesh get-blend row=003884 matched=0 value=3f800000 errors=1 code=206 line=58 diagnostic=1",
+  "mutation_differential": "oracle_exit=0 candidate_exit=1 stdout_delta=71",
+  "restored_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "phase5_coverage": "2832/2832",
+  "phase7_coverage": "2965/2965",
+  "phase5_log": "phase5-gate.log",
+  "phase7_log": "phase7-gate.log",
+  "phase6_coverage": "1719/1719",
+  "phase6_log": "phase6-gate.log"
+}
