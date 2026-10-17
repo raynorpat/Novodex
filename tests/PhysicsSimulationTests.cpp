@@ -5631,7 +5631,11 @@ int wmain(int argc, wchar_t** argv)
 		invalidPublicEmitterAfter.fluidGetRestParticleDistance ==
 			invalidPublicEmitterBefore.fluidGetRestParticleDistance &&
 		invalidPublicEmitterAfter.emitterCreate ==
-			invalidPublicEmitterBefore.emitterCreate;
+			invalidPublicEmitterBefore.emitterCreate &&
+		invalidPublicEmitterAfter.emitterSetGlobalPose ==
+			invalidPublicEmitterBefore.emitterSetGlobalPose &&
+		invalidPublicEmitterAfter.emitterGetGlobalPose ==
+			invalidPublicEmitterBefore.emitterGetGlobalPose;
 	const bool invalidPublicEmitterArrayUnchanged = emittersAfterInvalidDescriptor &&
 		emittersAfterInvalidDescriptor[0] == initialEmitters[0] &&
 		emittersAfterInvalidDescriptor[1] == initialEmitters[1] &&
@@ -5653,7 +5657,11 @@ int wmain(int argc, wchar_t** argv)
 		invalidPublicEmitterAfter.fluidGetRestParticleDistance ==
 			invalidPublicEmitterBefore.fluidGetRestParticleDistance &&
 			invalidPublicEmitterAfter.emitterCreate ==
-				invalidPublicEmitterBefore.emitterCreate ? 1u : 0u,
+				invalidPublicEmitterBefore.emitterCreate &&
+			invalidPublicEmitterAfter.emitterSetGlobalPose ==
+				invalidPublicEmitterBefore.emitterSetGlobalPose &&
+			invalidPublicEmitterAfter.emitterGetGlobalPose ==
+				invalidPublicEmitterBefore.emitterGetGlobalPose ? 1u : 0u,
 		publicEmitterInvalidDescriptorMatch ? 1u : 0u);
 	simulationOutput.resetLast();
 	FluidManagerCallbackSummary emitterAllocationFailureBefore = {};
