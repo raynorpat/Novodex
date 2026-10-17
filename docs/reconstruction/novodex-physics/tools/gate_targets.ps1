@@ -5659,7 +5659,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'tmplinit row=phys_fn_000496 candidate_dll_vs_oracle bytes=64 mismatches=0',
         'allocator bridge row=phys_fn_004805 return=1 stored_pointer=1 restored=1 mismatches=0',
         'allocator heap rows=phys_fn_004807,phys_fn_004808 cases=3 realloc=grow preserved_prefix=1 mismatches=0',
-		'allocator free row=phys_fn_004810 oracle_reuse=1 candidate_reuse=1 mismatches=0',
+		'allocator free row=phys_fn_004810 forwarded_calls=1 pointer_match=1 mismatches=0',
         'allocator debug row=phys_fn_004812 cases=2 oracle_null=2 candidate_null=2 mismatches=0',
         'shapevalid row=phys_fn_000498 candidate_dll_vs_oracle cases=8 mismatches=0',
         'tmplinit row=phys_fn_000499 candidate_dll_vs_oracle bytes=84 mismatches=0',

@@ -1,0 +1,79 @@
+{
+  "row": "phys_fn_004810",
+  "date": "2026-10-17",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "6c979a385abf74898de17432b2c134898b35faaec6bb5f21db77f5d6dc7c79f0",
+  "root_cause": "The prior fixture treated immediate address reuse after free as the row contract. Across 12 fresh processes, run 10 did not reuse the candidate address and failed while runs 1-9 and 11-12 reused it; the oracle reused its address. This made the Phase 6 gate depend on CRT heap layout.",
+  "replacement_probe": "Patch only the candidate DLL import thunk for api-ms-win-crt-heap-l1-1-0.dll!free, watch the specific allocation passed to phys_fn_004810, forward the call to the original CRT free, and require one exact pointer match. No-op candidate free mutation is rejected.",
+  "mutation": "Replace ::free(memory) in SdkDefaultAllocator::free with (void)memory.",
+  "mutation_result": "candidate exit=1; forwarded_calls=0 pointer_match=0 mismatches=1.",
+  "restored_result": "candidate exit=0; forwarded_calls=1 pointer_match=1 mismatches=0; layout result=differential-pass; oracle digest=3acf0dc7.",
+  "phase5": "pass 2878/2878",
+  "phase6": "pass 1738/1738",
+  "phase7": "pass 3017/3017",
+  "gate_registry_tests": "39 passed",
+  "oracle_proof": "pass target=NxPhysicsObjectLayoutTests oracle_output_digest=3acf0dc7",
+  "mutation_patch": {
+    "name": "free-no-op-mutation.patch.gz",
+    "sha256": "453d6124db3ec3bb8ac9b181daeb90c20b29aae943a69d2555413b2571e7f9da",
+    "bytes": 165,
+    "source_bytes": 313,
+    "source_sha256": "e99b1e9a49e158852d9b0ffac856d7e2fa1c416a43ea7cc33cfbc07f9c30d9ca"
+  },
+  "logs": [
+    {
+      "name": "phase6-flaky-before.log.gz",
+      "sha256": "9bd0c34d0be72db73f1cc28a62af4a1ac92ff33fb6c65f1f230aa45aa3022920",
+      "bytes": 23976,
+      "source_bytes": 359034
+    },
+    {
+      "name": "address-reuse-flaky-run.log.gz",
+      "sha256": "ae1a3613c74cc0a1f0642c9967d97281907549fe8ac62ada2a052f5ee8332e4f",
+      "bytes": 396,
+      "source_bytes": 721
+    },
+    {
+      "name": "address-reuse-green-run.log.gz",
+      "sha256": "6052b323af70d1774d184cf6a99a5770c3d7822be442f170db64ab82c8b3bd0b",
+      "bytes": 5110,
+      "source_bytes": 22505
+    },
+    {
+      "name": "free-no-op-mutation.log.gz",
+      "sha256": "f0cb014b0921926de024d73bc732a22420395b4da3420e69f3c920e679bb96f9",
+      "bytes": 416,
+      "source_bytes": 755
+    },
+    {
+      "name": "restored-layout-differential.log.gz",
+      "sha256": "f610ec77418c41734304aa166322a09692981443f914528d39dac4cd6434e68f",
+      "bytes": 5111,
+      "source_bytes": 22506
+    },
+    {
+      "name": "phase5-gate.log.gz",
+      "sha256": "5ac859d88ec319b81ebbe0c7331c63c9cba88ea85e0d5bd6c9451410d5c0b954",
+      "bytes": 217154,
+      "source_bytes": 2931794
+    },
+    {
+      "name": "phase6-gate.log.gz",
+      "sha256": "f4d2ccc6bcad109081d93bb8010b7a4d234d48a5bc21f4d47e7ffb40d1f024d5",
+      "bytes": 256925,
+      "source_bytes": 3134405
+    },
+    {
+      "name": "phase7-gate.log.gz",
+      "sha256": "eda73ed75754ff24425bcf46d8a59dcff49f1e3d9657e9c2be3cf1770ad7c400",
+      "bytes": 380861,
+      "source_bytes": 4746796
+    },
+    {
+      "name": "oracle-proof.json.gz",
+      "sha256": "f648898ed620041d8434689e808ba65126c6b737f3126d4b4cc847a3f9b14aa8",
+      "bytes": 586,
+      "source_bytes": 1031
+    }
+  ]
+}
