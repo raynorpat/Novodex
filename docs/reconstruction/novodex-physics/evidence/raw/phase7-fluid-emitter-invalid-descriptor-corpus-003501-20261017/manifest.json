@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003501",
+  "scope": "15 invalid descriptor cases spanning every isValid predicate, plus paired accepted dual-shape case; row remains partially open",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "3fbbebfb34b471df58ce9d50d4139efb77ad539bcda484aa6d645a1456c05fd0",
+  "mutation_candidate_sha256": "487907cdf438d66be298109c921687bc4f1ac195ad926180b0dc50da9c4703bd",
+  "mutation": "bypassed desc.isValid() in nxFluidCreateEmitter",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=87 stderr_exact=False; invalid descriptor gate fails on candidate",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; cases=15 rejected=15 diagnostics=15 allocation_attempts=0 array_mismatches=0 callback_mismatches=0 dual_shape_accepted=1 exact=1",
+  "phase_gates": {
+    "5": "pass 2860/2860",
+    "6": "pass 1727/1727",
+    "7": "pass 2994/2994"
+  },
+  "gate_target_unit_tests": "39 passed",
+  "inventory": "pass: 6338 functions, 5138 data objects, 0 unexplained",
+  "public_headers": "pass: 80/80",
+  "ruling": "dual shape bits are accepted by the oracle's bitwise-XOR predicate and paired assertion proves validation reaches record allocation; public headers are unchanged",
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "guard-mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}
