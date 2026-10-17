@@ -1444,3 +1444,8 @@ Mapped `nxSceneApplyDescriptorFlags` to the 176-byte oracle routine at RVA `0x00
 ### Phase 7 continuation — pruner section-one owner queries (`phys_fn_001958`, `phys_fn_001962`, 2026-10-17)
 
 IDA-confirmed section-one owner reads are implemented as mapped x86 thiscall members. The registered SceneRaycast fixture distinguishes static from selector-2 pruner data and checks two owner entries per row. A missing section-zero count is independently rejected for each row (`stdout_delta=2814`); restored controls are exact. Phase 7 records 443 closed / 117 deferred. Fresh registered Phase 4/5/7 gates pass at 553/553, 2,865/2,865, and 3,004/3,004 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-pruner-owner-queries-001958-001962.md`.
+
+
+### Phase 2 shared-pruner count queries (`phys_fn_001957`, `phys_fn_001960`, 2026-10-17)
+
+Implemented the static and selector-based population queries and added an oracle/candidate fixture. Mutating either sum to use section zero is independently detected; restored controls are exact. Phase 2/4/5/7 pass at 18/18, 555/555, 2,867/2,867, and 3,006/3,006. Phase 2 records 90 closed / 53 deferred after discharge by Phase 5. Evidence: `docs/reconstruction/novodex-physics/evidence/phase2-pruner-object-count-001957-001960.md`.

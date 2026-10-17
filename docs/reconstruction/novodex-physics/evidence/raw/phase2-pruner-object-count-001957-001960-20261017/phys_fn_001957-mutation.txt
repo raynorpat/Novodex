@@ -1,0 +1,1 @@
+Replaced section-two mNbObjects[2] with section-zero mNbObjects[0]. The candidate reported 3 instead of 8; the registered differential rejected it (oracle_exit=0, candidate_exit=1, stdout_delta=2814). The other row stayed exact.

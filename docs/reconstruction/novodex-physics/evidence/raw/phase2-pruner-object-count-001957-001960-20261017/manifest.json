@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_001957",
+    "phys_fn_001960"
+  ],
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "690a7582e7678f82ff0482c6c47cef8e6cfcd9c3c4e88917e0600242fadabda0",
+  "candidate_map": {
+    "path": "build/Release/NxPhysics.map",
+    "symbols": {
+      "phys_fn_001957": {
+        "symbol": "?StaticPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
+        "address": "0x100b0770",
+        "object": "IcePruningEngine.obj"
+      },
+      "phys_fn_001960": {
+        "symbol": "?SelectedPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
+        "address": "0x100b0710",
+        "object": "IcePruningEngine.obj"
+      }
+    }
+  },
+  "mutations": {
+    "phys_fn_001957": "Replaced section-two mNbObjects[2] with section-zero mNbObjects[0]; returned 3 instead of 8, and the registered differential rejected the candidate (stdout_delta=2814).",
+    "phys_fn_001960": "Replaced section-two mNbObjects[2] with section-zero mNbObjects[0]; returned 7 instead of 18, and the registered differential rejected the candidate (stdout_delta=2814)."
+  },
+  "results": {
+    "phys_fn_001957": {
+      "mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=2814, mismatches=1, returned=3 expected=8",
+      "restored": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; final candidate sha256=690a7582e7678f82ff0482c6c47cef8e6cfcd9c3c4e88917e0600242fadabda0"
+    },
+    "phys_fn_001960": {
+      "mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=2814, mismatches=1, returned=7 expected=18",
+      "restored": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; final candidate sha256=690a7582e7678f82ff0482c6c47cef8e6cfcd9c3c4e88917e0600242fadabda0"
+    }
+  },
+  "files_sha256": {
+    "phase4-gate.log.gz": "09bbf4d19d92da8308759be59e4731ccae77e77badd1ebb1a9b587e0462b7f61",
+    "phase5-gate.log.gz": "e82a7b8c69deebd603579a72c98bf1690654c65372bc29a785d23d6eb4fdcae5",
+    "phase7-gate.log.gz": "601206c8fa2a98d7059fbd49f8e2939792e8fcb7ac1718f05dcb7dcebd7d3ab9",
+    "row001957-mutation.log.gz": "58f542f127f8635286ede24848ccfb00e7c463ba1fbfc75ab3f87107c96dbbbb",
+    "row001960-mutation.log.gz": "4063088437c725dc993ef97e4a8f068bbf1c5e6555634fd1b4b504ceae3ce3d7",
+    "phys_fn_001957-mutation.txt": "3b10d57788d0d2f0acc0d08087a5c3deff907a4bb07b650850d0d5dc83a829bf",
+    "phys_fn_001960-mutation.txt": "db25b80faba329218abe4a1a8384c858eaefeb69c8474185ba78ce4356227387",
+    "restored-differential.log.gz": "3c1b83d6f4a2896a2886a846016690eb187161936a58d377ccc73e89a348a850",
+    "phase2-gate.log.gz": "8463d25714a64626d12b1f681b825e4f1b7cf5cf1a250c382afda8a7e5e2ff4e"
+  },
+  "phase_gates": {
+    "phase4-gate.log.gz": {
+      "uncompressed_sha256": "c71fd236515ade8bc612fb1d37dd4d922b35c8611020225b3dbecb9277ac48fa",
+      "compressed_sha256": "09bbf4d19d92da8308759be59e4731ccae77e77badd1ebb1a9b587e0462b7f61",
+      "result": "phase_gate=4 status=pass"
+    },
+    "phase5-gate.log.gz": {
+      "uncompressed_sha256": "5f1c2a7bcdf9d523c49d57ae4c12e85efbf41321142fef873264b3cff6fa6927",
+      "compressed_sha256": "e82a7b8c69deebd603579a72c98bf1690654c65372bc29a785d23d6eb4fdcae5",
+      "result": "phase_gate=5 status=pass"
+    },
+    "phase7-gate.log.gz": {
+      "uncompressed_sha256": "7a4987dcb94475673071ace7084e2b7a4623cf776bbc68a9ee5ae44b081e4ef8",
+      "compressed_sha256": "601206c8fa2a98d7059fbd49f8e2939792e8fcb7ac1718f05dcb7dcebd7d3ab9",
+      "result": "phase_gate=7 status=pass"
+    },
+    "phase2-gate.log.gz": {
+      "uncompressed_sha256": "416e5e53ac05d029487cf41a88be8d9948c10b1455037d3f714aafc3a1c6c423",
+      "compressed_sha256": "8463d25714a64626d12b1f681b825e4f1b7cf5cf1a250c382afda8a7e5e2ff4e",
+      "result": "phase_gate=2 status=pass"
+    }
+  },
+  "decompressed_gate_sha256": {
+    "phase4-gate.log": "c71fd236515ade8bc612fb1d37dd4d922b35c8611020225b3dbecb9277ac48fa",
+    "phase5-gate.log": "5f1c2a7bcdf9d523c49d57ae4c12e85efbf41321142fef873264b3cff6fa6927",
+    "phase7-gate.log": "7a4987dcb94475673071ace7084e2b7a4623cf776bbc68a9ee5ae44b081e4ef8",
+    "phase2-gate.log": "416e5e53ac05d029487cf41a88be8d9948c10b1455037d3f714aafc3a1c6c423"
+  }
+}

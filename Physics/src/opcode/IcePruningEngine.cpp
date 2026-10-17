@@ -84,6 +84,32 @@ void* NxScenePrunerOwnerQueries::SelectedSectionOneOwner(udword index)
 	return object->mOwner;
 	}
 
+// Static section-one plus section-two population, and the same total for the
+// pruning type selected by the Scene descriptor.
+class NxScenePrunerCountQueries
+	{
+	public:
+		__declspec(noinline) udword StaticPrunerObjectCount();
+		__declspec(noinline) udword SelectedPrunerObjectCount();
+	};
+
+udword NxScenePrunerCountQueries::StaticPrunerObjectCount()
+	{
+	Pruner* const pruner = nxEnginePruner(this, 0);
+	if(!pruner)
+		return 0;
+	return pruner->mPool.mNbObjects[1] + pruner->mPool.mNbObjects[2];
+	}
+
+udword NxScenePrunerCountQueries::SelectedPrunerObjectCount()
+	{
+	const udword selected = *reinterpret_cast<udword*>(reinterpret_cast<ubyte*>(this) + 0x70);
+	Pruner* const pruner = nxEnginePruner(this, selected);
+	if(!pruner)
+		return 0;
+	return pruner->mPool.mNbObjects[1] + pruner->mPool.mNbObjects[2];
+	}
+
 // The factory, types 0 through 3 (see the file comment). The base constructor's
 // first-use creation of the process-wide object (0x000b4cc0) is Scene.cpp's
 // emulation, run where the constructor would run it: after the pruner's own

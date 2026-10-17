@@ -161,10 +161,12 @@ static bool nxFindMapSymbol(FILE* map, const char* decorated, NxU32* address)
 	}
 
 static bool nxResolvePrunerOwnerQueries(HMODULE physics, const wchar_t* pairDirectory,
-	void** sectionOne, void** selectedSectionOne)
+	void** sectionOne, void** selectedSectionOne, void** staticCount, void** selectedCount)
 	{
 	const NxU32 sectionOneOracleRva = 0x0004be90;
 	const NxU32 selectedSectionOneOracleRva = 0x0004bee0;
+	const NxU32 staticCountOracleRva = 0x0004be80;
+	const NxU32 selectedCountOracleRva = 0x0004bec0;
 	wchar_t mapPath[MAX_PATH];
 	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
 		return false;
@@ -172,6 +174,8 @@ static bool nxResolvePrunerOwnerQueries(HMODULE physics, const wchar_t* pairDire
 		{
 		*sectionOne = reinterpret_cast<unsigned char*>(physics) + sectionOneOracleRva;
 		*selectedSectionOne = reinterpret_cast<unsigned char*>(physics) + selectedSectionOneOracleRva;
+		*staticCount = reinterpret_cast<unsigned char*>(physics) + staticCountOracleRva;
+		*selectedCount = reinterpret_cast<unsigned char*>(physics) + selectedCountOracleRva;
 		return true;
 		}
 	FILE* map = 0;
@@ -187,18 +191,29 @@ static bool nxResolvePrunerOwnerQueries(HMODULE physics, const wchar_t* pairDire
 		}
 	NxU32 sectionOneAddress = 0;
 	NxU32 selectedSectionOneAddress = 0;
+	NxU32 staticCountAddress = 0;
+	NxU32 selectedCountAddress = 0;
 	const bool found = nxFindMapSymbol(map,
 		"?SectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z", &sectionOneAddress) &&
 		nxFindMapSymbol(map,
 			"?SelectedSectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z",
-			&selectedSectionOneAddress);
+			&selectedSectionOneAddress) &&
+		nxFindMapSymbol(map,
+			"?StaticPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
+			&staticCountAddress) &&
+		nxFindMapSymbol(map,
+			"?SelectedPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
+			&selectedCountAddress);
 	fclose(map);
 	if(!found || !preferredBase || sectionOneAddress < preferredBase ||
-		selectedSectionOneAddress < preferredBase)
+		selectedSectionOneAddress < preferredBase || staticCountAddress < preferredBase ||
+		selectedCountAddress < preferredBase)
 		return false;
 	*sectionOne = reinterpret_cast<unsigned char*>(physics) + (sectionOneAddress - preferredBase);
 	*selectedSectionOne = reinterpret_cast<unsigned char*>(physics) +
 		(selectedSectionOneAddress - preferredBase);
+	*staticCount = reinterpret_cast<unsigned char*>(physics) + (staticCountAddress - preferredBase);
+	*selectedCount = reinterpret_cast<unsigned char*>(physics) + (selectedCountAddress - preferredBase);
 	return true;
 	}
 
@@ -211,8 +226,10 @@ static bool nxCheckPrunerOwnerQueries(HMODULE physics, const wchar_t* pairDirect
 	{
 	void* sectionOneAddress = 0;
 	void* selectedSectionOneAddress = 0;
+	void* staticCountAddress = 0;
+	void* selectedCountAddress = 0;
 	if(!nxResolvePrunerOwnerQueries(physics, pairDirectory,
-		&sectionOneAddress, &selectedSectionOneAddress))
+		&sectionOneAddress, &selectedSectionOneAddress, &staticCountAddress, &selectedCountAddress))
 		{
 		printf("scene_pruner row001958 row001962 candidate_map=unresolved\n");
 		return false;
@@ -260,6 +277,45 @@ static bool nxCheckPrunerOwnerQueries(HMODULE physics, const wchar_t* pairDirect
 		staticMatch ? 1u : 0u, staticMatch ? 0u : 1u);
 	printf("scene_pruner row001962 selected_section1_owner=%u selector=2 indices=2 mismatches=%u\n",
 		selectedMatch ? 1u : 0u, selectedMatch ? 0u : 1u);
+	return staticMatch && selectedMatch;
+	}
+
+typedef NxU32 (__thiscall *NxScenePrunerObjectCountFn)(NxScenePrunerOwnerQueryHost*);
+
+static bool nxCheckPrunerObjectCounts(HMODULE physics, const wchar_t* pairDirectory)
+	{
+	void* sectionOneAddress = 0;
+	void* selectedSectionOneAddress = 0;
+	void* staticCountAddress = 0;
+	void* selectedCountAddress = 0;
+	if(!nxResolvePrunerOwnerQueries(physics, pairDirectory,
+		&sectionOneAddress, &selectedSectionOneAddress, &staticCountAddress, &selectedCountAddress))
+		{
+		printf("scene_pruner row001957 row001960 candidate_map=unresolved\n");
+		return false;
+		}
+	NxScenePrunerObjectCountFn const staticCount =
+		reinterpret_cast<NxScenePrunerObjectCountFn>(staticCountAddress);
+	NxScenePrunerObjectCountFn const selectedCount =
+		reinterpret_cast<NxScenePrunerObjectCountFn>(selectedCountAddress);
+	alignas(4) NxU8 engine[0x74] = { 0 };
+	alignas(4) NxU8 staticPruner[0x34] = { 0 };
+	alignas(4) NxU8 selectedPruner[0x34] = { 0 };
+	nxWriteFixtureWord(staticPruner, 8, 3);
+	nxWriteFixtureWord(staticPruner, 12, 5);
+	nxWriteFixtureWord(selectedPruner, 8, 7);
+	nxWriteFixtureWord(selectedPruner, 12, 11);
+	nxWriteFixtureWord(engine, 0x1c, reinterpret_cast<NxU32>(staticPruner));
+	nxWriteFixtureWord(engine, 0x24, reinterpret_cast<NxU32>(selectedPruner));
+	nxWriteFixtureWord(engine, 0x70, 2);
+	NxScenePrunerOwnerQueryHost* const host =
+		reinterpret_cast<NxScenePrunerOwnerQueryHost*>(engine);
+	const bool staticMatch = staticCount(host) == 8;
+	const bool selectedMatch = selectedCount(host) == 18;
+	printf("scene_pruner row001957 static_object_count=%u expected=8 mismatches=%u\n",
+		staticCount(host), staticMatch ? 0u : 1u);
+	printf("scene_pruner row001960 selected_object_count=%u selector=2 expected=18 mismatches=%u\n",
+		selectedCount(host), selectedMatch ? 0u : 1u);
 	return staticMatch && selectedMatch;
 	}
 
@@ -1469,6 +1525,8 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("Prunable owner-query row 000965 did not return zero");
 	if(!nxCheckPrunerOwnerQueries(physics, pairDirectory))
 		return nxFail("Pruner section-one owner queries did not match");
+	if(!nxCheckPrunerObjectCounts(physics, pairDirectory))
+		return nxFail("Pruner object counts did not match");
 	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK)

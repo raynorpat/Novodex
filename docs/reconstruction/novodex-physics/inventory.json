@@ -36884,13 +36884,21 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
-      "source": "sum fields (0x4be80)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/IcePruningEngine.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/765",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5919",
-      "static_proof": "if [this+0x1c] non-null return [obj+0xc] + [obj+8], else 0; ret",
-      "dynamic_proof": "confirmed via smallflag differential (3z105): failures=0",
-      "notes": ""
+      "static_proof": "At RVA 0x0004be80, return zero if engine slot 0 is null; otherwise return PruningPool mNbObjects[1] + mNbObjects[2]. The oracle member uses thiscall and has no stack arguments.",
+      "dynamic_proof": "The registered SceneRaycast oracle/candidate fixture sets section counts to 3 and 5 and reports 8. Replacing section two with section zero is independently rejected: candidate returned 3, mismatches=1, exit=1; row001960 remains exact.",
+      "notes": "Mapped as an x86 thiscall member for stable candidate-map resolution.",
+      "implementation": "Physics/src/opcode/IcePruningEngine.cpp",
+      "implementation_symbol": "NxScenePrunerCountQueries::StaticPrunerObjectCount",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?StaticPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
+        "address": "0x100b0770",
+        "object": "IcePruningEngine.obj"
+      }
     },
     {
       "id": "phys_fn_001958",
@@ -36946,13 +36954,21 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
-      "source": "indexed-sum (0x4bec0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/IcePruningEngine.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/767",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5923",
-      "static_proof": "obj = [this + [this+0x70]*4 + 0x1c]; if non-null return [obj+0xc] + [obj+8] else 0; ret",
-      "dynamic_proof": "confirmed via ixsum2 isolated probe (3z111): failures=0 (faults only when batched)",
-      "notes": ""
+      "static_proof": "At RVA 0x0004bec0, select the engine pruner at index this[0x70]; return zero if null, otherwise return PruningPool mNbObjects[1] + mNbObjects[2]. The oracle member uses thiscall and has no stack arguments.",
+      "dynamic_proof": "The registered SceneRaycast oracle/candidate fixture selects slot 2 with section counts 7 and 11 and reports 18. Replacing section two with section zero is independently rejected: candidate returned 7, mismatches=1, exit=1; row001957 remains exact.",
+      "notes": "Mapped as an x86 thiscall member for stable candidate-map resolution.",
+      "implementation": "Physics/src/opcode/IcePruningEngine.cpp",
+      "implementation_symbol": "NxScenePrunerCountQueries::SelectedPrunerObjectCount",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?SelectedPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
+        "address": "0x100b0710",
+        "object": "IcePruningEngine.obj"
+      }
     },
     {
       "id": "phys_fn_001961",
