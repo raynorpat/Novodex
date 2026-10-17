@@ -3244,12 +3244,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "dynamically_gated": 23,
-    "reconstructed": 8
+    "dynamically_gated": 31
    },
    "bytes": {
-    "dynamically_gated": 2776,
-    "reconstructed": 338
+    "dynamically_gated": 3114
    },
    "phases": {
     "7": 31

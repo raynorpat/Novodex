@@ -1,0 +1,7 @@
+diff --git a/Physics/src/ObjectModel.cpp b/Physics/src/ObjectModel.cpp
+--- a/Physics/src/ObjectModel.cpp
++++ b/Physics/src/ObjectModel.cpp
+@@
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(a)) + 0x30, 4);
++	first ^= 1u; // deliberate mutation: corrupt first forwarded thunk argument
+	return fn(first, b, third);

@@ -71923,12 +71923,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8c9f0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1849",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12920",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8c9f0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {
@@ -71959,12 +71959,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8ca20u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1850",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12921",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ca20u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {
@@ -72109,12 +72109,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8cbf0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1854",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12933",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cbf0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {
@@ -72183,12 +72183,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8ccd0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1856",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12939",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ccd0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {
@@ -72257,12 +72257,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8cdb0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1858",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12945",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cdb0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {
@@ -72331,12 +72331,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8ce90u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1860",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12951",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ce90u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
+      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {
@@ -72439,12 +72439,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8cf50u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1441",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12956",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cf50u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
+      "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {
@@ -72475,12 +72475,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "lock-bracketed float thunk row (0x8cf80u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1442",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12957",
       "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cf80u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
+      "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound; Phase 7 mutation sensitivity: flipping bit 0 of the shared first forwarded argument was rejected with a row-local mismatch; restored controls were exact. See evidence/phase7-lock-bracketed-float-thunks-003826-003856.md",
       "notes": ""
     },
     {

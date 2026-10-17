@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003826",
+    "phys_fn_003828",
+    "phys_fn_003836",
+    "phys_fn_003840",
+    "phys_fn_003844",
+    "phys_fn_003848",
+    "phys_fn_003854",
+    "phys_fn_003856"
+  ],
+  "target": "NxPhysicsObjectLayoutTests",
+  "mutation": "nxLockedThunkFloat first forwarded argument ^= 1u",
+  "files": {
+    "baseline-differential.log.gz": {
+      "sha256": "2e4d271e6fe93a0ecea4e666f285c4d768663edc31fb55c43a807fb6f0d43475",
+      "uncompressed_bytes": 27097
+    },
+    "mutation-build.log.gz": {
+      "sha256": "51cc90519e16c51f4278977523b8375ef2db8b2e4d360905638d3f2fa59b8896",
+      "uncompressed_bytes": 3231
+    },
+    "mutation-differential.log.gz": {
+      "sha256": "f0c6f10c04edccfe7e8c7c7afcdbfe467a2fbca642a6dc4033ce993b58a8bb93",
+      "uncompressed_bytes": 27489
+    },
+    "restored-build.log.gz": {
+      "sha256": "5bcd1c009a6c1f355c48e0ad18affca93c224182058f5a87c72f3ac90e1a8898",
+      "uncompressed_bytes": 4522
+    },
+    "restored-differential.log.gz": {
+      "sha256": "bc5181e7e7b4b9bf3bdca11c648d0ffebd335e510aea627cb0ae0e046f7bb628",
+      "uncompressed_bytes": 27097
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "8ff181039eb350dc58a717a004b5d2b7e6f0cbbf3e5c7d1a6f38c161588b1930",
+      "uncompressed_bytes": 2830858
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "4e04933c0657ee36a44159e067b3fd56511a6f9288b23944170b12b17741ea0f",
+      "uncompressed_bytes": 3102355
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "247df084e59dcc5c0cf555ca3192baaa0392e429ff87c1d9a28ae351ac9e8695",
+      "uncompressed_bytes": 4635721
+    },
+    "mutation.patch": {
+      "sha256": "53478304b6b738bdab62371d8d9bdc3bdd6f4f4675e06e3d21b37880a923b1d4",
+      "uncompressed_bytes": 334
+    }
+  }
+}

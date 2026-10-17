@@ -11204,3 +11204,20 @@ phys_fn_003802: candidate-only ret-4 mutation rejected; mismatches=1.
 phys_fn_003810: candidate-only ret-4 mutation rejected; mismatches=1.
 phys_fn_003812: candidate-only ret-4 mutation rejected; mismatches=1.
 phys_fn_003814: candidate-only ret-4 mutation rejected; mismatches=1.
+
+Phase 7 continuation (2026-10-17): `phys_fn_003826`, `phys_fn_003828`,
+`phys_fn_003836`, `phys_fn_003840`, `phys_fn_003844`, `phys_fn_003848`,
+`phys_fn_003854`, and `phys_fn_003856` are mutation-falsified by
+the registered `NxPhysicsObjectLayoutTests` oracle differential. Flipping one
+bit in the shared float-thunk candidate's first forwarded argument produced a
+row-local mismatch for each of the eight rows; the restored differential is
+exact. See [the lock-bracketed float-thunk evidence](phase7-lock-bracketed-float-thunks-003826-003856.md)
+and its raw logs under `raw/phase7-lock-bracketed-float-thunks-003826-003856-20261017/`.
+phys_fn_003826: row-local first-argument mutation rejected; mismatches=1.
+phys_fn_003828: row-local first-argument mutation rejected; mismatches=1.
+phys_fn_003836: row-local first-argument mutation rejected; mismatches=1.
+phys_fn_003840: row-local first-argument mutation rejected; mismatches=1.
+phys_fn_003844: row-local first-argument mutation rejected; mismatches=1.
+phys_fn_003848: row-local first-argument mutation rejected; mismatches=1.
+phys_fn_003854: row-local first-argument mutation rejected; mismatches=1.
+phys_fn_003856: row-local first-argument mutation rejected; mismatches=1.

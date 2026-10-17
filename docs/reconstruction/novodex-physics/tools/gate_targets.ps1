@@ -5810,6 +5810,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'slot1wrapper candidate cases=4 failures=0 mismatches=0 digest=05167dcd'
         'addthunk candidate failures=0 mismatches=0 digest=f9aac08b'
         'shapeleaf candidate ok=1 digest=cb0e48f9'
+        # These oracle-row probes exercise the shared candidate bodies used by
+        # the lock-bracketed float wrappers. Keep their zero-mismatch results
+        # required so a change to either helper cannot silently evade Phase 7.
+        'lockthunkF candidate failures=0 provisional=1'
+        'lockthunk2 candidate failures=0 provisional=1'
         # phys_fn_004165: make the per-length ABI/dispatch checks a required
         # oracle-gate assertion; the layout aggregate does not include them.
         'vecloop4165 candidate failures=0 provisional=1'
@@ -6266,7 +6271,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2846  # previous 2845 plus the setFrameActor wrapper differential
+	'5' = 2848  # previous 2846 plus the two lock-thunk family assertions
 	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2837 plus the fluid-emitter deleting-destructor differential
 	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
@@ -6346,7 +6351,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1720  # previous 1719 plus the implicit-mesh lock-base deleting-destructor differential
+	'6' = 1722  # previous 1720 plus the two lock-thunk family assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
 	           # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
@@ -6395,7 +6400,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2979  # previous 2978 plus the setFrameActor wrapper differential
+	'7' = 2981  # previous 2979 plus the two lock-thunk family assertions
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential
