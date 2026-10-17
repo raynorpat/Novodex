@@ -6834,12 +6834,16 @@ static unsigned nxRunFluidSolverDeletingDestructors(unsigned char* image,
 	HMODULE const oracleModule = reinterpret_cast<HMODULE>(image);
 	void* candidateBaseVtableAddress = 0;
 	void* candidatePrimaryVtableAddress = 0;
+	void* candidateReadLockBaseVtableAddress = 0;
 	void* candidateReadLockVtableAddress = 0;
 	void* candidateAllocateAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"?gNxFluidSolverBaseVtable@@3PAPAXA", &candidateBaseVtableAddress)
 		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 			"?gNxFluidSolverVtable@@3PAPAXA", &candidatePrimaryVtableAddress)
+		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"?gNxFluidSolverReadLockBaseVtable@@3PAPAXA",
+			&candidateReadLockBaseVtableAddress)
 		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 			"?gNxFluidSolverReadLockVtable@@3PAPAXA",
 			&candidateReadLockVtableAddress)
@@ -6960,6 +6964,10 @@ static unsigned nxRunFluidSolverDeletingDestructors(unsigned char* image,
 		reinterpret_cast<void**>(image + 0x1160c8);
 	void** const candidateReadLockVtable =
 		reinterpret_cast<void**>(candidateReadLockVtableAddress);
+	void** const candidateReadLockBaseVtable =
+		reinterpret_cast<void**>(candidateReadLockBaseVtableAddress);
+	void** const oracleReadLockBaseVtable =
+		reinterpret_cast<void**>(image + 0x1088b8u);
 	unsigned mismatches = 0;
 	for(unsigned route = 0; route != 2; ++route)
 		{
@@ -6989,11 +6997,13 @@ static unsigned nxRunFluidSolverDeletingDestructors(unsigned char* image,
 		void* const candidateReturn = reinterpret_cast<CandidateDtor>(candidateEntry)(
 			candidateThis, 0, 0);
 		const bool oracleTransition =
-			*reinterpret_cast<void***>(oracleObject) != oraclePrimaryVtable
-			&& *reinterpret_cast<void***>(oracleObject + 8) != oracleReadLockVtable;
+			*reinterpret_cast<void***>(oracleObject) == oracleBaseVtable
+			&& *reinterpret_cast<void***>(oracleObject + 8)
+				== oracleReadLockBaseVtable;
 		const bool candidateTransition =
-			*reinterpret_cast<void***>(candidateObject) != candidatePrimaryVtable
-			&& *reinterpret_cast<void***>(candidateObject + 8) != candidateReadLockVtable;
+			*reinterpret_cast<void***>(candidateObject) == candidateBaseVtable
+			&& *reinterpret_cast<void***>(candidateObject + 8)
+				== candidateReadLockBaseVtable;
 		bool payloadMatch = true;
 		for(unsigned i = 0; i != sizeof(oracleObject); ++i)
 			if((i < 4 || (i >= 8 && i < 12)))
