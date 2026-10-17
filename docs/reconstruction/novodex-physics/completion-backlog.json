@@ -7,8 +7,8 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 1917,
-    "source_correspondence_only_rows": 432,
+    "mapped_code_rows": 1925,
+    "source_correspondence_only_rows": 424,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
     "artifact_bytes": 116213,
@@ -176,7 +176,7 @@
         "rows": 560,
         "bytes": 113976,
         "open_rows": 560,
-        "rows_without_implementation_mapping": 247,
+        "rows_without_implementation_mapping": 239,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
           "discovered": 62,
@@ -18162,14 +18162,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000394",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::simulate",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?simulate@NpScene@@UAEXM@Z",
+          "address": "0x100443d0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18246,10 +18252,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000394",
         "rva": "0x0000d680",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -18264,14 +18270,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000396",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "NxScene::checkResults status-mask and event-wait dispatch (0xd710, ret 8)",
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::checkResults",
+        "file_exists": true,
+        "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?checkResults@NpScene@@UAE_NW4NxSimulationStatus@@_N@Z",
+          "address": "0x100421a0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18320,10 +18332,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000396",
         "rva": "0x0000d710",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -18444,14 +18456,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000400",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::createFluid",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?createFluid@NpScene@@UAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
+          "address": "0x100422c0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18518,10 +18536,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000400",
         "rva": "0x0000d7c0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -18536,14 +18554,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000402",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::releaseFluid",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?releaseFluid@NpScene@@UAEXAAVNxFluid@@@Z",
+          "address": "0x10043bf0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18610,10 +18634,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000402",
         "rva": "0x0000d840",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -18628,14 +18652,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000404",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::createImplicitMesh",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?createImplicitMesh@NpScene@@UAEPAVNxImplicitMesh@@ABVNxImplicitMeshDesc@@@Z",
+          "address": "0x100423c0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18678,10 +18708,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000404",
         "rva": "0x0000d8a0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -18696,14 +18726,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000406",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::releaseImplicitMesh",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?releaseImplicitMesh@NpScene@@UAEXAAVNxImplicitMesh@@@Z",
+          "address": "0x10042cb0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18746,10 +18782,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000406",
         "rva": "0x0000d8d0",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -18764,14 +18800,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000408",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::getNbImplicitMeshes",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getNbImplicitMeshes@NpScene@@UBEIXZ",
+          "address": "0x10042a10",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18814,10 +18856,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000408",
         "rva": "0x0000d900",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -18832,14 +18874,20 @@
       "state": "dynamically_gated",
       "label": "phys_fn_000410",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/NpScene.cpp",
+        "role": "reconstruction",
+        "symbol": "NpScene::getImplicitMeshes",
+        "file_exists": true,
         "oracle_source": "Physics/src/NpScene.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?getImplicitMeshes@NpScene@@UAEPAPAVNxImplicitMesh@@XZ",
+          "address": "0x100428a0",
+          "object": "NpScene.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -18882,10 +18930,10 @@
         "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_000410",
         "rva": "0x0000d930",
-        "action": "record_candidate_implementation_mapping",
+        "action": "full_census_reclosure",
         "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
@@ -231347,7 +231395,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "2e5f1e31d5003132c4ce02d42512c196e6df7e43e31e45ba793e3bac451518b6",
+    "inventory_sha256": "22097c4c304e55ea49a49942a384377323067a852b133ae322c68920f2c973d8",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
