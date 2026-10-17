@@ -1350,7 +1350,7 @@ Reconstructed the 0x3c-byte manager constructor and wired it into surface-mesh i
 
 Made the existing free-pruner blue-AABB loop explicit as `nxVisualizeFreePrunerWorldBoxes` and tied it to IDA's 0x4b9f0 contract. `NxPhysicsSceneVisualizeTests` now requires 60 blue lines in its populated `collision_free` scene. Suppressing the candidate's `addAABB` call is caught by the staged-pair runner (`stdout_delta=1478`, candidate exit 1); restored oracle/candidate output matches exactly. Fresh Phase 7 passed at 2,983/2,983, inventory validation reports zero unexplained rows, and all 836 reconstruction-tool tests pass. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-free-pruner-visualize-001937.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-free-pruner-visualize-001937-20261017/`.
 
-The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). Tasks 16–20 record verified `NpScene` mappings for `000285`, `000317`–`000410`. The regenerated backlog next selects the inline `NxPlaneShapeDesc::setToDefault` mapping for `000499`. Full DLL reconstruction remains open.
+The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). Tasks 16–21 record verified mappings for `000285`, `000317`–`000410`, and inline plane defaults `000499`. The regenerated backlog next selects owner-pair and pair-flag implementation links `000517`/`000519` and `000525`/`000527`. Full DLL reconstruction remains open.
 
 ### Task 15 — Scene scalar-deleting thunk (`phys_fn_000668`)
 
@@ -1399,3 +1399,9 @@ Status: complete. Rows `000394`, `000396`, and `000400`–`000410` now point to 
 The next backlog item is implemented in the public inline `NxPlaneShapeDesc::setToDefault`. Record the header as its candidate source and resolve the emitted method from a fresh CMake Release map. Do not edit the public header; the existing object-layout differential and no-op mutation already cover its initialized bytes.
 
 Status: complete. Inventory now links `phys_fn_000499` to the unchanged `Physics/include/NxPlaneShapeDesc.h` definition and fresh `Scene.obj` symbol `?setToDefault@NxPlaneShapeDesc@@UAEXXZ` at VA `0x1006e3b0`. Existing differential evidence is updated with the fresh map location. Full DLL reconstruction remains open.
+
+### Task 22 — Owner-pair and pair-flag implementation links (`phys_fn_000517`–`000527`)
+
+The next backlog packet contains the owner-pair removal entry/loop and the shape-index/pair-flag translation. These adjacent oracle ranges share two existing candidate implementations in `Physics/src/Scene.cpp`, each already covered by row-specific Phase 7 mutations. Refresh implementation symbols and map addresses from the current Release build, then keep the function-level evidence scoped to its individual census rows.
+
+Status: complete. Rows `000517`/`000519` now link to `NxSceneRemoveOwnerPairRecords` at `0x1005e810`; rows `000525`/`000527` link to `NxSceneInternal::getPairFlagArray` at `0x100617c0`, both in Scene.obj. Their individual evidence records now use those current map locations. Full DLL reconstruction remains open.

@@ -1,6 +1,6 @@
 # Phase 7 row 000519: scene owner-pair loop continuation
 
-Oracle row phys_fn_000519 is the 78-byte loop continuation at RVA 0x00010390. It compares both owner keys, releases an eligible payload, removes matching records, and advances the cursor only for retained records. The candidate map resolves the combined C++ helper ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z at VA 0x1005da80; its entry row 000517 is independently closed.
+Oracle row phys_fn_000519 is the 78-byte loop continuation at RVA 0x00010390. It compares both owner keys, releases an eligible payload, removes matching records, and advances the cursor only for retained records. The current CMake Release map resolves the combined C++ helper ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z at VA 0x1005e810 in Scene.obj; its entry row 000517 is independently closed.
 
 The registered Phase 7 NxPhysicsSimulationTests fixture reaches this continuation through row 000521. A temporary mutation suppressed only the NxRemoveCollisionPairRecord operation. The candidate then reported root_removed=0 while the oracle reported root_removed=1, and the staged differential failed (oracle_exit=0, candidate_exit=1, stdout_delta=4007).
 

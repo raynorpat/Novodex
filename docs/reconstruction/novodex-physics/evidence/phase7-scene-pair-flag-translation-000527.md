@@ -1,6 +1,6 @@
 # Phase 7 row 000527: pair-flag handle translation
 
-Oracle row phys_fn_000527 at RVA 0x00010450 translates flagged hash entries into public shape or actor handles, sets the actor-pair bit, and advances the output array. Candidate implementation is NxSceneInternal::getPairFlagArray, resolved from NxPhysics.map at VA 0x10060ab0. The preceding shape-ID index row 000525 is independently closed.
+Oracle row phys_fn_000527 at RVA 0x00010450 translates flagged hash entries into public shape or actor handles, sets the actor-pair bit, and advances the output array. The current CMake Release map resolves candidate implementation NxSceneInternal::getPairFlagArray in Scene.obj at VA 0x100617c0. The preceding shape-ID index row 000525 is independently closed.
 
 The registered Phase 7 NxPhysicsPairFlagTests checks the returned actor handles and actor-pair bit. A temporary mutation nulled only the first actor-handle assignment in the 000527 continuation. The candidate transcript changed from objects=0.1 to objects=255.1; the staged differential rejected it (both sides exited 0, stdout_delta=2, exact stderr).
 

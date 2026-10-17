@@ -1,6 +1,6 @@
 # Phase 7 row 000525: pair-flag shape index
 
-Oracle row phys_fn_000525 at RVA 0x00010410 prepares a 0x40000-entry stack index of shapes from the static and selected dynamic pruner pools, keyed by each shape's ID at +0xd4. The following pair-entry conversion is continuation row 000527. The candidate implements both in NxSceneInternal::getPairFlagArray, resolved from NxPhysics.map at VA 0x10060ab0.
+Oracle row phys_fn_000525 at RVA 0x00010410 prepares a 0x40000-entry stack index of shapes from the static and selected dynamic pruner pools, keyed by each shape's ID at +0xd4. The following pair-entry conversion is continuation row 000527. The current CMake Release map resolves the candidate implementation NxSceneInternal::getPairFlagArray in Scene.obj at VA 0x100617c0.
 
 The registered Phase 7 NxPhysicsPairFlagTests exercises getPairFlagArray with actor and shape pairs. A temporary mutation changed only the 000525 shape-index assignment to store null. Pair enumeration then dereferenced the missing shape and the candidate access-violated (candidate_exit=-1073741819, stdout_delta=24).
 

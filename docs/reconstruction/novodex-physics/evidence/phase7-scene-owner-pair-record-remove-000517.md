@@ -1,6 +1,6 @@
 # Phase 7 row 000517: scene owner-pair entry
 
-Oracle row phys_fn_000517 is the 24-byte entry at RVA 0x00010370 that loads the Scene pair-map count and current record pointer. The candidate map resolves the combined C++ helper ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z at VA 0x1005da80. The C++ helper also contains the adjacent oracle loop continuation phys_fn_000519; this closure targets only the entry's owner load, and row 000519 remains open.
+Oracle row phys_fn_000517 is the 24-byte entry at RVA 0x00010370 that loads the Scene pair-map count and current record pointer. The current CMake Release map resolves the combined C++ helper ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z at VA 0x1005e810 in Scene.obj. The C++ helper also contains the adjacent oracle loop continuation phys_fn_000519; this closure targets only the entry's owner load, and row 000519 remains open.
 
 The registered Phase 7 NxPhysicsSimulationTests fixture invokes row 000521, which forwards root-shape cleanup through this helper. A temporary mutation changed only the 000517 owner value read from the shape's +0xd4 field to zero. The oracle reports root_removed=1 while the candidate reports root_removed=0; the staged differential fails (oracle_exit=0, candidate_exit=1, stdout_delta=4007).
 

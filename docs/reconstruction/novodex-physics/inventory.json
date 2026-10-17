@@ -10219,9 +10219,17 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/191",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1412",
-      "static_proof": "The Ghidra extent at 0x10370..0x10388 is the 24-byte entry that loads the scene pair-map count and record pointer. The neighboring row 000519 is the loop continuation. Candidate symbol ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z in NxPhysics.map (VA 0x1005da80) implements the combined entry and loop.",
+      "static_proof": "The Ghidra extent at 0x10370..0x10388 is the 24-byte entry that loads the scene pair-map count and record pointer. The neighboring row 000519 is the loop continuation. Candidate symbol ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z in NxPhysics.map (VA 0x1005e810) implements the combined entry and loop.",
       "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests actor-owner-pair fixture drives row 000521 through this candidate helper. Mutating only the row 000517 owner load to zero changes root_removed=1 to root_removed=0 and fails (oracle_exit=0, candidate_exit=1, stdout_delta=4007); the restored pair is exact (stdout_delta=0, exact stderr). The four-case direct candidate/oracle map differential also matches all 352 state bytes. See evidence/phase7-scene-owner-pair-record-remove-000517.md.",
-      "notes": "The candidate C++ implementation combines oracle entry 000517 with loop continuation 000519. The registered mutation changes only the owner value loaded by 000517; row 000519 remains separately open."
+      "notes": "Fresh CMake Release build confirms NxSceneRemoveOwnerPairRecords in Physics/src/Scene.cpp; ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z at 0x1005e810 in Scene.obj. Adjacent census rows may share this candidate implementation.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneRemoveOwnerPairRecords",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z",
+        "address": "0x1005e810",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000518",
@@ -10255,9 +10263,17 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/191",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1413",
-      "static_proof": "Ghidra manifest #/functions/191 identifies 0x00010390..0x000103de (78 B) as the loop continuation of entry 000517. The block compares both 16-bit owner keys, frees an even nonzero payload, removes a matching pair through 004157, advances the cursor only for retained records, and loops to its entry. Candidate symbol ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z (NxPhysics.map VA 0x1005da80) implements the combined entry and loop.",
+      "static_proof": "Ghidra manifest #/functions/191 identifies 0x00010390..0x000103de (78 B) as the loop continuation of entry 000517. The block compares both 16-bit owner keys, frees an even nonzero payload, removes a matching pair through 004157, advances the cursor only for retained records, and loops to its entry. Candidate symbol ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z (NxPhysics.map VA 0x1005e810) implements the combined entry and loop.",
       "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests actor-owner-pair fixture drives continuation 000519 through row 000521. Mutating only the matching-pair removal call makes the candidate retain the root-owned record and fails (oracle_exit=0, candidate_exit=1, stdout_delta=4007); the restored pair is exact (stdout_delta=0, exact stderr). The four-case direct candidate/oracle differential also matches all 352 state bytes. See evidence/phase7-scene-owner-pair-record-remove-000519.md.",
-      "notes": "The candidate C++ helper combines oracle entry 000517 and continuation 000519. This closure mutates only the loop's matching-record removal; row 000517's owner load is separately falsified and closed."
+      "notes": "Fresh CMake Release build confirms NxSceneRemoveOwnerPairRecords in Physics/src/Scene.cpp; ?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z at 0x1005e810 in Scene.obj. Adjacent census rows may share this candidate implementation.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneRemoveOwnerPairRecords",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z",
+        "address": "0x1005e810",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000520",
@@ -10372,9 +10388,17 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/194",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1421",
-      "static_proof": "IDA row 000525 starts at 0x00010410 and prepares a 0x40000-entry stack index of shapes found in the static and selected dynamic pruner pools. It keys each shape by its +0xd4 shape ID. The following hash-entry translation is continuation row 000527. Candidate implementation is NxSceneInternal::getPairFlagArray at NxPhysics.map VA 0x10060ab0.",
+      "static_proof": "IDA row 000525 starts at 0x00010410 and prepares a 0x40000-entry stack index of shapes found in the static and selected dynamic pruner pools. It keys each shape by its +0xd4 shape ID. The following hash-entry translation is continuation row 000527. Candidate implementation is NxSceneInternal::getPairFlagArray at NxPhysics.map VA 0x100617c0.",
       "dynamic_proof": "The registered Phase 7 NxPhysicsPairFlagTests exercises getPairFlagArray for an actor pair and shape pair. Mutating only the row 000525 shape-ID index assignment to store null causes the candidate to access-violate (candidate_exit=-1073741819, stdout_delta=24); restored oracle/candidate control is exact (stdout_delta=0, exact stderr). See evidence/phase7-scene-pair-flag-shape-index-000525.md.",
-      "notes": "The candidate C++ method combines this shape-index setup with continuation row 000527's pair-entry translation. Only row 000525's shape-ID index population is falsified here; row 000527 remains open."
+      "notes": "Fresh CMake Release build confirms NxSceneInternal::getPairFlagArray in Physics/src/Scene.cpp; ?getPairFlagArray@NxSceneInternal@@QBE_NPAUNxPairFlag@@I@Z at 0x100617c0 in Scene.obj. Adjacent census rows may share this candidate implementation.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::getPairFlagArray",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getPairFlagArray@NxSceneInternal@@QBE_NPAUNxPairFlag@@I@Z",
+        "address": "0x100617c0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000526",
@@ -10408,9 +10432,17 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/194",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1422",
-      "static_proof": "IDA row 000527 at 0x00010450 translates each flagged pair-hash entry into public object handles, sets the actor-pair flag bit, advances the output, and stops when the requested count is filled. Candidate implementation is NxSceneInternal::getPairFlagArray at NxPhysics.map VA 0x10060ab0; row 000525's preceding shape-ID index is independently closed.",
+      "static_proof": "IDA row 000527 at 0x00010450 translates each flagged pair-hash entry into public object handles, sets the actor-pair flag bit, advances the output, and stops when the requested count is filled. Candidate implementation is NxSceneInternal::getPairFlagArray at NxPhysics.map VA 0x100617c0; row 000525's preceding shape-ID index is independently closed.",
       "dynamic_proof": "The registered Phase 7 NxPhysicsPairFlagTests checks the returned actor handles and actor-pair bit. Mutating only the row 000527 first actor-handle assignment changes objects=0.1 to objects=255.1 and is rejected (both processes exit 0, stdout_delta=2, exact stderr); restored output is exact. See evidence/phase7-scene-pair-flag-translation-000527.md.",
-      "notes": "The candidate C++ method combines the 000525 shape index with this 000527 pair-entry translation; row 000525 is independently falsified."
+      "notes": "Fresh CMake Release build confirms NxSceneInternal::getPairFlagArray in Physics/src/Scene.cpp; ?getPairFlagArray@NxSceneInternal@@QBE_NPAUNxPairFlag@@I@Z at 0x100617c0 in Scene.obj. Adjacent census rows may share this candidate implementation.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::getPairFlagArray",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getPairFlagArray@NxSceneInternal@@QBE_NPAUNxPairFlag@@I@Z",
+        "address": "0x100617c0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000528",
