@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003501",
+  "date": "2026-10-17",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256_restored": "3bb027e1601c39365e31bb9a1f557fab85edafed04c7bd6d3ca01ba08c59ec6e",
+  "source": "Physics/src/Scene.cpp::nxFluidCreateEmitter",
+  "candidate_map": {
+    "path": "build/Release/NxPhysics.map",
+    "symbol": "?nxFluidCreateEmitter@@YAPAXPAXABVNxFluidEmitterDesc@@@Z",
+    "address": "0x10067940",
+    "object": "Scene.obj"
+  },
+  "mutation": "Changed the capacity comparison from 0x50 bytes (20 emitter pointers) to 0x4C bytes (19 pointers), rejecting the twentieth emitter.",
+  "mutation_result": "NxPhysicsSimulationTests rejected the candidate: emitter-capacity created=16 count=19; restored=1 exact=0. oracle_exit=0, candidate_exit=1; candidate stderr reports the enabled fluid creation lifecycle contract failure.",
+  "restored_result": "emitter-capacity created=17 count=20 rejected=1 array-match=1 callbacks-unchanged=1; restored=1 exact=1. oracle_exit=0, candidate_exit=0; stdout_delta=0, stderr_exact=true.",
+  "fixture": "Registered Phase 7 NxPhysicsSimulationTests public fluid lifecycle coverage, including capacity and paired emitter arrays; existing growth allocation failure ordinals 1 and 2 are also registered.",
+  "mutation_patch": {
+    "name": "mutation-003501.patch.gz",
+    "sha256": "87fd344025c75ebaf9fec28fc14a89705e0fdbfa345c1d2461fd289a2799bfd5",
+    "bytes": 335,
+    "source_bytes": 360952,
+    "source_sha256": "92d587b42d6b6c0bb44959314d8fc1662c41022ab8fd9c1e335e72dc5544db32"
+  },
+  "logs": [
+    {
+      "name": "mutant-oracle.stdout.gz",
+      "sha256": "0caaafe78a090fb1022e3cd22b6aaa7fce2c6271bf989ccbdc1a339e45adcb13",
+      "bytes": 28326,
+      "source_bytes": 430602
+    },
+    {
+      "name": "mutant-oracle.stderr.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "source_bytes": 0
+    },
+    {
+      "name": "mutant-candidate.stdout.gz",
+      "sha256": "f96f1b5f9cddef0a8b5060cee3351217d354f7c603f90a065011659bca40113d",
+      "bytes": 26681,
+      "source_bytes": 422062
+    },
+    {
+      "name": "mutant-candidate.stderr.gz",
+      "sha256": "87d26a88fde643d6fd5b70c8c40f1b64baa448110f118d4bbcaf786012508f74",
+      "bytes": 88,
+      "source_bytes": 74
+    },
+    {
+      "name": "restored-oracle.stdout.gz",
+      "sha256": "0caaafe78a090fb1022e3cd22b6aaa7fce2c6271bf989ccbdc1a339e45adcb13",
+      "bytes": 28326,
+      "source_bytes": 430602
+    },
+    {
+      "name": "restored-oracle.stderr.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "source_bytes": 0
+    },
+    {
+      "name": "restored-candidate.stdout.gz",
+      "sha256": "0406e8ee585d805917eeee56081f0f9afa64d29ae37cac28eea8cb485e29d78a",
+      "bytes": 28339,
+      "source_bytes": 430725
+    },
+    {
+      "name": "restored-candidate.stderr.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "source_bytes": 0
+    }
+  ],
+  "phase_gates": {
+    "7": "pass 3017/3017"
+  },
+  "phase7_gate_log": {
+    "path": "../phase7-fluid-static-collision-index-tail-003507-20261017/phase7-gate.log.gz",
+    "sha256": "b3c310533bf2113d28c849a496de24e5cf2ddfe3e6fd8c5e69822e8055e3d97d"
+  }
+}
