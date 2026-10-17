@@ -136,6 +136,133 @@ static bool nxCheckPrunableOwnerQuery(HMODULE physics, const wchar_t* pairDirect
 	return matches;
 	}
 
+struct NxScenePrunerOwnerQueryHost { };
+typedef void* (__thiscall *NxScenePrunerOwnerQueryFn)(NxScenePrunerOwnerQueryHost*, NxU32);
+
+static bool nxFindMapSymbol(FILE* map, const char* decorated, NxU32* address)
+	{
+	rewind(map);
+	char line[1024];
+	while(fgets(line, sizeof(line), map))
+		{
+		char* symbol = strstr(line, decorated);
+		if(!symbol)
+			continue;
+		char* value = symbol + strlen(decorated);
+		while(*value == ' ' || *value == '\t') ++value;
+		char* end = 0;
+		const unsigned long parsed = strtoul(value, &end, 16);
+		if(end == value)
+			return false;
+		*address = static_cast<NxU32>(parsed);
+		return true;
+		}
+	return false;
+	}
+
+static bool nxResolvePrunerOwnerQueries(HMODULE physics, const wchar_t* pairDirectory,
+	void** sectionOne, void** selectedSectionOne)
+	{
+	const NxU32 sectionOneOracleRva = 0x0004be90;
+	const NxU32 selectedSectionOneOracleRva = 0x0004bee0;
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	if(GetFileAttributesW(mapPath) == INVALID_FILE_ATTRIBUTES)
+		{
+		*sectionOne = reinterpret_cast<unsigned char*>(physics) + sectionOneOracleRva;
+		*selectedSectionOne = reinterpret_cast<unsigned char*>(physics) + selectedSectionOneOracleRva;
+		return true;
+		}
+	FILE* map = 0;
+	if(_wfopen_s(&map, mapPath, L"rt") != 0 || !map)
+		return false;
+	NxU32 preferredBase = 0;
+	char line[1024];
+	while(fgets(line, sizeof(line), map))
+		{
+		unsigned long parsedBase = 0;
+		if(sscanf_s(line, " Preferred load address is %lx", &parsedBase) == 1)
+			preferredBase = static_cast<NxU32>(parsedBase);
+		}
+	NxU32 sectionOneAddress = 0;
+	NxU32 selectedSectionOneAddress = 0;
+	const bool found = nxFindMapSymbol(map,
+		"?SectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z", &sectionOneAddress) &&
+		nxFindMapSymbol(map,
+			"?SelectedSectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z",
+			&selectedSectionOneAddress);
+	fclose(map);
+	if(!found || !preferredBase || sectionOneAddress < preferredBase ||
+		selectedSectionOneAddress < preferredBase)
+		return false;
+	*sectionOne = reinterpret_cast<unsigned char*>(physics) + (sectionOneAddress - preferredBase);
+	*selectedSectionOne = reinterpret_cast<unsigned char*>(physics) +
+		(selectedSectionOneAddress - preferredBase);
+	return true;
+	}
+
+static void nxWriteFixtureWord(NxU8* object, NxU32 offset, NxU32 value)
+	{
+	memcpy(object + offset, &value, sizeof(value));
+	}
+
+static bool nxCheckPrunerOwnerQueries(HMODULE physics, const wchar_t* pairDirectory)
+	{
+	void* sectionOneAddress = 0;
+	void* selectedSectionOneAddress = 0;
+	if(!nxResolvePrunerOwnerQueries(physics, pairDirectory,
+		&sectionOneAddress, &selectedSectionOneAddress))
+		{
+		printf("scene_pruner row001958 row001962 candidate_map=unresolved\n");
+		return false;
+		}
+	NxScenePrunerOwnerQueryFn const sectionOne =
+		reinterpret_cast<NxScenePrunerOwnerQueryFn>(sectionOneAddress);
+	NxScenePrunerOwnerQueryFn const selectedSectionOne =
+		reinterpret_cast<NxScenePrunerOwnerQueryFn>(selectedSectionOneAddress);
+	alignas(4) NxU8 engine[0x74] = { 0 };
+	alignas(4) NxU8 staticPruner[0x34] = { 0 };
+	alignas(4) NxU8 selectedPruner[0x34] = { 0 };
+	alignas(4) NxU8 staticObjects[4][8] = { { 0 } };
+	alignas(4) NxU8 selectedObjects[4][8] = { { 0 } };
+	void* staticEntries[4] =
+		{ staticObjects[0], staticObjects[1], staticObjects[2], staticObjects[3] };
+	void* selectedEntries[4] =
+		{ selectedObjects[0], selectedObjects[1], selectedObjects[2], selectedObjects[3] };
+	const NxU32 staticOwners[2] = { 0x11112222, 0x33334444 };
+	const NxU32 selectedOwners[2] = { 0x55556666, 0x77778888 };
+	for(NxU32 i = 0; i != 2; ++i)
+		{
+		nxWriteFixtureWord(staticObjects[i + 2], 4, staticOwners[i]);
+		nxWriteFixtureWord(selectedObjects[i + 2], 4, selectedOwners[i]);
+		}
+	const NxU32 sectionZeroCount = 2;
+	const NxU32 sectionOneCount = 2;
+	nxWriteFixtureWord(staticPruner, 4, sectionZeroCount);
+	nxWriteFixtureWord(staticPruner, 8, sectionOneCount);
+	nxWriteFixtureWord(staticPruner, 0x18, reinterpret_cast<NxU32>(staticEntries));
+	nxWriteFixtureWord(selectedPruner, 4, sectionZeroCount);
+	nxWriteFixtureWord(selectedPruner, 8, sectionOneCount);
+	nxWriteFixtureWord(selectedPruner, 0x18, reinterpret_cast<NxU32>(selectedEntries));
+	nxWriteFixtureWord(engine, 0x1c, reinterpret_cast<NxU32>(staticPruner));
+	nxWriteFixtureWord(engine, 0x24, reinterpret_cast<NxU32>(selectedPruner));
+	const NxU32 selectedType = 2;
+	nxWriteFixtureWord(engine, 0x70, selectedType);
+	NxScenePrunerOwnerQueryHost* const host =
+		reinterpret_cast<NxScenePrunerOwnerQueryHost*>(engine);
+	const bool staticMatch = sectionOne(host, 0) == reinterpret_cast<void*>(staticOwners[0]) &&
+		sectionOne(host, 1) == reinterpret_cast<void*>(staticOwners[1]);
+	const bool selectedMatch =
+		selectedSectionOne(host, 0) == reinterpret_cast<void*>(selectedOwners[0]) &&
+		selectedSectionOne(host, 1) == reinterpret_cast<void*>(selectedOwners[1]);
+	printf("scene_pruner row001958 section1_owner=%u indices=2 mismatches=%u\n",
+		staticMatch ? 1u : 0u, staticMatch ? 0u : 1u);
+	printf("scene_pruner row001962 selected_section1_owner=%u selector=2 indices=2 mismatches=%u\n",
+		selectedMatch ? 1u : 0u, selectedMatch ? 0u : 1u);
+	return staticMatch && selectedMatch;
+	}
+
 // Read the actual DLL-owned Scene and its type-0 pruner through the recovered
 // private layout. NpScene::mScene is +0x24; the Scene pruning engine is +0x624;
 // its type-0 pruner pointer is +0x1c. The Pruner constructor initializes the
@@ -1340,6 +1467,8 @@ int wmain(int argc, wchar_t** argv)
 		return status;
 	if(!nxCheckPrunableOwnerQuery(physics, pairDirectory))
 		return nxFail("Prunable owner-query row 000965 did not return zero");
+	if(!nxCheckPrunerOwnerQueries(physics, pairDirectory))
+		return nxFail("Pruner section-one owner queries did not match");
 	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK)

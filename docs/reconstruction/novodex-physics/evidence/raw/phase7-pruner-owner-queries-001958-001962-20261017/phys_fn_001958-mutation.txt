@@ -1,0 +1,1 @@
+Changed the section-one pool lookup from mObjects[mNbObjects[0] + index] to mObjects[index]. The candidate returned section-zero owner words and the registered differential rejected it (candidate_exit=1, stdout_delta=2814).

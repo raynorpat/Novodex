@@ -2911,6 +2911,8 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsSceneRaycastTests' = @(
 		'scene_pruning_engine ctor_empty_bounds=1 words=7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
         'scene_pruner row000965 owner_query_match=1 null=0 opaque=0',
+        'scene_pruner row001958 section1_owner=1 indices=2 mismatches=0',
+        'scene_pruner row001962 selected_section1_owner=1 selector=2 indices=2 mismatches=0',
         # AABB triangle query: appends intersecting world-space mesh triangles,
         # returns no elements for a miss, and applies a translated actor pose.
         'scene_overlap triangles hit_count=3 array_count=3',
@@ -6293,7 +6295,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-    '4' = 551  # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
+	'4' = 553  # rows 001958/001962 add section-one static and selected-pruner owner query assertions
+	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
 	           # plus hit, no-normal, cutoff, translation and miss coverage
                # adds direct row 004791 MemoryStream destructor allocator-free differential
                # adds direct row 000965 Prunable owner-query result
@@ -6304,7 +6307,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2863  # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
+	'5' = 2865  # rows 001958/001962 add section-one static and selected-pruner owner query assertions
+	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage
 	           # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6437,7 +6441,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3002  # row 001980 adds the pruning-engine constructor assertion after 001973 coverage
+	'7' = 3004  # rows 001958/001962 add section-one static and selected-pruner owner query assertions
+	           # row 001980 adds the pruning-engine constructor assertion after 001973 coverage
 	           # plus bounded-pruner tree-cache coverage for row 001967
 	           # plus invalid broadphase selector diagnostic coverage for row 000544
                # plus the full invalid fluid-emitter descriptor corpus assertion

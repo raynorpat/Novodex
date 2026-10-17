@@ -1439,3 +1439,8 @@ Added a separate coherent-broadphase scene that checks pair-node retention and f
 ### Phase 7 continuation — scene pruner descriptor setup (`phys_fn_001973`, 2026-10-17)
 
 Mapped `nxSceneApplyDescriptorFlags` to the 176-byte oracle routine at RVA `0x0004c1b0`. The existing simulation selector markers cover the public-to-engine mode mapping. A candidate-only mutation maps `NX_BROADPHASE_FULL` to engine mode 3 instead of 2; the staged differential detects the wrong selector output (`stdout_delta=2`), and restored output is exact. Phase 7 advances from 439 closed / 121 deferred to 440 / 120. The fresh Phase 7 gate passes at 3,001/3,001 assertions, and all 817 reconstruction tooling tests pass. The full DLL reconstruction remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-scene-pruner-descriptor-001973.md`.
+
+
+### Phase 7 continuation — pruner section-one owner queries (`phys_fn_001958`, `phys_fn_001962`, 2026-10-17)
+
+IDA-confirmed section-one owner reads are implemented as mapped x86 thiscall members. The registered SceneRaycast fixture distinguishes static from selector-2 pruner data and checks two owner entries per row. A missing section-zero count is independently rejected for each row (`stdout_delta=2814`); restored controls are exact. Phase 7 records 443 closed / 117 deferred. Fresh registered Phase 4/5/7 gates pass at 553/553, 2,865/2,865, and 3,004/3,004 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-pruner-owner-queries-001958-001962.md`.

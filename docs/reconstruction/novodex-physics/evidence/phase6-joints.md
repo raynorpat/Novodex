@@ -11248,3 +11248,10 @@ Phase 7 `phys_fn_001971` persistent pair-node frame stamping is mutation-falsifi
 Phase 7 `phys_fn_001973` scene pruner descriptor setup is mutation-falsified through `NxPhysicsSimulationTests`. Mapping `NX_BROADPHASE_FULL` to engine mode 3 changes the selector marker (`stdout_delta=2`); restored output matches exactly. Existing selector markers cover modes 1, 2, and 3. Details: `evidence/phase7-scene-pruner-descriptor-001973.md`.
 
 Phase 7 `phys_fn_001980` Scene pruning-engine construction is mutation-falsified through `NxPhysicsSceneRaycastTests`. The test checks the six empty-world bounds before any shape registration; changing the initial minimum to 1.0f is rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=2813`). Restored output is exact. See `evidence/phase7-pruning-engine-constructor-001980.md`.
+
+
+## Phase 7 scene pruner section-one owner queries `phys_fn_001958` / `phys_fn_001962`
+
+`phys_fn_001958` now has a candidate-map implementation and independent mutation through `NxPhysicsSceneRaycastTests`. The fixture seeds distinct static section-0/section-1 entries and checks two owner results; removing the section-0 count is detected (`stdout_delta=2814`, one row mismatch).
+
+`phys_fn_001962` now has a candidate-map implementation and independent mutation through `NxPhysicsSceneRaycastTests`. The fixture selects pruner slot 2 with distinct section-0/section-1 entries and checks two owner results; removing the section-0 count is detected (`stdout_delta=2814`, one row mismatch). Restored controls match exactly. See [phase7-pruner-owner-queries-001958-001962.md](phase7-pruner-owner-queries-001958-001962.md).

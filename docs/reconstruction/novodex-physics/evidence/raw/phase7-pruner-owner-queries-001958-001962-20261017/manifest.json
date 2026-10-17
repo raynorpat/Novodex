@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_001958",
+    "phys_fn_001962"
+  ],
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "5918f5ae5c283e124f3c26aadd580d57814bf1bdba0888a78194b7b74de80409",
+  "candidate_map": {
+    "path": "build/Release/NxPhysics.map",
+    "symbols": {
+      "phys_fn_001958": {
+        "symbol": "?SectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z",
+        "address": "0x100b06e0",
+        "object": "IcePruningEngine.obj"
+      },
+      "phys_fn_001962": {
+        "symbol": "?SelectedSectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z",
+        "address": "0x100b0710",
+        "object": "IcePruningEngine.obj"
+      }
+    }
+  },
+  "mutations": {
+    "phys_fn_001958": "Changed the section-one pool lookup from mObjects[mNbObjects[0] + index] to mObjects[index]. The candidate returned section-zero owner words and the registered differential rejected it (candidate_exit=1, stdout_delta=2814).",
+    "phys_fn_001962": "Changed the selected-pruner section-one pool lookup from mObjects[mNbObjects[0] + index] to mObjects[index]. The candidate returned section-zero owner words and the registered differential rejected it (candidate_exit=1, stdout_delta=2814)."
+  },
+  "results": {
+    "phys_fn_001958": {
+      "mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=2814",
+      "restored": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True"
+    },
+    "phys_fn_001962": {
+      "mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=2814",
+      "restored": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True"
+    }
+  },
+  "files_sha256": {
+    "row001958-mutation.log.gz": "310caed68eb03ce0c179bf8e0a397c92100a91f716211a93e007e5600526dffd",
+    "row001958-mutation.log.sha256": "6552df0e9f431fb00d9fab1163be1545ed84ecf9da6ce468f82f09b4369bc9fd",
+    "row001962-mutation.log.gz": "c1f63fe86b34187a57a2e5f618f39403c1177454a6764cedfb83aeb8906fa8f8",
+    "row001962-mutation.log.sha256": "b0721dd4ccf59a47c287133fe7c34763525c773c342ae3ea650a9cff9b204294",
+    "restored-differential.log.gz": "f1e28a6efcbb36126afc3cabb1ad792cbb5bedf321f86c6fbde74936bd64b543",
+    "restored-differential.log.sha256": "f573e9b19ab8c27d00a08e4e50449948fbff95da59423b59d9d3c4ab51170af5",
+    "phys_fn_001958-mutation.txt": "068c5020bf66f87d6a12f58ef1bea99af3cdb6dab0eeb2a3629b3c44a0e54894",
+    "phys_fn_001962-mutation.txt": "b0d60ad12e01f538ff86432348acf758576654f268f1f81d2364db1a26ea72fd",
+    "phase4-gate.log.gz": "83e119ab507e0ff1a0e7a780058dd7f1b5c9487a992d77e96af6528cf297c4ab",
+    "phase5-gate.log.gz": "ab73e6352be82c25b1c99580558de73ad0b5bd55d36ff98eee7814919bbf5ed6",
+    "phase7-gate.log.gz": "395c60ef7c4489e8f5a48cdbe3e558c2eecde4f33864656b6ad1e37161475d18"
+  },
+  "phase_gates": {
+    "phase4-gate.log.gz": {
+      "uncompressed_sha256": "3b164cbd3d4ca0467a8e2b77cc8d4d59ba30bcb1adb61b6729a5f897687825c1",
+      "compressed_sha256": "83e119ab507e0ff1a0e7a780058dd7f1b5c9487a992d77e96af6528cf297c4ab",
+      "result": "phase_gate=4 status=pass"
+    },
+    "phase5-gate.log.gz": {
+      "uncompressed_sha256": "f04e57a860f409f7f0b2bf269245c46db8467554630365acb71db16f78598e1e",
+      "compressed_sha256": "ab73e6352be82c25b1c99580558de73ad0b5bd55d36ff98eee7814919bbf5ed6",
+      "result": "phase_gate=5 status=pass"
+    },
+    "phase7-gate.log.gz": {
+      "uncompressed_sha256": "1bd899d63eb9853d929daab4d2a3c57797abf38502dea32103beadf530208cdc",
+      "compressed_sha256": "395c60ef7c4489e8f5a48cdbe3e558c2eecde4f33864656b6ad1e37161475d18",
+      "result": "phase_gate=7 status=pass"
+    }
+  },
+  "decompressed_gate_sha256": {
+    "phase4-gate.log": "3b164cbd3d4ca0467a8e2b77cc8d4d59ba30bcb1adb61b6729a5f897687825c1",
+    "phase5-gate.log": "f04e57a860f409f7f0b2bf269245c46db8467554630365acb71db16f78598e1e",
+    "phase7-gate.log": "1bd899d63eb9853d929daab4d2a3c57797abf38502dea32103beadf530208cdc"
+  }
+}

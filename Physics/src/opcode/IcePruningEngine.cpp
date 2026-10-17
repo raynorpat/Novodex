@@ -51,6 +51,39 @@ static inline_ Pruner*& nxEnginePruner(void* engine, udword type)
 	return *reinterpret_cast<Pruner**>(static_cast<ubyte*>(engine) + 0x1c + type*4);
 }
 
+// The two section-one owner queries are called through the Scene pruning
+// engine's private interface. Keep member-function ABI and stable map symbols
+// so the staged DLL differential can invoke each candidate row directly.
+class NxScenePrunerOwnerQueries
+	{
+	public:
+		__declspec(noinline) void* SectionOneOwner(udword index);
+		__declspec(noinline) void* SelectedSectionOneOwner(udword index);
+	};
+
+void* NxScenePrunerOwnerQueries::SectionOneOwner(udword index)
+	{
+	Pruner* const pruner = nxEnginePruner(this, 0);
+	Prunable* object;
+	if(pruner)
+		object = pruner->mPool.mObjects[pruner->mPool.mNbObjects[0] + index];
+	else
+		object = *reinterpret_cast<Prunable**>(static_cast<udword>(index * 4));
+	return object->mOwner;
+	}
+
+void* NxScenePrunerOwnerQueries::SelectedSectionOneOwner(udword index)
+	{
+	const udword selected = *reinterpret_cast<udword*>(reinterpret_cast<ubyte*>(this) + 0x70);
+	Pruner* const pruner = nxEnginePruner(this, selected);
+	Prunable* object;
+	if(pruner)
+		object = pruner->mPool.mObjects[pruner->mPool.mNbObjects[0] + index];
+	else
+		object = *reinterpret_cast<Prunable**>(static_cast<udword>(index * 4));
+	return object->mOwner;
+	}
+
 // The factory, types 0 through 3 (see the file comment). The base constructor's
 // first-use creation of the process-wide object (0x000b4cc0) is Scene.cpp's
 // emulation, run where the constructor would run it: after the pruner's own
