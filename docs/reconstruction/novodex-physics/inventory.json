@@ -73375,7 +73375,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13020",
       "static_proof": "IDA decompilation at 0x0008d850 calls FreeLibrary with the cached HMODULE, clears the cached handle unconditionally, and returns whether FreeLibrary succeeded.",
       "dynamic_proof": "NxPhysicsSimulationTests calls oracle RVA 0x0008d850 and the candidate nxFluidModelUnloadLibrary row after export clearing, then checks the return value and GetModuleHandleA state; omitting FreeLibrary is rejected with stdout_delta=4104, and restored output matches exactly.",
-      "notes": "Candidate handle is captured from nxFluidModelLoadLibrary and released after the export table is cleared during FluidManager array teardown."
+      "notes": "Candidate handle is captured from nxFluidModelLoadLibrary and released after the export table is cleared during FluidManager array teardown.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidModelUnloadLibrary",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_nxFluidModelUnloadLibrary",
+        "address": "0x1006f3a0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003903",
