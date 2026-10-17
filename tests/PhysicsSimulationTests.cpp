@@ -295,6 +295,46 @@ class NxSimulationFailSizeAllocator : public NxUserAllocator
 	size_t mFailSize;
 	};
 
+class NxSimulationFailNthSizeAllocator : public NxUserAllocator
+	{
+	public:
+	NxSimulationFailNthSizeAllocator(NxUserAllocator& inner, size_t failSize,
+		unsigned failOrdinal)
+		: mInner(inner), mFailSize(failSize), mFailOrdinal(failOrdinal),
+			mFailCount(0), mMatchingCount(0)
+		{
+		}
+	void* mallocDEBUG(size_t size, const char* fileName, int line) override
+		{
+			return fail(size) ? 0 : mInner.mallocDEBUG(size, fileName, line);
+		}
+	void* malloc(size_t size) override
+		{
+			return fail(size) ? 0 : mInner.malloc(size);
+		}
+	void* realloc(void* memory, size_t size) override
+		{
+			return mInner.realloc(memory, size);
+		}
+	void free(void* memory) override { mInner.free(memory); }
+	unsigned mFailCount;
+	unsigned mMatchingCount;
+	private:
+	bool fail(size_t size)
+		{
+		if(size != mFailSize)
+			return false;
+		++mMatchingCount;
+		if(mMatchingCount != mFailOrdinal)
+			return false;
+		++mFailCount;
+		return true;
+		}
+	NxUserAllocator& mInner;
+	size_t mFailSize;
+	unsigned mFailOrdinal;
+	};
+
 static void nxPrintSimulationSceneState(NxScene* scene, unsigned selector, const char* phase)
 	{
 	NxSceneStats* const sceneStats = scene->getSceneStats();
@@ -1033,6 +1073,163 @@ static bool nxSimulationRunFluidModelExportResolutionChild(
 	return waitResult == WAIT_OBJECT_0 && exitCode == 0;
 	}
 
+static unsigned nxSimulationTryCreateFluidEmitter(NxFluid* fluid,
+	const NxFluidEmitterDesc* desc, NxFluidEmitter** result)
+	{
+	__try
+		{
+		*result = fluid->createEmitter(*desc);
+		return 0;
+		}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+		{
+		*result = 0;
+		return GetExceptionCode();
+		}
+	}
+
+static int nxSimulationRunFluidEmitterArrayGrowthOomProbe(
+	const wchar_t* pairArgument, unsigned failOrdinal)
+	{
+	wchar_t pairDirectory[MAX_PATH];
+	wchar_t* pairArgs[2] = { L"NxPhysicsSimulationTests", const_cast<wchar_t*>(pairArgument) };
+	HMODULE physics = 0;
+	const int openStatus = nxOpenPair(2, pairArgs,
+		"NxPhysicsSimulationTests --fluid-emitter-array-growth-oom",
+		pairDirectory, &physics);
+	if(openStatus)
+		return openStatus;
+	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
+		GetProcAddress(physics, "NxCreatePhysicsSDK"));
+	if(!createSDK)
+		return nxFail("NxCreatePhysicsSDK missing in emitter-array OOM child");
+	NxSimulationOutputStream output;
+	NxPhysicsSDK* const sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, &output);
+	NxSimulationFluidLicenseOverride licenseOverride(465);
+	if(!sdk || !licenseOverride.ready)
+		return nxFail("emitter-array OOM child SDK or fluid license setup failed");
+	if(!SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 |
+		LOAD_LIBRARY_SEARCH_USER_DIRS))
+		return nxFail("emitter-array OOM child could not set DLL search policy");
+	DLL_DIRECTORY_COOKIE const directoryCookie = AddDllDirectory(pairDirectory);
+	if(!directoryCookie)
+		return nxFail("emitter-array OOM child could not add pair directory");
+	wchar_t fluidModelPath[MAX_PATH];
+	if(swprintf_s(fluidModelPath, L"%s\\FluidModel.dll", pairDirectory) < 0)
+		return nxFail("emitter-array OOM child FluidModel path construction failed");
+	HMODULE const fluidModel = LoadLibraryExW(fluidModelPath, 0,
+		LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!fluidModel)
+		return nxFail("emitter-array OOM child FluidModel fixture failed to load");
+	typedef void (__cdecl *GetFluidManagerCallbackSummaryFn)(void*);
+	GetFluidManagerCallbackSummaryFn getCallbacks = reinterpret_cast<
+		GetFluidManagerCallbackSummaryFn>(GetProcAddress(fluidModel,
+			"NxGetFluidManagerCallbackSummary"));
+	if(!getCallbacks)
+		return nxFail("emitter-array OOM callback counter is missing");
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* const scene = sdk->createScene(sceneDesc);
+	NxFluidDesc fluidDesc;
+	fluidDesc.setToDefault();
+	NxFluid* const fluid = scene ? scene->createFluid(fluidDesc) : 0;
+	NxFluidEmitterDesc emitterDesc;
+	emitterDesc.setToDefault();
+	NxFluidEmitter* const first = fluid ? fluid->createEmitter(emitterDesc) : 0;
+	NxFluidEmitter* const second = fluid ? fluid->createEmitter(emitterDesc) : 0;
+	unsigned char* const fluidInternal = fluid ? static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(fluid) + 0x14)) : 0;
+	if(!first || !second || !fluidInternal)
+		return nxFail("emitter-array OOM child could not establish two emitter entries");
+	unsigned char* const sceneInternal = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(scene) + 0x24);
+	unsigned char* const manager = sceneInternal
+		? *reinterpret_cast<unsigned char**>(sceneInternal + 0x61c) : 0;
+	if(manager)
+		manager[0x29] = 0;
+	unsigned* internalBegin = *reinterpret_cast<unsigned**>(fluidInternal + 4);
+	unsigned* internalEnd = *reinterpret_cast<unsigned**>(fluidInternal + 8);
+	unsigned* publicBegin = *reinterpret_cast<unsigned**>(fluidInternal + 0x14);
+	unsigned* publicEnd = *reinterpret_cast<unsigned**>(fluidInternal + 0x18);
+	const unsigned beforeInternal = internalBegin && internalEnd >= internalBegin
+		? static_cast<unsigned>(internalEnd - internalBegin) : 0;
+	const unsigned beforePublic = publicBegin && publicEnd >= publicBegin
+		? static_cast<unsigned>(publicEnd - publicBegin) : 0;
+	unsigned callbackWordsBefore[128] = {};
+	getCallbacks(callbackWordsBefore);
+	NxUserAllocator** const allocatorSlot = reinterpret_cast<NxUserAllocator**>(
+		GetProcAddress(GetModuleHandleW(L"NxFoundation.dll"),
+			"?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A"));
+	if(!allocatorSlot || !*allocatorSlot)
+		return nxFail("emitter-array OOM child Foundation allocator hook is missing");
+	NxUserAllocator* const savedAllocator = *allocatorSlot;
+	NxSimulationFailNthSizeAllocator failGrowth(*savedAllocator, 24, failOrdinal);
+	*allocatorSlot = &failGrowth;
+	NxFluidEmitter* failedEmitter = 0;
+	const unsigned exceptionCode = nxSimulationTryCreateFluidEmitter(fluid,
+		&emitterDesc, &failedEmitter);
+	*allocatorSlot = savedAllocator;
+	internalBegin = *reinterpret_cast<unsigned**>(fluidInternal + 4);
+	internalEnd = *reinterpret_cast<unsigned**>(fluidInternal + 8);
+	publicBegin = *reinterpret_cast<unsigned**>(fluidInternal + 0x14);
+	publicEnd = *reinterpret_cast<unsigned**>(fluidInternal + 0x18);
+	const unsigned afterInternal = internalBegin && internalEnd >= internalBegin
+		? static_cast<unsigned>(internalEnd - internalBegin) : 0;
+	const unsigned afterPublic = publicBegin && publicEnd >= publicBegin
+		? static_cast<unsigned>(publicEnd - publicBegin) : 0;
+	unsigned callbackWordsAfter[128] = {};
+	getCallbacks(callbackWordsAfter);
+	const unsigned expectedInternal = failOrdinal == 1 ? 2u : 3u;
+	const bool exact = beforeInternal == 2 && beforePublic == 2 &&
+		!failedEmitter && exceptionCode == EXCEPTION_ACCESS_VIOLATION &&
+		failGrowth.mFailCount == 1 && failGrowth.mMatchingCount == failOrdinal &&
+		afterInternal == expectedInternal && afterPublic == 2 &&
+		callbackWordsAfter[24] == callbackWordsBefore[24] + 1;
+	printf("simulation fluid-emitter-array-growth-oom row=003501 ordinal=%u caught=%u exception=%08x allocations=%u matches=%u internal=%u public=%u backend-create=%u exact=%u\n",
+		failOrdinal, exceptionCode == EXCEPTION_ACCESS_VIOLATION ? 1u : 0u,
+		exceptionCode, failGrowth.mFailCount, failGrowth.mMatchingCount,
+		afterInternal, afterPublic, callbackWordsAfter[24], exact ? 1u : 0u);
+	if(!exact)
+		return nxFail("emitter-array growth failure order differs from the oracle");
+	return nxReportPairIdentity(pairDirectory);
+	}
+
+static bool nxSimulationRunFluidEmitterArrayGrowthOomChild(
+	const wchar_t* pairDirectory, unsigned failOrdinal)
+	{
+	wchar_t executable[MAX_PATH];
+	const DWORD executableLength = GetModuleFileNameW(0, executable, MAX_PATH);
+	if(!executableLength || executableLength >= MAX_PATH)
+		return false;
+	wchar_t commandLine[2 * MAX_PATH + 128];
+	const int commandLength = _snwprintf_s(commandLine, _countof(commandLine),
+		_TRUNCATE, L"\"%s\" --fluid-emitter-array-growth-oom \"%s\" %u",
+		executable, pairDirectory, failOrdinal);
+	if(commandLength < 0)
+		return false;
+	STARTUPINFOW startup = {};
+	startup.cb = sizeof(startup);
+	startup.dwFlags = STARTF_USESTDHANDLES;
+	startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+	startup.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+	startup.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	PROCESS_INFORMATION process = {};
+	if(!CreateProcessW(executable, commandLine, 0, 0, TRUE, CREATE_NO_WINDOW,
+		0, 0, &startup, &process))
+		return false;
+	const DWORD waitResult = WaitForSingleObject(process.hProcess, 30000);
+	if(waitResult != WAIT_OBJECT_0)
+		{
+		TerminateProcess(process.hProcess, 1);
+		WaitForSingleObject(process.hProcess, INFINITE);
+		}
+	DWORD exitCode = 1;
+	GetExitCodeProcess(process.hProcess, &exitCode);
+	CloseHandle(process.hThread);
+	CloseHandle(process.hProcess);
+	return waitResult == WAIT_OBJECT_0 && exitCode == 0;
+	}
+
 static bool nxSimulationTestFluidModelLoadX87(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -1605,6 +1802,9 @@ static bool nxSimulationRunInvalidSurfaceMeshProbeChild(
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
+	if(argc == 4 && wcscmp(argv[1], L"--fluid-emitter-array-growth-oom") == 0)
+		return nxSimulationRunFluidEmitterArrayGrowthOomProbe(argv[2],
+			static_cast<unsigned>(wcstoul(argv[3], 0, 10)));
 	if(argc == 3 && wcscmp(argv[1], L"--fluid-public-surface-invalid-child") == 0)
 		{
 		argv[1] = argv[2];
@@ -1623,6 +1823,17 @@ int wmain(int argc, wchar_t** argv)
 	int status = nxOpenPair(argc, argv, "NxPhysicsSimulationTests", pairDirectory, &physics);
 	if(status)
 		return status;
+	const bool emitterArrayOomFirst =
+		nxSimulationRunFluidEmitterArrayGrowthOomChild(pairDirectory, 1);
+	const bool emitterArrayOomSecond =
+		nxSimulationRunFluidEmitterArrayGrowthOomChild(pairDirectory, 2);
+	printf("simulation fluid-emitter-array-growth-oom row=003501 children=2 exact=%u\n",
+		emitterArrayOomFirst && emitterArrayOomSecond ? 1u : 0u);
+	if(!emitterArrayOomFirst || !emitterArrayOomSecond)
+		{
+		FreeLibrary(physics);
+		return nxFail("Fluid emitter array growth OOM child differential failed");
+		}
 	if(!nxSimulationRunFluidModelExportResolutionChild(pairDirectory))
 		{
 		FreeLibrary(physics);

@@ -3740,6 +3740,9 @@ $NxRequiredCoverageLines = [ordered] @{
 		# value passes validation and reaches the private-record allocation.
 		'simulation fluid public-api emitter-invalid-descriptor cases=15 rejected=15 diagnostics=15 allocation-attempts=0 array-mismatches=0 callback-mismatches=0 dual-shape-accepted=1 exact=1'
 		'simulation fluid public-api emitter-create-release created=1.4.1.1 metadata=1 released=1.3.1.1 callback=1 mismatches=0'
+		'simulation fluid-emitter-array-growth-oom row=003501 ordinal=1 caught=1 exception=c0000005 allocations=1 matches=1 internal=2 public=2 backend-create=3 exact=1'
+		'simulation fluid-emitter-array-growth-oom row=003501 ordinal=2 caught=1 exception=c0000005 allocations=1 matches=2 internal=3 public=2 backend-create=3 exact=1'
+		'simulation fluid-emitter-array-growth-oom row=003501 children=2 exact=1'
 		# The unlicensed scalar getters return zero and report their precise
 		# feature-unavailable diagnostics through the public NxFluid vtable.
 		'simulation fluid public-api scalars stiffness=00000000.1 viscosity=00000000.1 diagnostics=1.1'
@@ -6312,7 +6315,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2869  # plus phys_fn_003692 NpFluid solver constructor differential
+	'5' = 2872  # plus phys_fn_003692 NpFluid solver constructor differential
+	           # plus three phys_fn_003501 emitter-array growth failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
 	           # rows 001957/001960 add static and selected-pruner object count assertions
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
@@ -6399,7 +6403,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1729  # registry audit 2026-10-17: row 001971 adds one registered simulation assertion
+	'6' = 1732  # plus three phys_fn_003501 emitter-array growth failure assertions
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
@@ -6449,7 +6453,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3008  # plus phys_fn_003692 NpFluid solver constructor differential
+	'7' = 3011  # plus phys_fn_003692 NpFluid solver constructor differential
+	           # plus three phys_fn_003501 emitter-array growth failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
 	           # rows 001957/001960 add static and selected-pruner object count assertions
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions

@@ -1,0 +1,43 @@
+{
+  "row": "phys_fn_003501",
+  "date": "2026-10-17",
+  "candidate_nxphysics_sha256": "dc755a1983daf512476e3facc84b7b4726036a507ead43c85d40a59f7ca2766b",
+  "mutation": "Reverse the internal/public emitter-array append order in nxFluidCreateEmitter.",
+  "mutation_result": "Rejected: ordinal 2 expected internal=3/public=2 but observed internal=2/public=3; exact=0; differential candidate_exit=1.",
+  "restored_result": "Exact oracle/candidate transcript; ordinal 1 internal=2/public=2, ordinal 2 internal=3/public=2.",
+  "phase5": "pass; 2872 coverage assertions observed (prior floor 2869; current floor updated to 2872)",
+  "phase6": "pass; 1732/1732 coverage assertions",
+  "phase7": "pass; 3011 coverage assertions observed (prior floor 3008; current floor updated to 3011)",
+  "logs": [
+    {
+      "name": "mutation-differential.log.gz",
+      "sha256": "35d11023fd5a019cfdb3d66a252e13956267a36924a6158c0b790115e2f35286",
+      "bytes": 29552
+    },
+    {
+      "name": "phase5-gate.log.gz",
+      "sha256": "7dc3eea6a082886a0cfc9eea16f759d2f547813cda85afb196ce6151c5344590",
+      "bytes": 215808
+    },
+    {
+      "name": "phase6-gate.log.gz",
+      "sha256": "698449d00a8edd105972e5d466cbb8b5b67f84485c1be75ceabdf53a4752cca6",
+      "bytes": 262407
+    },
+    {
+      "name": "phase7-gate.log.gz",
+      "sha256": "86b1084e083b38e6d66762bb87f39d12897c01da08584bbf22aee28ad8f9ea08",
+      "bytes": 388200
+    },
+    {
+      "name": "restored-differential.log.gz",
+      "sha256": "e2c36b31d4283c593f786bfad68ecebf987b23282c15eb016fa45b84295113b6",
+      "bytes": 57015
+    },
+    {
+      "name": "restored-final-differential.log.gz",
+      "sha256": "28a0084884a50c65a5cf13b1361304fda5ad4fe5e07b15cfecea48a5c2d733c8",
+      "bytes": 57012
+    }
+  ]
+}
