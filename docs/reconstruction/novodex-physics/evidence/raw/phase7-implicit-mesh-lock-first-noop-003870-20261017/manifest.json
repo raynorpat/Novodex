@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003870",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "2e5ddefeff1d6ad240de84e77ccfd8543410c68d5dddfa32c675c8e7f2dd2b18",
+  "mutation": "Changed row 003870 candidate workKind from no-op to a store at object offset zero. The acquired-lock arm reported mutexwork 003870 arm=0 and the candidate failure count increased to one.",
+  "mutation_result": "NxPhysicsObjectLayoutTests oracle-side probe rejected the mutant; mutexwork candidate failures=1.",
+  "restored_result": "mutexwork candidate failures=0 provisional=1; staged oracle/candidate differential passes.",
+  "phase_gates": {
+    "5": "pass 2830/2830",
+    "6": "pass 1718/1718",
+    "7": "pass 2963/2963"
+  },
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ],
+  "sha256": {
+    "restored-differential.log.gz": "c5cf3ed3eeb85078839e282903169ff4f4ec2500b233a35801d2f0c00222295d",
+    "mutation-differential.log.gz": "ae991297f06b9a88df66fd78acf5efb2043dcc40ae6a06a16a39ba3d6154a346",
+    "phase5-gate.log.gz": "d787b39ab66367dbbece0745f662ebaf39bb318feb59b1982e1c23ade32af4d1",
+    "phase6-gate.log.gz": "6caeceaf1d28168ffdf33e1a063378092f954569e5d0bccecdc84cea578e9777",
+    "phase7-gate.log.gz": "f9b8a8309ec02c4d83d52a78351b3125fe90eb5ab25d1ded7bb001a2a98512f1"
+  }
+}

@@ -5578,6 +5578,7 @@ $NxRequiredCoverageLines = [ordered] @{
     #     byte for byte by the oracle's own constructor;
     #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
     'NxPhysicsObjectLayoutTests' = @(
+		'mutexwork candidate failures=0 provisional=1',
         'tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match',
         'tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0',
         'tailabi row=003936 cleanup=0 oracle=1 candidate=1 this=match',
@@ -6248,7 +6249,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2829  # previous 2828 plus the NpImplicitMesh deleting-destructor differential
+	'5' = 2830  # previous 2829 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
 		           # plus primary and secondary fluid-solver deleting-destructor rows 003694/003788
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
@@ -6322,7 +6323,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1717  # previous 1716 plus the FluidModel module unload differential
+	'6' = 1718  # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
 	           # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
 	           # adds row 003649 callback ordering and row 003503 fluid userData initialization
@@ -6370,7 +6371,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2962  # previous 2961 plus the NpImplicitMesh deleting-destructor differential
+	'7' = 2963  # previous 2962 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential; adds flags-only initial ParticleData failure
 	           # plus primary and secondary fluid-solver deleting-destructor rows 003694/003788; plus phys_fn_003423 sub-word stride edge assertion; plus phys_fn_000445 per-step debug-renderable clear assertion; plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
