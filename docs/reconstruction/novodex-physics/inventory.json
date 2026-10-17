@@ -6557,14 +6557,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1053",
       "static_proof": "IDA: RVA 0x0000ca30 loads [this+0x24] and tail-jumps to NxFluidAssert; the pinned helper at VA 0x1002ea70 is a one-byte retn.",
       "dynamic_proof": "Direct NxPhysicsSimulationTests call observes zero error callbacks; an NXE_DB_WARNING mutation fails the fixture (stdout_delta=554, candidate_exit=1), and restored candidate matches the oracle exactly (stdout_delta=0, stderr_exact=True).",
-      "notes": "Public slot is an oracle-native no-op; no public headers changed.",
+      "notes": "Public slot is an oracle-native no-op; no public headers changed. Candidate source/map linkage verified: NpScene::flushStream in Physics/src/NpScene.cpp; ?flushStream@NpScene@@UAEXXZ at 0x10042530 in NpScene.obj.",
       "implementation_symbol": "NpScene::flushStream",
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?flushStream@NpScene@@UAEXXZ",
         "address": "0x10042530",
         "object": "NpScene.obj"
-      }
+      },
+      "implementation": "Physics/src/NpScene.cpp"
     },
     {
       "id": "phys_fn_000334",
@@ -6598,16 +6599,17 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/165",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1054",
-      "static_proof": null,
+      "static_proof": "IDA decompilation at oracle RVA 0x0000ca40 (80 bytes): emits its warning once, then dispatches the elapsed time through vtable slot +0x100 (simulate).",
       "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=4); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
-      "notes": "",
+      "notes": "Candidate source/map linkage verified: NpScene::startRun in Physics/src/NpScene.cpp; ?startRun@NpScene@@UAEXM@Z at 0x100442d0 in NpScene.obj.",
       "implementation_symbol": "NpScene::startRun",
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?startRun@NpScene@@UAEXM@Z",
         "address": "0x100442d0",
         "object": "NpScene.obj"
-      }
+      },
+      "implementation": "Physics/src/NpScene.cpp"
     },
     {
       "id": "phys_fn_000336",
@@ -6623,16 +6625,17 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/165",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1057",
-      "static_proof": null,
+      "static_proof": "IDA decompilation at oracle RVA 0x0000ca90 (77 bytes): emits its warning once, then dispatches fetchResults(NX_RIGID_BODY_FINISHED, true) through vtable slot +0x108.",
       "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=4); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
-      "notes": "",
+      "notes": "Candidate source/map linkage verified: NpScene::finishRun in Physics/src/NpScene.cpp; ?finishRun@NpScene@@UAEXXZ at 0x100424e0 in NpScene.obj.",
       "implementation_symbol": "NpScene::finishRun",
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?finishRun@NpScene@@UAEXXZ",
         "address": "0x100424e0",
         "object": "NpScene.obj"
-      }
+      },
+      "implementation": "Physics/src/NpScene.cpp"
     },
     {
       "id": "phys_fn_000337",
@@ -6666,9 +6669,17 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/119",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1060",
-      "static_proof": null,
+      "static_proof": "IDA decompilation at oracle RVA 0x0000cae0 (97 bytes): takes the write lock at wrapper+0x0c, forwards the timing triplet to the Scene, unlocks, and reports the write-lock failure at source line 0x120.",
       "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound; stdout_delta=2 in the registered NxPhysicsSimulationTests staged-pair mutation/control differential; see evidence/phase7-npscene-timing-wrappers-000338-000340.md",
-      "notes": ""
+      "notes": "Candidate source/map linkage verified: NpScene::setTiming in Physics/src/NpScene.cpp; ?setTiming@NpScene@@UAEXMIW4NxTimeStepMethod@@@Z at 0x10044150 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::setTiming",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setTiming@NpScene@@UAEXMIW4NxTimeStepMethod@@@Z",
+        "address": "0x10044150",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000339",
@@ -6699,12 +6710,20 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": "locked three-pointer copy accessor (0xcb50, ret 0xc)",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/120",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1063",
       "static_proof": "locks [self+0x10], calls helper 000542 on [self+0x24] which writes [field+0x52c], [field+0x530] and [field+0x534] through the three out pointers, then unlocks; ret 0xc",
       "dynamic_proof": "confirmed via lockacc6 differential (3z146): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; stdout_delta=4 in the registered NxPhysicsSimulationTests staged-pair mutation/control differential; see evidence/phase7-npscene-timing-wrappers-000338-000340.md",
-      "notes": ""
+      "notes": "Candidate source/map linkage verified: NpScene::getTiming in Physics/src/NpScene.cpp; ?getTiming@NpScene@@UBEXAAMAAIAAW4NxTimeStepMethod@@@Z at 0x10042ca0 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getTiming",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getTiming@NpScene@@UBEXAAMAAIAAW4NxTimeStepMethod@@@Z",
+        "address": "0x10042ca0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000341",
@@ -6738,9 +6757,17 @@
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/168",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1064",
-      "static_proof": null,
+      "static_proof": "IDA decompilation at oracle RVA 0x0000cb90 (123 bytes): emits the legacy warning once, then calls setTiming, simulate, flushStream, and blocking fetchResults in that order.",
       "dynamic_proof": "confirmed via once0342 differential (3z177): both gate passes failures=0, comparing the report tuple and the whole four-call slot sequence including every argument, with the report slot and gate byte bound; mutation-falsified in registered NxPhysicsSimulationTests staged-pair differential (stdout_delta=2); see evidence/phase7-npscene-legacy-run-wrappers-000335-000336-000342.md",
-      "notes": ""
+      "notes": "Candidate source/map linkage verified: NpScene::runFor in Physics/src/NpScene.cpp; ?runFor@NpScene@@UAEXMMIW4NxTimeStepMethod@@@Z at 0x10043e40 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::runFor",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?runFor@NpScene@@UAEXMMIW4NxTimeStepMethod@@@Z",
+        "address": "0x10043e40",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000343",

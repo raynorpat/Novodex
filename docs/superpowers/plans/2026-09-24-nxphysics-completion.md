@@ -1350,7 +1350,7 @@ Reconstructed the 0x3c-byte manager constructor and wired it into surface-mesh i
 
 Made the existing free-pruner blue-AABB loop explicit as `nxVisualizeFreePrunerWorldBoxes` and tied it to IDA's 0x4b9f0 contract. `NxPhysicsSceneVisualizeTests` now requires 60 blue lines in its populated `collision_free` scene. Suppressing the candidate's `addAABB` call is caught by the staged-pair runner (`stdout_delta=1478`, candidate exit 1); restored oracle/candidate output matches exactly. Fresh Phase 7 passed at 2,983/2,983, inventory validation reports zero unexplained rows, and all 836 reconstruction-tool tests pass. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-free-pruner-visualize-001937.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-free-pruner-visualize-001937-20261017/`.
 
-The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). The generated backlog's next actionable Phase 7 packet is `phys_fn_000285`, the `NpScene` constructor mapping. Full DLL reconstruction remains open.
+The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). Task 16 records the `NpScene` constructor mapping for `phys_fn_000285`; the next backlog packet is selected after regenerating the report. Full DLL reconstruction remains open.
 
 ### Task 15 — Scene scalar-deleting thunk (`phys_fn_000668`)
 
@@ -1367,3 +1367,11 @@ Status: complete. The vtable linkage is established; the restored staged-pair di
 IDA identifies RVA `0xC310` as the 216-byte `NpScene` `__thiscall` constructor taking an `NxSceneInternal*`, returning `this`, and cleaning the stack with `ret 4`. The direct linker-map symbol is `??0NpScene@@QAE@PAVNxSceneInternal@@@Z` at `0x10041b70` in `NpScene.obj`; candidate source is `Physics/src/NpScene.cpp#NpScene::NpScene`. The constructor is reached by the internal Scene constructor and installs the 0x28-byte public wrapper at `Scene.cpp:791`.
 
 The existing `NxPhysicsSceneConstructorTests` differential verifies the internal Scene back-link at wrapper `+0x24`, and a targeted source mutation of that store was previously caught. This task records the missing source/map link and the IDA allocation/layout contract in the inventory. Full semantic coverage of the nested lock and worker-condition branches remains open.
+
+Status: complete. The candidate source/map link is recorded and inventory validation remains at 6,338 functions, 5,138 data objects, and zero unexplained rows. The full DLL reconstruction remains open.
+
+### Task 17 — NpScene run/timing source/map ledger links (`phys_fn_000333`–`000342`)
+
+IDA confirms the six oracle routines and their call/lock behavior, and the fresh Release linker map resolves each candidate symbol into `NpScene.obj`. Record source/map links and the IDA ranges for `flushStream`, `startRun`, `finishRun`, `setTiming`, `getTiming`, and `runFor`; retain the already registered row-specific dynamic differentials as the behavioral evidence. This is a mapping/provenance task, not new semantic closure. Public headers remain unchanged.
+
+Status: complete. Inventory rows `000333`, `000335`, `000336`, `000338`, `000340`, and `000342` now point to `Physics/src/NpScene.cpp` and their verified `NpScene.obj` map entries. See `docs/reconstruction/novodex-physics/evidence/phase7-npscene-run-timing-map-000333-000342.md`; existing behavior proofs remain linked from the row entries. Full DLL reconstruction remains open.
