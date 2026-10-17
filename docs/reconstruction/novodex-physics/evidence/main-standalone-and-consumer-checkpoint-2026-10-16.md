@@ -6,8 +6,17 @@ The current committed layout-test source and its expected oracle digest are
 already aligned: `NxPhysicsObjectLayoutTests` reports `layout oracle
 digest=3acf0dc7`. The earlier uncommitted fixture edit from the October 8
 worktree changes the same unusual-float inputs, but its `5943e78a` digest was
-for an older source snapshot. It is superseded by the current-main test and
-baseline; no stale edit or baseline was transplanted.
+for an older source snapshot. The uncommitted edit is preserved in
+`C:\Users\raynorpat\.codex\worktrees\nxphysics-m0-current\Novodex` on branch
+`codex/nxphysics-fluid-manager-constructor` at base commit
+`818c8aa25c0700e2f824c6bcb596a70fdf70c97e`. Its changes were in
+`tests/PhysicsObjectLayoutTests.cpp` (the unusual-float values at old-source
+lines 7856–7857 and 11044–11045) and
+`docs/reconstruction/novodex-physics/tools/gate_targets.ps1` (expected digest
+`5943e78a`). Current main contains those same fixture values at lines 9096–9097
+and 12392–12393 and pins the digest `3acf0dc7` at gate-target line 5726. The
+current source and baseline therefore already include/supersede that edit; no
+stale patch or baseline was transplanted.
 
 Fresh Win32 Release verification used
 `D:\github\Novodex\build\phase5-main-validation-20261016`:
@@ -48,5 +57,9 @@ left the process running until the test timeout. The candidate was not run, so
 this is not a candidate differential result. The installed oracle DLL hashes
 remained `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`
 and `7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990`.
-No installed DLL was replaced. T2 remains pending a successful interactive
-D3D launch; further reconstruction can continue independently.
+No installed DLL was replaced. Current-main T2 revalidation remains pending a
+successful interactive D3D launch. A successful earlier DemoGame PhysTest
+smoke is recorded in
+`docs/reconstruction/novodex-physics/evidence/demogame-phystest-smoke-2026-10-09.md`;
+the failure here is limited to revalidating the current-main candidate in this
+run environment. Further reconstruction can continue independently.
