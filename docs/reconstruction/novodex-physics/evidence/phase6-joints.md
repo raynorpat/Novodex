@@ -11239,4 +11239,6 @@ Fresh Phase 5/6/7 gates pass at 2,861/2,861, 1,728/1,728, and 2,997/2,997. All 8
 
 Phase 7 bounded-pruner visualization phys_fn_001967: the cached-tree walk mutation is rejected by NxPhysicsSceneVisualizeTests (stdout_delta=3748, oracle_exit=0, candidate_exit=0, stderr_exact=True); the restored differential has stdout_delta=0. The tree-cache omission separately fails its explicit pointer assertion. See [phase7-bounded-pruner-visualize-001967.md](phase7-bounded-pruner-visualize-001967.md).
 
+Phase 7 pruner dispatch `phys_fn_001969`: static and bounded-dynamic tree stages each require 36 red AABB lines. Disabling the shared dispatch is rejected by the registered oracle/candidate differential (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=1976`); the restored output is exact. See [phase7-pruner-dispatch-001969.md](phase7-pruner-dispatch-001969.md).
+
 Fresh Phase 7 gate after phys_fn_001967 closes passes at 2,998/2,998 registered assertions; the bounded-pruner visualization candidate/oracle transcript is exact. Evidence and the compressed gate log: vidence/phase7-bounded-pruner-visualize-001967.md and vidence/raw/phase7-bounded-pruner-visualize-001967-20261017/.

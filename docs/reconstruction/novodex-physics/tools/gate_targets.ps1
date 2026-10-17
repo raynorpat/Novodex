@@ -3199,6 +3199,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'visualize contacts stage=after_step contact_lines=observed'
         'visualize row445 per-step-clear frames=60 contact-lines=3 exact=1'
         'visualize row001939 type3_red_lines=36 expected=36 matched=1'
+        'visualize row001969 static_tree_dispatch red_lines=36 expected=36 matched=1'
+        'visualize row001969 dynamic_tree_dispatch red_lines=36 expected=36 matched=1'
         'visualize empty renderables=0'
         'visualize empty_no_pruners stage=collision_aabbs renderable=1 points=0 lines=0 triangles=0'
         'visualize empty_no_pruners stage=collision_aabbs renderables=1'
@@ -6431,7 +6433,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2998  # adds bounded-pruner tree-cache coverage for row 001967
+	'7' = 3000  # adds static/dynamic pruner-dispatch coverage for row 001969
+	           # plus bounded-pruner tree-cache coverage for row 001967
 	           # plus invalid broadphase selector diagnostic coverage for row 000544
                # plus the full invalid fluid-emitter descriptor corpus assertion
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage

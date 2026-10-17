@@ -37100,13 +37100,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/771",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5946",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0004c070: when enabled, lazily build and draw the static-pruner tree; call bounded-dynamic visualization; draw free-pruner world boxes; and lazily build/draw the type-3 static-base tree. Return false only for a null pruning engine.",
+      "dynamic_proof": "NxPhysicsSceneVisualizeTests checks 36 red AABB lines for each static and dynamic pruner dispatch, with the existing free and type-3 branch fixtures. A no-op dispatch mutation is rejected (stdout_delta=1976, candidate_exit=1, oracle_exit=0); restored candidate/oracle output is exact. See evidence/phase7-pruner-dispatch-001969.md.",
+      "notes": "Implemented as nxSceneVisualizePrunerDispatch, called by nxSceneVisualizeCollisionPruners; SAP remains in the parent helper because the oracle dispatch row does not handle SAP."
     },
     {
       "id": "phys_fn_001970",

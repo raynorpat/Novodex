@@ -479,18 +479,11 @@ void NxPairNode::row000907(NxDebugRenderable& renderable)
 //   `ret 4`), which the candidate never creates.
 // ---------------------------------------------------------------------------
 
-void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderable)
+static __declspec(noinline) bool nxSceneVisualizePrunerDispatch(void* engine,
+	bool visualizeStatic, bool visualizeDynamic, bool visualizeFree)
 	{
-	const bool visualizeSap = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_SAP) != 0.0f;
-	const bool visualizeStatic = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_STATIC) != 0.0f;
-	const bool visualizeDynamic = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_DYNAMIC) != 0.0f;
-	const bool visualizeFree = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_FREE) != 0.0f;
-	if(!visualizeSap && !visualizeStatic && !visualizeDynamic && !visualizeFree)
-		return;
-
-	// phys_fn_001978 uses PhysicsSDK's separately cached global renderable for
-	// its tree and pool boxes. The Scene renderable argument is only passed to
-	// the SAP callback path.
+	if(!engine)
+		return false;
 	const auto drawTree = [](AABBTree* tree, NxU32 colour)
 		{
 		if(!tree)
@@ -518,9 +511,6 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 
 	unsigned char* const bytes = static_cast<unsigned char*>(engine);
 	Pruner** const pruners = reinterpret_cast<Pruner**>(bytes + 0x1c);
-
-	// phys_fn_001978 calls phys_fn_005216 to lazily rebuild the static
-	// pruning tree, then draws each node's AABB red in preorder.
 	if(visualizeStatic)
 		{
 		StaticPruner* const pruner = static_cast<StaticPruner*>(pruners[0]);
@@ -530,11 +520,6 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 			drawTree(pruner->mTree, 0xffff0000u);
 			}
 		}
-
-	// The bounded dynamic pruner (slot 1) is visualized as a fixed-depth 8-way tree.
-	// Its visualizer visits occupied nodes in depth-first storage order, drawing
-	// only nodes whose subtree contains at least one registered object, then
-	// draws the pruner's configured bounds in magenta.
 	if(visualizeDynamic)
 		{
 		BoundedDynamicPruner* const pruner = static_cast<BoundedDynamicPruner*>(pruners[1]);
@@ -578,10 +563,6 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 					}
 				}
 			}
-
-		// phys_fn_001939 is also reached from the dynamic visualization flag
-		// for the fourth pruner slot. Its caller lazily builds this static-base
-		// tree, then the row visits every node in preorder and draws it red.
 		Type3StaticPruner* const type3Pruner = static_cast<Type3StaticPruner*>(pruners[3]);
 		if(type3Pruner)
 			{
@@ -590,10 +571,27 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 			drawTree(type3Pruner->mTree, 0xffff0000u);
 			}
 		}
+	if(visualizeFree)
+		{
+		Pruner* const pruner = pruners[2];
+		if(pruner)
+			nxVisualizeFreePrunerWorldBoxes(pruner);
+		}
+	return true;
+	}
 
-	// The broad-phase SAP hook stores its entry count and pointer array at
-	// offsets +0x18/+0x1c. Each 24-byte entry contains pointers to the six
-	// endpoint words consumed by phys_fn_005279; the callback adds cyan AABBs.
+void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderable)
+	{
+	const bool visualizeSap = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_SAP) != 0.0f;
+	const bool visualizeStatic = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_STATIC) != 0.0f;
+	const bool visualizeDynamic = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_DYNAMIC) != 0.0f;
+	const bool visualizeFree = PhysicsSDK::instance->getParameter(NX_VISUALIZE_COLLISION_FREE) != 0.0f;
+	if(!visualizeSap && !visualizeStatic && !visualizeDynamic && !visualizeFree)
+		return;
+	if(!nxSceneVisualizePrunerDispatch(engine, visualizeStatic, visualizeDynamic, visualizeFree))
+		return;
+
+	unsigned char* const bytes = static_cast<unsigned char*>(engine);
 	if(visualizeSap)
 		{
 		void* const sap = *reinterpret_cast<void**>(bytes + 0x2c);
@@ -617,17 +615,7 @@ void nxSceneVisualizeCollisionPruners(void* engine, NxDebugRenderable* renderabl
 				}
 			}
 		}
-
-	// phys_fn_001978 selects the free pruner; phys_fn_001937 submits its
-	// world-box records to PhysicsSDK's renderable in blue.
-	if(visualizeFree)
-		{
-		Pruner* const pruner = pruners[2];
-		if(pruner)
-			nxVisualizeFreePrunerWorldBoxes(pruner);
-		}
 	}
-
 void nxSceneVisualizeCollisionBounds(void* engine, NxDebugRenderable* renderable, NxU32 colour, bool compounds)
 	{
 	// phys_fn_000638 (0x000128e0, 428 bytes) walks sections 1 and 2 of the

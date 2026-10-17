@@ -219,6 +219,12 @@ static void nxRunStage(NxPhysicsSDK* sdk, NxScene* scene, const NxStage& stage, 
 		printf("visualize row001937 free_pruner_blue_lines=%u expected=60 matched=%u\n",
 			renderer.mBlueLines, nxFreePrunerBlueAabbsObserved ? 1u : 0u);
 		}
+	if(strcmp(stage.name, "collision_static") == 0)
+		printf("visualize row001969 static_tree_dispatch red_lines=%u expected=36 matched=%u\n",
+			renderer.mRedLines, renderer.mRedLines == 36 ? 1u : 0u);
+	if(strcmp(stage.name, "collision_dynamic") == 0)
+		printf("visualize row001969 dynamic_tree_dispatch red_lines=%u expected=36 matched=%u\n",
+			renderer.mRedLines, renderer.mRedLines == 36 ? 1u : 0u);
 	if(strcmp(stage.name, "collision_type3_pruner") == 0)
 		{
 		const bool matched = renderer.mRedLines == 36;

@@ -1,0 +1,9 @@
+phase=7 row=phys_fn_001969 rva=0x0004c070
+Build: CMake Release, Visual Studio 18 2026, Win32.
+Oracle: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+Test target: NxPhysicsSceneVisualizeTests.
+New markers: static_tree_dispatch and dynamic_tree_dispatch, expected 36 red lines each.
+Baseline and restored control: oracle/candidate exit 0, stdout_delta=0, stderr_exact=True.
+Mutation: dispatch call disabled; oracle_exit=0, candidate_exit=1, stdout_delta=1976.
+The clean restored Phase 7 gate passes at 3000/3000 coverage assertions.
+Focused logs are gzip-compressed beside this manifest. The complete restored Phase 7 gate log is `phase7-gate.log.gz`; it reports 3000/3000 coverage assertions and `phase_gate=7 status=pass`.
