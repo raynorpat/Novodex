@@ -11259,3 +11259,9 @@ Phase 7 `phys_fn_001980` Scene pruning-engine construction is mutation-falsified
 `phys_fn_001958` now has a candidate-map implementation and independent mutation through `NxPhysicsSceneRaycastTests`. The fixture seeds distinct static section-0/section-1 entries and checks two owner results; removing the section-0 count is detected (`stdout_delta=2814`, one row mismatch).
 
 `phys_fn_001962` now has a candidate-map implementation and independent mutation through `NxPhysicsSceneRaycastTests`. The fixture selects pruner slot 2 with distinct section-0/section-1 entries and checks two owner results; removing the section-0 count is detected (`stdout_delta=2814`, one row mismatch). Restored controls match exactly. See [phase7-pruner-owner-queries-001958-001962.md](phase7-pruner-owner-queries-001958-001962.md).
+
+### Phase 7 continuation — `phys_fn_003692`
+
+`phys_fn_003692` committed-archive mutation result: mismatches=1 (zero_fields=0); restored result: mismatches=0.
+
+The NxFluid solver constructor at RVA `0x0008b000` is reconstructed and mutation-falsified through `NxPhysicsFluidEmitterAbiTests`. A committed-archive mutation changing the `+4` zero-store to `1` is rejected (`zero_fields=0`, `mismatches=1`, `oracle_exit=1`); the restored probe matches all vptr, field, return, and x86 stack checks. Fresh local-main Phase 5 and Phase 7 gates pass at 2,869/2,869 and 3,008/3,008 assertions. Public Physics headers remain unchanged. See `evidence/phase7-fluid-solver-constructor-003692.md` and `evidence/raw/phase7-fluid-solver-constructor-003692-committed/`.

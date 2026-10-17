@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003692",
+  "rva": "0x0008b000",
+  "date": "2026-10-17",
+  "implementation_commit": "170fff77",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "mutation_candidate_sha256": "ca702dc539845fa5c9e957e456185f91a2b7c96a410fc37e6cc1003a8de57df1",
+  "restored_archive_candidate_sha256": "5f0ea03abba03a5d7eb9ce410ac5bbcba382c72c40121e96b2e3f4466edde1e6",
+  "main_candidate_sha256": "cccd805015a948ec0420aa23ead218f1cd6cfebea441347cb7a7a73d721812e2",
+  "mutation": "Changed constructor +4 zero-store 0 to 1 in a committed git archive after refreshing .cpp/.h timestamps, then rebuilt the registered ABI target.",
+  "mutation_result": "oracle_exit=1; row=003692 zero_fields=0 mismatches=1; candidate_rows_in_oracle_probe=True",
+  "restored_result": "oracle_exit=0; row=003692 zero_fields=1 mismatches=0; candidate_rows_in_oracle_probe=True",
+  "phase_gates": {
+    "5": "pass 2869/2869",
+    "7": "pass 3008/3008"
+  },
+  "artifacts": [
+    {
+      "path": "mutation-differential.log.gz",
+      "sha256": "c5f603922dfdfcbeca72085f7b310b4f4a00dfa439c688abadf24faa4b7381ef",
+      "uncompressed_sha256": "105c9b89d953e0ade1de798127ce85dad32934c77ee736065872464a95e8f039",
+      "compressed_bytes": 3419,
+      "bytes": 18346
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "sha256": "86e3932dddad203ba5a6f3be3a8b826ddcff377e6dd540e7d8a42c3abe9193e7",
+      "uncompressed_sha256": "e35cb55e30d3a101657528b87d0e2e45dc0fa1028cecca36afdf07d19fb81293",
+      "compressed_bytes": 213037,
+      "bytes": 2855891
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "sha256": "02586760ed2eff4f1a02e54ffd0add82f2125339e4ecd1ec02ceb9f3388a19e5",
+      "uncompressed_sha256": "abeb6585510af80033c74b521344e7485929e1016e0f8142126bc92cc81ef7c7",
+      "compressed_bytes": 378581,
+      "bytes": 4687767
+    },
+    {
+      "path": "restored-differential.log.gz",
+      "sha256": "740e5d8415dbc831e3c54ff04e086b1182cc65d133832f5bd8f9f1d9de23b9e1",
+      "uncompressed_sha256": "e1deb7c77dbb47176ba7ee484bdf871d43c99e28504934aae490f2f9ee61214f",
+      "compressed_bytes": 3447,
+      "bytes": 18456
+    }
+  ]
+}
