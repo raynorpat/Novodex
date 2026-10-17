@@ -23,8 +23,8 @@
     "differential_falsified": 307,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 141,
-    "deferred_not_reconstructed_in_phase": 51,
-    "deferred_reconstructed_not_falsified": 60
+    "deferred_not_reconstructed_in_phase": 50,
+    "deferred_reconstructed_not_falsified": 61
   },
   "closed": [
     {
@@ -5357,9 +5357,10 @@
       "id": "phys_fn_003489",
       "rva": "0x00085800",
       "size": 140,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Partial manager traversal and cached-bounds branch reconstructed and mutation-tested; emitter, particle-position, velocity, and kernel-radius branches remain open, so the row cannot close."
     },
     {
       "id": "phys_fn_003491",

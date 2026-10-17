@@ -17,7 +17,7 @@
 // runs 000766's island test (+0x1e0 is 0 on both sides before a simulation
 // step, so 004163 is not reached). Contact-pair visualization has a separate
 // 60-step plane/sphere scene so rows 000907 and 000869 see a live pair.
-// Fluid visualization remains disabled because its manager is not created.
+// The licensed simulation fixture separately exercises two-fluid visualization.
 //
 // Then the scale goes back to 0 (000657 clears the renderable and draws
 // nothing), bodies move, and after releaseScene the renderer must receive no

@@ -65913,13 +65913,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1300",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12297",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at oracle RVA 0x00085800 shows per-fluid visualization gated by internal flags, iteration of fluid emitters, backend queries, and a cached-bounds branch controlled by NX_VISUALIZE_FLUID_BOUNDS. Candidate nxVisualizeFluidRecord traverses manager fluids and submits the cached bounds as a red AABB. Particle-position, velocity, and kernel-radius rendering remain unimplemented.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests fixture uses two licensed fluids with seeded cached AABBs and visualization enabled. Oracle and candidate both report fluids=2, bounds=2, red-lines=24, matched=1 with exact output. Removing candidate addAABB is detected (oracle red-lines=24/matched=1, candidate red-lines=0/matched=0, stdout_delta=2); restored output is exact. Phase 5/6/7 gates pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020 coverage assertions. See evidence/phase7-fluid-bounds-visualization-003489.md and evidence/raw/phase7-fluid-bounds-visualization-003489-20261017/.",
+      "notes": "Partial reconstruction only: manager traversal and licensed cached fluid-bounds rendering. Emitter, particle-position, velocity, and kernel-radius visualization branches remain open, so this row stays deferred and is not closed.",
+      "implementation": "Physics/src/SceneVisualize.cpp",
+      "implementation_symbol": "nxSceneVisualizeFluids"
     },
     {
       "id": "phys_fn_003490",

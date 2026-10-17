@@ -686,16 +686,67 @@ void nxSceneVisualizeCollisionShapes(void* engine, NxDebugRenderable* renderable
 	visualizePruner(dynamicPruner);
 	}
 
-void nxSceneVisualizeFluids(void* fluids, NxDebugRenderable* renderable)
-	{
-	(void)fluids;
-	(void)renderable;
-	}
-
-
 extern "C" void* __cdecl nxNpFluidEmitterStoreGlobalPose(void* internal);
 extern "C" float __cdecl nxNpFluidEmitterGetDimensionX(void* internal);
 extern "C" float __cdecl nxNpFluidEmitterGetDimensionY(void* internal);
+extern "C" void __cdecl nxNpFluidEmitterVisualizeRecord(void* internal,
+	unsigned, unsigned, void*, NxDebugRenderable* renderable);
+
+typedef float (__cdecl *NxVisualizeFluidGetCellSizeFn)(void*, void*);
+typedef void* (__cdecl *NxVisualizeFluidGetParticlesFn)(void*, void*);
+
+static void nxVisualizeFluidRecord(void* internal, NxDebugRenderable* renderable)
+	{
+	if(!internal || !renderable)
+		return;
+	unsigned char* const fluid = static_cast<unsigned char*>(internal);
+	if((*reinterpret_cast<unsigned*>(fluid + 0x58) & 1u) == 0)
+		return;
+
+	unsigned* emitters = *reinterpret_cast<unsigned**>(fluid + 4);
+	unsigned* const emittersEnd = *reinterpret_cast<unsigned**>(fluid + 8);
+	if(emitters && emittersEnd && emittersEnd >= emitters)
+		for(; emitters != emittersEnd; ++emitters)
+			nxNpFluidEmitterVisualizeRecord(
+				reinterpret_cast<void*>(*emitters), 0, 0, 0, renderable);
+
+	unsigned char* const manager = *reinterpret_cast<unsigned char**>(fluid + 0x7c);
+	void* const backendManager = manager
+		? *reinterpret_cast<void**>(manager + 0x30) : 0;
+	void* const backendFluid = *reinterpret_cast<void**>(fluid + 0x80);
+	HMODULE const fluidModel = GetModuleHandleA("FluidModel.DLL");
+	NxVisualizeFluidGetCellSizeFn getCellSize = fluidModel
+		? reinterpret_cast<NxVisualizeFluidGetCellSizeFn>(
+			GetProcAddress(fluidModel, "FluidGetCellSize")) : 0;
+	NxVisualizeFluidGetParticlesFn getParticles = fluidModel
+		? reinterpret_cast<NxVisualizeFluidGetParticlesFn>(
+			GetProcAddress(fluidModel, "FluidGetParticles")) : 0;
+	if(getCellSize)
+		(void)getCellSize(backendManager, backendFluid);
+	if(getParticles)
+		(void)getParticles(backendManager, backendFluid);
+
+	// The oracle submits the cached fluid AABB in red when the bounds parameter
+	// is enabled. Particle-position, velocity, and kernel-radius branches are
+	// reconstructed separately from this shared traversal.
+	if(nxVisSdkParameter(NX_VISUALIZE_FLUID_BOUNDS) > 0.0f)
+		{
+		NxBounds3 bounds;
+		memcpy(&bounds, fluid + 0x5c, sizeof(bounds));
+		renderable->addAABB(bounds, 0xffff0000u, false);
+		}
+	}
+
+void nxSceneVisualizeFluids(void* fluids, NxDebugRenderable* renderable)
+	{
+	if(!fluids || !renderable)
+		return;
+	unsigned char* const manager = static_cast<unsigned char*>(fluids);
+	void** fluid = *reinterpret_cast<void***>(manager + 4);
+	void** const fluidsEnd = *reinterpret_cast<void***>(manager + 8);
+	while(fluid && fluidsEnd && fluid < fluidsEnd)
+		nxVisualizeFluidRecord(*fluid++, renderable);
+	}
 
 static NxVec3 nxFluidEmitterVisualPlanePoint(const float* pose, double x, double y)
 	{

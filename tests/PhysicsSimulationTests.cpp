@@ -38,6 +38,8 @@
 #include "NxTriangleMeshDesc.h"
 #include "NxTriangleMeshShapeDesc.h"
 #include "NxBounds3.h"
+#include "NxDebugRenderable.h"
+#include "NxUserDebugRenderer.h"
 #include "NxUserContactReport.h"
 #include "NxFoundationSDK.h"
 #include "NxUserAllocator.h"
@@ -119,6 +121,22 @@ class NxSimulationCountingAllocator : public NxUserAllocator
 	unsigned mallocCalls;
 	unsigned freeCalls;
 	unsigned liveAllocations;
+	};
+
+class NxSimulationFluidVisualizationRenderer : public NxUserDebugRenderer
+	{
+	public:
+	NxSimulationFluidVisualizationRenderer(): redLines(0), renderCalls(0) {}
+	virtual void renderData(const NxDebugRenderable& data) const
+		{
+		++renderCalls;
+		const NxDebugLine* const lines = data.getLines();
+		for(NxU32 i = 0; i < data.getNbLines(); ++i)
+			if(lines[i].color == 0xffff0000u)
+				++redLines;
+		}
+	mutable unsigned redLines;
+	mutable unsigned renderCalls;
 	};
 
 static void* __fastcall nxSimulationFluidDeletingDestructor(
@@ -6864,6 +6882,46 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[6] == 6 ? 1u : 0u,
 		constructedSurfaceMeshUserDataMatches ? 1u : 0u,
 		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
+	unsigned visualizedFluidCount = 0;
+	unsigned visualizedBoundsCount = 0;
+	if(surfaceMeshScene)
+		{
+		unsigned char* const sceneInternal = *reinterpret_cast<unsigned char**>(
+			reinterpret_cast<unsigned char*>(surfaceMeshScene) + 0x24);
+		unsigned char* const fluidManager = sceneInternal
+			? *reinterpret_cast<unsigned char**>(sceneInternal + 0x61c) : 0;
+		if(fluidManager)
+			{
+		unsigned* const fluids = *reinterpret_cast<unsigned**>(fluidManager + 4);
+		unsigned* const fluidsEnd = *reinterpret_cast<unsigned**>(fluidManager + 8);
+		if(fluids && fluidsEnd && fluidsEnd >= fluids)
+			{
+		visualizedFluidCount = static_cast<unsigned>(fluidsEnd - fluids);
+		for(unsigned i = 0; i < visualizedFluidCount; ++i)
+			{
+		unsigned char* const internalFluid = reinterpret_cast<unsigned char*>(fluids[i]);
+			if(internalFluid && (*reinterpret_cast<unsigned*>(internalFluid + 0x58) & 1u))
+				{
+				const float bounds[6] = { -1.0f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f };
+				memcpy(internalFluid + 0x5c, bounds, sizeof(bounds));
+				++visualizedBoundsCount;
+				}
+			}
+			}
+		}
+		sdk->setParameter(NX_VISUALIZATION_SCALE, 1.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_BOUNDS, 1.0f);
+		surfaceMeshScene->visualize();
+		NxSimulationFluidVisualizationRenderer renderer;
+		sdk->visualize(renderer);
+		const bool fluidVisualizationMatches = visualizedFluidCount == 2 &&
+			visualizedBoundsCount == 2 && renderer.redLines == 24;
+		printf("simulation fluid-visualization row=003489 fluids=%u bounds=%u red-lines=%u matched=%u\n",
+			visualizedFluidCount, visualizedBoundsCount, renderer.redLines,
+			fluidVisualizationMatches ? 1u : 0u);
+		sdk->setParameter(NX_VISUALIZE_FLUID_BOUNDS, 0.0f);
+		sdk->setParameter(NX_VISUALIZATION_SCALE, 0.0f);
+		}
 	resetFluidManagerCallbacks();
 	NxImplicitMesh* const explicitSurfaceMesh = licensedSurfaceMeshFluid
 		? licensedSurfaceMeshFluid->createSurfaceMesh(licensedSurfaceMeshDesc) : 0;

@@ -157,3 +157,8 @@ The `NpFluidEmitter` world-pose setters (`phys_fn_003798/003800/003802`) are now
 
 
 Task M7-fluid-emitter-pose-setters (active): TDD red exposed missing full backend-pose cache refresh in rows 003798/003800/003802/003810/003812/003814; adding the `+0x48` cache refresh after backend publication makes the oracle/source/DLL full-state fixture exact. Six candidate-only no-op mutations are rejected 2/1/1/1/1/1; candidate DLL restored to `c9ae7d820bf51329364475698fc166f15b897bc709154fe6f2442354a61f2901`. Phase 5 passed 2845/2845 and Phase 7 passed 2978/2978 after serial clean configure/build. The reconstruction-tool suite passes 817 tests; inventory validation reports 6,338 functions, 5,138 data objects, zero unexplained; public headers pass all 80 hashes.
+
+
+### Continuation — fluid bounds visualization (`phys_fn_003489`, 2026-10-17)
+
+Implemented and mutation-tested the manager traversal and licensed cached-bounds branch. The two-fluid oracle/candidate differential reports 24 red lines on both sides; omitting candidate `addAABB` is caught, and restored output is exact. Phase 5/6/7 pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020 coverage assertions. This row remains open: emitter visualization and particle-position, velocity, and kernel-radius branches are still unimplemented. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-bounds-visualization-003489.md`.
