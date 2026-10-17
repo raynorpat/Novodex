@@ -5222,7 +5222,8 @@ void nxSceneApplyDescriptorFlags(NxSceneInternal* scene, NxU32 broadPhase,
 		engineMode = 3;
 	else
 		{
-		nxReport(1, "\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp", 0x63e, 0,
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp", 0x63e, 0,
 			"Scene::createBroadPhase: invalid broad phase type!");
 		return;
 		}
