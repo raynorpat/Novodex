@@ -6297,7 +6297,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2860  # adds the full invalid fluid-emitter descriptor corpus assertion
+	'5' = 2861  # registry audit 2026-10-17: all Phase 5 targets total 2,861 assertions
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage
 	           # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6380,7 +6380,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1727  # adds the full invalid fluid-emitter descriptor corpus assertion
+	'6' = 1728  # registry audit 2026-10-17: all Phase 6 targets total 1,728 assertions
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential

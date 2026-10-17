@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_001949",
+    "phys_fn_001951"
+  ],
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "fbe0d3796eb7893a80b03bfbcef23138221313204a90b32aaa22b4a9f76265ac",
+  "candidate_map": {
+    "path": "build/Release/NxPhysics.map",
+    "symbol": "?nxSceneRefreshPairs@@YAXPAVNxSceneInternal@@@Z",
+    "address": "0x10018070",
+    "object": "ContactPairManager.obj"
+  },
+  "mutations": {
+    "phys_fn_001949": "omitted coherent->UpdateObject(i, *boxes[i]);",
+    "phys_fn_001951": "forced both pruner object counts to zero"
+  },
+  "results": {
+    "phys_fn_001949": {
+      "mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=674",
+      "restored": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True"
+    },
+    "phys_fn_001951": {
+      "mutation": "oracle_exit=0 candidate_exit=1 stdout_delta=4099",
+      "restored": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True"
+    }
+  },
+  "files": {
+    "phase5-gate.log.gz": "8453391031818d9e71535c4dc2270e975450f2e77f95a4b2b595214c19151341",
+    "phase6-gate.log.gz": "30a85afdc02925ea72526b9c41cf55546bc42519a2b3120f133f38df490620cf",
+    "phase7-gate.log.gz": "f4e853b1041dad9e4d07f80c757a976aee26ca0b6ba4e88a9d86532cc1a5cc96",
+    "phys_fn_001949-mutation.txt": "0902c2e763d1a6793059d18c7f9f4bf722fddabd438f9224e8a71203a6a5607e",
+    "phys_fn_001951-mutation.txt": "a88c2273f12ffe4d50f909faf73f653e14bbbe63780c72b2c9f113f44d2bae1d",
+    "row001949-update-control.log.gz": "2de8a0a126b0ab0c1d93e8a7b463d9c51673cdbdb0d8ecb60e5c018db01e2999",
+    "row001949-update-mutation.log.gz": "c83a4bd29f48123a3387e069e6ef7dd00e2e3217e618e1ea4517287ea4cd1f22",
+    "row001951-count-control.log.gz": "0f4033f84cc3a9a071f1c4194b6b659f497aa5ccbdff11292fde7eaba07a69ab",
+    "row001951-count-mutation.log.gz": "4febace9595aea7cec48996b88280ccafbabe39141775a4f1c7f6d86bfae0867"
+  },
+  "decompressed_log_sha256": {
+    "row001949-update-mutation.log": "d4f3be2b3eb551b24944ad7a85c63b38a175102afd381a6a0c2b63aaa1d4e80c",
+    "row001949-update-control.log": "764100484afe8c881817ab190602e0cac93566565800a86a72228c4d46517397",
+    "row001951-count-mutation.log": "a6aed20f880690708eb667fe42537cebf3ea336c7683e4b020ec751f41d8a247",
+    "row001951-count-control.log": "c26a06f1474e3e30f3246d5a05c87624f4acc50029744da6c29f4f7d5a850477"
+  },
+  "phase_gates": {
+    "phase5-gate.log.gz": {
+      "uncompressed_sha256": "30ec061537a46c55cf6e2e593243e1547126320d7adb572a1a42c5707fedb60a",
+      "compressed_sha256": "8453391031818d9e71535c4dc2270e975450f2e77f95a4b2b595214c19151341",
+      "result": "phase_gate=5 status=pass"
+    },
+    "phase6-gate.log.gz": {
+      "uncompressed_sha256": "ebf7ad65784dfe1f136450e6ef0bb914bd8bd88182af9f2d02e8a2091d08e750",
+      "compressed_sha256": "30a85afdc02925ea72526b9c41cf55546bc42519a2b3120f133f38df490620cf",
+      "result": "phase_gate=6 status=pass"
+    },
+    "phase7-gate.log.gz": {
+      "uncompressed_sha256": "e0007271344d9d6c7f344ac0d4d0d416f03307036d169a121b7b97225861cdce",
+      "compressed_sha256": "f4e853b1041dad9e4d07f80c757a976aee26ca0b6ba4e88a9d86532cc1a5cc96",
+      "result": "phase_gate=7 status=pass"
+    }
+  },
+  "files_sha256": {
+    "phase5-gate.log.gz": "8453391031818d9e71535c4dc2270e975450f2e77f95a4b2b595214c19151341",
+    "phase6-gate.log.gz": "30a85afdc02925ea72526b9c41cf55546bc42519a2b3120f133f38df490620cf",
+    "phase7-gate.log.gz": "f4e853b1041dad9e4d07f80c757a976aee26ca0b6ba4e88a9d86532cc1a5cc96",
+    "phys_fn_001949-mutation.txt": "0902c2e763d1a6793059d18c7f9f4bf722fddabd438f9224e8a71203a6a5607e",
+    "phys_fn_001951-mutation.txt": "a88c2273f12ffe4d50f909faf73f653e14bbbe63780c72b2c9f113f44d2bae1d",
+    "row001949-update-control.log.gz": "2de8a0a126b0ab0c1d93e8a7b463d9c51673cdbdb0d8ecb60e5c018db01e2999",
+    "row001949-update-mutation.log.gz": "c83a4bd29f48123a3387e069e6ef7dd00e2e3217e618e1ea4517287ea4cd1f22",
+    "row001951-count-control.log.gz": "0f4033f84cc3a9a071f1c4194b6b659f497aa5ccbdff11292fde7eaba07a69ab",
+    "row001951-count-mutation.log.gz": "4febace9595aea7cec48996b88280ccafbabe39141775a4f1c7f6d86bfae0867"
+  }
+}

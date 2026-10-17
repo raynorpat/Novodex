@@ -1,0 +1,3 @@
+Target: Physics/src/ContactPairManager.cpp, nxSceneRefreshPairs coherent sweep-and-prune refresh loop.
+Mutation: Replace `coherent->UpdateObject(i, *boxes[i]);` with `(void)i;`.
+Detection: moved-apart selector=2 reports 1 pair in the oracle and 2 in the mutant; stdout_delta=674.

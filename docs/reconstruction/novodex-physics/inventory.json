@@ -36724,13 +36724,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/761",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5899",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x0004bc80 shows the helper clearing the changed-object dirty bit, refreshing its world AABB, and updating the cached coherent sweep-and-prune object. The candidate performs the bounds refresh and coherent UpdateObject operation for each valid pruner object in nxSceneRefreshPairs before retrieving pairs.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests coherent-pruner fixture was mutation-tested by omitting coherent->UpdateObject(i, *boxes[i]). In the moved-apart case the oracle reports pairs=1 and the mutant reports pairs=2; the staged differential rejects it (oracle_exit=0, candidate_exit=1, stdout_delta=674). Restored output matches exactly (stdout_delta=0, stderr_exact=True).",
+      "notes": "The oracle helper behavior is integrated into nxSceneRefreshPairs; the candidate refreshes every valid object rather than using the oracle changed-object list.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "nxSceneRefreshPairs",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneRefreshPairs@@YAXPAVNxSceneInternal@@@Z",
+        "address": "0x10018070",
+        "object": "ContactPairManager.obj"
+      }
     },
     {
       "id": "phys_fn_001950",
@@ -36760,13 +36768,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/762",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5902",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x0004bd00 shows the helper writing object counts and associated pool pointers for both pruners, zeroing absent-pool fields, and summing the total. nxSceneRefreshPairs reads both pruner object counts and object arrays before its mode-specific pair refresh.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests trigger-lifecycle fixture was mutation-tested by forcing both pruner counts to zero. The candidate then reports zero lifecycle callbacks where the oracle reports the expected enter/stay/leave sequence; the staged differential rejects it (oracle_exit=0, candidate_exit=1, stdout_delta=4099). Restored output matches exactly (stdout_delta=0, stderr_exact=True).",
+      "notes": "The oracle output descriptor is integrated into the candidate pair-refresh routine as direct reads of the two pruner pools.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "nxSceneRefreshPairs",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneRefreshPairs@@YAXPAVNxSceneInternal@@@Z",
+        "address": "0x10018070",
+        "object": "ContactPairManager.obj"
+      }
     },
     {
       "id": "phys_fn_001952",

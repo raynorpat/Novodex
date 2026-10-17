@@ -1,0 +1,3 @@
+Target: Physics/src/ContactPairManager.cpp, nxSceneRefreshPairs pruner enumeration loop.
+Mutation: Replace `counts[p] = pools[p]->mPool.mNbObjects[0] + pools[p]->mPool.mNbObjects[1];` with `counts[p] = 0;`.
+Detection: trigger lifecycle callbacks are lost in the mutant; stdout_delta=4099.

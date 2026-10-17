@@ -1417,3 +1417,8 @@ Status: complete. Inventory links `phys_fn_000529` to `NxFilterShapePair`, resol
 The next backlog row is an inline `fnstcw` operation at the beginning of `NxSceneInternal::simulateFrame`. Tie it to the containing source method and current CMake map symbol, while preserving the existing caller-control-word mutation proof. Do not invent a standalone candidate symbol for inline instructions.
 
 Status: complete. Inventory links the inline row to `Physics/src/Scene.cpp` and the containing method `NxSceneInternal::simulateFrame`, mapped at VA `0x1006e4d0` in Scene.obj. The evidence note identifies the instruction as inline. Full DLL reconstruction remains open.
+
+
+### Phase 7 continuation — coherent-pruner refresh and pool counts (`phys_fn_001949`, `phys_fn_001951`, 2026-10-17)
+
+The current backlog selected two undispositioned pruner rows whose behavior is integrated in `nxSceneRefreshPairs`. IDA confirms the coherent bounds update and pool descriptor contracts. Omitting `UpdateObject` is caught by the moved-apart pair fixture (`stdout_delta=674`); zeroing the pool counts is caught by trigger lifecycle (`stdout_delta=4099`). Restored differentials are exact. Phase 7 moves from 434 closed / 126 deferred to 436 / 124. Fresh Phase 5/6/7 gates pass at 2,861/2,861, 1,728/1,728, and 2,997/2,997; all 817 reconstruction-tool tests pass. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-pruner-pair-refresh-001949-001951.md` and its raw archive. The complete DLL reconstruction remains open.
