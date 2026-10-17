@@ -10769,8 +10769,16 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/203",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1447",
       "static_proof": "IDA at RVA 0x00010750 shows public broadPhase values 0, 1, and 2 selecting pruning-engine modes 1, 2, and 3; other values report code 1 at Scene.cpp line 0x63e. The candidate implements this mapping and optional-bounds initialization in nxSceneApplyDescriptorFlags, called by NxSceneInternal::initialise.",
-      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests staged-pair differential checks all three selector-to-mode values and bounded/unbounded scene behavior. In a throwaway git-archive copy, changing the coherent selector's mode from 3 to 2 is caught by the same differential (oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True). Evidence: docs/reconstruction/novodex-physics/evidence/phase7-broadphase-selector-000544.md.",
-      "notes": "The invalid-enum diagnostic branch is not exercised by the current public selector matrix; ground-plane construction is a separate unresolved row."
+      "dynamic_proof": "The registered Phase 7 NxPhysicsSimulationTests staged-pair differential checks all three selector-to-mode values and bounded/unbounded scene behavior. In a throwaway git-archive copy, changing the coherent selector's mode from 3 to 2 is caught by the same differential (oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True). Evidence: docs/reconstruction/novodex-physics/evidence/phase7-broadphase-selector-000544.md. The registered invalid-selector=3 fixture also requires one NXE_INVALID_PARAMETER with exact file, line 0x63e, and message. Oracle and restored candidate match exactly. Suppressing the FoundationSDK::error call is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=3920); the candidate emits errors=0 while the oracle emits errors=1. See evidence/phase7-broadphase-selector-000544.md.",
+      "notes": "The invalid-enum diagnostic branch is now covered and mutation-falsified by the registered selector=3 case; ground-plane construction is a separate unresolved row.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxSceneApplyDescriptorFlags",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneApplyDescriptorFlags@@YAXPAVNxSceneInternal@@IPBVNxBounds3@@@Z",
+        "address": "0x1006a570",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000545",
