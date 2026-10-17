@@ -6951,12 +6951,20 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": "locked field accessor over 000547 (0xcd20)",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/125",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1075",
       "static_proof": "under the lock at [self+0x10], calls the plain field getter phys_fn_000547 (+0x6ac) on [self+0x24] and returns it; the whole row reduces to reading [field+0x6ac]",
       "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential: Notifier getter returns the registered callback. The row-specific mutation is caught with stdout_delta=799; restored control is exact. Mutant NxPhysics.dll SHA-256 563645DED5EE58E6739FCA20A88EDCB3D58313B9E1E1C6663B8E658F5A624A42. See evidence/phase7-npscene-callbacks-000350-000360/README.md.",
-      "notes": ""
+      "notes": "Fresh CMake Release build confirms NpScene::getUserNotify in Physics/src/NpScene.cpp; ?getUserNotify@NpScene@@UBEPAVNxUserNotify@@XZ at 0x10042da0 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getUserNotify",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getUserNotify@NpScene@@UBEPAVNxUserNotify@@XZ",
+        "address": "0x10042da0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000353",
@@ -7025,12 +7033,20 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": "locked field accessor over 000551 (0xcdb0)",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/127",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1079",
       "static_proof": "under the lock at [self+0x10], calls the plain field getter phys_fn_000551 (+0x6b0) on [self+0x24] and returns it; the whole row reduces to reading [field+0x6b0]",
       "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential: Trigger getter is observed by trigger-pair fixture. The row-specific mutation is caught with stdout_delta=2; restored control is exact. Mutant NxPhysics.dll SHA-256 C05DDECAFBD5429AF0E1D79782FE62369521C1513294B27CF8D490CD0091C610. See evidence/phase7-npscene-callbacks-000350-000360/README.md.",
-      "notes": ""
+      "notes": "Fresh CMake Release build confirms NpScene::getUserTriggerReport in Physics/src/NpScene.cpp; ?getUserTriggerReport@NpScene@@UBEPAVNxUserTriggerReport@@XZ at 0x10042df0 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getUserTriggerReport",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getUserTriggerReport@NpScene@@UBEPAVNxUserTriggerReport@@XZ",
+        "address": "0x10042df0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000357",
@@ -7099,12 +7115,20 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": "locked field accessor over 000555 (0xce40)",
+      "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/129",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1083",
       "static_proof": "under the lock at [self+0x10], calls the plain field getter phys_fn_000555 (+0x6b4) on [self+0x24] and returns it; the whole row reduces to reading [field+0x6b4]",
       "dynamic_proof": "NxPhysicsSimulationTests Phase 7 staged-pair differential: Contact getter is observed by contact-report fixture. The row-specific mutation is caught with stdout_delta=2; restored control is exact. Mutant NxPhysics.dll SHA-256 521D10DE5C46C97BC5F65555680C0AF44B52E8989F65123FBA10806BF150499F. See evidence/phase7-npscene-callbacks-000350-000360/README.md.",
-      "notes": ""
+      "notes": "Fresh CMake Release build confirms NpScene::getUserContactReport in Physics/src/NpScene.cpp; ?getUserContactReport@NpScene@@UBEPAVNxUserContactReport@@XZ at 0x10042d10 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getUserContactReport",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getUserContactReport@NpScene@@UBEPAVNxUserContactReport@@XZ",
+        "address": "0x10042d10",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000361",
@@ -7140,7 +7164,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1084",
       "static_proof": "phys_fn_000362 (0x0000ce70) ignores the callback and calls Foundation error with code 0xce, NpScene.cpp, line 0x179, and the unavailable-feature message.",
       "dynamic_proof": "NxPhysicsSimulationTests: the pinned oracle and candidate both ignore the callback and report code 206, line 377, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxFluid::setUserFluidContactReport(): Feature not available!; stdout_delta=0 and stderr_exact=True (evidence/fluid-contact-report-disabled.md). Prior low-level assertrows differential (3z156) also matched the captured report tuple. Targeted mutation: changing only its unavailable-feature warning to \"Feature still available!\" is caught by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True); restored control stdout_delta=0, stderr_exact=True. See evidence/phase7-npscene-fluid-contact-report-000362-000364.md.",
-      "notes": "The API is explicitly unavailable in the pinned release; the callback is not retained."
+      "notes": "Fresh CMake Release build confirms NpScene::setUserFluidContactReport in Physics/src/NpScene.cpp; ?setUserFluidContactReport@NpScene@@UAEXPAVNxUserFluidContactReport@@@Z at 0x100442c0 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::setUserFluidContactReport",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setUserFluidContactReport@NpScene@@UAEXPAVNxUserFluidContactReport@@@Z",
+        "address": "0x100442c0",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000363",
@@ -7176,7 +7208,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1086",
       "static_proof": "phys_fn_000364 (0x0000cea0) calls Foundation error with code 0xce, NpScene.cpp, line 0x17f, and the unavailable-feature message, then returns null.",
       "dynamic_proof": "NxPhysicsSimulationTests: the pinned oracle and candidate report code 206, line 383, file \\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp, message NxFluid::getUserFluidContactReport(): Feature not available!, and return null after the attempted setter; stdout_delta=0 and stderr_exact=True (evidence/fluid-contact-report-disabled.md). Prior low-level assertrows differential (3z155) also matched the captured report tuple. Targeted mutation: changing only its unavailable-feature warning to \"Feature still available!\" is caught by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=0, stdout_delta=2, stderr_exact=True); restored control stdout_delta=0, stderr_exact=True. See evidence/phase7-npscene-fluid-contact-report-000362-000364.md.",
-      "notes": "The API is explicitly unavailable in the pinned release and always returns null."
+      "notes": "Fresh CMake Release build confirms NpScene::getUserFluidContactReport in Physics/src/NpScene.cpp; ?getUserFluidContactReport@NpScene@@UBEPAVNxUserFluidContactReport@@XZ at 0x10042d70 in NpScene.obj.",
+      "implementation": "Physics/src/NpScene.cpp",
+      "implementation_symbol": "NpScene::getUserFluidContactReport",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getUserFluidContactReport@NpScene@@UBEPAVNxUserFluidContactReport@@XZ",
+        "address": "0x10042d70",
+        "object": "NpScene.obj"
+      }
     },
     {
       "id": "phys_fn_000365",

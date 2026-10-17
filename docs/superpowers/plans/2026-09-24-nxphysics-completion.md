@@ -1350,7 +1350,7 @@ Reconstructed the 0x3c-byte manager constructor and wired it into surface-mesh i
 
 Made the existing free-pruner blue-AABB loop explicit as `nxVisualizeFreePrunerWorldBoxes` and tied it to IDA's 0x4b9f0 contract. `NxPhysicsSceneVisualizeTests` now requires 60 blue lines in its populated `collision_free` scene. Suppressing the candidate's `addAABB` call is caught by the staged-pair runner (`stdout_delta=1478`, candidate exit 1); restored oracle/candidate output matches exactly. Fresh Phase 7 passed at 2,983/2,983, inventory validation reports zero unexplained rows, and all 836 reconstruction-tool tests pass. Public Physics headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-free-pruner-visualize-001937.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-free-pruner-visualize-001937-20261017/`.
 
-The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). Task 16 records the `NpScene` constructor mapping for `phys_fn_000285`, and Task 17 records six `NpScene` run/timing mappings. The regenerated backlog next selects the source/map links for pair-query rows `000317` and `000319`. Full DLL reconstruction remains open.
+The earlier backlog pointer to `phys_fn_001939` is stale: its Phase 7 ledger entry is already dynamically closed in `gates/phase7-closure.json`. Task 15 completed the candidate mapping and row-specific falsification for `phys_fn_000668` (RVA `0x145c0`). Task 16 records the `NpScene` constructor mapping for `phys_fn_000285`, Task 17 records six `NpScene` run/timing mappings, and Task 18 records pair-query links `000317`/`000319`. The regenerated backlog next selects callback rows `000352`, `000356`, `000360`, `000362`, and `000364`. Full DLL reconstruction remains open.
 
 ### Task 15 — Scene scalar-deleting thunk (`phys_fn_000668`)
 
@@ -1381,3 +1381,9 @@ Status: complete. Inventory rows `000333`, `000335`, `000336`, `000338`, `000340
 The regenerated backlog selects the pair count and pair-flag array wrappers. Their row-specific behavior is already mutation-falsified by `NxPhysicsPairFlagTests`; complete the missing candidate source field and refresh the map addresses from a current CMake Release build. Keep the existing behavioral differential as proof and do not claim new semantic closure. Public headers remain unchanged.
 
 Status: complete. Both rows now identify `Physics/src/NpScene.cpp`; the fresh map resolves `?getNbPairs@NpScene@@UBEIXZ` at `0x10042a90` and `?getPairFlagArray@NpScene@@UBE_NPAUNxPairFlag@@I@Z` at `0x10042bb0` in `NpScene.obj`. Evidence and prior mutation results are in `docs/reconstruction/novodex-physics/evidence/phase7-npscene-pair-query-wrappers-000317-000319.md`. Full DLL reconstruction remains open.
+
+### Task 19 — NpScene callback source/map links (`phys_fn_000352`–`000364`)
+
+The next generated packet consists of the read-locked notify, trigger, and contact callback getters plus the disabled FluidModel callback setter/getter. Existing row-specific mutation proofs cover their behavior; fill the missing candidate implementation paths and refresh the map addresses from a current CMake Release build. Keep behavior status and public headers unchanged.
+
+Status: complete. Rows `000352`, `000356`, `000360`, `000362`, and `000364` now point to `Physics/src/NpScene.cpp` and verified `NpScene.obj` symbols. See `docs/reconstruction/novodex-physics/evidence/phase7-npscene-callback-mappings-000352-000364.md` and existing mutation evidence. Full DLL reconstruction remains open.
