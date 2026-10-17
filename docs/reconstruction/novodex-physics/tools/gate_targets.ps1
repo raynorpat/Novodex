@@ -3481,6 +3481,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation broadphase overlapping selector=0 pairs=2'
         'simulation broadphase overlapping selector=1 pairs=2'
         'simulation broadphase overlapping selector=2 pairs=2'
+        # phys_fn_001971 refreshes the persistent pair node's frame stamp so
+        # consecutive overlapping frames retain the same live pair records.
+        'simulation broadphase pair-refresh row=001971 frames=2 retained=1 stamped=1'
         'simulation stage=broadphase0-chain0 position=40c00000.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation stage=broadphase0-chain1 position=40d80000.00000000.00000000 velocity=00000000.00000000.00000000'
         'simulation stage=broadphase0-chain2 position=40f00000.00000000.00000000 velocity=00000000.00000000.00000000'
@@ -6300,7 +6303,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2861  # registry audit 2026-10-17: all Phase 5 targets total 2,861 assertions
+	'5' = 2862  # registry audit 2026-10-17: row 001971 adds one registered simulation assertion
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage
 	           # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6383,7 +6386,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1728  # registry audit 2026-10-17: all Phase 6 targets total 1,728 assertions
+	'6' = 1729  # registry audit 2026-10-17: row 001971 adds one registered simulation assertion
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
@@ -6433,7 +6436,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3000  # adds static/dynamic pruner-dispatch coverage for row 001969
+	'7' = 3001  # row 001971 adds a pair-refresh assertion after row 001969 coverage
 	           # plus bounded-pruner tree-cache coverage for row 001967
 	           # plus invalid broadphase selector diagnostic coverage for row 000544
                # plus the full invalid fluid-emitter descriptor corpus assertion

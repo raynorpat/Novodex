@@ -532,6 +532,18 @@ static unsigned nxReadSceneBroadPhasePairCount(NxScene* scene)
 	return count;
 	}
 
+static bool nxSceneBroadPhasePairsMatchFrame(NxScene* scene)
+	{
+	unsigned char* const wrapper = reinterpret_cast<unsigned char*>(scene);
+	unsigned char* const internal = *reinterpret_cast<unsigned char**>(wrapper + 0x24);
+	const unsigned frame = *reinterpret_cast<unsigned*>(internal + 0x540);
+	unsigned char* node = *reinterpret_cast<unsigned char**>(internal + 0x674);
+	for(; node; node = *reinterpret_cast<unsigned char**>(node + 8))
+		if(*reinterpret_cast<unsigned*>(node + 0x104) != frame)
+			return false;
+	return true;
+	}
+
 static void nxPrintBroadPhasePairOrder(NxScene* scene, unsigned selector,
 	NxActor** actors, unsigned actorCount)
 	{
@@ -2251,6 +2263,47 @@ int wmain(int argc, wchar_t** argv)
 				selector, nxReadSceneBroadPhasePairCount(chainScene));
 			}
 		sdk->releaseScene(*chainScene);
+		if(selector == NX_BROADPHASE_COHERENT)
+			{
+			NxSceneDesc refreshDesc;
+			refreshDesc.setToDefault();
+			refreshDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+			refreshDesc.broadPhase = NX_BROADPHASE_COHERENT;
+			NxScene* const refreshScene = sdk->createScene(refreshDesc);
+			if(!refreshScene)
+				return nxFail("pair-refresh scene creation failed");
+			refreshScene->setTiming(0.01f, 1, NX_TIMESTEP_VARIABLE);
+			NxSphereShapeDesc refreshSphere;
+			refreshSphere.radius = 0.5f;
+			NxActorDesc refreshStaticDesc;
+			refreshStaticDesc.globalPose.t = NxVec3(30.0f, 0.0f, 0.0f);
+			refreshStaticDesc.shapes.pushBack(&refreshSphere);
+			NxBodyDesc refreshBody;
+			NxActorDesc refreshDynamicDesc;
+			refreshDynamicDesc.body = &refreshBody;
+			refreshDynamicDesc.density = 1.0f;
+			refreshDynamicDesc.globalPose.t = NxVec3(30.75f, 0.0f, 0.0f);
+			refreshDynamicDesc.shapes.pushBack(&refreshSphere);
+			if(!refreshScene->createActor(refreshStaticDesc)
+				|| !refreshScene->createActor(refreshDynamicDesc))
+				return nxFail("pair-refresh actors creation failed");
+			refreshScene->simulate(0.01f);
+			if(!refreshScene->checkResults(NX_RIGID_BODY_FINISHED, true)
+				|| !refreshScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+				return nxFail("pair-refresh first step failed");
+			const unsigned refreshPairsFirst = nxReadSceneBroadPhasePairCount(refreshScene);
+			const bool refreshStampedFirst = nxSceneBroadPhasePairsMatchFrame(refreshScene);
+			refreshScene->simulate(0.01f);
+			if(!refreshScene->checkResults(NX_RIGID_BODY_FINISHED, true)
+				|| !refreshScene->fetchResults(NX_RIGID_BODY_FINISHED, true))
+				return nxFail("pair-refresh second step failed");
+			const unsigned refreshPairsSecond = nxReadSceneBroadPhasePairCount(refreshScene);
+			const bool refreshStampedSecond = nxSceneBroadPhasePairsMatchFrame(refreshScene);
+			printf("simulation broadphase pair-refresh row=001971 frames=2 retained=%u stamped=%u\n",
+				refreshPairsFirst != 0 && refreshPairsFirst == refreshPairsSecond,
+				refreshStampedFirst && refreshStampedSecond);
+			sdk->releaseScene(*refreshScene);
+			}
 		NxSceneDesc denseDesc;
 		denseDesc.setToDefault();
 		denseDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);

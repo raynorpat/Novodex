@@ -37136,13 +37136,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/772",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5954",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at oracle RVA 0x0004c100 selects the low/high pruner pool entries, resolves the shape-ID pair, looks up the persistent pair node, and stamps node+0x104 from the frame at context+0x0c. The candidate implementation is cpmRefreshPairCandidate in Physics/src/ContactPairManager.cpp, linked at 0x10017220 in ContactPairManager.obj.",
+      "dynamic_proof": "The registered NxPhysicsSimulationTests differential verifies that the coherent broadphase retains overlapping pair nodes and stamps them to the scene frame across two fetched frames. Mutating the candidate stamp to frame ^ 1u breaks trigger enter/stay/leave and is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4100). Restored output matches exactly (stdout_delta=0, stderr_exact=True). See evidence/phase7-pruner-pair-candidate-refresh-001971.md.",
+      "notes": "The helper is shared by the static/dynamic, sweep-and-prune, and coherent-pruner candidate enumeration paths.",
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmRefreshPairCandidate",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?cpmRefreshPairCandidate@@YAXIPAPAPAVPrunable@@IIIIPAUCpmPairHash@@PAUNxPairList@@@Z",
+        "address": "0x10017220",
+        "object": "ContactPairManager.obj"
+      }
     },
     {
       "id": "phys_fn_001972",

@@ -1,0 +1,9 @@
+Phase 7 differential evidence: phys_fn_001971
+Oracle: oracle/NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Restored candidate: build/Release/NxPhysics.dll sha256=8eac8031962767d01f270152ab8279e4b464831fb58fc7806e80f95406aae71c
+Marker: simulation broadphase pair-refresh row=001971 frames=2 retained=1 stamped=1
+Mutation: candidate node frame stamp changed from frame to frame ^ 1u
+Mutation detector: oracle_exit=0 candidate_exit=1 stdout_delta=4100 stderr_exact=False
+Restored control: oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True
+Fresh phase gates: Phase 5 2862/2862, Phase 6 1729/1729, Phase 7 3001/3001
+Logs are gzip-compressed. The restored focused differential uses the isolated fixture that leaves the existing coherent-chain trajectory unchanged.
