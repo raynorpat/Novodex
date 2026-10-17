@@ -10478,7 +10478,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1433",
       "static_proof": "Reconstructed from the pinned Capstone listing: test flag 0x10, collision group masks, then owner-pair record bit; seven oracle-vs-candidate filter cases exercise the branches.",
       "dynamic_proof": "The seven direct candidate/oracle filter cases match exactly in the restored build. A whole-body unconditional-allow mutation disagreed in three cases: group-mask records 3 and 4, and owner-pair record 1; the Phase 7 NxPhysicsCollisionTests oracle differential requires the exact checks=7 wrong=0 coverage line. See evidence/phase7-shape-pair-filter-000529.md.",
-      "notes": ""
+      "notes": "Fresh CMake Release build confirms NxFilterShapePair in Physics/src/NarrowPhase.cpp; the seven-case oracle differential and unconditional-allow mutation are recorded in phase7-shape-pair-filter-000529.md.",
+      "implementation": "Physics/src/NarrowPhase.cpp",
+      "implementation_symbol": "NxFilterShapePair",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxFilterShapePair@@YA_NPBIPBXPBUNxCollisionShape@@2@Z",
+        "address": "0x10031670",
+        "object": "NarrowPhase.obj"
+      }
     },
     {
       "id": "phys_fn_000530",

@@ -1,6 +1,6 @@
 # Phase 7 shape-pair filter, `phys_fn_000529`
 
-`NxFilterShapePair` at oracle RVA `0x00010570` rejects a shape pair when either shape carries filter flag `0x10`, when the two collision-group masks do not allow the pair, or when the scene's owner-pair record disables collision. The candidate implementation lives in `Physics/src/NarrowPhase.cpp`.
+`NxFilterShapePair` at oracle RVA `0x00010570` rejects a shape pair when either shape carries filter flag `0x10`, when the two collision-group masks do not allow the pair, or when the scene's owner-pair record disables collision. The candidate implementation lives in `Physics/src/NarrowPhase.cpp`; the current CMake Release map resolves `?NxFilterShapePair@@YA_NPBIPBXPBUNxCollisionShape@@2@Z` at VA `0x10031670` in `NarrowPhase.obj`.
 
 The row is covered by seven direct candidate-versus-oracle calls in `NxPhysicsCollisionTests`. The test target is now registered in the Phase 7 oracle-differential set, where this row is owned. Its existing required transcript line, `matrix contact_filter checks=7 wrong=0`, is part of that phase's enforced coverage floor.
 
