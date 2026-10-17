@@ -281,7 +281,7 @@ class NxSceneInternal
 
 	static void* vtable();
 	// The scalar deleting destructor at the vtable's slot 0.
-	void scalarDeletingDestructor(int flags);
+	void* scalarDeletingDestructor(int flags);
 
 	private:
 #if !NX_PHYSICS_USE_X87

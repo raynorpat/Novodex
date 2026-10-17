@@ -5539,9 +5539,10 @@ void nxSceneDestroyBodyRecords(NxSceneInternal* scene)
 			}
 	}
 
-void NxSceneInternal::scalarDeletingDestructor(int flags)
+void* NxSceneInternal::scalarDeletingDestructor(int flags)
 	{
 	nxSceneDelete(this, flags);
+	return this;
 	}
 
 // ---------------------------------------------------------------------------

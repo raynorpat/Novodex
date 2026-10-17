@@ -16,7 +16,7 @@ $NxPhaseTestTargets = [ordered] @{
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsSceneLifecycleTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidParticleAliasOrderTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneAllocatorTests', 'NxPhysicsPrunerPoolAllocationFailureTests')
     '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSDKTests')
     # Row 000799 body-base teardown is driven by the kinematic release fixture.
-    '7' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidCellRoundingTests', 'NxPhysicsFluidNullParticleCountTests', 'NxPhysicsFluidNullInitialParticleCountTests', 'NxPhysicsFluidNullInitialOptionalBuffersTests', 'NxPhysicsFluidFlagsOnlyInitialParticleFailureTests', 'NxPhysicsFluidCellSizeZeroTests', 'NxPhysicsFluidCellReciprocalTests', 'NxPhysicsFluidParticleAliasOrderTests', 'NxPhysicsFluidStrideAlignmentTests', 'NxPhysicsFluidParticleArrayFailureTests', 'NxPhysicsFluidGetParticlesNullTests', 'NxPhysicsFluidZeroInitialParticlesTests', 'NxPhysicsFluidInitialParticleCapacityClipTests', 'NxPhysicsFluidAddParticlesTests', 'NxPhysicsFluidAddParticlesGrowFailureTests', 'NxPhysicsFluidAddParticlesAppendTests', 'NxPhysicsFluidManagerGrowthFailureTests', 'NxPhysicsFluidManagerGrowthSecondFailureTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSceneAllocatorTests', 'NxPhysicsPrunerPoolAllocationFailureTests')
+    '7' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsJointWithoutBodiesTests', 'NxPhysicsSceneConstructorTests', 'NxPhysicsSceneBoundsPlanesTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsSceneVisualizeTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidCellRoundingTests', 'NxPhysicsFluidNullParticleCountTests', 'NxPhysicsFluidNullInitialParticleCountTests', 'NxPhysicsFluidNullInitialOptionalBuffersTests', 'NxPhysicsFluidFlagsOnlyInitialParticleFailureTests', 'NxPhysicsFluidCellSizeZeroTests', 'NxPhysicsFluidCellReciprocalTests', 'NxPhysicsFluidParticleAliasOrderTests', 'NxPhysicsFluidStrideAlignmentTests', 'NxPhysicsFluidParticleArrayFailureTests', 'NxPhysicsFluidGetParticlesNullTests', 'NxPhysicsFluidZeroInitialParticlesTests', 'NxPhysicsFluidInitialParticleCapacityClipTests', 'NxPhysicsFluidAddParticlesTests', 'NxPhysicsFluidAddParticlesGrowFailureTests', 'NxPhysicsFluidAddParticlesAppendTests', 'NxPhysicsFluidManagerGrowthFailureTests', 'NxPhysicsFluidManagerGrowthSecondFailureTests', 'NxPhysicsPairFlagTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsTriggerSimulationTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsPopulatedSceneTeardownTests', 'NxPhysicsSceneScalarDeleteTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSceneAllocatorTests', 'NxPhysicsPrunerPoolAllocationFailureTests')
     '8' = @()
 }
 
@@ -278,6 +278,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'teardown sdk_release outstanding=0',
         'teardown sdk_scalar_delete flag=1 bytes=56 freed=1',
         'teardown sdk_scalar_delete flag=0 bytes=56 preserved=1 result_self=1'
+    )
+    'NxPhysicsSceneScalarDeleteTests' = @(
+        'scene_scalar_delete flag=0 bytes=1808 preserved=1 result_self=1 stack=1',
+        'scene_scalar_delete flag=1 bytes=1808 freed=1 result_self=1 stack=1'
     )
     'NxPhysicsActorShapeMutationTests' = @(
         # NpActor.cpp completion Task 4: createShape (000070 -> Actor.cpp 000036)
@@ -6425,7 +6429,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2994  # adds the full invalid fluid-emitter descriptor corpus assertion
+	'7' = 2996  # adds the Scene scalar-deleting thunk flag 0/1 assertions
+               # plus the full invalid fluid-emitter descriptor corpus assertion
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage
 	           # previous 2984 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6602,6 +6607,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsMeshSimulationTests',
     'NxPhysicsTriggerSimulationTests',
     'NxPhysicsPopulatedSceneTeardownTests',
+    'NxPhysicsSceneScalarDeleteTests',
     'NxPhysicsSDKTests',
     'NxPhysicsSDKSceneLookupTests'
 )

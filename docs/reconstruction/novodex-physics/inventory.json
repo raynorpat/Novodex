@@ -12895,13 +12895,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "Physics/src/opcode/IcePruner.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/263",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1853",
-      "static_proof": null,
-      "dynamic_proof": "NxPhysicsSceneRaycastTests: 12-object static AABB-tree traversal and plane order, exact pinned-oracle differential (build/bounded-query-differential.log)",
-      "notes": "StaticPruner slot 8 uses OPCODE AABBCollider over the cached AABBTree and reports touched objects in tree traversal order."
+      "static_proof": "IDA disassembly at 0x100145c0 (RVA 0x145c0) identifies a 34-byte __thiscall scalar deleting thunk: call phys_fn_000663, test flag bit 0, call the Foundation allocator virtual slot at +0x14 when set, return this, ret 4. Vtable reference: 0x101066f4.",
+      "dynamic_proof": "NxPhysicsSceneScalarDeleteTests calls oracle RVA 0x145c0 and candidate-map NxSceneInternal::scalarDeletingDestructor on SDK-created internal Scene allocations. Flag 0 preserves the 1,808-byte allocation; flag 1 frees it; both return this and balance the x86 stack. Disabling the candidate free is rejected on flag 1 (candidate_exit=1, stdout_delta=2); restored oracle/candidate transcript is exact.",
+      "notes": "Candidate row is NxSceneInternal::scalarDeletingDestructor, reached through the Scene scalar-deleting vtable slot. The public wrapper is at internal Scene +0x24; the thunk frees the internal allocation only when flag bit 0 is set.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "?scalarDeletingDestructor@NxSceneInternal@@QAEPAXH@Z",
+      "candidate_map_reference": {
+        "path": "build-nxphysics-next-row/Release/NxPhysics.map",
+        "symbol": "?scalarDeletingDestructor@NxSceneInternal@@QAEPAXH@Z",
+        "address": "0x1006dff0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000669",

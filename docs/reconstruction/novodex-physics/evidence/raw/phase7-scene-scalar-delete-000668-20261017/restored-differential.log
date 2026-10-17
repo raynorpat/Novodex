@@ -1,0 +1,66 @@
+phase=none resolved_targets=NxPhysicsSceneScalarDeleteTests
+pass: at least one test target was requested
+pass: test target is registered in gate_targets.ps1: NxPhysicsSceneScalarDeleteTests
+pass: program pin file exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\docs\reconstruction\novodex-physics\program.json
+pass: shipped NxPhysics.dll matches the pinned oracle hash
+pass: shipped NxPhysics.dll matches the pinned oracle size
+pass: shipped NxFoundation.dll matches the pinned oracle hash
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+pass: source exists: D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle
+staged pair=oracle module=NxPhysics.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll source_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxPhysics.dll staged_sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: staged oracle/NxPhysics.dll byte-matches its source
+staged pair=oracle module=NxFoundation.dll source=D:\FlamingEnt__\Unreal_3\Binaries\NxFoundation.dll source_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxFoundation.dll staged_sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: staged oracle/NxFoundation.dll byte-matches its source
+pass: oracle-address image byte-matches staged oracle NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysics.dll
+pass: source exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxFoundation.dll
+pass: pair directory is directly under the pairs root: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate
+staged pair=candidate module=NxPhysics.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysics.dll source_sha256=abbe7f8ae92d213803256026345714be68c890b0c137cd1e95eb82341666b116 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxPhysics.dll staged_sha256=abbe7f8ae92d213803256026345714be68c890b0c137cd1e95eb82341666b116
+pass: staged candidate/NxPhysics.dll byte-matches its source
+staged pair=candidate module=NxFoundation.dll source=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxFoundation.dll source_sha256=816631d52b6b2df94dc2af6f480637eca18d745a3c344331ca9f100caf3b7bf7 staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxFoundation.dll staged_sha256=816631d52b6b2df94dc2af6f480637eca18d745a3c344331ca9f100caf3b7bf7
+pass: staged candidate/NxFoundation.dll byte-matches its source
+pass: candidate NxPhysics linker map exists: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysics.map
+staged candidate map source=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysics.map staged=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxPhysics.map
+pass: candidate NxPhysics.dll is not the shipped oracle file
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysicsSceneScalarDeleteTests.exe
+child target=NxPhysicsSceneScalarDeleteTests pair=oracle command="C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysicsSceneScalarDeleteTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle" exit=0
+child_stdout_begin
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+scene_scalar_delete flag=0 bytes=1808 preserved=1 result_self=1 stack=1
+scene_scalar_delete flag=1 bytes=1808 freed=1 result_self=1 stack=1
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsSceneScalarDeleteTests/oracle reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+pass: NxPhysicsSceneScalarDeleteTests/oracle reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+pass: test target is built: C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysicsSceneScalarDeleteTests.exe
+child target=NxPhysicsSceneScalarDeleteTests pair=candidate command="C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\Release\NxPhysicsSceneScalarDeleteTests.exe" "C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate" exit=0
+child_stdout_begin
+pair_directory=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxPhysics.dll sha256=abbe7f8ae92d213803256026345714be68c890b0c137cd1e95eb82341666b116
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxFoundation.dll sha256=816631d52b6b2df94dc2af6f480637eca18d745a3c344331ca9f100caf3b7bf7
+scene_scalar_delete flag=0 bytes=1808 preserved=1 result_self=1 stack=1
+scene_scalar_delete flag=1 bytes=1808 freed=1 result_self=1 stack=1
+modules pair=2 trusted_system=12 rejected=0
+loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxPhysics.dll sha256=abbe7f8ae92d213803256026345714be68c890b0c137cd1e95eb82341666b116
+loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxFoundation.dll sha256=816631d52b6b2df94dc2af6f480637eca18d745a3c344331ca9f100caf3b7bf7
+
+child_stdout_end
+child_stderr_begin
+child_stderr_end
+pass: NxPhysicsSceneScalarDeleteTests/candidate reported the staged identity: loaded module=NxPhysics.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxPhysics.dll sha256=abbe7f8ae92d213803256026345714be68c890b0c137cd1e95eb82341666b116
+pass: NxPhysicsSceneScalarDeleteTests/candidate reported the staged identity: loaded module=NxFoundation.dll path=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate\NxFoundation.dll sha256=816631d52b6b2df94dc2af6f480637eca18d745a3c344331ca9f100caf3b7bf7
+differential target=NxPhysicsSceneScalarDeleteTests oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True
+differential_targets=NxPhysicsSceneScalarDeleteTests
+differential_pairs=C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\oracle,C:\Users\raynorpat\.codex\worktrees\nxphysics-next-row\Novodex\build-nxphysics-next-row\row668-pairs\candidate
+pass: every requested target passes its registered oracle/candidate differential contract
+differential=pass
