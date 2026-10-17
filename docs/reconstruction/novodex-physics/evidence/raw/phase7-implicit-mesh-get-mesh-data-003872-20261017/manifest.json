@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003872",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "df92de83f77578a1d0afaa6587f114f23e4e573cf40599ab0aaac5558fd11e84",
+  "candidate_staged_sha256": "df92de83f77578a1d0afaa6587f114f23e4e573cf40599ab0aaac5558fd11e84",
+  "candidate_map_symbol": "?getMeshData@NpImplicitMesh@@UAE?AVNxMeshData@@XZ",
+  "candidate_map_address": "0x1002e1c0",
+  "baseline_result": "cases=3 matched=3 balanced_stacks=3 released_locks=3 mismatches=0",
+  "mutant_result": "cases=3 matched=0 balanced_stacks=3 released_locks=3 mismatches=3; exit=1",
+  "phase5_gate": "pass 2831/2831",
+  "phase7_gate": "pass 2964/2964",
+  "tooling_tests": "817 passed",
+  "files": {
+    "mutation-differential.log": "c041221fc87f1e6b2399edb00f7e004444ee24c5a5f9e6fb18853f4a8ad3102a",
+    "mutation.patch.txt": "9fff4c9ca250fd760d9c6dc4fea20f5f71775bf7f94f0003f07cd473fb6430f7",
+    "phase5-gate.log": "52ca6a873736ab12c291db0dbaffc35b5c57524fda576c2405ee957203de9bde",
+    "phase7-gate.log": "5e299fd7ed19c558619cf64f218dcbf1a15e83eca4dbe78d67b83c702051205c",
+    "restored-differential.log": "532ebd6e470b85d7fe658741b88ce91ddacdccf5572f8b3763632d0eb28e75e2"
+  }
+}

@@ -1528,6 +1528,102 @@ static bool nxAddressBelongsToModule(HMODULE module, const void* address)
 	return value >= base && value < base + nt->OptionalHeader.SizeOfImage;
 	}
 
+static unsigned nxRunNpImplicitMeshGetMeshDataDifferential(
+	unsigned char* oracleImage, HMODULE candidateModule,
+	void* candidateMethodAddress)
+	{
+	if(!oracleImage || !candidateModule || !candidateMethodAddress)
+		return 1;
+	typedef void* (__thiscall* GetMeshData)(void*, NxMeshData*);
+	GetMeshData const oracleMethod = reinterpret_cast<GetMeshData>(
+		oracleImage + 0x0008d1f0u);
+	GetMeshData const candidateMethod = reinterpret_cast<GetMeshData>(
+		candidateMethodAddress);
+	struct ReadLock
+		{
+		CRITICAL_SECTION section;
+		volatile LONG writer;
+		unsigned owner;
+		};
+	static_assert(offsetof(ReadLock, writer) == 0x18,
+		"the implicit-mesh lock tracks writer state after CRITICAL_SECTION");
+	ReadLock oracleLock, candidateLock;
+	memset(&oracleLock, 0, sizeof(oracleLock));
+	memset(&candidateLock, 0, sizeof(candidateLock));
+	InitializeCriticalSection(&oracleLock.section);
+	InitializeCriticalSection(&candidateLock.section);
+	CRITICAL_SECTION* oracleSection = &oracleLock.section;
+	CRITICAL_SECTION* candidateSection = &candidateLock.section;
+	void* oracleLink = &oracleSection;
+	void* candidateLink = &candidateSection;
+	unsigned mismatches = 0;
+	unsigned matchedCases = 0;
+	unsigned balancedStacks = 0;
+	unsigned releasedLocks = 0;
+	for(unsigned testCase = 0; testCase != 3; ++testCase)
+		{
+		unsigned char oracleRecord[0x38], candidateRecord[0x38];
+		unsigned char oracleObject[0x18], candidateObject[0x18];
+		memset(oracleRecord, 0xa5, sizeof(oracleRecord));
+		memset(candidateRecord, 0xa5, sizeof(candidateRecord));
+		memset(oracleObject, 0, sizeof(oracleObject));
+		memset(candidateObject, 0, sizeof(candidateObject));
+		for(unsigned offset = 0; offset != 0x30; offset += 4)
+			{
+			const unsigned word = 0x6c000000u | (testCase << 12) | offset;
+			memcpy(oracleRecord + 8 + offset, &word, sizeof(word));
+			memcpy(candidateRecord + 8 + offset, &word, sizeof(word));
+			}
+		void* oracleRecordPointer = oracleRecord;
+		void* candidateRecordPointer = candidateRecord;
+		memcpy(oracleObject + 0x10, &oracleLink, sizeof(oracleLink));
+		memcpy(candidateObject + 0x10, &candidateLink, sizeof(candidateLink));
+		memcpy(oracleObject + 0x14, &oracleRecordPointer,
+			sizeof(oracleRecordPointer));
+		memcpy(candidateObject + 0x14, &candidateRecordPointer,
+			sizeof(candidateRecordPointer));
+		NxMeshData oracleOut, candidateOut;
+		memset(&oracleOut, 0xcc, sizeof(oracleOut));
+		memset(&candidateOut, 0xcc, sizeof(candidateOut));
+		unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+		unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+		void* oracleResult = 0;
+		void* candidateResult = 0;
+		__asm mov oracleEspBefore, esp
+		oracleResult = oracleMethod(oracleObject, &oracleOut);
+		__asm mov oracleEspAfter, esp
+		__asm mov candidateEspBefore, esp
+		candidateResult = candidateMethod(candidateObject, &candidateOut);
+		__asm mov candidateEspAfter, esp
+		const bool stacksBalanced = oracleEspBefore == oracleEspAfter
+			&& candidateEspBefore == candidateEspAfter;
+		const bool locksReleased = oracleLock.writer == 0
+			&& candidateLock.writer == 0
+			&& oracleLock.owner == GetCurrentThreadId()
+			&& candidateLock.owner == GetCurrentThreadId();
+		const bool valuesMatch = memcmp(&oracleOut, &candidateOut,
+			sizeof(oracleOut)) == 0
+			&& memcmp(&oracleOut, oracleRecord + 8, sizeof(oracleOut)) == 0
+			&& memcmp(&candidateOut, candidateRecord + 8,
+				sizeof(candidateOut)) == 0;
+		const bool returnsMatch = oracleResult == &oracleOut
+			&& candidateResult == &candidateOut;
+		if(!stacksBalanced || !locksReleased || !valuesMatch || !returnsMatch)
+			++mismatches;
+		else
+			++matchedCases;
+		balancedStacks += stacksBalanced;
+		releasedLocks += locksReleased;
+		oracleLock.owner = candidateLock.owner = 0;
+		}
+	DeleteCriticalSection(&oracleLock.section);
+	DeleteCriticalSection(&candidateLock.section);
+	printf("implicit mesh getMeshData row=003872 candidate_dll cases=%u "
+		"matched=%u balanced_stacks=%u released_locks=%u mismatches=%u\n",
+		3u, matchedCases, balancedStacks, releasedLocks, mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunNpImplicitMeshDeletingDestructorDifferential(
 	HMODULE oracleModule, unsigned char* oracleImage, HMODULE candidateModule,
 	void* candidateDestructorAddress, void* candidateAllocateAddress,
@@ -8498,6 +8594,21 @@ int wmain(int argc, wchar_t** argv)
 			candidateScalarAllocate,
 			candidateImplicitMeshPrimaryVtable,
 			candidateImplicitMeshSecondaryVtable);
+	}
+
+	{
+	void* candidateGetMeshDataAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"?getMeshData@NpImplicitMesh@@UAE?AVNxMeshData@@XZ",
+			&candidateGetMeshDataAddress))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll implicit-mesh getMeshData row could not be resolved\n");
+		printf("implicit mesh getMeshData row=003872 candidate_dll cases=0 matched=0 balanced_stacks=0 released_locks=0 mismatches=1\n");
+		++gFailures;
+		}
+	else
+		gFailures += nxRunNpImplicitMeshGetMeshDataDifferential(
+			image, candidatePhysics, candidateGetMeshDataAddress);
 	}
 
 	// Run this last because the oracle constructor installs process-global

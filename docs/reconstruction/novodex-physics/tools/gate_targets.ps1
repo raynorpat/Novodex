@@ -118,6 +118,7 @@ $NxRequiredCoverageLines = [ordered] @{
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
 		'implicit mesh deleting-dtor row=003868 primary=1 secondary=1 links=1 record=1 return=1 stack=1 flag1_free=1 mismatches=0'
+		'implicit mesh getMeshData row=003872 candidate_dll cases=3 matched=3 balanced_stacks=3 released_locks=3 mismatches=0'
 		'fluid solver deleting dtor row=003694 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
 		'fluid solver deleting dtor row=003788 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
 		'fluid license resolver cases=11 input_digest=04893d50 oracle=8d75d855 candidate=8d75d855 mismatches=0'
@@ -6249,7 +6250,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2830  # previous 2829 plus the implicit-mesh lock-first no-op differential
+	'5' = 2831  # previous 2830 plus the implicit-mesh getMeshData differential
 	           # plus the 169-slot FluidModel export resolver differential
 		           # plus primary and secondary fluid-solver deleting-destructor rows 003694/003788
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor
@@ -6371,7 +6372,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2963  # previous 2962 plus the implicit-mesh lock-first no-op differential
+	'7' = 2964  # previous 2963 plus the implicit-mesh getMeshData differential
 	           # plus the 169-slot FluidModel export resolver differential; adds flags-only initial ParticleData failure
 	           # plus primary and secondary fluid-solver deleting-destructor rows 003694/003788; plus phys_fn_003423 sub-word stride edge assertion; plus phys_fn_000445 per-step debug-renderable clear assertion; plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649's dirty-refresh null-collision and solver/first-fluid allocation failures, implicit-mesh process-heap allocation route, row 003651 particle-copy case, rows 003653/003655 mesh-copy case, and row 003423 alias-order case
 	           # adds mutation-falsified phys_fn_003603 emitter record deleting destructor

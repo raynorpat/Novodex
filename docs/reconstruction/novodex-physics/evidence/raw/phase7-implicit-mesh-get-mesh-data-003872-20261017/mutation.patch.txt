@@ -1,0 +1,7 @@
+diff --git a/Physics/src/ImplicitMesh.cpp b/Physics/src/ImplicitMesh.cpp
+--- a/Physics/src/ImplicitMesh.cpp
++++ b/Physics/src/ImplicitMesh.cpp
+@@
+-	memcpy(&result, static_cast<unsigned char*>(mInternalRecord) + 8,
++	memcpy(&result, static_cast<unsigned char*>(mInternalRecord) + 12,
+ 		sizeof(result));
