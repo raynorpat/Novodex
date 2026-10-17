@@ -69715,13 +69715,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/include/fluids/NxFluid.h",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1781",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12726",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle RVA 0x0008afe0 is the scalar deleting destructor in the primary NxFluid base vtable at RVA 0x00115f48. It installs that base vtable before checking delete flag bit 0, then frees the object when set. The public NxFluid base declaration is inline in Physics/include/fluids/NxFluid.h; the candidate implementation is the explicit Scene.cpp base-vtable destructor.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls oracle and candidate base-vtable entries on scratch objects with delete flags 0 and 1. It checks base-vptr transition, preserved payload, return identity, x86 stack balance, and allocator frees from both DLLs. Removing the candidate base-vptr store is rejected (candidate_vptr=0, flag1_free=1, mismatches=1); the restored differential reports zero mismatches.",
+      "notes": "Reconstructed NxFluid primary-base scalar deleting destructor; public headers unchanged.",
+      "implementation_symbol": "?nxFluidSolverBaseDeletingDestructor@@YIPAXPAX0E@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFluidSolverBaseDeletingDestructor@@YIPAXPAX0E@Z",
+        "address": "0x1005c210",
+        "object": "Scene.obj"
+      },
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_003691",

@@ -20,6 +20,10 @@ when the secondary this adjustment changes from -8 to -4. The restored control i
 `evidence/phase7-fluid-solver-destructors-003694-003788.md` and
 `evidence/raw/phase7-fluid-solver-dtor-003694-003788-20261016/`.
 
+Phase 7 `NxFluid` base scalar-deleting destructor `phys_fn_003690` is mutation-falsified by `NxPhysicsFluidEmitterAbiTests`; omitting its base-vptr transition is detected as `mismatches=1`. The restored control matches both delete-flag paths, vptr, payload, return, stack, and allocator frees. See
+`evidence/phase7-fluid-base-deleting-dtor-003690.md` and
+`evidence/raw/phase7-fluid-base-deleting-dtor-003690-20261017/`.
+
 Phase 7 scene pair-flag getters `phys_fn_000311` and `phys_fn_000315` are
 mutation-falsified by `NxPhysicsPairFlagTests`. The valid actor-pair zero-return
 mutant changes the transcript by 4 bytes; the valid shape-pair zero-return

@@ -6757,23 +6757,133 @@ static unsigned nxRunFluidEmitterRecordConstructor(unsigned char* image,
 static unsigned nxRunFluidSolverDeletingDestructors(unsigned char* image,
 	HMODULE candidatePhysics)
 	{
+	HMODULE const oracleModule = reinterpret_cast<HMODULE>(image);
+	void* candidateBaseVtableAddress = 0;
 	void* candidatePrimaryVtableAddress = 0;
 	void* candidateReadLockVtableAddress = 0;
+	void* candidateAllocateAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
-		"?gNxFluidSolverVtable@@3PAPAXA", &candidatePrimaryVtableAddress)
+		"?gNxFluidSolverBaseVtable@@3PAPAXA", &candidateBaseVtableAddress)
+		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"?gNxFluidSolverVtable@@3PAPAXA", &candidatePrimaryVtableAddress)
 		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 			"?gNxFluidSolverReadLockVtable@@3PAPAXA",
-			&candidateReadLockVtableAddress))
+			&candidateReadLockVtableAddress)
+		|| !nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??2@YAPAXI@Z", &candidateAllocateAddress))
 		{
-		fprintf(stderr, "FAIL fluid solver deleting-destructor vtables could not be resolved from the candidate map\n");
+		fprintf(stderr, "FAIL fluid base deleting-destructor vtable or allocator could not be resolved from the candidate map\n");
 		return 1;
 		}
+	void** const oracleBaseVtable = reinterpret_cast<void**>(image + 0x115f48);
+	void** const candidateBaseVtable =
+		reinterpret_cast<void**>(candidateBaseVtableAddress);
+	void** const candidatePrimaryVtable =
+		reinterpret_cast<void**>(candidatePrimaryVtableAddress);
+	unsigned baseMismatches = 0;
+	unsigned char oracleBaseObject[8];
+	unsigned char candidateBaseObject[8];
+	memset(oracleBaseObject, 0xa5, sizeof(oracleBaseObject));
+	memset(candidateBaseObject, 0xa5, sizeof(candidateBaseObject));
+	*reinterpret_cast<void***>(oracleBaseObject) =
+		reinterpret_cast<void**>(image + 0x116008);
+	*reinterpret_cast<void***>(candidateBaseObject) = candidatePrimaryVtable;
+	void* const oracleBaseReturn = reinterpret_cast<void* (__thiscall *)(
+		void*, unsigned char)>(oracleBaseVtable[0])(oracleBaseObject, 0);
+	void* const candidateBaseReturn = reinterpret_cast<void* (__fastcall *)(
+		void*, void*, unsigned char)>(candidateBaseVtable[0])(
+		candidateBaseObject, 0, 0);
+	const bool oracleBaseTransition =
+		*reinterpret_cast<void***>(oracleBaseObject) == oracleBaseVtable;
+	const bool candidateBaseTransition =
+		*reinterpret_cast<void***>(candidateBaseObject) == candidateBaseVtable;
+	const bool basePayloadMatch = oracleBaseObject[4] == candidateBaseObject[4]
+		&& oracleBaseObject[5] == candidateBaseObject[5]
+		&& oracleBaseObject[6] == candidateBaseObject[6]
+		&& oracleBaseObject[7] == candidateBaseObject[7];
+	const bool baseReturnMatch = oracleBaseReturn == oracleBaseObject
+		&& candidateBaseReturn == candidateBaseObject;
+	if(!oracleBaseTransition || !candidateBaseTransition || !basePayloadMatch
+		|| !baseReturnMatch)
+		++baseMismatches;
+	printf("fluid base deleting dtor probe row=003690 oracle_vptr=%u candidate_vptr=%u payload=%u return=%u mismatches=%u\n",
+		oracleBaseTransition ? 1u : 0u, candidateBaseTransition ? 1u : 0u,
+		basePayloadMatch ? 1u : 0u, baseReturnMatch ? 1u : 0u,
+		baseMismatches);
+	typedef void* (__thiscall *OracleBaseDestructor)(void*, unsigned char);
+	typedef void* (__fastcall *CandidateBaseDestructor)(void*, void*, unsigned char);
+	typedef void* (__cdecl *ScalarAllocate)(unsigned);
+	ScalarAllocate oracleAllocate = reinterpret_cast<ScalarAllocate>(image + 0x000f467bu);
+	ScalarAllocate candidateAllocate = reinterpret_cast<ScalarAllocate>(candidateAllocateAddress);
+	void* const oracleDeleteObject = oracleAllocate(8);
+	void* const candidateDeleteObject = candidateAllocate(8);
+	bool baseFlagOneFreed = false;
+	if(oracleDeleteObject && candidateDeleteObject)
+		{
+	memset(oracleDeleteObject, 0, 8);
+	memset(candidateDeleteObject, 0, 8);
+	*reinterpret_cast<void***>(oracleDeleteObject) =
+		reinterpret_cast<void**>(image + 0x116008);
+	*reinterpret_cast<void***>(candidateDeleteObject) = candidatePrimaryVtable;
+	gNxOracleDeleteTarget = oracleDeleteObject;
+	gNxCandidateDeleteTarget = candidateDeleteObject;
+	InterlockedExchange(&gNxOracleDeleteObserved, 0);
+	InterlockedExchange(&gNxCandidateDeleteObserved, 0);
+	void* originalOracleHeapFree = 0;
+	void* originalCandidateFree = 0;
+	const bool oracleFreeHooked = nxReplaceImportSlot(oracleModule,
+		0x0001040b4u, reinterpret_cast<void*>(&nxObserveOracleHeapFree),
+		&originalOracleHeapFree);
+	const unsigned candidateFreeRva = nxFindCrtFreeImportRva(candidatePhysics);
+	const bool candidateFreeHooked = nxReplaceImportSlot(candidatePhysics,
+		candidateFreeRva, reinterpret_cast<void*>(&nxObserveCandidateFree),
+		&originalCandidateFree);
+	gNxOriginalOracleHeapFree =
+		reinterpret_cast<NxObservedHeapFree>(originalOracleHeapFree);
+	gNxOriginalCandidateFree =
+		reinterpret_cast<NxObservedCrtFree>(originalCandidateFree);
+	unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+	unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+	__asm mov oracleEspBefore, esp
+	void* const oracleDeleteReturn = reinterpret_cast<OracleBaseDestructor>(
+		oracleBaseVtable[0])(oracleDeleteObject, 1);
+	__asm mov oracleEspAfter, esp
+	__asm mov candidateEspBefore, esp
+	void* const candidateDeleteReturn = reinterpret_cast<CandidateBaseDestructor>(
+		candidateBaseVtable[0])(candidateDeleteObject, 0, 1);
+	__asm mov candidateEspAfter, esp
+	const bool oracleFreeRestored = !originalOracleHeapFree ||
+		nxRestoreImportSlot(oracleModule, 0x0001040b4u, originalOracleHeapFree);
+	const bool candidateFreeRestored = !originalCandidateFree ||
+		nxRestoreImportSlot(candidatePhysics, candidateFreeRva, originalCandidateFree);
+	baseFlagOneFreed = oracleFreeHooked && candidateFreeHooked
+		&& oracleDeleteReturn == oracleDeleteObject
+		&& candidateDeleteReturn == candidateDeleteObject
+		&& oracleEspBefore == oracleEspAfter
+		&& candidateEspBefore == candidateEspAfter
+		&& InterlockedCompareExchange(&gNxOracleDeleteObserved, 0, 0) == 1
+		&& InterlockedCompareExchange(&gNxCandidateDeleteObserved, 0, 0) == 1
+		&& oracleFreeRestored && candidateFreeRestored;
+		}
+	else
+		{
+	if(oracleDeleteObject)
+		reinterpret_cast<OracleBaseDestructor>(oracleBaseVtable[0])(oracleDeleteObject, 1);
+	if(candidateDeleteObject)
+		reinterpret_cast<CandidateBaseDestructor>(candidateBaseVtable[0])(
+			candidateDeleteObject, 0, 1);
+		}
+	if(!baseFlagOneFreed)
+		++baseMismatches;
+	printf("fluid base deleting dtor row=003690 oracle_vptr=%u candidate_vptr=%u payload=%u return=%u flag1_free=%u mismatches=%u\n",
+		oracleBaseTransition ? 1u : 0u, candidateBaseTransition ? 1u : 0u,
+		basePayloadMatch ? 1u : 0u, baseReturnMatch ? 1u : 0u,
+		baseFlagOneFreed ? 1u : 0u, baseMismatches);
+
 	void** const oraclePrimaryVtable =
 		reinterpret_cast<void**>(image + 0x116008);
 	void** const oracleReadLockVtable =
 		reinterpret_cast<void**>(image + 0x1160c8);
-	void** const candidatePrimaryVtable =
-		reinterpret_cast<void**>(candidatePrimaryVtableAddress);
 	void** const candidateReadLockVtable =
 		reinterpret_cast<void**>(candidateReadLockVtableAddress);
 	unsigned mismatches = 0;
@@ -6826,7 +6936,7 @@ static unsigned nxRunFluidSolverDeletingDestructors(unsigned char* image,
 			candidateTransition ? 1u : 0u, payloadMatch ? 1u : 0u,
 			returnedPrimary ? 1u : 0u, mismatches);
 		}
-	return mismatches;
+	return mismatches + baseMismatches;
 	}
 
 static unsigned gFluidEmitterDtorStackBefore;

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003690",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "fde96fa53dd41a560ec46bfa2e146e85b756b13021487ffafd0f7d4b80476333",
+  "oracle_contract": "primary NxFluid base scalar deleting destructor; base-vptr transition, return-this, conditional CRT free",
+  "mutation": "removed candidate base-vptr installation while preserving flag-one free",
+  "mutation_result": "oracle_exit=0 candidate_exit=1; candidate_vptr=0 flag1_free=1 mismatches=1",
+  "restored_result": "oracle_exit=0 candidate_exit=0; oracle_vptr=1 candidate_vptr=1 payload=1 return=1 flag1_free=1 mismatches=0",
+  "phase_gates": {
+    "5": "pass 2868/2868",
+    "7": "pass 3007/3007"
+  },
+  "oracle_only_baseline": {
+    "lines": 35,
+    "digest": "cb301f70da580852b55936238fa650fd8ef4bfc49f6dac35aa9ad9a188a0f1dc"
+  },
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}

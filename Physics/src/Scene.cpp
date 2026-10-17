@@ -1951,12 +1951,7 @@ static const char* __fastcall nxFluidGetName(void* wrapper, void*)
 	}
 
 static void* __fastcall nxFluidSolverBaseDeletingDestructor(void* helper,
-	void*, unsigned char deleteObject)
-	{
-	if((deleteObject & 1) != 0)
-		::operator delete(helper);
-	return helper;
-	}
+	void*, unsigned char deleteObject);
 
 static void* __fastcall nxFluidSolverReadLockBaseDeletingDestructor(void* base,
 	void*, unsigned char deleteObject)
@@ -1972,6 +1967,15 @@ static void* gNxFluidSolverBaseVtable[] = {
 static void* gNxFluidSolverReadLockBaseVtable[] = {
 	reinterpret_cast<void*>(nxFluidSolverReadLockBaseDeletingDestructor)
 	};
+
+static void* __fastcall nxFluidSolverBaseDeletingDestructor(void* helper,
+	void*, unsigned char deleteObject)
+	{
+	*reinterpret_cast<void***>(helper) = gNxFluidSolverBaseVtable;
+	if((deleteObject & 1) != 0)
+		::operator delete(helper);
+	return helper;
+	}
 
 // phys_fn_003694 (0x8b040) is the scalar deleting destructor for the fluid
 // solver wrapper. Its embedded read-lock base is at +8; destroying the derived

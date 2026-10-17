@@ -135,6 +135,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'implicit mesh getMeshData row=003872 candidate_dll cases=3 matched=3 balanced_stacks=3 released_locks=3 mismatches=0'
 		'fluid solver deleting dtor row=003694 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
 		'fluid solver deleting dtor row=003788 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
+		'fluid base deleting dtor row=003690 oracle_vptr=1 candidate_vptr=1 payload=1 return=1 flag1_free=1 mismatches=0'
 		'fluid license resolver cases=11 input_digest=04893d50 oracle=8d75d855 candidate=8d75d855 mismatches=0'
         'contact patch assignment cases=3 oracle_return=3 candidate_return=3 payload_equal=3 vptr_preserved=3 padding_preserved=3 stack=3/3 mismatches=0'
         'fluid collision bucket-prefix records=4 oracle_total=9 candidate_total=9 prefixes=1 return=1 stack=1/1 mismatches=0'
@@ -6310,7 +6311,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2867  # rows 001957/001960 add static and selected-pruner object count assertions
+	'5' = 2868  # plus phys_fn_003690 NxFluid base deleting-destructor differential
+	           # rows 001957/001960 add static and selected-pruner object count assertions
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
 	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
@@ -6445,7 +6447,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3006  # rows 001957/001960 add static and selected-pruner object count assertions
+	'7' = 3007  # plus phys_fn_003690 NxFluid base deleting-destructor differential
+	           # rows 001957/001960 add static and selected-pruner object count assertions
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
 	           # row 001980 adds the pruning-engine constructor assertion after 001973 coverage
 	           # plus bounded-pruner tree-cache coverage for row 001967
