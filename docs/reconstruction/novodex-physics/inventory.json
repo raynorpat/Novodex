@@ -69264,13 +69264,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PhysicsInternal.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1394",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12719",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x0008aea0 shows a thiscall thunk that forwards ECX (the registry key) and its single pointer argument to phys_fn_000480.",
+      "dynamic_proof": "NxPhysicsSimulationTests resolves the candidate member symbol and oracle RVA 0x0008aea0, then verifies map insertion, replacement, removal, and cleared lookup. A return-false mutation is rejected (mismatches=1; candidate_exit=1; stdout_delta=4106); the restored differential is exact (stdout_delta=0; stderr_exact=True).",
+      "notes": "The shared pointer-binding helper is called through this private member thunk at existing internal call sites; public headers are unchanged.",
+      "implementation": "Physics/src/PhysicsInternal.cpp",
+      "implementation_symbol": "?setValue@SdkPointerBindingThunk@@QAE_NPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setValue@SdkPointerBindingThunk@@QAE_NPAX@Z",
+        "address": "0x10053b90",
+        "object": "PhysicsInternal.obj"
+      }
     },
     {
       "id": "phys_fn_003684",

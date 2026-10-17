@@ -1,0 +1,37 @@
+{
+  "row": "phys_fn_003683",
+  "date": "2026-10-17",
+  "description": "Restored exact oracle/candidate differential and return-false row mutation rejection. Logs are gzip-compressed text transcripts.",
+  "files": {
+    "phase7-sdk-pointer-binding-003683-restored.log.gz": {
+      "sha256": "06b3f9d92fd1a8d384a92b31a616ab2de38f3d4e9a045c135e5844fb05c1cb94",
+      "uncompressed_sha256": "6fe8b23aa0c59c6a474e64b3c03038228e3a75e02b85418a4dbddd54cf94554d",
+      "source": "build/phase7-sdk-pointer-binding-003683-restored.log"
+    },
+    "phase7-sdk-pointer-binding-003683-mutation.log.gz": {
+      "sha256": "89093b2c28dd5a91846db4727609306d73d9f2fcd9542f535aa2c0b5fd7faa38",
+      "uncompressed_sha256": "2d9b42c377b1efdf644be79cc290a07be29a98834734a4b25c3cdd8ab28e7101",
+      "source": "build/phase7-sdk-pointer-binding-003683-mutation.log"
+    },
+    "phase7-sdk-pointer-binding-003683-phase5.log.gz": {
+      "sha256": "1f130e777dacb374ed1282eba269c65c211352e301c52e060c5900ebd461a374",
+      "uncompressed_sha256": "2572fe8af5f57445641ca8a4177f026b59c41b5b12f39ec7ed8cd6d39f5a8167",
+      "source": "build/phase7-sdk-pointer-binding-003683-phase5.log"
+    },
+    "phase7-sdk-pointer-binding-003683-phase6.log.gz": {
+      "sha256": "6fea15cf51a16cdb8e20fd0590bb97e39d425a5224407f74cc1f0b3e7e013bf1",
+      "uncompressed_sha256": "5f9c12d9a2c722ad9566910b6510ede03d93a700afcbe53fffc9aab3593bbf6c",
+      "source": "build/phase7-sdk-pointer-binding-003683-phase6.log"
+    },
+    "phase7-sdk-pointer-binding-003683-tool-tests-rerun.log.gz": {
+      "sha256": "bb6eadfafb07e3399e601a6b40ece9553f3a6201f9d633183b7d0180f5a34fb9",
+      "uncompressed_sha256": "f92e41602b3c4afca735698d34f1519f47bdefcf24d5f39542c7e7ff6c5d1465",
+      "source": "build/phase7-sdk-pointer-binding-003683-tool-tests-rerun.log"
+    },
+    "phase7-sdk-pointer-binding-003683-phase7.log.gz": {
+      "sha256": "a573663c598d60afed3a5276beb05ee3b756040918f03ee7f9a68c75da8177b8",
+      "uncompressed_sha256": "51c85f1f19f9b77e7ad7a9944a28e1d1e152b1435f58c357eb870b96ed24ebb7",
+      "source": "build/phase7-sdk-pointer-binding-003683-phase7-final.log"
+    }
+  }
+}

@@ -11221,3 +11221,5 @@ phys_fn_003844: row-local first-argument mutation rejected; mismatches=1.
 phys_fn_003848: row-local first-argument mutation rejected; mismatches=1.
 phys_fn_003854: row-local first-argument mutation rejected; mismatches=1.
 phys_fn_003856: row-local first-argument mutation rejected; mismatches=1.
+
+Phase 7 SDK pointer-binding thunk `phys_fn_003683` is mutation-falsified by the registered `NxPhysicsSimulationTests` candidate-DLL/oracle differential. A return-false mutation is caught with `mismatches=1` and `stdout_delta=4106`; the restored control is exact (`stdout_delta=0`, exact stderr). See `phase7-sdk-pointer-binding-thunk-003683.md`.

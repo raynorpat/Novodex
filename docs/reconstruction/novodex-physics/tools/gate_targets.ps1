@@ -3660,6 +3660,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid-model-export-resolve row=003903 slots=169 present=83 matched=169 digest=cbb94fff'
         'simulation fluid-model-export-clear row=003905 slots=169 result=1 cleared=169 callbacks_remaining=0 matched=169 mismatches=0'
         'simulation fluid-model-unload row=003902 result=1 module_after=0 matched=1 mismatches=0'
+        'simulation sdk-pointer-binding row=003683 set=1 update=1 remove=1 cleared=1 mismatches=0'
         # Row 003649 pins all non-pointer FluidCreate arguments against distinct descriptor values.
         'simulation row3649 create-args arguments=14 digest=1d2e206d manager=1 exact=1'
         # Rows 003653/003655 copy implicit-mesh vertex, normal, and index streams after simulation.
@@ -6271,7 +6272,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2848  # previous 2846 plus the two lock-thunk family assertions
+	'5' = 2849  # previous 2848 plus the SDK pointer-binding thunk assertion
 	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2837 plus the fluid-emitter deleting-destructor differential
 	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
@@ -6351,7 +6352,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1722  # previous 1720 plus the two lock-thunk family assertions
+	'6' = 1723  # previous 1722 plus the SDK pointer-binding thunk assertion
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
 	           # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
@@ -6400,7 +6401,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2981  # previous 2979 plus the two lock-thunk family assertions
+	'7' = 2982  # previous 2981 plus the SDK pointer-binding thunk assertion
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential

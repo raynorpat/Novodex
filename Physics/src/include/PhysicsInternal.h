@@ -120,6 +120,16 @@ void* nxGetSdkPointerBinding(void* key);
 // destructor.
 bool nxSetSdkPointerBinding(void* key, void* value);
 
+// phys_fn_003683 (0x0008aea0) is a thiscall bridge to the shared pointer map.
+// The bridge's this pointer is the registry key, so callers pass their internal
+// object address unchanged through nxSetSdkPointerBindingViaThunk.
+class SdkPointerBindingThunk
+	{
+	public:
+	bool setValue(void* value);
+	};
+bool nxSetSdkPointerBindingViaThunk(void* key, void* value);
+
 // The SDK destructor's release of the global name map (.data 0x00123c0c)
 // when pairs are still in it: the table's destructor and its free, as
 // phys_fn_000474 does. The map is null afterwards.

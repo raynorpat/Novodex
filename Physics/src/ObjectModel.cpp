@@ -1713,7 +1713,7 @@ void nxActorSetBoundTarget(void* self, void* value)
 		return;
 		}
 	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
-	nxSetSdkPointerBinding(reinterpret_cast<void*>(body),
+	nxSetSdkPointerBindingViaThunk(reinterpret_cast<void*>(body),
 		reinterpret_cast<void*>(value));
 	nxSceneGuardLeave(ctx);
 	}

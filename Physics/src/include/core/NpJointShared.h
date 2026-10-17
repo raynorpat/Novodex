@@ -226,7 +226,7 @@ class NX_NPJOINT_NOVTABLE NpJointShared : public Iface, public EmbeddedHookBase
 			reportWriteLocked(file, line);
 			return;
 			}
-		nxSetSdkPointerBinding(mInternal, const_cast<char*>(name));
+		nxSetSdkPointerBindingViaThunk(mInternal, const_cast<char*>(name));
 		nxNpSceneGuardLeave(link);
 		}
 

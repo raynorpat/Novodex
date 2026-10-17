@@ -520,7 +520,7 @@ static NxMaterialIndex __fastcall nxBoxHandleGetMaterial(void* self, void*)
 // table's two blocks).
 void nxShapeSetName(void* shape, const char* name)
 	{
-	nxSetSdkPointerBinding(shape, const_cast<char*>(name));
+	nxSetSdkPointerBindingViaThunk(shape, const_cast<char*>(name));
 	}
 
 const char* nxShapeGetName(void* shape)

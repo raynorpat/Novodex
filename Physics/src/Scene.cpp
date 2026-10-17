@@ -1932,7 +1932,7 @@ static void __fastcall nxFluidSetName(void* wrapper, void*, const char* name)
 		return;
 		}
 	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
-	nxSetSdkPointerBinding(internal, const_cast<char*>(name));
+	nxSetSdkPointerBindingViaThunk(internal, const_cast<char*>(name));
 	nxNpSceneGuardLeave(writeLock);
 	}
 
@@ -2064,7 +2064,7 @@ static void* __fastcall nxFluidEmitterDeletingDestructor(void* internal,
 		delete wrapper;
 		*reinterpret_cast<NpFluidEmitter**>(bytes + 0x0c) = 0;
 		}
-	nxSetSdkPointerBinding(internal, 0);
+	nxSetSdkPointerBindingViaThunk(internal, 0);
 	nxNpFluidEmitterRemoveName(internal);
 	void* const owner = *reinterpret_cast<void**>(bytes + 4);
 	if(owner)

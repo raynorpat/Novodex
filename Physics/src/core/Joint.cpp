@@ -349,7 +349,7 @@ Joint::Joint(const NxJointDesc& desc, NxU32 typeBit)
 // does at 0x95e26. The listing ends with a tail jump to phys_fn_004089.
 Joint::~Joint()
 	{
-	nxSetSdkPointerBinding(this, 0);
+	nxSetSdkPointerBindingViaThunk(this, 0);
 	if(mScene)
 		// Scene::removeJoint (phys_fn_000633, Physics/src/Scene.cpp).
 		static_cast<NxSceneInternal*>(mScene)->removeJoint(this);
@@ -1260,7 +1260,7 @@ void Joint::loadFromDescBase(const NxJointDesc& desc)
 	// before phys_fn_004366 stores it, so there it is skipped.
 	if(mPublicObject)
 		static_cast<NxJoint*>(mPublicObject)->userData = desc.userData;
-	nxSetSdkPointerBinding(this, const_cast<char*>(desc.name));
+	nxSetSdkPointerBindingViaThunk(this, const_cast<char*>(desc.name));
 	if(desc.jointFlags & NX_JF_COLLISION_ENABLED)
 		mFlags |= 0x100;
 	else

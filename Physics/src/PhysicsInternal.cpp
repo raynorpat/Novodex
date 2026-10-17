@@ -215,6 +215,21 @@ bool nxSetSdkPointerBinding(void* key, void* value)
 	return true;
 	}
 
+// phys_fn_003683 (0x0008aea0) receives its registry key in ECX and its value
+// as the single stack argument, then forwards both to phys_fn_000480.
+#if defined(_MSC_VER)
+__declspec(noinline)
+#endif
+bool SdkPointerBindingThunk::setValue(void* value)
+	{
+	return nxSetSdkPointerBinding(this, value);
+	}
+
+bool nxSetSdkPointerBindingViaThunk(void* key, void* value)
+	{
+	return reinterpret_cast<SdkPointerBindingThunk*>(key)->setValue(value);
+	}
+
 void nxReleaseSdkPointerBindings()
 	{
 	if(!gPointerBindings)

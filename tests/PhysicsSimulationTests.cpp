@@ -734,6 +734,41 @@ static bool nxSimulationResolvePrivateRow(HMODULE physics, const wchar_t* pairDi
 	return true;
 	}
 
+static bool nxSimulationTestSdkPointerBindingThunk(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* rowAddress = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?setValue@SdkPointerBindingThunk@@QAE_NPAX@Z", 0x0008aea0u,
+		&rowAddress))
+		return false;
+	void* getAddress = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?nxGetSdkPointerBinding@@YAPAXPAX@Z", 0x0000df90u,
+		&getAddress))
+		return false;
+	typedef bool (__thiscall *SetBindingThunkFn)(void*, void*);
+	typedef void* (__cdecl *GetBindingFn)(void*);
+	SetBindingThunkFn const setBinding = reinterpret_cast<SetBindingThunkFn>(rowAddress);
+	GetBindingFn const getBinding = reinterpret_cast<GetBindingFn>(getAddress);
+	alignas(4) unsigned char keyStorage[16] = {};
+	alignas(4) unsigned firstValue = 0x13579bdfu;
+	alignas(4) unsigned secondValue = 0x2468ace0u;
+	void* const key = keyStorage;
+	const bool firstSet = setBinding(key, &firstValue);
+	const bool firstRead = getBinding(key) == &firstValue;
+	const bool secondSet = setBinding(key, &secondValue);
+	const bool secondRead = getBinding(key) == &secondValue;
+	const bool removed = setBinding(key, 0);
+	const bool removedRead = getBinding(key) == 0;
+	const unsigned mismatches = !(firstSet && firstRead && secondSet &&
+		secondRead && removed && removedRead);
+	printf("simulation sdk-pointer-binding row=003683 set=%u update=%u remove=%u cleared=%u mismatches=%u\n",
+		firstSet && firstRead ? 1u : 0u, secondSet && secondRead ? 1u : 0u,
+		removed ? 1u : 0u, removedRead ? 1u : 0u, mismatches);
+	return mismatches == 0;
+	}
+
 static unsigned short nxSimulationReadX87ControlWord()
 	{
 	unsigned short controlWord = 0;
@@ -1560,6 +1595,12 @@ int wmain(int argc, wchar_t** argv)
 		{
 		FreeLibrary(physics);
 		return nxFail("SDK creation failed");
+		}
+	if(!nxSimulationTestSdkPointerBindingThunk(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 003683 failed the SDK pointer-binding thunk probe");
 		}
 	if(!nxSimulationTestActorOwnerPairCleanupRow521(physics, pairDirectory))
 		{
