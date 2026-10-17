@@ -3774,6 +3774,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'simulation fluid public-api descriptor-user-data copied=1'
 		'simulation fluid public-api name stored=1 cleared=1'
 		'simulation fluid public-api surface-mesh get=1 released=1 calls=1 flags=1 errors=0 unlicensed=1.1 create-warning=1'
+		'simulation fluid-internal-surface-mesh-create row=003481 created=1 callback=1 args=1 userdata=1 matched=1'
 		'simulation fluid licensed-surface-mesh properties row=003704 matched=1'
 		'simulation implicit-mesh set-surface-radius row=003878 matched=1'
 		'simulation implicit-mesh get-single-radius row=003880 matched=1'
@@ -6322,7 +6323,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2879  # plus phys_fn_003692 NpFluid solver constructor differential
+	'5' = 2880  # includes phys_fn_003481 surface-mesh constructor differential
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
@@ -6411,7 +6412,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1739  # plus nine phys_fn_003501 emitter-create failure assertions
+	'6' = 1740  # includes phys_fn_003481 surface-mesh constructor differential
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
@@ -6462,7 +6463,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3018  # plus phys_fn_003692 NpFluid solver constructor differential
+	'7' = 3019  # includes phys_fn_003481 surface-mesh constructor differential
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential

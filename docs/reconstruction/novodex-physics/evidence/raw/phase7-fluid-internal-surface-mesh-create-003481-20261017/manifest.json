@@ -1,0 +1,60 @@
+{
+  "row": "phys_fn_003481",
+  "date": "2026-10-17",
+  "oracle": "D:/FlamingEnt__/Unreal_3/Binaries/NxPhysics.dll",
+  "candidate_build_root": "build/approved-five-family-current",
+  "candidate_sha256_restored": "6095d1850a4a3ff2994181a24c984d6a7081ed2994626dc775481dcdce506003",
+  "oracle_candidate_restored": {
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true
+  },
+  "mutation": "nxFluidInitializeSurfaceMesh forwards desc->smoothingIterations + 1",
+  "mutation_detection": {
+    "oracle_exit": 0,
+    "candidate_exit": 1,
+    "stdout_delta": 67,
+    "marker": "simulation fluid-internal-surface-mesh-create row=003481 created=1 callback=1 args=0 userdata=1 matched=0"
+  },
+  "phase_gates": {
+    "5": {
+      "coverage": 2880,
+      "floor": 2879
+    },
+    "6": {
+      "coverage": 1740,
+      "floor": 1739
+    },
+    "7": {
+      "coverage": 3019,
+      "floor": 3018
+    }
+  },
+  "artifacts": {
+    "mutant-differential.log.gz": {
+      "sha256": "cec25c493ef96565be3d0bd5ced012c757155b03f326cf5a2d29c7323cdad001",
+      "size": 56703
+    },
+    "restored-differential.log.gz": {
+      "sha256": "2b2caa7af083282c6093381f50a78e7c784c752d636189e1829f584bb4c587ae",
+      "size": 57699
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "7ad912d78f06bae912b315104bf3eb5e9cedc69396061cfbdaf1eb1471771d72",
+      "size": 213700
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "40b5f9646a5ebe5bf5c3e44e996643275841a612ff96575bbc8a0056ea63896a",
+      "size": 256807
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "1bb0ca0c22344daf99ed022fdc112cad93069f0db2883f831b40cb61bb2c683e",
+      "size": 379668
+    },
+    "mutation-003481.patch": {
+      "sha256": "bc15a478dc61a5fe81ede7880864203af0a22f25a566155b36061b63ade91650",
+      "size": 165
+    }
+  }
+}

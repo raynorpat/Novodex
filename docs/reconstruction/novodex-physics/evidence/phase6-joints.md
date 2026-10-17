@@ -11270,3 +11270,5 @@ Phase 7 closure evidence: phys_fn_003507 static fluid-collision index-tail mutat
 Phase 7 closure evidence: phys_fn_003501 emitter-create capacity mutation is detected (created=16, count=19, stdout_delta=89, candidate_exit=1); restored capacity fixture matches at 20 emitters. See evidence/phase7-fluid-emitter-create-003501.md and evidence/raw/phase7-fluid-emitter-create-003501-20261017/.
 
 Phase 7 closure evidence: phys_fn_003493 internal emitter release swap-index mutation is detected (internal-array=0, public-array=1, callback=1, mismatches=1, stdout_delta=88); restored result matches. See evidence/phase7-fluid-emitter-release-003493.md and evidence/raw/phase7-fluid-emitter-release-003493-20261017/.
+
+Phase 7 closure evidence: phys_fn_003481 surface-mesh construction is mutation-falsified by the licensed descriptor fixture (smoothing-iteration +1 reports args=0, matched=0, stdout_delta=67); restored differential is exact. See evidence/phase7-fluid-internal-surface-mesh-create-003481.md and evidence/raw/phase7-fluid-internal-surface-mesh-create-003481-20261017/.

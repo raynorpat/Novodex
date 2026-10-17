@@ -1,0 +1,7 @@
+# Fluid::createSurfaceMesh constructor (`phys_fn_003481`)
+
+IDA decompilation of the pinned oracle at RVA `0x000855b0` shows the constructor path validates the descriptor, checks the licensed feature bit, deletes any existing surface manager, allocates a `0x3c`-byte manager through the SDK allocator, constructs and initializes it, stores the owner pointer, and publishes the new manager only after initialization succeeds. The matching candidate path is `nxFluidInitializeSurfaceMesh` in [Scene.cpp](../../../Physics/src/Scene.cpp), mapped in `Scene.obj` at `0x10068320`. The public `NpFluid::createSurfaceMesh` wrapper remains separately accounted for as `phys_fn_003704`.
+
+The registered simulation fixture creates a licensed surface mesh using non-default radii, blend, triangle size, six smoothing iterations, a name, and `userData`. Its row-specific marker verifies successful construction, one backend callback, all forwarded descriptor arguments, and copied `userData`. Mutating the backend call to forward `smoothingIterations + 1` is caught: the oracle reports `args=1 matched=1`, the candidate reports `args=0 matched=0`, exits 1, and differs by 67 bytes. The restored candidate returns to an exact match (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`).
+
+Fresh gates pass: Phase 5 at 2,880/2,879 assertions, Phase 6 at 1,740/1,739, and Phase 7 at 3,019/3,018. Full transcripts, gate logs, the mutation patch, and hashes are in [raw evidence](raw/phase7-fluid-internal-surface-mesh-create-003481-20261017/).

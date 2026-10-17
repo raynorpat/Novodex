@@ -65767,13 +65767,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": "Physics/src/fluids/Fluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1297",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12274",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at oracle RVA 0x000855b0 confirms descriptor validation, feature-flag rejection, prior surface-manager deletion, 0x3c-byte SDK allocation, manager construction and initialization, owner-slot publication, and failure cleanup. Candidate map resolves nxFluidInitializeSurfaceMesh in Scene.obj at 0x10068320.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests fixture creates a licensed implicit surface mesh from a descriptor with non-default radii, blend, triangle size, six smoothing iterations, name, and userData; the row-specific marker checks creation, one backend callback, all forwarded arguments, and userData. Changing the forwarded smoothing count to +1 is detected (args=0, matched=0, candidate_exit=1, stdout_delta=67); restored oracle/candidate output matches exactly (both exit 0, stdout_delta=0, stderr exact). Phase 5/6/7 gates pass at 2,880/2,879, 1,740/1,739, and 3,019/3,018 coverage assertions. See evidence/phase7-fluid-internal-surface-mesh-create-003481.md and evidence/raw/phase7-fluid-internal-surface-mesh-create-003481-20261017/.",
+      "notes": "Fluid::createSurfaceMesh constructor path. Covers validation, feature gate, replacement, allocation, manager initialization, and owner publication through a non-default descriptor. The public NpFluid wrapper is separately tracked as phys_fn_003704.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidInitializeSurfaceMesh"
     },
     {
       "id": "phys_fn_003482",

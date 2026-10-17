@@ -6854,6 +6854,16 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[4] == 0x3ca3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[5] == 0x3ba3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[6] == 6;
+	printf("simulation fluid-internal-surface-mesh-create row=003481 created=%u callback=%u args=%u userdata=%u matched=%u\n",
+		constructedSurfaceMesh ? 1u : 0u,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreate,
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[2] == 0x3c23d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[3] == 0x3d23d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[4] == 0x3ca3d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[5] == 0x3ba3d70au &&
+		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[6] == 6 ? 1u : 0u,
+		constructedSurfaceMeshUserDataMatches ? 1u : 0u,
+		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
 	resetFluidManagerCallbacks();
 	NxImplicitMesh* const explicitSurfaceMesh = licensedSurfaceMeshFluid
 		? licensedSurfaceMeshFluid->createSurfaceMesh(licensedSurfaceMeshDesc) : 0;
