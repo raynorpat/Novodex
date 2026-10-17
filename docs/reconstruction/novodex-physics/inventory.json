@@ -6243,14 +6243,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1043",
       "static_proof": "locked Scene::getNbPairs field/count forward; confirmed against the pinned Capstone listing and NpScene implementation.",
       "dynamic_proof": "NpScene::getNbPairs on the registered Phase 7 NxPhysicsPairFlagTests staged-pair differential. stdout_delta=6 under a row-specific mutation; oracle_exit=0, candidate_exit=0, stderr_exact=True. Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-pair-query-wrappers-000317-000319.md.",
-      "notes": "",
+      "notes": "Fresh CMake Release build confirms NpScene::getNbPairs in Physics/src/NpScene.cpp; ?getNbPairs@NpScene@@UBEIXZ at 0x10042a90 in NpScene.obj.",
       "implementation_symbol": "NpScene::getNbPairs",
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getNbPairs@NpScene@@UBEIXZ",
-        "address": "0x100428b0",
+        "address": "0x10042a90",
         "object": "NpScene.obj"
-      }
+      },
+      "implementation": "Physics/src/NpScene.cpp"
     },
     {
       "id": "phys_fn_000318",
@@ -6286,14 +6287,15 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1044",
       "static_proof": "read-locked Scene::getPairFlagArray forward; confirmed against the pinned Capstone listing and NpScene implementation.",
       "dynamic_proof": "NpScene::getPairFlagArray on the registered Phase 7 NxPhysicsPairFlagTests staged-pair differential. stdout_delta=4 under a row-specific mutation; oracle_exit=0, candidate_exit=0, stderr_exact=True. Restored control is exact (stdout_delta=0, stderr_exact=True). See evidence/phase7-npscene-pair-query-wrappers-000317-000319.md.",
-      "notes": "",
+      "notes": "Fresh CMake Release build confirms NpScene::getPairFlagArray in Physics/src/NpScene.cpp; ?getPairFlagArray@NpScene@@UBE_NPAUNxPairFlag@@I@Z at 0x10042bb0 in NpScene.obj.",
       "implementation_symbol": "NpScene::getPairFlagArray",
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getPairFlagArray@NpScene@@UBE_NPAUNxPairFlag@@I@Z",
-        "address": "0x100429d0",
+        "address": "0x10042bb0",
         "object": "NpScene.obj"
-      }
+      },
+      "implementation": "Physics/src/NpScene.cpp"
     },
     {
       "id": "phys_fn_000320",
