@@ -72614,13 +72614,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1445",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12967",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0008d0c0 shows the constructor writing the base-construction vptr, initializing the secondary NpImplicitMeshLockBase at +0x08 (its vptr and two null lock links), storing the internal record at +0x14, then installing the final primary vptr and returning this. The CMake Release map resolves ??0NpImplicitMesh@@QAE@PAX@Z in ImplicitMesh.obj.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests directly compares oracle RVA 0x0008d0c0 with the candidate map constructor and checks both vptrs, null lock links, exact internal-record pointer, returned object, and x86 stack balance. Clearing the constructor's record initializer is rejected (record=0, mismatches=1); restored output is exact. See evidence/phase7-implicit-mesh-constructor-003866.md.",
+      "notes": "The constructor is part of the NpImplicitMesh public wrapper lifecycle; its public SDK header remains unchanged."
     },
     {
       "id": "phys_fn_003867",

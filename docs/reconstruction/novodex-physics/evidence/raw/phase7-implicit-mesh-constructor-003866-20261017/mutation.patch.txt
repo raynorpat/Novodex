@@ -1,0 +1,9 @@
+Mutation applied only in the temporary candidate source, then restored:
+
+--- a/Physics/src/ImplicitMesh.cpp
++++ b/Physics/src/ImplicitMesh.cpp
+@@
+-NpImplicitMesh::NpImplicitMesh(void* internalRecord)
+-    : mInternalRecord(internalRecord)
++NpImplicitMesh::NpImplicitMesh(void* internalRecord)
++    : mInternalRecord(0)

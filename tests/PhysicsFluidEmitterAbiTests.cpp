@@ -1624,6 +1624,71 @@ static unsigned nxRunNpImplicitMeshGetMeshDataDifferential(
 	return mismatches;
 	}
 
+static unsigned nxRunNpImplicitMeshConstructorDifferential(
+	HMODULE oracleModule, unsigned char* oracleImage, HMODULE candidateModule,
+	void* candidateConstructorAddress, void* candidatePrimaryVtable,
+	void* candidateSecondaryVtable)
+	{
+	if(!oracleModule || !oracleImage || !candidateModule ||
+		!candidateConstructorAddress || !candidatePrimaryVtable ||
+		!candidateSecondaryVtable)
+		return 1;
+	typedef void* (__thiscall* Constructor)(void*, void*);
+	Constructor const oracleConstructor =
+		reinterpret_cast<Constructor>(oracleImage + 0x0008d0c0u);
+	Constructor const candidateConstructor =
+		reinterpret_cast<Constructor>(candidateConstructorAddress);
+	unsigned char oracleObject[0x18];
+	unsigned char candidateObject[0x18];
+	unsigned char oracleRecord[0x38];
+	unsigned char candidateRecord[0x38];
+	memset(oracleObject, 0xcd, sizeof(oracleObject));
+	memset(candidateObject, 0xcd, sizeof(candidateObject));
+	memset(oracleRecord, 0x5a, sizeof(oracleRecord));
+	memset(candidateRecord, 0x5a, sizeof(candidateRecord));
+	unsigned oracleEspBefore = 0, oracleEspAfter = 0;
+	unsigned candidateEspBefore = 0, candidateEspAfter = 0;
+	void* oracleResult = 0;
+	void* candidateResult = 0;
+	__asm mov oracleEspBefore, esp
+	oracleResult = oracleConstructor(oracleObject, oracleRecord);
+	__asm mov oracleEspAfter, esp
+	__asm mov candidateEspBefore, esp
+	candidateResult = candidateConstructor(candidateObject, candidateRecord);
+	__asm mov candidateEspAfter, esp
+	const bool primaryVptrsMatch =
+		*reinterpret_cast<void**>(oracleObject) == oracleImage + 0x001167d8u &&
+		*reinterpret_cast<void**>(candidateObject) == candidatePrimaryVtable;
+	const bool secondaryVptrsMatch =
+		*reinterpret_cast<void**>(oracleObject + 8) == oracleImage + 0x00116818u &&
+		*reinterpret_cast<void**>(candidateObject + 8) == candidateSecondaryVtable;
+	const bool lockLinksCleared =
+		*reinterpret_cast<void**>(oracleObject + 0x0c) == 0 &&
+		*reinterpret_cast<void**>(oracleObject + 0x10) == 0 &&
+		*reinterpret_cast<void**>(candidateObject + 0x0c) == 0 &&
+		*reinterpret_cast<void**>(candidateObject + 0x10) == 0;
+	const bool internalRecordsMatched =
+		*reinterpret_cast<void**>(oracleObject + 0x14) == oracleRecord &&
+		*reinterpret_cast<void**>(candidateObject + 0x14) == candidateRecord;
+	const bool returnsMatched = oracleResult == oracleObject &&
+		candidateResult == candidateObject;
+	const bool stacksBalanced = oracleEspBefore == oracleEspAfter &&
+		candidateEspBefore == candidateEspAfter;
+	unsigned mismatches = 0;
+	mismatches += primaryVptrsMatch ? 0u : 1u;
+	mismatches += secondaryVptrsMatch ? 0u : 1u;
+	mismatches += lockLinksCleared ? 0u : 1u;
+	mismatches += internalRecordsMatched ? 0u : 1u;
+	mismatches += returnsMatched ? 0u : 1u;
+	mismatches += stacksBalanced ? 0u : 1u;
+	printf("implicit mesh constructor row=003866 primary=%u secondary=%u "
+		"links=%u record=%u return=%u stack=%u mismatches=%u\n",
+		primaryVptrsMatch ? 1u : 0u, secondaryVptrsMatch ? 1u : 0u,
+		lockLinksCleared ? 1u : 0u, internalRecordsMatched ? 1u : 0u,
+		returnsMatched ? 1u : 0u, stacksBalanced ? 1u : 0u, mismatches);
+	return mismatches;
+	}
+
 static unsigned nxRunNpImplicitMeshDeletingDestructorDifferential(
 	HMODULE oracleModule, unsigned char* oracleImage, HMODULE candidateModule,
 	void* candidateDestructorAddress, void* candidateAllocateAddress,
@@ -8817,6 +8882,32 @@ int wmain(int argc, wchar_t** argv)
 			"stack_checks=0 mismatches=1\n");
 		++gFailures;
 		}
+	}
+
+	{
+	void* candidateImplicitMeshConstructor = 0;
+	void* candidateImplicitMeshPrimaryVtable = 0;
+	void* candidateImplicitMeshSecondaryVtable = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??0NpImplicitMesh@@QAE@PAX@Z",
+			&candidateImplicitMeshConstructor) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NpImplicitMesh@@6BNxImplicitMesh@@@",
+			&candidateImplicitMeshPrimaryVtable) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"??_7NpImplicitMesh@@6BNpImplicitMeshLockBase@@@",
+			&candidateImplicitMeshSecondaryVtable))
+		{
+		fprintf(stderr, "FAIL candidate NxPhysics.dll implicit-mesh constructor row could not be resolved\n");
+		printf("implicit mesh constructor row=003866 primary=0 secondary=0 links=0 record=0 return=0 stack=0 mismatches=1\n");
+		++gFailures;
+		}
+	else
+		gFailures += nxRunNpImplicitMeshConstructorDifferential(
+			oracleImage, image, candidatePhysics,
+			candidateImplicitMeshConstructor,
+			candidateImplicitMeshPrimaryVtable,
+			candidateImplicitMeshSecondaryVtable);
 	}
 
 	{
