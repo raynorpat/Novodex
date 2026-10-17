@@ -10628,12 +10628,20 @@
       "phase": 7,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": "x87 control-word read (0x106d0)",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/199",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1443",
       "static_proof": "pushes ecx, reads the x87 status word (fnstcw) into a local, stores it to [this+0]; pop; ret",
       "dynamic_proof": "The candidate preserves the caller x87 control word at simulateFrame entry with the inline fnstcw corresponding to this row. Replacing that save with zero makes the registered NxPhysicsSimulationTests candidate abort on a floating-point exception (candidate_exit=-1073741681, stdout_delta=3997). Restoring fnstcw returns the staged-pair transcript to an exact match. See evidence/phase7-x87-control-word-000537.md.",
-      "notes": ""
+      "notes": "The row is emitted inline at simulateFrame entry as fnstcw; map reference names the containing candidate method, not a separate standalone symbol.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::simulateFrame",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?simulateFrame@NxSceneInternal@@QAEXXZ",
+        "address": "0x1006e4d0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000538",
