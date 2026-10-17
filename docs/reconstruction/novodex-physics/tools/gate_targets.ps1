@@ -119,6 +119,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsFluidEmitterAbiTests' = @(
 		'implicit mesh constructor row=003866 primary=1 secondary=1 links=1 record=1 return=1 stack=1 mismatches=0'
 		'implicit mesh deleting-dtor row=003868 primary=1 secondary=1 links=1 record=1 return=1 stack=1 flag1_free=1 mismatches=0'
+		'implicit mesh lock-base deleting-dtor row=003864 oracle_vptr=1 candidate_vptr=1 oracle_links=1 candidate_links=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'implicit mesh secondary deleting-thunk row=003898 oracle_slot=1 candidate_slot=1 primary=1 secondary=1 record=1 return=1 stack=1 flag1_free=1 mismatches=0'
 		'implicit mesh getMeshData row=003872 candidate_dll cases=3 matched=3 balanced_stacks=3 released_locks=3 mismatches=0'
 		'fluid solver deleting dtor row=003694 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
@@ -6254,7 +6255,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2834  # previous 2833 plus the implicit-mesh constructor differential
+	'5' = 2836  # previous 2835 plus the implicit-mesh lock-base deleting-destructor differential
 	           # previous 2832 plus the implicit-mesh secondary deleting-thunk differential
 	           # previous 2830 plus the implicit-mesh getMeshData differential
 	           # plus the 169-slot FluidModel export resolver differential
@@ -6330,7 +6331,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1719  # previous 1718 plus the implicit-mesh getBlend row differential
+	'6' = 1720  # previous 1719 plus the implicit-mesh lock-base deleting-destructor differential
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
 	           # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
@@ -6379,7 +6380,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2967  # previous 2966 plus the implicit-mesh constructor differential
+	'7' = 2969  # previous 2968 plus the implicit-mesh lock-base deleting-destructor differential
 	           # previous 2965 plus the implicit-mesh secondary deleting-thunk differential
 	           # previous 2963 plus the implicit-mesh getMeshData differential
 	           # plus the 169-slot FluidModel export resolver differential; adds flags-only initial ParticleData failure

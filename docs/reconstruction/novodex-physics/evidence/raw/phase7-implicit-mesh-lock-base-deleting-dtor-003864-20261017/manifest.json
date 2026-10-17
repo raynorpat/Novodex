@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003864",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "ccaad05bd440eed4060d279d7ba95f9ba2600a326723f4e28a0b3f373019bb6b",
+  "mutation_candidate_sha256": "e32d5f3a4010f7f67cd2c29da6f093b101ea1bad11e088c37b08a2658764cfa8",
+  "mutation": "Changed NpImplicitMeshLockBase::~NpImplicitMeshLockBase to clear mWriteLockLink; candidate marker reported oracle_links=1 candidate_links=0 mismatches=1 and exit 1.",
+  "restored": "Candidate marker reports oracle_links=1 candidate_links=1, vptr/return/stack/free checks pass, mismatches=0 and exit 0.",
+  "phase_gates": {
+    "5": "pass; coverage_assertions_evaluated=2836; floor=2836",
+    "6": "pass; coverage_assertions_evaluated=1720; floor=1720",
+    "7": "pass; coverage_assertions_evaluated=2969; floor=2969"
+  },
+  "raw_logs": [
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz",
+    "mutation-differential.log.gz",
+    "restored-differential.log.gz"
+  ],
+  "oracle_only_baseline_sha256": "65affecb3c07879314017602fb4470f5869f438516b9fbbb47c669175438e7f3",
+  "fluid_fixture_source_sha256": "80bfffdbacb3d3aee357f2b1182a450e180ac07a90be3470868eff46cbcdafbd"
+}

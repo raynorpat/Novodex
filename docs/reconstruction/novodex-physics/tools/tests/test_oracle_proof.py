@@ -720,7 +720,7 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(sum(line == expected["coverage_line"] for line in lines), 1)
             elif expected["format"] == "fluid_oracle_lines":
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsFluidEmitterAbiTests.cpp")
-                self.assertEqual(expected["oracle_output_lines"], 29)
+                self.assertEqual(expected["oracle_output_lines"], 30)
                 self.assertEqual(len(expected["oracle_output_digest_sha256"]), 64)
             elif expected["format"] == "asset_oracle_digest":
                 self.assertEqual(expected["fixture_sources"], [

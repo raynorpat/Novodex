@@ -72578,13 +72578,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/include/NpImplicitMesh.h (compiler-generated scalar deleting destructor)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1868",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12965",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x0008d0a0 identifies the scalar deleting destructor for NpImplicitMeshLockBase: it installs the standalone base vptr, conditionally frees the object when delete flag bit zero is set, returns this, and uses ret 4.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests invokes oracle RVA 0x0008d0a0 and the candidate map-resolved ??_GNpImplicitMeshLockBase@@UAEPAXI@Z on scratch objects. It checks base-vptr replacement, preservation of both seeded lock links, return identity, x86 stack balance, and flag-one freeing through each DLL's allocator. Clearing mWriteLockLink is rejected (candidate_links=0, oracle_links=1, mismatches=1, candidate exit 1); restored control reports mismatches=0.",
+      "notes": "The CMake/MSVC build emits the candidate scalar deleting destructor from the existing private NpImplicitMeshLockBase destructor; public Physics headers are unchanged."
     },
     {
       "id": "phys_fn_003865",
