@@ -72542,13 +72542,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1867",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12964",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle body at RVA 0x8d090 is an 8-byte secondary scalar-deleting adjustor: subtract 8 from this and tail-jump to NpFluidEmitter::`scalar deleting destructor` at RVA 0x8c310. The candidate MSVC linker map emits the corresponding W7 thunk.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests calls the NpFluidEmitterReadLock secondary-vtable slot for deleting flags 0 and 1 on scratch objects. It checks oracle/candidate thunk resolution, both primary and secondary vptr transitions, seeded words, returned root pointer, x86 stack balance, and allocator frees. The sub-ecx adjustment mutant (8 to 4) is rejected with mismatches=4; restored controls report mismatches=0. Registered in Phase 5 and Phase 7.",
+      "notes": "compiler-generated secondary scalar-deleting adjustor thunk; secondary NpFluidEmitterReadLock subobject starts at this+8.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "??_ENpFluidEmitter@@W7AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ENpFluidEmitter@@W7AEPAXI@Z",
+        "address": "0x1003ce2b",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003863",
@@ -73240,7 +73248,8 @@
         "symbol": "??_ENpImplicitMesh@@W7AEPAXI@Z",
         "address": "0x1002e0f3",
         "object": "ImplicitMesh.obj"
-      }    },
+      }
+    },
     {
       "id": "phys_fn_003899",
       "rva": "0x0008d818",

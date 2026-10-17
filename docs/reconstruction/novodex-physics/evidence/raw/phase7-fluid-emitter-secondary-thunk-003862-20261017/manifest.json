@@ -1,0 +1,72 @@
+{
+  "row": "phys_fn_003862",
+  "rva": "0x0008d090",
+  "date": "2026-10-17",
+  "candidate_dll_sha256": "89896772111dcc32e2372e1fbde35598618b7f719e8ea46f9e7c6da944ebada9",
+  "oracle_dll_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "phase5_coverage": "2837/2837",
+  "phase7_coverage": "2970/2970",
+  "tool_tests": "817 passed",
+  "artifacts": [
+    {
+      "path": "build.log.gz",
+      "source": "build/phase7-fluid-emitter-secondary-thunk-003862-build.log",
+      "sha256": "21a994839827ceeb29ba26c1a0c3abff86a02a884c019e576648ce7f6e156f9f",
+      "uncompressed_sha256": "50aa6c879a85f0406a4e23885477814c84c22f8d2475903d54cb3a04c5827275",
+      "bytes": 674,
+      "compressed_bytes": 311
+    },
+    {
+      "path": "restored-differential.log.gz",
+      "source": "build/phase7-fluid-emitter-secondary-thunk-003862-restored-differential.log",
+      "sha256": "4377e6ad8dab3df3f8d9c110e1d4048d99a980fb8f537be9683affba300fb00b",
+      "uncompressed_sha256": "7ac8cbb26bfdd6113ea41e1e4f8735e2d98a51d028bce8eae939c3e9d226669c",
+      "bytes": 15886,
+      "compressed_bytes": 3275
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "source": "build/phase5-fluid-emitter-secondary-thunk-003862.log",
+      "sha256": "3ea7888b7c91b694b25f4f44ac4db080cfe02998c45cbd48c9a0f3ec88a1ccd2",
+      "uncompressed_sha256": "1e1d4d02fd1e7a457e051f3d10763a09534c3ebbcf9762a60f12e48f15f85a3d",
+      "bytes": 2828152,
+      "compressed_bytes": 210307
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source": "build/phase7-fluid-emitter-secondary-thunk-003862.log",
+      "sha256": "78c70d4b72c639cd65573e96171a3583b7f97d237537afa55f81d225f705d6ba",
+      "uncompressed_sha256": "d028717fc8a543dfe4f32bc12df857617eeca36177f452f3c37510eabbfd61c5",
+      "bytes": 4635043,
+      "compressed_bytes": 375101
+    },
+    {
+      "path": "tool-tests.log.gz",
+      "source": "build/phase7-fluid-emitter-secondary-thunk-003862-tool-tests.log",
+      "sha256": "918cb6ba1d45ae24cdcf7d2cc39fafc4762953a19cdb49746b5b1a42562dd989",
+      "uncompressed_sha256": "cb25fe8a72509a5961cf65b34fb7e488f09a787e4043e6738fed93df23295ad3",
+      "bytes": 126048,
+      "compressed_bytes": 19073
+    },
+    {
+      "path": "mutation.stdout.txt",
+      "sha256": "ff3713f9b1244b560e98711e8f44aaf3d4b66e8c83150905e55b02b22cbbabb5",
+      "bytes": 11242
+    },
+    {
+      "path": "mutation.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "mutation.exit.txt",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+      "bytes": 3
+    },
+    {
+      "path": "mutation.patch.txt",
+      "sha256": "42d1229c37e6e3c04eaaa2aed68b20494bceb91561ff46f8856555d5ce561ebb",
+      "bytes": 419
+    }
+  ]
+}
