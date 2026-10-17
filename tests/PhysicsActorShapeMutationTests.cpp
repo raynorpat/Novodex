@@ -450,6 +450,45 @@ static void printRoot(const char* label, const NxActor* actor)
 		prunerCount(scene));
 	}
 
+// phys_fn_001943 appends each actor root to the collection's +0x78 SdkContainer
+// and, for compound roots, registers each child with the selected pruner.
+// Inspect those outcomes on SDK-created actors so the row has direct markers
+// beyond the broader actor transcript.
+static void printPruningBodyRegistration(const char* label, const NxActor* actor)
+	{
+	const unsigned char* body = actorBody(actor);
+	const unsigned char* scene = *reinterpret_cast<unsigned char* const*>(body + 4);
+	const unsigned char* root = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	const unsigned char* pruning = scene + 0x624;
+	const unsigned char* list = pruning + 0x78;
+	const unsigned count = word(list, 4);
+	const unsigned entries = word(list, 8);
+	unsigned rootMatches = 0;
+	for(unsigned i = 0; i < count; ++i)
+		rootMatches += word(reinterpret_cast<const void*>(entries + 4 * i), 0) ==
+			reinterpret_cast<unsigned>(root) ? 1u : 0u;
+	const bool group = word(root, 0xd0) == 5u;
+	const unsigned childFirst = group ? word(root, 0xe0) : 0u;
+	const unsigned childEnd = group ? word(root, 0xe4) : 0u;
+	const unsigned childCount = group ? (childEnd - childFirst) / 4 : 0u;
+	bool childFlagsValid = true;
+	unsigned childPruners = 0;
+	for(unsigned i = 0; i < childCount; ++i)
+		{
+		const unsigned child = word(reinterpret_cast<const void*>(childFirst + 4 * i), 0);
+		childFlagsValid = childFlagsValid &&
+			*reinterpret_cast<const unsigned char*>(child + 0xce) ==
+			*reinterpret_cast<const unsigned char*>(root + 0xce) &&
+			*reinterpret_cast<const unsigned char*>(child + 0xcf) == 0;
+		childPruners += word(reinterpret_cast<const void*>(child), 0x20) != 0 &&
+			half(reinterpret_cast<const void*>(child), 0x28) != 0xffffu ? 1u : 0u;
+		}
+	printf("shape_mutation row001943 %s list_matches=%u root_type=%u root_kind=%u root_pruner=%u children=%u child_flags=%u child_pruners=%u\n",
+		label, rootMatches, root[0xce], root[0xcf],
+		word(root, 0x20) != 0 && half(root, 0x28) != 0xffffu ? 1u : 0u,
+		childCount, childFlagsValid ? 1u : 0u, childPruners);
+	}
+
 #define DYNAMIC_CASE(label, actor, bodyDesc) \
 	{ \
 	const unsigned a0 = allocator.allocations(), f0 = allocator.frees(); \
@@ -730,6 +769,7 @@ static void runTask5DynamicCases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allo
 	if(!single || !several || !dense || !staticTrigger || !staticPlane) return;
 	printRoot("t5_single_before", single);
 	DYNAMIC_CASE("t5_single_dynamic", single, given2);
+	printPruningBodyRegistration("single_dynamic", single);
 	t5UseDynamic("t5_single_use", single);
 	MASS_CASE("t5_single_mass", single, 1.0f, 0.0f);
 
@@ -740,6 +780,7 @@ static void runTask5DynamicCases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allo
 	fromShapes.mass = 4.0f;
 	printRoot("t5_several_before", several);
 	DYNAMIC_CASE("t5_several_dynamic", several, fromShapes);
+	printPruningBodyRegistration("group_dynamic", several);
 	t5UseDynamic("t5_several_use", several);
 	NxBodyDesc fromDensity;
 	DYNAMIC_CASE("t5_dense_dynamic", dense, fromDensity);

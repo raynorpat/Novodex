@@ -36394,13 +36394,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/759",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5885",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA pseudocode for RVA 0x0004bac0 and Capstone listing: release the optional cached SweepAndPrune at this+0x2c; derive the pruning type from hasRecord and pruning+0x70; assign the body root collection link at +0xa0, type at +0xce, and kind 1/2 at +0xcf; call the Scene pruning insert; for a compound root set every child type and kind 0 and insert it; finally append the root to the SdkContainer at pruning+0x78, growing it through phys_fn_004840 when full. The only indirect call at 0x0004badf is the allocator vtable release slot 3.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests drives SDK-created single and compound actors through nxSceneAddShape. Required row001943 markers assert exactly one root-list membership, root type/kind/pruner/handle, and all three compound child registrations. Replacing nxPruningAddBody with a no-op is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=122); corrupting the child-kind assignment crashes the candidate (candidate_exit=-1073741819); omitting the list count increment is rejected (stdout_delta=4). Restored control is exact (stdout_delta=0, stderr_exact=True).",
+      "notes": "The optional cached SweepAndPrune member at collection+0x2c is null in current observed call paths; the free branch remains represented and is directly established by the oracle listing. The helper is inlined into nxSceneAddShape in the candidate.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxPruningAddBody",
+      "candidate_map_reference": {
+        "path": "build/phase5-current-goal/Release/NxPhysics.map",
+        "symbol": "?nxSceneAddShape@@YAXPAVNxSceneInternal@@PAE_N@Z",
+        "address": "0x1006a100",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_001944",

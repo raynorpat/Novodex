@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_001943",
+  "base_commit": "63167e50",
+  "result": "mutation_falsified",
+  "gate": "NxPhysicsActorShapeMutationTests",
+  "candidate_build": "build/phase5-current-goal/Release/NxPhysics.dll",
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_restored_nxphysics_sha256": "14c39ae15cfa67047164c8f9452ed846d56375c49dc6616b6dc8cd14f6894d08",
+  "mutations": {
+    "whole_body_noop": {
+      "candidate_nxphysics_sha256": "36bbf1c80f9e83ad23ffa2ee9cc2e6a90f2ea90fb4401b66d80c5ba4a5bf3352",
+      "result": "oracle_exit=0 candidate_exit=0 stdout_delta=122",
+      "observations": [
+        "single_dynamic list_matches=0 root_type=0",
+        "group_dynamic list_matches=0 root_type=0"
+      ]
+    },
+    "compound_child_kind_1_instead_of_0": {
+      "candidate_nxphysics_sha256": "c239facca5f99b7ae5415d75bc1adfc745de4a9c15daf3ed4bfe0ab1634ddd",
+      "result": "oracle_exit=0 candidate_exit=-1073741819",
+      "observations": [
+        "mutated compound-child prunable kind crashes candidate"
+      ]
+    },
+    "omit_root_list_count_increment": {
+      "candidate_nxphysics_sha256": "f398fec25830f4dc9556262d01092038cc1d6dddfb56dbcf091beb37358c09e4",
+      "result": "oracle_exit=0 candidate_exit=0 stdout_delta=4",
+      "observations": [
+        "single_dynamic list_matches=0",
+        "group_dynamic list_matches=0"
+      ]
+    }
+  },
+  "restored_control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "coverage_markers": [
+    "shape_mutation row001943 single_dynamic list_matches=1 root_type=2 root_kind=1 root_pruner=1 children=0 child_flags=1 child_pruners=0",
+    "shape_mutation row001943 group_dynamic list_matches=1 root_type=2 root_kind=2 root_pruner=1 children=3 child_flags=1 child_pruners=3"
+  ],
+  "raw_logs": [
+    "marker-baseline.log.gz",
+    "whole-body-noop-mutation.log.gz",
+    "child-kind-mutation.log.gz",
+    "list-count-mutation.log.gz",
+    "restored-control.log.gz"
+  ],
+  "log_sha256": {
+    "marker-baseline.log.gz": "65bb65dfb461209f3be5ec9d027b6350f8743e04b52a851e36b8264243758403",
+    "whole-body-noop-mutation.log.gz": "d22167f0fb0fce76593ac53148f55d6fd6d9156da85779d8a2a93634f0c69880",
+    "child-kind-mutation.log.gz": "4674dc3c2f9b99ca85894ce15c6e9e92720cfdd3e2143f26a82ab5b04c30a310",
+    "list-count-mutation.log.gz": "8b7e2a9bc7ea8cb7a1119e049100fba7cb977c6ac0c2e0dc3b5c8d09e6e668dc",
+    "restored-control.log.gz": "93423b4a1c619949a9b75915b700efc989ecd61e58b911aae723e724b2dc3eca"
+  },
+  "mutation_patch": "whole-body-noop.patch",
+  "full_gate_logs": {
+    "phase5-full-gate.log.gz": {
+      "source": "build/phase5-current-goal-final.log",
+      "source_sha256": "c10a8fb225bd4628dbde295cf353d1e3095d92edd66925c0a82c2c173443bd0c",
+      "compressed_sha256": "66f4a750e7ba1fc73e057ef666c1272c5e070548e2985e1b4cc7d88e7998e0d3"
+    },
+    "phase7-full-gate.log.gz": {
+      "source": "build/phase7-current-goal-final.log",
+      "source_sha256": "cbba340c2158695db1f8cd73084c645a45ff7b80ce098c929dbc65991f74e2f7",
+      "compressed_sha256": "f02571c00822baa94fe0b8767b0f5c9162835e67a711ce2779d769b088f18ff9"
+    }
+  },
+  "full_gate_results": {
+    "phase5": "pass; 2852/2852 coverage assertions",
+    "phase7": "pass; 2986/2986 coverage assertions"
+  }
+}

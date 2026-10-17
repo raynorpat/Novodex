@@ -1,0 +1,10 @@
+--- a/Physics/src/Scene.cpp
++++ b/Physics/src/Scene.cpp
+@@
+ static void nxPruningAddBody(unsigned char* pruning, unsigned char* body, bool hasRecord)
+ {
++    (void)pruning;
++    (void)body;
++    (void)hasRecord;
++    return;
+     const unsigned char type = static_cast<unsigned char>(

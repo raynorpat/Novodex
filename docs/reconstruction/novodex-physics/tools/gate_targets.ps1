@@ -493,12 +493,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'shape_mutation t5_single_dynamic_memory=2.1.608.56.f.24',
         'shape_mutation t5_single_dynamic=0.m40400000.3eaaaaab.i3f000000.3fc00000.40200000.40000000.3f2aaaab.3ecccccd.f.3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0.w.3e7d5777.0.0.3f780aa5.3f800000.0.0.0.3f60a940.bef57744.0.3ef57744.3f60a940.3f800000.40000000.40400000.40000000.0.0.0.3f1af9c5.3de5c717.0.3de5c717.3eec2e9a.n2',
         'shape_mutation t5_single_dynamic_root=1.1.r2.2.1.624.2.s7.100.50006',
+        # phys_fn_001943 body-root list append and root pruner/type/kind fields;
+        # the group marker also checks all three child registrations and flags.
+        'shape_mutation row001943 single_dynamic list_matches=1 root_type=2 root_kind=1 root_pruner=1 children=0 child_flags=1 child_pruners=0',
         'shape_mutation t5_single_use=3eaaaaab.3f2aaaab.3f800000.bf800000.3ec0606e.3f735cd3.3f000000.bf800000.3e800000.3f000000.3fc00000.40200000.3f800000.40000000.40400000.40400000',
         'shape_mutation t5_single_mass=0.m40000000.3f000000.i402d5556.40355556.3e555580.3ebd0bd0.3eb4b4b4.4099997b.f.3f43cc8c.3f24eba1.0.bf24eba1.3f43cc8c.0.0.0.3f800000.40400000.3f800000.bf800000.w.3e6dfb6a.3dadbdcf.beaa1b4e.3f6900db.3f43cc8c.3f24eba1.0.bf10bb36.3f2bd46d.bef57744.be9e2256.3ebbbdfa.3f60a940.40800000.4056d938.40268498.3eb995b3.bbe6cf3c.bb7c2ed8.bbe6cf3c.3fb0ad89.bfef20b0.bb7c2ed8.bfef20b0.4071e18c.n4',
         'shape_mutation t5_several_before=0.3.r5.0.2.624.2.s7.100.50006',
         'shape_mutation t5_several_dynamic_memory=1.0.608.f',
         'shape_mutation t5_several_dynamic=0.m40800000.3e800000.i411f3828.424ef985.42399050.3dcdcddb.3c9e51a2.3cb09614.f.3f24fdc9.bcc079a0.3f43a595.3ebc4027.3f62ca66.be90cf35.bf2b9f5c.3eed32ee.3f1460a4.3fbba4a5.3da2f962.3eed2d4d.w.3ed8a27b.3ebbbc88.3e55161e.3f4d50a3.3f24fdc9.bcc079a0.3f43a595.3f24e208.3f0e2afa.bf06ad54.bed2f943.3f54cf5f.3ebf006f.401dd252.3fec8304.405c75a1.3d5e95f2.3d06541e.bcab5e77.3d06541e.3d5b98f3.bcb40bcd.bcab5e77.bcb40bcd.3d08e0ab.n2',
         'shape_mutation t5_several_dynamic_root=1.3.r5.2.2.624.2.s8.100.40007',
+        'shape_mutation row001943 group_dynamic list_matches=1 root_type=2 root_kind=2 root_pruner=1 children=3 child_flags=1 child_pruners=3',
         'shape_mutation t5_several_use=3e800000.3f000000.3f400000.bd791468.bd404f9f.3d930bbd.3f000000.bf800000.3e800000.411f3828.424ef985.42399050.401dd252.3fec8304.405c75a1.40800000',
         'shape_mutation t5_dense_dynamic_memory=3.2.608.768.128.f.384.64',
         'shape_mutation t5_dense_dynamic=0.m3e490fdb.40a2f983.i3d8c5312.3bc91000.3d8c5310.41698412.4322f965.41698415.f.3f800000.0.0.0.3f800000.0.0.0.3f800000.c0000000.3e800000.3f800000.w.0.0.0.3f800000.3f800000.0.0.0.3f800000.0.0.0.3f800000.c0000000.3e800000.3f800000.41698412.0.0.0.4322f965.0.0.0.41698415.n2',
@@ -6274,7 +6278,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2850  # previous 2849 plus the fluid surface-manager constructor assertion
+	'5' = 2852  # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 2838 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2837 plus the fluid-emitter deleting-destructor differential
 	           # previous 2836 plus the fluid-emitter secondary deleting-thunk differential
@@ -6354,7 +6358,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1724  # previous 1723 plus the fluid surface-manager constructor assertion
+	'6' = 1726  # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
 	           # plus the 169-slot FluidModel export resolver differential
 	           # plus source and actual-DLL rows 000837/000839 mass-frame scale/merge proofs; rows 003970 spring branches and 003979 two-body force plus the shared BoxHullFacade face-index layout assertion; adds phys_fn_003649 implicit-mesh process-heap allocation route and rows 003653/003655 mesh-copy case
@@ -6403,7 +6407,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 2984  # previous 2983 plus the type-3 pruner visualization assertion
+	'7' = 2986  # previous 2984 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 2971 plus the NxFluidEmitter deleting-destructor differential
 	           # previous 2970 plus the fluid-emitter deleting-destructor differential
 	           # previous 2969 plus the fluid-emitter secondary deleting-thunk differential
