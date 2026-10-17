@@ -177,6 +177,28 @@ static bool nxCheckPrunerConstructorBounds(NxScene* wrapper)
 	return empty && registrations;
 	}
 
+// phys_fn_001980 constructs the Scene's pruning engine at Scene+0x624. Check
+// its six empty-world bounds immediately after scene creation, before shape
+// registration can alter them. This makes the constructor's sentinel stores
+// visible to the staged oracle/candidate differential.
+static bool nxCheckPruningEngineConstructorBounds(NxScene* wrapper)
+	{
+	NxU32 sceneAddress = 0;
+	memcpy(&sceneAddress, reinterpret_cast<const NxU8*>(wrapper) + 0x24, sizeof(sceneAddress));
+	if(!sceneAddress)
+		return false;
+	const NxU8* const engine = reinterpret_cast<const NxU8*>(sceneAddress) + 0x624;
+	NxU32 bounds[6];
+	memcpy(bounds, engine + 0x04, sizeof(bounds));
+	const bool empty = bounds[0] == 0x7f7fffff && bounds[1] == 0x7f7fffff &&
+		bounds[2] == 0x7f7fffff && bounds[3] == 0xff7fffff &&
+		bounds[4] == 0xff7fffff && bounds[5] == 0xff7fffff;
+	printf("scene_pruning_engine ctor_empty_bounds=%u words=%08x.%08x.%08x.%08x.%08x.%08x\n",
+		empty ? 1u : 0u, bounds[0], bounds[1], bounds[2],
+		bounds[3], bounds[4], bounds[5]);
+	return empty;
+	}
+
 static bool nxPrunerHandleReuseFailed = false;
 
 static bool nxCheckPrunerHandleReuse(NxScene* wrapper)
@@ -1332,6 +1354,8 @@ int wmain(int argc, wchar_t** argv)
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene)
 		return nxFail("scene creation failed");
+	if(!nxCheckPruningEngineConstructorBounds(scene))
+		return nxFail("pruning-engine constructor bounds did not match");
 
 	for(unsigned i = 0; i < kShapeCaseCount; i++)
 		nxActors[i] = nxCreateCase(scene, i);

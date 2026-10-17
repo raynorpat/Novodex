@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_001980",
+  "entries": [
+    {
+      "file": "mutant.log.gz",
+      "sha256": "25a33cefb63e36ad78c719ff3e711198d66e1d74030311a74a9062218beea54b",
+      "uncompressed_sha256": "38ca6f9123afadd6579760efe468d8de86070196f46c8351d7a621426840211a",
+      "bytes": 403739,
+      "compressed_bytes": 19462
+    },
+    {
+      "file": "restored.log.gz",
+      "sha256": "b3f1b2d797e60ad2bffa2e4bf70de7680184ca528ce7c5be204f01089c5680ef",
+      "uncompressed_sha256": "56421c24c0cb60a659980907815de7e49b3f38dfc87fc104f9db3a2f389876a6",
+      "bytes": 800830,
+      "compressed_bytes": 36875
+    }
+  ]
+}
