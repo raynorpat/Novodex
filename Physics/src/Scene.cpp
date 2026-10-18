@@ -2839,6 +2839,7 @@ static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void* manager,
 	if(gNxImplicitFluidMeshDestroyCallback)
 		gNxImplicitFluidMeshDestroyCallback(backendManager, backendFluid);
 	nxImplicitMeshSetName(manager, 0);
+	nxSetSdkPointerBinding(manager, 0);
 	void* const publicMesh = *reinterpret_cast<void**>(bytes + 0x38);
 	if(publicMesh)
 		{

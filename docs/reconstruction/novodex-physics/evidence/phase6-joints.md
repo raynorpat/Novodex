@@ -11348,3 +11348,5 @@ The nine rows below have individual oracle/candidate mutation proofs; each argum
 Phase 7 implicit-fluid-mesh post-step callback `phys_fn_003657`: a no-op mutation is rejected by the registered `NxPhysicsSimulationTests` differential (`stdout_delta=4130`); restored control matches with zero delta. See `phase7-implicit-mesh-post-step-callback-003657.md` and `evidence/raw/phase7-implicit-mesh-post-step-callback-003657-20261018/`.
 
 - Phase 7 closure evidence: `phys_fn_003659` was mutation-falsified by `NxPhysicsFluidEmitterAbiTests`; the return-0 mutation was detected at `mismatches=1`, and the restored direct differential matches. See `phase7-implicit-mesh-run-003659.md`.
+
+Phase 7 closure evidence: `phys_fn_003687` owner-binding clear was mutation-falsified through `NxPhysicsSimulationTests` (`stdout_delta=74`, candidate exit 1); restored differential is exact. See `phase7-fluid-surface-owner-binding-clear-003687.md` and `evidence/raw/phase7-fluid-surface-owner-binding-clear-003687-20261018/`.

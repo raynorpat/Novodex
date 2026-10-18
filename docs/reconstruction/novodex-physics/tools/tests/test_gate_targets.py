@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2910, "6": 1766, "7": 3049}
+    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2911, "6": 1767, "7": 3050}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -1089,6 +1089,23 @@ class ImplicitMeshRunRowCoverage(unittest.TestCase):
             encoding="utf-8")
         self.assertIn("nxImplicitFluidMeshRun", implementation,
             "phys_fn_003659 has no candidate helper")
+
+
+class ImplicitMeshOwnerBindingClearCoverage(unittest.TestCase):
+    """The surface-mesh manager deleting destructor must clear its SDK binding."""
+
+    def test_owner_binding_clear_is_a_required_simulation_result(self):
+        marker = ("simulation implicit-mesh owner-binding-clear row=003687 "
+                  "set=1 before=1 cleared=1 matched=1")
+        self.assertIn(marker, registered_lines().get("NxPhysicsSimulationTests", []))
+        source = (REPO_ROOT / "tests" / "PhysicsSimulationTests.cpp").read_text(
+            encoding="utf-8")
+        self.assertIn("row=003687 set=%u before=%u cleared=%u matched=%u", source)
+        implementation = (REPO_ROOT / "Physics" / "src" / "Scene.cpp").read_text(
+            encoding="utf-8")
+        destructor = implementation.split(
+            "static void* __fastcall nxFluidSurfaceMeshDeletingDestructor", 1)[1]
+        self.assertIn("nxSetSdkPointerBinding(manager, 0)", destructor)
 
 if __name__ == "__main__":
     unittest.main()

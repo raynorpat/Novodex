@@ -70029,13 +70029,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp#nxFluidSurfaceMeshDeletingDestructor",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1396",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12722",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Ghidra oracle decompilation at RVA 0x0008af20 (93 bytes) shows the deleting destructor clears the public mesh and its SDK pointer binding before the base destructor and conditional free.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests seeds and checks the surface manager SDK binding around public releaseSurfaceMesh. Omission mutation is detected: oracle cleared=1; candidate cleared=0 and exits 1, stdout_delta=74. Restored differential is exact. Evidence: evidence/phase7-fluid-surface-owner-binding-clear-003687.md.",
+      "notes": "Candidate map symbol ?nxFluidSurfaceMeshDeletingDestructor@@YIPAXPAX0E@Z at RVA 0x0005c0e0."
     },
     {
       "id": "phys_fn_003688",

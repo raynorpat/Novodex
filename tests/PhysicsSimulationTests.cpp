@@ -7495,8 +7495,47 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshReentryAttempts,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCallbackArgumentErrors);
 	}
+	bool surfaceMeshBindingCleared = false;
+	bool surfaceMeshBindingSet = false;
+	bool surfaceMeshBindingPresent = false;
+	void* surfaceMeshManager = 0;
 	if(licensedSurfaceMeshFluid)
-		licensedSurfaceMeshFluid->releaseSurfaceMesh();
+		{
+	unsigned char* const fluidWrapper = reinterpret_cast<unsigned char*>(
+			licensedSurfaceMeshFluid);
+	unsigned char* const internalFluid = static_cast<unsigned char*>(
+			*reinterpret_cast<void**>(fluidWrapper + 0x14));
+	surfaceMeshManager = internalFluid
+		? *reinterpret_cast<void**>(internalFluid + 0x24) : 0;
+	void* setBindingAddress = 0;
+	void* getBindingAddress = 0;
+	const bool resolvedBindingRows = nxSimulationResolvePrivateRow(physics,
+		pairDirectory, "?nxSetSdkPointerBinding@@YA_NPAX0@Z", 0x0000edc0u,
+		&setBindingAddress) && nxSimulationResolvePrivateRow(physics,
+		pairDirectory, "?nxGetSdkPointerBinding@@YAPAXPAX@Z", 0x0000df90u,
+		&getBindingAddress);
+	typedef bool (__cdecl *SetBindingFn)(void*, void*);
+	typedef void* (__cdecl *GetBindingFn)(void*);
+	SetBindingFn const setBinding = reinterpret_cast<SetBindingFn>(
+		setBindingAddress);
+	GetBindingFn const getBinding = reinterpret_cast<GetBindingFn>(
+		getBindingAddress);
+	static unsigned surfaceMeshBindingValue;
+	surfaceMeshBindingSet = resolvedBindingRows && surfaceMeshManager &&
+		setBinding(surfaceMeshManager, &surfaceMeshBindingValue);
+	surfaceMeshBindingPresent = surfaceMeshBindingSet &&
+		getBinding(surfaceMeshManager) == &surfaceMeshBindingValue;
+	licensedSurfaceMeshFluid->releaseSurfaceMesh();
+	surfaceMeshBindingCleared = surfaceMeshBindingPresent &&
+		getBinding(surfaceMeshManager) == 0;
+	}
+	printf("simulation implicit-mesh owner-binding-clear row=003687 set=%u before=%u cleared=%u matched=%u\n",
+		surfaceMeshBindingSet ? 1u : 0u,
+		surfaceMeshBindingPresent ? 1u : 0u,
+		surfaceMeshBindingCleared ? 1u : 0u,
+		surfaceMeshBindingCleared ? 1u : 0u);
+	if(!surfaceMeshBindingCleared)
+		return nxFail("implicit surface-mesh teardown did not remove its SDK binding");
 	getFluidManagerCallbackSummary(&licensedSurfaceMeshCallbacks);
 	const bool licensedSurfaceMeshDestroyMatches =
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreate == 1 &&
