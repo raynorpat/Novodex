@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003667",
+  "candidate_dll_sha256": "3e5a85a87e49201343223760c0774c370e2cf1c0ddcf659d6607a8f9f6345b70",
+  "candidate_map_symbol": "?nxGlobalCallVia4Result3Arg003667@@YAIPAXIP6AIIII@Z@Z",
+  "candidate_map_address": "0x1004adf0",
+  "transcripts": [
+    {
+      "file": "focused-restored.log.gz",
+      "source_log": "phase7-global-call3-003667-focused.log",
+      "source_sha256": "c649a0230227dfd11bf46517d293725e97d45d792109bd12aacbba7ed92b0d56",
+      "compressed_sha256": "304d1d405b1d45c1105bfcd305c058772b6bec08d56347d48aa1427341c27a8a",
+      "bytes": 28191
+    },
+    {
+      "file": "focused-mutant.log.gz",
+      "source_log": "phase7-global-call3-003667-mutant.log",
+      "source_sha256": "3b3a02f690f25adbd9d0134fd04d5d33119d28c51b3713fbe99d68872ca15c9a",
+      "compressed_sha256": "278d054b8a43bac3bc48e19da1b5968e0f95b5d7765f297c82d6d872a1c4dc21",
+      "bytes": 28223
+    },
+    {
+      "file": "phase5.log.gz",
+      "source_log": "phase5-global-call3-003667.log",
+      "source_sha256": "e6d6bf11d0d73d8d2ff7743ceb2da25f37e1a25b14be352492369f2a4fb16461",
+      "compressed_sha256": "f139cf75da79fe3cb18abc2b975452cbc461ea3d1ff15e1b6132260702770364",
+      "bytes": 2260321
+    },
+    {
+      "file": "phase6.log.gz",
+      "source_log": "phase6-global-call3-003667.log",
+      "source_sha256": "697c54b727053d5942ec3b19921046782fb024da9e4e71db471c7fa32a32e0ed",
+      "compressed_sha256": "459b408054b3515fe9c6ff9e0d7f9005431f16d809f8ac9655e5552f6ac577b4",
+      "bytes": 2418495
+    },
+    {
+      "file": "phase7.log.gz",
+      "source_log": "phase7-global-call3-003667.log",
+      "source_sha256": "c5db1edb3b3c1ebc0f54286c2f85a773aab09fe800d19221dc4b8700b8ae5d05",
+      "compressed_sha256": "bd4f51a25290b87376e47950f2c5348d385247b19839a18462394ddef0a7043d",
+      "bytes": 3816071
+    }
+  ]
+}

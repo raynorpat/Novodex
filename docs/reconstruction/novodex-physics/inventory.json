@@ -69856,18 +69856,26 @@
       "rva": "0x0008ad50",
       "size": 34,
       "kind": "code",
-      "label": "phys_fn_003667",
+      "label": "three-argument global-call thunk via [this+4] (0x8ad50)",
       "label_confidence": "stable-id",
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x8ad50u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1386",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12711",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ad50u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA disassembly at 0x1008ad50 loads the fluid from [this+4], forwards context from [fluid+0x7c]+0x30, handle from [fluid+0x80], and the stack argument to global callback slot 0x101264fc, returns the callback integer unchanged, and uses ret 4. CMake Release map resolves nxGlobalCallVia4Result3Arg003667 in ObjectModel.obj.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly compares oracle RVA 0x0008ad50 with nxGlobalCallVia4Result3Arg003667. It checks the context, handle, third argument, callback result, and x86 stack balance. Changing the candidate handle read from fluid+0x80 to fluid+0x84 produces the registered row marker with mismatches=1 and fails the differential; restored output reports cases=1 stack=1/1 mismatches=0.",
+      "notes": "Dedicated helper preserves the global three-argument callback result and the thunk’s stack-argument semantics.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxGlobalCallVia4Result3Arg003667@@YAIPAXIP6AIIII@Z@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallVia4Result3Arg003667@@YAIPAXIP6AIIII@Z@Z",
+        "address": "0x1004adf0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003668",

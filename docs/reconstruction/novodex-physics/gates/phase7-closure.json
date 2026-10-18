@@ -22,9 +22,9 @@
   "counts": {
     "differential_falsified": 330,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 179,
+    "oracle_differential_falsified": 180,
     "deferred_not_reconstructed_in_phase": 37,
-    "deferred_reconstructed_not_falsified": 13
+    "deferred_reconstructed_not_falsified": 12
   },
   "closed": [
     {
@@ -4280,6 +4280,16 @@
       }
     },
     {
+      "id": "phys_fn_003667",
+      "rva": "0x0008ad50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result3Arg003667.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
       "id": "phys_fn_003679",
       "rva": "0x0008ae50",
       "proof": "oracle_differential_falsified",
@@ -5743,15 +5753,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003667",
-      "rva": "0x0008ad50",
-      "size": 34,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003669",
