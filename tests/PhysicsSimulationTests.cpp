@@ -946,6 +946,93 @@ static bool nxSimulationTestImplicitMeshRecordGetter(HMODULE physics,
 	return mismatches == 0;
 	}
 
+static bool nxSimulationTestImplicitMeshFloatGetters(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* surfaceAddress = 0;
+	void* triangleAddress = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?getSurfaceRadius@NpImplicitMesh@@UBEMXZ", 0x0008d2e0u,
+		&surfaceAddress) ||
+		!nxSimulationResolvePrivateRow(physics, pairDirectory,
+			"?getTriangleSize@NpImplicitMesh@@UBEMXZ", 0x0008d5a0u,
+			&triangleAddress))
+		return false;
+	HMODULE const fluidModel = GetModuleHandleA("FluidModel.DLL");
+	if(!fluidModel)
+		return false;
+	typedef void* (__cdecl *CreateManagerFn)();
+	typedef void* (__cdecl *CreateFluidFn)(void*, unsigned, unsigned, unsigned,
+		unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned,
+		unsigned, unsigned, unsigned, unsigned);
+	typedef void (__cdecl *DestroyFluidFn)(void*, void*);
+	typedef void (__cdecl *DestroyManagerFn)(void*);
+	CreateManagerFn const createManager = reinterpret_cast<CreateManagerFn>(
+		GetProcAddress(fluidModel, "FluidManagerCreate"));
+	CreateFluidFn const createFluid = reinterpret_cast<CreateFluidFn>(
+		GetProcAddress(fluidModel, "FluidCreate"));
+	DestroyFluidFn const destroyFluid = reinterpret_cast<DestroyFluidFn>(
+		GetProcAddress(fluidModel, "FluidDestroy"));
+	DestroyManagerFn const destroyManager = reinterpret_cast<DestroyManagerFn>(
+		GetProcAddress(fluidModel, "FluidManagerDestroy"));
+	if(!createManager || !createFluid || !destroyFluid || !destroyManager)
+		return false;
+	void* const backendManager = createManager();
+	void* const backendFluid = createFluid(backendManager,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	if(!backendManager || !backendFluid)
+		return false;
+	typedef float (__thiscall *GetFloatFn)(void*);
+	GetFloatFn const getSurfaceRadius =
+		reinterpret_cast<GetFloatFn>(surfaceAddress);
+	GetFloatFn const getTriangleSize =
+		reinterpret_cast<GetFloatFn>(triangleAddress);
+	unsigned surfaceMismatches = 0;
+	unsigned triangleMismatches = 0;
+	for(unsigned i = 0; i != 3; ++i)
+		{
+		alignas(4) unsigned char lockBlock[0x20];
+		memset(lockBlock, 0, sizeof(lockBlock));
+		InitializeCriticalSection(reinterpret_cast<CRITICAL_SECTION*>(lockBlock));
+		void* lockBlockPointer = lockBlock;
+		void* lockLink = &lockBlockPointer;
+		unsigned char owner[0x90]; memset(owner, 0, sizeof(owner));
+		unsigned char sceneManager[0x34]; memset(sceneManager, 0,
+			sizeof(sceneManager));
+		memcpy(sceneManager + 0x30, &backendManager, sizeof(void*));
+		void* sceneManagerPointer = sceneManager;
+		void* backendFluidPointer = backendFluid;
+		*reinterpret_cast<void**>(owner + 0x7c) = sceneManagerPointer;
+		*reinterpret_cast<void**>(owner + 0x80) = backendFluidPointer;
+		unsigned char record[8]; memset(record, 0, sizeof(record));
+		*reinterpret_cast<void**>(record + 4) = owner;
+		unsigned char self[0x18]; memset(self, 0, sizeof(self));
+		*reinterpret_cast<void**>(self + 0x10) = lockLink;
+		*reinterpret_cast<void**>(self + 0x14) = record;
+		unsigned before = 0, after = 0;
+		__asm { mov before, esp }
+		const float surfaceRadius = getSurfaceRadius(self);
+		__asm { mov after, esp }
+		const unsigned surfaceBits = nxFloatBits(surfaceRadius);
+		if(before != after || surfaceBits != 0x3d23d70au)
+			++surfaceMismatches;
+		__asm { mov before, esp }
+		const float triangleSize = getTriangleSize(self);
+		__asm { mov after, esp }
+		const unsigned triangleBits = nxFloatBits(triangleSize);
+		if(before != after || triangleBits != 0x3ba3d70au)
+			++triangleMismatches;
+		DeleteCriticalSection(reinterpret_cast<CRITICAL_SECTION*>(lockBlock));
+		}
+	destroyFluid(backendManager, backendFluid);
+	destroyManager(backendManager);
+	printf("simulation implicit-mesh-surface-radius row=003876 cases=3 mismatches=%u\n",
+		surfaceMismatches);
+	printf("simulation implicit-mesh-triangle-size row=003888 cases=3 mismatches=%u\n",
+		triangleMismatches);
+	return surfaceMismatches == 0 && triangleMismatches == 0;
+	}
+
 static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -994,6 +1081,8 @@ static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 		typedef unsigned (__cdecl *UnloadFluidModelFn)();
 		typedef unsigned (__cdecl *CountResolvedCallbacksFn)();
 		resolved = reinterpret_cast<ResolveFluidModelFn>(resolverAddress)() ? 1u : 0u;
+		if(!nxSimulationTestImplicitMeshFloatGetters(physics, pairDirectory))
+			return false;
 		GetResolvedExportFn const getResolvedExport =
 			reinterpret_cast<GetResolvedExportFn>(exportAccessorAddress);
 		HMODULE const fluidModel = GetModuleHandleA("FluidModel.DLL");
@@ -1054,6 +1143,8 @@ static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 	typedef unsigned (__stdcall *OracleResolveFn)();
 	loaded = reinterpret_cast<OracleLoadFn>(loadAddress)() & 0xffu;
 	resolved = reinterpret_cast<OracleResolveFn>(resolveAddress)() & 0xffu;
+	if(!nxSimulationTestImplicitMeshFloatGetters(physics, pairDirectory))
+		return false;
 	HMODULE const fluidModel = GetModuleHandleA("FluidModel.DLL");
 	if(!fluidModel)
 		return false;

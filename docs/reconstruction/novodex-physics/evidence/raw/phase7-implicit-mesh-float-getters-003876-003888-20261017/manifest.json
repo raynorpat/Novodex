@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003876",
+    "phys_fn_003888"
+  ],
+  "gate": "NxPhysicsSimulationTests",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; each getter cases=3 mismatches=0",
+  "mutations": [
+    {
+      "row": "phys_fn_003876",
+      "result": "oracle_exit=0 candidate_exit=1 stdout_delta=4119; candidate mismatches=3"
+    },
+    {
+      "row": "phys_fn_003888",
+      "result": "oracle_exit=0 candidate_exit=1 stdout_delta=4119; candidate mismatches=3"
+    }
+  ],
+  "phase_gates": {
+    "5": "pass; coverage floor=2890",
+    "6": "pass; coverage floor=1747",
+    "7": "pass; coverage floor=3029"
+  },
+  "logs": [
+    {
+      "file": "surface-mutant-differential.log.gz",
+      "source": "build/tmp/implicit-mesh-float-getters-surface-mutant.log",
+      "sha256": "7a67388b2077842d96fb6c4c7ed881f90fe96db24faffde85b7e837f1f9b0bf0",
+      "bytes": 449086,
+      "compressed_sha256": "cf92db775c9934142ea67de52ede935b5025ba12f63fe380430399a71b46a847"
+    },
+    {
+      "file": "triangle-mutant-differential.log.gz",
+      "source": "build/tmp/implicit-mesh-float-getters-triangle-mutant.log",
+      "sha256": "b507b10c861fbd5feeb88c7f5063d36aaa01b697db96c4bc976f248c0eca3571",
+      "bytes": 449178,
+      "compressed_sha256": "5bff7f717540945b42ace91028bd8a0b8af2cb30e9bbfa736ad370476e42f9f1"
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source": "build/tmp/implicit-mesh-float-getters-restored-final-differential.log",
+      "sha256": "80c9028f71482b801aca892e0ae15bae24ce7021e0419ac39904ba7c98336bdb",
+      "bytes": 873285,
+      "compressed_sha256": "82f21780bc2827eb39621ca57a543c4c80583823009a58193a08ba2a7a369566"
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source": "build/tmp/implicit-mesh-float-getters-phase5.log",
+      "sha256": "73f35f6cef614c3a16e73e0b993ed27a9d7dd1bd94fd17f13797089e6e1736b9",
+      "bytes": 2267926,
+      "compressed_sha256": "733c30efa45fbd777f13e3f651fbcb99e7c484bc0c47245b8722e6b1b3e3e421"
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source": "build/tmp/implicit-mesh-float-getters-phase6.log",
+      "sha256": "7a7799a6289b699cf0dd38f9ad3acefccdd7faa0085665530ee4aae3096f9afc",
+      "bytes": 2417738,
+      "compressed_sha256": "172fda098e7a7ca3c2f3b4aead7e6332227ac3d4f6fc004c5999e1cf7580f443"
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source": "build/tmp/implicit-mesh-float-getters-phase7.log",
+      "sha256": "98bb461648c89951ab0289105e95a345fd7398f4d9400a46ea68cd0f6c648367",
+      "bytes": 3834820,
+      "compressed_sha256": "1e02dd241bccd0c071ac8dc466a181a9263fcf92543861a40e3929a825c10cb6"
+    }
+  ]
+}

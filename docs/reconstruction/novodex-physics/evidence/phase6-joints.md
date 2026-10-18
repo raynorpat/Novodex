@@ -11313,3 +11313,5 @@ Fresh Phase 5 and Phase 7 gates pass at 2,887/2,887 and 3,026/3,026 registered c
 Fresh Phase 5, Phase 6 and Phase 7 gates pass at 2,887/2,887, 1,744/1,744 and 3,026/3,026 registered coverage assertions.
 
 Phase 7 row phys_fn_003661: NpImplicitMeshDataRecord::getMeshData is map-resolved in ImplicitMesh.obj; a candidate this+12 offset mutant is rejected by the registered NxPhysicsSimulationTests differential (stdout_delta=4119), and restored control matches exactly. See evidence/phase7-implicit-mesh-record-getter-003661.md.
+
+Phase 7 implicit-mesh float getters `phys_fn_003876` and `phys_fn_003888`: each getter is directly called against the oracle and candidate through the registered simulation fixture. Independent zero-return mutants are rejected (`stdout_delta=4119` each), and restored results match the callback float bits with balanced stack. See `phase7-implicit-mesh-float-getters-003876-003888.md`.

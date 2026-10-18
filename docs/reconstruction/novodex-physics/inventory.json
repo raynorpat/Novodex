@@ -73346,13 +73346,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8d2e0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/fluids/NpImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1874",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12981",
-      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8d2e0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0008d2e0 identifies NpImplicitMesh::getSurfaceRadius: read-lock through this+0x10, dispatch internal record this+0x14 through 0x8ad30, release lock, return NxReal.",
+      "dynamic_proof": "NxPhysicsSimulationTests resolves the candidate method through NxPhysics.map and calls the pinned oracle RVA directly. Three cases use staged FluidModel manager/fluid handles, verify callback-returned float bits and x86 stack balance. A candidate no-op mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4119); restored differential is exact. See evidence/phase7-implicit-mesh-float-getters-003876-003888.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "?getSurfaceRadius@NpImplicitMesh@@UBEMXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getSurfaceRadius@NpImplicitMesh@@UBEMXZ",
+        "address": "0x1002e3c0",
+        "object": "ImplicitMesh.obj"
+      }
     },
     {
       "id": "phys_fn_003877",
@@ -73578,13 +73586,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "lock-bracketed float thunk row (0x8d5a0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/fluids/NpImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1880",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13001",
-      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8d5a0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
-      "notes": ""
+      "static_proof": "IDA at RVA 0x0008d5a0 identifies NpImplicitMesh::getTriangleSize: read-lock through this+0x10, dispatch internal record this+0x14 through 0x8ae00, release lock, return NxReal.",
+      "dynamic_proof": "NxPhysicsSimulationTests resolves the candidate method through NxPhysics.map and calls the pinned oracle RVA directly. Three cases use staged FluidModel manager/fluid handles, verify callback-returned float bits and x86 stack balance. A candidate no-op mutation is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4119); restored differential is exact. See evidence/phase7-implicit-mesh-float-getters-003876-003888.md.",
+      "notes": "",
+      "implementation": "Physics/src/ImplicitMesh.cpp",
+      "implementation_symbol": "?getTriangleSize@NpImplicitMesh@@UBEMXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getTriangleSize@NpImplicitMesh@@UBEMXZ",
+        "address": "0x1002e420",
+        "object": "ImplicitMesh.obj"
+      }
     },
     {
       "id": "phys_fn_003889",
