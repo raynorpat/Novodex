@@ -627,6 +627,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision dtor families=5 mismatches=0'
         'collision dtor member-only mutant mismatches=5'
         'collision primary dtor families=5 mismatches=0'
+        'collision base dtor cases=2 mismatches=0'
         'shape vtable oracle_digest=ed1294b6 cases=645 mismatches=0'
         'shape vtable owner_notify oracle_slot=10 candidate_slot=10 oracle_calls=1 candidate_calls=1 owner_forwarded=1 box_forwarded=1 mismatches=0'
         'shape vtable base_stub slot4 oracle_false=1 candidate_false=1 output_preserved=1'
@@ -6363,7 +6364,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2914  # adds phys_fn_001073 box world-OBB read-lock behavior
+	'5' = 2915  # adds phys_fn_001199 base scalar deleting destructor differential
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions

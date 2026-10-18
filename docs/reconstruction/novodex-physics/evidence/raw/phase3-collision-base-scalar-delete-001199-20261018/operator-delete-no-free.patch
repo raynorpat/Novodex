@@ -1,0 +1,10 @@
+diff --git a/Physics/src/ObjectModel.cpp b/Physics/src/ObjectModel.cpp
+--- a/Physics/src/ObjectModel.cpp
++++ b/Physics/src/ObjectModel.cpp
+@@
+ void CollisionObject::operator delete(void* memory) noexcept
+     {
+-    if(memory)
+-        nxFoundationSDKAllocator->free(memory);
++    (void)memory;
+     }

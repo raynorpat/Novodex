@@ -40,6 +40,8 @@ by 0x0c before running the complete-object destructor.
 class CollisionObject
 	{
 	public:
+	friend CollisionObject* nxCollisionObjectBaseTestConstruct(void* memory,
+		void* argument);
 	virtual				~CollisionObject();
 	//! Primary slot 1 (phys_fn_001201): returns the first word of the shape's
 	//! owner while holding the secondary hook's read lock at +0x14.

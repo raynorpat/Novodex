@@ -115,6 +115,10 @@ struct CandidateAllocator : SdkAllocator {
     void* realloc(void* p, size_t size) override { return ::realloc(p, size); }
     void free(void* p) override { ++freeCount; ::free(p); }
 };
+CollisionObject* nxCollisionObjectBaseTestConstruct(void* memory,
+        void* argument) {
+    return ::new(memory) CollisionObject(argument);
+}
 // The oracle's [0x101041bc] holder and the candidate's nxFoundationSDKAllocator
 // are the same word: both modules import the one NxFoundation.dll this process
 // loads, so installAllocator makes the candidate's Foundation-allocator frees
@@ -839,6 +843,71 @@ int wmain(int argc, wchar_t** argv)
     printf("collision primary dtor families=5 mismatches=%u\n",
         collisionPrimaryDtorMismatches);
     printf("collision dtor families=5 mismatches=%u\n", collisionDtorMismatches);
+
+    // phys_fn_001199 is CollisionObject's scalar deleting destructor, distinct
+    // from the five family-complete destructor bodies above.
+    typedef void* (__thiscall* CollisionObjectDeletingDtor)(void*, unsigned);
+    unsigned char candidateBaseStorage[0x1c];
+    memset(candidateBaseStorage, 0xcd, sizeof(candidateBaseStorage));
+    CollisionObject* const candidateBase = nxCollisionObjectBaseTestConstruct(
+        candidateBaseStorage, &candidateAllocator);
+    void** const candidateBaseVtable = *reinterpret_cast<void***>(candidateBase);
+    CollisionObjectDeletingDtor const candidateBaseDeletingDtor =
+        reinterpret_cast<CollisionObjectDeletingDtor>(candidateBaseVtable[0]);
+    void** const oracleBaseVtable = reinterpret_cast<void**>(
+        const_cast<unsigned char*>(base) + 0x106c88);
+    unsigned char oracleBaseScratch[0x1c], candidateBaseScratch[0x1c];
+    memset(oracleBaseScratch, 0xcd, sizeof(oracleBaseScratch));
+    memset(candidateBaseScratch, 0xcd, sizeof(candidateBaseScratch));
+    reinterpret_cast<CollisionObjectCtor>(const_cast<unsigned char*>(base) + 0x23580)(
+        oracleBaseScratch, &candidateAllocator);
+    new(candidateBaseScratch) CollisionObjectBox(&candidateAllocator);
+    void* const oracleBasePrimaryBefore = *reinterpret_cast<void**>(oracleBaseScratch);
+    void* const candidateBasePrimaryBefore = *reinterpret_cast<void**>(candidateBaseScratch);
+    unsigned oracleBaseEspBefore = 0, oracleBaseEspAfter = 0;
+    unsigned candidateBaseEspBefore = 0, candidateBaseEspAfter = 0;
+    __asm mov oracleBaseEspBefore, esp
+    void* const oracleBaseScratchReturned = reinterpret_cast<CollisionObjectDeletingDtor>(
+        const_cast<unsigned char*>(base) + 0x24850)(oracleBaseScratch, 0);
+    __asm mov oracleBaseEspAfter, esp
+    __asm mov candidateBaseEspBefore, esp
+    void* const candidateBaseScratchReturned = candidateBaseDeletingDtor(
+        candidateBaseScratch, 0);
+    __asm mov candidateBaseEspAfter, esp
+
+    HANDLE const oracleObjectHeap = *reinterpret_cast<HANDLE*>(
+        const_cast<unsigned char*>(base) + 0x128da4);
+    unsigned char* oracleBaseHeap = static_cast<unsigned char*>(
+        HeapAlloc(oracleObjectHeap, 0, 0x1c));
+    unsigned char* candidateBaseHeap = static_cast<unsigned char*>(malloc(0x1c));
+    if(!oracleBaseHeap || !candidateBaseHeap) return 2;
+    reinterpret_cast<CollisionObjectCtor>(const_cast<unsigned char*>(base) + 0x23580)(
+        oracleBaseHeap, &candidateAllocator);
+    new(candidateBaseHeap) CollisionObjectBox(&candidateAllocator);
+    const SIZE_T oracleBaseHeapSizeBefore = HeapSize(oracleObjectHeap, 0,
+        oracleBaseHeap);
+    void* const oracleBaseHeapReturned = reinterpret_cast<CollisionObjectDeletingDtor>(
+        const_cast<unsigned char*>(base) + 0x24850)(oracleBaseHeap, 1);
+    const unsigned candidateBaseSdkBefore = candidateAllocator.freeCount;
+    const unsigned candidateBaseHolderBefore = oracleFreeCount;
+    void* const candidateBaseHeapReturned = candidateBaseDeletingDtor(
+        candidateBaseHeap, 1);
+    const unsigned candidateBaseFreeDelta = candidateFreesSince(candidateAllocator,
+        candidateBaseSdkBefore, candidateBaseHolderBefore);
+    const bool baseDtorMatched = oracleBaseScratchReturned == oracleBaseScratch &&
+        candidateBaseScratchReturned == candidateBaseScratch &&
+        *reinterpret_cast<void**>(oracleBaseScratch) == oracleBaseVtable &&
+        oracleBasePrimaryBefore != oracleBaseVtable &&
+        *reinterpret_cast<void**>(candidateBaseScratch) == candidateBaseVtable &&
+        candidateBasePrimaryBefore != candidateBaseVtable &&
+        oracleBaseEspBefore == oracleBaseEspAfter &&
+        candidateBaseEspBefore == candidateBaseEspAfter &&
+        oracleBaseHeapReturned == oracleBaseHeap &&
+        oracleBaseHeapSizeBefore >= 0x1c &&
+        candidateBaseHeapReturned == candidateBaseHeap && candidateBaseFreeDelta == 1;
+    printf("collision base dtor cases=2 mismatches=%u\n",
+        baseDtorMatched ? 0u : 1u);
+    if(!baseDtorMatched) ++failures;
 
     // Mutation control for the retired member-only layout: install the plain
     // EmbeddedHookBase deleting table at +0x0c, as that layout did. Calling

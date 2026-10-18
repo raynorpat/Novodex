@@ -23186,13 +23186,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/587",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3326",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00024850 confirms the scalar-deleting destructor restores the CollisionObject base vtable, calls the module heap free only when flags&1 is set, and returns the original object pointer.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests calls the oracle row and candidate base deleting thunk with flags 0 and 1, checks base-vtable transition, root return, x86 stack balance, and one candidate free. A no-free operator-delete mutation yields mismatches=1; restored oracle/candidate output is exact.",
+      "notes": "This Phase 3 row is discharged by the Phase 5 NxPhysicsShapeVtableTests differential. Oracle heap allocations use the module heap handle at RVA 0x00128da4. See evidence/phase3-collision-base-scalar-delete-001199.md and evidence/raw/phase3-collision-base-scalar-delete-001199-20261018/.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "??_GCollisionObject@@UAEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_GCollisionObject@@UAEPAXI@Z",
+        "address": "0x100464f0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001200",

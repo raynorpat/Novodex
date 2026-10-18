@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "slice": "phys_fn_001199 CollisionObject scalar deleting destructor",
+  "oracle_rva": "0x00024850",
+  "candidate_map_symbol": "??_GCollisionObject@@UAEPAXI@Z",
+  "candidate_map_address": "0x100464f0",
+  "focused_mutation_exit": 1,
+  "focused_mutation_detection": "collision base dtor cases=2 mismatches=1",
+  "focused_restored_exit": 0,
+  "focused_restored_differential": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "phase5_gate": "pass: 2915/2915 coverage assertions",
+  "validation": "inventory pass (0 unexplained); public headers pass (80 files); 45 gate registry tests pass",
+  "files": {
+    "mutation-differential.log.gz": {
+      "source": "build/phase3-base-dtor-mutation.log",
+      "sha256": "ba8810da742941a666aa6e8d15caad83dd11af6fcc9ddcfefeca7d8e43abe320",
+      "compressed_sha256": "35f191f5aba38a3f6355586873654378cbbb5eae4681ee5ee41190fcc88a29de"
+    },
+    "restored-differential.log.gz": {
+      "source": "build/phase3-base-dtor-restored.log",
+      "sha256": "3ef716d84e95d29a86dd2677be7f313953c08da63ed9e7bbd09bb2001f392459",
+      "compressed_sha256": "4dde315b19be8914029a47f06e272ef98229fbde5d2563c4a689fdbf438aaadd"
+    },
+    "phase5-gate.log.gz": {
+      "source": "build/phase3-base-dtor-phase5-gate-restored.log",
+      "sha256": "45698419d9dfd9db4bf6825534b6bf3ac944b3efe500069ae35e03b7f25992e5",
+      "compressed_sha256": "a6c0fa38d48ce4403a78abaf260dee2e983773494084f3c6fb661d3f9953b700"
+    },
+    "inventory-validation.log.gz": {
+      "source": "build/phase3-base-dtor-inventory.log",
+      "sha256": "90e1edd229d023cbeabb21de16e2a1918884d03d4600d191a994486afec91525",
+      "compressed_sha256": "40f7328bc9dc100845ddec623380ffb69bd1fb5e0bde32d39a173dfef06ce6fc"
+    },
+    "public-headers-validation.log.gz": {
+      "source": "build/phase3-base-dtor-public-headers.log",
+      "sha256": "c7d96f45fd6bab772f3d2fbbbc68e09f0e47fe2af7a24ffc10da31d89c51f3e4",
+      "compressed_sha256": "cc56f2156a3851beaf1da1bdb8277dd5c7cbaaf5a9ee7135898db04b9e4c4690"
+    },
+    "gate-registry-tests.log.gz": {
+      "source": "build/phase3-base-dtor-gate-registry-tests.log",
+      "sha256": "d1643d6a8b92b39d3ce27e2cadfd0628e0b08c424901196b26c5f9e52c70234d",
+      "compressed_sha256": "a8b6698b97702aa17294e4ddd525897bebdc1d4b6c930c0760b6f450f18715f6"
+    }
+  },
+  "operator_delete_mutation": "operator-delete-no-free.patch"
+}
