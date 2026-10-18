@@ -11319,3 +11319,5 @@ Phase 7 implicit-mesh float getters `phys_fn_003876` and `phys_fn_003888`: each 
 Phase 7 row `phys_fn_002398`: lock-API word setter stores the supplied value at `this+0x10`, returns it, and uses thiscall `ret 4`. The registered three-value oracle/source differential matches exactly; storing `value ^ 1` is rejected (`mismatches=3`). See `phase7-lock-api-store-word-002398.md` and `raw/phase7-lock-api-store-word-002398-20261018/`.
 
 Phase 7 lock-API worker start row `phys_fn_002381` is closed by the registered `NxPhysicsObjectLayoutTests` oracle/source mutation differential (`mismatches=1`); the restored control reports `mismatches=0`. Details: `phase7-lock-api-worker-start-002379-002381.md`.
+
+Phase 7 lock-API worker scalar-delete row `phys_fn_002402` is closed by the registered `NxPhysicsObjectLayoutTests` oracle/source mutation differential (`mismatches=1`); restored control reports `mismatches=0`. Details: `phase7-lock-api-scalar-delete-002402.md`.

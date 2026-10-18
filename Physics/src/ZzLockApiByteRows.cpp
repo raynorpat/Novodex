@@ -114,6 +114,16 @@ void* __fastcall nxLockApiWorkerScalarDelete2394(void* self, void*, unsigned fla
 	return self;
 	}
 
+// phys_fn_002402 (0x5ba40): scalar deleting destructor for the SDK-owned worker.
+// The base teardown always runs; flag bit 0 releases this through the SDK allocator.
+void* __fastcall nxLockApiWorkerScalarDelete2402(void* self, void*, unsigned flags)
+	{
+	nxLockApiWorkerDestroy2392(self);
+	if(flags & 1u)
+		nxFoundationSDKAllocator->free(self);
+	return self;
+	}
+
 // phys_fn_002377 (0x5b820): construct the base worker owner and zero its record.
 void* __fastcall nxLockApiWorkerBaseConstruct2377(void* self, void*)
 	{

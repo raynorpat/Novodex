@@ -45109,12 +45109,20 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "lock-API worker scalar delete (nxLockApiWorkerScalarDelete2402, Physics/src/ZzLockApiByteRows.cpp)",
+      "implementation": "Physics/src/ZzLockApiByteRows.cpp",
+      "implementation_symbol": "nxLockApiWorkerScalarDelete2402",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxLockApiWorkerScalarDelete2402@@YIPAXPAX0I@Z",
+        "address": "0x1007a020",
+        "object": "ZzLockApiByteRows.obj"
+      },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/901",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7440",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA: call the worker-record destructor at 0x5b920; test [flags] bit 0; when set, call the Foundation SDK allocator vtable slot at +0x14 to free this; return this; thiscall ret 4.",
+      "dynamic_proof": "Registered NxPhysicsObjectLayoutTests oracle/source differential covers flags 0 and 1, worker-handle closure, record release, owner field clearing, and the optional owner release through the SDK allocator. Changing the candidate condition from flags&1 to flags&2 is rejected (mismatches=1); restored control reports mismatches=0. Evidence: evidence/phase7-lock-api-scalar-delete-002402.md and evidence/raw/phase7-lock-api-scalar-delete-002402-20261018/.",
       "notes": ""
     },
     {

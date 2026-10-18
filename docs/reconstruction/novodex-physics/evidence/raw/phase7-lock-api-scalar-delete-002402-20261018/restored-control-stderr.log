@@ -1,0 +1,7 @@
+DBG colobj=00beac80 vtbl=10106dc8 slot0=100235d0 rva=000235d0
+v6 same=1 big=0
+cw read=0x027f/0x027f
+ix2 r=51
+orderprobe slot2 before=00000000
+orderprobe slot2 ok=1 after=00b374e0
+orderprobe slot2 restored=00000000

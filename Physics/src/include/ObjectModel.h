@@ -1285,6 +1285,8 @@ void __fastcall nxLockApiThreadExit2389(void* self);
 void __fastcall nxLockApiWorkerDestroy2392(void* self);
 //! phys_fn_002394 (0x5b980): scalar deleting thunk; delete this only for flag bit 0.
 void* __fastcall nxLockApiWorkerScalarDelete2394(void* self, void* edx, unsigned flags);
+//! phys_fn_002402 (0x5ba40): scalar deleting thunk; SDK-allocator free for flag bit 0.
+void* __fastcall nxLockApiWorkerScalarDelete2402(void* self, void* edx, unsigned flags);
 
 //! phys_fn_005320 (0x7c10): when [self+0x4c] is non-null, frees
 //! ([self+0x4c] - 4) through the 004803 allocator and clears both [self+0x4c]
