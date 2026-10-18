@@ -475,9 +475,22 @@ static NxCollisionGroup __fastcall nxBoxHandleGetGroup(void* self, void*)
 	return *reinterpret_cast<NxCollisionGroup*>(nxBoxHandleInternal(self) + 0xd8);
 	}
 
+static bool nxBoxHandleWriteTry(void* writeLock)
+	{
+	if(nxNpSceneGuardWriteTry(writeLock)) return true;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpBoxShape.cpp",
+		0x0f, 0,
+		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+	return false;
+	}
+
 static void __fastcall nxBoxHandleSetFlag(void* self, void*, NxShapeFlag flag,
 	bool value)
 	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
 	unsigned char* shape = nxBoxHandleInternal(self);
 	NxU16& flags = *reinterpret_cast<NxU16*>(shape + 0xde);
 	const NxU16 mask = static_cast<NxU16>(flag);
@@ -486,6 +499,7 @@ static void __fastcall nxBoxHandleSetFlag(void* self, void*, NxShapeFlag flag,
 	else
 		flags &= static_cast<NxU16>(~mask);
 	nxSceneMarkShapeDirty(shape, 0x10);
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 static NX_BOOL __fastcall nxBoxHandleGetFlag(void* self, void*, NxShapeFlag flag)

@@ -1,0 +1,6 @@
+diff --git a/Physics/src/NpActor.cpp b/Physics/src/NpActor.cpp
+--- a/Physics/src/NpActor.cpp
++++ b/Physics/src/NpActor.cpp
+@@
+-	if(!nxBoxHandleWriteTry(writeLock)) return;
++	// MUTATION: bypass the scene write-lock gate.

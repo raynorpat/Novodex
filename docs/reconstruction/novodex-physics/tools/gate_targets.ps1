@@ -596,6 +596,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'shape_mutation t5r_nan_0_root=1.1.r2.2.1.624.2.s25.100.19',
         'shape_mutation t5r_nan_1=0.m7fe00000.7fe00000.i3e800000.3f000000.3f400000.40800000.40000000.3faaaaab.f.3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0.w.0.3e190650.0.3f7d201a.3f7490ee.0.3e974e6d.0.3f800000.0.be974e6d.0.3f7490ee.bf333333.3fa66666.3ee66666.40711865.0.bf40bb36.0.40000000.0.bf40bb36.0.3fc879de.n2',
         'shape_mutation t5r_nan_1_root=1.1.r2.2.1.624.2.s26.100.1a',
+        'shape_mutation row=001045 locked_flag=0 locked_reports=1 unlocked_flag=1',
         'shape_mutation actor=1',
         'shape_mutation initial=1.2.1',
         'shape_mutation add_memory=5.0.552.28.272.8.8.f',
@@ -6337,7 +6338,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2894  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, global-call, and implicit-mesh getter checks
+	'5' = 2895  # includes box-shape setFlag foreign-lock behavior (001045)
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
@@ -6426,7 +6427,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1751  # includes licensed fluid visualization, deleting-destructor, global-call, and implicit-mesh getter checks
+	'6' = 1752  # includes box-shape setFlag foreign-lock behavior (001045)
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
@@ -6477,7 +6478,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3033  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, global-call, and implicit-mesh getter checks
+	'7' = 3034  # includes box-shape setFlag foreign-lock behavior (001045)
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential

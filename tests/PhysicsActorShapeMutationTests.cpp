@@ -952,6 +952,35 @@ static void runTask5ReviewCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
 		sprintf(label, "t5r_nan_%u_root", i);
 		printRoot(label, actor);
 		}
+
+	// phys_fn_001045 is the public box-shape setFlag wrapper. Its foreign
+	// scene-write-lock path reports and leaves the internal shape flag alone.
+	NxBoxShapeDesc flagBox;
+	flagBox.dimensions = NxVec3(0.5f, 0.75f, 1.0f);
+	NxActorDesc flagActorDesc;
+	flagActorDesc.shapes.pushBack(&flagBox);
+	NxActor* flagActor = scene->createActor(flagActorDesc);
+	if(flagActor)
+		{
+		NxShape* flagShape = flagActor->getShapes()[0];
+		const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(flagShape) + 0x18);
+		NxActorWriteLockHolder lock(flagActor);
+		const unsigned reportsBefore = errors.reports;
+		lock.hold();
+		flagShape->setFlag(NX_TRIGGER_ENABLE, true);
+		const unsigned reportsLocked = errors.reports - reportsBefore;
+		const unsigned lockedFlag = *reinterpret_cast<const unsigned short*>(internal + 0xde)
+			& NX_TRIGGER_ENABLE;
+		lock.release();
+		flagShape->setFlag(NX_TRIGGER_ENABLE, true);
+		const unsigned unlockedFlag = *reinterpret_cast<const unsigned short*>(internal + 0xde)
+			& NX_TRIGGER_ENABLE;
+		printf("shape_mutation row=001045 locked_flag=%u locked_reports=%u unlocked_flag=%u\n",
+			lockedFlag ? 1u : 0u, reportsLocked, unlockedFlag ? 1u : 0u);
+		}
+	else
+		printf("shape_mutation row=001045 actor=0\n");
 	errors.enabled = false;
 	sdk->releaseScene(*scene);
 	}

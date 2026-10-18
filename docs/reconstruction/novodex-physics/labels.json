@@ -3087,6 +3087,13 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/1378",
       "reason": "IDA identifies the 2,452-byte create path at RVA 0x0008a000; it validates the fluid descriptor, constructs and initializes Fluid, invokes FluidCreate and child-emitter/particle paths, and publishes internal and public arrays. Enabled DLL differential now covers null backend callback result and manager teardown."
+    },
+    {
+      "id": "phys_fn_001045",
+      "label": "NpBoxShape::setFlag",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/416",
+      "reason": "The public box-shape setFlag wrapper is identified by its Scene write-lock try, exact NpBoxShape.cpp:0x0f refusal diagnostic, internal slot-16 dispatch, and the independently mutation-tested locked/unlocked public fixture."
     }
   ]
 }

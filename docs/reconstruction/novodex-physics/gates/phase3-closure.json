@@ -53,9 +53,9 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 43,
+    "differential_falsified": 44,
     "oracle_differential_falsified": 44,
-    "deferred_not_reconstructed_in_phase": 199,
+    "deferred_not_reconstructed_in_phase": 198,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 5
   },
@@ -1033,6 +1033,21 @@
         "detected": "stdout_delta=663"
       },
       "note": "The Phase 5 sphere fixture also checks getter read-lock release; removing that bracket is independently rejected at stdout_delta=2. Restored control is exact. See evidence/phase3-sphere-public-radius-locks-001183-001185.md."
+    },
+    {
+      "id": "phys_fn_001045",
+      "rva": "0x000230a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Removed the public box-shape setFlag Scene write-lock guard, allowing the internal flag store to run while a foreign owner held the scene lock.",
+        "detected": "stdout_delta=5"
+      },
+      "note": "The oracle preserves the flag and reports the NpBoxShape.cpp:0x0f invalid-operation diagnostic; restored output is exact. See evidence/phase3-box-shape-setflag-lock-001045.md."
     }
   ],
   "deferred": [
@@ -1320,14 +1335,6 @@
       "id": "phys_fn_001043",
       "rva": "0x00023040",
       "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001045",
-      "rva": "0x000230a0",
-      "size": 89,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
