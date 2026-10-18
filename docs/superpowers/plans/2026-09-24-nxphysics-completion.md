@@ -9,7 +9,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-18:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, and 5,138 classified data objects. Current function ledgers: Phase 2 92 closed / 51 deferred; Phase 3 108 / 284; Phase 4 44 / 1,009; Phase 5 205 / 0; Phase 6 178 / 255; Phase 7 481 / 79. Fresh Win32 Release Phase 3/5/6/7 gates pass at 984/984, 2,913/2,913, 1,769/1,769, and 3,052/3,052 registered assertions. Inventory validation reports zero unexplained records, and the 80-file Physics header manifest matches both worktree and Unreal source. M1 and the full-image M8 audit remain open; CMake remains the build path and public headers remain unchanged.
+**Status, updated 2026-10-18:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, 5,138 classified data objects, and 2,007 mapped code rows. Current function ledgers: Phase 2 92 closed / 51 deferred; Phase 3 116 / 276; Phase 4 44 / 1,009; Phase 5 205 / 0; Phase 6 178 / 255; Phase 7 481 / 79. Fresh Win32 Release Phase 3/5/6/7 gates pass at 984/984, 2,914/2,914, 1,769/1,769, and 3,052/3,052 registered assertions. Inventory validation reports zero unexplained records, and the 80-file Physics header manifest matches both worktree and Unreal source. M1 and the full-image M8 audit remain open; CMake remains the build path and public headers remain unchanged.
 
 ### Continuation — box-shape setName write-lock behavior (`phys_fn_001063`, 2026-10-18)
 
@@ -1497,3 +1497,12 @@ IDA confirms the 4-byte row at RVA `0x0008ac40` returns `this+8`, the embedded `
 ### Continuation — Implicit-mesh float getters (`phys_fn_003876`, `phys_fn_003888`, 2026-10-17)
 
 The read-locked surface-radius and triangle-size getters now have row-specific candidate-map resolved calls and licensed FluidModel handles in the staged simulation fixture. Each returns its oracle callback value bit-for-bit across three cases with balanced x86 stack. Independent candidate zero-return mutations are both rejected (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=4119`); restored output is exact. Phase 7 advances to 473 closed / 87 deferred. Phase 5/6/7 coverage floors advance by two to 2,890/2,890, 1,747/1,747 and 3,029/3,029. Public headers remain unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-implicit-mesh-float-getters-003876-003888.md` and `docs/reconstruction/novodex-physics/evidence/raw/phase7-implicit-mesh-float-getters-003876-003888-20261017/`.
+
+
+### Continuation — box secondary deleting-destructor adjustor (`phys_fn_001077`, 2026-10-18)
+
+IDA confirms the 8-byte thunk adjusts `this` by `-0x0c` and jumps to the box collision-object destructor body. The candidate C++ multiple-inheritance model emits the corresponding thunk; the production map resolves it in ObjectModel.obj. The current `NxPhysicsShapeVtableTests` run exercises the secondary slot across all five families, with zero restored mismatches; its member-only negative control fails all five. Phase 3 records 112 closed / 280 deferred, discharged through Phase 5. Full reconstruction remains open.
+
+### Continuation — five-family secondary destructor adjustors (`phys_fn_001125`, `phys_fn_001161`, `phys_fn_001195`, `phys_fn_001243`, 2026-10-18)
+
+The Capsule, Plane, Sphere, and Mesh 8-byte thunks each adjust `this` by `-0x0c` and branch into the matching scalar deleting destructor. The current five-family secondary-vtable differential calls all four rows, matches the oracle across flags 0/1, and rejects the member-only negative control in all five families. Phase 3 records 116 closed / 276 deferred; the fresh Phase 5 gate passes at 2,914/2,914, and all 823 reconstruction-tool tests pass. Full reconstruction remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-five-family-secondary-dtor-adjustors-001077-001243.md`.

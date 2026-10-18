@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_001077",
+  "oracle_rva": "0x000235c0",
+  "static": "IDA disassembly: sub ecx, 0xc; jmp 0x000235d0. The row is the secondary-base adjustor thunk for the box collision-object destructor.",
+  "differential": "NxPhysicsShapeVtableTests invokes oracle and candidate secondary vtable slots across five families; the five-family result is mismatches=0.",
+  "negative_control": "The retired member-only EmbeddedHookBase secondary table is rejected in all five families (mismatches=5).",
+  "restored": "oracle_exit=0; candidate sources linked into harness; differential=pass",
+  "candidate_map": {
+    "path": "build/Release/NxPhysics.map",
+    "symbol": "??_ECollisionObjectBox@@WM@AEPAXI@Z",
+    "address": "0x100464c5",
+    "object": "ObjectModel.obj"
+  },
+  "raw_logs": [
+    "restored-differential.log.gz"
+  ],
+  "family_rows": [
+    "phys_fn_001077",
+    "phys_fn_001125",
+    "phys_fn_001161",
+    "phys_fn_001195",
+    "phys_fn_001243"
+  ],
+  "phase_gates": {
+    "5": "pass 2914/2914"
+  },
+  "tooling_tests": "pass; 823 tests"
+}

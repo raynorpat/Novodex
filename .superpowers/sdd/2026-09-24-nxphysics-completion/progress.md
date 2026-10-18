@@ -639,3 +639,13 @@ IDA maps RVA `0x000234c0` to the Scene-write-locked box `setDimensions` wrapper 
 ### Phase 3 continuation — box world OBB read lock (`phys_fn_001073`)
 
 The public box world-OBB getter now reproduces the oracle read-lock enter/call/leave sequence. A seeded lock-state marker agrees on oracle and candidate (`0.1`); omitting the guard pair is rejected (`stdout_delta=2`), and restored output is exact. Phase 3 now records 111 closed / 281 deferred functions. Inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained rows. Phase 5 passes 2,914/2,914 coverage assertions and all 823 reconstruction-tool tests pass. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-box-world-obb-lock-001073.md` and `evidence/raw/phase3-box-world-obb-lock-001073-20261018/`. Full DLL reconstruction remains open.
+
+
+### Phase 3 continuation — box secondary deleting-destructor adjustor (`phys_fn_001077`)
+
+IDA shows the 8-byte secondary-base thunk subtracting `0x0c` from `ECX` before jumping to the box destructor body. The production NxPhysics map resolves the compiler-generated equivalent in ObjectModel.obj. The current `NxPhysicsShapeVtableTests` staged oracle run exercises all five family secondary slots: restored mismatches=0, while the member-only negative control reports mismatches=5. Phase 3 now records 112 closed / 280 deferred; inventory validation reports zero unexplained rows. Full DLL reconstruction remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-box-secondary-dtor-adjustor-001077.md` and `evidence/raw/phase3-box-secondary-dtor-adjustor-001077-20261018/`.
+
+
+### Phase 3 continuation — five-family secondary destructor adjustors
+
+Closed the Capsule, Plane, Sphere, and Mesh adjustor rows `phys_fn_001125`, `phys_fn_001161`, `phys_fn_001195`, and `phys_fn_001243` using the current five-family secondary-vtable differential. IDA confirms each `-0x0c` adjustment and jump to its destructor body; candidate map symbols resolve in ObjectModel.obj. All five restored families match (mismatches=0), and the member-only negative control fails all five (mismatches=5). Phase 3 now records 116 closed / 276 deferred. Inventory validation reports zero unexplained rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-five-family-secondary-dtor-adjustors-001077-001243.md`.

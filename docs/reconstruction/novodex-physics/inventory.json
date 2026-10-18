@@ -20793,13 +20793,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/526",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3185",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x000235c0 shows sub ecx, 0x0c; jmp 0x000235d0, the secondary-base deleting-destructor adjustor thunk.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests calls the oracle and candidate secondary deleting-destructor slots across five families and checks root return, vptr transition, stack and free behavior; all five match. The member-only table negative control is rejected in all five families (mismatches=5).",
+      "notes": "MSVC emits the candidate adjustor thunk from the final family type and EmbeddedHookBase secondary-base layout. See evidence/phase3-box-secondary-dtor-adjustor-001077.md.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "??_ECollisionObjectBox@@WM@AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ECollisionObjectBox@@WM@AEPAXI@Z",
+        "address": "0x100464c5",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001078",
@@ -21765,13 +21773,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/550",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3238",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00023cf0 shows sub ecx, 0x0c; jmp 0x00023d00; this secondary-base deleting-destructor adjustor is referenced by the capsule family secondary vtable.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests invokes the oracle and candidate capsule secondary deleting-destructor slot with flags 0 and 1 and checks root return, vptr transition, stack balance, and free behavior; all five families match, while the member-only negative control fails all five (mismatches=5).",
+      "notes": "MSVC emits this family adjustor from the final collision-object type and EmbeddedHookBase secondary-base layout. See evidence/phase3-five-family-secondary-dtor-adjustors-001077-001243.md.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "??_ECollisionObjectCapsule@@WM@AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ECollisionObjectCapsule@@WM@AEPAXI@Z",
+        "address": "0x100464cd",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001126",
@@ -22417,13 +22433,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/568",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3281",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00024290 shows sub ecx, 0x0c; jmp 0x000242a0; this secondary-base deleting-destructor adjustor is referenced by the plane family secondary vtable.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests invokes the oracle and candidate plane secondary deleting-destructor slot with flags 0 and 1 and checks root return, vptr transition, stack balance, and free behavior; all five families match, while the member-only negative control fails all five (mismatches=5).",
+      "notes": "MSVC emits this family adjustor from the final collision-object type and EmbeddedHookBase secondary-base layout. See evidence/phase3-five-family-secondary-dtor-adjustors-001077-001243.md.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "??_ECollisionObjectPlane@@WM@AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ECollisionObjectPlane@@WM@AEPAXI@Z",
+        "address": "0x100464dd",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001162",
@@ -23081,13 +23105,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/585",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3323",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00024800 shows sub ecx, 0x0c; jmp 0x00024810; this secondary-base deleting-destructor adjustor is referenced by the sphere family secondary vtable.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests invokes the oracle and candidate sphere secondary deleting-destructor slot with flags 0 and 1 and checks root return, vptr transition, stack balance, and free behavior; all five families match, while the member-only negative control fails all five (mismatches=5).",
+      "notes": "MSVC emits this family adjustor from the final collision-object type and EmbeddedHookBase secondary-base layout. See evidence/phase3-five-family-secondary-dtor-adjustors-001077-001243.md.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "??_ECollisionObjectSphere@@WM@AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ECollisionObjectSphere@@WM@AEPAXI@Z",
+        "address": "0x100464e5",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001196",
@@ -23953,13 +23985,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/609",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3371",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00024e80 shows sub ecx, 0x0c; jmp 0x00024e90; this secondary-base deleting-destructor adjustor is referenced by the mesh family secondary vtable.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests invokes the oracle and candidate mesh secondary deleting-destructor slot with flags 0 and 1 and checks root return, vptr transition, stack balance, and free behavior; all five families match, while the member-only negative control fails all five (mismatches=5).",
+      "notes": "MSVC emits this family adjustor from the final collision-object type and EmbeddedHookBase secondary-base layout. See evidence/phase3-five-family-secondary-dtor-adjustors-001077-001243.md.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "??_ECollisionObjectMesh@@WM@AEPAXI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??_ECollisionObjectMesh@@WM@AEPAXI@Z",
+        "address": "0x100464d5",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001244",
