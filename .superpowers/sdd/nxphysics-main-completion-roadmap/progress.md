@@ -162,3 +162,13 @@ Task M7-fluid-emitter-pose-setters (active): TDD red exposed missing full backen
 ### Continuation — fluid bounds visualization (`phys_fn_003489`, 2026-10-17)
 
 Implemented and mutation-tested the manager traversal and licensed cached-bounds branch. The two-fluid oracle/candidate differential reports 24 red lines on both sides; omitting candidate `addAABB` is caught, and restored output is exact. Phase 5/6/7 pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020 coverage assertions. This row remains open: emitter visualization and particle-position, velocity, and kernel-radius branches are still unimplemented. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-bounds-visualization-003489.md`.
+
+
+### Continuation — full fluid particle visualization branches (`phys_fn_003489`, 2026-10-17)
+
+The earlier empty particle result came from the callback fixture's zero-count backend streams; the fluid's cached ParticleArray was not the stream consumed by the oracle. Seeding both backend streams through the existing fixture export and setting nonzero per-fluid scale makes the oracle render position crosses, velocity arrows, and kernel-radius circles. Candidate matches the oracle at 34 red, 72 green, and 6 blue lines; suppressing each branch independently is caught. Phase 5/6/7 pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020. The row stays open for emitter geometry and coordinate-level assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-visualization-003489-20261017.md`.
+
+
+### Continuation — fluid visualization coordinate fingerprint (`phys_fn_003489`, 2026-10-17)
+
+The backend-stream fixture now checks ordered line geometry hashes by color in addition to counts. Oracle/candidate hashes match; a wrong position scale keeps line counts but changes the position hash and is caught. The cross order now follows the oracle's z/y/x order. The hashes quantize four low mantissa bits to accommodate small x87 circle-rounding differences, so exact coordinate behavior is not fully closed. Fresh Phase 5/6/7 gates pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020; all 817 reconstruction-tool tests pass. Emitter geometry remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-visualization-003489-20261017.md`.

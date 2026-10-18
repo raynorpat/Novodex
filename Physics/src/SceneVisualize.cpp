@@ -695,6 +695,67 @@ extern "C" void __cdecl nxNpFluidEmitterVisualizeRecord(void* internal,
 typedef float (__cdecl *NxVisualizeFluidGetCellSizeFn)(void*, void*);
 typedef void* (__cdecl *NxVisualizeFluidGetParticlesFn)(void*, void*);
 
+struct NxVisualizeFluidParticleStream
+	{
+	unsigned* records;
+	unsigned count;
+	};
+
+static void nxVisualizeFluidParticles(const NxVisualizeFluidParticleStream* stream,
+	NxDebugRenderable* renderable, NxReal cellSize, NxReal particleScale)
+	{
+	if(!stream || !stream->records || !stream->count || !renderable)
+		return;
+	const NxReal* const parameters = nxPhysicsSDKParameters();
+	const NxReal visualizationScale = parameters[NX_VISUALIZATION_SCALE];
+	const NxReal positionScale = visualizationScale
+		* parameters[NX_VISUALIZE_FLUID_POSITION] * 0.5f;
+	const NxReal velocityScale = visualizationScale
+		* parameters[NX_VISUALIZE_FLUID_VELOCITY];
+	const NxReal kernelRadiusScale = visualizationScale
+		* parameters[NX_VISUALIZE_FLUID_KERNEL_RADIUS];
+	static const float circleOrientations[3][9] = {
+		{ 1,0,0, 0,1,0, 0,0,1 },
+		{ 0,0,1, 0,1,0, 1,0,0 },
+		{ 1,0,0, 0,0,1, 0,1,0 }
+		};
+	for(unsigned i = 0; i != stream->count; ++i)
+		{
+		const unsigned char* const record = reinterpret_cast<const unsigned char*>(
+			stream->records) + i * 92;
+		const float* const words = reinterpret_cast<const float*>(record);
+		const NxVec3 position(words[1], words[2], words[3]);
+		if(positionScale != 0.0f)
+			{
+			const NxReal halfLength = parameters[NX_VISUALIZE_FLUID_POSITION]
+				* visualizationScale * 0.5f;
+			const NxVec3 xAxis(halfLength, 0.0f, 0.0f);
+			const NxVec3 yAxis(0.0f, halfLength, 0.0f);
+			const NxVec3 zAxis(0.0f, 0.0f, halfLength);
+			renderable->addLine(position + zAxis, position - zAxis, 0xff0000ffu);
+			renderable->addLine(position + yAxis, position - yAxis, 0xff0000ffu);
+			renderable->addLine(position + xAxis, position - xAxis, 0xff0000ffu);
+			}
+		if(kernelRadiusScale != 0.0f)
+			for(unsigned plane = 0; plane != 3; ++plane)
+				{
+				NxMat34 matrix(false);
+				memcpy(&matrix.M, circleOrientations[plane], sizeof(matrix.M));
+				matrix.t = position;
+				renderable->addCircle(12, matrix, 0xff00ff00u, cellSize, false);
+				}
+		if(velocityScale != 0.0f)
+			{
+			const NxVec3 velocity(words[4], words[5], words[6]);
+			const NxReal velocityLength = sqrtf(velocity.x * velocity.x
+				+ velocity.y * velocity.y + velocity.z * velocity.z) * particleScale;
+			renderable->addArrow(position, velocity, velocityLength,
+				parameters[NX_VISUALIZE_FLUID_VELOCITY] * visualizationScale,
+				0xffff0000u);
+			}
+		}
+	}
+
 static void nxVisualizeFluidRecord(void* internal, NxDebugRenderable* renderable)
 	{
 	if(!internal || !renderable)
@@ -721,14 +782,14 @@ static void nxVisualizeFluidRecord(void* internal, NxDebugRenderable* renderable
 	NxVisualizeFluidGetParticlesFn getParticles = fluidModel
 		? reinterpret_cast<NxVisualizeFluidGetParticlesFn>(
 			GetProcAddress(fluidModel, "FluidGetParticles")) : 0;
-	if(getCellSize)
-		(void)getCellSize(backendManager, backendFluid);
-	if(getParticles)
-		(void)getParticles(backendManager, backendFluid);
+	const NxReal cellSize = getCellSize
+		? getCellSize(backendManager, backendFluid) : 0.0f;
+	const NxVisualizeFluidParticleStream* const particleStream = getParticles
+		? static_cast<const NxVisualizeFluidParticleStream*>(
+			getParticles(backendManager, backendFluid)) : 0;
+	nxVisualizeFluidParticles(particleStream, renderable, cellSize,
+		*reinterpret_cast<float*>(fluid + 0x74));
 
-	// The oracle submits the cached fluid AABB in red when the bounds parameter
-	// is enabled. Particle-position, velocity, and kernel-radius branches are
-	// reconstructed separately from this shared traversal.
 	if(nxVisSdkParameter(NX_VISUALIZE_FLUID_BOUNDS) > 0.0f)
 		{
 		NxBounds3 bounds;

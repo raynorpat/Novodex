@@ -125,17 +125,52 @@ class NxSimulationCountingAllocator : public NxUserAllocator
 
 class NxSimulationFluidVisualizationRenderer : public NxUserDebugRenderer
 	{
+	static unsigned hashLine(unsigned hash, const NxDebugLine& line)
+		{
+		const unsigned* const words = reinterpret_cast<const unsigned*>(&line);
+		for(unsigned i = 0; i != 7; ++i)
+			{
+			// NxDebugRenderable circle points can differ by a few x87 rounding
+			// bits across the pinned and rebuilt DLLs; retain the coordinates to
+			// roughly 1e-5 while hashing their order and geometry.
+			const unsigned word = i < 6 ? (words[i] + 8u) & ~15u : words[i];
+			hash = (hash ^ word) * 16777619u;
+			}
+		return hash;
+		}
 	public:
-	NxSimulationFluidVisualizationRenderer(): redLines(0), renderCalls(0) {}
+	NxSimulationFluidVisualizationRenderer(): redLines(0), greenLines(0), blueLines(0),
+		redHash(2166136261u), greenHash(2166136261u), blueHash(2166136261u),
+		renderCalls(0) {}
 	virtual void renderData(const NxDebugRenderable& data) const
 		{
 		++renderCalls;
 		const NxDebugLine* const lines = data.getLines();
 		for(NxU32 i = 0; i < data.getNbLines(); ++i)
+			{
 			if(lines[i].color == 0xffff0000u)
+			{
 				++redLines;
+				redHash = hashLine(redHash, lines[i]);
+			}
+			else if(lines[i].color == 0xff00ff00u)
+			{
+				++greenLines;
+				greenHash = hashLine(greenHash, lines[i]);
+			}
+			else if(lines[i].color == 0xff0000ffu)
+			{
+				++blueLines;
+				blueHash = hashLine(blueHash, lines[i]);
+			}
+			}
 		}
 	mutable unsigned redLines;
+	mutable unsigned greenLines;
+	mutable unsigned blueLines;
+	mutable unsigned redHash;
+	mutable unsigned greenHash;
+	mutable unsigned blueHash;
 	mutable unsigned renderCalls;
 	};
 
@@ -6884,6 +6919,7 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshConstructorMatches ? 1u : 0u);
 	unsigned visualizedFluidCount = 0;
 	unsigned visualizedBoundsCount = 0;
+	unsigned particleFixtureCount = 0;
 	if(surfaceMeshScene)
 		{
 		unsigned char* const sceneInternal = *reinterpret_cast<unsigned char**>(
@@ -6902,6 +6938,7 @@ int wmain(int argc, wchar_t** argv)
 		unsigned char* const internalFluid = reinterpret_cast<unsigned char*>(fluids[i]);
 			if(internalFluid && (*reinterpret_cast<unsigned*>(internalFluid + 0x58) & 1u))
 				{
+			*reinterpret_cast<float*>(internalFluid + 0x74) = 1.0f;
 				const float bounds[6] = { -1.0f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f };
 				memcpy(internalFluid + 0x5c, bounds, sizeof(bounds));
 				++visualizedBoundsCount;
@@ -6909,17 +6946,45 @@ int wmain(int argc, wchar_t** argv)
 			}
 			}
 		}
+		HMODULE const fluidModel = GetModuleHandleA("FluidModel.DLL");
+		typedef void (__cdecl *NxSimulationSetParticleStreamFn)(unsigned,
+			const unsigned*, unsigned);
+		NxSimulationSetParticleStreamFn const setParticleStream = fluidModel
+			? reinterpret_cast<NxSimulationSetParticleStreamFn>(GetProcAddress(
+				fluidModel, "NxSetFluidPostStepParticle")) : 0;
+		unsigned particleWords[23] = {};
+		const float particlePosition[3] = { 1.25f, -2.5f, 3.75f };
+		const float particleVelocity[3] = { 0.5f, -1.0f, 1.5f };
+		memcpy(particleWords + 1, particlePosition, sizeof(particlePosition));
+		memcpy(particleWords + 4, particleVelocity, sizeof(particleVelocity));
+		if(setParticleStream)
+			for(unsigned system = 0; system != 2; ++system)
+				{
+				setParticleStream(system, particleWords, 1);
+				++particleFixtureCount;
+				}
 		sdk->setParameter(NX_VISUALIZATION_SCALE, 1.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_POSITION, 1.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_VELOCITY, 1.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_KERNEL_RADIUS, 1.0f);
 		sdk->setParameter(NX_VISUALIZE_FLUID_BOUNDS, 1.0f);
 		surfaceMeshScene->visualize();
 		NxSimulationFluidVisualizationRenderer renderer;
 		sdk->visualize(renderer);
 		const bool fluidVisualizationMatches = visualizedFluidCount == 2 &&
-			visualizedBoundsCount == 2 && renderer.redLines == 24;
-		printf("simulation fluid-visualization row=003489 fluids=%u bounds=%u red-lines=%u matched=%u\n",
-			visualizedFluidCount, visualizedBoundsCount, renderer.redLines,
+			visualizedBoundsCount == 2 && particleFixtureCount == 2 &&
+			renderer.redLines == 34 && renderer.greenLines == 72 &&
+			renderer.blueLines == 6 && renderer.redHash == 0xcdb7b47du &&
+			renderer.greenHash == 0x2999a5a5u && renderer.blueHash == 0x18232b07u;
+		printf("simulation fluid-visualization row=003489 fluids=%u bounds=%u streams=%u red-lines=%u green-lines=%u blue-lines=%u red-hash=%08x green-hash=%08x blue-hash=%08x matched=%u\n",
+			visualizedFluidCount, visualizedBoundsCount, particleFixtureCount,
+			renderer.redLines, renderer.greenLines, renderer.blueLines,
+			renderer.redHash, renderer.greenHash, renderer.blueHash,
 			fluidVisualizationMatches ? 1u : 0u);
 		sdk->setParameter(NX_VISUALIZE_FLUID_BOUNDS, 0.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_KERNEL_RADIUS, 0.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_VELOCITY, 0.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_POSITION, 0.0f);
 		sdk->setParameter(NX_VISUALIZATION_SCALE, 0.0f);
 		}
 	resetFluidManagerCallbacks();

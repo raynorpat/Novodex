@@ -5360,7 +5360,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "Partial manager traversal and cached-bounds branch reconstructed and mutation-tested; emitter, particle-position, velocity, and kernel-radius branches remain open, so the row cannot close."
+      "note": "Manager traversal, cached bounds, and particle position/velocity/kernel-radius branches match the pinned oracle with geometry fingerprints and independent omission mutations. Emitter geometry and fully exact endpoint comparison remain open, so retain as reconstructed_not_falsified."
     },
     {
       "id": "phys_fn_003491",
