@@ -1,0 +1,9 @@
+# Fluid deleting destructor (`phys_fn_003491`)
+
+IDA identifies `phys_fn_003491` at RVA `0x85890` as the 178-byte scalar deleting destructor body. It resets the primary vptr to the one-entry base table, destroys and clears the helper at `+0x54`, removes the object from the SDK pointer-binding registry through `phys_fn_000480`, dispatches deleting destructors across the emitter array, calls `FluidDestroy`, releases and clears the particle array at `+0x78`, then frees and clears the two allocator-owned array headers at `+0x14` and `+0x4`. The adjacent 34-byte row `phys_fn_003499` is the scalar deleting thunk: it calls this body and frees the object when delete flag bit 0 is set. The fluid constructor also installs the same one-entry base table represented by `gNxFluidVtable` in the candidate.
+
+`NxPhysicsSimulationTests` now checks both destructor routes. A scratch fluid seeded with a live manager/backend pair calls the object's vtable entry with delete flag 0 and checks the return pointer, base-vtable state, and that the storage remains live. The existing licensed combined mesh/emitter/particle release fixture checks teardown callback order `FluidDestroy` then `ParticleArrayRelease` (`DP`). Both markers are registered as Phase 5, 6, and 7 coverage.
+
+The pre-fix candidate produced `teardown=PD` and `exact=0`; the registered fixture rejects it with `stdout_delta=64` and candidate exit 1. After restoring the oracle order, the scratch flag-0 row and combined initialization row both report `exact=1`; the registered `NxPhysicsSimulationTests` differential exits zero on both pairs with `stdout_delta=0` and exact stderr. Full transcripts are in [`evidence/raw/phase7-fluid-deleting-dtor-003491-20261017/`](raw/phase7-fluid-deleting-dtor-003491-20261017/).
+
+Fresh Phase 5, 6, and 7 gates pass at 2,882/2,882, 1,742/1,742, and 3,021/3,021 registered coverage assertions. The common phase runner also passed the immutable public-header and CMake build gates.

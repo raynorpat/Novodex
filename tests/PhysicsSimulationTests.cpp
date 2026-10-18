@@ -5398,6 +5398,8 @@ int wmain(int argc, wchar_t** argv)
 	typedef void (__cdecl *SetFluidEmitterCreateNullIndexFn)(unsigned);
 	typedef void (__cdecl *SetFluidCreateNullIndexFn)(unsigned);
 	typedef unsigned (__cdecl *GetFluidCreationOrderFn)(char*, unsigned);
+	typedef void (__cdecl *ResetFluidTeardownOrderFn)();
+	typedef unsigned (__cdecl *GetFluidTeardownOrderFn)(char*, unsigned);
 	typedef unsigned (__cdecl *GetFluidEmitterCreateRecordFn)(unsigned,
 		unsigned*, unsigned);
 	typedef void (__cdecl *SetImplicitMeshReentryTargetFn)(void*);
@@ -5447,6 +5449,12 @@ int wmain(int argc, wchar_t** argv)
 	GetFluidCreationOrderFn getFluidCreationOrder = reinterpret_cast<
 		GetFluidCreationOrderFn>(GetProcAddress(fluidModel,
 			"NxGetFluidCreationOrder"));
+	ResetFluidTeardownOrderFn resetFluidTeardownOrder = reinterpret_cast<
+		ResetFluidTeardownOrderFn>(GetProcAddress(fluidModel,
+			"NxResetFluidTeardownOrder"));
+	GetFluidTeardownOrderFn getFluidTeardownOrder = reinterpret_cast<
+		GetFluidTeardownOrderFn>(GetProcAddress(fluidModel,
+			"NxGetFluidTeardownOrder"));
 	GetFluidEmitterCreateRecordFn getFluidEmitterCreateRecord = reinterpret_cast<
 		GetFluidEmitterCreateRecordFn>(GetProcAddress(fluidModel,
 			"NxGetFluidEmitterCreateRecord"));
@@ -5463,7 +5471,8 @@ int wmain(int argc, wchar_t** argv)
 		!getFluidStaticRestitutionCalls || !getFluidStaticAdhesionCalls ||
 		!getFluidManagerCallbackSummary ||
 		!setFluidEmitterCreateNullIndex || !setFluidCreateNullIndex ||
-		!getFluidCreationOrder || !getFluidEmitterCreateRecord ||
+		!getFluidCreationOrder || !getFluidTeardownOrder ||
+		!resetFluidTeardownOrder || !getFluidEmitterCreateRecord ||
 		!setImplicitMeshReentryTarget)
 		return nxFail("fluid model manager callback controls are missing");
 	resetFluidManagerCallbacks();
@@ -7437,8 +7446,51 @@ int wmain(int argc, wchar_t** argv)
 	char combinedCreationOrder[16] = {};
 	const unsigned combinedCreationOrderLength = getFluidCreationOrder(
 		combinedCreationOrder, sizeof(combinedCreationOrder));
+	bool fluidScalarDeleteFlagZeroMatches = false;
+	bool fluidScalarDeleteFlagZeroReturnMatches = false;
+	bool fluidScalarDeleteFlagZeroVtableRestored = false;
+	bool fluidScalarDeleteFlagZeroStorageLive = false;
+	if(combinedInitializationFluid)
+		{
+		void* const internalFluid = *reinterpret_cast<void**>(
+			reinterpret_cast<unsigned char*>(combinedInitializationFluid) + 0x14);
+		void* const derivedVtable = internalFluid
+			? *reinterpret_cast<void**>(internalFluid) : 0;
+		if(derivedVtable)
+			{
+			alignas(4) unsigned char scratchFluid[0x84] = {};
+			*reinterpret_cast<void**>(scratchFluid) = derivedVtable;
+			*reinterpret_cast<void**>(scratchFluid + 0x7c) =
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(internalFluid) + 0x7c);
+			*reinterpret_cast<void**>(scratchFluid + 0x80) =
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(internalFluid) + 0x80);
+			scratchFluid[0x83] = 0x5a;
+			typedef void* (__thiscall *FluidDeletingDestructor)(void*, unsigned char);
+			FluidDeletingDestructor const destroy = reinterpret_cast<
+				FluidDeletingDestructor>(*reinterpret_cast<void***>(internalFluid)[0]);
+			void* const returned = destroy(scratchFluid, 0);
+			fluidScalarDeleteFlagZeroReturnMatches = returned == scratchFluid;
+			fluidScalarDeleteFlagZeroVtableRestored =
+				*reinterpret_cast<void**>(scratchFluid) == derivedVtable;
+			fluidScalarDeleteFlagZeroStorageLive = scratchFluid[0x83] == 0x5a;
+			fluidScalarDeleteFlagZeroMatches =
+				fluidScalarDeleteFlagZeroReturnMatches &&
+				fluidScalarDeleteFlagZeroVtableRestored &&
+				fluidScalarDeleteFlagZeroStorageLive;
+			}
+		}
+	printf("simulation fluid deleting-dtor row=003491 flag0 return=%u base-vptr=%u storage-live=%u exact=%u\n",
+		fluidScalarDeleteFlagZeroReturnMatches ? 1u : 0u,
+		fluidScalarDeleteFlagZeroVtableRestored ? 1u : 0u,
+		fluidScalarDeleteFlagZeroStorageLive ? 1u : 0u,
+		fluidScalarDeleteFlagZeroMatches ? 1u : 0u);
+	resetFluidManagerCallbacks();
+	resetFluidTeardownOrder();
 	if(combinedInitializationFluid)
 		surfaceMeshScene->releaseFluid(*combinedInitializationFluid);
+	char combinedTeardownOrder[16] = {};
+	const unsigned combinedTeardownOrderLength = getFluidTeardownOrder(
+		combinedTeardownOrder, sizeof(combinedTeardownOrder));
 	FluidManagerCallbackSummary combinedDestroyCallbacks = {};
 	getFluidManagerCallbackSummary(&combinedDestroyCallbacks);
 	const bool combinedInitializationMatches = combinedInitializationFluid &&
@@ -7448,11 +7500,15 @@ int wmain(int argc, wchar_t** argv)
 		combinedCreateCallbacks.fluidCreate == 1 &&
 		combinedCreateCallbacks.implicitFluidMeshCreate == 1 &&
 		combinedCreateCallbacks.emitterCreate == 1 &&
+		fluidScalarDeleteFlagZeroMatches &&
 		combinedDestroyCallbacks.fluidDestroy == 1 &&
+		combinedTeardownOrderLength == 2 &&
+		strcmp(combinedTeardownOrder, "DP") == 0 &&
 		combinedDestroyCallbacks.implicitFluidMeshDestroy == 0 &&
 		combinedDestroyCallbacks.emitterDestroy == 0;
-	printf("simulation row3649 combined-init order=%s length=%u callbacks=%u.%u.%u cleanup=%u.%u.%u exact=%u\n",
+	printf("simulation row3649 combined-init order=%s length=%u teardown=%s teardown-length=%u callbacks=%u.%u.%u cleanup=%u.%u.%u exact=%u\n",
 		combinedCreationOrder, combinedCreationOrderLength,
+		combinedTeardownOrder, combinedTeardownOrderLength,
 		combinedCreateCallbacks.fluidCreate,
 		combinedCreateCallbacks.implicitFluidMeshCreate,
 		combinedCreateCallbacks.emitterCreate,

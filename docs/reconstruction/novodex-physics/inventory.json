@@ -65586,13 +65586,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1293",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12260",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at oracle RVA 0x00084ff0 shows the per-particle visualization body. It gates particle kernel circles, position crosses, and velocity arrows on their SDK visualization parameters and consumes the backend 92-byte particle records. Candidate nxVisualizeFluidParticles implements the corresponding modes.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests exercises this particle renderer through the licensed two-fluid visualization case. The oracle and candidate match 34 red, 72 green, and 6 blue lines and geometry fingerprints cdb7b47d/2999a5a5/18232b07. Separate omissions of position, kernel-radius, and velocity branches are detected; a wrong position scale is detected by the geometry fingerprint while preserving line counts. Phase 5/6/7 pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020. See evidence/phase7-fluid-visualization-003489-20261017.md.",
+      "notes": "Particle visualization core. Its continuation at 0x000852c0 is inventoried as phys_fn_003473 and uses the same candidate helper. Emitter traversal is handled by phys_fn_003489.",
+      "implementation": "Physics/src/SceneVisualize.cpp",
+      "implementation_symbol": "nxVisualizeFluidParticles"
     },
     {
       "id": "phys_fn_003472",
@@ -65622,13 +65624,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1293",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12263",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00084ff0"
+      "static_proof": "IDA maps this 0x000852c0 range as a continuation of the particle visualization entry at 0x00084ff0. The continuation completes the three per-particle mode branches and their renderable submissions; candidate nxVisualizeFluidParticles implements the complete body.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests exercises this particle renderer through the licensed two-fluid visualization case. The oracle and candidate match 34 red, 72 green, and 6 blue lines and geometry fingerprints cdb7b47d/2999a5a5/18232b07. Separate omissions of position, kernel-radius, and velocity branches are detected; a wrong position scale is detected by the geometry fingerprint while preserving line counts. Phase 5/6/7 pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020. See evidence/phase7-fluid-visualization-003489-20261017.md.",
+      "notes": "Continuation of phys_fn_003471 at 0x00084ff0; the same backend-stream fixture covers this range.",
+      "implementation": "Physics/src/SceneVisualize.cpp",
+      "implementation_symbol": "nxVisualizeFluidParticles"
     },
     {
       "id": "phys_fn_003474",
@@ -65951,13 +65955,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1301",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12302",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x85890 shows base-vptr reset, helper destruction, phys_fn_000480 pointer-binding removal, emitter deleting-dispatch loop, FluidDestroy, ParticleArrayRelease, and ordered frees/clears of array headers at +0x14 and +0x4. phys_fn_003499 is the adjacent scalar deleting thunk that conditionally frees the fluid.",
+      "dynamic_proof": "NxPhysicsSimulationTests calls the live fluid vtable destructor with delete flag 0 and checks return, base-vtable state, and live storage. The licensed combined mesh/emitter/particle release asserts FluidDestroy precedes ParticleArrayRelease. The pre-fix PD ordering is rejected (exact=0, candidate exit=1); restored DP ordering passes the staged oracle/candidate differential (both exit 0, stdout_delta=0, stderr_exact=True). See evidence/phase7-fluid-deleting-destructor-003491.md and evidence/raw/phase7-fluid-deleting-dtor-003491-20261017/.",
+      "notes": "Mutation-falsified destructor behavior covers flag 0 return/storage and licensed flag 1 teardown ordering. The helper, emitter, pointer-binding, and allocator cleanup actions are grounded in IDA sequencing and exercised through the combined fluid release path.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidDeletingDestructor"
     },
     {
       "id": "phys_fn_003492",

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scope": "NxPhysics fluid deleting destructor phys_fn_003491; pre-fix teardown-order detection and restored oracle/candidate differential",
+  "files": {
+    "candidate-before-fix.stdout.txt": {
+      "sha256": "9810d408beeb4962376151ebb149121ddac8c5339db204f93995578832c504b2",
+      "bytes": 425017
+    },
+    "oracle-before-fix.stdout.txt": {
+      "sha256": "e178eb6a35f0356aa1746c1e9d1cd0af99724fc4cd9c48ac8642a8e48f96bb23",
+      "bytes": 431421
+    },
+    "restored-differential.log": {
+      "sha256": "d73b68456cb5b70d43065fdce7f0c3b12acd398e35af852e88df62ca10e8d9d5",
+      "bytes": 868736
+    }
+  }
+}

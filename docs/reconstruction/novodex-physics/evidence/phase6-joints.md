@@ -11272,3 +11272,9 @@ Phase 7 closure evidence: phys_fn_003501 emitter-create capacity mutation is det
 Phase 7 closure evidence: phys_fn_003493 internal emitter release swap-index mutation is detected (internal-array=0, public-array=1, callback=1, mismatches=1, stdout_delta=88); restored result matches. See evidence/phase7-fluid-emitter-release-003493.md and evidence/raw/phase7-fluid-emitter-release-003493-20261017/.
 
 Phase 7 closure evidence: phys_fn_003481 surface-mesh construction is mutation-falsified by the licensed descriptor fixture (smoothing-iteration +1 reports args=0, matched=0, stdout_delta=67); restored differential is exact. See evidence/phase7-fluid-internal-surface-mesh-create-003481.md and evidence/raw/phase7-fluid-internal-surface-mesh-create-003481-20261017/.
+
+
+## Phase 7 fluid deleting destructor (phys_fn_003491)
+
+The scalar deleting destructor now follows the pinned helper, pointer-binding, emitter, backend, particle-array, and allocator cleanup order. The registered licensed release fixture rejects the pre-fix PD teardown order against oracle DP (stdout_delta=64, candidate exit 1); restored flag-0 and flag-1 paths match. See [the row evidence](phase7-fluid-deleting-destructor-003491.md).
+Mutation evidence for phys_fn_003491: the pre-fix PD teardown order is rejected by the registered fixture (stdout_delta=64, candidate exit 1); restored DP output matches.

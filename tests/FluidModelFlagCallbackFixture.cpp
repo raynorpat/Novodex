@@ -90,6 +90,8 @@ struct NxFluidManagerCallbackRecord
 static NxFluidManagerCallbackSummary gFluidManagerCallbackSummary;
 static char gFluidCreationOrder[64];
 static unsigned gFluidCreationOrderCount;
+static char gFluidTeardownOrder[16];
+static unsigned gFluidTeardownOrderCount;
 static NxFluidManagerCallbackRecord gFluidManagerRecords[8];
 static unsigned gFluidManagerRecordCount;
 static unsigned gFluidManagerGetCallCount;
@@ -337,6 +339,8 @@ extern "C" __declspec(dllexport) void __cdecl NxResetFluidManagerCallbacks()
 	ZeroMemory(&gFluidManagerCallbackSummary, sizeof(gFluidManagerCallbackSummary));
 	ZeroMemory(gFluidCreationOrder, sizeof(gFluidCreationOrder));
 	gFluidCreationOrderCount = 0;
+	ZeroMemory(gFluidTeardownOrder, sizeof(gFluidTeardownOrder));
+	gFluidTeardownOrderCount = 0;
 	ZeroMemory(gFluidEmitterCreateRecords, sizeof(gFluidEmitterCreateRecords));
 	ZeroMemory(gFluidManagerRecords, sizeof(gFluidManagerRecords));
 	gFluidManagerRecordCount = 0;
@@ -425,6 +429,25 @@ extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidCreationOrder(
 		{
 		const unsigned copied = count < capacity - 1 ? count : capacity - 1;
 		memcpy(output, gFluidCreationOrder, copied);
+		output[copied] = 0;
+		}
+	return count;
+	}
+
+extern "C" __declspec(dllexport) void __cdecl NxResetFluidTeardownOrder()
+	{
+	ZeroMemory(gFluidTeardownOrder, sizeof(gFluidTeardownOrder));
+	gFluidTeardownOrderCount = 0;
+	}
+
+extern "C" __declspec(dllexport) unsigned __cdecl NxGetFluidTeardownOrder(
+	char* output, unsigned capacity)
+	{
+	const unsigned count = gFluidTeardownOrderCount;
+	if(output && capacity)
+		{
+		const unsigned copied = count < capacity - 1 ? count : capacity - 1;
+		memcpy(output, gFluidTeardownOrder, copied);
 		output[copied] = 0;
 		}
 	return count;
@@ -576,7 +599,11 @@ extern "C" __declspec(dllexport) void* __cdecl FluidCreate(void* manager,
 extern "C" __declspec(dllexport) void __cdecl FluidDestroy(void* manager, void* fluid)
 	{
 	if(manager == &gFluidManagerBackend && fluid)
+		{
 		++gFluidManagerCallbackSummary.fluidDestroy;
+		if(gFluidTeardownOrderCount < sizeof(gFluidTeardownOrder) - 1)
+			gFluidTeardownOrder[gFluidTeardownOrderCount++] = 'D';
+		}
 	}
 
 extern "C" __declspec(dllexport) void __cdecl ImplicitFluidMeshCreate(
@@ -1127,6 +1154,8 @@ extern "C" __declspec(dllexport) void __cdecl ParticleArrayRelease(
 	{
 	if(!array)
 		return;
+	if(gFluidTeardownOrderCount < sizeof(gFluidTeardownOrder) - 1)
+		gFluidTeardownOrder[gFluidTeardownOrderCount++] = 'P';
 	if(array->data != gFluidParticleArrayBackingAlias)
 		free(array->data);
 	free(array);

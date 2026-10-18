@@ -2820,10 +2820,19 @@ static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void* manager,
 static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(fluid);
-	void* const particleArray = *reinterpret_cast<void**>(bytes + 0x78);
-	if(particleArray && gNxParticleArrayReleaseCallback)
-		gNxParticleArrayReleaseCallback(particleArray);
-	*reinterpret_cast<void**>(bytes + 0x78) = 0;
+	// Construction already installs the one-entry Fluid base table in this
+	// reconstruction, so this store preserves the shipped destructor's reset.
+	*reinterpret_cast<void***>(bytes) = gNxFluidVtable;
+	void* helper = *reinterpret_cast<void**>(bytes + 0x54);
+	if(helper)
+		{
+		void** vtable = *reinterpret_cast<void***>(helper);
+		typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
+		reinterpret_cast<DeletingDestructor>(vtable[0])(helper, 1);
+		*reinterpret_cast<void**>(bytes + 0x54) = 0;
+		}
+	// phys_fn_000480 removes the fluid from the SDK pointer-binding registry.
+	nxSetSdkPointerBinding(fluid, 0);
 	unsigned emitterFirst = *reinterpret_cast<unsigned*>(bytes + 4);
 	unsigned emitterLast = *reinterpret_cast<unsigned*>(bytes + 8);
 	const unsigned emitterCount = emitterLast >= emitterFirst
@@ -2838,6 +2847,15 @@ static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned c
 		typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
 		reinterpret_cast<DeletingDestructor>(vtable[0])(internalEmitter, 1);
 		}
+	void* manager = *reinterpret_cast<void**>(bytes + 0x7c);
+	void* backendFluid = *reinterpret_cast<void**>(bytes + 0x80);
+	if(manager && backendFluid && gNxFluidDestroyCallback)
+		gNxFluidDestroyCallback(*reinterpret_cast<void**>(
+			static_cast<unsigned char*>(manager) + 0x30), backendFluid);
+	void* const particleArray = *reinterpret_cast<void**>(bytes + 0x78);
+	if(particleArray && gNxParticleArrayReleaseCallback)
+		gNxParticleArrayReleaseCallback(particleArray);
+	*reinterpret_cast<void**>(bytes + 0x78) = 0;
 	for(unsigned offset = 0x14; ; offset = 4)
 		{
 		void* const allocation = *reinterpret_cast<void**>(bytes + offset);
@@ -2849,19 +2867,6 @@ static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned c
 		if(offset == 4)
 			break;
 		}
-	void* helper = *reinterpret_cast<void**>(bytes + 0x54);
-	if(helper)
-		{
-		void** vtable = *reinterpret_cast<void***>(helper);
-		typedef void* (__thiscall *DeletingDestructor)(void*, unsigned char);
-		reinterpret_cast<DeletingDestructor>(vtable[0])(helper, 1);
-		*reinterpret_cast<void**>(bytes + 0x54) = 0;
-		}
-	void* manager = *reinterpret_cast<void**>(bytes + 0x7c);
-	void* backendFluid = *reinterpret_cast<void**>(bytes + 0x80);
-	if(manager && backendFluid && gNxFluidDestroyCallback)
-		gNxFluidDestroyCallback(*reinterpret_cast<void**>(
-			static_cast<unsigned char*>(manager) + 0x30), backendFluid);
 	if((deleteObject & 1) != 0)
 		nxFoundationSDKAllocator->free(fluid);
 	return fluid;

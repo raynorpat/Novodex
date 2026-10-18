@@ -172,3 +172,15 @@ The earlier empty particle result came from the callback fixture's zero-count ba
 ### Continuation — fluid visualization coordinate fingerprint (`phys_fn_003489`, 2026-10-17)
 
 The backend-stream fixture now checks ordered line geometry hashes by color in addition to counts. Oracle/candidate hashes match; a wrong position scale keeps line counts but changes the position hash and is caught. The cross order now follows the oracle's z/y/x order. The hashes quantize four low mantissa bits to accommodate small x87 circle-rounding differences, so exact coordinate behavior is not fully closed. Fresh Phase 5/6/7 gates pass at 2,881/2,881, 1,741/1,741, and 3,020/3,020; all 817 reconstruction-tool tests pass. Emitter geometry remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-visualization-003489-20261017.md`.
+
+
+### Inventory reconciliation — particle visualization chunks (`phys_fn_003471/003473`, 2026-10-17)
+
+IDA identifies 0x00084ff0 and its continuation at 0x000852c0 as the particle visualization body just reconstructed in `nxVisualizeFluidParticles`. Both rows now record the shared fixture and mutation evidence as reconstructed-not-falsified; Phase 7 deferred categories move to 48 unreconstructed / 63 reconstructed-not-falsified (111 total). Emitter geometry and address-specific closure remain outstanding.
+
+
+### Continuation - fluid deleting destructor (phys_fn_003491, 2026-10-17)
+
+Reconstructed the IDA cleanup sequence: base-vtable reset, helper deletion, SDK pointer-binding removal, emitter destructor walk, backend FluidDestroy, particle-array release, and ordered free/clear of the two array headers. Added a licensed combined teardown order check (DP) and a direct flag-0 scratch call checking return, vtable state, and live storage. The pre-fix PD candidate mutation is rejected with exit 1; restored NxPhysicsSimulationTests differential matches exactly. Phase 5/6/7 coverage floors each increase by one. Phase 7 closure now has 450 closed and 110 deferred function rows (63 reconstructed-not-falsified, 47 not reconstructed). Evidence: docs/reconstruction/novodex-physics/evidence/phase7-fluid-deleting-destructor-003491.md.
+
+Fresh Phase 5/6/7 gates pass at 2,882/2,882, 1,742/1,742, and 3,021/3,021 assertions; the CMake builds, public-header hashes, inventory validator, and all 817 reconstruction-tool tests pass. The full DLL remains incomplete; the Phase 7 closure ledger has 450/560 function rows closed.
