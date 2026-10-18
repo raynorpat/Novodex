@@ -65280,13 +65280,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "bit set/clear on [this+0x58] by flag (0x84ed0, ret 8)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1284",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12250",
       "static_proof": "mov al,[esp+8]; if nonzero OR else AND~[esp+4] into [this+0x58]; ret 8",
-      "dynamic_proof": "confirmed via misc3 drive (3z64): failures=0",
-      "notes": ""
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests invokes the pinned oracle RVA and map-resolved candidate DLL method over four seeded masks and flag words. It checks exact word/record preservation and x86 stack balance. Independent candidate-only set and get mutations are detected (set_mismatches=2 and get_mismatches=4); the restored differential matches all cases.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "setFlag",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?setFlag@NxFluidFlagsAt58",
+        "address": "0x1006e090",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003454",
@@ -65316,13 +65324,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "and-getter [this+0x58] & arg (0x84f00, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1285",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12252",
       "static_proof": "mov eax,[ecx+0x58]; and eax,[esp+4]; ret 4",
-      "dynamic_proof": "confirmed via tinygetters drive (3z48): failures=0",
-      "notes": ""
+      "dynamic_proof": "Registered NxPhysicsFluidEmitterAbiTests invokes the pinned oracle RVA and map-resolved candidate DLL method over four seeded masks and flag words. It checks exact word/record preservation and x86 stack balance. Independent candidate-only set and get mutations are detected (set_mismatches=2 and get_mismatches=4); the restored differential matches all cases.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "getFlag",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?getFlag@NxFluidFlagsAt58",
+        "address": "0x10061660",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_003456",

@@ -1,0 +1,59 @@
+{
+  "slice": [
+    "phys_fn_003453",
+    "phys_fn_003455"
+  ],
+  "candidate_source": "Physics/src/Scene.cpp",
+  "fixture_source": "tests/PhysicsFluidEmitterAbiTests.cpp",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "ce191479390aee91c6b09b88a7ddb5af6523f0f615f6527eb72aecda5ec8815b",
+  "phase5_coverage": "2886/2886",
+  "phase7_coverage": "3025/3025",
+  "tool_suite": "817 passed",
+  "files": {
+    "getter-mutation-build.log.gz": {
+      "sha256": "cee47da6963dd0ad259039dd2ffc9a8acd716d9d6727381f38ce0e598d4ffb1b",
+      "bytes": 739
+    },
+    "getter-mutation.exit": {
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    "getter-mutation.log.gz": {
+      "sha256": "3ee032f7f3125a78beff9de7efd81023a7932b248ead1c03031d38bcb182ad88",
+      "bytes": 2773
+    },
+    "phase5-gate-fixture-pin-failure.log.gz": {
+      "sha256": "d15411dbc2aa57ca04dbaf03d200353b52b262670f547d5eb4034a837331ed75",
+      "bytes": 11642
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "fe6c32339b7e612f2a40d6aafb29d60f44ec6714b8cac8c6a51ade6d2cba40df",
+      "bytes": 214084
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "925494dbd9c250e3d2d4f3d42d6a229add31f375fec20081b2c8a74158986ebe",
+      "bytes": 379847
+    },
+    "restored-build.log.gz": {
+      "sha256": "cee47da6963dd0ad259039dd2ffc9a8acd716d9d6727381f38ce0e598d4ffb1b",
+      "bytes": 739
+    },
+    "restored-differential.log.gz": {
+      "sha256": "014a7cdc5d6bd903119044acb865191d4baa1b325271ae4ca499de0128aaeda4",
+      "bytes": 3512
+    },
+    "setter-mutation-build.log.gz": {
+      "sha256": "ee177c0c28ea696c9ecfd6615e98d577533e74ff26eb2be8dc96f88423dae81a",
+      "bytes": 743
+    },
+    "setter-mutation.exit": {
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    "setter-mutation.log.gz": {
+      "sha256": "bc735bf9c5e73f5f64c7c2891a6bf63da694dee89dd3248d26428b316a97cd37",
+      "bytes": 2774
+    }
+  }
+}

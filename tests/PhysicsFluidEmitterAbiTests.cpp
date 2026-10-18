@@ -1024,6 +1024,96 @@ static unsigned nxRunFluidParticleWriteDataCopyDifferential(
 	return mismatches;
 	}
 
+static unsigned nxRunFluidFlagWordDifferential(
+	const unsigned char* oracleImage, HMODULE candidatePhysics)
+	{
+	if(!oracleImage || !candidatePhysics)
+		return 1;
+	void* candidateSetAddress = 0;
+	void* candidateGetAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"setFlag@NxFluidFlagsAt58", &candidateSetAddress) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+			"getFlag@NxFluidFlagsAt58", &candidateGetAddress))
+		return 1;
+	typedef void (__thiscall *SetFlag)(void*, unsigned, unsigned);
+	typedef unsigned (__thiscall *GetFlag)(const void*, unsigned);
+	SetFlag oracleSet = reinterpret_cast<SetFlag>(
+		const_cast<unsigned char*>(oracleImage) + 0x84ed0);
+	SetFlag candidateSet = reinterpret_cast<SetFlag>(candidateSetAddress);
+	GetFlag oracleGet = reinterpret_cast<GetFlag>(
+		const_cast<unsigned char*>(oracleImage) + 0x84f00);
+	GetFlag candidateGet = reinterpret_cast<GetFlag>(candidateGetAddress);
+	static const unsigned initial[] = { 0x0000000fu, 0x80000001u,
+		0x55aa33ccu, 0xffffffffu };
+	static const unsigned masks[] = { 0x000000a0u, 0x80000000u,
+		0x0f0f00f0u, 0x55555555u };
+	static const unsigned enabled[] = { 1u, 0u, 1u, 0u };
+	unsigned mismatches = 0, setterMismatches = 0, getterMismatches = 0;
+	unsigned stackChecks = 0;
+	for(unsigned i = 0; i != 4; ++i)
+		{
+		unsigned char oracleRecord[0x70], candidateRecord[0x70];
+		memset(oracleRecord, 0xa5, sizeof(oracleRecord));
+		memset(candidateRecord, 0xa5, sizeof(candidateRecord));
+		memcpy(oracleRecord + 0x58, &initial[i], 4);
+		memcpy(candidateRecord + 0x58, &initial[i], 4);
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		oracleSet(oracleRecord, masks[i], enabled[i]);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		candidateSet(candidateRecord, masks[i], enabled[i]);
+		__asm mov candidateAfter, esp
+		unsigned oracleWord = 0, candidateWord = 0;
+		memcpy(&oracleWord, oracleRecord + 0x58, 4);
+		memcpy(&candidateWord, candidateRecord + 0x58, 4);
+		const unsigned expected = enabled[i] ? initial[i] | masks[i]
+			: initial[i] & ~masks[i];
+		const bool setMatch = oracleWord == candidateWord &&
+			oracleWord == expected &&
+			memcmp(oracleRecord, candidateRecord, 0x58) == 0 &&
+			memcmp(oracleRecord + 0x5c, candidateRecord + 0x5c,
+				sizeof(oracleRecord) - 0x5c) == 0;
+		const bool setStack = oracleBefore == oracleAfter &&
+			candidateBefore == candidateAfter;
+		if(!setMatch || !setStack)
+			{
+			++mismatches;
+			++setterMismatches;
+			}
+		stackChecks += setStack;
+		unsigned oracleGetRecord[0x1c], candidateGetRecord[0x1c];
+		memset(oracleGetRecord, 0xa5, sizeof(oracleGetRecord));
+		memset(candidateGetRecord, 0xa5, sizeof(candidateGetRecord));
+		memcpy(reinterpret_cast<unsigned char*>(oracleGetRecord) + 0x58,
+			&initial[i], 4);
+		memcpy(reinterpret_cast<unsigned char*>(candidateGetRecord) + 0x58,
+			&initial[i], 4);
+		unsigned oracleResult = 0, candidateResult = 0;
+		__asm mov oracleBefore, esp
+		oracleResult = oracleGet(oracleGetRecord, masks[i]);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		candidateResult = candidateGet(candidateGetRecord, masks[i]);
+		__asm mov candidateAfter, esp
+		const bool getMatch = oracleResult == candidateResult &&
+			oracleResult == (initial[i] & masks[i]);
+		const bool getStack = oracleBefore == oracleAfter &&
+			candidateBefore == candidateAfter;
+		if(!getMatch || !getStack)
+			{
+			++mismatches;
+			++getterMismatches;
+			}
+		stackChecks += getStack;
+		}
+	printf("fluid flag-word rows=003453.003455 cases=4 set_mismatches=%u get_mismatches=%u stack=%u/8 mismatches=%u\n",
+		setterMismatches, getterMismatches, stackChecks, mismatches);
+	return mismatches;
+	}
+
 struct NxFluidLicenseRegistryOverride
 	{
 	NxFluidLicenseRegistryOverride()
@@ -7780,6 +7870,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	gFailures += nxRunFluidParticleWriteDataCopyDifferential(image,
 		candidatePhysics);
+	gFailures += nxRunFluidFlagWordDifferential(image, candidatePhysics);
 	gFailures += nxRunFluidEmitterRecordConstructor(image, candidatePhysics);
 	gFailures += nxRunFluidEmitterRecordDestructor(image, candidatePhysics);
 	gFailures += nxRunFluidSolverConstructor(image, candidatePhysics);

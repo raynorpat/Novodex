@@ -137,6 +137,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'fluid solver constructor row=003692 oracle_primary=1 candidate_primary=1 oracle_secondary=1 candidate_secondary=1 zero_fields=1 user_data=1 return=1 stack=1 mismatches=0'
 		'fluid solver deleting dtor row=003694 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
 		'fluid solver deleting dtor row=003788 oracle_transition=1 candidate_transition=1 payload=1 return=1 mismatches=0'
+		'fluid flag-word rows=003453.003455 cases=4 set_mismatches=0 get_mismatches=0 stack=8/8 mismatches=0'
 		'fluid base deleting dtor row=003690 oracle_vptr=1 candidate_vptr=1 payload=1 return=1 flag1_free=1 mismatches=0'
 		'fluid license resolver cases=11 input_digest=04893d50 oracle=8d75d855 candidate=8d75d855 mismatches=0'
         'contact patch assignment cases=3 oracle_return=3 candidate_return=3 payload_equal=3 vptr_preserved=3 padding_preserved=3 stack=3/3 mismatches=0'
@@ -6328,7 +6329,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2885  # includes licensed fluid visualization, deleting-destructor, and particle-copy checks
+	'5' = 2886  # includes licensed fluid visualization, deleting-destructor, particle-copy, and flag-word checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
@@ -6468,7 +6469,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3024  # includes licensed fluid visualization, deleting-destructor, and particle-copy checks
+	'7' = 3025  # includes licensed fluid visualization, deleting-destructor, particle-copy, and flag-word checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential

@@ -1263,6 +1263,28 @@ static NxFluidEmitter** __fastcall nxFluidGetEmitters(void* wrapper, void*)
 	return emitters;
 	}
 
+// phys_fn_003453 / phys_fn_003455 (0x84ed0 / 0x84f00) are the shared
+// internal-fluid flag-word setter and masked getter.
+class NxFluidFlagsAt58
+	{
+	public:
+	__declspec(noinline) void setFlag(unsigned mask, unsigned enabled)
+		{
+		unsigned* const flags = reinterpret_cast<unsigned*>(
+			reinterpret_cast<unsigned char*>(this) + 0x58);
+		if(enabled)
+			*flags |= mask;
+		else
+			*flags &= ~mask;
+		}
+	__declspec(noinline) unsigned getFlag(unsigned mask) const
+		{
+		const unsigned flags = *reinterpret_cast<const unsigned*>(
+			reinterpret_cast<const unsigned char*>(this) + 0x58);
+		return flags & mask;
+		}
+	};
+
 // phys_fn_003425 / phys_fn_003427 (0x84d10 / 0x84d30) are the pair of
 // eleven-dword record-copy helpers used by the locked public accessors below.
 class NxFluidParticleWriteDataCopy
@@ -1810,11 +1832,8 @@ static void __fastcall nxFluidSetFlag(void* wrapper, void*, NxFluidFlag flag,
 	gNxApiReentry = true;
 	unsigned char* const internal = static_cast<unsigned char*>(
 		*reinterpret_cast<void**>(wrapperBytes + 0x14));
-	unsigned* const flags = reinterpret_cast<unsigned*>(internal + 0x58);
-	if(enabled)
-		*flags |= static_cast<unsigned>(flag);
-	else
-		*flags &= ~static_cast<unsigned>(flag);
+	reinterpret_cast<NxFluidFlagsAt58*>(internal)->setFlag(
+		static_cast<unsigned>(flag), enabled ? 1u : 0u);
 	gNxApiReentry = false;
 	nxNpSceneGuardLeave(writeLock);
 	}
@@ -1828,9 +1847,9 @@ static NX_BOOL __fastcall nxFluidGetFlag(void* wrapper, void*, NxFluidFlag flag)
 	nxNpSceneGuardEnter(readLock);
 	unsigned char* const internal = static_cast<unsigned char*>(
 		*reinterpret_cast<void**>(wrapperBytes + 0x14));
-	const unsigned flags = *reinterpret_cast<unsigned*>(internal + 0x58);
 	const NX_BOOL result = static_cast<NX_BOOL>(
-		flags & static_cast<unsigned>(flag));
+		reinterpret_cast<const NxFluidFlagsAt58*>(internal)->getFlag(
+			static_cast<unsigned>(flag)));
 	nxNpSceneGuardLeave(readLock);
 	return result;
 	}

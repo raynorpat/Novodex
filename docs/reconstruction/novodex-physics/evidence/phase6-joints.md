@@ -11292,3 +11292,9 @@ A candidate-only mutation replacing `nxVisualizeFluidRecord(*fluid++, renderable
 Closure measurement: `phys_fn_003489` is rejected by the traversal mutation with `stdout_delta=2`; restored output is exact.
 
 Phase 7 particle write-data copy rows `phys_fn_003425` and `phys_fn_003427`: the registered `NxPhysicsFluidEmitterAbiTests` direct DLL probe compares eleven dwords, surrounding sentinels, and x86 stack balance on three records. A one-dword truncation is caught for the getter (`getter_mismatches=3`) and setter (`setter_mismatches=3`); restored output reports `mismatches=0`. See `phase7-fluid-particle-write-data-copy-003425-003427.md` and `evidence/raw/phase7-fluid-particle-write-data-copy-003425-003427-20261017/`.
+
+
+## Phase 7 fluid flag-word continuation (2026-10-17)
+
+`phys_fn_003453` and `phys_fn_003455` are now candidate-DLL gated through `NxPhysicsFluidEmitterAbiTests`. Four direct pinned-oracle cases cover flag set/clear, masked reads, untouched bytes and x86 stack balance. Independent setter and getter mutations were detected with 2 and 4 mismatches. The restored control reports zero mismatches. See `evidence/phase7-fluid-flag-word-003453-003455.md` and `evidence/raw/phase7-fluid-flag-word-003453-003455-20261017/`.
+Fresh Phase 5 and Phase 7 gates pass at 2,886/2,886 and 3,025/3,025 registered coverage assertions.
