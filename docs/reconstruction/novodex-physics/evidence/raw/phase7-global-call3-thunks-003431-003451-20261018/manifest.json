@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "evidence": "phase7-global-call3-thunks-003431-003451.md",
+  "rows": {
+    "phys_fn_003431": {
+      "restored": "cases=1 failures=0",
+      "immediate_return_mutation": "mismatches=1"
+    },
+    "phys_fn_003435": {
+      "restored": "cases=1 failures=0",
+      "immediate_return_mutation": "mismatches=1"
+    },
+    "phys_fn_003439": {
+      "restored": "cases=1 failures=0",
+      "immediate_return_mutation": "mismatches=1"
+    },
+    "phys_fn_003443": {
+      "restored": "cases=1 failures=0",
+      "immediate_return_mutation": "mismatches=1"
+    },
+    "phys_fn_003447": {
+      "restored": "cases=1 failures=0",
+      "immediate_return_mutation": "mismatches=1"
+    },
+    "phys_fn_003449": {
+      "restored": "cases=1 failures=0",
+      "immediate_return_mutation": "mismatches=1"
+    },
+    "phys_fn_003451": {
+      "restored": "cases=1 failures=0",
+      "immediate_return_mutation": "mismatches=1"
+    }
+  },
+  "gates": {
+    "phase5": 2951,
+    "phase6": 1802,
+    "phase7": 3087
+  },
+  "files": {
+    "restored.log.gz": {
+      "sha256": "3e963bc0d6ccbdad28b589a7a787a3a88d028c7e7eac937b7a69363c1138c484",
+      "uncompressed_sha256": "9697cd43e44983ab1029263723ff453439c2fdbf9f68c397e02e09b02d2ab7d9",
+      "bytes": 5347,
+      "source": "build/global-call3-family-restored.log"
+    },
+    "mutant.log.gz": {
+      "sha256": "1037dc4173bcac319a7ca52ae3c153700a743d03d6ef8219baac8b9edc35fe72",
+      "uncompressed_sha256": "916f9c511046c99be5980b2349565270bbce978ffd692c346cde287990200862",
+      "bytes": 5675,
+      "source": "build/global-call3-family-mutant.log"
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "c7dc8fe0e8bc535ec8e7aa27fb839a93380a99c6a630983438ba3d1e27e140c8",
+      "uncompressed_sha256": "8b968a3f370aefe62f3b8cb595696efd33b932e931c8e3ab59f3e7343dc3fca1",
+      "bytes": 216467,
+      "source": "docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-global-call3-thunks-003431-003451-20261018\\phase5-gate.log"
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "1ae9b0c982b5ab0c510234b1cd75d9e97d20fee895859570c486274a4998a080",
+      "uncompressed_sha256": "517aab1d27ffce1a961596271dc26e6f1a5157b8bf04d92974db45ae10b2c57d",
+      "bytes": 259364,
+      "source": "docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-global-call3-thunks-003431-003451-20261018\\phase6-gate.log"
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "f1a424a4af329b6876a68b29fa9b12f8d563730c9bf7984b528489b2727c3c21",
+      "uncompressed_sha256": "45de8730d24239050fba72c5f98ea3c09ad9480b7c830f6b353e5f6b65f44643",
+      "bytes": 381755,
+      "source": "docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-global-call3-thunks-003431-003451-20261018\\phase7-gate.log"
+    }
+  },
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "b0533ef4328d9c50ba2b86f641b4aefe821dcf746bb01e05cca98d8db13f7255",
+  "git_head": "a4a920f3e"
+}

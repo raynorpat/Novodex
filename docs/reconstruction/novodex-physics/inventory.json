@@ -65376,13 +65376,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x84df0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1277",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12243",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84df0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA confirms a thiscall wrapper loads the object from [this+0x7c], its first callback argument from object+0x30, second from this+0x80, and third from [esp+4], calls global function-pointer slot 0x10126508, and returns with ret 4.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x00084df0 and compares all three callback arguments against nxGlobalCallN. The row-specific marker reports one case with zero failures; an immediate-return mutation of nxGlobalCallN is detected with mismatches=1.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCallN",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
+        "address": "0x1004ace0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003440",
@@ -65456,13 +65464,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x84e30u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1279",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12245",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84e30u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA confirms a thiscall wrapper loads the object from [this+0x7c], its first callback argument from object+0x30, second from this+0x80, and third from [esp+4], calls global function-pointer slot 0x10126578, and returns with ret 4.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x00084e30 and compares all three callback arguments against nxGlobalCallN. The row-specific marker reports one case with zero failures; an immediate-return mutation of nxGlobalCallN is detected with mismatches=1.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCallN",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
+        "address": "0x1004ace0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003444",
@@ -65536,13 +65552,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x84e70u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1281",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12247",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84e70u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA confirms a thiscall wrapper loads the object from [this+0x7c], its first callback argument from object+0x30, second from this+0x80, and third from [esp+4], calls global function-pointer slot 0x10126624, and returns with ret 4.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x00084e70 and compares all three callback arguments against nxGlobalCallN. The row-specific marker reports one case with zero failures; an immediate-return mutation of nxGlobalCallN is detected with mismatches=1.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCallN",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
+        "address": "0x1004ace0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003448",
@@ -65572,13 +65596,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x84e90u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1282",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12248",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84e90u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA confirms a thiscall wrapper loads the object from [this+0x7c], its first callback argument from object+0x30, second from this+0x80, and third from [esp+4], calls global function-pointer slot 0x101263cc, and returns with ret 4.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x00084e90 and compares all three callback arguments against nxGlobalCallN. The row-specific marker reports one case with zero failures; an immediate-return mutation of nxGlobalCallN is detected with mismatches=1.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCallN",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
+        "address": "0x1004ace0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003450",
@@ -65608,13 +65640,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x84eb0u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1283",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12249",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84eb0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA confirms a thiscall wrapper loads the object from [this+0x7c], its first callback argument from object+0x30, second from this+0x80, and third from [esp+4], calls global function-pointer slot 0x101264d8, and returns with ret 4.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x00084eb0 and compares all three callback arguments against nxGlobalCallN. The row-specific marker reports one case with zero failures; an immediate-return mutation of nxGlobalCallN is detected with mismatches=1.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCallN",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
+        "address": "0x1004ace0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003452",

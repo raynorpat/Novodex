@@ -9,7 +9,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-18:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, 5,138 classified data objects, and 2,034 mapped code rows. Current function ledgers: Phase 2 92 closed / 51 deferred; Phase 3 123 / 269; Phase 4 46 / 1,091; Phase 5 205 / 0; Phase 6 178 / 255; Phase 7 501 / 59. Fresh Win32 Release Phase 4/5/6/7 gates pass at 562/560, 2,946/2,946, 1,797/1,797, and 3,082/3,082 registered assertions. Inventory validation reports zero unexplained records; M1 and the full-image M8 audit remain open. CMake remains the build path and public headers remain unchanged.
+**Status, updated 2026-10-18:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, 5,138 classified data objects, and 2,041 mapped code rows. Current function ledgers: Phase 2 92 closed / 51 deferred; Phase 3 123 / 269; Phase 4 46 / 1,007; Phase 5 205 / 0; Phase 6 178 / 255; Phase 7 506 / 54. Fresh Win32 Release Phase 4/5/6/7 gates pass at 562/560, 2,951/2,951, 1,802/1,802, and 3,087/3,087 registered assertions. Inventory validation reports zero unexplained records; M1 and the full-image M8 audit remain open. CMake remains the build path and public headers remain unchanged.
 
 ### Continuation — CollisionObject scalar deleting destructor (`phys_fn_001199`, 2026-10-18)
 
@@ -24,6 +24,10 @@ The box-shape `setName` wrapper now follows the oracle Scene write-lock contract
 ### Continuation — three-argument global-call thunks (`phys_fn_003431`, `phys_fn_003435`, 2026-10-18)
 
 IDA confirms both rows call their bound global function-pointer slot with the first callback argument from `object+0x30`, the second from `object+0x80`, and the third from the row's stack argument. The candidate maps both through `nxGlobalCallN`. Row-specific oracle/source markers compare all three arguments; an immediate-return mutation is detected for each (`mismatches=1`), and restored runs report zero failures. Phase 7 advances to 501 closed / 59 deferred. Fresh Phase 5/6/7 gates pass at 2,946/1,797/3,082 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-global-call3-thunks-003431-003435.md` and its raw archive.
+
+### Continuation — remaining ordinary three-argument global-call thunks (`phys_fn_003439`, `003443`, `003447`, `003449`, `003451`, 2026-10-18)
+
+Mapped the five ordinary stack-argument wrappers to the shared `nxGlobalCallN` candidate helper. Each row has an individual oracle comparison over all three callback arguments. The immediate-return helper mutation is caught by every row marker (`mismatches=1` each); restored output matches. Phase 7 advances to 506 closed / 54 deferred. IDA identifies neighboring `phys_fn_003461` as an x87 reciprocal-double wrapper rather than this void-call family, so it remains open for a separate return-ABI fixture. Fresh Phase 5/6/7 gates pass at 2,951/1,802/3,087 assertions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-global-call3-thunks-003431-003451.md` and its raw archive.
 
 ### Continuation — fluid surface-mesh descriptor-name SDK binding (`phys_fn_003689`, 2026-10-18)
 

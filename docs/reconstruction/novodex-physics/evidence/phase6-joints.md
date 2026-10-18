@@ -11372,3 +11372,5 @@ Phase 7 FluidModel unavailable method rows `phys_fn_003748`, `phys_fn_003750`, `
 Phase 7 locked-array wrapper rows `phys_fn_003700` and `phys_fn_003702` each reject a row-specific candidate mutation in the `NxPhysicsObjectLayoutTests` oracle differential (`mismatches=3` and `mismatches=2`). Restored fixtures verify result, stack, and lock state; see `phase7-fluid-locked-array-accessors-003700-003702.md`.
 
 Phase 7 global-call3 rows `phys_fn_003431` and `phys_fn_003435` are mutation-falsified through `NxPhysicsObjectLayoutTests` (`mismatches=1` each). Replacing the shared `nxGlobalCallN` callback invocation with an immediate return is detected by each row marker; restored controls report zero failures. See `phase7-global-call3-thunks-003431-003435.md`.
+
+Phase 7 global-call3 rows `phys_fn_003439`, `phys_fn_003443`, `phys_fn_003447`, `phys_fn_003449`, and `phys_fn_003451` are individually mutation-falsified through `NxPhysicsObjectLayoutTests` (`mismatches=1` per row). The no-op `nxGlobalCallN` mutation breaks each row marker; restored output reports zero failures. See `phase7-global-call3-thunks-003431-003451.md`.
