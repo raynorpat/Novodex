@@ -53,9 +53,9 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 51,
+    "differential_falsified": 63,
     "oracle_differential_falsified": 44,
-    "deferred_not_reconstructed_in_phase": 191,
+    "deferred_not_reconstructed_in_phase": 179,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 5
   },
@@ -376,6 +376,96 @@
       "note": "Phase 5 exercises the box secondary deleting destructor, including the member-only negative control."
     },
     {
+      "id": "phys_fn_001087",
+      "rva": "0x00023700",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 7 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at CapsuleShape.cpp:0x10; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001089",
+      "rva": "0x00023760",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 8 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at CapsuleShape.cpp:0x10; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001091",
+      "rva": "0x000237c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 9 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at CapsuleShape.cpp:0x10; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001093",
+      "rva": "0x00023820",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 16 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at CapsuleShape.cpp:0x10; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001095",
+      "rva": "0x00023880",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 17 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at CapsuleShape.cpp:0x10; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001097",
+      "rva": "0x000238e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 18 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at CapsuleShape.cpp:0x10; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
       "id": "phys_fn_001109",
       "rva": "0x00023a90",
       "proof": "differential_falsified",
@@ -539,6 +629,96 @@
         5
       ],
       "note": "Phase 5 exercises the plane secondary deleting destructor, including the member-only negative control."
+    },
+    {
+      "id": "phys_fn_001169",
+      "rva": "0x000243a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 7 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at SphereShape.cpp:0x16; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001171",
+      "rva": "0x00024400",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 8 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at SphereShape.cpp:0x16; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001173",
+      "rva": "0x00024460",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 9 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at SphereShape.cpp:0x16; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001175",
+      "rva": "0x000244c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 16 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at SphereShape.cpp:0x16; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001177",
+      "rva": "0x00024520",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 17 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at SphereShape.cpp:0x16; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001179",
+      "rva": "0x00024580",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the public shape vtable slot 18 with the box-family handler, removing the capsule/sphere-specific lock diagnostic for this setter.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "The oracle rejects the locked call at SphereShape.cpp:0x16; the restored public differential is exact. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
     },
     {
       "id": "phys_fn_001185",
@@ -1533,54 +1713,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_001087",
-      "rva": "0x00023700",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001089",
-      "rva": "0x00023760",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001091",
-      "rva": "0x000237c0",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001093",
-      "rva": "0x00023820",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001095",
-      "rva": "0x00023880",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001097",
-      "rva": "0x000238e0",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_001099",
       "rva": "0x00023940",
       "size": 39,
@@ -1768,54 +1900,6 @@
       "id": "phys_fn_001167",
       "rva": "0x00024340",
       "size": 89,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001169",
-      "rva": "0x000243a0",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001171",
-      "rva": "0x00024400",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001173",
-      "rva": "0x00024460",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001175",
-      "rva": "0x000244c0",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001177",
-      "rva": "0x00024520",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001179",
-      "rva": "0x00024580",
-      "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []

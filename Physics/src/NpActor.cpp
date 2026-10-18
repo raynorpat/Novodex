@@ -545,6 +545,60 @@ static void __fastcall nxBoxHandleSetGlobalOrientation(void* self, void*,
 	nxNpSceneGuardLeave(writeLock);
 	}
 
+// The capsule and sphere public wrappers use the same six shape operations as
+// the box wrappers, but report lock refusal from their own source location.
+// Keep their public vtable entries distinct so the error stream preserves the
+// oracle's family-specific file and line.
+#define NX_DEFINE_SHAPE_POSE_LOCK_HANDLERS(Prefix, TryFunction, ErrorLine) \
+	static void __fastcall Prefix##SetLocalPose(void* self, void*, \
+		const NxMat34& pose) \
+		{ \
+		void* lock = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + 0x10); \
+		if(!TryFunction(lock, ErrorLine)) return; \
+		nxShapeHandleSetLocalPose(self, 0, pose); \
+		nxNpSceneGuardLeave(lock); \
+		} \
+	static void __fastcall Prefix##SetLocalPosition(void* self, void*, \
+		const NxVec3& position) \
+		{ \
+		void* lock = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + 0x10); \
+		if(!TryFunction(lock, ErrorLine)) return; \
+		nxShapeHandleSetLocalPosition(self, 0, position); \
+		nxNpSceneGuardLeave(lock); \
+		} \
+	static void __fastcall Prefix##SetLocalOrientation(void* self, void*, \
+		const NxMat33& orientation) \
+		{ \
+		void* lock = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + 0x10); \
+		if(!TryFunction(lock, ErrorLine)) return; \
+		nxShapeHandleSetLocalOrientation(self, 0, orientation); \
+		nxNpSceneGuardLeave(lock); \
+		} \
+	static void __fastcall Prefix##SetGlobalPose(void* self, void*, \
+		const NxMat34& pose) \
+		{ \
+		void* lock = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + 0x10); \
+		if(!TryFunction(lock, ErrorLine)) return; \
+		nxShapeHandleSetGlobalPose(self, 0, pose); \
+		nxNpSceneGuardLeave(lock); \
+		} \
+	static void __fastcall Prefix##SetGlobalPosition(void* self, void*, \
+		const NxVec3& position) \
+		{ \
+		void* lock = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + 0x10); \
+		if(!TryFunction(lock, ErrorLine)) return; \
+		nxShapeHandleSetGlobalPosition(self, 0, position); \
+		nxNpSceneGuardLeave(lock); \
+		} \
+	static void __fastcall Prefix##SetGlobalOrientation(void* self, void*, \
+		const NxMat33& orientation) \
+		{ \
+		void* lock = *reinterpret_cast<void**>(static_cast<unsigned char*>(self) + 0x10); \
+		if(!TryFunction(lock, ErrorLine)) return; \
+		nxShapeHandleSetGlobalOrientation(self, 0, orientation); \
+		nxNpSceneGuardLeave(lock); \
+		}
+
 static void __fastcall nxBoxHandleSetFlag(void* self, void*, NxShapeFlag flag,
 	bool value)
 	{
@@ -727,6 +781,20 @@ static bool nxCapsuleHandleWriteTry(void* writeLock, int line)
 		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
 	return false;
 	}
+
+static bool nxSphereHandleWriteTry(void* writeLock, int line)
+	{
+	if(nxNpSceneGuardWriteTry(writeLock)) return true;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpSphereShape.cpp",
+		line, 0,
+		"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+	return false;
+	}
+
+NX_DEFINE_SHAPE_POSE_LOCK_HANDLERS(nxCapsuleHandle, nxCapsuleHandleWriteTry, 0x10)
+NX_DEFINE_SHAPE_POSE_LOCK_HANDLERS(nxSphereHandle, nxSphereHandleWriteTry, 0x16)
+#undef NX_DEFINE_SHAPE_POSE_LOCK_HANDLERS
 
 static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
 	{
@@ -969,9 +1037,21 @@ void* nxShapePublicVtable(unsigned type)
 				}
 			slots[0][31] = reinterpret_cast<void*>(&nxPlaneHandleSetPlane);
 			slots[0][32] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
+			slots[1][7] = reinterpret_cast<void*>(&nxSphereHandleSetLocalPose);
+			slots[1][8] = reinterpret_cast<void*>(&nxSphereHandleSetLocalPosition);
+			slots[1][9] = reinterpret_cast<void*>(&nxSphereHandleSetLocalOrientation);
+			slots[1][16] = reinterpret_cast<void*>(&nxSphereHandleSetGlobalPose);
+			slots[1][17] = reinterpret_cast<void*>(&nxSphereHandleSetGlobalPosition);
+			slots[1][18] = reinterpret_cast<void*>(&nxSphereHandleSetGlobalOrientation);
 			slots[1][31] = reinterpret_cast<void*>(&nxSphereHandleSetRadius);
 			slots[1][32] = reinterpret_cast<void*>(&nxSphereHandleGetRadius);
 			slots[1][33] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
+			slots[2][7] = reinterpret_cast<void*>(&nxCapsuleHandleSetLocalPose);
+			slots[2][8] = reinterpret_cast<void*>(&nxCapsuleHandleSetLocalPosition);
+			slots[2][9] = reinterpret_cast<void*>(&nxCapsuleHandleSetLocalOrientation);
+			slots[2][16] = reinterpret_cast<void*>(&nxCapsuleHandleSetGlobalPose);
+			slots[2][17] = reinterpret_cast<void*>(&nxCapsuleHandleSetGlobalPosition);
+			slots[2][18] = reinterpret_cast<void*>(&nxCapsuleHandleSetGlobalOrientation);
 			slots[2][31] = reinterpret_cast<void*>(&nxCapsuleHandleSetDimensions);
 			slots[2][28] = reinterpret_cast<void*>(&nxCapsuleHandleIs);
 			slots[2][25] = reinterpret_cast<void*>(&nxCapsuleHandleSetMaterial);

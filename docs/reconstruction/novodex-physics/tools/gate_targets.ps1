@@ -598,6 +598,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'shape_mutation t5r_nan_1_root=1.1.r2.2.1.624.2.s26.100.1a',
         'shape_mutation row=001045 locked_flag=0 locked_reports=1 unlocked_flag=1',
         'shape_mutation rows=001047,001049,001051,001053,001055,001057,001059 locked_changed=00 locked_reports=7 final_pose=00000000.00000000.3f800000.00000000.3f800000.00000000.bf800000.00000000.00000000.41200000.41300000.41400000 material=0011',
+        'shape_mutation shape_pose_lock_actors=1.1',
+        'shape_mutation pose_lock family=capsule rows=1087,1089,1091,1093,1095,1097 changed=00 reports=6',
+        'shape_mutation pose_lock family=sphere rows=1169,1171,1173,1175,1177,1179 changed=00 reports=6',
         'shape_mutation actor=1',
         'shape_mutation initial=1.2.1',
         'shape_mutation add_memory=5.0.552.28.272.8.8.f',
@@ -6310,7 +6313,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
-	'3' = 984  # adds the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
+    '3' = 984
+               # plus the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
                # previous 973 includes nine populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
                # plus the two-live-scene actor-group flag wrapper case
@@ -6339,7 +6343,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2896  # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
+    '5' = 2899  # adds capsule/sphere setter-lock rows 001087-001097 and 001169-001179
+               # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
@@ -6428,7 +6433,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1753  # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
+	'6' = 1756  # adds capsule/sphere setter-lock rows 001087-001097 and 001169-001179
+	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
@@ -6479,7 +6485,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3035  # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
+	'7' = 3038  # adds capsule/sphere setter-lock rows 001087-001097 and 001169-001179
+	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential

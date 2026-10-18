@@ -1084,6 +1084,76 @@ static void runTask5ReviewCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
 		}
 	else
 		printf("shape_mutation rows=001047,001049,001051,001053,001055,001057,001059 actor=0\n");
+
+	// The oracle gives the capsule and sphere wrappers their own source file
+	// and invalid-operation line for the six shared pose setters. Exercise those
+	// public vtable slots while another thread owns the Scene write lock.
+	NxCapsuleShapeDesc capsuleLockDesc;
+	capsuleLockDesc.radius = 0.35f;
+	capsuleLockDesc.height = 1.25f;
+	NxActorDesc capsuleLockActorDesc;
+	capsuleLockActorDesc.shapes.pushBack(&capsuleLockDesc);
+	NxActor* capsuleLockActor = scene->createActor(capsuleLockActorDesc);
+	NxSphereShapeDesc sphereLockDesc;
+	sphereLockDesc.radius = 0.65f;
+	NxActorDesc sphereLockActorDesc;
+	sphereLockActorDesc.shapes.pushBack(&sphereLockDesc);
+	NxActor* sphereLockActor = scene->createActor(sphereLockActorDesc);
+	printf("shape_mutation shape_pose_lock_actors=%u.%u\n",
+		capsuleLockActor ? 1u : 0u, sphereLockActor ? 1u : 0u);
+	if(capsuleLockActor && sphereLockActor)
+		{
+	static const unsigned rows[2][6] = {
+		{ 1087, 1089, 1091, 1093, 1095, 1097 },
+		{ 1169, 1171, 1173, 1175, 1177, 1179 } };
+	NxActor* const actors[2] = { capsuleLockActor, sphereLockActor };
+	const char* const families[2] = { "capsule", "sphere" };
+	for(unsigned family = 0; family != 2; ++family)
+		{
+	NxShape* const shape = actors[family]->getShapes()[0];
+	const unsigned char* const internal = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(shape) + 0x18);
+	unsigned char baseline[48];
+	memcpy(baseline, internal + 0x6c, sizeof(baseline));
+	NxMat34 localPose;
+	localPose.M.id();
+	localPose.t = NxVec3(1.25f, -2.5f, 3.75f);
+	NxVec3 localPosition(-4.5f, 5.25f, -6.0f);
+	const float localRows[9] = { 0, -1, 0, 1, 0, 0, 0, 0, 1 };
+	NxMat33 localOrientation;
+	localOrientation.setRowMajor(localRows);
+	NxMat34 globalPose;
+	globalPose.M.id();
+	globalPose.t = NxVec3(7.5f, -8.25f, 9.0f);
+	NxVec3 globalPosition(10.5f, -11.25f, 12.0f);
+	const float globalRows[9] = { 0, 0, 1, 0, 1, 0, -1, 0, 0 };
+	NxMat33 globalOrientation;
+	globalOrientation.setRowMajor(globalRows);
+	NxActorWriteLockHolder lock(actors[family]);
+	const unsigned reportsBefore = errors.reports;
+	unsigned changed = 0;
+	for(unsigned setter = 0; setter != 6; ++setter)
+		{
+	memcpy(const_cast<unsigned char*>(internal) + 0x6c, baseline, sizeof(baseline));
+	lock.hold();
+	if(setter == 0) shape->setLocalPose(localPose);
+	else if(setter == 1) shape->setLocalPosition(localPosition);
+	else if(setter == 2) shape->setLocalOrientation(localOrientation);
+	else if(setter == 3) shape->setGlobalPose(globalPose);
+	else if(setter == 4) shape->setGlobalPosition(globalPosition);
+	else shape->setGlobalOrientation(globalOrientation);
+	if(memcmp(internal + 0x6c, baseline, sizeof(baseline)) != 0)
+		changed |= 1u << setter;
+	lock.release();
+	}
+	printf("shape_mutation pose_lock family=%s rows=%04u,%04u,%04u,%04u,%04u,%04u changed=%02x reports=%u\n",
+		families[family], rows[family][0], rows[family][1], rows[family][2],
+		rows[family][3], rows[family][4], rows[family][5], changed,
+		errors.reports - reportsBefore);
+	}
+	}
+	else
+		printf("shape_mutation shape_pose_lock_actors=missing\n");
 	errors.enabled = false;
 	sdk->releaseScene(*scene);
 	}

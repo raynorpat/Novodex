@@ -3143,6 +3143,90 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/423",
       "reason": "The NpBoxShape vtable slot 25 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching Material; the public fixture independently mutation-falsifies the guard."
+    },
+    {
+      "id": "phys_fn_001087",
+      "label": "NpCapsuleShape::setLocalPose",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/436",
+      "reason": "The capsule public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001089",
+      "label": "NpCapsuleShape::setLocalPosition",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/437",
+      "reason": "The capsule public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001091",
+      "label": "NpCapsuleShape::setLocalOrientation",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/438",
+      "reason": "The capsule public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001093",
+      "label": "NpCapsuleShape::setGlobalPose",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/439",
+      "reason": "The capsule public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001095",
+      "label": "NpCapsuleShape::setGlobalPosition",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/440",
+      "reason": "The capsule public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001097",
+      "label": "NpCapsuleShape::setGlobalOrientation",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/441",
+      "reason": "The capsule public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001169",
+      "label": "NpSphereShape::setLocalPose",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/473",
+      "reason": "The sphere public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001171",
+      "label": "NpSphereShape::setLocalPosition",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/474",
+      "reason": "The sphere public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001173",
+      "label": "NpSphereShape::setLocalOrientation",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/475",
+      "reason": "The sphere public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001175",
+      "label": "NpSphereShape::setGlobalPose",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/476",
+      "reason": "The sphere public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001177",
+      "label": "NpSphereShape::setGlobalPosition",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/477",
+      "reason": "The sphere public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001179",
+      "label": "NpSphereShape::setGlobalOrientation",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/478",
+      "reason": "The sphere public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
     }
   ]
 }
