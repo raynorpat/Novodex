@@ -44,3 +44,9 @@ both attach cases report `mismatches=0`. Forcing the nonzero attached-flag
 argument to zero is caught with `mismatches=2` across the two cases.
 The fresh full Phase 7 gate passes at 1,652/1,649 registered coverage
 assertions.
+
+## Census continuation row `phys_fn_003487`
+
+The 42-byte row at RVA `0x857d0` is the aligned tail of the same oracle function that begins at `phys_fn_003485` (`0x857b0`). Its matched-emitter path sets broken-actor-reference bit 2 and detaches the backend emitter. The registered actor-release differential now emits a row-specific marker; restored output reports two matches, six callbacks on each side, and zero state or callback mismatches.
+
+A candidate-only mutation that continued past the matched-actor test before the tail actions was rejected: oracle callbacks `6`, candidate callbacks `0`, state mismatches `27`, callback mismatches `6` (33 total). Restoring the source returns the direct differential to exact output.

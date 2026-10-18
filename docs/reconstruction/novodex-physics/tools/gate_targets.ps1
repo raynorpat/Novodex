@@ -118,6 +118,7 @@ $NxRequiredCoverageLines = [ordered] @{
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
 		'fluid emitter setFrameActor row=003822 cases=2 callback_checks=2 cache_checks=2 actor_checks=2 stack_checks=2 mismatches=0'
+		'fluid actor-release continuation row=003487 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0'
 		'fluid emitter global and local component setters cases=5 callback_checks=5 stack_checks=5 mismatches=0'
 		'fluid emitter setGlobalPose row=003798 cases=2 mismatches=0'
 		'fluid emitter setGlobalPosition row=003800 cases=1 mismatches=0'

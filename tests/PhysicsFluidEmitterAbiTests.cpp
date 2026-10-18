@@ -9166,6 +9166,11 @@ int wmain(int argc, wchar_t** argv)
 			"callback_mismatches=%u\n", oraclePoseCallbackCount,
 			candidatePoseCallbackCount,
 			oracleStateMismatches + candidateStateMismatches, callbackMismatches);
+		printf("fluid actor-release continuation row=003487 matched=2 "
+			"oracle_callbacks=%u candidate_callbacks=%u state_mismatches=%u "
+			"callback_mismatches=%u\n", oraclePoseCallbackCount,
+			candidatePoseCallbackCount,
+			oracleStateMismatches + candidateStateMismatches, callbackMismatches);
 		}
 
 	// phys_fn_003622's nonzero branch attaches an emitter to an actor while

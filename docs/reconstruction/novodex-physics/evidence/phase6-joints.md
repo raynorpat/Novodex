@@ -11280,3 +11280,7 @@ The scalar deleting destructor now follows the pinned helper, pointer-binding, e
 Mutation evidence for phys_fn_003491: the pre-fix PD teardown order is rejected by the registered fixture (stdout_delta=64, candidate exit 1); restored DP output matches.
 
 Phase 7 contact-stream constructor `phys_fn_002356`: the direct oracle/candidate probe verifies return identity, reset bytes, embedded container capacity/count/seed/growth, and the untouched tail. Omitting `NxContactSinkResetState` in an archived candidate is rejected (`stdout_delta=4108`, candidate exit 1); restored output matches exactly. See `phase7-contact-stream-constructor-002356.md` and `evidence/raw/phase7-contact-stream-constructor-002356-20261017/`.
+
+### NpFluid actor-release continuation row phys_fn_003487 (mismatches=33)
+
+A candidate-only early-continue mutation skips the matched-emitter tail that sets broken-actor-reference bit 2 and detaches the emitter. The registered oracle differential reports six oracle callbacks, zero candidate callbacks, 27 state mismatches, and 6 callback mismatches (mismatches=33). Restored control reports two matched emitters, six callbacks on both sides, and zero state/callback mismatches. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
