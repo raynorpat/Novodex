@@ -5684,6 +5684,7 @@ $NxRequiredCoverageLines = [ordered] @{
     #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
     'NxPhysicsObjectLayoutTests' = @(
 		'mutexwork candidate failures=0 provisional=1',
+		'elemcount row=phys_fn_003477 cases=3 mismatches=0',
 		'vtconst row=phys_fn_004417 mismatches=0',
 		'vtconst row=phys_fn_004419 mismatches=0',
 		'vtconst row=phys_fn_004421 mismatches=0',

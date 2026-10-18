@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003477",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sources_in_harness": true,
+  "restored_test_exe_sha256": "3f8f2c949e0f901eb26fe351a8faf6c68578168f91e28c678fdca97e592948b7",
+  "restored_result": "oracle_exit=0; elemcount row cases=3 mismatches=0; differential=pass",
+  "mutation": "Changed nxLockedElementCount shift from 2 to 3.",
+  "mutation_result": "elemcount row cases=3 mismatches=2; registered target rejected the candidate through dependent lockacc4 count assertions.",
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ],
+  "phase5_gate": "pass; coverage_assertions_evaluated=2927 floor=2924",
+  "phase6_gate": "pass; coverage_assertions_evaluated=1778 floor=1777",
+  "phase7_gate": "pass; coverage_assertions_evaluated=3063 floor=3060"
+}

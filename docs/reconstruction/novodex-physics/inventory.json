@@ -66121,13 +66121,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "element-count (0x85580)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1295",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12271",
-      "static_proof": "returns ([this+8] - [this+4]) >> 2 (signed element count); ret",
-      "dynamic_proof": "confirmed via elemcount differential (3z112): failures=0",
-      "notes": ""
+      "static_proof": "Oracle RVA 0x00085580 (10 bytes) returns the arithmetic signed difference ([this+8]-[this+4]) >> 2.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls the oracle row and candidate nxLockedElementCount for positive (+3), empty (0), and negative (-2) spans. Restored output: mismatches=0. Mutating the candidate arithmetic shift from 2 to 3 is caught by the direct row fixture at mismatches=2.",
+      "notes": "The helper is also consumed by locked array-count wrappers; the row fixture exercises its direct arithmetic contract.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxLockedElementCount"
     },
     {
       "id": "phys_fn_003478",
