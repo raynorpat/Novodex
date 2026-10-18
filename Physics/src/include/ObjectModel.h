@@ -1104,6 +1104,15 @@ void					nxSetLockOwner(unsigned id);
 //! each is `vtable[slot](this, constant)`. 004417 (0xb0580) passes 1 through
 //! slot +0x4c; the others pass 5, 4, 0, 2, 3, 8, 6 and 7.
 void					nxVtConstEx(void* self, unsigned slot, unsigned arg);
+extern "C" void __cdecl nxVtConst004417(void);
+extern "C" void __cdecl nxVtConst004419(void);
+extern "C" void __cdecl nxVtConst004421(void);
+extern "C" void __cdecl nxVtConst004423(void);
+extern "C" void __cdecl nxVtConst004425(void);
+extern "C" void __cdecl nxVtConst004427(void);
+extern "C" void __cdecl nxVtConst004429(void);
+extern "C" void __cdecl nxVtConst004431(void);
+extern "C" void __cdecl nxVtConst004433(void);
 
 //! phys_fn_002390 (0x5b910): dispatches [[self+4]+0xc]([self+4], [[self+4]+0x10])
 //! -- the thunk pops the argument itself, so the slot is __cdecl.

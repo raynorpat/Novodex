@@ -5663,6 +5663,15 @@ $NxRequiredCoverageLines = [ordered] @{
     #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
     'NxPhysicsObjectLayoutTests' = @(
 		'mutexwork candidate failures=0 provisional=1',
+		'vtconst row=phys_fn_004417 mismatches=0',
+		'vtconst row=phys_fn_004419 mismatches=0',
+		'vtconst row=phys_fn_004421 mismatches=0',
+		'vtconst row=phys_fn_004423 mismatches=0',
+		'vtconst row=phys_fn_004425 mismatches=0',
+		'vtconst row=phys_fn_004427 mismatches=0',
+		'vtconst row=phys_fn_004429 mismatches=0',
+		'vtconst row=phys_fn_004431 mismatches=0',
+		'vtconst row=phys_fn_004433 mismatches=0',
 		'global-call2 rows=003429.003433.003437.003441.003445.003457.003459.003463.003465.003469.003679 cases=11 failures=0',
         'tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match',
         'tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0',
@@ -6348,7 +6357,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-    '5' = 2899  # adds capsule/sphere setter-lock rows 001087-001097 and 001169-001179
+	'5' = 2908  # adds nine independently registered constant-argument thunk rows
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
@@ -6438,7 +6447,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1756  # adds capsule/sphere setter-lock rows 001087-001097 and 001169-001179
+	'6' = 1765  # adds nine independently registered constant-argument thunk rows
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6490,7 +6499,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3038  # adds capsule/sphere setter-lock rows 001087-001097 and 001169-001179
+	'7' = 3047  # adds nine independently registered constant-argument thunk rows
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions

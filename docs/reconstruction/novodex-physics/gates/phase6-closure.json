@@ -2,14 +2,14 @@
   "schema_version": 1,
   "phase": 6,
   "evidence_file": "evidence/phase6-joints.md",
-  "note": "Phase 6 closure is evidence-backed and row-specific: 168 rows are closed (160 staged-pair differential rows and 8 oracle/candidate DLL differential rows); 265 rows remain open. The default allocator bridge setter row 004805, malloc/realloc rows 004807/004808, and free row 004810 are independently mutation-falsified by NxPhysicsObjectLayoutTests; see evidence/phase6-allocator-bridge-004805.md and evidence/phase6-default-allocator-malloc-realloc-004807-004808.md. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. See evidence/phase6-actor-group-hash-004153-004155.md.",
+  "note": "Phase 6 closure is evidence-backed and row-specific: 178 rows are closed (161 staged-pair differential rows and 17 oracle/candidate DLL differential rows); 255 rows remain open (242 reconstructed but not falsified, 13 not reconstructed in Phase 6). The default allocator bridge setter row 004805, malloc/realloc rows 004807/004808, and free row 004810 are independently mutation-falsified by NxPhysicsObjectLayoutTests; see evidence/phase6-allocator-bridge-004805.md and evidence/phase6-default-allocator-malloc-realloc-004807-004808.md. Full DLL reconstruction remains pending. The 004174 support solver and adjacent 004176 island wrapper are independently falsified through NxPhysicsSimulationTests and NxPhysicsJointSupportTests. The wrapper differential observes and mutation-tests both global resets; see evidence/phase6-joint-support-island-wrapper-004176.md. The shared joint impulse row 004395 is directly compared and mutation-tested by NxPhysicsJointSupportTests; see evidence/phase6-joint-support-apply-impulse-004395.md. Actor-group hash rows phys_fn_004153 and phys_fn_004155 are independently mutation-falsified by NxPhysicsSDKTests with two live Scenes (stdout_delta=2 and 6); the restored differential is exact. See evidence/phase6-actor-group-hash-004153-004155.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at this row. This is the remaining Phase 6 falsification work: 258 rows.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at this row. This is the remaining Phase 6 falsification work: 242 rows.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -65,8 +65,8 @@
   },
   "counts": {
     "differential_falsified": 161,
-    "oracle_differential_falsified": 8,
-    "deferred_reconstructed_not_falsified": 251,
+    "oracle_differential_falsified": 17,
+    "deferred_reconstructed_not_falsified": 242,
     "deferred_not_reconstructed_in_phase": 13
   },
   "closed": [
@@ -1764,6 +1764,105 @@
         "mutation": "In an isolated git archive of 776487b3, changed only Joint::operator delete to omit the SDK allocator free and rebuilt the Win32 Release DLL. The registered NxPhysicsJointSlotTests fixture compared the oracle RVA with the candidate map-resolved thunk; oracle reported frees=0,1 and the mutant reported frees=0,0, mismatches=1, candidate exit 1. Mutant NxPhysics.dll SHA-256: f0fdc8d51649cf7641696c34403259f9ff1d46e91144dadb87bb8db909115eda. The restored candidate reports frees=0,1, mismatches=0 with stdout_delta=0 and exact stderr.",
         "detected": "stdout_delta=87"
       }
+    },
+    {
+      "id": "phys_fn_004417",
+      "rva": "0x000b0580",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004417 from 1 to 0, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004417 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004419",
+      "rva": "0x000b0590",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004419 from 5 to 4, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004419 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004421",
+      "rva": "0x000b05a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004421 from 4 to 5, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004421 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004423",
+      "rva": "0x000b05b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004423 from 0 to 1, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004423 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004425",
+      "rva": "0x000b05c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004425 from 2 to 3, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004425 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004427",
+      "rva": "0x000b05d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004427 from 3 to 2, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004427 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004429",
+      "rva": "0x000b05e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004429 from 8 to 9, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004429 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004431",
+      "rva": "0x000b05f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004431 from 6 to 7, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004431 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
+    },
+    {
+      "id": "phys_fn_004433",
+      "rva": "0x000b0600",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed only the immediate in candidate thunk nxVtConst004433 from 7 to 6, rebuilt, and ran the registered oracle/candidate object-layout differential. The phys_fn_004433 row reported mismatches=1 and the target exited 1; the other eight rows remained exact. Restoring the immediate returned this row to mismatches=0 and the target to exit 0.",
+        "detected": "mismatches=1"
+      },
+      "note": "Row-specific candidate thunk argument mutation caught by direct oracle/candidate DLL differential; see evidence/phase6-constant-argument-thunks-004417-004433.md."
     }
   ],
   "deferred": [
@@ -2959,87 +3058,6 @@
       "id": "phys_fn_004415",
       "rva": "0x000b0550",
       "size": 34,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004417",
-      "rva": "0x000b0580",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004419",
-      "rva": "0x000b0590",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004421",
-      "rva": "0x000b05a0",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004423",
-      "rva": "0x000b05b0",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004425",
-      "rva": "0x000b05c0",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004427",
-      "rva": "0x000b05d0",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004429",
-      "rva": "0x000b05e0",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004431",
-      "rva": "0x000b05f0",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004433",
-      "rva": "0x000b0600",
-      "size": 8,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],

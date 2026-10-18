@@ -11327,3 +11327,20 @@ Phase 7 Fluid scalar-delete row `phys_fn_003499` is closed by the registered `Nx
 Phase 7 active-substep row `phys_fn_000655` is independently falsified by removing its zero-timestep guard; the zero-delta fixture observes the frame stamp advance and rejects the mutant (`stdout_delta=3918`). Details: `phase7-scene-scheduler-000655-000659.md`.
 
 Phase 7 scheduler row `phys_fn_000659` is independently falsified by removing its Scene+0x70c bit-1 clear; the zero-delta fixture observes the stale flag and rejects the mutant (`stdout_delta=3918`). Details: `phase7-scene-scheduler-000655-000659.md`.
+
+
+### Constant-argument virtual thunk closure supplement (2026-10-18)
+
+The nine rows below have individual oracle/candidate mutation proofs; each argument immediate was changed independently and caught as one row mismatch. Full IDA audit, restored control, and Phase 5/6/7 gates: [constant-argument thunk evidence](phase6-constant-argument-thunks-004417-004433.md).
+
+| Row | Detection |
+|---|---|
+| phys_fn_004417 | mismatches=1 |
+| phys_fn_004419 | mismatches=1 |
+| phys_fn_004421 | mismatches=1 |
+| phys_fn_004423 | mismatches=1 |
+| phys_fn_004425 | mismatches=1 |
+| phys_fn_004427 | mismatches=1 |
+| phys_fn_004429 | mismatches=1 |
+| phys_fn_004431 | mismatches=1 |
+| phys_fn_004433 | mismatches=1 |

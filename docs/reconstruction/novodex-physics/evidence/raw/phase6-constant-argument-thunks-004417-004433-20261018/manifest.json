@@ -1,0 +1,146 @@
+{
+  "description": "Nine constant-argument virtual-call thunk reconstructions. Each isolated compiler-source immediate mutation is detected by the registered oracle/candidate object-layout differential; restored code and all registering phase gates pass.",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "oracle_only_transcript_digest": "3acf0dc7",
+  "candidate_sha256": "b3e163b3393dc4590b67fa628ac7c2b5e8f6ee312e8e8e17c88aaa3c682e3157",
+  "ida_image": "build/vtconst-gates/Release/NxPhysics.dll",
+  "ida_image_base": "0x10000000",
+  "ida_disassembly_pattern": "mov eax,[ecx]; push <row argument>; call dword ptr [eax+4Ch]; retn",
+  "rows": [
+    {
+      "id": "phys_fn_004417",
+      "argument": 1,
+      "candidate_symbol": "nxVtConst004417",
+      "candidate_va": "0x10050750",
+      "candidate_rva": "0x50750",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004419",
+      "argument": 5,
+      "candidate_symbol": "nxVtConst004419",
+      "candidate_va": "0x10050760",
+      "candidate_rva": "0x50760",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004421",
+      "argument": 4,
+      "candidate_symbol": "nxVtConst004421",
+      "candidate_va": "0x10050770",
+      "candidate_rva": "0x50770",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004423",
+      "argument": 0,
+      "candidate_symbol": "nxVtConst004423",
+      "candidate_va": "0x10050780",
+      "candidate_rva": "0x50780",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004425",
+      "argument": 2,
+      "candidate_symbol": "nxVtConst004425",
+      "candidate_va": "0x10050790",
+      "candidate_rva": "0x50790",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004427",
+      "argument": 3,
+      "candidate_symbol": "nxVtConst004427",
+      "candidate_va": "0x100507a0",
+      "candidate_rva": "0x507a0",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004429",
+      "argument": 8,
+      "candidate_symbol": "nxVtConst004429",
+      "candidate_va": "0x100507b0",
+      "candidate_rva": "0x507b0",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004431",
+      "argument": 6,
+      "candidate_symbol": "nxVtConst004431",
+      "candidate_va": "0x100507c0",
+      "candidate_rva": "0x507c0",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    },
+    {
+      "id": "phys_fn_004433",
+      "argument": 7,
+      "candidate_symbol": "nxVtConst004433",
+      "candidate_va": "0x100507d0",
+      "candidate_rva": "0x507d0",
+      "mutation": "changed only this thunk immediate to argument XOR 1",
+      "mutant_exit": 1,
+      "row_mismatches": 1,
+      "detected": true
+    }
+  ],
+  "restored_control": {
+    "exit": 0,
+    "all_nine_mismatches": 0
+  },
+  "phase_gates": {
+    "phase5": {
+      "status": "pass",
+      "assertions": 2908,
+      "floor": 2908
+    },
+    "phase6": {
+      "status": "pass",
+      "assertions": 1765,
+      "floor": 1765
+    },
+    "phase7": {
+      "status": "pass",
+      "assertions": 3047,
+      "floor": 3047
+    }
+  },
+  "raw_logs_sha256_uncompressed": {
+    "mutant-004417.log.gz": "bbef4644af7f92b1ecaca5f41537e71eb97de714c24fc803a029b1ae9d1b76f7",
+    "mutant-004419.log.gz": "d720dd2a6373b3241196bb2e8ad7eaa3d8058cef482535fd8620febac2cf865b",
+    "mutant-004421.log.gz": "8c13a6ddaad5436d9a0a573bcd6ee6c5d776ba0992373e5c9419fd464c192f47",
+    "mutant-004423.log.gz": "9ef3c9ab335030b0d76f8f44472e45e4ea79d7256ade31f5fdbb195773da13c1",
+    "mutant-004425.log.gz": "a8ba6deaf6959c159dfd99e440bcc06260af90108d476a1c32444bbb4be30eb6",
+    "mutant-004427.log.gz": "112d5aaedfc8acd14bda5251ec45bc463c9c092f96e1278a6794597094662562",
+    "mutant-004429.log.gz": "0668a651b7d4164b94b4e05a72a5cede58ca8c005c1ac668c1c8b33c5c95eb78",
+    "mutant-004431.log.gz": "d234eceebe211aeb51f97f03ab903d321509fa67632f67c96636117b8aa3442b",
+    "mutant-004433.log.gz": "b6c44d7dec23e0c0dbcb20fd1a4ea8221e9332046727444dc16183499c8a960a",
+    "restored-differential.log.gz": "b136e849512165a3e9d5e45ad4448b33f5896681fe8fb0f7912e9f40d759a062",
+    "phase5-gate.log.gz": "dbf78a0e612ba79c3159227b7a46a49398cb0a540fd96294c25e6b232c1bf4c4",
+    "phase6-gate.log.gz": "02bf5d7b342fb5bc65750f1c5f9c2c1cca42079df254ac3b14fe7b494a23f844",
+    "phase7-gate.log.gz": "fe9e88e349912653ab5bac1652f32367254e92051c2d7e9d5d22d307dc4da0a9"
+  }
+}

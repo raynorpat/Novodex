@@ -3951,13 +3951,13 @@
    ],
    "rows": {
     "discovered": 3,
-    "dynamically_gated": 3,
-    "reconstructed": 18
+    "dynamically_gated": 12,
+    "reconstructed": 9
    },
    "bytes": {
     "discovered": 1248,
-    "dynamically_gated": 1893,
-    "reconstructed": 1610
+    "dynamically_gated": 1965,
+    "reconstructed": 1538
    },
    "phases": {
     "6": 24

@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2899, "6": 1756, "7": 3038}
+    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2908, "6": 1765, "7": 3047}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -1033,6 +1033,32 @@ class RetypedArtifactsStayCode(unittest.TestCase):
                 % (entry["id"], entry["evidence"], row["kind"]))
             self.assertTrue(entry["evidence"],
                 "%s records no reference that reaches it" % entry["id"])
+
+
+class ConstantArgumentThunkCoverage(unittest.TestCase):
+    """Every virtual thunk row has its own required differential marker."""
+
+    ROWS = ("004417", "004419", "004421", "004423", "004425",
+            "004427", "004429", "004431", "004433")
+
+    def test_each_thunk_has_an_individually_registered_result(self):
+        source = (REPO_ROOT / "tests" / "PhysicsObjectLayoutTests.cpp").read_text(
+            encoding="utf-16")
+        implementation = (REPO_ROOT / "Physics" / "src" / "ObjectModel.cpp").read_text(
+            encoding="utf-8")
+        registry = registered_lines().get("NxPhysicsObjectLayoutTests", [])
+        for row in self.ROWS:
+            marker = "vtconst row=phys_fn_%s mismatches=0" % row
+            self.assertIn(marker, registry,
+                "%s has no gate-required row-specific oracle differential" % row)
+            self.assertIn('"%s"' % row, source,
+                "%s is missing from the oracle thunk fixture" % row)
+            self.assertIn("nxVtConst%s" % row, implementation,
+                "%s has no candidate function in the production implementation" % row)
+            self.assertIn("&nxVtConst%s" % row, source,
+                "%s candidate differential does not call its production row" % row)
+            self.assertIn('printf("vtconst row=phys_fn_%s mismatches=%u\\n"', source,
+                "the fixture does not emit row-specific results for %s" % row)
 
 if __name__ == "__main__":
     unittest.main()

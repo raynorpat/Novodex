@@ -2307,6 +2307,29 @@ void nxVtConstEx(void* self, unsigned slot, unsigned arg)
 	fn(arg);
 	}
 
+// phys_fn_004417..004433 (0xb0580..0xb0600): preserve the individual
+// constant-argument thiscall thunks in the product image. Each row reads its
+// vptr from ECX, pushes its own constant, dispatches through slot +0x4c, and
+// returns the callee's EAX without disturbing the x86 stack.
+#define NX_VT_CONST_THUNK(name, value) \
+	extern "C" __declspec(naked) void __cdecl name(void) \
+		{ \
+		__asm mov eax, [ecx] \
+		__asm push value \
+		__asm call dword ptr [eax+4Ch] \
+		__asm ret \
+		}
+NX_VT_CONST_THUNK(nxVtConst004417, 1)
+NX_VT_CONST_THUNK(nxVtConst004419, 5)
+NX_VT_CONST_THUNK(nxVtConst004421, 4)
+NX_VT_CONST_THUNK(nxVtConst004423, 0)
+NX_VT_CONST_THUNK(nxVtConst004425, 2)
+NX_VT_CONST_THUNK(nxVtConst004427, 3)
+NX_VT_CONST_THUNK(nxVtConst004429, 8)
+NX_VT_CONST_THUNK(nxVtConst004431, 6)
+NX_VT_CONST_THUNK(nxVtConst004433, 7)
+#undef NX_VT_CONST_THUNK
+
 // phys_fn_002390 (0x5b910): the __cdecl slot takes one argument.
 void nxVtCall2390(void* self)
 	{
