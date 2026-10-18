@@ -11284,3 +11284,9 @@ Phase 7 contact-stream constructor `phys_fn_002356`: the direct oracle/candidate
 ### NpFluid actor-release continuation row phys_fn_003487 (mismatches=33)
 
 A candidate-only early-continue mutation skips the matched-emitter tail that sets broken-actor-reference bit 2 and detaches the emitter. The registered oracle differential reports six oracle callbacks, zero candidate callbacks, 27 state mismatches, and 6 callback mismatches (mismatches=33). Restored control reports two matched emitters, six callbacks on both sides, and zero state/callback mismatches. See [phase7-fluid-actor-release.md](phase7-fluid-actor-release.md).
+
+### FluidManager visualization traversal row phys_fn_003489
+
+A candidate-only mutation replacing `nxVisualizeFluidRecord(*fluid++, renderable)` with `++fluid` preserves the manager loop but skips every fluid. The registered `NxPhysicsSimulationTests` differential rejects the zero-geometry candidate (`stdout_delta=2`, exact stderr); restored output matches at 39/77/255 lines and exact registered fingerprints. The fingerprint retains its four-low-bit x87 tolerance. See [phase7-fluid-visualization-003489-20261017.md](phase7-fluid-visualization-003489-20261017.md).
+
+Closure measurement: `phys_fn_003489` is rejected by the traversal mutation with `stdout_delta=2`; restored output is exact.
