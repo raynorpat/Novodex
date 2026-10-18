@@ -20632,13 +20632,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpBoxShape.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/428",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3179",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x000234c0 shows the public box setDimensions wrapper entering the Scene write lock, passing the NxVec3 to the internal shape setter, and releasing the lock; lock refusal reports NpBoxShape.cpp:0x1f and leaves the shape unchanged.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests calls setDimensions with distinct dimensions and verifies the resulting dimensions, internal words, dirty state, bounds, and descriptor. Replacing nxBoxHandleSetDimensions with a no-op is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=10); the restored staged-pair differential is exact (stdout_delta=0).",
+      "notes": "See evidence/phase3-box-shape-dimensions-001069.md and evidence/raw/phase3-box-shape-dimensions-001069-20261018/.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxBoxHandleSetDimensions",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxBoxHandleSetDimensions@@YIXPAX0ABVNxVec3@@@Z",
+        "address": "0x10036aa0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001070",
