@@ -19662,13 +19662,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/405",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3087",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x22810 invalidates the cached sphere when its radius is negative, calls each child slot 11, transforms each child sphere through its local pose, merges the world-space spheres, copies the cache to the output, and returns the output pointer.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests calls the live ShapeGroup slot 11 on a two-sphere group. Oracle/candidate return the output and match words 00000000.00000000.40200000.40600000 (center (0,0,2.5), radius 3.5). Removing candidate table slot 11 is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4, mismatches=1); restored control is exact. Registered in Phases 5, 6, and 7. See evidence/phase3-shape-group-vtable-001020-001026.md.",
+      "notes": "Compound ShapeGroup vtable entry; verified through the group root table rather than as a direct exported call.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxShapeGroupWorldSphere"
     },
     {
       "id": "phys_fn_001021",
@@ -19698,13 +19700,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "per-element virtual dispatch loop (0x22970, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/499",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3093",
-      "static_proof": "static review of the recorded shape: per-element virtual dispatch loop (0x22970, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via arrayloop differential (3z165): element counts 0, 1 and 2 all failures=0, comparing both the call count and the argument the slot received",
-      "notes": ""
+      "static_proof": "The group dispatcher traverses children in array order, calls each child vtable slot 3 with the same argument, and returns the final child's result; an empty group returns zero.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests replaces two scratch child slot-3 callbacks with ordered probes. Oracle/candidate report result=23, calls=2, args=2, order=1.2. Removing candidate table slot 3 is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4, mismatches=1); restored control is exact. Registered in Phases 5, 6, and 7. See evidence/phase3-shape-group-vtable-001020-001026.md.",
+      "notes": "Compound ShapeGroup vtable entry; verified through the group root table rather than as a direct exported call.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxShapeGroupDispatchSlot3"
     },
     {
       "id": "phys_fn_001023",
@@ -19771,13 +19775,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/407",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3101",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x22a10 filters child shapes by the requested group bit, calls child slot 5, selects the hit with the nearest impact point to the ray origin, copies the winning hit record, and returns the winning child.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests exercises nearest-child selection and group filtering. Oracle/candidate select child indices 0 and 1 respectively, with impact distances 0x41100000 and 0x41600000 and flags 0x17. Removing candidate table slot 5 is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=4, mismatches=1); restored control is exact. Registered in Phases 5, 6, and 7. See evidence/phase3-shape-group-vtable-001020-001026.md.",
+      "notes": "Compound ShapeGroup vtable entry; verified through the group root table rather than as a direct exported call.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxShapeGroupRaycast"
     },
     {
       "id": "phys_fn_001027",
@@ -24646,7 +24652,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/516",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3414",
       "static_proof": "__thiscall ret 4: copies pose3 (12 words from +0x6c) to record+8, movzx halfword +0xde -> dword record+0x38, halfwords +0xd8/+0xda -> record+0x3c/0x3e, [colobj+4] -> record+0x40 UNCONDITIONALLY (no null test), returns al=1; BASE vtable .rdata 0x10107494 slot 2",
-      "dynamic_proof": "The pinned-oracle NxPhysicsObjectLayoutTests differential exercises the base save row on a constructed sphere and compares its return plus the full poisoned 0x48-byte descriptor record. Baseline: oracle saved=1 digest=bc9dc964, candidate ok=1, mismatches=0. Mutation: replacing the +0xde halfword load with zero produces candidate digest 6e8a0c5c and mismatches=6. Restored run: candidate digest bc9dc964 and mismatches=0. Evidence: evidence/phase5-base-save-001277.md.",
+      "dynamic_proof": "The pinned-oracle NxPhysicsObjectLayoutTests differential exercises the base save row on a constructed sphere and compares its return plus the full poisoned 0x48-byte descriptor record. Baseline: oracle saved=1 digest=bc9dc964, candidate ok=1, mismatches=0. Mutation: replacing the +0xde halfword load with zero produces candidate digest 6e8a0c5c and mismatches=6. Restored run: candidate digest bc9dc964 and mismatches=0. Evidence: evidence/phase5-base-save-001277.md. The compound ShapeGroup table also exposes slot 2; the registered group fixture saves and compares the descriptor record and a candidate-only null-slot mutation is rejected. See evidence/phase3-shape-group-vtable-001020-001026.md.",
       "notes": "P5 Task 3: the differential caught a first-draft transcription bug ([colobj] read instead of [colobj+4]) before it could ship -- the gate is doing its job. The +0xde saved word is independently mutation-falsified; the existing fixture currently uses its default value 8.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -25912,7 +25918,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/550",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3508",
       "static_proof": "__thiscall ret 4: copies descriptor pose3 (12 words from +0x08) to shape+0x6c, halfword +0x38 -> +0xde, halfword +0x3e -> +0xda, [desc+0x40] -> [colobj+4] when colobj non-null, calls registry phys_fn_000480(shape, name) and validated group-setter phys_fn_001329(group), returns al=1; BASE vtable .rdata 0x10107494 slot 1, inherited by ALL five finals",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests applydesc family on a real constructed sphere with a crafted NULL-name record: oracle digest bfd22e48 equals candidate bitwise over the shape tail Row-targeted fixture and mutation proof (2026-10-08): the registered pinned-oracle NxPhysicsObjectLayoutTests fixture applies a descriptor with a non-default pose, flags=0x1234, group=5, material=0x5678, and null name to detached ShapeBase instances, then compares all non-pointer object words and return. Oracle/candidate fixture digest 11e5e856, result=true. Mutating the +0xde flag copy to zero changes candidate digest to b866a954 and yields mismatches=1; restoring the copy returns the exact digest and zero mismatches. Gate pins the oracle row and candidate line; coverage floor raised to 2561. Evidence: evidence/phase5-apply-descriptor-001347.md.",
+      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests applydesc family on a real constructed sphere with a crafted NULL-name record: oracle digest bfd22e48 equals candidate bitwise over the shape tail Row-targeted fixture and mutation proof (2026-10-08): the registered pinned-oracle NxPhysicsObjectLayoutTests fixture applies a descriptor with a non-default pose, flags=0x1234, group=5, material=0x5678, and null name to detached ShapeBase instances, then compares all non-pointer object words and return. Oracle/candidate fixture digest 11e5e856, result=true. Mutating the +0xde flag copy to zero changes candidate digest to b866a954 and yields mismatches=1; restoring the copy returns the exact digest and zero mismatches. Gate pins the oracle row and candidate line; coverage floor raised to 2561. Evidence: evidence/phase5-apply-descriptor-001347.md. The compound ShapeGroup table also exposes slot 1; the registered group fixture applies a crafted descriptor and a candidate-only null-slot mutation is rejected. See evidence/phase3-shape-group-vtable-001020-001026.md.",
       "notes": " The base descriptor copy path is now directly covered with non-default values in a row-targeted oracle differential.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },

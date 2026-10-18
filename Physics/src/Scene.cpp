@@ -46,6 +46,8 @@
 #include "NxBounds3.h"
 #include "NxIntersectionRayTriangle.h"
 #include "NxBox.h"
+#include "NxRay.h"
+#include "NxSphere.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
 #include "NxShapeDesc.h"
@@ -72,6 +74,7 @@
 #include "NxJoint.h"
 #include "NxUserNotify.h"
 #include "NxUserContactReport.h"
+#include "NxUserRaycastReport.h"
 #include "core/RevoluteJoint.h"
 #include "core/PrismaticJoint.h"
 #include "core/CylindricalJoint.h"
@@ -6382,14 +6385,25 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 // array's begin/end/capacity, +0xf0/+0xf4/+0xf8 the parallel array of the
 // children's public handles, +0x10c a float the adds and removes reset to
 // -1.0f. Its table (.rdata 0x10106c2c) is this file's gNxShapeGroupTable:
-// slot 0 the deleting destructor 001039, slot 4 the mass walk 001024 and
-// slot 6 the owner update 001018 are the slots the runtime reaches; the
-// others (001347, 001277, 001022, 001030, ...) are not wired and stay null.
+// all fifteen oracle entries are reconstructed below: the base descriptor
+// methods, child dispatchers, raycast, mass/owner/AABB methods, and the shared
+// sweep/no-op/identity rows. Slots 5 and 11 are the compound raycast and
+// cached world-sphere operations that were absent from the candidate table.
 // ---------------------------------------------------------------------------
 
 static void* __fastcall nxShapeGroupDeletingDtor(void* self, void*, unsigned flags);
 static void __fastcall nxShapeGroupOwnerUpdate(void* self, void*, unsigned flags);
 static void __fastcall nxShapeGroupAggregateAABB(void* self, void*, float* out);
+static bool __fastcall nxShapeGroupApplyDescriptor(void* self, void*, const void* record);
+static bool __fastcall nxShapeGroupSaveDescriptor(void* self, void*, void* record);
+static int __fastcall nxShapeGroupDispatchSlot3(void* self, void*, void* argument);
+static void* __fastcall nxShapeGroupRaycast(void* self, void*, const NxRay* ray,
+	NxReal maxDistance, NxU32 groups, NxU32 hintFlags, NxRaycastHit* hit);
+static NxSphere* __fastcall nxShapeGroupWorldSphere(void* self, void*, NxSphere* out);
+static bool __fastcall nxShapeGroupSweep(void* self, void*, unsigned* out,
+	const void* swept);
+static void __stdcall nxShapeGroupNoop(void* argument);
+static void* __fastcall nxShapeGroupIdentity(void* self, void*);
 
 // The group's slot 4 is 001024 (ObjectModel.cpp nxArrayVtCall3Args1024,
 // thiscall `ret 0xc`): each child whose +0xde has none of the low three bits
@@ -6412,13 +6426,155 @@ static void __fastcall nxShapeGroupAggregateAABB(void* self, void*, float* out)
 	nxAggregateAABB1030(self, out);
 	}
 
+// phys_fn_001347 and phys_fn_001277 are the shared ShapeBase descriptor
+// methods. The wrappers preserve the oracle's thiscall vtable ABI while
+// forwarding to the already mutation-tested candidate bodies.
+static bool __fastcall nxShapeGroupApplyDescriptor(void* self, void*, const void* record)
+	{
+	return static_cast<ShapeBase*>(self)->nxApplyDescriptor(record);
+	}
+
+static bool __fastcall nxShapeGroupSaveDescriptor(void* self, void*, void* record)
+	{
+	return static_cast<ShapeBase*>(self)->nxBaseSaveState(record);
+	}
+
+// phys_fn_001022 visits child slot 3 in order and returns the last child's
+// result (zero for an empty group). ObjectModel.cpp's generic array adapter
+// intentionally records call/argument behavior only; this exact group entry
+// also preserves the result register for this vtable dispatch.
+static int __fastcall nxShapeGroupDispatchSlot3(void* self, void*, void* argument)
+	{
+	unsigned char* group = static_cast<unsigned char*>(self);
+	unsigned char** child = *reinterpret_cast<unsigned char***>(group + 0xe0);
+	unsigned count = static_cast<unsigned>(
+		*reinterpret_cast<unsigned char***>(group + 0xe4) - child);
+	int result = static_cast<int>(count);
+	for(; count; --count, ++child)
+		{
+		void** table = *reinterpret_cast<void***>(*child);
+		typedef int (__stdcall* ChildSlot3)(void*);
+		result = reinterpret_cast<ChildSlot3>(table[3])(argument);
+		}
+	return result;
+	}
+
+// phys_fn_001026: apply the child's collision-group bit mask, dispatch slot 5,
+// and keep the hit whose impact point is nearest the ray origin. The oracle
+// compares the wide squared distance against a float accumulator, then narrows
+// the winning distance before the next child, and copies the complete 48-byte
+// hit record only when a child becomes the new winner.
+static void* __fastcall nxShapeGroupRaycast(void* self, void*, const NxRay* ray,
+	NxReal maxDistance, NxU32 groups, NxU32 hintFlags, NxRaycastHit* hit)
+	{
+	unsigned char* group = static_cast<unsigned char*>(self);
+	unsigned char** child = *reinterpret_cast<unsigned char***>(group + 0xe0);
+	unsigned count = static_cast<unsigned>(
+		*reinterpret_cast<unsigned char***>(group + 0xe4) - child);
+	float closestSquared = 3.402823466e+38f;
+	void* closestChild = 0;
+	for(; count; --count, ++child)
+		{
+		unsigned char* shape = *child;
+		const unsigned groupIndex = shape[0xd8];
+		if((groups & (1u << groupIndex)) == 0)
+			continue;
+		void** table = *reinterpret_cast<void***>(shape);
+		typedef void* (__fastcall* ChildRaycast)(void*, void*, const NxRay*,
+			NxReal, NxU32, NxU32, NxRaycastHit*);
+		NxRaycastHit localHit;
+		if(!reinterpret_cast<ChildRaycast>(table[5])(shape, 0, ray,
+			maxDistance, groups, hintFlags, &localHit))
+			continue;
+		const double dx = static_cast<double>(localHit.worldImpact.x) - ray->orig.x;
+		const double dy = static_cast<double>(localHit.worldImpact.y) - ray->orig.y;
+		const double dz = static_cast<double>(localHit.worldImpact.z) - ray->orig.z;
+		const double squared = (dz * dz + dy * dy) + dx * dx;
+		if(squared < closestSquared)
+			{
+			closestSquared = static_cast<float>(squared);
+			closestChild = shape;
+			memcpy(hit, &localHit, sizeof(localHit));
+			}
+		}
+	return closestChild;
+	}
+
+// phys_fn_001020 lazily rebuilds the group's world-space sphere when the
+// cached radius is negative, transforms each child's slot-11 sphere through
+// its local pose, merges the results, and always copies the cache to `out`.
+static NxSphere* __fastcall nxShapeGroupWorldSphere(void* self, void*, NxSphere* out)
+	{
+	unsigned char* group = static_cast<unsigned char*>(self);
+	NxSphere* cached = reinterpret_cast<NxSphere*>(group + 0x100);
+	if(cached->radius < 0.0f)
+		{
+		unsigned char** child = *reinterpret_cast<unsigned char***>(group + 0xe0);
+		unsigned count = static_cast<unsigned>(
+			*reinterpret_cast<unsigned char***>(group + 0xe4) - child);
+		for(; count; --count, ++child)
+			{
+			unsigned char* shape = *child;
+			void** table = *reinterpret_cast<void***>(shape);
+			typedef NxSphere* (__fastcall* ChildWorldSphere)(void*, void*, NxSphere*);
+			NxSphere local;
+			reinterpret_cast<ChildWorldSphere>(table[11])(shape, 0, &local);
+			const float* pose = reinterpret_cast<const float*>(shape);
+			volatile float worldX = local.center.y * pose[28] +
+				local.center.z * pose[29] + local.center.x * pose[27] + pose[36];
+			const double worldYWide =
+				static_cast<double>(local.center.y) * pose[31] +
+				static_cast<double>(local.center.x) * pose[30] +
+				static_cast<double>(local.center.z) * pose[32] + pose[37];
+			volatile float worldZPartial = local.center.y * pose[34] +
+				local.center.x * pose[33] + local.center.z * pose[35];
+			NxSphere transformed(NxVec3(worldX, static_cast<float>(worldYWide),
+				static_cast<float>(static_cast<double>(worldZPartial) + pose[38])),
+				local.radius);
+			if(cached->radius <= 0.0f)
+				*cached = transformed;
+			else
+				NxMergeSpheres(*cached, *cached, transformed);
+			}
+		}
+	*out = *cached;
+	return out;
+	}
+
+static bool __fastcall nxShapeGroupSweep(void* self, void*, unsigned* out,
+	const void* swept)
+	{
+	return static_cast<ShapeBase*>(self)->nxBaseSlot7(out, swept);
+	}
+
+static void __stdcall nxShapeGroupNoop(void* argument)
+	{
+	(void)argument;
+	}
+
+static void* __fastcall nxShapeGroupIdentity(void* self, void*)
+	{
+	return self;
+	}
+
 static void** nxShapeGroupTable()
 	{
 	static void* table[15] = {
-		reinterpret_cast<void*>(&nxShapeGroupDeletingDtor), 0, 0, 0,
-		reinterpret_cast<void*>(&nxShapeGroupAccumulateMass), 0,
-		reinterpret_cast<void*>(&nxShapeGroupOwnerUpdate), 0, 0,
-		reinterpret_cast<void*>(&nxShapeGroupAggregateAABB), 0, 0, 0, 0, 0 };
+		reinterpret_cast<void*>(&nxShapeGroupDeletingDtor),
+		reinterpret_cast<void*>(&nxShapeGroupApplyDescriptor),
+		reinterpret_cast<void*>(&nxShapeGroupSaveDescriptor),
+		reinterpret_cast<void*>(&nxShapeGroupDispatchSlot3),
+		reinterpret_cast<void*>(&nxShapeGroupAccumulateMass),
+		reinterpret_cast<void*>(&nxShapeGroupRaycast),
+		reinterpret_cast<void*>(&nxShapeGroupOwnerUpdate),
+		reinterpret_cast<void*>(&nxShapeGroupSweep),
+		reinterpret_cast<void*>(&nxShapeGroupNoop),
+		reinterpret_cast<void*>(&nxShapeGroupAggregateAABB),
+		reinterpret_cast<void*>(&nxShapeGroupNoop),
+		reinterpret_cast<void*>(&nxShapeGroupWorldSphere),
+		reinterpret_cast<void*>(&nxShapeGroupIdentity),
+		reinterpret_cast<void*>(&nxShapeGroupIdentity),
+		reinterpret_cast<void*>(&nxShapeGroupIdentity) };
 	return table;
 	}
 

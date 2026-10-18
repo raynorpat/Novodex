@@ -298,6 +298,12 @@ $NxRequiredCoverageLines = [ordered] @{
         # the group teardown, installs into an empty actor, the group's own poses
         # (001018, before and after setGlobalPose), a Scene whose first shape comes
         # from createShape, and the Actor.cpp E1 reports 0x18f/0x19c/0x19d/0x1a4.
+        'shape_mutation row=shape_group_table',
+        'shape_mutation row=001347 group_apply=',
+        'shape_mutation row=001277 group_save=',
+        'shape_mutation row=001022 group_dispatch',
+        'shape_mutation row=001026 group_raycast',
+        'shape_mutation row=001020 group_sphere',
         'shape_mutation t4_static=1',
         'shape_mutation t4_dynamic=1',
         'shape_mutation t4_st_initial=1.2.0.s.c2.2.0.0.624.1.p100.10001.0',
@@ -6367,7 +6373,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2918  # adds phys_fn_001083 capsule setFlag write-lock behavior
+	'5' = 2924  # adds six ShapeGroup vtable/row markers (001347, 001277, 001022, 001026, 001020)
+	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
@@ -6457,7 +6464,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1771  # adds phys_fn_001083 capsule setFlag write-lock behavior
+	'6' = 1777  # adds six ShapeGroup vtable/row markers (001347, 001277, 001022, 001026, 001020)
+	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6509,7 +6517,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3054  # adds phys_fn_001083 capsule setFlag write-lock behavior
+	'7' = 3060  # adds six ShapeGroup vtable/row markers (001347, 001277, 001022, 001026, 001020)
+	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions

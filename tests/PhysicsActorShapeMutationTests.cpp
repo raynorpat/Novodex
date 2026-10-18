@@ -12,6 +12,9 @@
 #include "NxPlaneShapeDesc.h"
 #include "NxBodyDesc.h"
 #include "NxShape.h"
+#include "NxRay.h"
+#include "NxUserRaycastReport.h"
+#include "NxSphere.h"
 #include "NxFixedJointDesc.h"
 #include "NxJoint.h"
 #include "PhysicsActorErrorStream.h"
@@ -218,6 +221,250 @@ static void printGroupPose(const char* label, const NxActor* actor)
 	for(unsigned i = 0; i < 24; ++i)
 		printf("%x.", word(root, 0x0c + 4 * i));
 	printf("%x.%x\n", word(root, 8), half(root, 0xdc));
+	}
+
+// The compound ShapeGroup's slot 5 is a thiscall raycast over its children;
+// slot 11 returns its cached world-space sphere. Call the entries through the
+// actual root table in both staged DLL pairs, translating the returned child
+// address back to its public handle index so the transcript stays relocatable.
+typedef void* (__fastcall* NxShapeGroupRaycastSlot)(void*, void*, const NxRay*,
+	NxReal, NxU32, NxU32, NxRaycastHit*);
+typedef NxSphere* (__fastcall* NxShapeGroupWorldSphereSlot)(void*, void*, NxSphere*);
+typedef bool (__fastcall* NxShapeGroupApplySlot)(void*, void*, const void*);
+typedef bool (__fastcall* NxShapeGroupSaveSlot)(void*, void*, void*);
+typedef int (__fastcall* NxShapeGroupDispatchSlot)(void*, void*, void*);
+
+static void* nxShapeGroupDispatchExpectedArgument;
+static unsigned nxShapeGroupDispatchCalls;
+static unsigned nxShapeGroupDispatchArgumentMatches;
+static unsigned nxShapeGroupDispatchSequence;
+static unsigned nxShapeGroupDispatchFirstOrder;
+static unsigned nxShapeGroupDispatchSecondOrder;
+
+static int __stdcall nxShapeGroupTestChildSlot3First(void* argument)
+	{
+	++nxShapeGroupDispatchCalls;
+	if(argument == nxShapeGroupDispatchExpectedArgument)
+		++nxShapeGroupDispatchArgumentMatches;
+	nxShapeGroupDispatchFirstOrder = ++nxShapeGroupDispatchSequence;
+	return 17;
+	}
+
+static int __stdcall nxShapeGroupTestChildSlot3Second(void* argument)
+	{
+	++nxShapeGroupDispatchCalls;
+	if(argument == nxShapeGroupDispatchExpectedArgument)
+		++nxShapeGroupDispatchArgumentMatches;
+	nxShapeGroupDispatchSecondOrder = ++nxShapeGroupDispatchSequence;
+	return 23;
+	}
+
+static int shapeGroupChildIndex(const NxActor* actor, const void* internal)
+	{
+	NxShape* const* handles = actor->getShapes();
+	for(NxU32 i = 0; i < actor->getNbShapes(); ++i)
+		if(handles[i] && reinterpret_cast<const void*>(word(handles[i], 8)) == internal)
+			return static_cast<int>(i);
+	return -1;
+	}
+
+static bool probeShapeGroupDescriptorAndDispatch(const NxActor* actor,
+	const unsigned char* root, void** table)
+	{
+	unsigned char scratch[0x110];
+	memcpy(scratch, root, sizeof(scratch));
+	*reinterpret_cast<void**>(scratch + 4) = 0;
+	unsigned collisionObject[2] = {0, 0x89abcdefu};
+	*reinterpret_cast<void**>(scratch + 0x9c) = collisionObject;
+
+	unsigned char descriptor[0x48];
+	unsigned char saved[0x48];
+	unsigned char expected[0x48];
+	memset(descriptor, 0xcd, sizeof(descriptor));
+	memset(saved, 0xcd, sizeof(saved));
+	memset(expected, 0xcd, sizeof(expected));
+	const float pose[12] = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f,
+		6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f};
+	const unsigned short flags = 0x1234u;
+	const unsigned short group = 2u;
+	const unsigned short material = 0x5678u;
+	const unsigned collisionWord = 0x76543210u;
+	memcpy(descriptor + 8, pose, sizeof(pose));
+	memcpy(descriptor + 0x38, &flags, sizeof(flags));
+	memcpy(descriptor + 0x3c, &group, sizeof(group));
+	memcpy(descriptor + 0x3e, &material, sizeof(material));
+	memcpy(descriptor + 0x40, &collisionWord, sizeof(collisionWord));
+	const unsigned nullName = 0;
+	memcpy(descriptor + 0x44, &nullName, sizeof(nullName));
+
+	bool applied = false;
+	if(table[1])
+		applied = reinterpret_cast<NxShapeGroupApplySlot>(table[1])(
+			scratch, 0, descriptor);
+	bool savedOk = false;
+	if(table[2])
+		savedOk = reinterpret_cast<NxShapeGroupSaveSlot>(table[2])(
+			scratch, 0, saved);
+	memcpy(expected + 8, pose, sizeof(pose));
+	unsigned savedFlags = flags;
+	memcpy(expected + 0x38, &savedFlags, sizeof(savedFlags));
+	memcpy(expected + 0x3c, &group, sizeof(group));
+	memcpy(expected + 0x3e, &material, sizeof(material));
+	memcpy(expected + 0x40, &collisionWord, sizeof(collisionWord));
+	unsigned descriptorHash = 2166136261u;
+	for(unsigned i = 0; i < sizeof(saved); ++i)
+		descriptorHash = (descriptorHash ^ saved[i]) * 16777619u;
+	const bool appliedStateMatches =
+		memcmp(scratch + 0x6c, pose, sizeof(pose)) == 0 &&
+		half(scratch, 0xd8) == group && half(scratch, 0xda) == material &&
+		half(scratch, 0xde) == flags && collisionObject[1] == collisionWord;
+	const bool applyMatches = applied && appliedStateMatches;
+	const bool saveMatches = savedOk &&
+		memcmp(saved, expected, sizeof(saved)) == 0;
+	printf("shape_mutation row=001347 group_apply=%u mismatches=%u\n",
+		applied ? 1u : 0u, applyMatches ? 0u : 1u);
+	printf("shape_mutation row=001277 group_save=%u digest=%08x mismatches=%u\n",
+		savedOk ? 1u : 0u, descriptorHash, saveMatches ? 0u : 1u);
+
+	const unsigned char* const* children =
+		reinterpret_cast<const unsigned char* const*>(word(root, 0xe0));
+	void* firstTable[4] = {0, 0, 0,
+		reinterpret_cast<void*>(&nxShapeGroupTestChildSlot3First)};
+	void* secondTable[4] = {0, 0, 0,
+		reinterpret_cast<void*>(&nxShapeGroupTestChildSlot3Second)};
+	void** oldFirstTable = *reinterpret_cast<void***>(
+		const_cast<unsigned char*>(children[0]));
+	void** oldSecondTable = *reinterpret_cast<void***>(
+		const_cast<unsigned char*>(children[1]));
+	*reinterpret_cast<void***>(const_cast<unsigned char*>(children[0])) = firstTable;
+	*reinterpret_cast<void***>(const_cast<unsigned char*>(children[1])) = secondTable;
+	nxShapeGroupDispatchExpectedArgument = reinterpret_cast<void*>(0x1234abcdu);
+	nxShapeGroupDispatchCalls = 0;
+	nxShapeGroupDispatchArgumentMatches = 0;
+	nxShapeGroupDispatchSequence = 0;
+	nxShapeGroupDispatchFirstOrder = 0;
+	nxShapeGroupDispatchSecondOrder = 0;
+	int dispatchResult = 0;
+	if(table[3])
+		dispatchResult = reinterpret_cast<NxShapeGroupDispatchSlot>(table[3])(
+			const_cast<unsigned char*>(root), 0,
+			nxShapeGroupDispatchExpectedArgument);
+	*reinterpret_cast<void***>(const_cast<unsigned char*>(children[0])) = oldFirstTable;
+	*reinterpret_cast<void***>(const_cast<unsigned char*>(children[1])) = oldSecondTable;
+	const bool dispatchMatches = table[3] && dispatchResult == 23 &&
+		nxShapeGroupDispatchCalls == 2 && nxShapeGroupDispatchArgumentMatches == 2 &&
+		nxShapeGroupDispatchFirstOrder == 1 && nxShapeGroupDispatchSecondOrder == 2;
+	printf("shape_mutation row=001022 group_dispatch result=%d calls=%u args=%u "
+		"order=%u.%u mismatches=%u\n", dispatchResult,
+		nxShapeGroupDispatchCalls, nxShapeGroupDispatchArgumentMatches,
+		nxShapeGroupDispatchFirstOrder, nxShapeGroupDispatchSecondOrder,
+		dispatchMatches ? 0u : 1u);
+	(void)actor;
+	return applyMatches && saveMatches && dispatchMatches;
+	}
+
+static bool probeShapeGroupRaycastAndSphere(const NxActor* actor)
+	{
+	unsigned char* root = const_cast<unsigned char*>(shapeRoot(actor));
+	if(!root || word(root, 0xd0) != 5 || actor->getNbShapes() != 2)
+		{
+		printf("shape_mutation row=001026 group_raycast available=0 mismatches=1\n");
+		printf("shape_mutation row=001020 group_sphere available=0 mismatches=1\n");
+		return false;
+		}
+	void** table = *reinterpret_cast<void***>(root);
+	unsigned tableSlots = 0;
+	for(unsigned i = 0; i < 15; ++i)
+		if(table[i]) tableSlots |= 1u << i;
+	unsigned tableMismatches = tableSlots == 0x7fffu ? 0u : 1u;
+	if(table[7])
+		{
+		unsigned output = 0xdeadbeefu;
+		const unsigned swept = 0x12345678u;
+		typedef bool (__fastcall* SweepSlot)(void*, void*, unsigned*, const void*);
+		if(reinterpret_cast<SweepSlot>(table[7])(root, 0, &output, &swept) ||
+			output != 0xdeadbeefu)
+			++tableMismatches;
+		}
+	else
+		++tableMismatches;
+	const unsigned noopSlots[] = {8u, 10u};
+	for(unsigned i = 0; i < sizeof(noopSlots) / sizeof(noopSlots[0]); ++i)
+		{
+		const unsigned slot = noopSlots[i];
+		if(table[slot])
+			reinterpret_cast<void (__stdcall*)(void*)>(table[slot])(
+				reinterpret_cast<void*>(0xdeadbeefu));
+		else
+			++tableMismatches;
+		}
+	const unsigned identitySlots[] = {12u, 13u, 14u};
+	for(unsigned i = 0; i < sizeof(identitySlots) / sizeof(identitySlots[0]); ++i)
+		{
+		const unsigned slot = identitySlots[i];
+		typedef void* (__fastcall* SelfSlot)(void*, void*);
+		if(!table[slot] || reinterpret_cast<SelfSlot>(table[slot])(root, 0) != root)
+			++tableMismatches;
+		}
+	printf("shape_mutation row=shape_group_table slots=%04x mismatches=%u\n",
+		tableSlots, tableMismatches);
+	const bool descriptorAndDispatchMatch =
+		probeShapeGroupDescriptorAndDispatch(actor, root, table);
+	unsigned raycastMismatches = 0;
+	int nearest = -1, filtered = -1;
+	unsigned nearestDistance = 0, filteredDistance = 0;
+	unsigned nearestFlags = 0, filteredFlags = 0;
+	if(table[5])
+		{
+		const NxRay ray(NxVec3(0.0f, 0.0f, -10.0f), NxVec3(0.0f, 0.0f, 1.0f));
+		NxRaycastHit hit;
+		memset(&hit, 0xcd, sizeof(hit));
+		void* const nearestChild = reinterpret_cast<NxShapeGroupRaycastSlot>(table[5])(
+			root, 0, &ray, 100.0f, 0x6u,
+			NX_RAYCAST_NORMAL, &hit);
+		nearest = shapeGroupChildIndex(actor, nearestChild);
+		memcpy(&nearestDistance, &hit.distance, sizeof(nearestDistance));
+		nearestFlags = hit.flags;
+		memset(&hit, 0xcd, sizeof(hit));
+		void* const filteredChild = reinterpret_cast<NxShapeGroupRaycastSlot>(table[5])(
+			root, 0, &ray, 100.0f, 0x4u,
+			NX_RAYCAST_NORMAL, &hit);
+		filtered = shapeGroupChildIndex(actor, filteredChild);
+		memcpy(&filteredDistance, &hit.distance, sizeof(filteredDistance));
+		filteredFlags = hit.flags;
+		if(nearest != 0 || filtered != 1 || nearestDistance != 0x41100000u ||
+			filteredDistance != 0x41600000u ||
+			nearestFlags != (NX_RAYCAST_SHAPE | NX_RAYCAST_IMPACT |
+				NX_RAYCAST_DISTANCE | NX_RAYCAST_NORMAL) ||
+			filteredFlags != nearestFlags)
+			++raycastMismatches;
+		}
+	else
+		++raycastMismatches;
+	printf("shape_mutation row=001026 group_raycast nearest=%d filtered=%d "
+		"nearest_distance=%08x filtered_distance=%08x flags=%x.%x mismatches=%u\n",
+		nearest, filtered, nearestDistance, filteredDistance,
+		nearestFlags, filteredFlags, raycastMismatches);
+
+	unsigned sphereWords[4] = {0xcdcdcdcdu, 0xcdcdcdcdu, 0xcdcdcdcdu, 0xcdcdcdcdu};
+	unsigned sphereReturn = 0;
+	unsigned sphereMismatches = 0;
+	if(table[11])
+		{
+		NxSphere* const result = reinterpret_cast<NxShapeGroupWorldSphereSlot>(table[11])(
+			root, 0, reinterpret_cast<NxSphere*>(sphereWords));
+		sphereReturn = result == reinterpret_cast<NxSphere*>(sphereWords) ? 1u : 0u;
+		if(!sphereReturn || sphereWords[0] != 0 || sphereWords[1] != 0 ||
+			sphereWords[2] != 0x40200000u || sphereWords[3] != 0x40600000u)
+			++sphereMismatches;
+		}
+	else
+		++sphereMismatches;
+	printf("shape_mutation row=001020 group_sphere return=%u words=%08x.%08x.%08x.%08x mismatches=%u\n",
+		sphereReturn, sphereWords[0], sphereWords[1], sphereWords[2], sphereWords[3],
+		sphereMismatches);
+	return descriptorAndDispatchMatch && tableMismatches == 0 && table[5] && table[11] &&
+		raycastMismatches == 0 && sphereMismatches == 0;
 	}
 
 #define CREATE_CASE(label, actor, desc, known, knownCount) \
@@ -1470,6 +1717,31 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("material dirty-row state mismatch");
 	materialScene->releaseActor(*materialActor);
 	sdk->releaseScene(*materialScene);
+
+	// Directly exercise the compound root's slot-5 masked nearest raycast and
+	// slot-11 world-sphere aggregation on a deterministic two-sphere group.
+	NxScene* shapeGroupScene = sdk->createScene(sceneDesc);
+	NxSphereShapeDesc nearSphere;
+	nearSphere.radius = 1.0f;
+	nearSphere.group = 1;
+	nearSphere.localPose.t = NxVec3(0.0f, 0.0f, 0.0f);
+	NxSphereShapeDesc farSphere;
+	farSphere.radius = 1.0f;
+	farSphere.group = 2;
+	farSphere.localPose.t = NxVec3(0.0f, 0.0f, 5.0f);
+	NxActorDesc shapeGroupDesc;
+	shapeGroupDesc.shapes.pushBack(&nearSphere);
+	shapeGroupDesc.shapes.pushBack(&farSphere);
+	NxActor* shapeGroupActor = shapeGroupScene
+		? shapeGroupScene->createActor(shapeGroupDesc) : 0;
+	if(!shapeGroupActor)
+		return nxFail("ShapeGroup vtable actor creation failed");
+	const bool shapeGroupRowsMatch = probeShapeGroupRaycastAndSphere(shapeGroupActor);
+	shapeGroupScene->releaseActor(*shapeGroupActor);
+	sdk->releaseScene(*shapeGroupScene);
+	if(!shapeGroupRowsMatch)
+		return nxFail("ShapeGroup vtable row mismatch");
+
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 	}
