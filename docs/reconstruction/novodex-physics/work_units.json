@@ -901,13 +901,13 @@
     "phys_fn_001079"
    ],
    "rows": {
-    "discovered": 2,
-    "dynamically_gated": 2,
+    "discovered": 1,
+    "dynamically_gated": 3,
     "reconstructed": 1
    },
    "bytes": {
-    "discovered": 47,
-    "dynamically_gated": 112,
+    "discovered": 8,
+    "dynamically_gated": 151,
     "reconstructed": 36
    },
    "phases": {

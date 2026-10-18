@@ -709,10 +709,14 @@ static const NxVec3* __fastcall nxBoxHandleGetDimensions(void* self, void*)
 
 static void __fastcall nxBoxHandleGetWorldOBB(void* self, void*, NxBox& box)
 	{
+	void* readLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x14);
+	nxNpSceneGuardEnter(readLock);
 	// 001073 calls 000933 on the internal shape (0x10023566).
 	unsigned char* shape = nxBoxHandleInternal(self);
 	static_cast<BoxShape*>(static_cast<void*>(shape))->nxBoxGetWorldOBB(
 		&box.center.x);
+	nxNpSceneGuardLeave(readLock);
 	}
 
 static bool __fastcall nxBoxHandleSaveToDesc(void* self, void*,

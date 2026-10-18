@@ -634,3 +634,8 @@ Mapped the IDA row at RVA `0x00023430` to the read-locked shape global-orientati
 ### Phase 3 continuation — box shape dimensions (`phys_fn_001069`)
 
 IDA maps RVA `0x000234c0` to the Scene-write-locked box `setDimensions` wrapper and its internal hull/owner update. The existing `NxPhysicsActorDynamicSetterTests` fixture verifies dimensions, dirty state, bounds and descriptor output. A no-op mutation of `nxBoxHandleSetDimensions` is rejected (`stdout_delta=10`), and the restored control is exact (`stdout_delta=0`). Updated Phase 3 counts to 110 closed / 282 deferred and regenerated the backlog/work units. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-box-shape-dimensions-001069.md` and `evidence/raw/phase3-box-shape-dimensions-001069-20261018/`.
+
+
+### Phase 3 continuation — box world OBB read lock (`phys_fn_001073`)
+
+The public box world-OBB getter now reproduces the oracle read-lock enter/call/leave sequence. A seeded lock-state marker agrees on oracle and candidate (`0.1`); omitting the guard pair is rejected (`stdout_delta=2`), and restored output is exact. Phase 3 now records 111 closed / 281 deferred functions. Inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained rows. Phase 5 passes 2,914/2,914 coverage assertions and all 823 reconstruction-tool tests pass. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-box-world-obb-lock-001073.md` and `evidence/raw/phase3-box-world-obb-lock-001073-20261018/`. Full DLL reconstruction remains open.

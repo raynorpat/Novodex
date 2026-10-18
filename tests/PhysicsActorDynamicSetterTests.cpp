@@ -589,6 +589,22 @@ int wmain(int argc, wchar_t** argv)
 		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
 			&posedWorldOBB)[i]));
 	printf("\n");
+	{
+		unsigned char* boxBytes = reinterpret_cast<unsigned char*>(posedPublicBox);
+		unsigned char* readLink = *reinterpret_cast<unsigned char**>(boxBytes + 0x14);
+		unsigned* readState = reinterpret_cast<unsigned*>(
+			*reinterpret_cast<unsigned char**>(readLink) + 0x18);
+		const unsigned savedReadFlag = readState[0];
+		const unsigned savedReadOwner = readState[1];
+		readState[0] = 1;
+		readState[1] = 0;
+		NxBox lockOBB;
+		posedPublicBox->getWorldOBB(lockOBB);
+		printf("setter box_obb_read_lock=%u.%u\n", readState[0],
+			readState[1] == GetCurrentThreadId() ? 1u : 0u);
+		readState[0] = savedReadFlag;
+		readState[1] = savedReadOwner;
+	}
 	NxBoxShapeDesc savedBox;
 	savedBox.shapeFlags = 0x1234u;
 	const char* savedNameSentinel = "descriptor-sentinel";

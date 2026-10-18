@@ -1787,6 +1787,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter box_changed=40000000.40400000.40800000.40000000.40400000.40800000.80002.1',
         'setter box_changed_world_bounds=bfdffffe.3fc00000.c0c80000.40c80000.40b00000.be800000',
         'setter box_world_obb=40100000.40600000.c0500000.40000000.40400000.40800000.331302ae.0.3f7fffff.3f7fffff.0.b31302ae.0.3f800000.0',
+        'setter box_obb_read_lock=0.1',
         'setter box_saved=1.2.72.5.2.1.40000000.40400000.40800000.3f800000.0.0.0.0.bf800000.0.3f800000.0.3f000000.be800000.3f400000.1.0',
         'setter box_changed_aabb=c0000000.c0400000.c0800000.40000000.40400000.40800000',
         'setter box_local_position=c0000000.3f800000.40400000.c0000000.3f800000.40400000.3f800000.3f800001.bf800000.480002.1',
@@ -6362,7 +6363,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2913  # adds phys_fn_001063 box-shape name write-lock behavior
+	'5' = 2914  # adds phys_fn_001073 box world-OBB read-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions

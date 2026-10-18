@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_001073",
+  "mutation": "omitted nxNpSceneGuardEnter/Leave around nxBoxHandleGetWorldOBB",
+  "mutation_result": "oracle lock marker=0.1; candidate marker=1.0; stdout_delta=2; oracle_exit=0; candidate_exit=0; differential rejected",
+  "restored_result": "oracle and candidate lock marker=0.1; stdout_delta=0; stderr_exact=True",
+  "build": "NxPhysics Release rebuilt for mutant and restored control; NxPhysicsActorDynamicSetterTests Release target built",
+  "raw_logs": [
+    "mutation-build.log.gz",
+    "mutation-differential.log.gz",
+    "restored-build.log.gz",
+    "restored-differential.log.gz"
+  ],
+  "phase_gates": {
+    "5": "pass 2914/2914"
+  },
+  "verification": {
+    "inventory": "pass; functions=6338 data_objects=5138 unexplained=0",
+    "tooling_tests": "pass; 823 tests"
+  }
+}

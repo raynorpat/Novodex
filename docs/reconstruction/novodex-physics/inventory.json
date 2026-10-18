@@ -20712,13 +20712,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/430",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3183",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00023550 acquires the public shape read lock, calls the internal box world-OBB helper, then releases the lock.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests seeds the lock state and confirms the oracle and candidate both return it to marker 0.1; omitting the guard pair is rejected (stdout_delta=2), and restored staged output matches exactly.",
+      "notes": "Candidate nxBoxHandleGetWorldOBB is mapped in the NxPhysics linker map. See evidence/phase3-box-world-obb-lock-001073.md.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "?nxBoxHandleGetWorldOBB@@YIXPAX0AAVNxBox@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxBoxHandleGetWorldOBB@@YIXPAX0AAVNxBox@@@Z",
+        "address": "0x100369b0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001074",
