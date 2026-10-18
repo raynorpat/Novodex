@@ -23230,13 +23230,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/487",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3328",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00024870 shows the accessor takes the scene read lock at [self+0x14], obtains the owner from the shape at [self+0x18], reads the owner first dword, releases the read lock, and returns that dword.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests calls the oracle RVA and candidate CollisionObject::nxOwnerValue() for two owner values. Both return the owner first dword and leave the scene lock unheld; the no-op return mutation reports mismatches=2, while the restored oracle/candidate run reports mismatches=0.",
+      "notes": "Phase 3 row discharged by the Phase 5 NxPhysicsShapeVtableTests differential. See evidence/phase3-collision-owner-accessor-001201.md and evidence/raw/phase3-collision-owner-accessor-001201-20261018/.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxOwnerValue@CollisionObject@@UAEPAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxOwnerValue@CollisionObject@@UAEPAXXZ",
+        "address": "0x1004d1e0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001202",

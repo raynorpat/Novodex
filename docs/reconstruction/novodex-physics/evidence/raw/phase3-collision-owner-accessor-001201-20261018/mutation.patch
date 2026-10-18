@@ -1,0 +1,5 @@
+--- a/Physics/src/ObjectModel.cpp
++++ b/Physics/src/ObjectModel.cpp
+@@
+-	void* value = *reinterpret_cast<void* const*>(owner);
++	void* value = 0;

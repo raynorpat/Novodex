@@ -29,7 +29,7 @@
       "format": "shape_boxsweep",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsShapeVtableTests.cpp",
-      "fixture_source_sha256": "b8b900d6405bc79d76e851eed2fe0fd757b19dce9487c86c2d6b9df974b1a64d",
+      "fixture_source_sha256": "96eb51ddbc1ba7657082cae4d7f7b048ca0ab08675b26735c732d97d11016131",
       "cases": 84,
       "input_digest_fnv32": "46df40a9",
       "oracle_output_digest_fnv32": "2c5d5c09"

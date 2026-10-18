@@ -115,6 +115,13 @@ struct CandidateAllocator : SdkAllocator {
     void* realloc(void* p, size_t size) override { return ::realloc(p, size); }
     void free(void* p) override { ++freeCount; ::free(p); }
 };
+struct CollisionObjectTestLock {
+    CRITICAL_SECTION criticalSection;
+    volatile LONG lockFlag;
+    DWORD ownerThread;
+};
+static_assert(sizeof(CRITICAL_SECTION) == 0x18,
+    "Win32 critical section is followed by the two lock-tracking words");
 CollisionObject* nxCollisionObjectBaseTestConstruct(void* memory,
         void* argument) {
     return ::new(memory) CollisionObject(argument);
@@ -908,6 +915,58 @@ int wmain(int argc, wchar_t** argv)
     printf("collision base dtor cases=2 mismatches=%u\n",
         baseDtorMatched ? 0u : 1u);
     if(!baseDtorMatched) ++failures;
+
+    // phys_fn_001201 reads the owner through the shape pointer while holding
+    // the secondary EmbeddedHookBase read lock at +0x14.
+    typedef void* (__thiscall* CollisionObjectOwnerGetter)(void*);
+    unsigned collisionOwnerMismatches = 0;
+    for(unsigned ownerCase = 0; ownerCase != 2; ++ownerCase) {
+        const unsigned ownerWord = ownerCase == 0 ? 0x13579bdfu : 0x2468ace0u;
+        unsigned char ownerStorage[4];
+        memcpy(ownerStorage, &ownerWord, sizeof(ownerWord));
+        unsigned char shapeStorage[8] = {};
+        void* const ownerPointer = ownerStorage;
+        memcpy(shapeStorage + 4, &ownerPointer, sizeof(ownerPointer));
+        CollisionObjectTestLock oracleLock = {};
+        CollisionObjectTestLock candidateLock = {};
+        InitializeCriticalSection(&oracleLock.criticalSection);
+        InitializeCriticalSection(&candidateLock.criticalSection);
+        CRITICAL_SECTION* oracleCriticalSection = &oracleLock.criticalSection;
+        CRITICAL_SECTION* candidateCriticalSection = &candidateLock.criticalSection;
+        void* const oracleLockLink = &oracleCriticalSection;
+        void* const candidateLockLink = &candidateCriticalSection;
+        unsigned char oracleOwnerObject[0x1c];
+        unsigned char candidateOwnerObject[0x1c];
+        memset(oracleOwnerObject, 0xcd, sizeof(oracleOwnerObject));
+        memset(candidateOwnerObject, 0xcd, sizeof(candidateOwnerObject));
+        reinterpret_cast<CollisionObjectCtor>(
+            const_cast<unsigned char*>(base) + 0x23580)(
+                oracleOwnerObject, shapeStorage);
+        CollisionObjectBox* const candidateOwner =
+            new(candidateOwnerObject) CollisionObjectBox(shapeStorage);
+        memcpy(oracleOwnerObject + 0x14, &oracleLockLink,
+            sizeof(oracleLockLink));
+        memcpy(candidateOwnerObject + 0x14, &candidateLockLink,
+            sizeof(candidateLockLink));
+        const void* const expectedOwner = reinterpret_cast<const void*>(
+            static_cast<size_t>(ownerWord));
+        const void* const oracleOwnerValue = reinterpret_cast<
+            CollisionObjectOwnerGetter>(const_cast<unsigned char*>(base) +
+                0x24870)(oracleOwnerObject);
+        const void* const candidateOwnerValue = candidateOwner->nxOwnerValue();
+        const bool ownerMatched = oracleOwnerValue == expectedOwner &&
+            candidateOwnerValue == expectedOwner &&
+            oracleLock.lockFlag == 0 && candidateLock.lockFlag == 0 &&
+            oracleLock.ownerThread == GetCurrentThreadId() &&
+            candidateLock.ownerThread == GetCurrentThreadId();
+        if(!ownerMatched) ++collisionOwnerMismatches;
+        DeleteCriticalSection(&candidateLock.criticalSection);
+        DeleteCriticalSection(&oracleLock.criticalSection);
+        (void)candidateOwner;
+    }
+    printf("collision owner accessor cases=2 mismatches=%u\n",
+        collisionOwnerMismatches);
+    if(collisionOwnerMismatches) ++failures;
 
     // Mutation control for the retired member-only layout: install the plain
     // EmbeddedHookBase deleting table at +0x0c, as that layout did. Calling
