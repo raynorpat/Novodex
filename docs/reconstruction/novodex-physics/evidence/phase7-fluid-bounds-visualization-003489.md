@@ -6,4 +6,4 @@ The pinned oracle and candidate both report `fluids=2 bounds=2 red-lines=24 matc
 
 Fresh Phase 5, 6, and 7 gates pass with 2,881, 1,741, and 3,020 coverage assertions, respectively. Raw red, green, mutation, restored, and gate transcripts are archived under `evidence/raw/phase7-fluid-bounds-visualization-003489-20261017/`.
 
-This is a partial reconstruction. Emitter visualization and particle-position, velocity, and kernel-radius branches remain unimplemented. The inventory therefore records the function as reconstructed, while the Phase 7 closure ledger retains it as `reconstructed_not_falsified` and leaves it open.
+This bounds-only record predates the particle and emitter traversal continuations. Current branch coverage and its remaining closure gap are recorded in [phase7-fluid-visualization-003489-20261017.md](phase7-fluid-visualization-003489-20261017.md). The row remains open pending an isolated, row-specific emitter traversal mutation and stricter coordinate fidelity.

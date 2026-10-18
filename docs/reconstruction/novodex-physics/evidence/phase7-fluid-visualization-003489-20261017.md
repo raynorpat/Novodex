@@ -6,4 +6,10 @@ The simulation fixture seeds one backend particle record in each of two licensed
 
 Three candidate-only omission mutations were tested independently. Removing position crosses changes blue lines from 6 to 0; removing kernel circles changes green lines from 72 to 0; removing velocity arrows changes red lines from 34 to 24. Each mutation is rejected with `stdout_delta=2`. A wrong position scale preserves line counts but changes the blue endpoint fingerprint and is also rejected. Restored output matches exactly. Fresh Phase 5/6/7 gates pass at 2,881, 1,741, and 3,020 coverage assertions. Raw fixture, mutation, restored differential, and gate transcripts are archived under `evidence/raw/phase7-fluid-visualization-003489-20261017/`.
 
-This row remains open. The fixture does not exercise emitter geometry, and the endpoint fingerprint allows a small rounding tolerance. The closure ledger therefore keeps the row as `reconstructed_not_falsified`.
+This row remains open. The endpoint fingerprint allows a small rounding tolerance. The closure ledger therefore keeps the row as `reconstructed_not_falsified`.
+
+## Emitter traversal continuation (2026-10-17)
+
+Extended the registered simulation fixture to create one visual emitter in the licensed fluid manager and set deterministic emitter dimensions (`0.06`, `0.04`) and world pose. With `NX_VISUALIZE_FLUID_EMITTERS` enabled, the integrated `nxSceneVisualizeFluids` path now includes emitter basis, footprint, and spawn circles in its recorded geometry. Oracle and candidate both report `emitters=1 red-lines=39 green-lines=77 blue-lines=255` with matching ordered fingerprints `bca20d6f/997ff147/481e4db8`; the full simulation-test outputs match exactly. Fresh Phase 5/6/7 gates pass at 2,882/2,882, 1,742/1,742, and 3,021/3,021 assertions.
+
+An emitter-helper no-op mutation was rejected earlier by the broad simulation test at row `000780`, before this visualization assertion ran; it is not counted as row-specific mutation evidence. The independent `phys_fn_003607` direct fixture still has its own successful no-op mutation proof. Keep `phys_fn_003489` open until an isolated traversal mutation reaches and fails this integrated marker; its geometry hash also retains the existing low-bit tolerance.

@@ -6929,6 +6929,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned visualizedFluidCount = 0;
 	unsigned visualizedBoundsCount = 0;
 	unsigned particleFixtureCount = 0;
+	NxFluidEmitter* visualEmitter = 0;
 	if(surfaceMeshScene)
 		{
 		unsigned char* const sceneInternal = *reinterpret_cast<unsigned char**>(
@@ -6937,6 +6938,13 @@ int wmain(int argc, wchar_t** argv)
 			? *reinterpret_cast<unsigned char**>(sceneInternal + 0x61c) : 0;
 		if(fluidManager)
 			{
+		NxFluidEmitterDesc visualEmitterDesc;
+		visualEmitterDesc.setToDefault();
+		visualEmitterDesc.relPose.t.set(0.125f, -0.25f, 0.5f);
+		visualEmitterDesc.dimensionX = 0.005f;
+		visualEmitterDesc.dimensionY = 0.005f;
+		visualEmitter = surfaceMeshFluid
+			? surfaceMeshFluid->createEmitter(visualEmitterDesc) : 0;
 		unsigned* const fluids = *reinterpret_cast<unsigned**>(fluidManager + 4);
 		unsigned* const fluidsEnd = *reinterpret_cast<unsigned**>(fluidManager + 8);
 		if(fluids && fluidsEnd && fluidsEnd >= fluids)
@@ -6961,6 +6969,22 @@ int wmain(int argc, wchar_t** argv)
 		NxSimulationSetParticleStreamFn const setParticleStream = fluidModel
 			? reinterpret_cast<NxSimulationSetParticleStreamFn>(GetProcAddress(
 				fluidModel, "NxSetFluidPostStepParticle")) : 0;
+		typedef void (__cdecl *SetEmitterVisualDimensionsFn)(unsigned, float, float);
+		typedef void (__cdecl *SetEmitterGlobalPoseFn)(const float*);
+		SetEmitterVisualDimensionsFn const setEmitterVisualDimensions = fluidModel
+			? reinterpret_cast<SetEmitterVisualDimensionsFn>(GetProcAddress(
+				fluidModel, "NxSetEmitterVisualDimensions")) : 0;
+		SetEmitterGlobalPoseFn const setEmitterGlobalPose = fluidModel
+			? reinterpret_cast<SetEmitterGlobalPoseFn>(GetProcAddress(
+				fluidModel, "NxSetEmitterGlobalPose")) : 0;
+		static const float emitterPose[12] = {
+			1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 1.0f, 2.0f, 3.0f };
+		if(setEmitterVisualDimensions && setEmitterGlobalPose)
+			{
+			setEmitterVisualDimensions(1, 0.06f, 0.04f);
+			setEmitterGlobalPose(emitterPose);
+			}
 		unsigned particleWords[23] = {};
 		const float particlePosition[3] = { 1.25f, -2.5f, 3.75f };
 		const float particleVelocity[3] = { 0.5f, -1.0f, 1.5f };
@@ -6977,16 +7001,22 @@ int wmain(int argc, wchar_t** argv)
 		sdk->setParameter(NX_VISUALIZE_FLUID_VELOCITY, 1.0f);
 		sdk->setParameter(NX_VISUALIZE_FLUID_KERNEL_RADIUS, 1.0f);
 		sdk->setParameter(NX_VISUALIZE_FLUID_BOUNDS, 1.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_EMITTERS, 1.0f);
 		surfaceMeshScene->visualize();
 		NxSimulationFluidVisualizationRenderer renderer;
 		sdk->visualize(renderer);
 		const bool fluidVisualizationMatches = visualizedFluidCount == 2 &&
 			visualizedBoundsCount == 2 && particleFixtureCount == 2 &&
-			renderer.redLines == 34 && renderer.greenLines == 72 &&
-			renderer.blueLines == 6 && renderer.redHash == 0xcdb7b47du &&
-			renderer.greenHash == 0x2999a5a5u && renderer.blueHash == 0x18232b07u;
-		printf("simulation fluid-visualization row=003489 fluids=%u bounds=%u streams=%u red-lines=%u green-lines=%u blue-lines=%u red-hash=%08x green-hash=%08x blue-hash=%08x matched=%u\n",
+			visualEmitter && surfaceMeshFluid->getNbEmitters() == 1 &&
+			setEmitterVisualDimensions && setEmitterGlobalPose &&
+			renderer.redLines == 39 && renderer.greenLines == 77 &&
+			renderer.blueLines == 255 &&
+			renderer.redHash == 0xbca20d6fu &&
+			renderer.greenHash == 0x997ff147u &&
+			renderer.blueHash == 0x481e4db8u;
+		printf("simulation fluid-visualization row=003489 fluids=%u bounds=%u streams=%u emitters=%u red-lines=%u green-lines=%u blue-lines=%u red-hash=%08x green-hash=%08x blue-hash=%08x matched=%u\n",
 			visualizedFluidCount, visualizedBoundsCount, particleFixtureCount,
+			surfaceMeshFluid ? surfaceMeshFluid->getNbEmitters() : 0,
 			renderer.redLines, renderer.greenLines, renderer.blueLines,
 			renderer.redHash, renderer.greenHash, renderer.blueHash,
 			fluidVisualizationMatches ? 1u : 0u);
@@ -6994,7 +7024,10 @@ int wmain(int argc, wchar_t** argv)
 		sdk->setParameter(NX_VISUALIZE_FLUID_KERNEL_RADIUS, 0.0f);
 		sdk->setParameter(NX_VISUALIZE_FLUID_VELOCITY, 0.0f);
 		sdk->setParameter(NX_VISUALIZE_FLUID_POSITION, 0.0f);
+		sdk->setParameter(NX_VISUALIZE_FLUID_EMITTERS, 0.0f);
 		sdk->setParameter(NX_VISUALIZATION_SCALE, 0.0f);
+		if(setEmitterVisualDimensions)
+			setEmitterVisualDimensions(0, 0.0f, 0.0f);
 		}
 	resetFluidManagerCallbacks();
 	NxImplicitMesh* const explicitSurfaceMesh = licensedSurfaceMeshFluid
