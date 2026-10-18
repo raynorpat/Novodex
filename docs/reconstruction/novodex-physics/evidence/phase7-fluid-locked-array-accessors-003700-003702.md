@@ -1,0 +1,9 @@
+# FluidModel lock-bracketed array accessors (`phys_fn_003700`, `phys_fn_003702`)
+
+IDA confirms that both 36-byte rows acquire the lock through `[this+0x10]`, read the array at `[this+0x14]`, release the same lock, and return. `phys_fn_003700` calls the MSVC `std::vector<void*>::size()` operation; `phys_fn_003702` calls `phys_fn_003479`, returning its data pointer only when the unsigned span contains a complete word. The earlier provisional checks compared the underlying arithmetic helpers and did not exercise these two row bodies or their lock brackets.
+
+`NxLockedFluidArrayAccessor::elementCount()` and `intervalData()` now implement the two thiscall methods in `Physics/src/ObjectModel.cpp`, using the existing `nxSceneGuardEnter`/`Leave` behavior. The direct oracle/source fixture compares results, checks x86 stack balance, and confirms the interlocked owner flag, owner thread, and critical-section recursion count return to the expected state. Restored output is exact: row 003700 has three cases (`stack=3/3`, `lock=3/3`); row 003702 has five cases (`stack=5/5`, `lock=5/5`).
+
+Independent candidate-source mutations are rejected. Returning `count+1` in row 003700 produces three mismatches. Returning zero in row 003702 produces two mismatches, covering the four- and eight-byte spans. The restored focused transcript and both mutation transcripts are compressed with SHA-256 entries in `evidence/raw/phase7-fluid-locked-array-accessors-003700-003702-20261018/manifest.json`.
+
+The rows are registered through the Phase 5/6/7 `NxPhysicsObjectLayoutTests` oracle differential. Fresh Win32 Release gates pass at Phase 5 2,944/2,944, Phase 6 1,795/1,795, and Phase 7 3,080/3,080 assertions. Each gate transcript is compressed and SHA-256 pinned in the adjacent raw archive; all three report zero accessor mismatches.

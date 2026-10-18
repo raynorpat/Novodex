@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "evidence": "phase7-fluid-locked-array-accessors-003700-003702.md",
+  "mutation_tests": {
+    "phys_fn_003700": "mismatches=3",
+    "phys_fn_003702": "mismatches=2"
+  },
+  "files": {
+    "mutant-003700.log.gz": {
+      "sha256": "ef9b6023c57dce584c2cbb66240193c4f61f7a13ed68e8d42edd198606b8fc68",
+      "uncompressed_sha256": "3e34d42b0e8a038f55fdf78aeb6e4dc93c532c50a2e265347c753d204ff12e9d",
+      "bytes": 476,
+      "source": "build/locked-accessor-row3700-mutation.log"
+    },
+    "mutant-003702.log.gz": {
+      "sha256": "c9b94efac08016557767e0111f752587b41322279cf88608f4c84b6ef025a9ab",
+      "uncompressed_sha256": "6f67ebfd6158fcb2e096a2fa4108d6f8540430c66d047c513f6338e4494aafbf",
+      "bytes": 476,
+      "source": "build/locked-accessor-row3702-mutation.log"
+    },
+    "restored.log.gz": {
+      "sha256": "425fe54d87c79a22147abcd57165410ac1485f17a5889b6f833364ada0cb10bc",
+      "uncompressed_sha256": "ef95c41d0bbeb95cd2de8c3a8e312e2b6ab1872911957c50390719e09566ecc8",
+      "bytes": 23630,
+      "source": "build/locked-accessor-restored.log"
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "a4c813aeffc71b75666fb2ce54f4edf3ab1fe8d4255b1a2726519baefe8730ab",
+      "uncompressed_sha256": "cc814bfe28e632d86043ca978cbbea58d1c6d1c782b2a888da86122ff68e2313",
+      "bytes": 216375,
+      "source": "fresh phase 5 gate transcript; coverage_assertions_evaluated=2944"
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "3913e05e3c54104a1a27a7b2f0695323386bf3964986da9071cde72917846e7e",
+      "uncompressed_sha256": "4c17e3568c8049603572707592015d0fae62198f67b7ff1f8ee39b9d0eaa4b27",
+      "bytes": 259267,
+      "source": "fresh phase 6 gate transcript; coverage_assertions_evaluated=1795"
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "62dc48a7222c81c18ca8a8b762e15354aefe66d023467aca364d21fc9ad0879c",
+      "uncompressed_sha256": "56267d57721aca5323c8ac5489c12aabd24a616bd6f6601d0ba8cac85757a935",
+      "bytes": 382616,
+      "source": "fresh phase 7 gate transcript; coverage_assertions_evaluated=3080"
+    }
+  },
+  "candidate_sha256": "0cd56415f478e8b6936922643c386db36c13e8949291836b1c7a21560034f3cb",
+  "git_head": "ead12b6f32e5ae6c1835f87602d5f1e455a56f73"
+}

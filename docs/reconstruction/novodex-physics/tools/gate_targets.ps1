@@ -5696,6 +5696,8 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsObjectLayoutTests' = @(
 		'mutexwork candidate failures=0 provisional=1',
 		'elemcount row=phys_fn_003477 cases=3 mismatches=0',
+		'locked-accessor row=003700 cases=3 mismatches=0 stack=3/3 lock=3/3',
+		'locked-accessor row=003702 cases=5 mismatches=0 stack=5/5 lock=5/5',
 		'andget row=phys_fn_003595 cases=3 mismatches=0',
 		'global-call-result row=003597 cases=6 stack=6/6 mismatches=0',
 		'global-call-result row=003599 cases=6 stack=6/6 mismatches=0',
@@ -6394,7 +6396,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2942  # includes current locked-array, ElementCount, and fluid-unavailable markers
+	'5' = 2944  # includes current locked-array, ElementCount, fluid, and locked-accessor markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6485,7 +6487,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1793  # includes current locked-array and fluid-unavailable markers
+	'6' = 1795  # includes current locked-array, fluid, and locked-accessor markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6538,7 +6540,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3078  # includes current locked-array, ElementCount, and fluid-unavailable markers
+	'7' = 3080  # includes current locked-array, ElementCount, fluid, and locked-accessor markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker

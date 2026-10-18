@@ -1981,6 +1981,30 @@ unsigned nxLockedIntervalFlag(void* self, unsigned fieldOff)
 	return ((hi - lo) & 0xfffffffcu) ? lo : 0u;
 	}
 
+// phys_fn_003700 (0x8b1f0): lock, return the MSVC vector<void*>::size()
+// at [this+0x14], then release the lock.
+int NxLockedFluidArrayAccessor::elementCount()
+	{
+	unsigned char* const self = reinterpret_cast<unsigned char*>(this);
+	void* const lock = *reinterpret_cast<void**>(self + 0x10);
+	nxSceneGuardEnter(lock);
+	const int count = nxLockedElementCount(self, 0x14);
+	nxSceneGuardLeave(lock);
+	return count;
+	}
+
+// phys_fn_003702 (0x8b220): lock, apply helper 003479 to [this+0x14],
+// release the lock, and return its pointer-sized result.
+unsigned NxLockedFluidArrayAccessor::intervalData()
+	{
+	unsigned char* const self = reinterpret_cast<unsigned char*>(this);
+	void* const lock = *reinterpret_cast<void**>(self + 0x10);
+	nxSceneGuardEnter(lock);
+	const unsigned data = nxLockedIntervalFlag(self, 0x14);
+	nxSceneGuardLeave(lock);
+	return data;
+	}
+
 // The address-returning member.
 void* nxLockedFieldAddress(void* self, unsigned fieldOff, unsigned dataOff)
 	{

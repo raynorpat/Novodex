@@ -130,9 +130,9 @@
       "gate_artifact": null,
       "owned_functions": 560,
       "owned_data_objects": 502,
-      "closed_functions": 497,
+      "closed_functions": 499,
       "closed_data_objects": 0,
-      "remaining_functions": 63,
+      "remaining_functions": 61,
       "remaining_data_objects": 502
     },
     {

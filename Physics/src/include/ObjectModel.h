@@ -1736,6 +1736,16 @@ unsigned				nxLockedAndRead(void* self, unsigned fieldOff,
 unsigned				nxLockedBitExtract(void* self, unsigned fieldOff,
 							unsigned dataOff);
 
+//! Rows 003700 and 003702 are the lock-bracketed FluidModel array accessors.
+//! Their methods accept the recovered object address and use its lock link at
+//! +0x10 and vector/array pointer at +0x14.
+class NxLockedFluidArrayAccessor
+	{
+	public:
+	__declspec(noinline) int elementCount();
+	__declspec(noinline) unsigned intervalData();
+	};
+
 //! The element-count member: helper 003477 returns
 //! ([field+8] - [field+4]) >> 2, the signed element count of a buffer.
 int						nxLockedElementCount(void* self, unsigned fieldOff);

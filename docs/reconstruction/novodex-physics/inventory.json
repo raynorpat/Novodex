@@ -70413,13 +70413,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked element-count accessor (0x8b1f0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1402",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12743",
-      "static_proof": "locks [self+0x10], calls the element-count helper 003477 on [self+0x14] which returns ([field+8]-[field+4])>>2, unlocks and returns it",
-      "dynamic_proof": "confirmed via lockacc4 differential (3z144): three spans failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "static_proof": "IDA confirms the row acquires the CRITICAL_SECTION through [this+0x10], reads the array object at [this+0x14], releases the same lock, and returns. 003700 calls std::vector<void*>::size; 003702 calls phys_fn_003479 to return the data pointer only when at least one full word remains.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x0008b1f0 and candidate NxLockedFluidArrayAccessor::elementCount; it checks results, x86 stack balance, lock-owner flag, owner thread, and recursion count. Restored three cases match; the row-specific mutation is rejected with mismatches=3.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "NxLockedFluidArrayAccessor::elementCount",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?elementCount@NxLockedFluidArrayAccessor@@QAEHXZ",
+        "address": "0x10046970",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003701",
@@ -70449,13 +70457,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked interval-flag accessor (0x8b220)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1403",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12744",
-      "static_proof": "locks [self+0x10], calls helper 003479 on [self+0x14] which returns [field+0x14] when ([field+0x18]-[field+0x14]) has any bit above the low two and zero otherwise, unlocks and returns it",
-      "dynamic_proof": "confirmed via lockacc4 differential (3z144): four span classes failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "static_proof": "IDA confirms the row acquires the CRITICAL_SECTION through [this+0x10], reads the array object at [this+0x14], releases the same lock, and returns. 003700 calls std::vector<void*>::size; 003702 calls phys_fn_003479 to return the data pointer only when at least one full word remains.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x0008b220 and candidate NxLockedFluidArrayAccessor::intervalData; it checks results, x86 stack balance, lock-owner flag, owner thread, and recursion count. Restored five cases match; the row-specific mutation is rejected with mismatches=2.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "NxLockedFluidArrayAccessor::intervalData",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?intervalData@NxLockedFluidArrayAccessor@@QAEIXZ",
+        "address": "0x10046a10",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003703",
