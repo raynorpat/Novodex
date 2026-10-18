@@ -1,0 +1,46 @@
+{
+  "row": "phys_fn_002398",
+  "date": "2026-10-18",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "511ff02042e13c78e771fc5ca1dfbe69a9a72662da8cd30e492192c5d02f5b76",
+  "mutation": "store value ^ 1u at this+0x10",
+  "mutation_detected": "row marker reports 3 mismatches; runner exit=1",
+  "restored": "row marker reports 0 mismatches; runner exit=0",
+  "phase_coverage": {
+    "5": "2891/2891",
+    "6": "1748/1748",
+    "7": "3030/3030"
+  },
+  "files": [
+    {
+      "path": "mutation-differential.log.gz",
+      "sha256": "5639ce5e51baf61a357001e20e2befdd0616b40617315325a2c635be639b514c",
+      "uncompressed_sha256": "d04c580410ebfd4376a696f6cbfbb3fb744e99af775e347324e0034f021a591d",
+      "bytes": 6133
+    },
+    {
+      "path": "restored-differential.log.gz",
+      "sha256": "5068d5aaa4d5dcd295962dc2f5fa4d4247a8363f8f3b058811b7fdfae6410c89",
+      "uncompressed_sha256": "23a5cef08dcbde1ea5a6ef514059744f7142cb5f37d39142437fb966355796c6",
+      "bytes": 6007
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "sha256": "f46decee4093f900a2d89e0a42ee8c2b2d9b96b52117bcc268ec3072f985bec2",
+      "uncompressed_sha256": "f602e628d2cd0acc9c79d4665bc97549605abc5d36bdbf2aa9be7495b0d89828",
+      "bytes": 214294
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "sha256": "f1920b4167aa8cf76882d0f1e53a5910158c9d001dc69e73673c18115e192a7f",
+      "uncompressed_sha256": "ddc17b9b4ca3f390ad8e222c03e7b90928a4e9ca99f27cad71390c30b2a8f19d",
+      "bytes": 257210
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "sha256": "bccf73dd9051c5eca62685a76119a88c91c2acb19a188f366a193dd72093f6ec",
+      "uncompressed_sha256": "78814e344f9832ad8e6a53db8ec5169da37c8898c574755ebe60aa93b45662aa",
+      "bytes": 380844
+    }
+  ]
+}

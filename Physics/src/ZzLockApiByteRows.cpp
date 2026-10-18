@@ -24,6 +24,13 @@ unsigned char nxLockApiGetByte2387(void* self)
 	return inner[8];
 	}
 
+// phys_fn_002398 (0x5b9d0, ret 4): store the stack argument at +0x10 and return it.
+unsigned NxLockApiWordStore2398::store(unsigned value)
+	{
+	memcpy(reinterpret_cast<unsigned char*>(this) + 0x10, &value, sizeof(value));
+	return value;
+	}
+
 // phys_fn_002389 (0x5b8f0): store state 2 at [[this+4]+4], then end
 // the worker thread with exit code zero.
 void __fastcall nxLockApiThreadExit2389(void* self)

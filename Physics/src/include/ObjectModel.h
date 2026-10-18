@@ -1260,6 +1260,14 @@ void					nxLockApiSetByte2383(void* self);
 //! phys_fn_002387 (0x5b8e0): returns byte 8 through the pointer in [self+4].
 unsigned char			nxLockApiGetByte2387(void* self);
 
+//! phys_fn_002398 (0x5b9d0, ret 4): stores the stack argument at [this+0x10]
+//! and returns the stored value.
+class NxLockApiWordStore2398
+	{
+	public:
+	unsigned store(unsigned value);
+	};
+
 //! phys_fn_002389 (0x5b8f0): stores state 2 through [self+4] at +4, then
 //! terminates the current thread with ExitThread(0).
 void __fastcall nxLockApiThreadExit2389(void* self);

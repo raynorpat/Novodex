@@ -45021,12 +45021,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "setter: this+0x10 = [esp+4] (0x5b9d0, ret 4)",
+      "state": "dynamically_gated",
+      "source": "lock-API word setter (NxLockApiWordStore2398::store, Physics/src/ZzLockApiByteRows.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/899",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7436",
-      "static_proof": "mov eax,[esp+4]; mov [ecx+0x10],eax; ret 4",
-      "dynamic_proof": "confirmed via ptrgetters drive (3z45): failures=0",
+      "static_proof": "IDA shows mov eax,[esp+4]; mov [ecx+0x10],eax; ret 4. Candidate map emits thiscall member symbol ?store@NxLockApiWordStore2398@@QAEII@Z.",
+      "dynamic_proof": "Registered NxPhysicsObjectLayoutTests oracle/source differential compares return and the full 0x20-byte record for 0, 0x12345678, and 0xffffffff. The value^1 store mutation is rejected at all three values (mismatches=3); restored output reports zero mismatches. Evidence: evidence/phase7-lock-api-store-word-002398.md and evidence/raw/phase7-lock-api-store-word-002398-20261018/.",
       "notes": ""
     },
     {
