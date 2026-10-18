@@ -65,14 +65,14 @@ bool FUN_1008d820(void)
 
 ## phys_fn_003902 (0x0008d850, 32 B, reconstructed)
 
-- ambiguous: yes
-- source: cached flag consumer (0x8d850)
-- implementation: None
-- prototype: bool __stdcall FUN_1008d850(void)
-- calling convention: __stdcall, stack purge: 0
-- callers: phys_fn_003641 (0x00089e00)
-- callees: none
-- indirect calls: 0x0008d856  call dword ptr [0x1010403c]
+- ambiguous: no
+- source: FluidModel cached module unload (`Physics/src/Scene.cpp::nxFluidModelUnloadLibrary`)
+- implementation: `FreeLibrary(gNxFluidModelModule)`, then clear the cached module handle and return the BOOL result
+- prototype: `bool __cdecl nxFluidModelUnloadLibrary(void)`
+- calling convention: `__cdecl`, stack purge: 0
+- callers: FluidManager teardown after `nxFluidModelClearResolvedExports`
+- callees: imported `FreeLibrary`
+- indirect calls: none
 - strings: none
 
 Decompile (ghidra manifest):

@@ -1429,9 +1429,6 @@ unsigned char			nxReportRow2160(unsigned a, unsigned b, unsigned c);
 typedef void (__thiscall* NxObservableDestructorFn)(void*);
 void					nxDtorTrampoline3936(void* self, NxObservableDestructorFn fn);
 
-//! phys_fn_003902 (0x8d850): reads the cached word [0x10126654], calls the
-//! global [0x1010403c] with it, CLEARS the cache, and returns whether the call
-//! returned non-zero. The cache is mirrored through the two helpers.
 //! The FOUR-argument global-call thunk rows (003577, 003581, 003585, 003589).
 //! Each takes the object from [self+4], reads [[obj+0x7c]+0x30], [obj+0x80]
 //! and [self+8], and pushes them plus the ROW ARGUMENT -- four arguments,
@@ -1553,9 +1550,6 @@ void					nxSlotCall1544(void* self, unsigned objOff, void* obj,
 void					nxGlobalVirtualCall3413(unsigned arg,
 							void (__stdcall* fn)(unsigned));
 
-void					nxSetCache3902(unsigned value);
-unsigned				nxGetCache3902();
-unsigned char			nxConsumeFlag3902(unsigned (__stdcall* fn)(unsigned));
 
 unsigned char			nxLockApiTest2385(void* self,
 							unsigned (__stdcall* fn)(unsigned, unsigned));

@@ -3343,26 +3343,6 @@ void nxDtorTrampoline3936(void* self, NxObservableDestructorFn fn)
 	fn(self);
 	}
 
-// phys_fn_003902 (0x8d850): the cached flag consumer.
-static unsigned gNxCache3902 = 0u;
-
-void nxSetCache3902(unsigned value)
-	{
-	gNxCache3902 = value;
-	}
-
-unsigned nxGetCache3902()
-	{
-	return gNxCache3902;
-	}
-
-unsigned char nxConsumeFlag3902(unsigned (__stdcall* fn)(unsigned))
-	{
-	const unsigned r = fn(gNxCache3902);
-	gNxCache3902 = 0u;
-	return r != 0u ? 1u : 0u;
-	}
-
 // The four-argument global-call thunk rows.
 void nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff, NxGlobalFn4 fn,
 	unsigned extraArg)
