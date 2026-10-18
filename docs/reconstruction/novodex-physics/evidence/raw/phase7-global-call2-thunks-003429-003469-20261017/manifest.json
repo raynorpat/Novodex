@@ -1,0 +1,58 @@
+{
+  "slice": [
+    "phys_fn_003429",
+    "phys_fn_003433",
+    "phys_fn_003437",
+    "phys_fn_003441",
+    "phys_fn_003445",
+    "phys_fn_003457",
+    "phys_fn_003459",
+    "phys_fn_003463",
+    "phys_fn_003465",
+    "phys_fn_003469",
+    "phys_fn_003679"
+  ],
+  "candidate_source": "Physics/src/ObjectModel.cpp",
+  "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_map_symbol": "?nxGlobalCall2@@YAXPAXP6AXII@ZH@Z",
+  "candidate_map_address": "0x1004a1c0",
+  "phase5_coverage": "2887/2887",
+  "phase7_coverage": "3026/3026",
+  "tool_suite": "817 passed",
+  "files": {
+    "argument-mutation-build.log.gz": {
+      "sha256": "3fac7147085c8a442c5b4506fb9750c2d16d8909bac9e94600e9fa12336d7f8f",
+      "bytes": 842
+    },
+    "argument-mutation.exit": {
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    "argument-mutation.log.gz": {
+      "sha256": "4be262cd7ae23fa9c67cae0eb8e1a77aae6e326231657df9e95c52859328ef62",
+      "bytes": 6183
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "5fa3b17e002f4b4f515bff3c538d5ee300a9fe858154046f104fcbec77bed44c",
+      "bytes": 214761
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "f33d4221bcee937e763d6c67e233062cabc5dcd4d93319fdcc661bf0fa0fb2a2",
+      "bytes": 257132
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "86881f856df16665baf1967086034f8ecf349f40a42072daac4a73c2e2469d72",
+      "bytes": 379889
+    },
+    "restored-build.log.gz": {
+      "sha256": "0335e3d0869a15ab564740b211f0edc051ab1cb5c6fbcae03f8d37f0941c652c",
+      "bytes": 1087
+    },
+    "restored-differential.log.gz": {
+      "sha256": "381dd55825cdd4d20e1d45cb2232373209a9408e0ea242fe844fbfa8432e05ad",
+      "bytes": 5984
+    }
+  },
+  "phase6_coverage": "1744/1744"
+}

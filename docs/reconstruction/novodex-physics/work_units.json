@@ -2862,14 +2862,14 @@
    ],
    "rows": {
     "discovered": 76,
-    "dynamically_gated": 39,
-    "reconstructed": 450,
+    "dynamically_gated": 49,
+    "reconstructed": 440,
     "statically_reviewed": 3
    },
    "bytes": {
     "discovered": 24944,
-    "dynamically_gated": 5581,
-    "reconstructed": 139467,
+    "dynamically_gated": 5821,
+    "reconstructed": 139227,
     "statically_reviewed": 157
    },
    "phases": {
@@ -3099,13 +3099,13 @@
    ],
    "rows": {
     "discovered": 2,
-    "dynamically_gated": 5,
-    "reconstructed": 9
+    "dynamically_gated": 6,
+    "reconstructed": 8
    },
    "bytes": {
     "discovered": 189,
-    "dynamically_gated": 242,
-    "reconstructed": 278
+    "dynamically_gated": 269,
+    "reconstructed": 251
    },
    "phases": {
     "7": 16

@@ -64848,13 +64848,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84d50)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1272",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12238",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84d50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003430",
@@ -64920,13 +64928,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84d90)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1274",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12240",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84d90); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003434",
@@ -64992,13 +65008,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84dd0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1276",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12242",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84dd0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003438",
@@ -65064,13 +65088,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84e10)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1278",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12244",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84e10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003442",
@@ -65136,13 +65168,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84e50)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1280",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12246",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84e50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003446",
@@ -65368,13 +65408,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84f10)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1286",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12253",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003458",
@@ -65404,13 +65452,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84f30)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1287",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12254",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f30); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003460",
@@ -65476,13 +65532,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84f70)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1289",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12256",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f70); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003464",
@@ -65512,13 +65576,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84f90)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1290",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12257",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f90); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003466",
@@ -65584,13 +65656,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk (0x84fd0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1292",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12259",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84fd0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003470",
@@ -69557,13 +69637,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "two-argument global-call thunk via [self+4] (0x8ae50)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1392",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12717",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk via [self+4] (0x8ae50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly invokes each of the 11 pinned thunk RVAs, binding each oracle global function-pointer slot to the recorder and comparing all callback arguments with candidate nxGlobalCall2. The fixture checks the complete family, including the field+4 indirection case. Changing the candidate second-argument read from +0x80 to +0x84 yields mismatches=11 and candidate exit 1; restoring it yields failures=0. See evidence/phase7-global-call2-thunks-003429-003469.md.",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCall2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCall2",
+        "address": "0x1004a1c0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003680",

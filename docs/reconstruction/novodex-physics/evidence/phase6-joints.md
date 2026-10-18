@@ -11304,3 +11304,10 @@ Fresh Phase 5 and Phase 7 gates pass at 2,886/2,886 and 3,025/3,025 registered c
 
 Rows `phys_fn_003471` and `phys_fn_003473` now close through `NxPhysicsSimulationTests`. The position-cross mutation is detected with `stdout_delta=2`; the velocity-arrow mutation is detected with `stdout_delta=85`. The restored control matches its line counts and geometry fingerprints. See `evidence/phase7-fluid-particle-visualization-003471-003473.md` and `evidence/raw/phase7-fluid-particle-visualization-003471-003473-20261017/`.
 Fresh Phase 5 and Phase 7 gates pass at 2,886/2,886 and 3,025/3,025 registered coverage assertions.
+
+
+## Phase 7 global-call thunk family (2026-10-17)
+
+Rows `phys_fn_003429`, `phys_fn_003433`, `phys_fn_003437`, `phys_fn_003441`, `phys_fn_003445`, `phys_fn_003457`, `phys_fn_003459`, `phys_fn_003463`, `phys_fn_003465`, `phys_fn_003469` and `phys_fn_003679` are now mutation-falsified through `NxPhysicsObjectLayoutTests`. Changing the candidate second-argument read from `+0x80` to `+0x84` yields `mismatches=11`; the restored run reports zero failures. See `evidence/phase7-global-call2-thunks-003429-003469.md` and `evidence/raw/phase7-global-call2-thunks-003429-003469-20261017/`.
+Fresh Phase 5 and Phase 7 gates pass at 2,887/2,887 and 3,026/3,026 registered coverage assertions.
+Fresh Phase 5, Phase 6 and Phase 7 gates pass at 2,887/2,887, 1,744/1,744 and 3,026/3,026 registered coverage assertions.

@@ -5650,6 +5650,7 @@ $NxRequiredCoverageLines = [ordered] @{
     #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
     'NxPhysicsObjectLayoutTests' = @(
 		'mutexwork candidate failures=0 provisional=1',
+		'global-call2 rows=003429.003433.003437.003441.003445.003457.003459.003463.003465.003469.003679 cases=11 failures=0',
         'tailabi row=004387 cleanup=8 oracle=1 candidate=1 args=match',
         'tailabi row=003509 cleanup=0 oracle=1 candidate=1 arg=match return=3509 mismatches=0',
         'tailabi row=003936 cleanup=0 oracle=1 candidate=1 this=match',
@@ -6329,7 +6330,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2886  # includes licensed fluid visualization, deleting-destructor, particle-copy, and flag-word checks
+	'5' = 2887  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, and global-call checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
@@ -6418,7 +6419,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1743  # includes licensed fluid visualization and deleting-destructor checks
+	'6' = 1744  # includes licensed fluid visualization, deleting-destructor, and global-call checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
@@ -6469,7 +6470,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3025  # includes licensed fluid visualization, deleting-destructor, particle-copy, and flag-word checks
+	'7' = 3026  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, and global-call checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
