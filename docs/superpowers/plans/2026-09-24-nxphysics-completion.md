@@ -1556,4 +1556,11 @@ Status: complete (2026-10-18). All ten methods now report the exact oracle warni
 
 Status: complete (2026-10-18). IDA confirms both rows acquire the lock through `this+0x10`, read the array at `this+0x14`, release the lock, and return: 003700 returns `std::vector<void*>::size()`, while 003702 returns the data pointer only when its span has a complete word. Both thiscall methods now match the pinned oracle across eight total direct cases, with x86 stack balance and lock-state checks. Independent count and pointer mutations are rejected (three and two mismatches). Phase 7 advances to 499 closed / 61 deferred; generated backlog and work units are refreshed. Fresh Phase 5/6/7 gates pass at 2,944/2,944, 1,795/1,795, and 3,080/3,080 assertions. All three compressed gate transcripts and focused mutation logs are SHA-256 pinned in `docs/reconstruction/novodex-physics/evidence/raw/phase7-fluid-locked-array-accessors-003700-003702-20261018/`. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-locked-array-accessors-003700-003702.md`. Public headers remain unchanged; full-DLL reconstruction remains open.
 
-Status: implementation and focused mutation tests complete; full phase gates and retained evidence are pending. The previous provisional test compared only the underlying helpers and did not exercise either row's lock bracket.
+
+
+
+### Task 28 — two-argument fluid-context callback thunk (`phys_fn_003669`)
+
+IDA confirms the row at RVA `0x0008ad80` loads the fluid from `[this+4]`, the callback context from `[[fluid+0x7c]+0x30]`, the second argument from `[fluid+0x80]`, invokes its global callback, and returns the integer result. Reconstruct the private helper and add a row-specific oracle/candidate fixture checking arguments, result, and x86 stack balance. Mutation-test the handle offset, update the Phase 7 closure and oracle-source baseline, then pass Phase 5/6/7 and tooling gates.
+
+Status: complete (2026-10-18). The restored direct differential reports `cases=1 stack=1/1 mismatches=0`; changing the candidate read to `fluid+0x84` is rejected (`mismatches=1`). Phase 7 advances to 512 closed / 48 deferred. Fresh Phase 5/6/7 gates pass at 2,957/2,957, 1,808/1,808, and 3,093/3,093; all 823 reconstruction-tool tests pass. The raw bundle pins the focused, mutation, and three gate transcripts. Public headers are unchanged, and full-DLL reconstruction remains open. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-global-call2-003669.md`.

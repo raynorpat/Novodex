@@ -1,4 +1,4 @@
-# The one registry of differential test targets per reconstruction phase.
+﻿# The one registry of differential test targets per reconstruction phase.
 # run_phase_gate.ps1 and run_differential.ps1 both dot-source this file and
 # neither keeps a second list, so target registration is centralized here.
 # The phase plans address it through `run_differential.ps1 -Phase N`.
@@ -5715,6 +5715,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'global-call2 row=003467 cases=1 stack=1/1 mismatches=0',
 		'global-call2 row=003665 cases=1 stack=1/1 mismatches=0',
 		'global-call3 row=003667 cases=1 stack=1/1 mismatches=0',
+		'global-call2 row=003669 cases=1 stack=1/1 mismatches=0',
 		'global-call3 row=003431 cases=1 failures=0',
 		'global-call3 row=003435 cases=1 failures=0',
 		'global-call3 row=003439 cases=1 failures=0',
@@ -5871,7 +5872,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=7 reciprocal003461=6 copy6003483=1',
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=7 globalcall2=1 reciprocal003461=6 copy6003483=1',
         'applydesc row=phys_fn_001347 result=1 digest=11e5e856 flags=1234 group=5 material=5678',
         'layout oracle digest=3acf0dc7',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
@@ -6408,7 +6409,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2956  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call3 markers
+	'5' = 2957  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6499,7 +6500,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1807  # includes current locked-array, fluid, locked-accessor, and global-call3 markers
+	'6' = 1808  # includes current locked-array, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6552,7 +6553,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3092  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call3 markers
+	'7' = 3093  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker

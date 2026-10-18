@@ -1257,6 +1257,8 @@ unsigned					nxGlobalCallSelf7c803467(void* self,
 							unsigned (__cdecl* fn)(unsigned, unsigned));
 unsigned					nxGlobalCallVia4Result003665(void* self,
 							unsigned (__cdecl* fn)(unsigned, unsigned));
+unsigned					nxGlobalCallVia4Result003669(void* self,
+							unsigned (__cdecl* fn)(unsigned, unsigned));
 unsigned					nxGlobalCallVia4Result3Arg003667(void* self,
 							unsigned extraArg,
 							unsigned (__cdecl* fn)(unsigned, unsigned, unsigned));

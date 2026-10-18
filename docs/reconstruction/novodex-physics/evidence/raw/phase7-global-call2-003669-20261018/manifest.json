@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003669",
+  "rva": "0x0008ad80",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "7eb2bc1deb7fe9e8e85d0b52ca4d315f84364754310173ae5821b43bb3a88f9f",
+  "candidate_map_symbol": "?nxGlobalCallVia4Result003669@@YAIPAXP6AIII@Z@Z",
+  "candidate_map_address": "0x1004adf0",
+  "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result003669.",
+  "mutation_result": "NxPhysicsObjectLayoutTests reports mismatches=1; candidate exit=1.",
+  "restored_result": "global-call2 row=003669 cases=1 stack=1/1 mismatches=0; Phase 5/6/7 gates pass at 2957/2957, 1808/1808, and 3093/3093.",
+  "raw_logs": [
+    {
+      "path": "focused.log.gz",
+      "sha256": "809a29bf74653524652ef69cc574365329c0beff0b7671d0ac2a75e8142f82fc",
+      "uncompressed_sha256": "054adc2d9592304df85da6e5f820d15b8f2327fbc5c2455bd96390109c6fb7b3"
+    },
+    {
+      "path": "mutation.log.gz",
+      "sha256": "263fdf54101c58b3a017195501e270cafc488e78cdb457dd00eaf1c9d6b08310",
+      "uncompressed_sha256": "c9d50ba702945bb66873b51b2066f3ad420a46eb29b68fc81a9acd5becbdc4ff"
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "sha256": "3838eb14b89cf5b712a69b2da828be5ef412ee7557e1a713fd1d4dd2e3f7de68",
+      "uncompressed_sha256": "1ce911fdc91775a12c615ccfd48fd78b17a7f0e54da1d3a0c9f0a20f70446ecf"
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "sha256": "54d3bd247a25344c557e68679cf3d8e6cda9bc4808c0acaef7fd49b589c23bf4",
+      "uncompressed_sha256": "2740afce5bedbcb54742c098ba0d82277cacf9a9ab675743c6559920c55aeee9"
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "sha256": "2962285db9b33a26ed3b6f8fe530c2a1f4e51a5c6710ae2838e6fc34ce82ebdf",
+      "uncompressed_sha256": "b8d91c400cac8efdf7534b1477bb96fcb2947f5ec7fa03d6c9ae96ad4c1e95b4"
+    }
+  ]
+}

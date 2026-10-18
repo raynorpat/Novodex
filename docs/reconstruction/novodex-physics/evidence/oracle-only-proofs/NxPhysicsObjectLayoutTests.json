@@ -3,7 +3,7 @@
   "target": "NxPhysicsObjectLayoutTests",
   "format": "layout_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "78c9647ebf10c2bc4369cdf4bb2ec4d54cccd550001ec37052b2f0b382c54bb9",
+  "fixture_source_sha256": "54479f60609ffde564f1b9b932cbd194f2acc4ce470e95e4b48f7e7c0197f72f",
   "fixture_sources": [
     "tests/PhysicsObjectLayoutTests.cpp",
     "tests/PhysicsElementCountRowFixture.inl",
@@ -11,9 +11,9 @@
     "tests/PhysicsGlobalCallResultRowsFixture.inl",
     "tests/PhysicsLockedArrayDataRowFixture.inl"
   ],
-  "proof_lines_sha256": "02430f846b8e6ea513aa9f4399fe7c5d2b6adc68540c2310f7c5b812d377f80d",
-  "baseline_sha256": "c4173450275e2d442b7942678d328e2f6c2311de45ebe8efb6bc329abf2f5c50",
+  "proof_lines_sha256": "9b1954cede510785c91f8895004ecc420459b7682b26029bbee162ce7bde5c4c",
+  "baseline_sha256": "0d69cec72ff317c2ded77c742d48b0ab4f8042cdd16c6b25be7b75ff53067f76",
   "oracle_digest_fnv32": "3acf0dc7",
-  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=7 reciprocal003461=6 copy6003483=1",
-  "proof_sha256": "787ae8c8e15efd423c623fea81e5e8b59b74dde53992dc7e0ad365178153146f"
+  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=7 globalcall2=1 reciprocal003461=6 copy6003483=1",
+  "proof_sha256": "45e55a57b632882280ac079df308d6a23cd4f90a77b642405d4b4c8bbd6c0001"
 }
