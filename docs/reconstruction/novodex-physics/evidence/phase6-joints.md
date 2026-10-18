@@ -11278,3 +11278,5 @@ Phase 7 closure evidence: phys_fn_003481 surface-mesh construction is mutation-f
 
 The scalar deleting destructor now follows the pinned helper, pointer-binding, emitter, backend, particle-array, and allocator cleanup order. The registered licensed release fixture rejects the pre-fix PD teardown order against oracle DP (stdout_delta=64, candidate exit 1); restored flag-0 and flag-1 paths match. See [the row evidence](phase7-fluid-deleting-destructor-003491.md).
 Mutation evidence for phys_fn_003491: the pre-fix PD teardown order is rejected by the registered fixture (stdout_delta=64, candidate exit 1); restored DP output matches.
+
+Phase 7 contact-stream constructor `phys_fn_002356`: the direct oracle/candidate probe verifies return identity, reset bytes, embedded container capacity/count/seed/growth, and the untouched tail. Omitting `NxContactSinkResetState` in an archived candidate is rejected (`stdout_delta=4108`, candidate exit 1); restored output matches exactly. See `phase7-contact-stream-constructor-002356.md` and `evidence/raw/phase7-contact-stream-constructor-002356-20261017/`.

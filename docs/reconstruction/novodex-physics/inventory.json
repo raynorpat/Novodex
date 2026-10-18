@@ -44261,13 +44261,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/include/ContactStreamLifecycle.inl",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/878",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7406",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/Capstone body at RVA 0x0005b680 constructs the embedded SdkContainer at +0x28, resets its inline storage, and returns the stream object.",
+      "dynamic_proof": "NxPhysicsSimulationTests directly calls oracle RVA 0x0005b680 and the candidate constructor; an archived mutation omitting NxContactSinkResetState is rejected (stdout_delta=4108), and restored output matches exactly.",
+      "notes": "Constructed by NxActorPair::row000893 before the contact stream is used.",
+      "implementation": "Physics/src/include/ContactStreamLifecycle.inl",
+      "implementation_symbol": "nxContactStreamConstruct002356"
     },
     {
       "id": "phys_fn_002357",
