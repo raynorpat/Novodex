@@ -20552,13 +20552,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/426",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3175",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x00023430 identifies the shape read-locked wrapper for the 3x3 global-orientation getter: it uses the internal shape at handle+0x18 and returns the output pointer after conversion through the live actor quaternion.",
+      "dynamic_proof": "NxPhysicsActorDynamicSetterTests compares the public global-orientation output for a box with rotated actor and local poses. Replacing nxShapeHandleGetGlobalOrientation with a zero-fill mutation is rejected (oracle_exit=0, candidate_exit=0, stdout_delta=4); the restored staged-pair differential is exact (stdout_delta=0).",
+      "notes": "See evidence/phase3-shape-global-orientation-001065.md and evidence/raw/phase3-shape-global-orientation-001065-20261018/.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxShapeHandleGetGlobalOrientation",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShapeHandleGetGlobalOrientation@@YIXPAX0AAVNxMat33@@@Z",
+        "address": "0x10039e40",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001066",

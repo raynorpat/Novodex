@@ -1,0 +1,13 @@
+{
+  "target": "NxPhysicsActorDynamicSetterTests",
+  "mutation": "nxShapeHandleGetGlobalOrientation zero-fills NxMat33 instead of copying the internal 3x3 matrix",
+  "mutation_result": "oracle_exit=0 candidate_exit=0 stdout_delta=4 stderr_exact=true; the differential gate rejects the candidate",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true; differential=pass",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "5cf5f7a6c7c31570a5d394d8eac48897c861cc00347aa8f82bcc19bd0bdc51b8",
+  "files": [
+    "mutant.log",
+    "restored.log",
+    "transcripts.zip"
+  ]
+}
