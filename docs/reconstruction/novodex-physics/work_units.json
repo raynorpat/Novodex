@@ -2861,14 +2861,14 @@
     "phys_fn_003479"
    ],
    "rows": {
-    "discovered": 76,
-    "dynamically_gated": 50,
+    "discovered": 75,
+    "dynamically_gated": 51,
     "reconstructed": 439,
     "statically_reviewed": 3
    },
    "bytes": {
-    "discovered": 24944,
-    "dynamically_gated": 5831,
+    "discovered": 24894,
+    "dynamically_gated": 5881,
     "reconstructed": 139217,
     "statically_reviewed": 157
    },

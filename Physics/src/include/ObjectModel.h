@@ -1260,6 +1260,16 @@ void					nxLockApiSetByte2383(void* self);
 //! phys_fn_002387 (0x5b8e0): returns byte 8 through the pointer in [self+4].
 unsigned char			nxLockApiGetByte2387(void* self);
 
+//! phys_fn_002379 (0x5b860): worker entrypoint; dispatches vtable slot 1 and returns zero.
+unsigned long __stdcall nxLockApiWorkerStart2379(void* self);
+
+//! phys_fn_002381 (0x5b870): start the worker when its record state is zero.
+class NxLockApiWorkerStarter2381
+	{
+	public:
+	void* start();
+	};
+
 //! phys_fn_002398 (0x5b9d0, ret 4): stores the stack argument at [this+0x10]
 //! and returns the stored value.
 class NxLockApiWordStore2398

@@ -44680,11 +44680,19 @@
       "phase": 5,
       "phase_provenance": "layout_adjacency",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "lock-API worker start (nxLockApiWorkerStart2379, Physics/src/ZzLockApiByteRows.cpp)",
+      "implementation": "Physics/src/ZzLockApiByteRows.cpp",
+      "implementation_symbol": "nxLockApiWorkerStart2379",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxLockApiWorkerStart2379@@YGKPAX@Z",
+        "address": "0x1007a020",
+        "object": "ZzLockApiByteRows.obj"
+      },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/890",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7421",
       "static_proof": "virtual slot-1 wrapper: loads the argument from [esp+4], reads the receiver's vtable, calls [vtable+4] (slot 1) with the receiver as this, discards the callee's return, and returns 0; ret 4, __stdcall",
-      "dynamic_proof": "NxPhysicsObjectLayoutTests drives the slot-1 wrapper over four receiver cases; changing its return from false to true yields mismatches=4; restored candidate has failures=0, mismatches=0, digest 05167dcd.",
+      "dynamic_proof": "The registered NxPhysicsObjectLayoutTests slot-1 fixture now calls the product-linked worker entrypoint over four receivers and verifies slot selection, receiver identity, exactly-once dispatch, discarded callback results, and return zero. Changing the product entrypoint return to 1 is rejected (mismatches=4); restored digest is 05167dcd. Evidence: evidence/phase7-lock-api-worker-start-002379-002381.md.",
       "notes": ""
     },
     {
@@ -44715,12 +44723,20 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "lock-API worker starter (NxLockApiWorkerStarter2381::start, Physics/src/ZzLockApiByteRows.cpp)",
+      "implementation": "Physics/src/ZzLockApiByteRows.cpp",
+      "implementation_symbol": "NxLockApiWorkerStarter2381::start",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?start@NxLockApiWorkerStarter2381@@QAEPAXXZ",
+        "address": "0x1007a040",
+        "object": "ZzLockApiByteRows.obj"
+      },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/891",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7422",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA decompilation: read worker record from [this+4]; when [record+4] is zero, CreateThread(StartAddress, this), store returned HANDLE at [record], set [record+4]=1, and return HANDLE; otherwise return the record pointer. Uses thiscall with no stack arguments.",
+      "dynamic_proof": "Registered NxPhysicsObjectLayoutTests oracle/source differential checks idle-state thread creation and nonzero-state record return, including HANDLE/state fields, callback completion and unchanged record tail. Changing the idle branch from state==0 to state==3 is rejected (mismatches=1); restored output reports mismatches=0. Evidence: evidence/phase7-lock-api-worker-start-002379-002381.md and evidence/raw/phase7-lock-api-worker-start-002379-002381-20261018/.",
       "notes": ""
     },
     {

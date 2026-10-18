@@ -24,6 +24,34 @@ unsigned char nxLockApiGetByte2387(void* self)
 	return inner[8];
 	}
 
+// phys_fn_002379 (0x5b860): worker entrypoint invokes virtual slot 1 on self.
+unsigned long __stdcall nxLockApiWorkerStart2379(void* self)
+	{
+	typedef void (__thiscall* WorkerCallback)(void*);
+	void** vtable = *reinterpret_cast<void***>(self);
+	reinterpret_cast<WorkerCallback>(vtable[1])(self);
+	return 0;
+	}
+
+// phys_fn_002381 (0x5b870): create the worker only while the record is idle.
+void* NxLockApiWorkerStarter2381::start()
+	{
+	unsigned char* owner = reinterpret_cast<unsigned char*>(this);
+	unsigned char* record = 0;
+	memcpy(&record, owner + 4, sizeof(record));
+	unsigned state = 0;
+	memcpy(&state, record + 4, sizeof(state));
+	if(state == 0)
+		{
+		HANDLE thread = ::CreateThread(0, 0, &nxLockApiWorkerStart2379, this, 0, 0);
+		memcpy(record, &thread, sizeof(thread));
+		state = 1;
+		memcpy(record + 4, &state, sizeof(state));
+		return thread;
+		}
+	return record;
+	}
+
 // phys_fn_002398 (0x5b9d0, ret 4): store the stack argument at +0x10 and return it.
 unsigned NxLockApiWordStore2398::store(unsigned value)
 	{

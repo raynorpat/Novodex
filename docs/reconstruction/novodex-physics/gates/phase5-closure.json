@@ -2040,9 +2040,10 @@
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsObjectLayoutTests",
       "falsification": {
-        "mutation": "Changed nxVirtualSlot1Wrapper to return true instead of false.",
+        "mutation": "Changed the product-linked nxLockApiWorkerStart2379 entrypoint to return 1 after dispatching slot 1. The registered four-receiver fixture rejected the return value across all cases.",
         "detected": "mismatches=4"
-      }
+      },
+      "note": "The product-linked worker entrypoint dispatches slot 1, keeps the receiver, invokes exactly once, discards the callback result, and returns zero. See evidence/phase7-lock-api-worker-start-002379-002381.md."
     },
     {
       "id": "phys_fn_002408",

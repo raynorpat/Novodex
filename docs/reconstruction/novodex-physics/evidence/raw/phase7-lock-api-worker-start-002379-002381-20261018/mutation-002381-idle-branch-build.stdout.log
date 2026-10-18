@@ -1,0 +1,21 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\Release\NxFoundation.dll
+  NxOpcode.vcxproj -> D:\github\Novodex\build\External\Release\NxOpcode.lib
+  ZzLockApiByteRows.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\NxPhysicsObjectLayoutTests.vcxproj]
+  (compiling source file '../Physics/src/ZzLockApiByteRows.cpp')
+      D:\github\Novodex\build\External\opcode-tree\Ice\IceUtils.h(207,10):
+      see previous definition of 'ARRAYSIZE'
+  
+     Creating library D:/github/Novodex/build/Release/NxPhysicsObjectLayoutTests.lib and object D:/github/Novodex/build/Release/NxPhysicsObjectLayoutTests.exp
+LINK : warning LNK4217: symbol '_NxRayAABBIntersect2' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: void * __thiscall BoxShape::nxBoxRaycast(float const *,float,unsigned int,unsigned int,void *)const " (?nxBoxRaycast@BoxShape@@QBEPAXPBMMIIPAX@Z)' [D:\github\Novodex\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ObjectModel.obj' in function '"public: bool __thiscall MeshShape::nxMeshSweepPrepared(float *,float const *)const " (?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z)' [D:\github\Novodex\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4286: symbol '_NxRayPlaneIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' [D:\github\Novodex\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRaySphereIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastSphere(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastSphere@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\build\NxPhysicsObjectLayoutTests.vcxproj]
+LINK : warning LNK4217: symbol '_NxRayCapsuleIntersect' defined in 'Geometry.obj' is imported by 'ShapeRaycast.obj' in function '"struct NxCollisionShape const * __fastcall NxShapeRaycastCapsule(struct NxCollisionShape const *,void *,class NxRay const *,float,unsigned int,unsigned int,struct NxRaycastHit *)" (?NxShapeRaycastCapsule@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z)' [D:\github\Novodex\build\NxPhysicsObjectLayoutTests.vcxproj]
+  NxPhysicsObjectLayoutTests.vcxproj -> D:\github\Novodex\build\Release\NxPhysicsObjectLayoutTests.exe

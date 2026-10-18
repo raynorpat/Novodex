@@ -11317,3 +11317,5 @@ Phase 7 row phys_fn_003661: NpImplicitMeshDataRecord::getMeshData is map-resolve
 Phase 7 implicit-mesh float getters `phys_fn_003876` and `phys_fn_003888`: each getter is directly called against the oracle and candidate through the registered simulation fixture. Independent zero-return mutants are rejected (`stdout_delta=4119` each), and restored results match the callback float bits with balanced stack. See `phase7-implicit-mesh-float-getters-003876-003888.md`.
 
 Phase 7 row `phys_fn_002398`: lock-API word setter stores the supplied value at `this+0x10`, returns it, and uses thiscall `ret 4`. The registered three-value oracle/source differential matches exactly; storing `value ^ 1` is rejected (`mismatches=3`). See `phase7-lock-api-store-word-002398.md` and `raw/phase7-lock-api-store-word-002398-20261018/`.
+
+Phase 7 lock-API worker start row `phys_fn_002381` is closed by the registered `NxPhysicsObjectLayoutTests` oracle/source mutation differential (`mismatches=1`); the restored control reports `mismatches=0`. Details: `phase7-lock-api-worker-start-002379-002381.md`.
