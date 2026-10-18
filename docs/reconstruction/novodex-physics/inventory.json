@@ -91826,13 +91826,15 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/IcePruningEngine.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1845",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15746",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Oracle RVA 0x000b5060 (43 bytes) loops over four pointers at Scene-engine +0x1c through +0x28; for each non-null pointer it calls vtable slot 0 with deleting flag 1, then clears the pointer. Dword +0x2c is untouched.",
+      "dynamic_proof": "Direct staged oracle/candidate calls through NxPhysicsSceneRaycastTests exercise dense and sparse fake-vtable slots. Both require the four-slot clear, destructor order, scalar-deleting flag 1, and unchanged +0x2c sentinel. Restored oracle/candidate differential: both exits 0, stdout_delta=0, stderr_exact=True. Mutation changed the candidate deleting flag from 1 to 0; the dense case reported matched=0 and candidate exit=1.",
+      "notes": "Pruner supplies class operator delete through opcNovodeXFree so scalar deleting destructors use the SDK allocator.",
+      "implementation": "Physics/src/opcode/IcePruningEngine.cpp",
+      "implementation_symbol": "nxSceneEngineDestroyPruners"
     },
     {
       "id": "phys_fn_004851",

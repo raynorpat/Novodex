@@ -160,6 +160,123 @@ static bool nxFindMapSymbol(FILE* map, const char* decorated, NxU32* address)
 	return false;
 	}
 
+struct NxFakeDeletingPruner
+	{
+	void** vtable;
+	NxU32 id;
+	};
+
+static NxU32 nxFakeDeletingPrunerCalls;
+static NxU32 nxFakeDeletingPrunerIds[4];
+static NxU32 nxFakeDeletingPrunerFlags[4];
+
+static void* __fastcall nxFakePrunerDeletingDestructor(void* self, void*, unsigned char flags)
+	{
+	NxFakeDeletingPruner* const object = static_cast<NxFakeDeletingPruner*>(self);
+	const NxU32 call = nxFakeDeletingPrunerCalls++;
+	if(call < 4)
+		{
+		nxFakeDeletingPrunerIds[call] = object->id;
+		nxFakeDeletingPrunerFlags[call] = flags;
+		}
+	return self;
+	}
+
+static bool nxResolvePrunerDestroyRow(HMODULE physics, const wchar_t* pairDirectory,
+	void** function, bool* candidate)
+	{
+	const NxU32 oracleRva = 0x000b5060;
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	if(GetFileAttributesW(mapPath) == INVALID_FILE_ATTRIBUTES)
+		{
+		*candidate = false;
+		*function = reinterpret_cast<unsigned char*>(physics) + oracleRva;
+		return true;
+		}
+	FILE* map = 0;
+	if(_wfopen_s(&map, mapPath, L"rt") != 0 || !map)
+		return false;
+	NxU32 preferredBase = 0;
+	while(true)
+		{
+		char line[1024];
+		if(!fgets(line, sizeof(line), map))
+			break;
+		unsigned long parsedBase = 0;
+		if(sscanf_s(line, " Preferred load address is %lx", &parsedBase) == 1)
+			preferredBase = static_cast<NxU32>(parsedBase);
+		}
+	NxU32 symbolAddress = 0;
+	const bool found = nxFindMapSymbol(map,
+		"?nxSceneEngineDestroyPruners@@YAXPAX@Z", &symbolAddress);
+	fclose(map);
+	if(!found || !preferredBase || symbolAddress < preferredBase)
+		return false;
+	*candidate = true;
+	*function = reinterpret_cast<unsigned char*>(physics) + (symbolAddress - preferredBase);
+	return true;
+	}
+
+static bool nxCheckPrunerDestroyRow(HMODULE physics, const wchar_t* pairDirectory)
+	{
+	void* functionAddress = 0;
+	bool candidate = false;
+	if(!nxResolvePrunerDestroyRow(physics, pairDirectory, &functionAddress, &candidate))
+		{
+		printf("scene_pruner row004850 candidate_map=unresolved\n");
+		return false;
+		}
+	void* fakeVtable[1] = { reinterpret_cast<void*>(&nxFakePrunerDeletingDestructor) };
+	for(unsigned sparse = 0; sparse != 2; ++sparse)
+		{
+		alignas(4) NxU8 engine[0x30] = {};
+		NxFakeDeletingPruner objects[4];
+		for(NxU32 i = 0; i != 4; ++i)
+			{
+			objects[i].vtable = fakeVtable;
+			objects[i].id = i;
+			const bool present = !sparse || (i == 1 || i == 3);
+			const NxU32 value = present ? reinterpret_cast<NxU32>(&objects[i]) : 0;
+			memcpy(engine + 0x1c + i * 4, &value, sizeof(value));
+			}
+		const NxU32 sentinel = 0xa5a55a5a;
+		memcpy(engine + 0x2c, &sentinel, sizeof(sentinel));
+		nxFakeDeletingPrunerCalls = 0;
+		memset(nxFakeDeletingPrunerIds, 0xff, sizeof(nxFakeDeletingPrunerIds));
+		memset(nxFakeDeletingPrunerFlags, 0xff, sizeof(nxFakeDeletingPrunerFlags));
+		if(candidate)
+			reinterpret_cast<void (__cdecl*)(void*)>(functionAddress)(engine);
+		else
+			reinterpret_cast<void (__thiscall*)(void*)>(functionAddress)(engine);
+		const NxU32 expectedCalls = sparse ? 2 : 4;
+		bool match = nxFakeDeletingPrunerCalls == expectedCalls;
+		for(NxU32 i = 0; i != 4; ++i)
+			{
+			NxU32 slot = 1;
+			memcpy(&slot, engine + 0x1c + i * 4, sizeof(slot));
+			match = match && slot == 0;
+			}
+		for(NxU32 i = 0; i != expectedCalls && i < 4; ++i)
+			{
+			const NxU32 expectedId = sparse ? i * 2 + 1 : i;
+			match = match && nxFakeDeletingPrunerIds[i] == expectedId &&
+				nxFakeDeletingPrunerFlags[i] == 1;
+			}
+		NxU32 actualSentinel = 0;
+		memcpy(&actualSentinel, engine + 0x2c, sizeof(actualSentinel));
+		match = match && actualSentinel == sentinel;
+		printf("scene_pruner row004850 case=%s calls=%u cleared=%u flags=1 order=%u.%u.%u.%u matched=%u\n",
+			sparse ? "sparse" : "dense", nxFakeDeletingPrunerCalls,
+			match ? 1u : 0u, nxFakeDeletingPrunerIds[0], nxFakeDeletingPrunerIds[1],
+			nxFakeDeletingPrunerIds[2], nxFakeDeletingPrunerIds[3], match ? 1u : 0u);
+		if(!match)
+			return false;
+		}
+	return true;
+	}
+
 static bool nxResolvePrunerOwnerQueries(HMODULE physics, const wchar_t* pairDirectory,
 	void** sectionOne, void** selectedSectionOne, void** staticCount, void** selectedCount)
 	{
@@ -1527,6 +1644,8 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("Pruner section-one owner queries did not match");
 	if(!nxCheckPrunerObjectCounts(physics, pairDirectory))
 		return nxFail("Pruner object counts did not match");
+	if(!nxCheckPrunerDestroyRow(physics, pairDirectory))
+		return nxFail("Pruner destroy row 004850 did not match");
 	CreatePhysicsSDKFn createSDK = reinterpret_cast<CreatePhysicsSDKFn>(
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK)

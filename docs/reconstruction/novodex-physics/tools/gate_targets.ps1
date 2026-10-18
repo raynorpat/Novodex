@@ -2941,6 +2941,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene_pruner row001962 selected_section1_owner=1 selector=2 indices=2 mismatches=0',
         'scene_pruner row001957 static_object_count=8 expected=8 mismatches=0',
         'scene_pruner row001960 selected_object_count=18 selector=2 expected=18 mismatches=0',
+        'scene_pruner row004850 case=dense calls=4 cleared=1 flags=1 order=0.1.2.3 matched=1',
+        'scene_pruner row004850 case=sparse calls=2 cleared=1 flags=1 order=1.3.4294967295.4294967295 matched=1',
         # AABB triangle query: appends intersecting world-space mesh triangles,
         # returns no elements for a miss, and applies a translated actor pose.
         'scene_overlap triangles hit_count=3 array_count=3',

@@ -151,8 +151,9 @@ void nxPruningEngineDestroyPruner(Pruner* pruner)
 {
 	if(!pruner)
 		return;
-	pruner->~Pruner();
-	opcNovodeXFree(pruner);
+	typedef void* (__thiscall* DeletingDestructor)(void*, ubyte);
+	void** const vtable = *reinterpret_cast<void***>(pruner);
+	reinterpret_cast<DeletingDestructor>(vtable[0])(pruner, 1);
 }
 
 // phys_fn_004857 (0x000b5180, 213 B)

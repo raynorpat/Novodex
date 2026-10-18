@@ -139,6 +139,7 @@ class Pruner
 			PruningPool			mPool;				//!< +0x04
 			AABB				mBounds;			//!< +0x1c, 0x00053810 at 0x000f156c
 			NxPrunerRegistration mRegistration;	//!< +0x34 handle, +0x38 timestamp
+			void				operator delete(void* memory) { opcNovodeXFree(memory); }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

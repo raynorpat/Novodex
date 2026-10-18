@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_004850",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "a07815c7700079caa1e146419e8ba185f6d33343dd73bf5ef6f9dca3a030543d",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True",
+  "mutation": "Changed the candidate scalar deleting destructor flag from 1 to 0.",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=2815; dense case matched=0",
+  "phase5_gate": "pass; coverage_assertions_evaluated=2926 floor=2924",
+  "phase7_gate": "pass; coverage_assertions_evaluated=3062 floor=3060",
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase7-gate.log.gz",
+    "phase4-gate.log.gz"
+  ],
+  "phase4_gate": "pass; coverage_assertions_evaluated=562 floor=560"
+}
