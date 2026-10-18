@@ -69311,13 +69311,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "pointer getter this+8 (0x8ac40)",
+      "state": "dynamically_gated",
+      "source": "NpImplicitMeshDataRecord::getMeshData in Physics/src/ImplicitMesh.cpp; candidate map symbol ?getMeshData@NpImplicitMeshDataRecord@@QAEPAVNxMeshData@@XZ at 0x1002e290.",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1383",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12696",
       "static_proof": "lea eax,[ecx+8]; ret",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsSimulationTests directly compares the oracle RVA and map-resolved candidate method for three records; the +4 candidate offset mutant reports mismatches=3, restored control mismatches=0.",
+      "notes": "IDA confirms lea eax,[ecx+8]; ret. See evidence/phase7-implicit-mesh-record-getter-003661.md."
     },
     {
       "id": "phys_fn_003662",

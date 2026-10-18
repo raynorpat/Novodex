@@ -3696,6 +3696,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid-model-export-resolve row=003903 slots=169 present=83 matched=169 digest=cbb94fff'
         'simulation fluid-model-export-clear row=003905 slots=169 result=1 cleared=169 callbacks_remaining=0 matched=169 mismatches=0'
         'simulation fluid-model-unload row=003902 result=1 module_after=0 matched=1 mismatches=0'
+        'simulation implicit-mesh-record-getter row=003661 cases=3 mismatches=0'
         'simulation sdk-pointer-binding row=003683 set=1 update=1 remove=1 cleared=1 mismatches=0'
         'simulation fluid-surface-manager-ctor row=003685 returned=1 vptr=1 fields=1 type=4 storage=1 mismatches=0'
         # Row 003649 pins all non-pointer FluidCreate arguments against distinct descriptor values.
@@ -6330,7 +6331,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
-	'5' = 2887  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, and global-call checks
+	'5' = 2888  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, global-call, and implicit-mesh getter checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
@@ -6419,7 +6420,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1744  # includes licensed fluid visualization, deleting-destructor, and global-call checks
+	'6' = 1745  # includes licensed fluid visualization, deleting-destructor, global-call, and implicit-mesh getter checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
 	           # previous 1717 plus the implicit-mesh lock-first no-op differential
@@ -6470,7 +6471,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3026  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, and global-call checks
+	'7' = 3027  # includes licensed fluid visualization, deleting-destructor, particle-copy, flag-word, global-call, and implicit-mesh getter checks
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential

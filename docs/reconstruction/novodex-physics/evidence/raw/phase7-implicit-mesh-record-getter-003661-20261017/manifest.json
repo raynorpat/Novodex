@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003661",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "9f5cb939e8967d1eb38dceb8742d4e0b541d0507984730dfa6f127ff6173b34c",
+  "mutant_candidate_sha256": "368876318b7fd37da6300ed1e0363345d43312662dcc6db26d43e449c74c7fef",
+  "mutation": "Changed NpImplicitMeshDataRecord::getMeshData from returning this+8 to this+12.",
+  "mutation_result": "oracle_exit=0 candidate_exit=1; cases=3 mismatches=3; stdout_delta=4119",
+  "restored_result": "oracle_exit=0 candidate_exit=0; cases=3 mismatches=0; stdout_delta=0 stderr_exact=True",
+  "phase_gates": {
+    "5": "pass 2888/2888",
+    "6": "pass 1745/1745",
+    "7": "pass 3027/3027"
+  },
+  "tool_tests": "836 passed, 743 subtests passed",
+  "raw_logs": [
+    "red-differential.log.gz",
+    "mutant-differential.log.gz",
+    "restored-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ],
+  "raw_log_sha256": {
+    "red-differential.log.gz": "7492dacc5e526cc1e3e007c6891b857b6df3759133eb1e57519b2bb7e1100403",
+    "mutant-differential.log.gz": "4c942c4756e71ac7d5c51e9dd9627f373cb2a754b2b2708b2dc888e5b8856f51",
+    "restored-differential.log.gz": "11c35cb51dc7662e1f23f027cc8e4afe2a594b4fa03b20a77edd99ed952286ea",
+    "phase5-gate.log.gz": "ba83841228253661afee01138455d0c8630b217c4950fc7a0bf366c0e5624c09",
+    "phase6-gate.log.gz": "f57d4c111a38f5bf49f507368169d5e1ff025c96cc1ebc5098a1e4f30000b3a9",
+    "phase7-gate.log.gz": "2200a70ca59a78f7746074135388abf32c28b2ea25b8ed420adc0f50d6aa0d43"
+  },
+  "source_sha256": {
+    "Physics/src/ImplicitMesh.cpp": "4ee5cea7d71a79cb4f4cc8019355ffa74be3ec9fda6a0d428db0198bb920bda9",
+    "Physics/src/include/NpImplicitMesh.h": "3393a6a4ed7194cfaea2ad8d96380009603e74e3ff91e9937a816749e573e506",
+    "tests/PhysicsSimulationTests.cpp": "5f7658b87b95f1726f673f19b554e43d6b908e768653e206f954f71813f0e224",
+    "docs/reconstruction/novodex-physics/tools/gate_targets.ps1": "e0bf143b0b52bae1733e7ebdcb801fa101983c48d7a449429de031fe4667cab7"
+  }
+}

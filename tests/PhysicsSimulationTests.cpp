@@ -919,6 +919,33 @@ static unsigned short nxSimulationReadX87ControlWord()
 	return controlWord;
 	}
 
+static bool nxSimulationTestImplicitMeshRecordGetter(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* address = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"?getMeshData@NpImplicitMeshDataRecord@@QAEPAVNxMeshData@@XZ",
+		0x0008ac40u, &address))
+		return false;
+	typedef void* (__thiscall *GetRecordFn)(void*);
+	GetRecordFn const getRecord = reinterpret_cast<GetRecordFn>(address);
+	unsigned mismatches = 0;
+	for(unsigned i = 0; i != 3; ++i)
+		{
+		unsigned char self[0x20];
+		memset(self, static_cast<int>(0x31u + i), sizeof(self));
+		unsigned before = 0, after = 0;
+		__asm { mov before, esp }
+		void* const result = getRecord(self);
+		__asm { mov after, esp }
+		if(result != self + 8 || before != after)
+			++mismatches;
+		}
+	printf("simulation implicit-mesh-record-getter row=003661 cases=3 mismatches=%u\n",
+		mismatches);
+	return mismatches == 0;
+	}
+
 static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 	const wchar_t* pairDirectory)
 	{
@@ -945,7 +972,8 @@ static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 	void* callbackCountAddress = 0;
 	if(candidate)
 		{
-		if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		if(!nxSimulationTestImplicitMeshRecordGetter(physics, pairDirectory) ||
+			!nxSimulationResolvePrivateRow(physics, pairDirectory,
 			"?nxFluidManagerResolveModel@@YA_NXZ", 0x0008d870u,
 			&resolverAddress) ||
 			!nxSimulationResolvePrivateRow(physics, pairDirectory,
@@ -1019,6 +1047,8 @@ static bool nxSimulationTestFluidModelExportResolution(HMODULE physics,
 			unloadResult == 1 && moduleAfter == 0;
 		}
 	void* loadAddress = reinterpret_cast<unsigned char*>(physics) + 0x0008d820u;
+	if(!nxSimulationTestImplicitMeshRecordGetter(physics, pairDirectory))
+		return false;
 	void* resolveAddress = reinterpret_cast<unsigned char*>(physics) + 0x0008d870u;
 	typedef unsigned (__stdcall *OracleLoadFn)();
 	typedef unsigned (__stdcall *OracleResolveFn)();

@@ -21,6 +21,7 @@ class NpImplicitMeshLockBase
 class NpImplicitMeshDataRecord
 	{
 	public:
+	NxMeshData* getMeshData();
 	int setMeshData(NxMeshData& data);
 	private:
 	void* mVtable;

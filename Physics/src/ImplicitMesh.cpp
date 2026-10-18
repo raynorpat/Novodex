@@ -60,10 +60,17 @@ NxMeshData NpImplicitMesh::getMeshData()
 	{
 	nxNpSceneGuardEnter(mReadLockLink);
 	NxMeshData result;
-	memcpy(&result, static_cast<unsigned char*>(mInternalRecord) + 8,
-		sizeof(result));
+	NpImplicitMeshDataRecord* const record =
+		static_cast<NpImplicitMeshDataRecord*>(mInternalRecord);
+	memcpy(&result, record->getMeshData(), sizeof(result));
 	nxNpSceneGuardLeave(mReadLockLink);
 	return result;
+	}
+
+// phys_fn_003661 (0x0008ac40): return the embedded NxMeshData record.
+NxMeshData* NpImplicitMeshDataRecord::getMeshData()
+	{
+	return &mMeshData;
 	}
 
 NxReal NpImplicitMesh::getSurfaceRadius() const

@@ -11311,3 +11311,5 @@ Fresh Phase 5 and Phase 7 gates pass at 2,886/2,886 and 3,025/3,025 registered c
 Rows `phys_fn_003429`, `phys_fn_003433`, `phys_fn_003437`, `phys_fn_003441`, `phys_fn_003445`, `phys_fn_003457`, `phys_fn_003459`, `phys_fn_003463`, `phys_fn_003465`, `phys_fn_003469` and `phys_fn_003679` are now mutation-falsified through `NxPhysicsObjectLayoutTests`. Changing the candidate second-argument read from `+0x80` to `+0x84` yields `mismatches=11`; the restored run reports zero failures. See `evidence/phase7-global-call2-thunks-003429-003469.md` and `evidence/raw/phase7-global-call2-thunks-003429-003469-20261017/`.
 Fresh Phase 5 and Phase 7 gates pass at 2,887/2,887 and 3,026/3,026 registered coverage assertions.
 Fresh Phase 5, Phase 6 and Phase 7 gates pass at 2,887/2,887, 1,744/1,744 and 3,026/3,026 registered coverage assertions.
+
+Phase 7 row phys_fn_003661: NpImplicitMeshDataRecord::getMeshData is map-resolved in ImplicitMesh.obj; a candidate this+12 offset mutant is rejected by the registered NxPhysicsSimulationTests differential (stdout_delta=4119), and restored control matches exactly. See evidence/phase7-implicit-mesh-record-getter-003661.md.
