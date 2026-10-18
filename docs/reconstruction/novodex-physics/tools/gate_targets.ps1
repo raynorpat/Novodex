@@ -12,7 +12,7 @@ $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsSDKSceneLookupTests', 'NxPhysicsCoreClusterTests', 'NxPhysicsTriangleMeshReleaseLockTests')
     '3' = @('NxPhysicsBodyCreationTests', 'NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsPopulatedSceneTeardownTests')
-    '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
+    '4' = @('NxPhysicsConvexMeshTests', 'NxPhysicsTriangleMeshApiTests', 'NxPhysicsTriangleMeshSortTests', 'NxPhysicsPMapResolution80Tests', 'NxPhysicsSceneRaycastTests')
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsSceneLifecycleTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorReleaseShapeProbeTests', 'NxPhysicsBodyCreationTests', 'NxPhysicsFluidEmitterBodyRepulsionTests', 'NxPhysicsSimulationTests', 'NxPhysicsFluidInitialParticlesTests', 'NxPhysicsFluidParticleAliasOrderTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsConvexMeshTests', 'NxPhysicsSceneRaycastTests', 'NxPhysicsControllerSweepFaceTests', 'NxPhysicsSceneAllocatorTests', 'NxPhysicsPrunerPoolAllocationFailureTests')
     '6' = @('NxPhysicsActorShapeMutationTests', 'NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests', 'NxPhysicsMeshSimulationTests', 'NxPhysicsSimulationTests', 'NxPhysicsCcdSimulationTests', 'NxPhysicsAllocatorReleaseTests', 'NxPhysicsSDKTests')
     # Row 000799 body-base teardown is driven by the kinematic release fixture.
@@ -87,6 +87,9 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+	'NxPhysicsTriangleMeshSortTests' = @(
+		'triangle_mesh_sort row=002180/002182 cases=4 digest='
+	)
 	'NxPhysicsSceneLifecycleTests' = @(
 		'scene lifecycle cycles=8 creates=32 releases=32 stable=1 mismatches=0'
 		'scene registration growth active=6 handles=00000000.00000001.00000002.00000003.00000004.00000005 stable=1'
@@ -6359,7 +6362,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 559  # rows 001957/001960 add static and selected-pruner object count assertions; two stream candidate rows
+	'4' = 560  # plus the direct actual-DLL sort rows 002180/002182 differential
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
 	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
 	           # plus hit, no-normal, cutoff, translation and miss coverage
@@ -6666,6 +6669,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsCoreDumpTests',
     'NxPhysicsConvexMeshTests',
     'NxPhysicsTriangleMeshApiTests',
+	'NxPhysicsTriangleMeshSortTests',
     'NxPhysicsTriangleMeshReleaseLockTests',
     'NxPhysicsPMapResolution80Tests',
     'NxPhysicsCoreClusterTests',

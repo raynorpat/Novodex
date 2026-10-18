@@ -31,7 +31,7 @@ COMMAND_PATTERN = re.compile(
 PHASE_TARGETS = {
     "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsSDKSceneLookupTests,NxPhysicsCoreClusterTests,NxPhysicsTriangleMeshReleaseLockTests",
     "3": "NxPhysicsBodyCreationTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests,NxPhysicsSDKTests,NxPhysicsCoreDumpTests,NxPhysicsPopulatedSceneTeardownTests",
-    "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsPMapResolution80Tests,NxPhysicsSceneRaycastTests",
+    "4": "NxPhysicsConvexMeshTests,NxPhysicsTriangleMeshApiTests,NxPhysicsTriangleMeshSortTests,NxPhysicsPMapResolution80Tests,NxPhysicsSceneRaycastTests",
     "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsSceneLifecycleTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests,NxPhysicsActorMassTests,NxPhysicsActorShapeMutationTests,NxPhysicsActorReleaseShapeProbeTests,NxPhysicsBodyCreationTests,NxPhysicsFluidEmitterBodyRepulsionTests,NxPhysicsSimulationTests,NxPhysicsFluidInitialParticlesTests,NxPhysicsFluidParticleAliasOrderTests,NxPhysicsMeshSimulationTests,NxPhysicsConvexMeshTests,NxPhysicsSceneRaycastTests,NxPhysicsControllerSweepFaceTests,NxPhysicsSceneAllocatorTests,NxPhysicsPrunerPoolAllocationFailureTests",
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
     # implementation, and only a staged-pair target loads the rebuilt module, so the

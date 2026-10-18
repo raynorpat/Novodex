@@ -7,7 +7,7 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 2014,
+    "mapped_code_rows": 2016,
     "source_correspondence_only_rows": 371,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
@@ -79,10 +79,10 @@
       },
       "4": {
         "phase": 4,
-        "closed_rows": 44,
-        "deferred_rows": 1009,
+        "closed_rows": 46,
+        "deferred_rows": 1007,
         "deferred_reasons": {
-          "not_reconstructed_in_phase": 172,
+          "not_reconstructed_in_phase": 170,
           "reconstructed_not_falsified": 747,
           "vendored_not_falsified": 90
         }
@@ -142,11 +142,11 @@
         "rows": 1053,
         "bytes": 441595,
         "open_rows": 1053,
-        "rows_without_implementation_mapping": 321,
+        "rows_without_implementation_mapping": 319,
         "rows_with_unresolved_indirect_calls": 313,
         "by_state": {
-          "discovered": 244,
-          "dynamically_gated": 44,
+          "discovered": 242,
+          "dynamically_gated": 46,
           "reconstructed": 765
         }
       },
@@ -92294,22 +92294,22 @@
       "size": 13,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "label": "phys_fn_002180",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/TriangleMesh.cpp",
+        "role": "reconstruction",
+        "symbol": "nxTriangleMeshSortEdgeRecords",
+        "file_exists": true,
+        "oracle_source": "Physics/src/TriangleMesh.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshSortTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -92332,22 +92332,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshSortTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002180",
         "rva": "0x00054140",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -92358,22 +92358,22 @@
       "size": 283,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "label": "phys_fn_002182",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/TriangleMesh.cpp",
+        "role": "reconstruction",
+        "symbol": "nxTriangleMeshSortEdgeRecords",
+        "file_exists": true,
+        "oracle_source": "Physics/src/TriangleMesh.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "dynamic_proof"
       },
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshSortTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -92387,7 +92387,7 @@
           {
             "id": "phys_fn_002180",
             "kind": "code",
-            "state": "discovered"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -92406,22 +92406,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshSortTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002182",
         "rva": "0x00054150",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -94629,7 +94629,7 @@
           {
             "id": "phys_fn_002180",
             "kind": "code",
-            "state": "discovered"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002184",
@@ -231923,14 +231923,14 @@
     }
   ],
   "source": {
-    "inventory_sha256": "fec455efcb409e5a5b11d91a315c942640feb4894a0636b621c0cdb8c9b2c602",
+    "inventory_sha256": "b9ddb39e669307056c68b16ced5a0a94d1a11b3a0df16c3c4a93eed1b428fa72",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "62e3fbc0404aaada62cb734eb8e4d2791402d75325b1694c8aa72a46ddd6b11f",
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "3ff1f3bd505d1a847ef894ee50b3a40bc8ac4b0b56cf8fd5c17b6aaf46f6beb3",
-      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "abfd6d8a6707321f47a51b80902708b6a16b6bae6c09d60657ae28b4f88fea40",
+      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "d45f027f468c2a408ccbca4775db46e7faad9b414d97e337449a3a4ce4883c0e",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "d8a3032213b783d79d8fc91d5cb893aaf00ab867dfafdc969dd0f9fd4d4c56ca",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "f9065254b20e08340760e62051b8f0a490fd61ec6fd57180a550d200f8e3fea6"

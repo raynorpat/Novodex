@@ -551,6 +551,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsTriangleMeshApiTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsTriangleMeshApiTests bcrypt)
+	add_executable(NxPhysicsTriangleMeshSortTests tests/PhysicsTriangleMeshSortTests.cpp)
+	target_include_directories(NxPhysicsTriangleMeshSortTests PRIVATE tests)
+	target_link_libraries(NxPhysicsTriangleMeshSortTests bcrypt)
+	add_dependencies(NxPhysicsTriangleMeshSortTests NxPhysics)
 	add_executable(NxPhysicsPMapResolution80Tests tests/PhysicsTriangleMeshApiTests.cpp)
 	target_include_directories(NxPhysicsPMapResolution80Tests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)

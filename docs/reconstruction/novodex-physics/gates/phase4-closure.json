@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 44 closed and 1,009 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The exported NxCreatePMap wrapper phys_fn_002049 and its PenetrationMap::create compute body phys_fn_002047 are independently mutation-falsified through NxPhysicsTriangleMeshApiTests. Density-32 and density-80 result markers are registered; allocation-failure and alternate-tree branches remain open. The two AABB tree rows phys_fn_005517 and phys_fn_005523 are independently falsified through the registered NxPhysicsTriangleMeshApiTests staged pair; each entry mutation prevents authored PMap mesh creation (candidate_exit=1, stdout_delta=26). The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13. On 2026-10-15, phys_fn_005537 (Pruner::~Pruner) was independently mutation-falsified through generation-tagged slot reuse after Scene destruction; all three dependent phase gates require and pass the lifecycle marker. MemoryStream destructor continuation (2026-10-16): phys_fn_004791 is closed by the Phase 4 NxPhysicsAssetTests row-specific allocator differential; a no-op destructor mutation is rejected across all 16 PMap fixtures (32 oracle frees versus zero candidate frees), and restored control is exact. Evidence: evidence/phase4-memory-stream-dtor-004791.md.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 46 closed and 1,007 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The exported NxCreatePMap wrapper phys_fn_002049 and its PenetrationMap::create compute body phys_fn_002047 are independently mutation-falsified through NxPhysicsTriangleMeshApiTests. Density-32 and density-80 result markers are registered; allocation-failure and alternate-tree branches remain open. The two AABB tree rows phys_fn_005517 and phys_fn_005523 are independently falsified through the registered NxPhysicsTriangleMeshApiTests staged pair; each entry mutation prevents authored PMap mesh creation (candidate_exit=1, stdout_delta=26). The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13. On 2026-10-15, phys_fn_005537 (Pruner::~Pruner) was independently mutation-falsified through generation-tagged slot reuse after Scene destruction; all three dependent phase gates require and pass the lifecycle marker. MemoryStream destructor continuation (2026-10-16): phys_fn_004791 is closed by the Phase 4 NxPhysicsAssetTests row-specific allocator differential; a no-op destructor mutation is rejected across all 16 PMap fixtures (32 oracle frees versus zero candidate frees), and restored control is exact. Evidence: evidence/phase4-memory-stream-dtor-004791.md. On 2026-10-18, TriangleMesh edge-record quicksort rows phys_fn_002180 and phys_fn_002182 were reconstructed in TriangleMesh.cpp and mutation-falsified through NxPhysicsTriangleMeshSortTests; four cases match the pinned oracle and a secondary-key mutation is detected. The row fixture is direct and does not close the larger edge/adjacency caller.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway source copy, rebuilt and run through a registered Phase 4 staged-pair differential. Phase 4 now registers NxPhysicsTriangleMeshApiTests for the live-reference refusal path; bypassing the mReferenceCount guard changes the candidate transcript by stdout_delta=6 while the pinned oracle remains unchanged, and the restored control matches exactly.",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -55,10 +55,10 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 747,
-    "deferred_not_reconstructed_in_phase": 172,
+    "deferred_not_reconstructed_in_phase": 170,
     "deferred_vendored_not_falsified": 90,
-    "differential_falsified": 14,
-    "oracle_differential_falsified": 30
+    "oracle_differential_falsified": 30,
+    "differential_falsified": 16
   },
   "closed": [
     {
@@ -111,7 +111,7 @@
         "mutation": "The compute arm one-ray classifier loop in PenetrationMap::create was changed from one sample to zero. The existing direct NxPhysicsAssetTests mutations still falsify the load arm (largest result mismatches=10); the public real-mesh compute mutation is the row-level staged-pair proof.",
         "detected": "stdout_delta=26"
       },
-      "note": "The compute mutant changed the candidate PMap from the oracle\u2019s density-32 10,444-byte payload (hash 9a70de00aaf0edd4) to 4,120 bytes (hash 387b40b2b1eb1513), and the candidate exited 1. Restored control exits zero on both sides with stdout_delta=0 and exact stderr. Density 80 is also pinned by the full Phase 4 gate. The earlier direct load-arm mutation remains documented in evidence/phase4-falsification.md section 5; compute details are in section 18. Alternate allocation-failure and OPCODE-tree branches remain open."
+      "note": "The compute mutant changed the candidate PMap from the oracle’s density-32 10,444-byte payload (hash 9a70de00aaf0edd4) to 4,120 bytes (hash 387b40b2b1eb1513), and the candidate exited 1. Restored control exits zero on both sides with stdout_delta=0 and exact stderr. Density 80 is also pinned by the full Phase 4 gate. The earlier direct load-arm mutation remains documented in evidence/phase4-falsification.md section 5; compute details are in section 18. Alternate allocation-failure and OPCODE-tree branches remain open."
     },
     {
       "id": "phys_fn_002049",
@@ -507,7 +507,10 @@
         "detected": "stdout_delta=6"
       },
       "discharged_by_phase": 5,
-      "driving_phases": [5, 7],
+      "driving_phases": [
+        5,
+        7
+      ],
       "note": "The allocator target is registered in Phases 5 and 7. Restored source was force-recompiled; oracle and candidate both report the five pool frees and match exactly (stdout_delta=0, exact stderr). Evidence: evidence/phase4-pruner-release-pool-005446.md."
     },
     {
@@ -520,6 +523,28 @@
         "detected": "mismatches=16"
       },
       "note": "Restored control: all 16 oracle/candidate stream destructor cases released two allocations each (32/32 total); asset oracle digest remained 1daa095e and candidate mismatches=0. Evidence: evidence/phase4-memory-stream-dtor-004791.md."
+    },
+    {
+      "id": "phys_fn_002180",
+      "rva": "0x00054140",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshSortTests",
+      "falsification": {
+        "mutation": "In a candidate-only temporary source edit, compare the secondary key using payload words[2] instead of words[1] in the quicksort partition comparisons, then rebuild and run the staged oracle/candidate differential.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "Four cases cover duplicate and high-bit keys, partial subranges, singleton, and empty ranges; restored digest a4b713d8. This proves only the sort rows, not integration into the larger edge/adjacency caller."
+    },
+    {
+      "id": "phys_fn_002182",
+      "rva": "0x00054150",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshSortTests",
+      "falsification": {
+        "mutation": "In a candidate-only temporary source edit, compare the secondary key using payload words[2] instead of words[1] in the quicksort partition comparisons, then rebuild and run the staged oracle/candidate differential.",
+        "detected": "stdout_delta=2"
+      },
+      "note": "Four cases cover duplicate and high-bit keys, partial subranges, singleton, and empty ranges; restored digest a4b713d8. This proves only the sort rows, not integration into the larger edge/adjacency caller."
     }
   ],
   "deferred": [
@@ -1642,22 +1667,6 @@
       "id": "phys_fn_002178",
       "rva": "0x00053f40",
       "size": 511,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002180",
-      "rva": "0x00054140",
-      "size": 13,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002182",
-      "rva": "0x00054150",
-      "size": 283,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []

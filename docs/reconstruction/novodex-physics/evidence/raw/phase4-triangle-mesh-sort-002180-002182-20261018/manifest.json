@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-18",
+  "rows": {
+    "phys_fn_002180": "0x00054140",
+    "phys_fn_002182": "0x00054150"
+  },
+  "oracle": {
+    "sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c"
+  },
+  "candidate": {
+    "sha256": "8b47ec8ee735b6f8ef7be368e6b6cd6ee975e9b07bca85fb84aeabaab4ebeeca"
+  },
+  "focused_control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; digest=a4b713d8; cases=4",
+  "candidate_mutation": "secondary key changed from words[1] to payload words[2]; oracle digest=a4b713d8 candidate digest=d1450f88; stdout_delta=2; both exit 0; mutant candidate SHA-256 e9d6495cea51d6754034494837e8bdb2f26994c8699f2166657dbba2b1ad746a; direct observation is archived in mutation-observation.log",
+  "restored_control": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; digest=a4b713d8; candidate restored before clean rebuild",
+  "phase4_gate": "phase_gate=4 status=pass; coverage_assertions_evaluated=560 floor=560",
+  "scope_limit": "Direct function rows only; larger TriangleMesh edge/adjacency caller remains open.",
+  "transcripts": {
+    "focused-differential.log": {
+      "sha256": "8cfe0aff53b1371db726ee7bfdaad6ec0346a6e55fa2afcc53756a3c832d6cd4",
+      "bytes": 6588
+    },
+    "mutation-observation.log": {
+      "sha256": "cf0d4dcd7e6a1aa917478f4a499180a9f6fd123c092ef4c38721b0739c0c40bf",
+      "bytes": 1238
+    },
+    "phase4-gate.log": {
+      "sha256": "00499976d502337d1c2b73bf9d62b5d0dddb57a0fae7321a6511a62abf81946b",
+      "bytes": 1131886
+    }
+  }
+}

@@ -527,3 +527,12 @@ The `Pruner::~Pruner` row `phys_fn_005537` is independently mutation-falsified t
 ## 27. 2026-10-16 MemoryStream destructor row
 
 `MemoryStream::~MemoryStream` (`phys_fn_004791`, RVA `0x000b3db0`) now has a row-specific allocator differential in `NxPhysicsAssetTests`. For each of the 16 PMap fixtures, both the pinned oracle and reconstructed stream free the two allocations owned by the stream; the registered aggregate marker requires 32 frees per side. Disabling the candidate destructor body produces 16 mismatches (32 oracle frees, zero candidate frees) and exits 1. Restoring the source returns the asset differential to zero mismatches with the same oracle digest `1daa095e`. The focused control, mutation, and restored transcripts are archived in [phase4-memory-stream-dtor-004791.md](phase4-memory-stream-dtor-004791.md).
+
+
+## 28. 2026-10-18 TriangleMesh edge-record sort rows
+
+`phys_fn_002180` (RVA `0x00054140`) and its continuation `phys_fn_002182` (RVA `0x00054150`) implement the in-place quicksort of TriangleMesh edge records. The reconstruction compares the first two unsigned 32-bit words lexicographically and moves all four words together. `NxPhysicsTriangleMeshSortTests` calls the oracle entry at its pinned RVA and resolves the candidate implementation from the candidate linker map. Four registered cases cover duplicate and high-bit keys, partial ranges with guards, singleton ranges, and empty ranges. The pinned oracle and restored candidate report digest `a4b713d8`, zero mismatches, and the staged pair has `stdout_delta=0` with exact stderr.
+
+The candidate-only mutation for rows `phys_fn_002180` and `phys_fn_002182`, comparing the second key word against payload word 2 instead, was caught: the oracle retained digest `a4b713d8`, the candidate changed to `d1450f88`, and the differential reported `stdout_delta=2`. Restoring the comparator and rebuilding returned the focused differential to exact. The full Phase 4 gate passed with 560/560 registered assertions. Focused staged-pair output is archived in `evidence/raw/phase4-triangle-mesh-sort-002180-002182-20261018/focused-differential.log`.
+
+This closes only the two sort rows. The larger TriangleMesh edge/adjacency construction caller remains open, and this direct-row fixture does not claim that the mesh creation path now uses the reconstructed sorter.

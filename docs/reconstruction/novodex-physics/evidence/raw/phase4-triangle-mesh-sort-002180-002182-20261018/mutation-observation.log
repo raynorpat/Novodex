@@ -1,0 +1,12 @@
+pair_directory=D:\github\Novodex\build\pairs\triangle-mesh-sort-mutant-20261018\oracle
+modules pair=2 trusted_system=10 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\build\pairs\triangle-mesh-sort-mutant-20261018\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+loaded module=NxFoundation.dll path=D:\github\Novodex\build\pairs\triangle-mesh-sort-mutant-20261018\oracle\NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+triangle_mesh_sort row=002180/002182 cases=4 digest=a4b713d8 mismatches=0
+oracle_exit=0
+pair_directory=D:\github\Novodex\build\pairs\triangle-mesh-sort-mutant-20261018\candidate
+modules pair=2 trusted_system=11 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\build\pairs\triangle-mesh-sort-mutant-20261018\candidate\NxPhysics.dll sha256=e9d6495cea51d6754034494837e8bdb2f26994c8699f2166657dbba2b1ad746a
+loaded module=NxFoundation.dll path=D:\github\Novodex\build\pairs\triangle-mesh-sort-mutant-20261018\candidate\NxFoundation.dll sha256=abb1d1ad730321e773e789eff69d67212921a209eba364ca9cdb8fcc05156244
+triangle_mesh_sort row=002180/002182 cases=4 digest=d1450f88 mismatches=0
+candidate_exit=0

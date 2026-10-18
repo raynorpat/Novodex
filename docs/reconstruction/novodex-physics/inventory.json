@@ -41323,13 +41323,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/829",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6887",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "The row is the in-place quicksort entry for 16-byte edge records. Oracle disassembly at RVA 0x00054140 and continuation 0x00054150 compare unsigned words[0], then unsigned words[1], and swap each four-word record as a unit. The recursive partition and tail-iteration structure are reproduced in TriangleMesh.cpp.",
+      "dynamic_proof": "NxPhysicsTriangleMeshSortTests calls the pinned oracle at RVA 0x00054140 and resolves the candidate symbol from the staged candidate NxPhysics.map. Four cases (duplicate/high-bit keys, partial range with guards, singleton, empty range) match digest a4b713d8 with mismatches=0, stdout_delta=0, stderr_exact=True. Candidate-only mutation of the secondary comparator from words[1] to payload words[2] changes the candidate digest to d1450f88 and is detected with stdout_delta=2; restored build returns exact. Full Phase 4 gate passes at 560/560 assertions. See evidence/phase4-falsification.md section 28.",
+      "notes": "Direct internal-row differential only; TriangleMesh edge/adjacency caller integration remains open.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "nxTriangleMeshSortEdgeRecords"
     },
     {
       "id": "phys_fn_002181",
@@ -41359,13 +41361,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/TriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/829",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6888",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00054140"
+      "static_proof": "The row is the in-place quicksort entry for 16-byte edge records. Oracle disassembly at RVA 0x00054140 and continuation 0x00054150 compare unsigned words[0], then unsigned words[1], and swap each four-word record as a unit. The recursive partition and tail-iteration structure are reproduced in TriangleMesh.cpp.",
+      "dynamic_proof": "NxPhysicsTriangleMeshSortTests calls the pinned oracle at RVA 0x00054140 and resolves the candidate symbol from the staged candidate NxPhysics.map. Four cases (duplicate/high-bit keys, partial range with guards, singleton, empty range) match digest a4b713d8 with mismatches=0, stdout_delta=0, stderr_exact=True. Candidate-only mutation of the secondary comparator from words[1] to payload words[2] changes the candidate digest to d1450f88 and is detected with stdout_delta=2; restored build returns exact. Full Phase 4 gate passes at 560/560 assertions. See evidence/phase4-falsification.md section 28.",
+      "notes": "Direct internal-row differential only; TriangleMesh edge/adjacency caller integration remains open.",
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "nxTriangleMeshSortEdgeRecords"
     },
     {
       "id": "phys_fn_002183",

@@ -35,6 +35,62 @@ static const char* const kTriangleMeshPMapCreateFailedMessage = "TriangleMesh::l
 static const char* const kTriangleMeshReleaseInUseMessage =
 	"TriangleMesh::release: instances of this mesh still exist!";
 
+// phys_fn_002180 (0x00054140) and its aligned continuation phys_fn_002182
+// (0x00054150): in-place quicksort of 16-byte mesh-edge records. Keys are the
+// first two unsigned words; the remaining pair travels with the record. Keep
+// this as a named C entry so the staged-pair probe can resolve the candidate
+// implementation from NxPhysics.map without adding a public export.
+struct NxTriangleMeshSortRecord
+	{
+	NxU32 words[4];
+	};
+
+static void nxTriangleMeshSortRecords(NxTriangleMeshSortRecord* records, NxI32 low, NxI32 high)
+	{
+	for(;;)
+		{
+	NxI32 i = low;
+	NxI32 j = high;
+	const NxTriangleMeshSortRecord pivot = records[(low + high) / 2];
+	if(low <= high)
+		{
+		for(;;)
+			{
+			while(records[i].words[0] < pivot.words[0] ||
+				(records[i].words[0] == pivot.words[0] && records[i].words[1] < pivot.words[1]))
+				++i;
+			while(pivot.words[0] < records[j].words[0] ||
+				(pivot.words[0] == records[j].words[0] && pivot.words[1] < records[j].words[1]))
+				--j;
+			if(j < i)
+				break;
+			const NxTriangleMeshSortRecord temporary = records[i];
+			records[i] = records[j];
+			records[j] = temporary;
+			++i;
+			--j;
+			if(i > j)
+				break;
+			}
+		}
+		if(low < j)
+			nxTriangleMeshSortRecords(records, low, j);
+		if(i >= high)
+			break;
+		low = i;
+		}
+	}
+
+extern "C" __declspec(noinline) void __cdecl nxTriangleMeshSortEdgeRecords(
+	void* rawRecords, NxI32 low, NxI32 high)
+	{
+	nxTriangleMeshSortRecords(static_cast<NxTriangleMeshSortRecord*>(rawRecords), low, high);
+	}
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+#pragma comment(linker, "/include:_nxTriangleMeshSortEdgeRecords")
+#endif
+
 // The cleanup helper at 0x00054a80 invokes slot 0 with deleting flag 1 for
 // three opaque TriangleMesh-owned objects (+0xa4, +0xa8 and +0xac). Preserve
 // that ABI operation until their concrete types are recovered.
