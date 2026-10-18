@@ -3330,6 +3330,18 @@ void nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4)
 	fn(first, b);
 	}
 
+// phys_fn_003467 preserves the integer result from its global two-argument call.
+unsigned nxGlobalCallSelf7c803467(void* self,
+	unsigned (__cdecl* fn)(unsigned, unsigned))
+	{
+	unsigned char* const p = static_cast<unsigned char*>(self);
+	void* const nested = *reinterpret_cast<void**>(p + 0x7c);
+	const unsigned first = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(nested) + 0x30);
+	const unsigned second = *reinterpret_cast<unsigned*>(p + 0x80);
+	return fn(first, second);
+	}
+
 // phys_fn_003461 preserves the callback's x87 double result through reciprocal.
 double nxGlobalCallReciprocalDouble(void* self, NxGlobalFn2ReciprocalDouble fn)
 	{

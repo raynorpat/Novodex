@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003467",
+  "candidate_dll_sha256": "3b4401bede7b6f78631d01a0f4e7f46919d4f470e7c389fdedd7de2ff3770693",
+  "candidate_map_symbol": "?nxGlobalCallSelf7c803467@@YAIPAXP6AIII@Z@Z",
+  "candidate_map_address": "0x1004adb0",
+  "transcripts": [
+    {
+      "file": "focused-restored.log.gz",
+      "source_log": "phase7-global-call2-003467-restored.log",
+      "source_sha256": "9d5119f83c92de100ef357fc778faa24739ce8e95174240505d3f0c5a19f8cdf",
+      "compressed_sha256": "c5804c4006a5f02e9260295ec5f85d1f2341310a7a121347846af4979c6ba8cd",
+      "bytes": 28079
+    },
+    {
+      "file": "focused-mutant.log.gz",
+      "source_log": "phase7-global-call2-003467-mutant.log",
+      "source_sha256": "54887a5f9a81dcc1d6b541e64223774ad5ba67873dedfc5f33677e254f0e7008",
+      "compressed_sha256": "9046fd906703e21683079a743096c23f6fe7fbea7defed04d3ee28cd4af26565",
+      "bytes": 27580
+    },
+    {
+      "file": "phase5.log.gz",
+      "source_log": "phase5-global-call2-003467.log",
+      "source_sha256": "14715dac3987a42a07685a94fcbff4400c393626aadb8039ab22e2997a3b01f3",
+      "compressed_sha256": "6baaa0dbf6baecd66ce0f3b6ff24428adb2300a461d1f790fca1a21341cd8416",
+      "bytes": 2260321
+    },
+    {
+      "file": "phase6.log.gz",
+      "source_log": "phase6-global-call2-003467.log",
+      "source_sha256": "10d5c5e2ac98711e2a1f4547a4a3748363548dacd8d30382c73b96d32c2c083a",
+      "compressed_sha256": "6c07eab67691606e45b617ef5568d65d31302ef52230508e13e74a8694146098",
+      "bytes": 2418495
+    },
+    {
+      "file": "phase7.log.gz",
+      "source_log": "phase7-global-call2-003467.log",
+      "source_sha256": "a2791b2f6576dd0b840590c571d9b713b502d850c80db053c9ed92765920f88f",
+      "compressed_sha256": "ac2105f8dc127bad21ff876b17a57553158d08ef1c2124e98b6386b7a1d19cb2",
+      "bytes": 3816071
+    }
+  ]
+}

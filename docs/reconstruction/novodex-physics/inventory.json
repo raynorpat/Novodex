@@ -65992,13 +65992,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "two-argument global-call thunk (0x84fb0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1291",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12258",
       "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84fb0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
-      "notes": ""
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly compares oracle RVA 0x00084fb0 with nxGlobalCallSelf7c803467 using a pinned callback recorder. The check verifies the callback receives the dword at [self+0x7c]+0x30 and the dword at [self+0x80], returns the callback result unchanged, and preserves x86 stack balance. Mutating the second read to self+0x84 is detected by the registered row marker (mismatches=1) and fails the differential; restored output reports cases=1 stack=1/1 mismatches=0.",
+      "notes": "Dedicated per-row implementation preserves the callback return value, unlike the shared void two-argument thunk helper."
     },
     {
       "id": "phys_fn_003468",

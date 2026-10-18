@@ -3,7 +3,7 @@
   "target": "NxPhysicsObjectLayoutTests",
   "format": "layout_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "04cf3bf95ce3364c394c06cbfec1631adf79b220beec5cd79719ded28870d3d9",
+  "fixture_source_sha256": "0fef4dacdf9785e1065475b9c14d7b0c728c6be4991eaf17e9368ea459bdbbf1",
   "fixture_sources": [
     "tests/PhysicsObjectLayoutTests.cpp",
     "tests/PhysicsElementCountRowFixture.inl",
@@ -12,8 +12,8 @@
     "tests/PhysicsLockedArrayDataRowFixture.inl"
   ],
   "proof_lines_sha256": "02430f846b8e6ea513aa9f4399fe7c5d2b6adc68540c2310f7c5b812d377f80d",
-  "baseline_sha256": "5a67fc24a69694b86337e3930fde41abc9640be44303b22360b2541605b42c01",
+  "baseline_sha256": "1f299b56b2b7ddd5d40a68596ffd28e450450b96977f3bc43cb1d94f2800c9eb",
   "oracle_digest_fnv32": "3acf0dc7",
   "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=7 reciprocal003461=6 copy6003483=1",
-  "proof_sha256": "b78e7ae1368b4e362adca320773d71c596f0899f4b74d521be219209016f2ea8"
+  "proof_sha256": "381dbf83ef0f8d9bc1d8ae98d0b25f065a79318649f2bc5e2a3675e31afd0368"
 }
