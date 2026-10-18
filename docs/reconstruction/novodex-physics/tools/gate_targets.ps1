@@ -3709,6 +3709,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # Row 003649 pins all non-pointer FluidCreate arguments against distinct descriptor values.
         'simulation row3649 create-args arguments=14 digest=1d2e206d manager=1 exact=1'
         # Rows 003653/003655 copy implicit-mesh vertex, normal, and index streams after simulation.
+        'simulation implicit-mesh post-step-row row=003657 mapped=1'
         'simulation implicit-mesh post-step-copy rows=003653.003655 matched=1 ready=1 fetched=1 data-match=1 vertices=1 triangles=1 data=3f800001.3f800002.3f800003/40000001.40000002.40000003/3f000001.3f000002.3f000003'
         # Row 003649 pins combined mesh/emitter/particle initialization and fluid teardown callbacks.
 		'simulation row3649 combined-init order=CMEP length=4 teardown=DP teardown-length=2 callbacks=1.1.1 cleanup=1.0.0 exact=1'
@@ -6357,7 +6358,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2908  # adds nine independently registered constant-argument thunk rows
+	'5' = 2909  # adds phys_fn_003657 implicit-mesh callback row mapping
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
@@ -6447,7 +6448,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1765  # adds nine independently registered constant-argument thunk rows
+	'6' = 1766  # adds phys_fn_003657 implicit-mesh callback row mapping
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # previous 1724 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6499,7 +6500,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3047  # adds nine independently registered constant-argument thunk rows
+	'7' = 3048  # adds phys_fn_003657 implicit-mesh callback row mapping
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions

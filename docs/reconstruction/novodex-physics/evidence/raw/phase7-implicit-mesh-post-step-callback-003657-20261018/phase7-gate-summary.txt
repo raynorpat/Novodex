@@ -1,0 +1,7 @@
+Phase 7 runner command:
+& docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 7 -RepoRoot D:\github\Novodex -BuildRoot D:\github\Novodex\build\phase7-implicit-mesh-callback-003657 -PairsRoot D:\github\Novodex\build\phase7-implicit-mesh-callback-003657\pairs
+
+Result: phase_gate=7 status=pass; 3048 of 3048 required coverage assertions.
+Phase 5: phase_gate=5 status=pass; 2909 of 2909 required coverage assertions (phase5-gate.log).
+Phase 6: phase_gate=6 status=pass; 1766 of 1766 required coverage assertions (phase6-gate.log).
+The staged-pair simulation transcript reports row 003657 mapped=1 and exact implicit-mesh vertex, normal, index, and count data for both oracle and candidate. Mutation and restored-control runner transcripts are preserved in this directory.

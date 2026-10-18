@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003657",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "e3d777cc2ce8caf3f7eca29fea3de6bbed2df68a7cfdeea632ae618a9c094584",
+  "mutation": "changed nxFluidPostStepImplicitMeshUpdate to return immediately while retaining the map entry",
+  "mutation_result": "oracle_exit=0 candidate_exit=1 stdout_delta=4130; mapped=1 matched=0 and mesh outputs remained zero",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; mapped=1 matched=1 with exact mesh streams",
+  "phase_gates": {
+    "5": "pass 2909/2909",
+    "6": "pass 1766/1766",
+    "7": "pass 3048/3048"
+  },
+  "raw_logs": [
+    "mutation-differential.log.gz",
+    "mutation-gate.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate-summary.txt",
+    "restored-candidate-control.log.gz"
+  ],
+  "sha256": {
+    "mutation-differential.log.gz": "aa77d068017e2f0891d03b11ecfab6d70b2498ff4a52f8d64ca23b27df6cd6d0",
+    "mutation-gate.log.gz": "fd98d657f5ea48d6b3ad46e30b860c59856a36ebd851404c4805e56e2f1d0a52",
+    "phase5-gate.log.gz": "fbbccf152e17c178c199c069f10e6823eed8c2154b5b559a0a505268b292d633",
+    "phase6-gate.log.gz": "2b452d372adbc3f165fb7b4122c521fe8acef9c358f4043b41c1bd246d16a2a6",
+    "phase7-gate-summary.txt": "818d70901730eb6d05bd10da56c1cb6972ea0d45419ca32c5740748ace64280a",
+    "restored-candidate-control.log.gz": "e2991a24a2550fe345ead8cf28200fd8915b4e56dde4637969d791657f5cda4a"
+  }
+}

@@ -7374,6 +7374,24 @@ int wmain(int argc, wchar_t** argv)
 		implicitMeshCopyStepMatches = implicitMeshCopyReady &&
 			implicitMeshCopyFetched && implicitMeshCopyDataMatches;
 		}
+	void* implicitMeshPostStepAddress = 0;
+	bool implicitMeshPostStepMapped = nxSimulationResolvePrivateRow(
+		physics, pairDirectory, "@nxFluidPostStepImplicitMeshUpdate@8",
+		0x0008abe0, &implicitMeshPostStepAddress);
+	// The oracle map preserves the original private address but cannot name the
+	// reconstructed candidate helper. Resolve the oracle row by its shipped RVA.
+	const wchar_t* pairLeaf = wcsrchr(pairDirectory, L'\\');
+	if(!implicitMeshPostStepMapped && pairLeaf &&
+		wcscmp(pairLeaf + 1, L"oracle") == 0)
+		{
+		implicitMeshPostStepAddress = reinterpret_cast<unsigned char*>(physics) +
+			0x0008abe0;
+		implicitMeshPostStepMapped = true;
+		}
+	implicitMeshCopyStepMatches = implicitMeshCopyStepMatches &&
+		implicitMeshPostStepMapped;
+	printf("simulation implicit-mesh post-step-row row=003657 mapped=%u\n",
+		implicitMeshPostStepMapped ? 1u : 0u);
 	printf("simulation implicit-mesh post-step-copy rows=003653.003655 matched=%u ready=%u fetched=%u data-match=%u vertices=%u triangles=%u data=%08x.%08x.%08x/%08x.%08x.%08x/%08x.%08x.%08x\n",
 		implicitMeshCopyStepMatches ? 1u : 0u,
 		implicitMeshCopyReady ? 1u : 0u,

@@ -8274,6 +8274,28 @@ static void nxFluidCopyImplicitMeshData(unsigned char* record, unsigned* mesh)
 		*countOutput = count;
 	}
 
+// phys_fn_003657 (0x0008abe0): fetch one implicit mesh from FluidModel and
+// copy its streams into the owning fluid's mesh-data record.
+extern "C" __declspec(noinline) void __fastcall
+nxFluidPostStepImplicitMeshUpdate(void* meshRecord, void*)
+	{
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.dll");
+	if(!fluidModel)
+		return;
+	NxImplicitFluidMeshGetMeshCallback getMesh =
+		reinterpret_cast<NxImplicitFluidMeshGetMeshCallback>(
+			GetProcAddress(fluidModel, "ImplicitFluidMeshGetMesh"));
+	if(!getMesh)
+		return;
+	auto record = static_cast<unsigned char*>(meshRecord);
+	auto ownerFluid = *reinterpret_cast<unsigned char**>(record + 4);
+	auto ownerBackend = *reinterpret_cast<unsigned char**>(ownerFluid + 0x7c);
+	const unsigned ownerSystem = *reinterpret_cast<unsigned*>(ownerBackend + 0x30);
+	const unsigned ownerHandle = *reinterpret_cast<unsigned*>(ownerFluid + 0x80);
+	if(unsigned* mesh = getMesh(ownerSystem, ownerHandle))
+		nxFluidCopyImplicitMeshData(record, mesh);
+	}
+
 // phys_fn_003651 (0x0008a9a0): copy post-step particle position, velocity,
 // and flag fields from 92-byte backend records into the caller's buffers.
 static __declspec(noinline) void* __cdecl nxFluidCopyPostStepParticleData(
@@ -8332,21 +8354,7 @@ static void nxFluidPostStepUpdate(void* fluid)
 		reinterpret_cast<NxVec3*>(bytes + 0x5c),
 		reinterpret_cast<NxVec3*>(bytes + 0x68));
 	if(void* meshRecord = *reinterpret_cast<void**>(bytes + 0x24))
-		{
-			NxImplicitFluidMeshGetMeshCallback getMesh =
-				reinterpret_cast<NxImplicitFluidMeshGetMeshCallback>(
-					GetProcAddress(fluidModel, "ImplicitFluidMeshGetMesh"));
-			if(getMesh)
-				{
-				auto recordBytes = static_cast<unsigned char*>(meshRecord);
-				auto ownerFluid = *reinterpret_cast<unsigned char**>(recordBytes + 4);
-				auto ownerBackend = *reinterpret_cast<unsigned char**>(ownerFluid + 0x7c);
-				const unsigned ownerSystem = *reinterpret_cast<unsigned*>(ownerBackend + 0x30);
-				const unsigned ownerHandle = *reinterpret_cast<unsigned*>(ownerFluid + 0x80);
-				if(unsigned* mesh = getMesh(ownerSystem, ownerHandle))
-					nxFluidCopyImplicitMeshData(recordBytes, mesh);
-			}
-		}
+		nxFluidPostStepImplicitMeshUpdate(meshRecord, 0);
 	unsigned* particles = getParticles(system, handle);
 	if(particles)
 		nxFluidCopyPostStepParticleData(bytes + 0x28, particles);

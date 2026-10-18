@@ -11344,3 +11344,5 @@ The nine rows below have individual oracle/candidate mutation proofs; each argum
 | phys_fn_004429 | mismatches=1 |
 | phys_fn_004431 | mismatches=1 |
 | phys_fn_004433 | mismatches=1 |
+
+Phase 7 implicit-fluid-mesh post-step callback `phys_fn_003657`: a no-op mutation is rejected by the registered `NxPhysicsSimulationTests` differential (`stdout_delta=4130`); restored control matches with zero delta. See `phase7-implicit-mesh-post-step-callback-003657.md` and `evidence/raw/phase7-implicit-mesh-post-step-callback-003657-20261018/`.

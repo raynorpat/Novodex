@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2908, "6": 1765, "7": 3047}
+    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2909, "6": 1766, "7": 3048}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -1059,6 +1059,21 @@ class ConstantArgumentThunkCoverage(unittest.TestCase):
                 "%s candidate differential does not call its production row" % row)
             self.assertIn('printf("vtconst row=phys_fn_%s mismatches=%u\\n"', source,
                 "the fixture does not emit row-specific results for %s" % row)
+
+
+class ImplicitMeshPostStepRowCoverage(unittest.TestCase):
+    """The 003657 callback is mapped and its result is a required simulation assertion."""
+
+    def test_callback_mapping_is_a_required_simulation_marker(self):
+        marker = "simulation implicit-mesh post-step-row row=003657 mapped=1"
+        self.assertIn(marker, registered_lines().get("NxPhysicsSimulationTests", []))
+        source = (REPO_ROOT / "tests" / "PhysicsSimulationTests.cpp").read_text(
+            encoding="utf-8")
+        self.assertIn('"@nxFluidPostStepImplicitMeshUpdate@8"', source)
+        scene = (REPO_ROOT / "Physics" / "src" / "Scene.cpp").read_text(
+            encoding="utf-8")
+        self.assertTrue("nxFluidPostStepImplicitMeshUpdate" in scene,
+            "phys_fn_003657 has no candidate helper")
 
 if __name__ == "__main__":
     unittest.main()
