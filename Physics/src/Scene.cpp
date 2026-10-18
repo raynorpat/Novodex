@@ -2027,8 +2027,9 @@ static void __fastcall nxFluidGetWorldBounds(void* wrapper, void*, NxBounds3& bo
 	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
 	nxNpSceneGuardEnter(readLock);
 	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
-	memcpy(&bounds, static_cast<unsigned char*>(internal) + 0x5c,
-		6 * sizeof(unsigned));
+	const NxGlobalCopy6ToOut003483* const copy =
+		reinterpret_cast<const NxGlobalCopy6ToOut003483*>(internal);
+	copy->copyTo(reinterpret_cast<unsigned*>(&bounds));
 	nxNpSceneGuardLeave(readLock);
 	}
 

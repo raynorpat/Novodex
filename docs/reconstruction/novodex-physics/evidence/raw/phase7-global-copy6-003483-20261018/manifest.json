@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003483",
+  "candidate_dll_sha256": "b0892f5741b462762408bcc9182d7fab659718288d5474cb8a19d973425faa62",
+  "restored_source_sha256": "a40ee759ad43b6d2f62effb99b120480ec02a536fa99402f8718e869cfb649df",
+  "transcripts": [
+    {
+      "file": "focused-restored-final.log.gz",
+      "source_log": "phase7-copy6-003483-restored-final.log",
+      "source_sha256": "9590a1b9c7ebb16e5e939ac09b9215acee1d89b27f9157ecfc512203e1b8130f",
+      "compressed_sha256": "27598b3dda49aece97f06ef64b856f5de46985ca33f62ba216a04a6d74c06aa1",
+      "bytes": 896358
+    },
+    {
+      "file": "focused-row-mutant.log.gz",
+      "source_log": "phase7-copy6-003483-mutant.log",
+      "source_sha256": "e3c291d25f198e53950f549fe83f57dbe3d69964b3eb3db84b14667a0d4001c2",
+      "compressed_sha256": "e10352b99092a6fc0523a8af1e9ebc1145f924737e9e441cfa148c1f51c61f43",
+      "bytes": 27924
+    },
+    {
+      "file": "wired-public-path-mutant.log.gz",
+      "source_log": "phase7-copy6-003483-wired-mutant.log",
+      "source_sha256": "bad33378556703fda4b455d7d87a6dc3c8faf7a22a457fc88f7d10b487a0f555",
+      "compressed_sha256": "b0534c99343739972156302fb1fdca1baa039772599c3a56375731bf9f18fe01",
+      "bytes": 861464
+    },
+    {
+      "file": "phase5-final.log.gz",
+      "source_log": "phase5-copy6-003483-final.log",
+      "source_sha256": "a16a3344e7a93e4105a810877c8337854c781c65880ea94b1f87f386943a1d3f",
+      "compressed_sha256": "c5c89ff6b09a96be0453345d2d47059d059a772890974057609725824d93ac7c",
+      "bytes": 2260217
+    },
+    {
+      "file": "phase6-final.log.gz",
+      "source_log": "phase6-copy6-003483-final.log",
+      "source_sha256": "d83bbeb870954aae3430839c52e70f009e56122920711c8aaff0ddbe1682b3d1",
+      "compressed_sha256": "3c982b3ccac77efbb3048d1bbf6d30d1ef50414b008e196b47a19c323997f32b",
+      "bytes": 2418447
+    },
+    {
+      "file": "phase7-final.log.gz",
+      "source_log": "phase7-copy6-003483-final.log",
+      "source_sha256": "8ffd652e3b011e2a5c4b2ba2ed47df96b2fe1d1423f6bc1213f0610dae963382",
+      "compressed_sha256": "5fdb3a75aa8c7eb36743c9a1adcf547f7be927a3b20f133c1123665af7297a9e",
+      "bytes": 3815899
+    }
+  ]
+}

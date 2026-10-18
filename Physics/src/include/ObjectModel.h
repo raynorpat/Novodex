@@ -1445,6 +1445,13 @@ void					nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4);
 double					nxGlobalCallReciprocalDouble(void* self,
 							NxGlobalFn2ReciprocalDouble fn);
 
+//! phys_fn_003483 copies six dwords from self+0x5c to an output and returns it.
+class NxGlobalCopy6ToOut003483
+	{
+public:
+	unsigned* copyTo(unsigned* out) const;
+	};
+
 //! phys_fn_003575 (0x87f10, ret 4): the family's float-OUT variant. It reads
 //! the object from [self+4], takes [[obj+0x7c]+0x30] and [obj+0x80] as the
 //! first two arguments and [self+8] as the third, calls the global slot, and

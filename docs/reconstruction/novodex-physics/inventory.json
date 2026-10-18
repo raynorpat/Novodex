@@ -66305,13 +66305,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "copy [this+0x5c..0x70] to one out arg (0x85780, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1298",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12292",
-      "static_proof": "6 dword moves to out arg; ret 4",
-      "dynamic_proof": "confirmed via multicopy drive (3z60): failures=0",
-      "notes": ""
+      "static_proof": "IDA decompilation at 0x00085780 copies the six dwords at [this+0x5c..0x70] to the output buffer, returns that buffer in EAX, and uses ret 4. The CMake Release map resolves NxGlobalCopy6ToOut003483::copyTo in ObjectModel.obj at 0x10046960.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x00085780 and candidate NxGlobalCopy6ToOut003483::copyTo on six distinct dwords. It compares all six words, returned output pointer, and stack balance; shifting the candidate source from +0x5c to +0x60 is detected (mismatches=1 and the registered required marker is rejected). The public nxFluidGetWorldBounds path now calls this helper under the scene read lock; its simulation differential matches exact six-word output, and the same offset mutation causes the registered public simulation differential to fail. Restored direct and public-path comparisons pass.",
+      "notes": "This six-word thiscall out-copy thunk is now the implementation used by the public fluid world-bounds path as well as the row-specific ABI fixture.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?copyTo@NxGlobalCopy6ToOut003483@@QBEPAIPAI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?copyTo@NxGlobalCopy6ToOut003483@@QBEPAIPAI@Z",
+        "address": "0x10046960",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003484",

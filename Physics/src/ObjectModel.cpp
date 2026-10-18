@@ -3344,6 +3344,15 @@ double nxGlobalCallReciprocalDouble(void* self, NxGlobalFn2ReciprocalDouble fn)
 	return 1.0 / fn(first, second);
 	}
 
+// phys_fn_003483 copies the six-word pose payload and returns the caller's buffer.
+unsigned* NxGlobalCopy6ToOut003483::copyTo(unsigned* out) const
+	{
+	const unsigned char* source = reinterpret_cast<const unsigned char*>(this) + 0x5c;
+	for(unsigned i = 0; i != 6; ++i)
+		memcpy(out + i, source + i * sizeof(unsigned), sizeof(unsigned));
+	return out;
+	}
+
 // phys_fn_003575 (0x87f10, ret 4): the float-OUT variant.
 void nxThunkFloatOut3575(void* self, float* out, NxFloatRet3Fn fn)
 	{
