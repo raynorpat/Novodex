@@ -1263,6 +1263,23 @@ static NxFluidEmitter** __fastcall nxFluidGetEmitters(void* wrapper, void*)
 	return emitters;
 	}
 
+// phys_fn_003425 / phys_fn_003427 (0x84d10 / 0x84d30) are the pair of
+// eleven-dword record-copy helpers used by the locked public accessors below.
+class NxFluidParticleWriteDataCopy
+	{
+	public:
+	__declspec(noinline) void copyTo(NxParticleData* output)
+		{
+		memcpy(output, reinterpret_cast<unsigned char*>(this) + 0x28,
+			 sizeof(*output));
+		}
+	__declspec(noinline) void copyFrom(const NxParticleData& input)
+		{
+		memcpy(reinterpret_cast<unsigned char*>(this) + 0x28, &input,
+			sizeof(input));
+		}
+	};
+
 // phys_fn_003712 (0x0008b530): copy the internal particle write-data record
 // to the caller's aggregate return buffer under the Scene read lock.
 static NxParticleData* __fastcall nxFluidGetParticlesWriteData(void* wrapper,
@@ -1272,8 +1289,7 @@ static NxParticleData* __fastcall nxFluidGetParticlesWriteData(void* wrapper,
 	void* const readLock = *reinterpret_cast<void**>(wrapperBytes + 0x10);
 	nxNpSceneGuardEnter(readLock);
 	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
-	memcpy(result, static_cast<unsigned char*>(internal) + 0x28,
-		sizeof(*result));
+	reinterpret_cast<NxFluidParticleWriteDataCopy*>(internal)->copyTo(result);
 	nxNpSceneGuardLeave(readLock);
 	return result;
 	}
@@ -1334,9 +1350,8 @@ static void __fastcall nxFluidSetParticlesWriteData(void* wrapper, void*,
 		return;
 		}
 	gNxApiReentry = true;
-	unsigned char* const internal = static_cast<unsigned char*>(
-		*reinterpret_cast<void**>(wrapperBytes + 0x14));
-	memcpy(internal + 0x28, &data, sizeof(data));
+	void* const internal = *reinterpret_cast<void**>(wrapperBytes + 0x14);
+	reinterpret_cast<NxFluidParticleWriteDataCopy*>(internal)->copyFrom(data);
 	gNxApiReentry = false;
 	nxNpSceneGuardLeave(writeLock);
 	}

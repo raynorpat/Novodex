@@ -12,6 +12,7 @@
 #include "NxFoundationSDK.h"
 #include "NxUserOutputStream.h"
 #include "fluids/NxFluidEmitter.h"
+#include "fluids/NxParticleData.h"
 #include "fluids/NpFluidEmitter.h"
 #include "fluids/NxMeshData.h"
 #include "ContactPairManager.h"
@@ -876,12 +877,22 @@ static bool nxResolveCandidateFluidEmitterSymbol(HMODULE module, const char* exp
 		std::string::size_type symbolPosition = line.find(expected);
 		if(symbolPosition == std::string::npos)
 			continue;
-		std::istringstream addressField(line.substr(symbolPosition + strlen(expected)));
+		std::istringstream addressFields(line.substr(symbolPosition));
 		std::string addressText;
-		addressField >> addressText;
-		std::istringstream addressValue(addressText);
-		addressValue >> std::hex >> preferredAddress;
-		if(!addressField || !addressValue)
+		bool foundAddress = false;
+		while(addressFields >> addressText)
+			{
+			std::istringstream addressValue(addressText);
+			unsigned parsedAddress = 0;
+			addressValue >> std::hex >> parsedAddress;
+			if(addressValue && addressValue.peek() == std::char_traits<char>::eof())
+				{
+				preferredAddress = parsedAddress;
+				foundAddress = true;
+				break;
+				}
+			}
+		if(!foundAddress)
 			{ fprintf(stderr, "candidate NxPhysics map address parse failed: %s\n", line.c_str()); return false; }
 		IMAGE_DOS_HEADER* dos = reinterpret_cast<IMAGE_DOS_HEADER*>(module);
 		if(dos->e_magic != IMAGE_DOS_SIGNATURE)
@@ -897,6 +908,120 @@ static bool nxResolveCandidateFluidEmitterSymbol(HMODULE module, const char* exp
 		}
 	fprintf(stderr, "candidate NxPhysics map has no symbol: %s\n", expected);
 	return false;
+	}
+
+static unsigned nxRunFluidParticleWriteDataCopyDifferential(
+	const unsigned char* oracleImage, HMODULE candidatePhysics)
+	{
+	if(!oracleImage || !candidatePhysics)
+		return 1;
+	void* candidateGetAddress = 0;
+	void* candidateSetAddress = 0;
+	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"copyTo@NxFluidParticleWriteDataCopy", &candidateGetAddress) ||
+		!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
+		"copyFrom@NxFluidParticleWriteDataCopy", &candidateSetAddress))
+		return 1;
+	typedef void (__thiscall *GetCopy)(void*, NxParticleData*);
+	typedef void (__thiscall *SetCopy)(void*, const NxParticleData&);
+	GetCopy oracleGet = reinterpret_cast<GetCopy>(
+		const_cast<unsigned char*>(oracleImage) + 0x84d10);
+	SetCopy oracleSet = reinterpret_cast<SetCopy>(
+		const_cast<unsigned char*>(oracleImage) + 0x84d30);
+	GetCopy candidateGet = reinterpret_cast<GetCopy>(candidateGetAddress);
+	SetCopy candidateSet = reinterpret_cast<SetCopy>(candidateSetAddress);
+	unsigned mismatches = 0;
+	unsigned getterMismatches = 0;
+	unsigned setterMismatches = 0;
+	unsigned stackChecks = 0;
+	for(unsigned test = 0; test != 3; ++test)
+		{
+		unsigned char oracleRecord[0x60], candidateRecord[0x60];
+		memset(oracleRecord, 0xa5, sizeof(oracleRecord));
+		memset(candidateRecord, 0xa5, sizeof(candidateRecord));
+		for(unsigned word = 0; word != 11; ++word)
+			{
+			const unsigned value = 0x10203040u + test * 0x100u + word;
+			memcpy(oracleRecord + 0x28 + word * 4, &value, 4);
+			memcpy(candidateRecord + 0x28 + word * 4, &value, 4);
+			}
+		unsigned oracleOutStorage[13], candidateOutStorage[13];
+		memset(oracleOutStorage, 0x5a, sizeof(oracleOutStorage));
+		memset(candidateOutStorage, 0x5a, sizeof(candidateOutStorage));
+		NxParticleData* const oracleOut = reinterpret_cast<NxParticleData*>(
+			oracleOutStorage + 1);
+		NxParticleData* const candidateOut = reinterpret_cast<NxParticleData*>(
+			candidateOutStorage + 1);
+		unsigned oracleBefore = 0, oracleAfter = 0;
+		unsigned candidateBefore = 0, candidateAfter = 0;
+		__asm mov oracleBefore, esp
+		oracleGet(oracleRecord, oracleOut);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		candidateGet(candidateRecord, candidateOut);
+		__asm mov candidateAfter, esp
+		const bool outputMatch = memcmp(oracleOut, candidateOut,
+			sizeof(*oracleOut)) == 0 &&
+			memcmp(oracleOut, oracleRecord + 0x28, sizeof(*oracleOut)) == 0;
+		const bool getterGuards = oracleRecord[0x27] == 0xa5 &&
+			candidateRecord[0x27] == 0xa5 &&
+			oracleRecord[0x54] == 0xa5 && candidateRecord[0x54] == 0xa5 &&
+			reinterpret_cast<unsigned char*>(oracleOutStorage)[0] == 0x5a &&
+			reinterpret_cast<unsigned char*>(oracleOutStorage)[51] == 0x5a &&
+			reinterpret_cast<unsigned char*>(candidateOutStorage)[0] == 0x5a &&
+			reinterpret_cast<unsigned char*>(candidateOutStorage)[51] == 0x5a;
+		const bool getterStack = oracleBefore == oracleAfter &&
+			candidateBefore == candidateAfter;
+		if(!outputMatch || !getterGuards || !getterStack)
+			{
+			++mismatches;
+			++getterMismatches;
+			fprintf(stderr, "particle getter mismatch case=%u output=%u guard=%u stack=%u size=%u\n",
+				test, outputMatch, getterGuards, getterStack,
+				static_cast<unsigned>(sizeof(NxParticleData)));
+			}
+		stackChecks += oracleBefore == oracleAfter &&
+			candidateBefore == candidateAfter;
+		NxParticleData input;
+		for(unsigned byte = 0; byte != sizeof(input); ++byte)
+			reinterpret_cast<unsigned char*>(&input)[byte] =
+				static_cast<unsigned char>(0x31u + test * 17u + byte * 3u);
+		unsigned char oracleBeforeSet[0x60], candidateBeforeSet[0x60];
+		memcpy(oracleBeforeSet, oracleRecord, sizeof(oracleRecord));
+		memcpy(candidateBeforeSet, candidateRecord, sizeof(candidateRecord));
+		__asm mov oracleBefore, esp
+		oracleSet(oracleRecord, input);
+		__asm mov oracleAfter, esp
+		__asm mov candidateBefore, esp
+		candidateSet(candidateRecord, input);
+		__asm mov candidateAfter, esp
+		const bool setterMatch = memcmp(oracleRecord, candidateRecord,
+			sizeof(oracleRecord)) == 0 &&
+			memcmp(oracleRecord + 0x28, &input, sizeof(input)) == 0;
+		const bool setterGuards =
+			memcmp(oracleRecord, oracleBeforeSet, 0x28) == 0 &&
+			memcmp(candidateRecord, candidateBeforeSet, 0x28) == 0 &&
+			memcmp(oracleRecord + 0x28 + sizeof(input),
+				oracleBeforeSet + 0x28 + sizeof(input),
+				sizeof(oracleRecord) - 0x28 - sizeof(input)) == 0 &&
+			memcmp(candidateRecord + 0x28 + sizeof(input),
+				candidateBeforeSet + 0x28 + sizeof(input),
+				sizeof(candidateRecord) - 0x28 - sizeof(input)) == 0;
+		const bool setterStack = oracleBefore == oracleAfter &&
+			candidateBefore == candidateAfter;
+		if(!setterMatch || !setterGuards || !setterStack)
+			{
+			++mismatches;
+			++setterMismatches;
+			fprintf(stderr, "particle setter mismatch case=%u data=%u guard=%u stack=%u\n",
+				test, setterMatch, setterGuards, setterStack);
+			}
+		stackChecks += oracleBefore == oracleAfter &&
+			candidateBefore == candidateAfter;
+		}
+	printf("fluid particle-write-data-copy rows=003425.003427 getter_words=11 setter_words=11 getter_result=void stack=%u getter_mismatches=%u setter_mismatches=%u mismatches=%u\n",
+		stackChecks == 6, getterMismatches, setterMismatches, mismatches);
+	return mismatches;
 	}
 
 struct NxFluidLicenseRegistryOverride
@@ -7653,6 +7778,8 @@ int wmain(int argc, wchar_t** argv)
 			expectedCandidateHash, actualCandidateHash);
 		return 1;
 		}
+	gFailures += nxRunFluidParticleWriteDataCopyDifferential(image,
+		candidatePhysics);
 	gFailures += nxRunFluidEmitterRecordConstructor(image, candidatePhysics);
 	gFailures += nxRunFluidEmitterRecordDestructor(image, candidatePhysics);
 	gFailures += nxRunFluidSolverConstructor(image, candidatePhysics);

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003425",
+    "phys_fn_003427"
+  ],
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "restored_candidate_sha256": "3b24fdd2fcd470b792dfdbb38ea86cc2b1cdf777ab53bfdf3f8a7af69555d2b6",
+  "getter_mutation": "candidate copyTo copies 10 dwords instead of 11; detected getter_mismatches=3, candidate exit 1",
+  "setter_mutation": "candidate copyFrom copies 10 dwords instead of 11; detected setter_mismatches=3, candidate exit 1",
+  "restored_differential": "oracle_exit=0; getter_mismatches=0; setter_mismatches=0; mismatches=0; differential=pass",
+  "phase_gates": {
+    "5": "pass 2885/2885",
+    "7": "pass 3024/3024"
+  },
+  "raw_logs": [
+    "getter-mutation.log.gz",
+    "setter-mutation.log.gz",
+    "restored-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}
