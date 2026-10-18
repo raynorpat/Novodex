@@ -1255,6 +1255,8 @@ typedef void (__cdecl* NxGlobalFn2)(unsigned, unsigned);
 void					nxGlobalCall2(void* self, NxGlobalFn2 fn, int viaField4);
 unsigned					nxGlobalCallSelf7c803467(void* self,
 							unsigned (__cdecl* fn)(unsigned, unsigned));
+unsigned					nxGlobalCallVia4Result003665(void* self,
+							unsigned (__cdecl* fn)(unsigned, unsigned));
 
 //! phys_fn_001583 (0x2ea70): a bare `ret` -- a one-byte no-op.
 void					nxNoop1583(void);

@@ -69812,18 +69812,26 @@
       "rva": "0x0008ad30",
       "size": 27,
       "kind": "code",
-      "label": "phys_fn_003665",
+      "label": "two-argument global-call thunk via [this+4] (0x8ad30)",
       "label_confidence": "stable-id",
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x8ad30u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1385",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12710",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ad30u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA disassembly at 0x1008ad30 loads the fluid from [this+4], forwards its backend context at [fluid+0x7c]+0x30 and handle at [fluid+0x80] to the global callback slot 0x101265ec, returns the callback integer unchanged, and uses ret. The CMake Release map resolves nxGlobalCallVia4Result003665 in ObjectModel.obj at 0x1004add0.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests calls oracle RVA 0x0008ad30 and candidate nxGlobalCallVia4Result003665 with a seeded callback recorder. It checks both forwarded values, the unchanged callback result, and x86 stack balance. Changing only the candidate handle read from fluid+0x80 to fluid+0x84 is detected by the row marker (mismatches=1) and the differential exits nonzero; restored output reports cases=1 stack=1/1 mismatches=0.",
+      "notes": "A dedicated return-preserving helper models the callback result and this+4 receiver indirection.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxGlobalCallVia4Result003665@@YAIPAXP6AIII@Z@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallVia4Result003665@@YAIPAXP6AIII@Z@Z",
+        "address": "0x1004add0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003666",

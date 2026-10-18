@@ -1,0 +1,7 @@
+# Phase 7 fluid-context callback thunk (`phys_fn_003665`)
+
+The 27-byte thiscall thunk at oracle RVA `0x0008ad30` dereferences `[this+4]` to the fluid, reads context from `[fluid+0x7c]+0x30` and the fluid handle from `[fluid+0x80]`, calls the global cdecl callback at `0x101265ec`, returns its integer result unchanged, and uses `ret`. The candidate implementation is `nxGlobalCallVia4Result003665` in `Physics/src/ObjectModel.cpp`; the CMake Release map resolves it in `ObjectModel.obj` at `0x1004add0`. A fresh IDA load of the built DLL confirms the same receiver dereference, two loads, indirect call, and return sequence.
+
+The registered `NxPhysicsObjectLayoutTests` differential compares oracle RVA `0x8ad30` with the candidate helper using separately seeded self, fluid, and backend records. It verifies the context and handle, callback return `0x6a6a5033`, and x86 stack balance: `global-call2 row=003665 cases=1 stack=1/1 mismatches=0`. Shifting the candidate handle read from `fluid+0x80` to `fluid+0x84` yields `mismatches=1` and fails the differential.
+
+Fresh Phase 5, 6, and 7 gates pass at 2,955/2,955, 1,806/1,806, and 3,091/3,091 registered assertions. Phase 7 closure advances to 510 closed / 50 deferred functions. Public Physics headers are unchanged; the full DLL reconstruction remains active. Transcripts and hashes are in [the raw evidence bundle](raw/phase7-global-call2-003665-20261018/).
