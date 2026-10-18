@@ -1679,8 +1679,8 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "In a clean git archive of mainline commit e3faa461, added an immediate return at the start of NxSceneInternal::simulateFrame (the 000655 per-substep body), rebuilt NxPhysics.dll and ran the registered Phase 7 staged-pair differential. The mutant was rejected: oracle_exit=0, candidate_exit=1, stdout_delta=3829, stderr_exact=False. Removing the mutation, rebuilding, and rerunning returned both exits=0, stdout_delta=0, stderr_exact=True.",
-        "detected": "stdout_delta=3829"
+        "mutation": "Removed the zero-timestep early return from NxSceneInternal::simulateSubstep, rebuilt NxPhysics.dll, and ran the registered NxPhysicsSimulationTests staged-pair differential. The variable-timing zero-delta fixture then advanced Scene+0x540 from 0 to 1; the candidate exited 1 while the oracle exited 0.",
+        "detected": "stdout_delta=3918"
       }
     },
     {
@@ -1699,8 +1699,8 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSimulationTests",
       "falsification": {
-        "mutation": "Inserted an immediate return at the start of NxSceneInternal::simulateFrame, rebuilt NxPhysics.dll, and ran the registered Phase 7 NxPhysicsSimulationTests staged-pair differential against the pinned oracle.",
-        "detected": "stdout_delta=3829"
+        "mutation": "Removed the Scene+0x70c bit-1 clear from NxSceneInternal::simulateFrame, rebuilt NxPhysics.dll, and ran the registered NxPhysicsSimulationTests staged-pair differential. The fixture seeded bit 1 and observed that it remained set after the zero-delta frame; the candidate exited 1 while the oracle exited 0.",
+        "detected": "stdout_delta=3918"
       }
     },
     {

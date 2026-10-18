@@ -8008,6 +8008,139 @@ void NxSceneInternal::row000615()
 		}
 	}
 
+// phys_fn_000655 (0x000137e0): run one active scene substep. The oracle
+// leaves the frame and scene time untouched when the scheduled timestep is zero.
+void NxSceneInternal::simulateSubstep()
+	{
+	const NxReal timestep = at<NxReal>(0x548);
+	if(timestep == 0.0f)
+		return;
+	at<NxReal>(0x53c) += timestep;
+	// The contact-patch cache stamps each pair against this per-substep
+	// counter. Advance it for both variable and fixed timestep methods.
+	++at<NxU32>(0x540);
+	// phys_fn_000608 -> 001976 refreshes broadphase pairs and their contact
+	// streams before the active islands build their solver rows.
+	nxSceneRefreshPairs(this);
+
+	// phys_fn_000635 (0x127e0): refresh dirty joint islands, then reset
+	// every body's sleep-group links before collision pairs are rebuilt.
+	Joint** joints = at<Joint**>(0x58c);
+	Joint** jointsEnd = at<Joint**>(0x590);
+	for(Joint** item = joints; item && item != jointsEnd; ++item)
+		{
+			void* joint = *item;
+			void* body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 8);
+			if(!body)
+				body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 0xc);
+			if(body)
+				reinterpret_cast<Row000762Fixture*>(body)->row000762(joint);
+		}
+	for(Joint** item = joints; item && item != jointsEnd; ++item)
+		{
+			void* joint = *item;
+			void* body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 8);
+			if(!body)
+				body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 0xc);
+			reinterpret_cast<Row000720Fixture*>(body)->row000720();
+		}
+	at<Joint**>(0x590) = joints;
+	void** bodies = at<void**>(0x56c);
+	void** bodiesEnd = at<void**>(0x570);
+	for(void** item = bodies; item && item != bodiesEnd; ++item)
+		reinterpret_cast<Row000764Fixture*>(*item)->row000764();
+	// 001976's dirty-prunable prepass reaches 001949/001303 before the
+	// pair-list refresh. The public shape slot 6 refreshes its world pose and
+	// advances ShapeBase+0x08 to this Scene frame; 000905 uses that stamp to
+	// detect the changed pair geometry and dispatch narrow phase.
+	void** trackedShapes = at<void**>(0x6a4);
+	const NxU32 trackedShapeCount = at<NxU32>(0x6a0);
+	for(NxU32 i = 0; trackedShapes && i < trackedShapeCount; ++i)
+		nxRuntimeShapeSlot6(static_cast<unsigned char*>(trackedShapes[i]), 1);
+
+	// phys_fn_000608's post-broadphase auxiliary-pair walk calls 000724 for
+	// each live pair with contacts. Rebuild those per-body links after 000764
+	// clears them and before active roots are collected for 000611.
+	NxPairList* contactPairs = reinterpret_cast<NxPairList*>(mBytes + 0x674);
+	for(NxPairNode* node = contactPairs->head; node;
+		node = node->at<NxPairNode*>(8))
+		{
+		NxActorPair* pair = node->pair();
+		if(!pair->at<NxU32>(0x10))
+			continue;
+		void* body0 = pair->at<void*>(8);
+		void* body1 = pair->at<void*>(0xc);
+		if(body0)
+			reinterpret_cast<Row000724Fixture*>(body0)->row000724(body1, node);
+		else if(body1)
+			reinterpret_cast<Row000724Fixture*>(body1)->row000724(0, node);
+		}
+
+	// 000655's active-island collection follows 000608. Keep only the
+	// self-parented, awake sleep-group roots in Scene+0x57c..+0x580.
+	void**& rootFirst = at<void**>(0x57c);
+	void**& rootLast = at<void**>(0x580);
+	void**& rootEnd = at<void**>(0x584);
+	for(void** item = bodies; item && item != bodiesEnd; ++item)
+		{
+			void* body = *item;
+			void* root = reinterpret_cast<Row000713Fixture*>(body)->row000713();
+			if(root != body || *reinterpret_cast<NxReal*>(
+				static_cast<NxU8*>(root) + 0x1f8) == 0.0f)
+				continue;
+			if(rootEnd <= rootLast)
+				{
+				const NxU32 count = rootFirst
+					? static_cast<NxU32>(rootLast - rootFirst) : 0;
+				const NxU32 capacity = count * 2 + 2;
+				const NxU32 held = rootFirst
+					? static_cast<NxU32>(rootEnd - rootFirst) : 0;
+				if(held < capacity)
+					{
+					void** grown = static_cast<void**>(nxFoundationSDKAllocator->malloc(
+						capacity * sizeof(void*), NX_MEMORY_PERSISTENT));
+					for(NxU32 i = 0; i < count; ++i)
+						grown[i] = rootFirst[i];
+					if(rootFirst)
+						nxFoundationSDKAllocator->free(rootFirst);
+					rootFirst = grown;
+					rootLast = grown + count;
+					rootEnd = grown + capacity;
+					}
+				}
+			*rootLast++ = body;
+		}
+
+	// phys_fn_000655 applies effectors after active roots are collected but
+	// before phys_fn_000610 integrates their bodies. The spring impulse must
+	// enter angular velocity before 000726 applies angular damping.
+	for(Effector* effector = at<Effector*>(0x5a4); effector;
+		effector = effector->mNext)
+		effector->tick();
+
+	// phys_fn_000610 walks active island roots (+0x57c) and each root's
+	// sleep-group chain (+0x1fc); inactive bodies must not be integrated.
+	row000610();
+	row000611();
+
+	// 000636 performs post-step velocity bookkeeping and clears the active
+	// root range before 000615 advances each body's COM/quaternion.
+	row000636();
+
+	// 000615 advances poses, notifies actors, and projects articulation
+	// islands after all of the active roots have been retired.
+	row000615();
+	// phys_fn_000655 calls 000917 once per completed substep. 000905 has
+	// stamped active contact-report records during the broadphase refresh;
+	// buffer their event flags and solved force totals for fetchResults.
+	nxSceneProcessTriggerPairs(this);
+	if(at<NxUserContactReport*>(0x6b4))
+		{
+		CpmPairHash* const reportHash = reinterpret_cast<CpmPairHash*>(mBytes + 0x2c);
+		cpmBufferContactReports0917(this, reportHash);
+		}
+	}
+
 // phys_fn_000659 (0x00013c40): select fixed or variable stepping under the
 // oracle's x87 precision-64/round-toward-zero mode, run each requested body
 // substep, then restore the caller's control word. The scheduler fields are
@@ -8016,6 +8149,7 @@ void NxSceneInternal::simulateFrame()
 	{
 	unsigned short savedControlWord = 0;
 	__asm fnstcw savedControlWord
+	at<NxU32>(0x70c) &= ~2u;
 	NxSetFPURoundingChop();
 	NxSetFPUPrecision64();
 
@@ -8072,129 +8206,7 @@ void NxSceneInternal::simulateFrame()
 
 	for(NxU32 iteration = 0; iteration < iterations; ++iteration)
 		{
-		// The contact-patch cache stamps each pair against this per-substep
-		// counter. Advance it for both variable and fixed timestep methods.
-		++at<NxU32>(0x540);
-		// phys_fn_000608 -> 001976 refreshes broadphase pairs and their contact
-		// streams before the active islands build their solver rows.
-		nxSceneRefreshPairs(this);
-
-		// phys_fn_000635 (0x127e0): refresh dirty joint islands, then reset
-		// every body's sleep-group links before collision pairs are rebuilt.
-		Joint** joints = at<Joint**>(0x58c);
-		Joint** jointsEnd = at<Joint**>(0x590);
-		for(Joint** item = joints; item && item != jointsEnd; ++item)
-			{
-				void* joint = *item;
-				void* body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 8);
-				if(!body)
-					body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 0xc);
-				if(body)
-					reinterpret_cast<Row000762Fixture*>(body)->row000762(joint);
-			}
-		for(Joint** item = joints; item && item != jointsEnd; ++item)
-			{
-				void* joint = *item;
-				void* body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 8);
-				if(!body)
-					body = *reinterpret_cast<void**>(static_cast<NxU8*>(joint) + 0xc);
-				reinterpret_cast<Row000720Fixture*>(body)->row000720();
-			}
-		at<Joint**>(0x590) = joints;
-		void** bodies = at<void**>(0x56c);
-		void** bodiesEnd = at<void**>(0x570);
-		for(void** item = bodies; item && item != bodiesEnd; ++item)
-			reinterpret_cast<Row000764Fixture*>(*item)->row000764();
-		// 001976's dirty-prunable prepass reaches 001949/001303 before the
-		// pair-list refresh. The public shape slot 6 refreshes its world pose and
-		// advances ShapeBase+0x08 to this Scene frame; 000905 uses that stamp to
-		// detect the changed pair geometry and dispatch narrow phase.
-		void** trackedShapes = at<void**>(0x6a4);
-		const NxU32 trackedShapeCount = at<NxU32>(0x6a0);
-		for(NxU32 i = 0; trackedShapes && i < trackedShapeCount; ++i)
-			nxRuntimeShapeSlot6(static_cast<unsigned char*>(trackedShapes[i]), 1);
-
-		// phys_fn_000608's post-broadphase auxiliary-pair walk calls 000724 for
-		// each live pair with contacts. Rebuild those per-body links after 000764
-		// clears them and before active roots are collected for 000611.
-		NxPairList* contactPairs = reinterpret_cast<NxPairList*>(mBytes + 0x674);
-		for(NxPairNode* node = contactPairs->head; node;
-			node = node->at<NxPairNode*>(8))
-			{
-			NxActorPair* pair = node->pair();
-			if(!pair->at<NxU32>(0x10))
-				continue;
-			void* body0 = pair->at<void*>(8);
-			void* body1 = pair->at<void*>(0xc);
-			if(body0)
-				reinterpret_cast<Row000724Fixture*>(body0)->row000724(body1, node);
-			else if(body1)
-				reinterpret_cast<Row000724Fixture*>(body1)->row000724(0, node);
-			}
-
-		// 000655's active-island collection follows 000608. Keep only the
-		// self-parented, awake sleep-group roots in Scene+0x57c..+0x580.
-		void**& rootFirst = at<void**>(0x57c);
-		void**& rootLast = at<void**>(0x580);
-		void**& rootEnd = at<void**>(0x584);
-		for(void** item = bodies; item && item != bodiesEnd; ++item)
-			{
-				void* body = *item;
-				void* root = reinterpret_cast<Row000713Fixture*>(body)->row000713();
-				if(root != body || *reinterpret_cast<NxReal*>(
-					static_cast<NxU8*>(root) + 0x1f8) == 0.0f)
-					continue;
-				if(rootEnd <= rootLast)
-					{
-					const NxU32 count = rootFirst
-						? static_cast<NxU32>(rootLast - rootFirst) : 0;
-					const NxU32 capacity = count * 2 + 2;
-					const NxU32 held = rootFirst
-						? static_cast<NxU32>(rootEnd - rootFirst) : 0;
-					if(held < capacity)
-						{
-						void** grown = static_cast<void**>(nxFoundationSDKAllocator->malloc(
-							capacity * sizeof(void*), NX_MEMORY_PERSISTENT));
-						for(NxU32 i = 0; i < count; ++i)
-							grown[i] = rootFirst[i];
-						if(rootFirst)
-							nxFoundationSDKAllocator->free(rootFirst);
-						rootFirst = grown;
-						rootLast = grown + count;
-						rootEnd = grown + capacity;
-						}
-					}
-				*rootLast++ = body;
-			}
-
-		// phys_fn_000655 applies effectors after active roots are collected but
-		// before phys_fn_000610 integrates their bodies. The spring impulse must
-		// enter angular velocity before 000726 applies angular damping.
-		for(Effector* effector = at<Effector*>(0x5a4); effector;
-			effector = effector->mNext)
-			effector->tick();
-
-		// phys_fn_000610 walks active island roots (+0x57c) and each root's
-		// sleep-group chain (+0x1fc); inactive bodies must not be integrated.
-		row000610();
-		row000611();
-
-		// 000636 performs post-step velocity bookkeeping and clears the active
-		// root range before 000615 advances each body's COM/quaternion.
-		row000636();
-
-		// 000615 advances poses, notifies actors, and projects articulation
-		// islands after all of the active roots have been retired.
-		row000615();
-		// phys_fn_000655 calls 000917 once per completed substep. 000905 has
-		// stamped active contact-report records during the broadphase refresh;
-		// buffer their event flags and solved force totals for fetchResults.
-		nxSceneProcessTriggerPairs(this);
-		if(at<NxUserContactReport*>(0x6b4))
-			{
-			CpmPairHash* const reportHash = reinterpret_cast<CpmPairHash*>(mBytes + 0x2c);
-			cpmBufferContactReports0917(this, reportHash);
-			}
+		simulateSubstep();
 		if(void* fluidManager = at<void*>(0x61c))
 			nxFluidManagerStep(fluidManager, 0, timestep);
 		++at<NxU32>(0x558);

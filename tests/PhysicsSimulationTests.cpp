@@ -3199,6 +3199,11 @@ int wmain(int argc, wchar_t** argv)
 		simulationOutput.errors - simulateErrorsBefore,
 		static_cast<unsigned>(simulationOutput.code), simulationOutput.line,
 		simulationOutput.file, simulationOutput.message);
+	unsigned char* emptyWrapper = reinterpret_cast<unsigned char*>(emptyScene);
+	unsigned char* emptyInternal = *reinterpret_cast<unsigned char**>(emptyWrapper + 0x24);
+	const unsigned zeroDtFrameBefore = *reinterpret_cast<unsigned*>(emptyInternal + 0x540);
+	*reinterpret_cast<unsigned*>(emptyInternal + 0x70c) |= 2u;
+	emptyScene->setTiming(sceneDesc.maxTimestep, sceneDesc.maxIter, NX_TIMESTEP_VARIABLE);
 	emptyScene->simulate(0.0f);
 	bool zeroDtReady = false;
 	for(unsigned wait = 0; wait != 1000 && !zeroDtReady; ++wait)
@@ -3209,10 +3214,17 @@ int wmain(int argc, wchar_t** argv)
 		}
 	const bool zeroDtFetched = zeroDtReady
 		? emptyScene->fetchResults(NX_RIGID_BODY_FINISHED, false) : false;
-	printf("simulation zero-dt ready=%u fetched=%u\n",
-		zeroDtReady ? 1u : 0u, zeroDtFetched ? 1u : 0u);
-	unsigned char* emptyWrapper = reinterpret_cast<unsigned char*>(emptyScene);
-	unsigned char* emptyInternal = *reinterpret_cast<unsigned char**>(emptyWrapper + 0x24);
+	const unsigned zeroDtFrameAfter = *reinterpret_cast<unsigned*>(emptyInternal + 0x540);
+	const unsigned zeroDtFlagsAfter = *reinterpret_cast<unsigned*>(emptyInternal + 0x70c);
+	printf("simulation zero-dt ready=%u fetched=%u frame=%u->%u cleared-flags=%u\n",
+		zeroDtReady ? 1u : 0u, zeroDtFetched ? 1u : 0u,
+		zeroDtFrameBefore, zeroDtFrameAfter,
+		(zeroDtFlagsAfter & 2u) == 0 ? 1u : 0u);
+	emptyScene->setTiming(sceneDesc.maxTimestep, sceneDesc.maxIter,
+		sceneDesc.timeStepMethod);
+	if(!zeroDtReady || !zeroDtFetched || zeroDtFrameAfter != zeroDtFrameBefore ||
+		(zeroDtFlagsAfter & 2u) != 0)
+		return nxFail("zero-dt simulation did not preserve scheduler observables");
 	emptyScene->simulate(0.125f);
 	emptyScene->simulate(0.25f);
 	const unsigned queuedDtBits = nxFloatBits(

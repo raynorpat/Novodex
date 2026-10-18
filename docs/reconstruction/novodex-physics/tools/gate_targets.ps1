@@ -3530,7 +3530,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation stage=legacy-runFor position=3cf5c28f.00000000.00000000 velocity=3f800000.00000000.00000000'
         'simulation writable=initial 1'
         'simulation negative-dt error=1 code=1 line=540 file=\Epic\Novodex\SDKs\Physics\src\NpScene.cpp message=Scene::simulate: The elapsed time must be nonnegative!'
-        'simulation zero-dt ready=1 fetched=1'
+        'simulation zero-dt ready=1 fetched=1 frame=0->0 cleared-flags=1'
         'simulation submit state dt=3e000000 pending=1 ready=1 fetched=1 finished=0'
         'simulation nonblocking=idle ready=0 fetched=0'
         'simulation fence=idle ready=0'

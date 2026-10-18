@@ -11323,3 +11323,7 @@ Phase 7 lock-API worker start row `phys_fn_002381` is closed by the registered `
 Phase 7 lock-API worker scalar-delete row `phys_fn_002402` is closed by the registered `NxPhysicsObjectLayoutTests` oracle/source mutation differential (`mismatches=1`); restored control reports `mismatches=0`. Details: `phase7-lock-api-scalar-delete-002402.md`.
 
 Phase 7 Fluid scalar-delete row `phys_fn_003499` is closed by the registered `NxPhysicsSimulationTests` staged-pair mutation differential (`stdout_delta=67`); restored control is exact. Details: `phase7-fluid-scalar-delete-003499.md`.
+
+Phase 7 active-substep row `phys_fn_000655` is independently falsified by removing its zero-timestep guard; the zero-delta fixture observes the frame stamp advance and rejects the mutant (`stdout_delta=3918`). Details: `phase7-scene-scheduler-000655-000659.md`.
+
+Phase 7 scheduler row `phys_fn_000659` is independently falsified by removing its Scene+0x70c bit-1 clear; the zero-delta fixture observes the stale flag and rejects the mutant (`stdout_delta=3918`). Details: `phase7-scene-scheduler-000655-000659.md`.

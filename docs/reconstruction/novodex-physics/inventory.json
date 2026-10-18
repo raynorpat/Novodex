@@ -12866,9 +12866,17 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/257",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1753",
-      "static_proof": "phys_fn_000655 (0x000137e0): the active-step body translates the nonzero-timestep guard, frame counter and wrap, 000635/000608 prepass, awake self-root collection and allocator growth, effector list at Scene+0x5a4 with vtable slot 2, then the 000610/000611/000636/000615/002350/000917 sequence. The 475-byte row is implemented in NxSceneInternal::simulateFrame; Ghidra control-flow and indirect-call targets were checked against the source.",
-      "dynamic_proof": "The public spring/damper fixture reaches the effector dispatch and matches both fixed substeps exactly; second-step x velocity is 0x3e8e38e3 (evidence/effector-step-integration.md; build/FluidGate/effector-tick-green.log). The current full NxPhysicsSimulationTests paired differential also passes in Phase 7 (build/FluidGate/phase7-fluid-step.log). Whole-row falsification: an immediate-return mutation of NxSceneInternal::simulateFrame in a clean archive of mainline e3faa461 was rejected by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=1, stdout_delta=3829); the restored control was exact (both exits=0, stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-step-000655.md.",
-      "notes": "The registered three-step off-center spring/damper simulation observes this per-substep routine. A whole-row immediate-return mutation changes the staged differential and fails candidate assertions; the restored control is exact."
+      "static_proof": "phys_fn_000655 (0x000137e0) is the active-substep body: it returns when Scene+0x548 is zero; otherwise it advances scene time at +0x53c and the frame stamp at +0x540, runs the 000635/000608 prepass, collects awake self roots with allocator growth, ticks effectors at Scene+0x5a4, then executes the 000610/000611/000636/000615/002350/000917 sequence. It is implemented as NxSceneInternal::simulateSubstep, separate from the 000659 scheduler.",
+      "dynamic_proof": "The three-step public spring/damper fixture exercises the active body; the variable-timing zero-delta fixture verifies that this row leaves Scene+0x540 unchanged. Removing the zero-timestep guard is rejected by NxPhysicsSimulationTests (oracle_exit=0, candidate_exit=1, stdout_delta=3918). The restored simulation differential is exact. See evidence/phase7-scene-scheduler-000655-000659.md and evidence/raw/phase7-scene-scheduler-000655-000659-20261018/.",
+      "notes": "Source boundary and candidate-map row are recorded separately from the scheduler at phys_fn_000659.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::simulateSubstep",
+      "candidate_map_reference": {
+        "path": "build/phase-mainline/Release/NxPhysics.map",
+        "symbol": "?simulateSubstep@NxSceneInternal@@QAEXXZ",
+        "address": "0x1006e800",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000656",
@@ -12939,9 +12947,17 @@
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/259",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1782",
-      "static_proof": "phys_fn_000659 (0x00013c40): saves the FP control state, selects variable or fixed timestep scheduling, computes and caps fixed-step iteration count, initializes scheduler fields, calls 000655 for each substep, calls 003630 after each substep when Scene+0x61c has a manager, clamps residual time, calls 003632 once after the frame, then restores FP control state. Implemented by NxSceneInternal::simulateFrame; the Ghidra branches, field offsets, and direct-call order are reflected in source.",
-      "dynamic_proof": "The public simulation corpus matches oracle and candidate in the full Phase 7 differential. A disabled-manager fixture executes two fixed frames and verifies three warnings (one step warning per frame and one surface-mesh warning after stepping), with exact text/output and successful check/fetch (build/FluidGate/fluid-step-green.log). Whole-row mutation falsification: an immediate-return mutation in a throwaway git archive of cc1118dc was rejected by the registered Phase 7 NxPhysicsSimulationTests staged-pair differential (oracle_exit=0, candidate_exit=1, stdout_delta=3829, stderr_exact=False); after restoring and rebuilding, the control was exact (both exits=0, stdout_delta=0, stderr_exact=True). See evidence/phase7-scene-scheduler-000659-mutation.md.",
-      "notes": "Whole-row mutation falsification is recorded. The called phys_fn_003630/phys_fn_003632 extension-backed and nonempty-fluid branches remain separately tracked as partial."
+      "static_proof": "phys_fn_000659 (0x00013c40) saves the FP control word, clears Scene+0x70c bit 1, selects variable or fixed timestep scheduling, computes/caps the fixed-step count, initializes scheduler fields, calls 000655 for each substep, calls 003630 after each substep when Scene+0x61c has a manager, clamps residual time, calls 003632 once after the frame, and restores the saved control word. Implemented by NxSceneInternal::simulateFrame with the recovered 000655 boundary preserved.",
+      "dynamic_proof": "The registered simulation corpus and variable-timing zero-delta fixture match the pinned oracle. The fixture seeds Scene+0x70c bit 1 and requires it to be clear after the worker frame. Removing the clear is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=3918); restored output is exact. The disabled-manager fixed-frame fixture also verifies step/generation warning order. See evidence/phase7-scene-scheduler-000655-000659.md and evidence/raw/phase7-scene-scheduler-000655-000659-20261018/.",
+      "notes": "The called phys_fn_003630/phys_fn_003632 extension-backed and nonempty-fluid branches remain separately tracked as partial.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::simulateFrame",
+      "candidate_map_reference": {
+        "path": "build/phase-mainline/Release/NxPhysics.map",
+        "symbol": "?simulateFrame@NxSceneInternal@@QAEXXZ",
+        "address": "0x1006e5e0",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_000660",

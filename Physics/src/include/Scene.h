@@ -217,6 +217,8 @@ class NxSceneInternal
 	// phys_fn_000659's fixed/variable timestep scheduler. Called by NpScene's
 	// worker after simulate() stores the elapsed time at +0x544.
 	void simulateFrame();
+	// phys_fn_000655 (0x000137e0): one nonzero-timestep active simulation step.
+	__declspec(noinline) void simulateSubstep();
 	// phys_fn_000610 (0x00011210): integrate bodies reached from the active
 	// sleep-group roots at +0x57c/+0x580.
 	__declspec(noinline) void row000610();

@@ -1,0 +1,9 @@
+# Scene scheduler and active substep (`phys_fn_000659` / `phys_fn_000655`)
+
+The oracle places the scheduler at RVA `0x13c40` and the active substep at `0x137e0`. The scheduler saves/restores the x87 control word, clears bit 1 in `Scene+0x70c`, chooses variable or fixed timestep scheduling, computes the iteration count, invokes the substep once per iteration, steps the optional fluid manager, clamps residual time, and generates surface meshes after the frame. The substep first checks `Scene+0x548`; for zero timestep it returns without changing scene time or the frame stamp. Otherwise it advances `Scene+0x53c` and `Scene+0x540`, refreshes pairs and active islands, ticks effectors, solves/integrates bodies, and collects reports.
+
+`Physics/src/Scene.cpp` now implements these as distinct `NxSceneInternal::simulateFrame` and no-inline `NxSceneInternal::simulateSubstep` methods. The Win32 Release map resolves them to `?simulateFrame@NxSceneInternal@@QAEXXZ` at `0x1006e5e0` and `?simulateSubstep@NxSceneInternal@@QAEXXZ` at `0x1006e800`, both in `Scene.obj`.
+
+The registered `NxPhysicsSimulationTests` differential sets variable timing, seeds the scheduler flag, runs a zero-delta frame, then checks the frame stamp and flag. Oracle and restored candidate report `frame=0->0 cleared-flags=1` with exact output. Removing the substep zero-timestep guard yields `frame=0->1`; removing the scheduler bit clear yields `cleared-flags=0`. Each mutation is rejected with `oracle_exit=0`, `candidate_exit=1`, and `stdout_delta=3918`. The full restored simulation target passes with `stdout_delta=0` and exact stderr.
+
+Fresh registered gates pass at Phase 5 `2,894/2,894`, Phase 6 `1,751/1,751`, and Phase 7 `3,033/3,033`. The existing zero-delta marker was replaced in place, so the registered assertion floors do not change. Raw differential and phase-gate logs are retained in `evidence/raw/phase7-scene-scheduler-000655-000659-20261018/`.
