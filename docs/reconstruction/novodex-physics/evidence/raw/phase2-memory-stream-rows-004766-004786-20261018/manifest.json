@@ -1,0 +1,34 @@
+{
+  "rows": [
+    "phys_fn_004766",
+    "phys_fn_004786"
+  ],
+  "target": "NxPhysicsAssetTests",
+  "control": {
+    "exit": 0,
+    "candidate_mismatches": 0,
+    "transcript": "asset-stream-control.log.gz",
+    "sha256": "8cb0bd97c857124e1561c1ba9c383fdc560bcd075649441d9a944c6da2d75cf3"
+  },
+  "mutations": [
+    {
+      "row": "phys_fn_004766",
+      "description": "Changed previous block growth from 2x to 4x.",
+      "result": "candidate next_size=16 instead of 8; candidate mismatches=1; exit=1",
+      "transcript": "append-mutant.log.gz",
+      "sha256": "6979d34694ab0ba6084d1d2dfd66b239d3cd87f3fcb3582b8381958ee6574348"
+    },
+    {
+      "row": "phys_fn_004786",
+      "description": "Changed partial-bit accumulator padding from left shift to right shift.",
+      "result": "candidate byte=00 instead of a0; candidate mismatches=1; exit=1",
+      "transcript": "flush-mutant.log.gz",
+      "sha256": "e575420adfa03a6b3f92670ddac56c1d5b860223111d722d473aee957c02fc7a"
+    }
+  ],
+  "fresh_phase4_gate": {
+    "status": "pass",
+    "coverage_assertions": 559,
+    "required": 559
+  }
+}

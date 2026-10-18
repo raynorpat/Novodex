@@ -86,7 +86,7 @@
         "docs/reconstruction/novodex-physics/cases/assets/formats.json",
         "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt"
       ],
-      "fixture_source_sha256": "b8effc49554738e17ea5b1dc06c4ab764e6181bd46ff2ee1aa70f9e3f13c1c76",
+      "fixture_source_sha256": "3d58ad43d4e930f4f486b66c9c86befebff4416e6eefcf50caf2565c270479c6",
       "cases": 32,
       "expect_mismatches": 0,
       "oracle_output_digest_fnv32": "1daa095e",

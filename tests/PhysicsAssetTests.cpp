@@ -120,6 +120,8 @@ static const unsigned kPMapSampleRva    = 0x0004f070;	// phys_fn_002029, Penetra
 static const unsigned kStreamCtorRva    = 0x000b3ce0;	// phys_fn_004788, (size, buffer)
 static const unsigned kStreamSeekRva    = 0x000b3b30;	// phys_fn_004780
 static const unsigned kStreamDtorRva    = 0x000b3db0;	// phys_fn_004791, jmp to phys_fn_004784
+static const unsigned kStreamAppendBlockRva = 0x000b39b0;	// phys_fn_004766
+static const unsigned kStreamFlushBitsRva = 0x000b3c70;	// phys_fn_004786
 static const unsigned kSdkAllocatorGetterRva = 0x000b4000;	// phys_fn_004803
 static const unsigned kSdkAllocatorSetRva = 0x000b4020;	// phys_fn_004805
 static const unsigned kMeshHeaderRva    = 0x00055cb0;	// phys_fn_002262, the NxStream mesh loader
@@ -153,6 +155,9 @@ typedef char (__thiscall* NxPMapSampleFn)(void* self, unsigned x, unsigned y, un
 typedef void* (__thiscall* NxStreamCtorFn)(void* self, unsigned size, const void* buffer);
 typedef void* (__thiscall* NxCandidateStreamCtorFn)(void* self, unsigned size,
 	const void* buffer, unsigned fill, unsigned initialOffset);
+typedef char (__thiscall* NxStreamAppendBlockFn)(void* self,
+	MemoryStreamBlock* previous, unsigned size);
+typedef void (__thiscall* NxStreamFlushBitsFn)(void* self);
 typedef void* (__thiscall* NxStreamSeekFn)(void* self, unsigned offset);
 typedef void (__thiscall* NxStreamDtorFn)(void* self);
 typedef char (__thiscall* NxMeshHeaderFn)(void* self, void* stream);
@@ -671,6 +676,8 @@ struct NxOracle
 	NxStreamCtorFn streamCtor;
 	NxStreamSeekFn streamSeek;
 	NxStreamDtorFn streamDtor;
+	NxStreamAppendBlockFn streamAppendBlock;
+	NxStreamFlushBitsFn streamFlushBits;
 	NxMeshHeaderFn meshHeader;
 	NxReleasePMapFn releasePMap;
 	NxMeshWriterFn meshWriter;
@@ -1201,6 +1208,70 @@ static bool nxCandidateReleasePMap(void* pmap, unsigned char* returned)
 	return true;
 	}
 
+static bool nxRunStreamAppendBlockRow(const NxOracle* oracle, const char* side)
+	{
+	__declspec(align(4)) unsigned char stream[0x1c];
+	const unsigned char initial[4] = { 0x19, 0x2a, 0x3b, 0x4c };
+	memset(stream, 0, sizeof(stream));
+	if(reinterpret_cast<unsigned>(oracle->base) == kNxRvaPreferredImageBase)
+		oracle->streamCtor(stream, sizeof(initial), initial);
+	else
+		((NxCandidateStreamCtorFn) oracle->streamCtor)(stream, sizeof(initial),
+			initial, 0, sizeof(initial));
+	MemoryStreamBlock* first = *reinterpret_cast<MemoryStreamBlock**>(stream);
+	if(!first)
+		return false;
+	const char appended = oracle->streamAppendBlock(stream, first, 3);
+	MemoryStreamBlock* current = *reinterpret_cast<MemoryStreamBlock**>(stream);
+	MemoryStreamBlock* head = *reinterpret_cast<MemoryStreamBlock**>(stream + 4);
+	MemoryStreamBlock* next = first->mNext;
+	const bool preserved = first->mOffset == sizeof(initial) &&
+		memcmp(first->mData, initial, sizeof(initial)) == 0;
+	const bool valid = appended && first->mSize == 4 && next && next->mData &&
+		next->mSize == 8 && next->mOffset == 0 && head == first &&
+		current == next && preserved;
+	printf("asset stream row=004766 side=%s append=%u first_size=%u next_size=%u next_offset=%u "
+		"linked=%u current=%u head=%u preserved=%u\n",
+		side, appended ? 1u : 0u, first->mSize, next ? next->mSize : 0,
+		next ? next->mOffset : 0, next == first->mNext ? 1u : 0u,
+		current == next ? 1u : 0u, head == first ? 1u : 0u, preserved ? 1u : 0u);
+	oracle->streamDtor(stream);
+	return valid;
+	}
+
+static bool nxRunStreamFlushBitsRow(const NxOracle* oracle, const char* side)
+	{
+	__declspec(align(4)) unsigned char stream[0x1c];
+	const unsigned char initial = 0x3c;
+	memset(stream, 0, sizeof(stream));
+	if(reinterpret_cast<unsigned>(oracle->base) == kNxRvaPreferredImageBase)
+		oracle->streamCtor(stream, 1, &initial);
+	else
+		((NxCandidateStreamCtorFn) oracle->streamCtor)(stream, 1, &initial, 0, 1);
+	MemoryStreamBlock* first = *reinterpret_cast<MemoryStreamBlock**>(stream);
+	if(!first)
+		return false;
+	first->mOffset = 1;
+	stream[0x18] = 3;
+	stream[0x19] = 0x15;
+	oracle->streamFlushBits(stream);
+	MemoryStreamBlock* current = *reinterpret_cast<MemoryStreamBlock**>(stream);
+	MemoryStreamBlock* head = *reinterpret_cast<MemoryStreamBlock**>(stream + 4);
+	MemoryStreamBlock* next = first->mNext;
+	const bool valid = next && next->mData && first->mSize == 1 &&
+		first->mOffset == 1 && next->mSize == 2 && next->mOffset == 1 &&
+		head == first && current == next && next->mData[0] == 0xa0 &&
+		stream[0x18] == 0 && stream[0x19] == 0xa0;
+	printf("asset stream row=004786 side=%s flush=1 first_size=%u first_offset=%u next_size=%u "
+		"next_offset=%u byte=%02x mask=%u accumulator=%02x linked=%u current=%u head=%u\n",
+		side, first->mSize, first->mOffset, next ? next->mSize : 0,
+		next ? next->mOffset : 0, next && next->mData ? next->mData[0] : 0,
+		stream[0x18], stream[0x19], next == first->mNext ? 1u : 0u,
+		current == next ? 1u : 0u, head == first ? 1u : 0u);
+	oracle->streamDtor(stream);
+	return valid;
+	}
+
 // ---------------------------------------------------------------------------
 // The candidate's fake model. It derives from the vendored BaseModel -- whose
 // seven-slot vtable shape NxPhysicsThirdPartyTests asserts against the image --
@@ -1549,6 +1620,18 @@ int wmain(int argc, wchar_t** argv)
 		"phys_fn_004780 MemoryStream::seek");
 	oracle.streamDtor = (NxStreamDtorFn) nxOracleTarget(candidateSelf, oracle.base, kStreamDtorRva,
 		"phys_fn_004791 MemoryStream::~MemoryStream");
+	oracle.streamAppendBlock = (NxStreamAppendBlockFn)
+		(candidateSelf
+			? nxOracleMapTarget(oracle.base,
+				"?appendBlock@MemoryStream@@AAE_NPAUMemoryStreamBlock@@I@Z",
+				"phys_fn_004766 MemoryStream::appendBlock")
+			: oracle.base + kStreamAppendBlockRva);
+	oracle.streamFlushBits = (NxStreamFlushBitsFn)
+		(candidateSelf
+			? nxOracleMapTarget(oracle.base,
+				"?flushBits@MemoryStream@@QAEXXZ",
+				"phys_fn_004786 MemoryStream::flushBits")
+			: oracle.base + kStreamFlushBitsRva);
 	oracle.meshHeader = (NxMeshHeaderFn) nxOracleTarget(candidateSelf, oracle.base, kMeshHeaderRva,
 		"phys_fn_002262 the NxStream mesh loader");
 	oracle.releasePMap = (NxReleasePMapFn) GetProcAddress(physics, "NxReleasePMap");
@@ -1579,6 +1662,8 @@ int wmain(int argc, wchar_t** argv)
 		{ "streamCtor   phys_fn_004788 MemoryStream::MemoryStream", oracle.streamCtor },
 		{ "streamSeek   phys_fn_004780 MemoryStream::seek", oracle.streamSeek },
 		{ "streamDtor   phys_fn_004791 MemoryStream::~MemoryStream", oracle.streamDtor },
+		{ "streamAppend phys_fn_004766 MemoryStream::appendBlock", oracle.streamAppendBlock },
+		{ "streamFlush  phys_fn_004786 MemoryStream::flushBits", oracle.streamFlushBits },
 		{ "meshHeader   phys_fn_002262 the NxStream mesh loader", oracle.meshHeader },
 		{ "meshWriter   phys_fn_002162 the TriangleMesh writer", oracle.meshWriter },
 		{ "releasePMap  phys_fn_002051 NxReleasePMap", oracle.releasePMap },
@@ -1614,6 +1699,76 @@ int wmain(int argc, wchar_t** argv)
 	unsigned streamDtorOracleFrees = 0;
 	unsigned streamDtorCandidateFrees = 0;
 	unsigned streamDtorCases = 0;
+	if(!oracle.streamAppendBlock || !oracle.streamFlushBits || !oracle.streamDtor ||
+		!nxRunStreamAppendBlockRow(&oracle, "oracle"))
+		++expectMismatch;
+	if(!oracle.streamAppendBlock || !oracle.streamFlushBits || !oracle.streamDtor ||
+		!nxRunStreamFlushBitsRow(&oracle, "oracle"))
+		++expectMismatch;
+
+	// Drive the same two rows through the rebuilt DLL by its exact decorated
+	// symbols. The oracle fixture above cannot establish candidate behavior by
+	// itself, so both sides receive independent streams and allocator bridges.
+	{
+	wchar_t executablePath[MAX_PATH];
+	DWORD executableLength = GetModuleFileNameW(0, executablePath, MAX_PATH);
+	if(executableLength == 0 || executableLength >= MAX_PATH)
+		return nxFail("could not locate the asset differential executable");
+	wchar_t* slash = wcsrchr(executablePath, L'\\');
+	if(!slash)
+		return nxFail("asset differential executable path has no directory");
+	wchar_t candidateDirectory[MAX_PATH];
+	size_t directoryLength = (size_t)(slash + 1 - executablePath);
+	memcpy(candidateDirectory, executablePath, directoryLength * sizeof(wchar_t));
+	candidateDirectory[directoryLength] = L'\0';
+	wcscpy_s(slash + 1, MAX_PATH - (size_t)(slash + 1 - executablePath),
+		L"NxPhysicsCandidate.dll");
+	if(!AddDllDirectory(candidateDirectory) && GetLastError() != ERROR_ALREADY_EXISTS)
+		return nxFail("could not add candidate DLL directory");
+	HMODULE candidatePhysics = LoadLibraryExW(executablePath, 0,
+		LOAD_LIBRARY_SEARCH_USER_DIRS | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!candidatePhysics)
+		return nxFail("could not load the candidate DLL for stream-row differentials");
+
+	NxOracle candidateStream;
+	memset(&candidateStream, 0, sizeof(candidateStream));
+	candidateStream.base = (unsigned char*) candidatePhysics;
+	candidateStream.streamCtor = (NxStreamCtorFn) nxOracleMapTarget(candidateStream.base,
+		"??0MemoryStream@@QAE@IPBXII@Z", "candidate MemoryStream constructor");
+	candidateStream.streamDtor = (NxStreamDtorFn) nxOracleMapTarget(candidateStream.base,
+		"??1MemoryStream@@QAE@XZ", "candidate MemoryStream destructor");
+	candidateStream.streamAppendBlock = (NxStreamAppendBlockFn) nxOracleMapTarget(candidateStream.base,
+		"?appendBlock@MemoryStream@@AAE_NPAUMemoryStreamBlock@@I@Z",
+		"phys_fn_004766 MemoryStream::appendBlock");
+	candidateStream.streamFlushBits = (NxStreamFlushBitsFn) nxOracleMapTarget(candidateStream.base,
+		"?flushBits@MemoryStream@@QAEXXZ", "phys_fn_004786 MemoryStream::flushBits");
+	typedef bool (__cdecl* NxCandidateSetAllocatorFn)(SdkAllocator*);
+	typedef SdkAllocator* (__cdecl* NxCandidateGetAllocatorFn)();
+	NxCandidateSetAllocatorFn candidateSetAllocator = (NxCandidateSetAllocatorFn)
+		nxOracleMapTarget(candidateStream.base,
+			"?nxSetSdkAllocatorBridge@@YA_NPAVSdkAllocator@@@Z",
+			"candidate SDK allocator setter");
+	NxCandidateGetAllocatorFn candidateGetAllocator = (NxCandidateGetAllocatorFn)
+		nxOracleMapTarget(candidateStream.base,
+			"?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ",
+			"candidate SDK allocator getter");
+	if(!candidateStream.streamCtor || !candidateStream.streamDtor ||
+		!candidateStream.streamAppendBlock || !candidateStream.streamFlushBits ||
+		!candidateSetAllocator || !candidateGetAllocator)
+		return nxFail("candidate stream-row symbols did not resolve from its map");
+	SdkAllocator* savedCandidateModuleAllocator = candidateGetAllocator();
+	SdkAllocatorBridge candidateModuleAllocator;
+	candidateModuleAllocator.mAllocator = &gAssetAllocator;
+	if(!candidateSetAllocator(&candidateModuleAllocator))
+		return nxFail("could not install the candidate stream-row allocator");
+	const bool appendMatches = nxRunStreamAppendBlockRow(&candidateStream, "candidate");
+	const bool flushMatches = nxRunStreamFlushBitsRow(&candidateStream, "candidate");
+	if(!candidateSetAllocator(savedCandidateModuleAllocator))
+		return nxFail("could not restore the candidate stream-row allocator");
+	if(!appendMatches || !flushMatches)
+		++candidateMismatch;
+	FreeLibrary(candidatePhysics);
+	}
 
 	// Directly exercise phys_fn_002029 with a private-layout map and one triangle. The two flag
 	// patterns distinguish the map's classification split; the direction and matrix rows cover both

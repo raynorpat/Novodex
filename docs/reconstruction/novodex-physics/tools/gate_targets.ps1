@@ -5552,7 +5552,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # folds the oracle's own answers -- acceptance, error count, the reported
     # source line, the cell count, the decoded grid, and for the writer cases
     # the acceptance plus a fold over everything its writer stored -- over all
-    # 30 probes, and each case line is that case's answer. Nothing on the
+    # 32 probes, and each case line is that case's answer. Nothing on the
     # reconstruction side appears in any of them.
     #
     # The nine `writer` cases are INPUTS both sides serialise, not recorded
@@ -5582,6 +5582,10 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsAssetTests' = @(
         'asset fixtures pmap=16 mesh=6 writer=9 release=1',
         'asset rows pmap_create=phys_fn_002047 pmap_sample=phys_fn_002029 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051 stream_dtor=phys_fn_004791',
+        'asset stream row=004766 side=oracle append=1 first_size=4 next_size=8 next_offset=0 linked=1 current=1 head=1 preserved=1',
+        'asset stream row=004786 side=oracle flush=1 first_size=1 first_offset=1 next_size=2 next_offset=1 byte=a0 mask=0 accumulator=a0 linked=1 current=1 head=1',
+        'asset stream row=004766 side=candidate append=1 first_size=4 next_size=8 next_offset=0 linked=1 current=1 head=1 preserved=1',
+        'asset stream row=004786 side=candidate flush=1 first_size=1 first_offset=1 next_size=2 next_offset=1 byte=a0 mask=0 accumulator=a0 linked=1 current=1 head=1',
         'asset row4791 row=phys_fn_004791 cases=16 oracle_frees=32 candidate_frees=32 mode=differential',
         'asset coverage driven=32 accepted=15 rejected=16 errors=10',
         'asset oracle digest=1daa095e',
@@ -6330,7 +6334,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 555  # rows 001957/001960 add static and selected-pruner object count assertions
+	'4' = 559  # rows 001957/001960 add static and selected-pruner object count assertions; two stream candidate rows
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
 	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
 	           # plus hit, no-normal, cutoff, translation and miss coverage
@@ -6343,6 +6347,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # fresh mainline: two additional convex cooking assertions; previous 264 plus direct QhullHost::facet and releaseArrays differentials
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
+               # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
     '5' = 2899  # adds capsule/sphere setter-lock rows 001087-001097 and 001169-001179
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker

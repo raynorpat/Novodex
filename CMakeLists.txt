@@ -906,6 +906,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	if(MSVC)
 		target_link_options(NxPhysicsAssetTests PRIVATE /MAP)
 	endif()
+	add_custom_target(NxPhysicsAssetCandidateCopy
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:NxPhysics>
+			$<TARGET_FILE_DIR:NxPhysicsAssetTests>/NxPhysicsCandidate.dll
+		COMMENT "Staging NxPhysicsCandidate.dll for direct asset-row differentials")
+	add_dependencies(NxPhysicsAssetCandidateCopy NxPhysics)
+	add_dependencies(NxPhysicsAssetTests NxPhysicsAssetCandidateCopy)
 
 	# The vendored third-party differential. Same shape as the two above: it
 	# holds the pinned oracle in its own process and calls qhull and OPCODE rows

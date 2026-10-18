@@ -90112,14 +90112,21 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/MemoryStream.cpp",
+      "implementation": "Physics/src/MemoryStream.cpp",
+      "implementation_symbol": "MemoryStream::appendBlock",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?appendBlock@MemoryStream@@AAE_NPAUMemoryStreamBlock@@I@Z",
+        "address": "0x10030e40",
+        "object": "MemoryStream.obj"
+      },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1807",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15548",
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004766` | `0x000b39b0` | appendBlock: doubling growth, linked through prev->next |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
-      "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed; the growth-by-doubling shape the store half drives.",
-      "implementation": "Physics/src/MemoryStream.cpp"
+      "dynamic_proof": "NxPhysicsAssetTests directly calls oracle RVA 0x000b39b0 and candidate map symbol ?appendBlock@MemoryStream@@AAE_NPAUMemoryStreamBlock@@I@Z. A 4x growth mutation produces candidate next_size=16 instead of 8 and candidate mismatches=1; restored output matches. See evidence/phase2-memory-stream-rows-004766-004786.md.",
+      "notes": "P4 Task 4 reconstructed; Phase 4 directly differentially gates the shared helper because ordinary Phase 2 entry points do not reach it."
     },
     {
       "id": "phys_fn_004767",
@@ -90481,13 +90488,20 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/MemoryStream.cpp",
+      "implementation_symbol": "MemoryStream::flushBits",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?flushBits@MemoryStream@@QAEXXZ",
+        "address": "0x10030f60",
+        "object": "MemoryStream.obj"
+      },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1817",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15576",
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004786` | `0x000b3c70` | flushBits |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
-      "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed; the self-call at 0x000b3c9e re-enters with the count cleared and returns at once.",
+      "dynamic_proof": "NxPhysicsAssetTests directly calls oracle RVA 0x000b3c70 and candidate map symbol ?flushBits@MemoryStream@@QAEXXZ. A right-shift mutation writes 0x00 instead of 0xa0 and candidate mismatches=1; restored output matches. See evidence/phase2-memory-stream-rows-004766-004786.md.",
+      "notes": "P4 Task 4 reconstructed; Phase 4 directly differentially gates the shared helper because ordinary Phase 2 entry points do not reach it. The candidate preserves the self-call at 0x000b3c9e after the count clears.",
       "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
