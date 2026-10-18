@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "evidence": "phase7-global-call3-thunks-003431-003435.md",
+  "rows": {
+    "phys_fn_003431": {
+      "oracle_rva": "0x00084d70",
+      "restored": "failures=0",
+      "mutation": "mismatches=1"
+    },
+    "phys_fn_003435": {
+      "oracle_rva": "0x00084db0",
+      "restored": "failures=0",
+      "mutation": "mismatches=1"
+    }
+  },
+  "gates": {
+    "phase5": 2946,
+    "phase6": 1797,
+    "phase7": 3082
+  },
+  "files": {
+    "restored.log.gz": {
+      "sha256": "3afad05f4e0c5684608b9be24e700cde5188457372171c7eccebfa14f13e0a52",
+      "uncompressed_sha256": "5a0445f1ac9b01906d9db2c67bcd77c8715aa315311c7ac3c00f6b0309dbe6ca",
+      "bytes": 5329,
+      "source": "build/global-call3-restored.log"
+    },
+    "mutant.log.gz": {
+      "sha256": "752a9d4a3c048eb0698bf4e849673040b2099f9c12717628344cc6181f792eff",
+      "uncompressed_sha256": "1700d22635dcb6803ba72e7b591f39dea5c138d7835194f6dc50ef96182437c1",
+      "bytes": 5647,
+      "source": "build/global-call3-mutant.log"
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "3bb74d1765b3756246c7808b53a33052c633f039e4dc4a5e5118211dbc66814a",
+      "uncompressed_sha256": "57786f889d31fd9546db8753d282246c647ece78465949fbd06b78383f20bc22",
+      "bytes": 217005,
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-global-call3-thunks-003431-003435-20261018/phase5-gate.log"
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "5054c67b1b442f8c63ce8a5848c7ae60dc3318049873eb39bc2c8809dd855462",
+      "uncompressed_sha256": "52b0b448cc519ffc457fa1f18e8daffda23efe173e37ebc4556ac9e9e2718d02",
+      "bytes": 259318,
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-global-call3-thunks-003431-003435-20261018/phase6-gate.log"
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "8ee03f7cad234cc0ef7386781cb1a21b27cef26e214c1001e5da9eea8d513abb",
+      "uncompressed_sha256": "21bd8b95e6f55266834a47d37a988ebd01c32c63a6fa9fd410a6b30b84b32914",
+      "bytes": 381734,
+      "source": "docs/reconstruction/novodex-physics/evidence/raw/phase7-global-call3-thunks-003431-003435-20261018/phase7-gate.log"
+    }
+  },
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "807ab6c0e77570c1165866779707a26688afcfef07306517380df20871474c0d",
+  "git_head": "57862b431"
+}

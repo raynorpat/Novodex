@@ -3,11 +3,17 @@
   "target": "NxPhysicsObjectLayoutTests",
   "format": "layout_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "c91077bb0940f166d8ec97ab53fda870c0d62ec4a7e8255deb2e4a7dd69cdc6e",
-  "fixture_source": "tests/PhysicsObjectLayoutTests.cpp",
-  "proof_lines_sha256": "c7fb2db8ebb6503cc2b4b2dd8dcaa877dab7fd0e896f876976a9def09e69a92e",
-  "baseline_sha256": "49f198c02bf59d2fdeaea8789afdcd185809527cc9cd0ca1945baf69605f7f81",
+  "fixture_source_sha256": "88635a397998fe78d350ec429657a85746b6aaa53c790e4980bde4afdf625af1",
+  "fixture_sources": [
+    "tests/PhysicsObjectLayoutTests.cpp",
+    "tests/PhysicsElementCountRowFixture.inl",
+    "tests/PhysicsAndGetterRowFixture.inl",
+    "tests/PhysicsGlobalCallResultRowsFixture.inl",
+    "tests/PhysicsLockedArrayDataRowFixture.inl"
+  ],
+  "proof_lines_sha256": "171ccc92f04de5a8f5bc94ed15220bb85a1fc49c0e951bfb691f934bcde0c07c",
+  "baseline_sha256": "f5fcda4e6a13bd1c0b6b0ac303096ef54a8acd00c8b8e23140c59cd39ce625ec",
   "oracle_digest_fnv32": "3acf0dc7",
-  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1",
-  "proof_sha256": "01695551f812a2742c47335809eeb3e15893de536b86660e3f4d58556fb82b0f"
+  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=2",
+  "proof_sha256": "e3cba17d0f2b5e30365b2e92190707267f7be5fa08e843396df8af7ddb197f56"
 }
