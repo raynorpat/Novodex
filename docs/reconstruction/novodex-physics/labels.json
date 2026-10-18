@@ -3227,6 +3227,13 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/478",
       "reason": "The sphere public pose-setter vtable slot uses the family-specific Scene write-lock diagnostic; an isolated slot mutation is rejected by NxPhysicsActorShapeMutationTests. See evidence/phase3-capsule-sphere-setter-locks-001087-001179.md."
+    },
+    {
+      "id": "phys_fn_001083",
+      "label": "NpCapsuleShape::setFlag",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/434",
+      "reason": "The public capsule setFlag wrapper is identified by its Scene write-lock try, exact NpCapsuleShape.cpp:0x10 refusal diagnostic, internal shape flag update, and the independently mutation-tested locked/unlocked public fixture."
     }
   ]
 }

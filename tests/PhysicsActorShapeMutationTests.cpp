@@ -1020,6 +1020,40 @@ static void runTask5ReviewCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
 		}
 	else
 		printf("shape_mutation row=001045 actor=0\n");
+
+	// phys_fn_001083 is the capsule-specific setFlag lock wrapper. Its error
+	// path must retain the NpCapsuleShape source/line even though the flag
+	// mutation itself shares the same shape word and dirty bit as the box path.
+	NxCapsuleShapeDesc flagCapsule;
+	flagCapsule.radius = 0.5f;
+	flagCapsule.height = 1.25f;
+	NxActorDesc flagCapsuleActorDesc;
+	flagCapsuleActorDesc.shapes.pushBack(&flagCapsule);
+	NxActor* flagCapsuleActor = scene->createActor(flagCapsuleActorDesc);
+	if(flagCapsuleActor)
+		{
+		NxShape* flagCapsuleShape = flagCapsuleActor->getShapes()[0];
+		const unsigned char* capsuleInternal =
+			*reinterpret_cast<unsigned char* const*>(
+				reinterpret_cast<const unsigned char*>(flagCapsuleShape) + 0x18);
+		NxActorWriteLockHolder lock(flagCapsuleActor);
+		const unsigned reportsBefore = errors.reports;
+		lock.hold();
+		flagCapsuleShape->setFlag(NX_TRIGGER_ENABLE, true);
+		const unsigned reportsLocked = errors.reports - reportsBefore;
+		const unsigned lockedFlag =
+			*reinterpret_cast<const unsigned short*>(capsuleInternal + 0xde)
+			& NX_TRIGGER_ENABLE;
+		lock.release();
+		flagCapsuleShape->setFlag(NX_TRIGGER_ENABLE, true);
+		const unsigned unlockedFlag =
+			*reinterpret_cast<const unsigned short*>(capsuleInternal + 0xde)
+			& NX_TRIGGER_ENABLE;
+		printf("shape_mutation row=001083 capsule_locked_flag=%u locked_reports=%u unlocked_flag=%u\n",
+			lockedFlag ? 1u : 0u, reportsLocked, unlockedFlag ? 1u : 0u);
+		}
+	else
+		printf("shape_mutation row=001083 capsule_actor=0\n");
 	if(flagActor)
 		{
 	NxShape* const shape = flagActor->getShapes()[0];

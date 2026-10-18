@@ -20905,18 +20905,26 @@
       "rva": "0x00023670",
       "size": 89,
       "kind": "code",
-      "label": "phys_fn_001083",
-      "label_confidence": "stable-id",
+      "label": "NpCapsuleShape::setFlag",
+      "label_confidence": "semantic",
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpCapsuleShape.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/434",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3191",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x00023670 shows the public capsule setFlag wrapper reading the Scene write-lock link at handle+0x10 and attempting the write lock. On refusal it reports NXE_INVALID_OPERATION at NpCapsuleShape.cpp:0x10 without changing the flag. On success it updates the 16-bit flags at internal shape+0xde using the supplied mask, marks dirty bit 0x10, releases the Scene lock, and returns.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests holds the owning Scene write lock, calls capsule setFlag, and checks the flag remains clear with one exact NpCapsuleShape.cpp:0x10 lock diagnostic; after releasing the lock it checks the flag is set. Bypassing the candidate lock guard is rejected (locked_flag=1, locked_reports=0, stdout_delta=25); restored oracle/candidate output is exact (stdout_delta=0, stderr_exact=True). See evidence/phase3-capsule-setflag-lock-001083.md and evidence/raw/phase3-capsule-setflag-lock-001083-20261018/.",
+      "notes": "The test is registered in Phases 5, 6, and 7; the Phase 3 row is discharged by the Phase 5 public-object differential.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxCapsuleHandleSetFlag",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxCapsuleHandleSetFlag@@YIXPAX0W4NxShapeFlag@@_N@Z",
+        "address": "0x10037400",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001084",

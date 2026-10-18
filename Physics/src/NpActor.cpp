@@ -790,6 +790,23 @@ static bool nxCapsuleHandleWriteTry(void* writeLock, int line)
 	return false;
 	}
 
+static void __fastcall nxCapsuleHandleSetFlag(void* self, void*,
+	NxShapeFlag flag, bool value)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxCapsuleHandleWriteTry(writeLock, 0x10)) return;
+	unsigned char* shape = nxBoxHandleInternal(self);
+	NxU16& flags = *reinterpret_cast<NxU16*>(shape + 0xde);
+	const NxU16 mask = static_cast<NxU16>(flag);
+	if(value)
+		flags |= mask;
+	else
+		flags &= static_cast<NxU16>(~mask);
+	nxSceneMarkShapeDirty(shape, 0x10);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
 static bool nxSphereHandleWriteTry(void* writeLock, int line)
 	{
 	if(nxNpSceneGuardWriteTry(writeLock)) return true;
@@ -1057,6 +1074,7 @@ void* nxShapePublicVtable(unsigned type)
 			slots[2][7] = reinterpret_cast<void*>(&nxCapsuleHandleSetLocalPose);
 			slots[2][8] = reinterpret_cast<void*>(&nxCapsuleHandleSetLocalPosition);
 			slots[2][9] = reinterpret_cast<void*>(&nxCapsuleHandleSetLocalOrientation);
+			slots[2][5] = reinterpret_cast<void*>(&nxCapsuleHandleSetFlag);
 			slots[2][16] = reinterpret_cast<void*>(&nxCapsuleHandleSetGlobalPose);
 			slots[2][17] = reinterpret_cast<void*>(&nxCapsuleHandleSetGlobalPosition);
 			slots[2][18] = reinterpret_cast<void*>(&nxCapsuleHandleSetGlobalOrientation);

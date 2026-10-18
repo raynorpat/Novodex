@@ -1,0 +1,32 @@
+{
+  "row": "phys_fn_001083",
+  "focused_target": "NxPhysicsActorShapeMutationTests",
+  "mutation": "candidate capsule lock guard bypass",
+  "focused_control": {
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "stdout_delta": 0,
+    "stderr_exact": true
+  },
+  "mutation_result": {
+    "oracle_exit": 0,
+    "candidate_exit": 0,
+    "locked_flag": 1,
+    "locked_reports": 0,
+    "stdout_delta": 25,
+    "differential_exit": 1
+  },
+  "phase_gates": {
+    "5": "pass 2918/2918",
+    "6": "pass 1771/1771",
+    "7": "pass 3054/3054"
+  },
+  "raw_logs_sha256": {
+    "candidate-lock-bypass-mutant.log.gz": "2c295f93293c9249174adf6c45ff5bd6bd2f0cc70c0304fd13e1c181cd809dcb",
+    "focused-red.log.gz": "fe5e73b889623d5ddb36b99f2d81f13b5d76984a29bae1a2c3d028518dfc813a",
+    "focused-restored.log.gz": "a2b11fca76f1c4f21787d645eff362a0be5b8667f2b75bd447bea0b83d32132e",
+    "phase5-gate.log.gz": "77f8694c70063ff16794e2048ca26bc5061a4ec3075e4888c9e4dbb5023a7622",
+    "phase6-gate.log.gz": "65dc95d60771d842b6691cc9c22eb704c73e7a1565d7943cb531ba1680d76f60",
+    "phase7-gate.log.gz": "699c3922d380b68c861bb976649092cea5459f9d06c6e107ad8bb644e19c38a3"
+  }
+}
