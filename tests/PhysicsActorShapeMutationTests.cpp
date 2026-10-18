@@ -19,6 +19,45 @@
 #include <stdio.h>
 #include <string.h>
 
+static bool nxResolveMapAddress(const wchar_t* pairDirectory, HMODULE module,
+	const char* symbol, void** address)
+	{
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return false;
+	FILE* map = 0;
+	if(_wfopen_s(&map, mapPath, L"r") || !map)
+		return false;
+	unsigned preferredBase = 0;
+	char line[2048];
+	bool found = false;
+	while(fgets(line, sizeof(line), map))
+		{
+		static const char marker[] = "Preferred load address is ";
+		char* basePos = strstr(line, marker);
+		if(basePos)
+			preferredBase = static_cast<unsigned>(strtoul(
+				basePos + sizeof(marker) - 1, 0, 16));
+		char* symbolPos = strstr(line, symbol);
+		if(!symbolPos)
+			continue;
+		char* addressText = symbolPos + strlen(symbol);
+		while(*addressText == ' ' || *addressText == '\t') ++addressText;
+		char* addressEnd = 0;
+		const unsigned preferredAddress = static_cast<unsigned>(
+			strtoul(addressText, &addressEnd, 16));
+		if(addressEnd == addressText || !preferredBase ||
+			preferredAddress < preferredBase)
+			break;
+		*address = reinterpret_cast<unsigned char*>(module) +
+			(preferredAddress - preferredBase);
+		found = true;
+		break;
+		}
+	fclose(map);
+	return found;
+	}
+
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(
 	NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -1340,6 +1379,63 @@ int wmain(int argc, wchar_t** argv)
 	runTask5Cases(sdk, allocator, errors);
 	runTask5DynamicCases(sdk, allocator, errors);
 	runTask5ReviewCases(sdk, errors);
+
+	// phys_fn_001343 is the unguarded internal half of setMaterial: write the
+	// material index, then register the shape's dirty bit in its owning Scene.
+	// Use a fresh Scene so the dirty queue can be reset without touching the
+	// larger public mutation corpus above.
+	NxScene* materialScene = sdk->createScene(sceneDesc);
+	NxBoxShapeDesc materialShapeDesc;
+	NxActorDesc materialActorDesc;
+	materialActorDesc.shapes.pushBack(&materialShapeDesc);
+	NxActor* materialActor = materialScene
+		? materialScene->createActor(materialActorDesc) : 0;
+	if(!materialActor)
+		return nxFail("material dirty-row actor creation failed");
+	unsigned char* materialShape = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(shapeRoot(materialActor)));
+	unsigned char* materialBody = *reinterpret_cast<unsigned char**>(
+		materialShape + 4);
+	unsigned char* materialSceneInternal = *reinterpret_cast<unsigned char**>(
+		materialBody + 4);
+	unsigned char* materialAux = *reinterpret_cast<unsigned char**>(
+		materialSceneInternal + 0x48);
+	const unsigned materialId = word(materialShape, 0xd4);
+	unsigned* materialFlags = *reinterpret_cast<unsigned**>(materialAux);
+	unsigned* materialActive = *reinterpret_cast<unsigned**>(materialAux + 0x10);
+	unsigned* materialActiveEnd = *reinterpret_cast<unsigned**>(materialAux + 0x14);
+	unsigned* materialIndices = *reinterpret_cast<unsigned**>(materialAux + 0x20);
+	unsigned* materialFlagsEnd = *reinterpret_cast<unsigned**>(materialAux + 8);
+	if(!materialFlags || !materialFlagsEnd || !materialActive ||
+		!materialActiveEnd || !materialIndices || materialId >=
+			static_cast<unsigned>(materialFlagsEnd - materialFlags))
+		return nxFail("material dirty-row Scene arrays are invalid");
+	materialFlags[materialId] = 0;
+	materialIndices[materialId] = 0xd00beed0u;
+	*reinterpret_cast<unsigned**>(materialAux + 0x14) = materialActive;
+	void* materialSetter = reinterpret_cast<unsigned char*>(physics) + 0x276f0;
+	wchar_t mapPath[MAX_PATH];
+	if(swprintf_s(mapPath, L"%s\\NxPhysics.map", pairDirectory) < 0)
+		return nxFail("material dirty-row map path failed");
+	if(GetFileAttributesW(mapPath) != INVALID_FILE_ATTRIBUTES &&
+		!nxResolveMapAddress(pairDirectory, physics,
+			"?nxSetMaterialIndex@ShapeBase@@QAEXG@Z", &materialSetter))
+		return nxFail("candidate material dirty-row symbol is missing");
+	typedef void (__thiscall *ShapeSetMaterialFn)(void*, unsigned short);
+	reinterpret_cast<ShapeSetMaterialFn>(materialSetter)(materialShape, 0x4a39);
+	const unsigned dirtyFlags = materialFlags[materialId];
+	const unsigned queued = *reinterpret_cast<unsigned**>(materialAux + 0x14) -
+		materialActive;
+	const unsigned dirtyIndex = materialIndices[materialId];
+	const unsigned materialValue = half(materialShape, 0xda);
+	const unsigned materialMismatches = materialValue == 0x4a39 &&
+		dirtyFlags == 8 && queued == 1 && dirtyIndex == 0 ? 0u : 1u;
+	printf("shape_mutation row=001343 material=%04x dirty=%x queued=%u index=%u mismatches=%u\n",
+		materialValue, dirtyFlags, queued, dirtyIndex, materialMismatches);
+	if(materialMismatches)
+		return nxFail("material dirty-row state mismatch");
+	materialScene->releaseActor(*materialActor);
+	sdk->releaseScene(*materialScene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

@@ -9,7 +9,7 @@
 
 **Tech stack:** CMake, MSVC Win32 Release, existing C++ public headers, reconstructed NxFoundation, pinned Ghidra 12.1.2 and Capstone 5.0.6, Python evidence tooling, PowerShell isolated-process runners. Use IDA or angr selectively when they answer a specific unresolved question.
 
-**Status, updated 2026-10-18:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, 5,138 classified data objects, and 2,009 mapped code rows. Current function ledgers: Phase 2 92 closed / 51 deferred; Phase 3 118 / 274; Phase 4 44 / 1,009; Phase 5 205 / 0; Phase 6 178 / 255; Phase 7 481 / 79. Fresh Win32 Release Phase 3/5/6/7 gates pass at 984/984, 2,916/2,916, 1,769/1,769, and 3,052/3,052 registered assertions. Inventory validation reports zero unexplained records, and the 80-file Physics header manifest matches both worktree and Unreal source. M1 and the full-image M8 audit remain open; CMake remains the build path and public headers remain unchanged.
+**Status, updated 2026-10-18:** Full-DLL semantic and ABI reconstruction remains open: 2,786 nonterminal code rows, 3,552 classified compiler artifacts, 5,138 classified data objects, and 2,010 mapped code rows. Current function ledgers: Phase 2 92 closed / 51 deferred; Phase 3 119 / 273; Phase 4 44 / 1,009; Phase 5 205 / 0; Phase 6 178 / 255; Phase 7 481 / 79. Fresh Win32 Release Phase 3/5/6/7 gates pass at 984/984, 2,917/2,917, 1,770/1,770, and 3,053/3,053 registered assertions. Inventory validation reports zero unexplained records, and the 80-file Physics header manifest matches both worktree and Unreal source. M1 and the full-image M8 audit remain open; CMake remains the build path and public headers remain unchanged.
 
 ### Continuation — CollisionObject scalar deleting destructor (`phys_fn_001199`, 2026-10-18)
 
@@ -1513,3 +1513,8 @@ The Capsule, Plane, Sphere, and Mesh 8-byte thunks each adjust `this` by `-0x0c`
 
 
 `phys_fn_001201` now has a two-case owner-value oracle/candidate differential in `NxPhysicsShapeVtableTests`, including read-lock release. The null-return mutation is rejected in both cases; restored output matches, and the fresh Phase 5 gate passes at 2,916/2,916. Phase 3 advances to 118 closed / 274 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-collision-owner-accessor-001201.md`. The previously approved FluidModel cached-library unload row `phys_fn_003902` is already on main (`2cd257cf7`) with its export-clear ordering and mutation-tested Phase 5/6/7 evidence.
+
+
+### Continuation — shape material dirty-table row (`phys_fn_001343`, 2026-10-18)
+
+`ShapeBase::nxSetMaterialIndex` now stores the 16-bit material at `+0xda` and marks Scene dirty bit 8; the five public setters retain their existing lock behavior and call the helper after acquiring the write lock. The registered fresh-Scene oracle/candidate probe verifies `material=4a39 dirty=8 queued=1 index=0`. Independent material-store and dirty-registration omissions are both rejected (`stdout_delta=4` and `2`); restored output is exact. Phase 3 records 119 closed / 273 deferred. See `docs/reconstruction/novodex-physics/evidence/phase3-shape-material-dirty-row-001343.md`. Full-DLL reconstruction remains open.

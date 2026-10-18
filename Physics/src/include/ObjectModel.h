@@ -331,6 +331,10 @@ class ShapeBase
 	//! because every family's apply/load rows reach it.
 	void				nxApplyGroup(unsigned short group);
 
+	//! phys_fn_001343 (0x000276f0): store the material index at +0xda, then
+	//! mark dirty bit 8 on the owning Scene. Public setters hold the write lock.
+	void				nxSetMaterialIndex(unsigned short material);
+
 	//! Row 001309 (0x00025f60, __thiscall `ret 4`, not claimed): the shape's
 	//! global pose written to out[0..11] (row-major rotation, translation),
 	//! composed from the owner's pose -- the body's quaternion (+0x5c) and

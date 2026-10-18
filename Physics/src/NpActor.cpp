@@ -628,8 +628,8 @@ static void __fastcall nxBoxHandleSetMaterial(void* self, void*, NxMaterialIndex
 		static_cast<unsigned char*>(self) + 0x10);
 	if(!nxBoxHandleWriteTry(writeLock)) return;
 	unsigned char* shape = nxBoxHandleInternal(self);
-	*reinterpret_cast<NxMaterialIndex*>(shape + 0xda) = material;
-	nxSceneMarkShapeDirty(shape, 8);
+	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxSetMaterialIndex(
+		static_cast<unsigned short>(material));
 	nxNpSceneGuardLeave(writeLock);
 	}
 

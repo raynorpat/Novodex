@@ -25825,13 +25825,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/548",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3505",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x000276f0 stores the 16-bit argument at ShapeBase+0xda, sets argument 8, and tail-calls the Scene dirty-table helper at RVA 0x00026c90.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests calls oracle RVA 0x000276f0 and the candidate map symbol ?nxSetMaterialIndex@ShapeBase@@QAEXG@Z on a fresh live Scene shape; both report material=4a39 dirty=8 queued=1 index=0. Removing the candidate material write is rejected (material=0000, stdout_delta=4); removing Scene dirty registration is rejected (dirty=0 queued=0 index=3490442960, stdout_delta=2). Restored oracle/candidate transcript is exact.",
+      "notes": "The five public shape-family setMaterial wrappers retain their write-lock handling and route the material store plus Scene dirty registration through this row. Candidate map RVA: 0x0004e230 (ObjectModel.obj). Evidence: evidence/phase3-shape-material-dirty-row-001343.md.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "ShapeBase::nxSetMaterialIndex"
     },
     {
       "id": "phys_fn_001344",

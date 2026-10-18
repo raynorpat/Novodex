@@ -51,6 +51,11 @@
       "name": "box_face_index_families_000973_2026-10-16",
       "command": "run_phase_gate.ps1 -Phase 5 -RepoRoot D:\\github\\Novodex -BuildRoot D:\\github\\Novodex\\build -OracleRoot D:\\FlamingEnt__\\Unreal_3 -PairsRoot D:\\FlamingEnt__\\novodex-analysis\\pairs",
       "result": "Fresh mainline Win32 Release Phase 5 gate passes at 2,803/2,803 coverage assertions. The six-face oracle/candidate rebuild compares all 24 corner and 24 edge indices (digest 28d445a5); mutating an edge index to 12 is rejected, and the restored differential is exact. Updated oracle-only layout digest: 3acf0dc7. Evidence: evidence/phase5-box-face-index-families-000973.md and evidence/raw/phase5-box-face-index-families-000973-20261016/phase5-gate.log.gz."
+    },
+    {
+      "name": "shape_material_dirty_row_001343_2026-10-18",
+      "command": "run_phase_gate.ps1 -Phase 5 -RepoRoot D:\\github\\Novodex -BuildRoot D:\\github\\Novodex\\build -OracleRoot D:\\FlamingEnt__\\Unreal_3 -PairsRoot D:\\FlamingEnt__\\novodex-analysis\\pairs",
+      "result": "Fresh mainline Win32 Release Phase 5 gate passed at 2,917/2,917 coverage assertions. The direct live-Scene row probe reports material=4a39 dirty=8 queued=1 index=0. Independent material-store and dirty-registration omissions were rejected (stdout_delta=4 and 2); the restored focused differential is exact. Evidence: evidence/phase3-shape-material-dirty-row-001343.md and evidence/raw/phase3-shape-material-dirty-row-001343-20261018/phase5.log.gz."
     }
   ],
   "excluded_from_comparison": [

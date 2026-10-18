@@ -231,6 +231,12 @@ void CollisionObject::nxSetGroup(unsigned group)
 	nxMutexApplyGroupEx(this, group, 2, 0, 0, 0);
 	}
 
+void ShapeBase::nxSetMaterialIndex(unsigned short material)
+	{
+	mHalfwordDA = material;
+	nxSceneMarkShapeDirty(this, 8);
+	}
+
 NxU16 CollisionObject::nxGetGroup()
 	{
 	unsigned char* bytes = reinterpret_cast<unsigned char*>(this);
