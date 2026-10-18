@@ -3462,6 +3462,17 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsSimulationTests' = @(
         'simulation implicit-mesh owner-binding-clear row=003687 set=1 before=1 cleared=1 matched=1'
         'simulation implicit-mesh owner-binding-init row=003689 resolved=1 manager=1 bound=1 matched=1'
+        'simulation fluid-unavailable row=003748 result=void warning=1 exact=1'
+        'simulation fluid-unavailable row=003750 result=0 warning=1 exact=1'
+        'simulation fluid-unavailable row=003752 result=void warning=1 exact=1'
+        'simulation fluid-unavailable row=003754 result=0 warning=1 exact=1'
+        'simulation fluid-unavailable row=003756 result=void warning=1 exact=1'
+        'simulation fluid-unavailable row=003758 result=0 warning=1 exact=1'
+        'simulation fluid-unavailable row=003760 result=void warning=1 exact=1'
+        'simulation fluid-unavailable row=003762 result=0 warning=1 exact=1'
+        'simulation fluid-unavailable row=003764 result=void warning=1 exact=1'
+        'simulation fluid-unavailable row=003766 result=0 warning=1 exact=1'
+        'simulation fluid-unavailable-methods cases=10 mismatches=0'
         'simulation motion stage=friction60 position=3fbbb856.3ee66666.00000000 velocity=3fb101df.00000000.00000000 angular=00000000.00000000.c031321f'
         # Pair reconciliation produces one enter, one stay and one leave event
         # with the corresponding public shape handles across fetched steps.
@@ -6383,7 +6394,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2931  # includes current locked-array and ElementCount row markers
+	'5' = 2942  # includes current locked-array, ElementCount, and fluid-unavailable markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6474,7 +6485,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1782  # includes current locked-array data row marker
+	'6' = 1793  # includes current locked-array and fluid-unavailable markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6527,7 +6538,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3067  # includes current locked-array and ElementCount row markers
+	'7' = 3078  # includes current locked-array, ElementCount, and fluid-unavailable markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6739,4 +6750,3 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsType3PrunerTests'
 )
 $NxSkippedExitCode = 3
-

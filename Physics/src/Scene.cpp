@@ -1891,6 +1891,83 @@ static NxU32 nxFluidReportUnavailableUnsigned(int unavailableLine,
 	return 0;
 	}
 
+static void nxFluidReportUnavailableVoid(int unavailableLine,
+	const char* message)
+	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING,
+		"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp",
+		unavailableLine, 0, message);
+	}
+
+// phys_fn_003748..003766 are the ten shipped NxFluid slots whose feature
+// implementations are unavailable in this release. The vtable entries still
+// report the original warning; getters return zero after reporting it.
+static void __fastcall nxFluidSetCollisionGroup(void*, void*, NxCollisionGroup)
+	{
+	nxFluidReportUnavailableVoid(237,
+		"NxFluid::setCollisionGroup(): Feature not available!");
+	}
+
+static NxU32 __fastcall nxFluidGetCollisionGroup(void*, void*)
+	{
+	return nxFluidReportUnavailableUnsigned(246,
+		"NxFluid::getCollisionGroup(): Feature not available!");
+	}
+
+static void __fastcall nxFluidSetFluidGroup(void*, void*, NxFluidGroup)
+	{
+	nxFluidReportUnavailableVoid(253,
+		"NxFluid::setFluidGroup(): Feature not available!");
+	}
+
+static NxU32 __fastcall nxFluidGetFluidGroup(void*, void*)
+	{
+	return nxFluidReportUnavailableUnsigned(262,
+		"NxFluid::getFluidGroup(): Feature not available!");
+	}
+
+static void __fastcall nxFluidSetOnSeparationAction(void*, void*,
+	NxFluidParticleAction, bool)
+	{
+	nxFluidReportUnavailableVoid(273,
+		"NxFluid::setOnSeparationAction(): Feature not available!");
+	}
+
+static NX_BOOL __fastcall nxFluidGetOnSeparationAction(void*, void*,
+	NxFluidParticleAction)
+	{
+	return static_cast<NX_BOOL>(nxFluidReportUnavailableUnsigned(283,
+		"NxFluid::getOnSeparationAction(): Feature not available!"));
+	}
+
+static void __fastcall nxFluidSetOnCollision(void*, void*,
+	NxFluidParticleAction, bool)
+	{
+	nxFluidReportUnavailableVoid(291,
+		"NxFluid::setOnCollision(): Feature not available!");
+	}
+
+static NX_BOOL __fastcall nxFluidGetOnCollision(void*, void*,
+	NxFluidParticleAction)
+	{
+	return static_cast<NX_BOOL>(nxFluidReportUnavailableUnsigned(301,
+		"NxFluid::getOnCollision(): Feature not available!"));
+	}
+
+static void __fastcall nxFluidSetOnLifetimeExpired(void*, void*,
+	NxFluidParticleAction, bool)
+	{
+	nxFluidReportUnavailableVoid(308,
+		"NxFluid::setOnLifetimeExpired(): Feature not available!");
+	}
+
+static NX_BOOL __fastcall nxFluidGetOnLifetimeExpired(void*, void*,
+	NxFluidParticleAction)
+	{
+	return static_cast<NX_BOOL>(nxFluidReportUnavailableUnsigned(318,
+		"NxFluid::getOnLifetimeExpired(): Feature not available!"));
+	}
+
 static NxU32 __fastcall nxFluidGetMaxParticles(void* wrapper, void*)
 	{
 	return nxFluidCallBackendUnsignedGetter(wrapper,
@@ -2074,7 +2151,16 @@ static void* gNxFluidSolverVtable[] = {
 	reinterpret_cast<void*>(nxFluidSetDynamicCollisionAdhesion),
 	reinterpret_cast<void*>(nxFluidSetFlag),
 	reinterpret_cast<void*>(nxFluidGetFlag),
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	reinterpret_cast<void*>(nxFluidSetCollisionGroup),
+	reinterpret_cast<void*>(nxFluidGetCollisionGroup),
+	reinterpret_cast<void*>(nxFluidSetFluidGroup),
+	reinterpret_cast<void*>(nxFluidGetFluidGroup),
+	reinterpret_cast<void*>(nxFluidSetOnSeparationAction),
+	reinterpret_cast<void*>(nxFluidGetOnSeparationAction),
+	reinterpret_cast<void*>(nxFluidSetOnCollision),
+	reinterpret_cast<void*>(nxFluidGetOnCollision),
+	reinterpret_cast<void*>(nxFluidSetOnLifetimeExpired),
+	reinterpret_cast<void*>(nxFluidGetOnLifetimeExpired),
 	reinterpret_cast<void*>(nxFluidGetMaxParticles),
 	reinterpret_cast<void*>(nxFluidGetKernelRadiusMultiplier),
 	reinterpret_cast<void*>(nxFluidGetRestParticlesPerMeter),

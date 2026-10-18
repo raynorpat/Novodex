@@ -1,0 +1,9 @@
+# FluidModel unavailable setter/getter rows (`phys_fn_003748`–`phys_fn_003766`)
+
+The five pairs of exported `NxFluid` methods were null in candidate vtable slots 27–36, so a licensed FluidModel call through any of these methods crashed. IDA confirms ten warning-only oracle routines in `NpFluid.cpp`: `setCollisionGroup`, `getCollisionGroup`, `setFluidGroup`, `getFluidGroup`, `setOnSeparationAction`, `getOnSeparationAction`, `setOnCollision`, `getOnCollision`, `setOnLifetimeExpired`, and `getOnLifetimeExpired`. Setters emit the exact `NXE_DB_WARNING` and return void; getters emit their exact warning and return zero.
+
+The candidate now wires all ten slots to row-specific wrappers in `Physics/src/Scene.cpp`. No public headers changed. `NxPhysicsSimulationTests` invokes every method on a licensed fluid and compares the warning code, source path, line, message, getter return, and one-warning count to the oracle.
+
+The pre-fix red differential reproduced the null-slot access violation (`candidate_exit=0xC0000005`) after entering this fixture. For mutation testing, the five candidate setters were changed to omit their warning and the five getters to return 1 without warning. The registered gate rejected the mutant: all ten row markers were inexact, `mismatches=10`, `oracle_exit=0`, `candidate_exit=1`, and `stdout_delta=73`. After restoring the implementations, all ten row markers are exact; oracle and candidate exit 0, `stdout_delta=0`, and stderr is byte-exact.
+
+The raw archive contains compressed red, mutation, and restored transcripts with SHA-256 hashes in `evidence/raw/phase7-fluid-unavailable-methods-003748-003766-20261018/manifest.json`. Fresh registered Phase 5/6/7 gates pass at 2,942/2,942, 1,793/1,793, and 3,078/3,078 coverage assertions; their transcripts and the mutation controls are retained in that archive.

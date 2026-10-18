@@ -235,6 +235,84 @@ class NxSimulationOutputStream : public NxUserOutputStream
 		}
 	};
 
+static bool nxSimulationFluidWarningMatches(const NxSimulationOutputStream& output,
+	unsigned errorsBefore, int line, const char* message)
+	{
+	return output.errors == errorsBefore + 1 &&
+		output.code == NXE_DB_WARNING && output.line == line &&
+		strcmp(output.file,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\fluids\\NpFluid.cpp") == 0 &&
+		strcmp(output.message, message) == 0;
+	}
+
+static bool nxSimulationTestUnavailableFluidMethods(NxFluid* fluid,
+	NxSimulationOutputStream& output)
+	{
+	if(!fluid)
+		return false;
+	unsigned cases = 0;
+	unsigned mismatches = 0;
+	#define NX_FLUID_CHECK_UNAVAILABLE_VOID(row, lineValue, text, call) \
+		{ \
+		const unsigned errorsBefore = output.errors; \
+		output.resetLast(); \
+		call; \
+		const bool exact = nxSimulationFluidWarningMatches(output, errorsBefore, \
+			lineValue, text); \
+		++cases; \
+		mismatches += exact ? 0u : 1u; \
+		printf("simulation fluid-unavailable row=%s result=void warning=%u exact=%u\n", \
+			row, output.errors - errorsBefore, exact ? 1u : 0u); \
+		}
+	#define NX_FLUID_CHECK_UNAVAILABLE_VALUE(row, lineValue, text, call) \
+		{ \
+		const unsigned errorsBefore = output.errors; \
+		output.resetLast(); \
+		const unsigned value = static_cast<unsigned>(call); \
+		const bool exact = value == 0 && nxSimulationFluidWarningMatches(output, \
+			errorsBefore, lineValue, text); \
+		++cases; \
+		mismatches += exact ? 0u : 1u; \
+		printf("simulation fluid-unavailable row=%s result=%u warning=%u exact=%u\n", \
+			row, value, output.errors - errorsBefore, exact ? 1u : 0u); \
+		}
+	NX_FLUID_CHECK_UNAVAILABLE_VOID("003748", 237,
+		"NxFluid::setCollisionGroup(): Feature not available!",
+		fluid->setCollisionGroup(static_cast<NxCollisionGroup>(0x53)));
+	NX_FLUID_CHECK_UNAVAILABLE_VALUE("003750", 246,
+		"NxFluid::getCollisionGroup(): Feature not available!",
+		fluid->getCollisionGroup());
+	NX_FLUID_CHECK_UNAVAILABLE_VOID("003752", 253,
+		"NxFluid::setFluidGroup(): Feature not available!",
+		fluid->setFluidGroup(static_cast<NxFluidGroup>(0x46)));
+	NX_FLUID_CHECK_UNAVAILABLE_VALUE("003754", 262,
+		"NxFluid::getFluidGroup(): Feature not available!",
+		fluid->getFluidGroup());
+	NX_FLUID_CHECK_UNAVAILABLE_VOID("003756", 273,
+		"NxFluid::setOnSeparationAction(): Feature not available!",
+		fluid->setOnSeparationAction(NX_F_TURN_DEAD, true));
+	NX_FLUID_CHECK_UNAVAILABLE_VALUE("003758", 283,
+		"NxFluid::getOnSeparationAction(): Feature not available!",
+		fluid->getOnSeparationAction(NX_F_TURN_SIMPLE));
+	NX_FLUID_CHECK_UNAVAILABLE_VOID("003760", 291,
+		"NxFluid::setOnCollision(): Feature not available!",
+		fluid->setOnCollision(NX_F_TURN_DEAD, false));
+	NX_FLUID_CHECK_UNAVAILABLE_VALUE("003762", 301,
+		"NxFluid::getOnCollision(): Feature not available!",
+		fluid->getOnCollision(NX_F_TURN_SIMPLE));
+	NX_FLUID_CHECK_UNAVAILABLE_VOID("003764", 308,
+		"NxFluid::setOnLifetimeExpired(): Feature not available!",
+		fluid->setOnLifetimeExpired(NX_F_TURN_DEAD, true));
+	NX_FLUID_CHECK_UNAVAILABLE_VALUE("003766", 318,
+		"NxFluid::getOnLifetimeExpired(): Feature not available!",
+		fluid->getOnLifetimeExpired(NX_F_TURN_SIMPLE));
+	#undef NX_FLUID_CHECK_UNAVAILABLE_VALUE
+	#undef NX_FLUID_CHECK_UNAVAILABLE_VOID
+	printf("simulation fluid-unavailable-methods cases=%u mismatches=%u\n",
+		cases, mismatches);
+	return cases == 10 && mismatches == 0;
+	}
+
 // Redirect this process's HKLM view to an isolated HKCU key so the licensed
 // NxFluid getter branch can be exercised without changing machine-wide state.
 struct NxSimulationFluidLicenseOverride
@@ -8135,6 +8213,7 @@ int wmain(int argc, wchar_t** argv)
 	bool licensedStaticCollisionAdhesionSetter = false;
 	bool licensedDynamicCollisionRestitutionSetter = false;
 	bool licensedDynamicCollisionAdhesionSetter = false;
+	bool licensedUnavailableFluidMethods = false;
 	{
 	NxSimulationFluidLicenseOverride licenseOverride;
 	NxScene* const licensedFluidScene = licenseOverride.ready
@@ -8143,6 +8222,8 @@ int wmain(int argc, wchar_t** argv)
 	licensedFluidDesc.setToDefault();
 	NxFluid* const licensedFluid = licensedFluidScene
 		? licensedFluidScene->createFluid(licensedFluidDesc) : 0;
+	licensedUnavailableFluidMethods = nxSimulationTestUnavailableFluidMethods(
+		licensedFluid, simulationOutput);
 	FluidManagerCallbackSummary licensedCallbacksBefore = {};
 	getFluidManagerCallbackSummary(&licensedCallbacksBefore);
 	unsigned stiffnessCallsBefore = 0, stiffnessBitsBefore = 0,
@@ -8344,8 +8425,9 @@ int wmain(int argc, wchar_t** argv)
 		!licensedStaticCollisionRestitutionSetter ||
 		!licensedStaticCollisionAdhesionSetter ||
 		!licensedDynamicCollisionRestitutionSetter ||
-		!licensedDynamicCollisionAdhesionSetter)
-		return nxFail("licensed NxFluid scalar setter or kernel-radius getter did not forward through FluidModel");
+		!licensedDynamicCollisionAdhesionSetter ||
+		!licensedUnavailableFluidMethods)
+		return nxFail("licensed NxFluid API forwarding or unavailable-method diagnostics did not match the oracle");
 	// NxScene::createController forwards to the Scene-owned controller list in
 	// the pinned DLL. NxControllerDesc is intentionally incomplete in this SDK
 	// header set, so supply its recovered byte layout without changing public

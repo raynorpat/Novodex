@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "evidence": "phase7-fluid-unavailable-methods-003748-003766.md",
+  "files": {
+    "red.log.gz": {
+      "sha256": "76820f1283fc9776ab3b8a9d997a9e345a54fc638f630fc3bd9473fc0c7aea43",
+      "uncompressed_sha256": "f214dd05f2b6ac6678538fb97c3b8c73a84a50c6380885eee389954186b0a833",
+      "bytes": 871350,
+      "source": "build/fluid-unavailable-differential.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "495d151a82c3567d59daa2e263ff9b7206d8b2dcd6782116fbad10d1b230be2f",
+      "uncompressed_sha256": "6ce40a78b2fdca83ae763796b5401980c0b302aa5530207410f673153b5c7cbe",
+      "bytes": 866658,
+      "source": "build/fluid-unavailable-row-mutation-differential.log"
+    },
+    "restored.log.gz": {
+      "sha256": "238097336ac28ace6978cb657afdaaf83675d102da3de3e4bd2899caa2a7075f",
+      "uncompressed_sha256": "5cb94dfa70da3d330b0ccbe4b143418e5feaa3eb3ffc780ae59179e45a84210a",
+      "bytes": 871350,
+      "source": "build/fluid-unavailable-restored-differential.log"
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "59906580d78aa6ac2d44eabba2271dba4c2388832ab19ef30899644773135b5d",
+      "uncompressed_sha256": "c027e963df8f84ba13e01db64d9d821c01a0c7b573b92b3a2d812940567a656d",
+      "bytes": 2880526,
+      "source": "docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-unavailable-methods-003748-003766-20261018\\phase5-gate.log"
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "cab28ae932fd0ad8265af6a7d662465bf8dd8f5882638b2895c644731e03120e",
+      "uncompressed_sha256": "2e5dd5ae60a5404e32b8ff324f832a82ca73c399026cfd378ea9546f17f33659",
+      "bytes": 3143246,
+      "source": "docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-unavailable-methods-003748-003766-20261018\\phase6-gate.log"
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "fc1bf6d4c54fd08dde3fb5f67df0e9dbe9a32dfe045effb671c2b4d77c05fb0e",
+      "uncompressed_sha256": "5279532acfcf707d6bf0c76db1367f86e4cc6feed7b4aac3874e491c53405d37",
+      "bytes": 4700900,
+      "source": "docs\\reconstruction\\novodex-physics\\evidence\\raw\\phase7-fluid-unavailable-methods-003748-003766-20261018\\phase7-gate.log"
+    }
+  },
+  "candidate_sha256": "892e1d71579ddf24ffafcb9d4b3ad8bdee57325c805fd3f6cf112a8299dbb3f6",
+  "git_head": "a0a7cea50fe0aa26ede4e7082ca3803c8cc40e3d"
+}
