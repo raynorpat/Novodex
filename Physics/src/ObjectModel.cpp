@@ -3255,6 +3255,28 @@ void nxGlobalCallN(void* self, NxGlobalFn3 fn, int objSelf4, unsigned nargs,
 	fn(first, b, (nargs == 2u) ? 0u : extraArg);
 	}
 
+// phys_fn_003597 and phys_fn_003599: the callback result is returned verbatim
+// for mode 2 and normalized to (result == 0) for every other mode.
+unsigned nxGlobalCallNResult(void* self, NxGlobalFn3Result fn, int objSelf4,
+	unsigned mode, unsigned extraArg)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	if(objSelf4 != 0)
+		{
+		unsigned inner;
+		memcpy(&inner, p + 4, 4);
+		p = reinterpret_cast<unsigned char*>(static_cast<size_t>(inner));
+		}
+	unsigned a, b;
+	memcpy(&a, p + 0x7c, 4);
+	memcpy(&b, p + 0x80, 4);
+	unsigned first;
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(a))
+		+ 0x30, 4);
+	const unsigned result = fn(first, b, extraArg);
+	return (mode == 2u) ? result : (result == 0u);
+	}
+
 void nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);

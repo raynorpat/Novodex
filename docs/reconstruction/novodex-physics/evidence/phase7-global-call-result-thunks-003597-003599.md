@@ -1,0 +1,9 @@
+# Three argument global call return thunks (`phys_fn_003597`, `phys_fn_003599`)
+
+IDA confirms both 51-byte x86 `__thiscall` rows read three callback arguments from the `this+4` record and `this+8`, then call their bound global slot with `cdecl`. Row `003597` calls `EmitterGetShapeFlag`; row `003599` calls `EmitterGetTypeFlag`. Each preserves the callback's EAX word when its stack mode argument is `2`; otherwise it returns whether that word is zero.
+
+`nxGlobalCallNResult` in `Physics/src/ObjectModel.cpp` implements that result contract. The `NxPhysicsObjectLayoutTests` oracle/source fixture drives both pinned RVAs with callback results `0` and `0x12345678` under modes `0`, `1`, and `2`. It compares the three callback arguments, callback count, returned word, and before/after x86 stack pointer. The restored run reports six cases per row, stack checks `6/6`, and zero mismatches.
+
+Changing the helper to return the callback word unconditionally produces four mismatches in each row: the two non-2 modes for each callback result. `run_differential.ps1 -Targets NxPhysicsObjectLayoutTests` rejects the mutation with exit 1. The restored oracle control and oracle/source differential pass. The source bundle is pinned by `oracle-only-baselines.json` and `evidence/raw/phase7-global-call-result-thunks-003597-003599-20261018/oracle-proof.json`.
+
+The restored registered `NxPhysicsObjectLayoutTests` differential passes (`oracle_exit=0`, candidate sources present in the harness, zero mismatches). Fresh Phase 5, 6, and 7 gates pass at 2,930/2,928, 1,781/1,781, and 3,066/3,064 coverage assertions. The oracle direct run, restored and mutation differentials, and all three gate transcripts are compressed in the adjacent `raw/phase7-global-call-result-thunks-003597-003599-20261018/` directory; its manifest records the pinned oracle and candidate DLL hashes.

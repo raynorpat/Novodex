@@ -68397,13 +68397,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x88140u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1352",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12516",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88140u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA Pro confirms a 51-byte __thiscall row that reads the callback arguments from this+4, its +0x7c/+0x80 record, and this+8; it returns the callback word only when the stack mode is 2 and otherwise returns callback_result == 0.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares oracle RVA 0x00088140 with nxGlobalCallNResult across callback results zero/nonzero and modes 0/1/2, checking all callback arguments, return values, and x86 stack balance. An unconditional callback-result mutation is rejected with four mismatches for this row.",
+      "notes": "Shared callback result helper used by both oracle rows; each row binds its own function-pointer slot.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCallNResult",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallNResult@@YAIPAXP6AIIII@ZHII@Z",
+        "address": "0x1004ac30",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003598",
@@ -68433,13 +68441,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "three-argument global-call thunk (0x88180u)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1353",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12518",
-      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88180u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
-      "notes": ""
+      "static_proof": "IDA Pro confirms a 51-byte __thiscall row that reads the callback arguments from this+4, its +0x7c/+0x80 record, and this+8; it returns the callback word only when the stack mode is 2 and otherwise returns callback_result == 0.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests compares oracle RVA 0x00088180 with nxGlobalCallNResult across callback results zero/nonzero and modes 0/1/2, checking all callback arguments, return values, and x86 stack balance. An unconditional callback-result mutation is rejected with four mismatches for this row.",
+      "notes": "Shared callback result helper used by both oracle rows; each row binds its own function-pointer slot.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxGlobalCallNResult",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxGlobalCallNResult@@YAIPAXP6AIIII@ZHII@Z",
+        "address": "0x1004ac30",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003600",

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003597",
+    "phys_fn_003599"
+  ],
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "90ccf0e0931887284dadd230d46708edded19dfb0011c7db1a4dd1c17026b629",
+  "source_bundle_sha256": "8d60004b8b80ba47074e0e8e6aaacaab014d88e1f2d25ca8191b5cfa4c943ed5",
+  "restored_result": "oracle_exit=0; each row cases=6 stack=6/6 mismatches=0; differential=pass",
+  "mutation": "Changed nxGlobalCallNResult to return callback EAX unconditionally.",
+  "mutation_result": "Each row mismatches=4; registered oracle/source target rejected with exit 1.",
+  "phase5_gate": "pass; coverage_assertions_evaluated=2930 floor=2928",
+  "phase6_gate": "pass; coverage_assertions_evaluated=1781 floor=1781",
+  "phase7_gate": "pass; coverage_assertions_evaluated=3066 floor=3064",
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz",
+    "oracle-direct.log.gz"
+  ]
+}

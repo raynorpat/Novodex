@@ -5686,6 +5686,8 @@ $NxRequiredCoverageLines = [ordered] @{
 		'mutexwork candidate failures=0 provisional=1',
 		'elemcount row=phys_fn_003477 cases=3 mismatches=0',
 		'andget row=phys_fn_003595 cases=3 mismatches=0',
+		'global-call-result row=003597 cases=6 stack=6/6 mismatches=0',
+		'global-call-result row=003599 cases=6 stack=6/6 mismatches=0',
 		'vtconst row=phys_fn_004417 mismatches=0',
 		'vtconst row=phys_fn_004419 mismatches=0',
 		'vtconst row=phys_fn_004421 mismatches=0',
@@ -6380,7 +6382,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2924  # adds six ShapeGroup vtable/row markers (001347, 001277, 001022, 001026, 001020)
+	'5' = 2928  # adds two result-contract markers for phys_fn_003597/003599
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6471,7 +6473,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1777  # adds six ShapeGroup vtable/row markers (001347, 001277, 001022, 001026, 001020)
+	'6' = 1781  # adds two result-contract markers for phys_fn_003597/003599
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6524,7 +6526,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3060  # adds six ShapeGroup vtable/row markers (001347, 001277, 001022, 001026, 001020)
+	'7' = 3064  # adds two result-contract markers for phys_fn_003597/003599
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
