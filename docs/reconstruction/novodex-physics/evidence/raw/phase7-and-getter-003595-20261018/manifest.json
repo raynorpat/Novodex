@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003595",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sources_in_harness": true,
+  "restored_test_exe_sha256": "5fc97ee867b55fe93df56d6ff4166c25e0cd7dfe9d6f26c9b5b17fa60348f5e7",
+  "restored_result": "oracle_exit=0; cases=3 mismatches=0; differential=pass",
+  "mutation": "Changed nxLockedAndRead from bitwise AND to bitwise OR.",
+  "mutation_result": "Direct row cases=3 mismatches=3; registered oracle/source target rejected via dependent lockacc3 candidate checks.",
+  "phase5_gate": "pass; coverage_assertions_evaluated=2928 floor=2924",
+  "phase6_gate": "pass; coverage_assertions_evaluated=1779 floor=1777",
+  "phase7_gate": "pass; coverage_assertions_evaluated=3064 floor=3060",
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}

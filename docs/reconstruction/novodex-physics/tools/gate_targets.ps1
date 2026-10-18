@@ -5685,6 +5685,7 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsObjectLayoutTests' = @(
 		'mutexwork candidate failures=0 provisional=1',
 		'elemcount row=phys_fn_003477 cases=3 mismatches=0',
+		'andget row=phys_fn_003595 cases=3 mismatches=0',
 		'vtconst row=phys_fn_004417 mismatches=0',
 		'vtconst row=phys_fn_004419 mismatches=0',
 		'vtconst row=phys_fn_004421 mismatches=0',
