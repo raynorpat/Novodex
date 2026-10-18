@@ -11321,3 +11321,5 @@ Phase 7 row `phys_fn_002398`: lock-API word setter stores the supplied value at 
 Phase 7 lock-API worker start row `phys_fn_002381` is closed by the registered `NxPhysicsObjectLayoutTests` oracle/source mutation differential (`mismatches=1`); the restored control reports `mismatches=0`. Details: `phase7-lock-api-worker-start-002379-002381.md`.
 
 Phase 7 lock-API worker scalar-delete row `phys_fn_002402` is closed by the registered `NxPhysicsObjectLayoutTests` oracle/source mutation differential (`mismatches=1`); restored control reports `mismatches=0`. Details: `phase7-lock-api-scalar-delete-002402.md`.
+
+Phase 7 Fluid scalar-delete row `phys_fn_003499` is closed by the registered `NxPhysicsSimulationTests` staged-pair mutation differential (`stdout_delta=67`); restored control is exact. Details: `phase7-fluid-scalar-delete-003499.md`.

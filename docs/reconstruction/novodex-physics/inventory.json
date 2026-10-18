@@ -66257,12 +66257,20 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Fluid scalar deleting thunk (nxFluidScalarDelete3499, Physics/src/Scene.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1305",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12328",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "IDA decompilation at RVA 0x00085bb0 calls the Fluid cleanup body at 0x00085890, tests scalar-delete flag bit 0, frees this through the Foundation SDK allocator when set, returns this, and uses thiscall ret 4.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests checks that flag 0 preserves the watched fluid allocation and that public releaseFluid invokes flag 1 and frees that exact allocation. Mutating the thunk flag condition to flags&2 is rejected (candidate_exit=1, stdout_delta=67); restored oracle/candidate output is exact. See evidence/phase7-fluid-scalar-delete-003499.md and evidence/raw/phase7-fluid-scalar-delete-003499-20261018/.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "nxFluidScalarDelete3499",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFluidScalarDelete3499@@YIPAXPAX0E@Z",
+        "address": "0x1005ade0",
+        "object": "Scene.obj"
+      },
       "notes": ""
     },
     {

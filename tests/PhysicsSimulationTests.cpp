@@ -86,7 +86,8 @@ static bool gNxSimulationRunInvalidSurfaceMeshProbe = false;
 class NxSimulationCountingAllocator : public NxUserAllocator
 	{
 	public:
-	NxSimulationCountingAllocator(): mallocCalls(0), freeCalls(0), liveAllocations(0) {}
+	NxSimulationCountingAllocator(): mallocCalls(0), freeCalls(0), liveAllocations(0),
+		watchedAllocation(0), watchedFreeCalls(0) {}
 	void* mallocDEBUG(size_t size, const char*, int) override { return malloc(size); }
 	void* malloc(size_t size) override
 		{
@@ -113,14 +114,23 @@ class NxSimulationCountingAllocator : public NxUserAllocator
 		if(memory)
 			{
 			++freeCalls;
+			if(memory == watchedAllocation)
+				++watchedFreeCalls;
 			if(liveAllocations)
 				--liveAllocations;
 			::free(memory);
 			}
 		}
+	void watchAllocation(void* allocation)
+		{
+		watchedAllocation = allocation;
+		watchedFreeCalls = 0;
+		}
 	unsigned mallocCalls;
 	unsigned freeCalls;
 	unsigned liveAllocations;
+	void* watchedAllocation;
+	unsigned watchedFreeCalls;
 	};
 
 class NxSimulationFluidVisualizationRenderer : public NxUserDebugRenderer
@@ -7650,25 +7660,31 @@ int wmain(int argc, wchar_t** argv)
 	bool fluidScalarDeleteFlagZeroReturnMatches = false;
 	bool fluidScalarDeleteFlagZeroVtableRestored = false;
 	bool fluidScalarDeleteFlagZeroStorageLive = false;
+	bool fluidScalarDeleteFlagZeroOwnerRetained = false;
+	void* combinedInternalFluid = 0;
 	if(combinedInitializationFluid)
 		{
-		void* const internalFluid = *reinterpret_cast<void**>(
+		combinedInternalFluid = *reinterpret_cast<void**>(
 			reinterpret_cast<unsigned char*>(combinedInitializationFluid) + 0x14);
-		void* const derivedVtable = internalFluid
-			? *reinterpret_cast<void**>(internalFluid) : 0;
+		void* const derivedVtable = combinedInternalFluid
+			? *reinterpret_cast<void**>(combinedInternalFluid) : 0;
 		if(derivedVtable)
 			{
 			alignas(4) unsigned char scratchFluid[0x84] = {};
 			*reinterpret_cast<void**>(scratchFluid) = derivedVtable;
 			*reinterpret_cast<void**>(scratchFluid + 0x7c) =
-				*reinterpret_cast<void**>(static_cast<unsigned char*>(internalFluid) + 0x7c);
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(combinedInternalFluid) + 0x7c);
 			*reinterpret_cast<void**>(scratchFluid + 0x80) =
-				*reinterpret_cast<void**>(static_cast<unsigned char*>(internalFluid) + 0x80);
+				*reinterpret_cast<void**>(static_cast<unsigned char*>(combinedInternalFluid) + 0x80);
 			scratchFluid[0x83] = 0x5a;
 			typedef void* (__thiscall *FluidDeletingDestructor)(void*, unsigned char);
 			FluidDeletingDestructor const destroy = reinterpret_cast<
-				FluidDeletingDestructor>(*reinterpret_cast<void***>(internalFluid)[0]);
+				FluidDeletingDestructor>(*reinterpret_cast<void***>(combinedInternalFluid)[0]);
+			simulationAllocator.watchAllocation(scratchFluid);
 			void* const returned = destroy(scratchFluid, 0);
+			fluidScalarDeleteFlagZeroOwnerRetained =
+				simulationAllocator.watchedFreeCalls == 0;
+			simulationAllocator.watchedAllocation = 0;
 			fluidScalarDeleteFlagZeroReturnMatches = returned == scratchFluid;
 			fluidScalarDeleteFlagZeroVtableRestored =
 				*reinterpret_cast<void**>(scratchFluid) == derivedVtable;
@@ -7676,7 +7692,8 @@ int wmain(int argc, wchar_t** argv)
 			fluidScalarDeleteFlagZeroMatches =
 				fluidScalarDeleteFlagZeroReturnMatches &&
 				fluidScalarDeleteFlagZeroVtableRestored &&
-				fluidScalarDeleteFlagZeroStorageLive;
+				fluidScalarDeleteFlagZeroStorageLive &&
+				fluidScalarDeleteFlagZeroOwnerRetained;
 			}
 		}
 	printf("simulation fluid deleting-dtor row=003491 flag0 return=%u base-vptr=%u storage-live=%u exact=%u\n",
@@ -7686,8 +7703,18 @@ int wmain(int argc, wchar_t** argv)
 		fluidScalarDeleteFlagZeroMatches ? 1u : 0u);
 	resetFluidManagerCallbacks();
 	resetFluidTeardownOrder();
+	simulationAllocator.watchAllocation(combinedInternalFluid);
 	if(combinedInitializationFluid)
 		surfaceMeshScene->releaseFluid(*combinedInitializationFluid);
+	const bool fluidScalarDeleteFlagOneOwnerFreed =
+		combinedInternalFluid && simulationAllocator.watchedFreeCalls == 1;
+	simulationAllocator.watchedAllocation = 0;
+	simulationAllocator.watchedFreeCalls = 0;
+	printf("simulation fluid scalar-delete row=003499 flag0-owner-free=%u flag1-owner-free=%u exact=%u\n",
+		fluidScalarDeleteFlagZeroOwnerRetained ? 0u : 1u,
+		fluidScalarDeleteFlagOneOwnerFreed ? 1u : 0u,
+		fluidScalarDeleteFlagZeroOwnerRetained &&
+			fluidScalarDeleteFlagOneOwnerFreed ? 1u : 0u);
 	char combinedTeardownOrder[16] = {};
 	const unsigned combinedTeardownOrderLength = getFluidTeardownOrder(
 		combinedTeardownOrder, sizeof(combinedTeardownOrder));
@@ -7701,6 +7728,7 @@ int wmain(int argc, wchar_t** argv)
 		combinedCreateCallbacks.implicitFluidMeshCreate == 1 &&
 		combinedCreateCallbacks.emitterCreate == 1 &&
 		fluidScalarDeleteFlagZeroMatches &&
+		fluidScalarDeleteFlagOneOwnerFreed &&
 		combinedDestroyCallbacks.fluidDestroy == 1 &&
 		combinedTeardownOrderLength == 2 &&
 		strcmp(combinedTeardownOrder, "DP") == 0 &&

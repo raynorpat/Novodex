@@ -1213,9 +1213,10 @@ static unsigned nxFluidResolveLicensedFeatureFlags()
 		}
 	}
 
-static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject);
+static void __fastcall nxFluidDestructor3491(void* fluid, void*);
+void* __fastcall nxFluidScalarDelete3499(void* fluid, void* edx, unsigned char deleteObject);
 static void* gNxFluidVtable[] = {
-	reinterpret_cast<void*>(nxFluidDeletingDestructor)
+	reinterpret_cast<void*>(nxFluidScalarDelete3499)
 	};
 
 // Public NpFluid count/list reads use the scene's read-lock link at wrapper
@@ -2851,7 +2852,7 @@ static void* __fastcall nxFluidSurfaceMeshDeletingDestructor(void* manager,
 	return manager;
 	}
 
-static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned char deleteObject)
+static void __fastcall nxFluidDestructor3491(void* fluid, void*)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(fluid);
 	// Construction already installs the one-entry Fluid base table in this
@@ -2901,7 +2902,13 @@ static void* __fastcall nxFluidDeletingDestructor(void* fluid, void*, unsigned c
 		if(offset == 4)
 			break;
 		}
-	if((deleteObject & 1) != 0)
+	}
+
+// phys_fn_003499 (0x85bb0): scalar deleting thunk around the Fluid destructor.
+void* __fastcall nxFluidScalarDelete3499(void* fluid, void*, unsigned char deleteObject)
+	{
+	nxFluidDestructor3491(fluid, 0);
+	if((deleteObject & 1u) != 0)
 		nxFoundationSDKAllocator->free(fluid);
 	return fluid;
 	}

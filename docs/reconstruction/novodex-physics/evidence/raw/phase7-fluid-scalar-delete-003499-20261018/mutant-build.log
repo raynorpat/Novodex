@@ -1,0 +1,21 @@
+MSBuild version 18.10.1-1.26427.6+3cd27c13e for .NET Framework
+
+  Checking File Globs
+  NxFoundation.vcxproj -> D:\github\Novodex\build\Release\NxFoundation.dll
+  NxQhull.vcxproj -> D:\github\Novodex\build\External\Release\NxQhull.lib
+  NxOpcode.vcxproj -> D:\github\Novodex\build\External\Release\NxOpcode.lib
+  Scene.cpp
+  Compiling OPCODE
+  Compiling on Windows...
+  Compiling with VC++...
+D:\github\Novodex\build\External\opcode-tree\Ice\IceUtils.h(207,10): warning C4005: 'ARRAYSIZE': macro redefinition [D:\github\Novodex\build\NxPhysics.vcxproj]
+  (compiling source file '../Physics/src/Scene.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h(1429,9):
+      see previous definition of 'ARRAYSIZE'
+
+D:\github\Novodex\Physics\src\Scene.cpp(791,55): warning C4291: 'void *NxAllocateable::operator new(size_t,NxMemoryType)': no matching operator delete found; memory will not be freed if initialization throws an exception [D:\github\Novodex\build\NxPhysics.vcxproj]
+      D:\github\Novodex\Foundation\include\NxAllocateable.h(32,33):
+      see declaration of 'NxAllocateable::operator new'
+
+     Creating library D:/github/Novodex/build/Release/NxPhysics.lib and object D:/github/Novodex/build/Release/NxPhysics.exp
+  NxPhysics.vcxproj -> D:\github\Novodex\build\Release\NxPhysics.dll
