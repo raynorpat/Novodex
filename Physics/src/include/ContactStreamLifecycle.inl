@@ -7,6 +7,14 @@ static __declspec(noinline) void cpmOpen002356(void* streamObject)
 	NxContactSinkResetState(reinterpret_cast<NxU32*>(streamObject));
 	}
 
+// Oracle row 002356 is thiscall on the stream sub-object and returns this.
+extern "C" __declspec(noinline) void* __fastcall
+nxContactStreamConstruct002356(void* streamObject, void*)
+	{
+	cpmOpen002356(streamObject);
+	return streamObject;
+	}
+
 // Row 002354 (0x0005b620, 86 B): resets the stream sub-object (zeroes
 // +0x00..+0x33, reserves the pair-count word). thiscall.
 static __declspec(noinline) void cpmOpen002354(void* streamObject)

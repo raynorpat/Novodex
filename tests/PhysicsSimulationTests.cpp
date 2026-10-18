@@ -1804,6 +1804,46 @@ static bool nxSimulationTestMaterialCombineRow855(HMODULE physics,
 		unknown == 0x40c00000;
 	}
 
+static bool nxSimulationTestContactStreamConstructorRow2356(HMODULE physics,
+	const wchar_t* pairDirectory)
+	{
+	void* constructorAddress = 0;
+	void* emptyAddress = 0;
+	if(!nxSimulationResolvePrivateRow(physics, pairDirectory,
+		"@nxContactStreamConstruct002356@8", 0x0005b680u,
+		&constructorAddress) ||
+		!nxSimulationResolvePrivateRow(physics, pairDirectory,
+			"?empty@SdkContainer@@QAEXXZ", 0x000b4f50u, &emptyAddress))
+		return false;
+	typedef void* (__thiscall *OracleConstructorFn)(void*);
+	typedef void* (__fastcall *CandidateConstructorFn)(void*, void*);
+	typedef void (__thiscall *ContainerEmptyFn)(void*);
+	alignas(16) unsigned char streamObject[0x44];
+	memset(streamObject, 0xcd, sizeof(streamObject));
+	void* const returned = reinterpret_cast<CandidateConstructorFn>(
+		constructorAddress)(streamObject, 0);
+	const unsigned* const state = reinterpret_cast<const unsigned*>(streamObject);
+	const unsigned* const container = reinterpret_cast<const unsigned*>(streamObject + 0x28);
+	const unsigned* const entries = reinterpret_cast<const unsigned*>(
+		static_cast<size_t>(container[2]));
+	bool zeroed = true;
+	for(unsigned i = 0; i != 10; ++i)
+		zeroed = zeroed && state[i] == 0;
+	bool tailPreserved = true;
+	for(unsigned i = 0x38; i != sizeof(streamObject); ++i)
+		tailPreserved = tailPreserved && streamObject[i] == 0xcd;
+	const bool matched = returned == streamObject && zeroed &&
+		container[0] == 2 && container[1] == 1 && entries && entries[0] == 0 &&
+		container[3] == 0x40000000u && tailPreserved;
+	printf("simulation contact-stream-constructor row=002356 return=%u zeroed=%u capacity=%u count=%u seed=%u growth=%u tail=%u matched=%u\n",
+		returned == streamObject, zeroed, container[0], container[1],
+		entries && entries[0] == 0, container[3] == 0x40000000u,
+		tailPreserved, matched);
+	if(entries)
+		reinterpret_cast<ContainerEmptyFn>(emptyAddress)(streamObject + 0x28);
+	return matched;
+	}
+
 struct NxSimulationFrictionParamsProbe
 	{
 	NxU32 spring;
@@ -2231,6 +2271,12 @@ int wmain(int argc, wchar_t** argv)
 		sdk->release();
 		FreeLibrary(physics);
 		return nxFail("row 000780 failed the pinned direct joint-array probe");
+		}
+	if(!nxSimulationTestContactStreamConstructorRow2356(physics, pairDirectory))
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("row 002356 failed the direct contact-stream constructor probe");
 		}
 	if(!nxSimulationTestMaterialCombineRow855(physics, pairDirectory))
 		{

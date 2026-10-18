@@ -1848,7 +1848,7 @@ __declspec(noinline) void NxActorPair::row000891(NxSceneInternal* scene)
 // +0x08.
 __declspec(noinline) NxActorPair* NxActorPair::row000893(const NxU8* shape0, const NxU8* shape1)
 	{
-	cpmOpen002356(mBytes + 0x10);
+	nxContactStreamConstruct002356(mBytes + 0x10, 0);
 	new (mBytes + 0x4c) NxFrictionPatch;
 	at<void*>(0xc4) = 0;
 	at<void*>(0xc8) = 0;

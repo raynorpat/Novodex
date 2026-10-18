@@ -3623,6 +3623,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # Check that row 000780 queues the other joint and clears both links
         # while resetting the seeded root record.
         'simulation row780 direct queued=1 linked_cleared=1 body_reset=1'
+        'simulation contact-stream-constructor row=002356 return=1 zeroed=1 capacity=2 count=1 seed=1 growth=1 tail=1 matched=1'
         # The private material-combine row returns the oracle's average, min, multiply, max and fallback results.
         'simulation row855 direct combine=40800000.40000000.41400000.40c00000.40c00000'
         # The anisotropic row rotates the material axis and handles one or two anisotropic materials.
