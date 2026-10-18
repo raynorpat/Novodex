@@ -3042,12 +3042,10 @@
     "phys_fn_003661"
    ],
    "rows": {
-    "discovered": 1,
-    "dynamically_gated": 5
+    "dynamically_gated": 6
    },
    "bytes": {
-    "discovered": 44,
-    "dynamically_gated": 602
+    "dynamically_gated": 646
    },
    "phases": {
     "7": 6

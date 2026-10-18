@@ -785,9 +785,28 @@ extern "C" __declspec(naked) int __fastcall nxNpFluidStep(void*, void*, float)
 	}
 #endif
 
+// phys_fn_003659 forwards one mesh record to FluidModel's run callback.
+extern "C" __declspec(noinline) int __fastcall
+nxImplicitFluidMeshRun(void* mesh, void*)
+	{
+	unsigned char* meshBytes = static_cast<unsigned char*>(mesh);
+	unsigned char* fluid = static_cast<unsigned char*>(
+		*reinterpret_cast<void**>(meshBytes + 4));
+	void* backend = *reinterpret_cast<void**>(fluid + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluid + 0x80);
+	const unsigned meshHandle = *reinterpret_cast<unsigned*>(meshBytes + 0x18);
+	const unsigned vertexCount = *reinterpret_cast<unsigned*>(meshBytes + 0x28);
+	typedef int (__cdecl *ImplicitFluidMeshRun)(unsigned, unsigned, unsigned, unsigned);
+	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
+	ImplicitFluidMeshRun run = reinterpret_cast<ImplicitFluidMeshRun>(
+		GetProcAddress(fluidModel, "ImplicitFluidMeshRun"));
+	return run(context, fluidHandle, meshHandle, vertexCount / 3u);
+	}
+
 // phys_fn_003419 (0x00084a50) forwards a fluid's implicit mesh to the
-// FluidModel extension. The mesh record stores its fluid at +0x04, mesh handle
-// at +0x18, and a vertex count at +0x28; the extension consumes triangles.
+// FluidModel extension. The mesh record is stored at internal +0x24.
 extern "C" int __cdecl nxNpFluidEmitterGenerateSurfaceMesh(void* internal)
 	{
 	unsigned char* bytes = static_cast<unsigned char*>(internal);
@@ -795,19 +814,7 @@ extern "C" int __cdecl nxNpFluidEmitterGenerateSurfaceMesh(void* internal)
 		*reinterpret_cast<void**>(bytes + 0x24));
 	if(!mesh)
 		return 0;
-	unsigned char* fluid = static_cast<unsigned char*>(
-		*reinterpret_cast<void**>(mesh + 4));
-	void* backend = *reinterpret_cast<void**>(fluid + 0x7c);
-	const unsigned context = *reinterpret_cast<unsigned*>(
-		static_cast<unsigned char*>(backend) + 0x30);
-	const unsigned fluidHandle = *reinterpret_cast<unsigned*>(fluid + 0x80);
-	const unsigned meshHandle = *reinterpret_cast<unsigned*>(mesh + 0x18);
-	const unsigned vertexCount = *reinterpret_cast<unsigned*>(mesh + 0x28);
-	typedef int (__cdecl *ImplicitFluidMeshRun)(unsigned, unsigned, unsigned, unsigned);
-	HMODULE fluidModel = GetModuleHandleA("FluidModel.DLL");
-	ImplicitFluidMeshRun run = reinterpret_cast<ImplicitFluidMeshRun>(
-		GetProcAddress(fluidModel, "ImplicitFluidMeshRun"));
-	return run(context, fluidHandle, meshHandle, vertexCount / 3u);
+	return nxImplicitFluidMeshRun(mesh, 0);
 	}
 
 void NpFluidEmitter::setFrameActor(NxActor* actor)

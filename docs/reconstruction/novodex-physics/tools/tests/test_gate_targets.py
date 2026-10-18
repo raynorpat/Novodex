@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2909, "6": 1766, "7": 3048}
+    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2910, "6": 1766, "7": 3049}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -1074,6 +1074,21 @@ class ImplicitMeshPostStepRowCoverage(unittest.TestCase):
             encoding="utf-8")
         self.assertTrue("nxFluidPostStepImplicitMeshUpdate" in scene,
             "phys_fn_003657 has no candidate helper")
+
+
+class ImplicitMeshRunRowCoverage(unittest.TestCase):
+    """The 003659 mesh-run dispatch has a candidate map symbol and row marker."""
+
+    def test_mesh_run_mapping_is_required_by_the_abi_gate(self):
+        marker = "fluid implicit-mesh run row=003659 mapped=1 args=1 mismatches=0"
+        self.assertIn(marker, registered_lines().get("NxPhysicsFluidEmitterAbiTests", []))
+        source = (REPO_ROOT / "tests" / "PhysicsFluidEmitterAbiTests.cpp").read_text(
+            encoding="utf-8")
+        self.assertIn('"@nxImplicitFluidMeshRun@8"', source)
+        implementation = (REPO_ROOT / "Physics" / "src" / "NpFluidEmitter.cpp").read_text(
+            encoding="utf-8")
+        self.assertIn("nxImplicitFluidMeshRun", implementation,
+            "phys_fn_003659 has no candidate helper")
 
 if __name__ == "__main__":
     unittest.main()

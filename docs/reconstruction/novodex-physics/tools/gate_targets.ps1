@@ -117,6 +117,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'joint bodyless list member=1 nodes=1 next_null=1'
 	)
     'NxPhysicsFluidEmitterAbiTests' = @(
+		'fluid implicit-mesh run row=003659 mapped=1 args=1 mismatches=0'
 		'fluid emitter setFrameActor row=003822 cases=2 callback_checks=2 cache_checks=2 actor_checks=2 stack_checks=2 mismatches=0'
 		'fluid actor-release continuation row=003487 matched=2 oracle_callbacks=6 candidate_callbacks=6 state_mismatches=0 callback_mismatches=0'
 		'fluid emitter global and local component setters cases=5 callback_checks=5 stack_checks=5 mismatches=0'
@@ -6358,7 +6359,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2909  # adds phys_fn_003657 implicit-mesh callback row mapping
+	'5' = 2910  # adds phys_fn_003659 implicit-mesh run row mapping
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions
@@ -6500,7 +6501,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3048  # adds phys_fn_003657 implicit-mesh callback row mapping
+	'7' = 3049  # adds phys_fn_003659 implicit-mesh run row mapping
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
 	           # plus nine phys_fn_003501 emitter-create failure assertions

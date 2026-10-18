@@ -69491,13 +69491,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpFluidEmitter.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1382",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12695",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA identifies RVA 0x0008ac10 as an implicit-fluid-mesh run callback: derive vertex count / 3, then call FluidModel ImplicitFluidMeshRun with the context, fluid handle, mesh handle, and triangle count. The owning emitter callback checks that a mesh record exists before entering this row.",
+      "dynamic_proof": "NxPhysicsFluidEmitterAbiTests resolves @nxImplicitFluidMeshRun@8 in the candidate map and compares the callback arguments and result with the pinned oracle. The restored probe reports mapped=1 args=1 mismatches=0; a return-0 mutation retains the map entry but is rejected with args=0 mismatches=1. Fresh Phase 5 and Phase 7 gates pass at 2,910/2,910 and 3,049/3,049 assertions.",
+      "notes": "Split from nxNpFluidEmitterGenerateSurfaceMesh so this callback has a row-specific candidate-map symbol; no public header changes.",
+      "implementation": "Physics/src/NpFluidEmitter.cpp",
+      "implementation_symbol": "nxImplicitFluidMeshRun",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "@nxImplicitFluidMeshRun@8",
+        "address": "0x1003fff0",
+        "object": "NpFluidEmitter.obj"
+      }
     },
     {
       "id": "phys_fn_003660",

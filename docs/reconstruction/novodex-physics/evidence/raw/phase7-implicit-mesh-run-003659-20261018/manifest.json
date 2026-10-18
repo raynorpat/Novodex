@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003659",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "1ec16c213991ff61295c52896667d9b00a4fbb5b2793398d1c952910e0686015",
+  "mutation": "Temporarily changed nxImplicitFluidMeshRun to return 0 while retaining its candidate map entry.",
+  "mutation_result": "NxPhysicsFluidEmitterAbiTests reports fluid implicit-mesh run row=003659 mapped=1 args=0 mismatches=1; candidate exits 1 and oracle exits 0.",
+  "restored_result": "NxPhysicsFluidEmitterAbiTests reports mapped=1 args=1 mismatches=0; oracle_exit=0 and candidate exit=0 with exact output.",
+  "timeout_fix": "The invalid licensed surface-mesh child now has a 60-second wait budget; under the complete gate load the 30-second timeout had killed the expected-fault child before it exited. The restored simulation differential reports exit=c0000005, reached=1, returned=0, exact=1 on both pairs.",
+  "phase_gates": {
+    "5": "pass 2910/2910",
+    "7": "pass 3049/3049"
+  },
+  "raw_logs": [
+    "mutation-differential.log.gz",
+    "restored-callback-differential.log.gz",
+    "simulation-timeout-fix-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase7-gate.log.gz",
+    "phase5-gate-summary.txt",
+    "phase7-gate-summary.txt"
+  ],
+  "sha256": {
+    "mutation-differential.log.gz": "5f35bb5a03ac048f3b47c995a26c757dce59d4545dbe6d4232b990dacbab3a8f",
+    "restored-callback-differential.log.gz": "8277608b0dc7812f414f3c46d6afc7db7ad186290913cca5f39b819268b5f1ca",
+    "simulation-timeout-fix-differential.log.gz": "887d383087d2cd852230a12eeb2e8d0ff0cfd9e28903588fc54909d0bf9ae9dc",
+    "phase5-gate.log.gz": "6411ea9db2859c36a3b15d57e8814040e2125eb04072a957c396ee55009be967",
+    "phase7-gate.log.gz": "e6a27397b196619b7a73e879237dcd6cfe9aefeda7efc4f48cf5761b1d3f7b1b",
+    "phase5-gate-summary.txt": "445bb2731bcf0556c21bc3b83f3ffb1aaf6c17e7cc4ed11b640a4d335b850888",
+    "phase7-gate-summary.txt": "af8aedaf6fecf25e9c57ebe0535fd8fc8c8a8fd9a04d26cbd456e96ea2ea25f7"
+  }
+}

@@ -2239,7 +2239,10 @@ static bool nxSimulationRunInvalidSurfaceMeshProbeChild(
 		DeleteFileW(logPath);
 		return false;
 		}
-	const DWORD waitResult = WaitForSingleObject(process.hProcess, 30000);
+	// This child first builds the licensed fluid scene before deliberately
+	// faulting on the invalid descriptor. Phase 5 runs it after several
+	// allocation-failure children, so allow the same 60s budget as those probes.
+	const DWORD waitResult = WaitForSingleObject(process.hProcess, 60000);
 	if(waitResult != WAIT_OBJECT_0)
 		{
 		TerminateProcess(process.hProcess, 1);

@@ -8017,6 +8017,12 @@ int wmain(int argc, wchar_t** argv)
 		fprintf(stderr, "FAIL candidate NxPhysics.dll fluid surface-mesh dispatch row could not be resolved from its map\n");
 		++gFailures;
 		}
+	void* candidateImplicitMeshRunAddress = 0;
+	const bool candidateImplicitMeshRunMapped = nxResolveCandidateFluidEmitterSymbol(
+		candidatePhysics, "@nxImplicitFluidMeshRun@8",
+		&candidateImplicitMeshRunAddress);
+	if(!candidateImplicitMeshRunMapped)
+		++gFailures;
 	void* candidateFluidManagerGenerateSurfaceMeshesAddress = 0;
 	if(!nxResolveCandidateFluidEmitterSymbol(candidatePhysics,
 		"?nxFluidManagerGenerateSurfaceMeshesDisabled@@YAXPAX@Z",
@@ -9826,7 +9832,8 @@ int wmain(int argc, wchar_t** argv)
 			&& candidateRecord.argument0 == oracleRecord.argument0
 			&& candidateRecord.argument1 == oracleRecord.argument1
 			&& candidateRecord.argument2 == oracleRecord.argument2
-			&& candidateRecord.enabled == oracleRecord.enabled;
+			&& candidateRecord.enabled == oracleRecord.enabled
+			&& candidateImplicitMeshRunMapped;
 		const unsigned meshMismatches = !oracleArgumentsMatch || !candidateArgumentsMatch
 			|| oracleResult != candidateResult || oracleEspBefore != oracleEspAfter
 			|| candidateEspBefore != candidateEspAfter;
@@ -9836,6 +9843,10 @@ int wmain(int argc, wchar_t** argv)
 			oracleCount, candidateCount, oracleArgumentsMatch && candidateArgumentsMatch,
 			oracleResult == candidateResult, oracleEspBefore == oracleEspAfter,
 			candidateEspBefore == candidateEspAfter, meshMismatches);
+		printf("fluid implicit-mesh run row=003659 mapped=%u args=%u mismatches=%u\n",
+			candidateImplicitMeshRunMapped ? 1u : 0u,
+			oracleArgumentsMatch && candidateArgumentsMatch ? 1u : 0u,
+			meshMismatches);
 		*reinterpret_cast<void**>(oracleEmitter + 0x24) = 0;
 		*reinterpret_cast<void**>(candidateEmitter + 0x24) = 0;
 		gOracleFlagCallbackCount = 0;
