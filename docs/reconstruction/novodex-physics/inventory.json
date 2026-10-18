@@ -20508,13 +20508,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpBoxShape.cpp",
+      "state": "dynamically_gated",
+      "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/425",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3172",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x000233d0 shows the public box-shape setName wrapper reading the Scene write-lock link at handle+0x10, attempting the write lock, and on refusal reporting NXE_INVALID_OPERATION at NpBoxShape.cpp:0x0f without changing the binding. On success it writes the SDK pointer binding, releases the lock, and returns.",
+      "dynamic_proof": "NxPhysicsActorShapeMutationTests holds the owning Scene write lock, calls setName, and checks the prior name pointer is preserved with one lock diagnostic; after releasing the lock it checks the new name. The unguarded candidate differs from the oracle (stdout_delta=19); the restored differential is exact.",
+      "notes": "The test is registered in Phases 5, 6, and 7; this Phase 3 row is discharged by the Phase 5 public-object differential. See evidence/phase3-box-shape-setname-lock-001063.md and evidence/raw/phase3-box-shape-setname-lock-001063-20261018/.",
+      "implementation": "Physics/src/NpActor.cpp",
+      "implementation_symbol": "nxBoxHandleSetName",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxBoxHandleSetName@@YIXPAX0PBD@Z",
+        "address": "0x10036de0",
+        "object": "NpActor.obj"
+      }
     },
     {
       "id": "phys_fn_001064",

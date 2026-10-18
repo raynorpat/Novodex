@@ -662,7 +662,11 @@ const char* nxShapeGetName(void* shape)
 
 static void __fastcall nxBoxHandleSetName(void* self, void*, const char* name)
 	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
 	nxShapeSetName(nxBoxHandleInternal(self), name);
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 static const char* __fastcall nxBoxHandleGetName(void* self, void*)

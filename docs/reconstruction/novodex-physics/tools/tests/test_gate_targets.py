@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2912, "6": 1768, "7": 3051}
+    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2913, "6": 1769, "7": 3052}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -1123,6 +1123,25 @@ class ImplicitMeshOwnerBindingInitCoverage(unittest.TestCase):
         self.assertIn(
             "nxSetSdkPointerBinding(manager, const_cast<char*>(desc->name))",
             implementation)
+
+
+class BoxShapeNameWriteLockCoverage(unittest.TestCase):
+    """A foreign Scene write lock must block box-shape name changes."""
+
+    def test_box_shape_name_lock_result_is_required(self):
+        marker = ("shape_mutation row=001063 locked_name_preserved=1 "
+                  "locked_reports=1 unlocked_name_updated=1")
+        self.assertIn(marker, registered_lines().get(
+            "NxPhysicsActorShapeMutationTests", []))
+        source = (REPO_ROOT / "tests" / "PhysicsActorShapeMutationTests.cpp").read_text(
+            encoding="utf-8")
+        self.assertIn("row=001063 locked_name_preserved=%u", source)
+        implementation = (REPO_ROOT / "Physics" / "src" / "NpActor.cpp").read_text(
+            encoding="utf-8")
+        handler = implementation.split(
+            "static void __fastcall nxBoxHandleSetName", 1)[1].split("\n\t}", 1)[0]
+        self.assertIn("nxBoxHandleWriteTry(writeLock)", handler)
+        self.assertIn("nxNpSceneGuardLeave(writeLock)", handler)
 
 if __name__ == "__main__":
     unittest.main()

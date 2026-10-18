@@ -981,6 +981,28 @@ static void runTask5ReviewCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
 		}
 	else
 		printf("shape_mutation row=001045 actor=0\n");
+	if(flagActor)
+		{
+	NxShape* const shape = flagActor->getShapes()[0];
+	static const char beforeLock[] = "shape-name-before-lock";
+	static const char blockedName[] = "shape-name-blocked";
+	static const char afterLock[] = "shape-name-after-lock";
+	shape->setName(beforeLock);
+	NxActorWriteLockHolder lock(flagActor);
+	const unsigned reportsBefore = errors.reports;
+	lock.hold();
+	shape->setName(blockedName);
+	const unsigned lockedReports = errors.reports - reportsBefore;
+	const bool lockedNamePreserved = shape->getName() == beforeLock;
+	lock.release();
+	shape->setName(afterLock);
+	const bool unlockedNameUpdated = shape->getName() == afterLock;
+	printf("shape_mutation row=001063 locked_name_preserved=%u locked_reports=%u unlocked_name_updated=%u\n",
+		lockedNamePreserved ? 1u : 0u, lockedReports,
+		unlockedNameUpdated ? 1u : 0u);
+	}
+	else
+		printf("shape_mutation row=001063 actor=0\n");
 
 	// The remaining NxBoxShape/NxShape pose and material setters share the
 	// same Scene write-lock contract as setFlag. Check each wrapper in isolation

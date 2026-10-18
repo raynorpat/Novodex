@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_001063",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "red_candidate_sha256": "00dd2cbf71d646584d46a74bad706e23b70b346a392cd8145e613af1a27af29c",
+  "mutation_candidate_sha256": "e53fd5bb79749b9b1d6d62edc362cbd1055b473526bf70776ef920eb23aad052",
+  "restored_candidate_sha256": "2c87ec639e4afb915709f5421958ad8ba88edf81360174b2b25b9ede70806324",
+  "mutation": "Removed the nxBoxHandleSetName Scene write-lock guard, allowing the SDK pointer binding to change while a foreign write lock was held.",
+  "mutation_result": "oracle_exit=0 candidate_exit=0 stdout_delta=19 stderr_exact=True; oracle locked_name_preserved=1 locked_reports=1; candidate locked_name_preserved=0 locked_reports=0",
+  "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; locked_name_preserved=1 locked_reports=1 unlocked_name_updated=1",
+  "phase_gates": {
+    "5": "pass 2913/2913",
+    "6": "pass 1769/1769",
+    "7": "pass 3052/3052",
+    "3": "pass 984/984"
+  },
+  "raw_logs": [
+    "red-differential.log.gz",
+    "green-differential.log.gz",
+    "mutation-differential.log.gz",
+    "restored-differential.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz",
+    "phase3-gate.log.gz"
+  ],
+  "raw_log_sha256": {
+    "red-differential.log.gz": "87561c5dabfeb3e2a35868790c4da6d9b35350a8189abc1a378be749921e9ec0",
+    "green-differential.log.gz": "0b5e5bc544466e983c68e51af2823a98429bf17a41e752ac724ef2cd416b4200",
+    "mutation-differential.log.gz": "e5750317f56cdafd2bf960f0cbe2534c728e195ff3426009eff3c7f54ed0c24e",
+    "restored-differential.log.gz": "b322dc6bc15131e7965eddc3e9f2bce27afbcb64b3da5fce20fa6830a3b96900",
+    "phase5-gate.log.gz": "772b71b65d964192968ba2805bccdd9726c0e4a98f65c464de336d30061ba382",
+    "phase6-gate.log.gz": "ad6c21b027c4e68657fa2faa466b164b2e9109813b7df0047c40a38b1e1ead33",
+    "phase7-gate.log.gz": "83815d604883644da1444578c1f89d8d1ec7eadb68faad56012907d412a2c538",
+    "phase3-gate.log.gz": "6ec5fc7e5d8a188bf603bec91ce8d5f70e28d9e20203f71b52b28f3394d219bc"
+  }
+}
