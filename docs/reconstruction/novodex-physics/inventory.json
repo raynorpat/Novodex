@@ -66159,13 +66159,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "interval flag (0x85590)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1296",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12272",
-      "static_proof": "if ([this+0x18]-[this+0x14]) & ~3 == 0 return 0 else [this+0x14]; ret",
-      "dynamic_proof": "confirmed via indfield differential (3z109): failures=0",
-      "notes": ""
+      "static_proof": "IDA confirms a 21-byte __thiscall getter: return [this+0x14] when (([this+0x18]-[this+0x14]) & 0xfffffffc) is nonzero; otherwise return null.",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests directly compares oracle RVA 0x00085590 with nxArrayDataIfNonEmpty across eight spans, including 0-3 bytes, full words, and unsigned wrap. Return pointers and x86 stack balance match. A null-return mutation is rejected with four mismatches.",
+      "notes": "Direct array-object getter; the 32-bit subtraction wraps before its low two bits are masked.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxArrayDataIfNonEmpty",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxArrayDataIfNonEmpty@@YAPAXPAX@Z",
+        "address": "0x10048090",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_003480",

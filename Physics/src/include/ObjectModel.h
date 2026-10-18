@@ -1745,6 +1745,10 @@ int						nxLockedElementCount(void* self, unsigned fieldOff);
 int						nxLockedElementCountAt(void* self, unsigned fieldOff,
 							unsigned hiOff, unsigned loOff);
 
+//! The array-data member: helper 003479 returns [this+0x14] when the wrapped
+//! 32-bit span to [this+0x18] has any bits above the low two.
+void*					nxArrayDataIfNonEmpty(void* self);
+
 //! The interval-flag member: helper 003479 returns [field+0x14] when the
 //! difference ([field+0x18] - [field+0x14]) has any bit above the low two,
 //! else zero.

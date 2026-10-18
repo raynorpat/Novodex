@@ -712,7 +712,9 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(sum(line.startswith("shape vtable boxsweep inputs=84 digest=")
                                       for line in lines), 1)
             elif expected["format"] == "layout_digest":
-                self.assertIn(expected["fixture_source"], {
+                fixture_sources = expected.get(
+                    "fixture_sources", [expected.get("fixture_source")])
+                self.assertTrue(set(fixture_sources) & {
                     "tests/PhysicsObjectLayoutTests.cpp",
                     "tests/PhysicsSceneAuxiliaryBlockTests.cpp",
                 })

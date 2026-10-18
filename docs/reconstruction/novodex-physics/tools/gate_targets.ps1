@@ -5688,6 +5688,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'andget row=phys_fn_003595 cases=3 mismatches=0',
 		'global-call-result row=003597 cases=6 stack=6/6 mismatches=0',
 		'global-call-result row=003599 cases=6 stack=6/6 mismatches=0',
+		'locked-array-data row=003479 cases=8 stack=8/8 mismatches=0',
 		'vtconst row=phys_fn_004417 mismatches=0',
 		'vtconst row=phys_fn_004419 mismatches=0',
 		'vtconst row=phys_fn_004421 mismatches=0',
@@ -6368,7 +6369,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 560  # plus the direct actual-DLL sort rows 002180/002182 differential
+	'4' = 562  # plus the direct actual-DLL sort rows 002180/002182 differential
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
 	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
 	           # plus hit, no-normal, cutoff, translation and miss coverage
@@ -6382,7 +6383,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2928  # adds two result-contract markers for phys_fn_003597/003599
+	'5' = 2931  # includes current locked-array and ElementCount row markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6473,7 +6474,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1781  # adds two result-contract markers for phys_fn_003597/003599
+	'6' = 1782  # includes current locked-array data row marker
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6526,7 +6527,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3064  # adds two result-contract markers for phys_fn_003597/003599
+	'7' = 3067  # includes current locked-array and ElementCount row markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker

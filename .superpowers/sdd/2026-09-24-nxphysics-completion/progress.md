@@ -649,3 +649,8 @@ IDA shows the 8-byte secondary-base thunk subtracting `0x0c` from `ECX` before j
 ### Phase 3 continuation — five-family secondary destructor adjustors
 
 Closed the Capsule, Plane, Sphere, and Mesh adjustor rows `phys_fn_001125`, `phys_fn_001161`, `phys_fn_001195`, and `phys_fn_001243` using the current five-family secondary-vtable differential. IDA confirms each `-0x0c` adjustment and jump to its destructor body; candidate map symbols resolve in ObjectModel.obj. All five restored families match (mismatches=0), and the member-only negative control fails all five (mismatches=5). Phase 3 now records 116 closed / 276 deferred. Inventory validation reports zero unexplained rows. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-five-family-secondary-dtor-adjustors-001077-001243.md`.
+
+
+### Task 25 — locked-array data getter (`phys_fn_003479`, 2026-10-18)
+
+The helper now reproduces the oracle's wrapped unsigned span test and begin-pointer return. Eight direct cases cover empty, sub-word, word, multiword, and wrapped spans; the restored differential matches with balanced x86 stack, while an unconditional null-return mutation is rejected with four mismatches. Updated inventory, Phase 7 closure, baseline proof bundle, work units, completion backlog, and registered coverage floors. Fresh Phase 5/6/7 gates pass at 2,931/2,931, 1,782/1,782, and 3,067/3,067; all 842 reconstruction-tool tests and 743 subtests pass. Public headers are unchanged. Full DLL reconstruction remains open.

@@ -1957,6 +1957,18 @@ int nxLockedElementCountAt(void* self, unsigned fieldOff, unsigned hiOff,
 	return static_cast<int>(static_cast<signed>(hi - lo) >> 2);
 	}
 
+// The array-data member: return [this+0x14] if the byte span to +0x18
+// contains any complete word after masking its low two bits.
+void* nxArrayDataIfNonEmpty(void* self)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	unsigned lo, hi;
+	memcpy(&lo, p + 0x14, 4);
+	memcpy(&hi, p + 0x18, 4);
+	return ((hi - lo) & 0xfffffffcu) ?
+		reinterpret_cast<void*>(static_cast<size_t>(lo)) : 0;
+	}
+
 // The interval-flag member: returns [field+0x14] when the span from it to
 // [field+0x18] carries any bit above the low two, else zero.
 unsigned nxLockedIntervalFlag(void* self, unsigned fieldOff)

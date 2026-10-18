@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003479",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "115f0b3914c57707d160e1d4840d5c38c543616083b1234479367554de15f739",
+  "candidate_map_symbol": "?nxArrayDataIfNonEmpty@@YAPAXPAX@Z",
+  "candidate_map_va": "0x10048090",
+  "test_exe_sha256": "10a49ab82cb8acfde85d9a54ea7931d9461e44b61ea7a68f00b01082d7b25252",
+  "restored_result": "oracle/candidate cases=8 stack=8/8 mismatches=0; staged differential exact",
+  "mutation": "Replaced nxArrayDataIfNonEmpty body with unconditional null return.",
+  "mutation_result": "mismatches=4; registered differential rejected candidate",
+  "phase_gates": {
+    "5": "pass 2931/2931",
+    "6": "pass 1782/1782",
+    "7": "pass 3067/3067"
+  },
+  "raw_logs": [
+    "restored-differential.log.gz",
+    "mutation-differential.log.gz",
+    "oracle-self.log.gz",
+    "phase5-gate.log.gz",
+    "phase6-gate.log.gz",
+    "phase7-gate.log.gz"
+  ]
+}
