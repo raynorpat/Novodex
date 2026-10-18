@@ -1,0 +1,70 @@
+{
+  "row": "phys_fn_003461",
+  "date": "2026-10-18",
+  "files": [
+    {
+      "file": "direct-red-green.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-red-green.log",
+      "source_sha256": "7834e7c2e3364eaf47c866324511e261f7bdbe5c846a1d3cb4c91f3c2c4e37e9",
+      "compressed_sha256": "aef8ab37544ad319a22c9ebd41c7e83ed6a4ee15b86438d4f123fb093480a654",
+      "source_bytes": 24035,
+      "compressed_bytes": 5378
+    },
+    {
+      "file": "oracle-proof.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-oracle-proof.log",
+      "source_sha256": "4196346386c5532be0ae451e84d5e18c6980cd187e7e74cc8b4e44c5fa508923",
+      "compressed_sha256": "06db0459ba25a5484fa808ebca6bcc6f5694a054c4fadf32d4223b2658ccaf9c",
+      "source_bytes": 24054,
+      "compressed_bytes": 5381
+    },
+    {
+      "file": "focused-differential.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-differential.log",
+      "source_sha256": "8dee53f3cb4998e472564ab0849f83dfa0548a76d5c40eeed749510199d57c89",
+      "compressed_sha256": "b860523bce2a3d0f5e58dd7f13b331a3c08a73d5e6d4cbc8a604015703214a71",
+      "source_bytes": 27949,
+      "compressed_bytes": 6191
+    },
+    {
+      "file": "mutant-differential.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-mutant.log",
+      "source_sha256": "0c667eb8a40d630e936f4b00feb6a43d2f983dc11485298b57b1674167506e89",
+      "compressed_sha256": "47828a34ed9bbe5eea4b6c7c661ca78cd554684663ae0905191a44573ad87fdd",
+      "source_bytes": 24504,
+      "compressed_bytes": 5469
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-restored.log",
+      "source_sha256": "7dbc87631440b43e685f450f762d1fa1f281f26ab4c966b58d7eead45fa91e16",
+      "compressed_sha256": "4f74b4e532a3a1cabad0585480c52445da7f124f2e184fe9bad57d070a6090fa",
+      "source_bytes": 24035,
+      "compressed_bytes": 5376
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-phase5.log",
+      "source_sha256": "492706f9e2e120f0838571c32ff3e454bac931aa36bf1e87d4f9fcb487e8ad1b",
+      "compressed_sha256": "b5f724b191402aa72562e69932315de8bfd47e373a8f2a85b77d80d6f9a027eb",
+      "source_bytes": 2885498,
+      "compressed_bytes": 217089
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-phase6.log",
+      "source_sha256": "6e7f45be0adbdb6bc60fa11488c9c68325c1c294ab3f7fe04534399a5eb11f39",
+      "compressed_sha256": "6808a32e7ec6d63e0907aea5a9479a481503abac243f68e8dab330b4b3e4bfb8",
+      "source_bytes": 3145234,
+      "compressed_bytes": 259373
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "source_log": "build/phase7-global-call-reciprocal-003461-phase7.log",
+      "source_sha256": "4a35f57a168a8bed9704cf3d771cb4325eedb38adedc973e112544a8cb0e7ca5",
+      "compressed_sha256": "3682ca092e787afd1073e37c19eae09f4cd16023fa11e0d782a865f683c2c73b",
+      "source_bytes": 4731865,
+      "compressed_bytes": 382715
+    }
+  ]
+}

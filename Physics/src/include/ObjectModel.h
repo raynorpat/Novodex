@@ -1433,6 +1433,7 @@ void					nxLockApiPushSelf(void* self, void (__stdcall* fn)(unsigned));
 typedef void (__cdecl* NxGlobalFn3)(unsigned, unsigned, unsigned);
 typedef unsigned (__cdecl* NxGlobalFn3Result)(unsigned, unsigned, unsigned);
 typedef void (__cdecl* NxGlobalFn2)(unsigned, unsigned);
+typedef double (__cdecl* NxGlobalFn2ReciprocalDouble)(unsigned, unsigned);
 void					nxGlobalCallN(void* self, NxGlobalFn3 fn, int objSelf4,
 							unsigned nargs, unsigned extraArg);
 //! phys_fn_003597 and phys_fn_003599: forward the three stored arguments and
@@ -1440,6 +1441,9 @@ void					nxGlobalCallN(void* self, NxGlobalFn3 fn, int objSelf4,
 unsigned				nxGlobalCallNResult(void* self, NxGlobalFn3Result fn,
 							int objSelf4, unsigned mode, unsigned extraArg);
 void					nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4);
+//! phys_fn_003461 calls its two-argument global callback and returns 1.0 / result as double.
+double					nxGlobalCallReciprocalDouble(void* self,
+							NxGlobalFn2ReciprocalDouble fn);
 
 //! phys_fn_003575 (0x87f10, ret 4): the family's float-OUT variant. It reads
 //! the object from [self+4], takes [[obj+0x7c]+0x30] and [obj+0x80] as the

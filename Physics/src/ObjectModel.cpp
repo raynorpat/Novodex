@@ -3330,6 +3330,20 @@ void nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4)
 	fn(first, b);
 	}
 
+// phys_fn_003461 preserves the callback's x87 double result through reciprocal.
+double nxGlobalCallReciprocalDouble(void* self, NxGlobalFn2ReciprocalDouble fn)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned inner;
+	memcpy(&inner, p + 0x7c, 4);
+	unsigned first;
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(inner))
+		+ 0x30, 4);
+	unsigned second;
+	memcpy(&second, p + 0x80, 4);
+	return 1.0 / fn(first, second);
+	}
+
 // phys_fn_003575 (0x87f10, ret 4): the float-OUT variant.
 void nxThunkFloatOut3575(void* self, float* out, NxFloatRet3Fn fn)
 	{
