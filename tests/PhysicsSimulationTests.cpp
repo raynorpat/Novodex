@@ -7060,7 +7060,7 @@ int wmain(int argc, wchar_t** argv)
 			renderer.redHash == 0xbca20d6fu &&
 			renderer.greenHash == 0x997ff147u &&
 			renderer.blueHash == 0x481e4db8u;
-		printf("simulation fluid-visualization row=003489 fluids=%u bounds=%u streams=%u emitters=%u red-lines=%u green-lines=%u blue-lines=%u red-hash=%08x green-hash=%08x blue-hash=%08x matched=%u\n",
+		printf("simulation fluid-visualization rows=003471.003473.003489 fluids=%u bounds=%u streams=%u emitters=%u red-lines=%u green-lines=%u blue-lines=%u red-hash=%08x green-hash=%08x blue-hash=%08x matched=%u\n",
 			visualizedFluidCount, visualizedBoundsCount, particleFixtureCount,
 			surfaceMeshFluid ? surfaceMeshFluid->getNbEmitters() : 0,
 			renderer.redLines, renderer.greenLines, renderer.blueLines,

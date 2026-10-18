@@ -11298,3 +11298,9 @@ Phase 7 particle write-data copy rows `phys_fn_003425` and `phys_fn_003427`: the
 
 `phys_fn_003453` and `phys_fn_003455` are now candidate-DLL gated through `NxPhysicsFluidEmitterAbiTests`. Four direct pinned-oracle cases cover flag set/clear, masked reads, untouched bytes and x86 stack balance. Independent setter and getter mutations were detected with 2 and 4 mismatches. The restored control reports zero mismatches. See `evidence/phase7-fluid-flag-word-003453-003455.md` and `evidence/raw/phase7-fluid-flag-word-003453-003455-20261017/`.
 Fresh Phase 5 and Phase 7 gates pass at 2,886/2,886 and 3,025/3,025 registered coverage assertions.
+
+
+## Phase 7 fluid particle visualization continuation (2026-10-17)
+
+Rows `phys_fn_003471` and `phys_fn_003473` now close through `NxPhysicsSimulationTests`. The position-cross mutation is detected with `stdout_delta=2`; the velocity-arrow mutation is detected with `stdout_delta=85`. The restored control matches its line counts and geometry fingerprints. See `evidence/phase7-fluid-particle-visualization-003471-003473.md` and `evidence/raw/phase7-fluid-particle-visualization-003471-003473-20261017/`.
+Fresh Phase 5 and Phase 7 gates pass at 2,886/2,886 and 3,025/3,025 registered coverage assertions.

@@ -3780,7 +3780,7 @@ $NxRequiredCoverageLines = [ordered] @{
 		'simulation fluid public-api name stored=1 cleared=1'
 		'simulation fluid public-api surface-mesh get=1 released=1 calls=1 flags=1 errors=0 unlicensed=1.1 create-warning=1'
 		'simulation fluid-internal-surface-mesh-create row=003481 created=1 callback=1 args=1 userdata=1 matched=1'
-		'simulation fluid-visualization row=003489 fluids=2 bounds=2 streams=2 emitters=1 red-lines=39 green-lines=77 blue-lines=255 red-hash=bca20d6f green-hash=997ff147 blue-hash=481e4db8 matched=1'
+		'simulation fluid-visualization rows=003471.003473.003489 fluids=2 bounds=2 streams=2 emitters=1 red-lines=39 green-lines=77 blue-lines=255 red-hash=bca20d6f green-hash=997ff147 blue-hash=481e4db8 matched=1'
 		'simulation fluid licensed-surface-mesh properties row=003704 matched=1'
 		'simulation implicit-mesh set-surface-radius row=003878 matched=1'
 		'simulation implicit-mesh get-single-radius row=003880 matched=1'
