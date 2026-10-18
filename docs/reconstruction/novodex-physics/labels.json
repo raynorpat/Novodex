@@ -3094,6 +3094,55 @@
       "confidence": "semantic",
       "evidence": "oracle/ghidra/manifest.json#/functions/416",
       "reason": "The public box-shape setFlag wrapper is identified by its Scene write-lock try, exact NpBoxShape.cpp:0x0f refusal diagnostic, internal slot-16 dispatch, and the independently mutation-tested locked/unlocked public fixture."
+    },
+    {
+      "id": "phys_fn_001047",
+      "label": "NpBoxShape::setLocalPose",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/417",
+      "reason": "The NpBoxShape vtable slot 7 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching LocalPose; the public fixture independently mutation-falsifies the guard."
+    },
+    {
+      "id": "phys_fn_001049",
+      "label": "NpBoxShape::setLocalPosition",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/418",
+      "reason": "The NpBoxShape vtable slot 8 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching LocalPosition; the public fixture independently mutation-falsifies the guard."
+    },
+    {
+      "id": "phys_fn_001051",
+      "label": "NpBoxShape::setLocalOrientation",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/419",
+      "reason": "The NpBoxShape vtable slot 9 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching LocalOrientation; the public fixture independently mutation-falsifies the guard."
+    },
+    {
+      "id": "phys_fn_001053",
+      "label": "NpBoxShape::setGlobalPose",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/420",
+      "reason": "The NpBoxShape vtable slot 16 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching GlobalPose; the public fixture independently mutation-falsifies the guard."
+    },
+    {
+      "id": "phys_fn_001055",
+      "label": "NpBoxShape::setGlobalPosition",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/421",
+      "reason": "The NpBoxShape vtable slot 17 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching GlobalPosition; the public fixture independently mutation-falsifies the guard."
+    },
+    {
+      "id": "phys_fn_001057",
+      "label": "NpBoxShape::setGlobalOrientation",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/422",
+      "reason": "The NpBoxShape vtable slot 18 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching GlobalOrientation; the public fixture independently mutation-falsifies the guard."
+    },
+    {
+      "id": "phys_fn_001059",
+      "label": "NpBoxShape::setMaterial",
+      "confidence": "semantic",
+      "evidence": "oracle/ghidra/manifest.json#/functions/423",
+      "reason": "The NpBoxShape vtable slot 25 wrapper uses the Scene write-lock and exact NpBoxShape.cpp:0x0f refusal diagnostic before dispatching Material; the public fixture independently mutation-falsifies the guard."
     }
   ]
 }

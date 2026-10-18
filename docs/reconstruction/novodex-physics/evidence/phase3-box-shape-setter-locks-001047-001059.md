@@ -1,0 +1,11 @@
+# Box shape pose and material write-lock setters (`phys_fn_001047`–`001059`)
+
+IDA decompilation of oracle RVAs `0x00023100`, `0x00023160`, `0x000231c0`, `0x00023220`, `0x00023280`, `0x000232e0`, and `0x00023340` shows seven `NpBoxShape` wrappers. They cover `setLocalPose`, `setLocalPosition`, `setLocalOrientation`, `setGlobalPose`, `setGlobalPosition`, `setGlobalOrientation`, and `setMaterial`. Each reads the Scene write-lock link at public handle `+0x10`, tries the write lock, reports `NXE_INVALID_OPERATION` from `NpBoxShape.cpp:0x0f` and leaves the shape unchanged on refusal, otherwise dispatches the corresponding internal `Shape` operation and releases the lock.
+
+The candidate now routes shape vtable slots 7, 8, 9, 16, 17, 18, and 25 through lock-aware handlers in `Physics/src/NpActor.cpp`. Those handlers call the already reconstructed local/global pose operations or store the material and mark the shape dirty. No public headers changed.
+
+`NxPhysicsActorShapeMutationTests` isolates each public setter while a foreign Scene write lock is held, resets the relevant shape bytes between calls, and checks the mutation bitmask and error count. The oracle and restored candidate report `locked_changed=00 locked_reports=7`; the unlocked calls then match the expected final pose and material (`0011`). The restored staged differential is exact (`oracle_exit=0`, `candidate_exit=0`, `stdout_delta=0`, `stderr_exact=True`).
+
+Each row has an independent candidate-only guard-bypass mutation. All seven were rejected by the differential with `stdout_delta=11`; their isolated mutation bits are `01`, `02`, `04`, `08`, `10`, `20`, and `40` respectively. Raw per-row patches, transcripts, the clean restored build, and the pre-fix red control are in [the raw evidence directory](raw/phase3-box-shape-setter-locks-001047-001059-20261018/).
+
+Fresh gates passed with all registered coverage assertions: Phase 3 `984/984`, Phase 5 `2896/2896`, Phase 6 `1753/1753`, and Phase 7 `3035/3035`. Inventory validation reports 6,338 functions, 5,138 data objects, and zero unexplained records. The Phase 3 ledger now records 95 closed / 297 deferred rows; these rows are dynamically gated by Phase 5 and the fixture also runs in Phases 6 and 7.

@@ -981,6 +981,109 @@ static void runTask5ReviewCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
 		}
 	else
 		printf("shape_mutation row=001045 actor=0\n");
+
+	// The remaining NxBoxShape/NxShape pose and material setters share the
+	// same Scene write-lock contract as setFlag. Check each wrapper in isolation
+	// while the lock is foreign, then exercise its unlocked operation.
+	if(flagActor)
+		{
+		NxShape* shape = flagActor->getShapes()[0];
+		const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(shape) + 0x18);
+		unsigned char baselinePose[48];
+		unsigned short baselineMaterial;
+		memcpy(baselinePose, internal + 0x6c, sizeof(baselinePose));
+		memcpy(&baselineMaterial, internal + 0xda, sizeof(baselineMaterial));
+		NxMat34 localPose;
+		localPose.M.id();
+		localPose.t = NxVec3(1.0f, 2.0f, 3.0f);
+		NxVec3 localPosition(4.0f, 5.0f, 6.0f);
+		const float localOrientationRows[9] = {
+			0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+		NxMat33 localOrientation;
+		localOrientation.setRowMajor(localOrientationRows);
+		NxMat34 globalPose;
+		globalPose.M.id();
+		globalPose.t = NxVec3(7.0f, 8.0f, 9.0f);
+		NxVec3 globalPosition(10.0f, 11.0f, 12.0f);
+		const float globalOrientationRows[9] = {
+			0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f};
+		NxMat33 globalOrientation;
+		globalOrientation.setRowMajor(globalOrientationRows);
+		NxActorWriteLockHolder lock(flagActor);
+		const unsigned reportsBefore = errors.reports;
+		unsigned lockedChangedMask = 0;
+		memcpy(const_cast<unsigned char*>(internal) + 0x6c, baselinePose,
+			sizeof(baselinePose));
+		lock.hold();
+		shape->setLocalPose(localPose);
+		if(memcmp(internal + 0x6c, baselinePose, sizeof(baselinePose)) != 0)
+			lockedChangedMask |= 1u << 0;
+		lock.release();
+		memcpy(const_cast<unsigned char*>(internal) + 0x6c, baselinePose,
+			sizeof(baselinePose));
+		lock.hold();
+		shape->setLocalPosition(localPosition);
+		if(memcmp(internal + 0x6c, baselinePose, sizeof(baselinePose)) != 0)
+			lockedChangedMask |= 1u << 1;
+		lock.release();
+		memcpy(const_cast<unsigned char*>(internal) + 0x6c, baselinePose,
+			sizeof(baselinePose));
+		lock.hold();
+		shape->setLocalOrientation(localOrientation);
+		if(memcmp(internal + 0x6c, baselinePose, sizeof(baselinePose)) != 0)
+			lockedChangedMask |= 1u << 2;
+		lock.release();
+		memcpy(const_cast<unsigned char*>(internal) + 0x6c, baselinePose,
+			sizeof(baselinePose));
+		lock.hold();
+		shape->setGlobalPose(globalPose);
+		if(memcmp(internal + 0x6c, baselinePose, sizeof(baselinePose)) != 0)
+			lockedChangedMask |= 1u << 3;
+		lock.release();
+		memcpy(const_cast<unsigned char*>(internal) + 0x6c, baselinePose,
+			sizeof(baselinePose));
+		lock.hold();
+		shape->setGlobalPosition(globalPosition);
+		if(memcmp(internal + 0x6c, baselinePose, sizeof(baselinePose)) != 0)
+			lockedChangedMask |= 1u << 4;
+		lock.release();
+		memcpy(const_cast<unsigned char*>(internal) + 0x6c, baselinePose,
+			sizeof(baselinePose));
+		lock.hold();
+		shape->setGlobalOrientation(globalOrientation);
+		if(memcmp(internal + 0x6c, baselinePose, sizeof(baselinePose)) != 0)
+			lockedChangedMask |= 1u << 5;
+		lock.release();
+		memcpy(const_cast<unsigned char*>(internal) + 0xda, &baselineMaterial,
+			sizeof(baselineMaterial));
+		lock.hold();
+		shape->setMaterial(17);
+		unsigned short currentMaterial;
+		memcpy(&currentMaterial, internal + 0xda, sizeof(currentMaterial));
+		if(currentMaterial != baselineMaterial)
+			lockedChangedMask |= 1u << 6;
+		lock.release();
+		const unsigned lockedReports = errors.reports - reportsBefore;
+		lock.release();
+		shape->setLocalPose(localPose);
+		shape->setLocalPosition(localPosition);
+		shape->setLocalOrientation(localOrientation);
+		shape->setGlobalPose(globalPose);
+		shape->setGlobalPosition(globalPosition);
+		shape->setGlobalOrientation(globalOrientation);
+		shape->setMaterial(17);
+		unsigned poseWords[12];
+		memcpy(poseWords, internal + 0x6c, sizeof(poseWords));
+		memcpy(&currentMaterial, internal + 0xda, sizeof(currentMaterial));
+		printf("shape_mutation rows=001047,001049,001051,001053,001055,001057,001059 locked_changed=%02x locked_reports=%u final_pose=",
+			lockedChangedMask, lockedReports);
+		for(unsigned i = 0; i < 12; ++i)
+			printf("%s%08x", i ? "." : "", poseWords[i]);
+		printf(" material=%04x\n", currentMaterial);
+		}
+	else
+		printf("shape_mutation rows=001047,001049,001051,001053,001055,001057,001059 actor=0\n");
 	errors.enabled = false;
 	sdk->releaseScene(*scene);
 	}

@@ -53,9 +53,9 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 44,
+    "differential_falsified": 51,
     "oracle_differential_falsified": 44,
-    "deferred_not_reconstructed_in_phase": 198,
+    "deferred_not_reconstructed_in_phase": 191,
     "deferred_reconstructed_not_falsified": 101,
     "deferred_blocked_on_later_phase": 5
   },
@@ -241,6 +241,126 @@
       }
     },
     {
+      "id": "phys_fn_001045",
+      "rva": "0x000230a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Removed the public box-shape setFlag Scene write-lock guard, allowing the internal flag store to run while a foreign owner held the scene lock.",
+        "detected": "stdout_delta=5"
+      },
+      "note": "The oracle preserves the flag and reports the NpBoxShape.cpp:0x0f invalid-operation diagnostic; restored output is exact. See evidence/phase3-box-shape-setflag-lock-001045.md."
+    },
+    {
+      "id": "phys_fn_001047",
+      "rva": "0x00023100",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Bypassed the nxBoxHandleSetLocalPose write-lock guard so its public setter operation ran under a foreign Scene lock.",
+        "detected": "stdout_delta=11"
+      },
+      "note": "The oracle rejects the call at NpBoxShape.cpp:0x0f without changing pose/material; restored differential is exact. See evidence/phase3-box-shape-setter-locks-001047-001059.md."
+    },
+    {
+      "id": "phys_fn_001049",
+      "rva": "0x00023160",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Bypassed the nxBoxHandleSetLocalPosition write-lock guard so its public setter operation ran under a foreign Scene lock.",
+        "detected": "stdout_delta=11"
+      },
+      "note": "The oracle rejects the call at NpBoxShape.cpp:0x0f without changing pose/material; restored differential is exact. See evidence/phase3-box-shape-setter-locks-001047-001059.md."
+    },
+    {
+      "id": "phys_fn_001051",
+      "rva": "0x000231c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Bypassed the nxBoxHandleSetLocalOrientation write-lock guard so its public setter operation ran under a foreign Scene lock.",
+        "detected": "stdout_delta=11"
+      },
+      "note": "The oracle rejects the call at NpBoxShape.cpp:0x0f without changing pose/material; restored differential is exact. See evidence/phase3-box-shape-setter-locks-001047-001059.md."
+    },
+    {
+      "id": "phys_fn_001053",
+      "rva": "0x00023220",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Bypassed the nxBoxHandleSetGlobalPose write-lock guard so its public setter operation ran under a foreign Scene lock.",
+        "detected": "stdout_delta=11"
+      },
+      "note": "The oracle rejects the call at NpBoxShape.cpp:0x0f without changing pose/material; restored differential is exact. See evidence/phase3-box-shape-setter-locks-001047-001059.md."
+    },
+    {
+      "id": "phys_fn_001055",
+      "rva": "0x00023280",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Bypassed the nxBoxHandleSetGlobalPosition write-lock guard so its public setter operation ran under a foreign Scene lock.",
+        "detected": "stdout_delta=11"
+      },
+      "note": "The oracle rejects the call at NpBoxShape.cpp:0x0f without changing pose/material; restored differential is exact. See evidence/phase3-box-shape-setter-locks-001047-001059.md."
+    },
+    {
+      "id": "phys_fn_001057",
+      "rva": "0x000232e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Bypassed the nxBoxHandleSetGlobalOrientation write-lock guard so its public setter operation ran under a foreign Scene lock.",
+        "detected": "stdout_delta=11"
+      },
+      "note": "The oracle rejects the call at NpBoxShape.cpp:0x0f without changing pose/material; restored differential is exact. See evidence/phase3-box-shape-setter-locks-001047-001059.md."
+    },
+    {
+      "id": "phys_fn_001059",
+      "rva": "0x00023340",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Bypassed the nxBoxHandleSetMaterial write-lock guard so its public setter operation ran under a foreign Scene lock.",
+        "detected": "stdout_delta=11"
+      },
+      "note": "The oracle rejects the call at NpBoxShape.cpp:0x0f without changing pose/material; restored differential is exact. See evidence/phase3-box-shape-setter-locks-001047-001059.md."
+    },
+    {
       "id": "phys_fn_001079",
       "rva": "0x000235d0",
       "proof": "oracle_differential_falsified",
@@ -419,6 +539,21 @@
         5
       ],
       "note": "Phase 5 exercises the plane secondary deleting destructor, including the member-only negative control."
+    },
+    {
+      "id": "phys_fn_001185",
+      "rva": "0x00024670",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ],
+      "falsification": {
+        "mutation": "Removed the public sphere setRadius write try-lock and error report, leaving the radius store and owner/dirty updates active.",
+        "detected": "stdout_delta=663"
+      },
+      "note": "The Phase 5 sphere fixture also checks getter read-lock release; removing that bracket is independently rejected at stdout_delta=2. Restored control is exact. See evidence/phase3-sphere-public-radius-locks-001183-001185.md."
     },
     {
       "id": "phys_fn_001193",
@@ -1018,36 +1153,6 @@
         "mutation": "Temporarily omitted the shape-pointer store in nxSceneAuxRegisterShape while leaving slot allocation, occupancy, active-list, and reverse-index bookkeeping intact.",
         "detected": "stdout_delta=6"
       }
-    },
-    {
-      "id": "phys_fn_001185",
-      "rva": "0x00024670",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorDynamicSetterTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        5
-      ],
-      "falsification": {
-        "mutation": "Removed the public sphere setRadius write try-lock and error report, leaving the radius store and owner/dirty updates active.",
-        "detected": "stdout_delta=663"
-      },
-      "note": "The Phase 5 sphere fixture also checks getter read-lock release; removing that bracket is independently rejected at stdout_delta=2. Restored control is exact. See evidence/phase3-sphere-public-radius-locks-001183-001185.md."
-    },
-    {
-      "id": "phys_fn_001045",
-      "rva": "0x000230a0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorShapeMutationTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        5
-      ],
-      "falsification": {
-        "mutation": "Removed the public box-shape setFlag Scene write-lock guard, allowing the internal flag store to run while a foreign owner held the scene lock.",
-        "detected": "stdout_delta=5"
-      },
-      "note": "The oracle preserves the flag and reports the NpBoxShape.cpp:0x0f invalid-operation diagnostic; restored output is exact. See evidence/phase3-box-shape-setflag-lock-001045.md."
     }
   ],
   "deferred": [
@@ -1334,62 +1439,6 @@
     {
       "id": "phys_fn_001043",
       "rva": "0x00023040",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001047",
-      "rva": "0x00023100",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001049",
-      "rva": "0x00023160",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001051",
-      "rva": "0x000231c0",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001053",
-      "rva": "0x00023220",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001055",
-      "rva": "0x00023280",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001057",
-      "rva": "0x000232e0",
-      "size": 84,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001059",
-      "rva": "0x00023340",
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",

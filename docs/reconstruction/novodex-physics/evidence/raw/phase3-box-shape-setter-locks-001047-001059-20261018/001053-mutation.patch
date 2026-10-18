@@ -1,0 +1,6 @@
+diff --git a/Physics/src/NpActor.cpp b/Physics/src/NpActor.cpp
+--- a/Physics/src/NpActor.cpp
++++ b/Physics/src/NpActor.cpp
+@@ nxBoxHandleSetGlobalPose
+-if(!nxBoxHandleWriteTry(writeLock)) return;
++// MUTATION: bypass this setter row write-lock gate.

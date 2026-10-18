@@ -485,6 +485,66 @@ static bool nxBoxHandleWriteTry(void* writeLock)
 	return false;
 	}
 
+static void __fastcall nxBoxHandleSetLocalPose(void* self, void*,
+	const NxMat34& pose)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
+	nxShapeHandleSetLocalPose(self, 0, pose);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+static void __fastcall nxBoxHandleSetLocalPosition(void* self, void*,
+	const NxVec3& position)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
+	nxShapeHandleSetLocalPosition(self, 0, position);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+static void __fastcall nxBoxHandleSetLocalOrientation(void* self, void*,
+	const NxMat33& orientation)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
+	nxShapeHandleSetLocalOrientation(self, 0, orientation);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+static void __fastcall nxBoxHandleSetGlobalPose(void* self, void*,
+	const NxMat34& pose)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
+	nxShapeHandleSetGlobalPose(self, 0, pose);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+static void __fastcall nxBoxHandleSetGlobalPosition(void* self, void*,
+	const NxVec3& position)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
+	nxShapeHandleSetGlobalPosition(self, 0, position);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
+static void __fastcall nxBoxHandleSetGlobalOrientation(void* self, void*,
+	const NxMat33& orientation)
+	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
+	nxShapeHandleSetGlobalOrientation(self, 0, orientation);
+	nxNpSceneGuardLeave(writeLock);
+	}
+
 static void __fastcall nxBoxHandleSetFlag(void* self, void*, NxShapeFlag flag,
 	bool value)
 	{
@@ -510,9 +570,13 @@ static NX_BOOL __fastcall nxBoxHandleGetFlag(void* self, void*, NxShapeFlag flag
 
 static void __fastcall nxBoxHandleSetMaterial(void* self, void*, NxMaterialIndex material)
 	{
+	void* writeLock = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 0x10);
+	if(!nxBoxHandleWriteTry(writeLock)) return;
 	unsigned char* shape = nxBoxHandleInternal(self);
 	*reinterpret_cast<NxMaterialIndex*>(shape + 0xda) = material;
 	nxSceneMarkShapeDirty(shape, 8);
+	nxNpSceneGuardLeave(writeLock);
 	}
 
 static NxMaterialIndex __fastcall nxBoxHandleGetMaterial(void* self, void*)
@@ -831,18 +895,18 @@ void* nxBoxShapePublicVtable()
 			slots[4] = reinterpret_cast<void*>(&nxShapeHandleGetWorldBounds);
 			slots[5] = reinterpret_cast<void*>(&nxBoxHandleSetFlag);
 			slots[6] = reinterpret_cast<void*>(&nxBoxHandleGetFlag);
-			slots[7] = reinterpret_cast<void*>(&nxShapeHandleSetLocalPose);
-			slots[8] = reinterpret_cast<void*>(&nxShapeHandleSetLocalPosition);
-			slots[9] = reinterpret_cast<void*>(&nxShapeHandleSetLocalOrientation);
+			slots[7] = reinterpret_cast<void*>(&nxBoxHandleSetLocalPose);
+			slots[8] = reinterpret_cast<void*>(&nxBoxHandleSetLocalPosition);
+			slots[9] = reinterpret_cast<void*>(&nxBoxHandleSetLocalOrientation);
 			slots[10] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPose);
 			slots[11] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPosition);
 			slots[12] = reinterpret_cast<void*>(&nxShapeHandleGetLocalOrientation);
 			slots[13] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPoseVal);
 			slots[14] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPositionVal);
 			slots[15] = reinterpret_cast<void*>(&nxShapeHandleGetLocalOrientationVal);
-			slots[16] = reinterpret_cast<void*>(&nxShapeHandleSetGlobalPose);
-			slots[17] = reinterpret_cast<void*>(&nxShapeHandleSetGlobalPosition);
-			slots[18] = reinterpret_cast<void*>(&nxShapeHandleSetGlobalOrientation);
+			slots[16] = reinterpret_cast<void*>(&nxBoxHandleSetGlobalPose);
+			slots[17] = reinterpret_cast<void*>(&nxBoxHandleSetGlobalPosition);
+			slots[18] = reinterpret_cast<void*>(&nxBoxHandleSetGlobalOrientation);
 			slots[19] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPose);
 			slots[20] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPosition);
 			slots[21] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalOrientation);
