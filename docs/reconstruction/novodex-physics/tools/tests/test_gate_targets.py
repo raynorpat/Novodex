@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2911, "6": 1767, "7": 3050}
+    MINIMUM = {"2": 18, "3": 984, "4": 559, "5": 2912, "6": 1768, "7": 3051}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -1106,6 +1106,23 @@ class ImplicitMeshOwnerBindingClearCoverage(unittest.TestCase):
         destructor = implementation.split(
             "static void* __fastcall nxFluidSurfaceMeshDeletingDestructor", 1)[1]
         self.assertIn("nxSetSdkPointerBinding(manager, 0)", destructor)
+
+
+class ImplicitMeshOwnerBindingInitCoverage(unittest.TestCase):
+    """Creating a licensed mesh binds its manager to the descriptor name."""
+
+    def test_owner_name_binding_is_a_required_simulation_result(self):
+        marker = ("simulation implicit-mesh owner-binding-init row=003689 "
+                  "resolved=1 manager=1 bound=1 matched=1")
+        self.assertIn(marker, registered_lines().get("NxPhysicsSimulationTests", []))
+        source = (REPO_ROOT / "tests" / "PhysicsSimulationTests.cpp").read_text(
+            encoding="utf-8")
+        self.assertIn("row=003689 resolved=%u manager=%u bound=%u matched=%u", source)
+        implementation = (REPO_ROOT / "Physics" / "src" / "Scene.cpp").read_text(
+            encoding="utf-8")
+        self.assertIn(
+            "nxSetSdkPointerBinding(manager, const_cast<char*>(desc->name))",
+            implementation)
 
 if __name__ == "__main__":
     unittest.main()

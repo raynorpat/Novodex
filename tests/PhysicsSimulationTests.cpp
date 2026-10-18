@@ -7108,6 +7108,32 @@ int wmain(int argc, wchar_t** argv)
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[4] == 0x3ca3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[5] == 0x3ba3d70au &&
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreateArguments[6] == 6;
+	void* surfaceMeshNameBindingAddress = 0;
+	unsigned char* const licensedSurfaceMeshWrapper =
+		reinterpret_cast<unsigned char*>(licensedSurfaceMeshFluid);
+	unsigned char* const licensedSurfaceMeshInternal = licensedSurfaceMeshWrapper
+		? static_cast<unsigned char*>(
+			*reinterpret_cast<void**>(licensedSurfaceMeshWrapper + 0x14)) : 0;
+	void* const licensedSurfaceMeshManager = licensedSurfaceMeshInternal
+		? *reinterpret_cast<void**>(licensedSurfaceMeshInternal + 0x24) : 0;
+	const bool surfaceMeshNameBindingResolved = nxSimulationResolvePrivateRow(
+		physics, pairDirectory, "?nxGetSdkPointerBinding@@YAPAXPAX@Z",
+		0x0000df90u, &surfaceMeshNameBindingAddress);
+	typedef void* (__cdecl *GetSdkPointerBindingFn)(void*);
+	GetSdkPointerBindingFn const getSurfaceMeshNameBinding =
+		reinterpret_cast<GetSdkPointerBindingFn>(surfaceMeshNameBindingAddress);
+	void* const surfaceMeshNameBinding =
+		surfaceMeshNameBindingResolved && licensedSurfaceMeshManager
+			? getSurfaceMeshNameBinding(licensedSurfaceMeshManager) : 0;
+	const bool surfaceMeshNameBindingMatches =
+		surfaceMeshNameBinding == licensedSurfaceMeshDesc.name;
+	printf("simulation implicit-mesh owner-binding-init row=003689 resolved=%u manager=%u bound=%u matched=%u\n",
+		surfaceMeshNameBindingResolved ? 1u : 0u,
+		licensedSurfaceMeshManager ? 1u : 0u,
+		surfaceMeshNameBinding ? 1u : 0u,
+		surfaceMeshNameBindingMatches ? 1u : 0u);
+	if(!surfaceMeshNameBindingMatches)
+		return nxFail("implicit surface-mesh creation did not bind its descriptor name");
 	printf("simulation fluid-internal-surface-mesh-create row=003481 created=%u callback=%u args=%u userdata=%u matched=%u\n",
 		constructedSurfaceMesh ? 1u : 0u,
 		licensedSurfaceMeshCallbacks.implicitFluidMeshCreate,

@@ -1,0 +1,37 @@
+{
+  "row": "phys_fn_003689",
+  "date": "2026-10-18",
+  "description": "Descriptor-name SDK binding differential, omission mutation, restored control, and fresh Phase 5/6/7 gates.",
+  "files": {
+    "phase7-fluid-surface-owner-binding-init-003689-mutation.log.gz": {
+      "sha256": "cf82e57cb8a0beddae651fb597bdfefcf37f39059a827418cb56a2dabf26eb28",
+      "uncompressed_sha256": "ac4d466e50886ae9017e1dbcc2d4c48d8b7edd1519edaec6f8bd290f0e163e37",
+      "source": "build/phase7-row-003689-mutation.log"
+    },
+    "phase7-fluid-surface-owner-binding-init-003689-green.log.gz": {
+      "sha256": "c0dce025fb16c3f701b0bdbb126162e7b1bcb607409a0c83274d7372e6b6e2aa",
+      "uncompressed_sha256": "dadcf29bf7c4aeb39f827947449afcd9713e0f2d1efecaf403e9069225c17767",
+      "source": "build/phase7-row-003689-green.log"
+    },
+    "phase7-fluid-surface-owner-binding-init-003689-restored.log.gz": {
+      "sha256": "d968951899b534fd5e465bbbfc0617656916081d84d6bed2fc4ac19f2c4230b2",
+      "uncompressed_sha256": "c845f83778dad11c0474f33701c907706a505d93ded85c1643c964501745e111",
+      "source": "build/phase7-row-003689-restored.log"
+    },
+    "phase7-fluid-surface-owner-binding-init-003689-phase5.log.gz": {
+      "sha256": "ca4dc7bb50d2becc546d38c5a12a5e15f15a271a6c9285a3c48a2ea2abaa6e1b",
+      "uncompressed_sha256": "20e07aa3347760bb6c21d17ca3e8c1bf9ee91d5fb523472947529cbf04f121c5",
+      "source": "build/phase7-row-003689-phase5.log"
+    },
+    "phase7-fluid-surface-owner-binding-init-003689-phase6.log.gz": {
+      "sha256": "d9a56fdd305e230d5f17f0c33f37934779f3bff415005eeecda6c2b87b09c94b",
+      "uncompressed_sha256": "46e2bf076a8a6e5e9c33aa5022e14b31df1830fe86121c8d33389127ed3c3b8e",
+      "source": "build/phase7-row-003689-phase6.log"
+    },
+    "phase7-fluid-surface-owner-binding-init-003689-phase7.log.gz": {
+      "sha256": "79d3210e4f58a82a49cbd093ccf99319250e427d2f2a6802b4efc84d2fc86ec4",
+      "uncompressed_sha256": "5a2ddddf2d867dab3c8d375860846a15555a7d44d1ed2acc78e80e3871e04b27",
+      "source": "build/phase7-row-003689-phase7.log"
+    }
+  }
+}

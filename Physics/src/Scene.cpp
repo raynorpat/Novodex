@@ -2771,6 +2771,7 @@ static void* nxFluidInitializeSurfaceMesh(void* fluid,
 		*reinterpret_cast<void**>(bytes + 0x38) = mesh;
 		}
 	nxImplicitMeshSetName(manager, desc->name);
+	nxSetSdkPointerBinding(manager, const_cast<char*>(desc->name));
 	*reinterpret_cast<void**>(fluidBytes + 0x24) = manager;
 	return manager;
 	}

@@ -70065,13 +70065,13 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp#nxFluidInitializeSurfaceMesh",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1397",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12725",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA decompilation at RVA 0x0008af80 (96 bytes) shows the descriptor record copy, FluidModel creation callback, public mesh userData store, SDK pointer binding of the descriptor name, and true return.",
+      "dynamic_proof": "Registered NxPhysicsSimulationTests creates a licensed fluid from a named NxImplicitMeshDesc and checks that the created surface-mesh manager maps to that exact name pointer. Removing nxSetSdkPointerBinding(manager, desc->name) is rejected (oracle bound=1, candidate bound=0; candidate_exit=1, stdout_delta=89); restored differential is exact. Evidence: evidence/phase7-fluid-surface-owner-binding-init-003689.md.",
+      "notes": "Candidate map symbol ?nxFluidInitializeSurfaceMesh@@YAPAXPAXPBVNxImplicitMeshDesc@@@Z in Scene.obj at RVA 0x00068c60."
     },
     {
       "id": "phys_fn_003690",
