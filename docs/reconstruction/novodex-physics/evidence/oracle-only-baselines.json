@@ -4,7 +4,7 @@
     "NxPhysicsObjectLayoutTests": {
       "format": "layout_digest",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-      "fixture_source_sha256": "f5ceaba95abf03cc36e3c68e46af2ea25df88a9907097eac6417e49ea93f3226",
+      "fixture_source_sha256": "a81e1604f934071daa92fc4e08375f2dbe407223d13cfb23d334cfa27f0f6e67",
       "oracle_digest_fnv32": "3acf0dc7",
       "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=11 globalcall2=2 reciprocal003461=6 copy6003483=1",
       "fixture_sources": [

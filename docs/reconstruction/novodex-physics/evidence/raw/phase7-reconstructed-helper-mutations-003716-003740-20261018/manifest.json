@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "rows": [
+    "phys_fn_003716",
+    "phys_fn_003724",
+    "phys_fn_003728",
+    "phys_fn_003732",
+    "phys_fn_003736",
+    "phys_fn_003740"
+  ],
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "e2b157a8d93d25f1ff048f3bfadcae553c496f227c734c5877123bd745ddf18a",
+  "candidate_map_symbols": {
+    "nxOnceReportThunkFloat": "0x1004d290",
+    "nxLockedHelperCallF": "0x1004b520",
+    "nxAssertReport003736": "0x100482e0",
+    "nxAssertReport003740": "0x10048310"
+  },
+  "mutation_results": {
+    "reportonceF": "row 003716 cases=2 mismatches=1; rows 003720/003770 also detect the shared mutant",
+    "lockhelperF": "rows 003724, 003728, 003732 each cases=1 mismatches=1",
+    "assert003736": "row 003736 mismatches=1; row 003740 mismatches=0",
+    "assert003740": "row 003736 mismatches=0; row 003740 mismatches=1"
+  },
+  "restored_result": "all six registered row markers report mismatches=0; direct oracle/candidate differential passes",
+  "phase_gates": {
+    "5": "pass 2968/2968",
+    "6": "pass 1819/1819",
+    "7": "pass 3104/3104"
+  },
+  "raw_logs": [
+    {
+      "path": "focused.log.gz",
+      "sha256": "06489fb90f358e84c12854f165bf067e933b8159908d578960050cb79fcd7de4",
+      "uncompressed_sha256": "711003bd86826c9b28c695a528e003611457b607b98954be26c6e85df14f714b"
+    },
+    {
+      "path": "restored.log.gz",
+      "sha256": "44707f372ae40011beaf48d40239715436751883e0b4e9132ea6542e8b188875",
+      "uncompressed_sha256": "0dffd6a5aa9848f6605be39a92fc0a50dcf15e673fa36760b9e6c5ddb0fb71d7"
+    },
+    {
+      "path": "mutation-reportonceF.log.gz",
+      "sha256": "a7ac5e4971f8fadd70f283b2a917a077abbd84534f407ff922ebd00720db42f0",
+      "uncompressed_sha256": "fdbee4c48144973513398628ea73b1bd167c987e826b8a39475a444895c0a662"
+    },
+    {
+      "path": "mutation-lockhelperF.log.gz",
+      "sha256": "f20b392c6575045a2b8d151b723aae36f146fde4a0d5c9f257f049654e3a224b",
+      "uncompressed_sha256": "959e032e663a16cdd79fc0e5978e13a61f77e357163889c6f8c09c80fb5038f9"
+    },
+    {
+      "path": "mutation-assert003736.log.gz",
+      "sha256": "ac0795356a98bfb4d5d0d2e0b968114c2917f02ac3741c363c9bed3ce78accff",
+      "uncompressed_sha256": "b69f7239c5d0a458ee1b5196c0351fca7ee7f3c9bc7ffb07acbd688120a3a50a"
+    },
+    {
+      "path": "mutation-assert003740.log.gz",
+      "sha256": "19887ca1b992bbfba4d71954c9969c1e9a2108b110910d0637d5a692feec7e84",
+      "uncompressed_sha256": "81cfd96244c29bf0bfded6a7ceb7e016616177ed4b550db3610fcf1cecd054fd"
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "sha256": "7f17d3db36e9e8676eecbb8bd82ad354336e252d8ff73475cbdb00d2eac49f8c",
+      "uncompressed_sha256": "83f0faf60fb0d09bd44ebd99e33a6e26dbf871fba99e1f03f8761cf7bb13106b"
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "sha256": "eb73191e36b05ea1383eae2bc2ad827a592608e3ef9f99cc5d060c01e2ce8f35",
+      "uncompressed_sha256": "b34e970583d4a1e1196ffe7a6b9da28ff6596fd896288e01f85b827a40098b7d"
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "sha256": "e3dcd1b6ac98b1a9b96151e6d3d892de4462eec15d06d2da18624b3c18394d31",
+      "uncompressed_sha256": "2049a59f683a038d724670fb234ed131b741db5488f097f29a5b9026f64f457d"
+    }
+  ]
+}

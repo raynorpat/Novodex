@@ -662,3 +662,5 @@ Task 31: complete (red link test confirms missing helper; focused differential e
 Task 32: complete (red link test confirms missing helper; focused differential exact; +0x84 mutation rejected; Phase 5/6/7: 2961/2961, 1812/1812, 3097/3097; tooling tests: 823 OK; validate_inventory: 6338 functions, 5138 data objects, 0 unexplained; immutable public headers verified unchanged).
 
 Task 33: complete (phys_fn_003681; red link test confirms missing helper; restored direct differential exact, 1 case and stack 1/1; +0x84 mutation rejected; Phase 5/6/7: 2962/2962, 1813/1813, 3098/3098; Phase 7 517 closed / 43 deferred; public headers unchanged).
+
+Task 34: complete (six reconstructed Phase 7 rows now have independent registered mismatch markers and fail the target on differences; four isolated mutations rejected; restored differential exact; Phase 5/6/7 pass 2968/2968, 1819/1819, 3104/3104; Phase 7 523 closed / 37 deferred; public headers unchanged).

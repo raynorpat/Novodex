@@ -1,0 +1,9 @@
+# Reconstructed Fluid callback and assertion helpers (`phys_fn_003716`–`003740`)
+
+The six rows were already implemented, but their shared fixture totals were provisional and did not fail the target when a comparison differed. `NxPhysicsObjectLayoutTests` now emits and aggregates a separate mismatch marker for each row, so any wrong row makes the fixture fail.
+
+IDA confirms the behavior: `003716` checks the global feature gate, reports the disabled-feature tuple and returns zero when disabled, or takes the lock at `this+0x10`, calls the float callback on `this+0x14`, unlocks, and returns its result. Rows `003724`, `003728`, and `003732` take the same lock, call their distinct float callback, preserve the x87 return across unlock, and return it. Rows `003736` and `003740` report the disabled-feature error with their own file, line, and expression values, then return zero.
+
+The restored oracle/candidate run reports zero mismatches for all six rows. Four isolated mutations were rebuilt from the same pristine source: the report-once return mutation is detected by `003716`; the shared locked-float return mutation is detected separately by all three locked rows; changing the `003736` line value affects only `003736`; changing the `003740` line value affects only `003740`. The direct harness exits on each mismatch. The staged-pair wrapper observes that failure on its first invocation because this harness embeds the candidate helper; the row-specific mismatch markers identify the failing candidate behavior.
+
+Fresh Phase 5, 6, and 7 gates pass at 2,968/2,968, 1,819/1,819, and 3,104/3,104 assertions. Phase 7 advances to 523 closed / 37 deferred. Public headers are unchanged. Hash-pinned focused, restored, isolated-mutation, and gate logs are in [the raw evidence bundle](raw/phase7-reconstructed-helper-mutations-003716-003740-20261018/). Full DLL reconstruction remains open.

@@ -1597,3 +1597,10 @@ Status: complete (2026-10-18). The fixture failed to link before implementation.
 IDA confirms RVA `0x8ae70` reads the fluid through `[this+4]`, callback context through `[[fluid+0x7c]+0x30]`, handle at `[fluid+0x80]`, and forwards the caller argument through slot RVA `0x1264b8`; it cleans 12 callback bytes and returns with `ret 4`. Add a dedicated oracle/candidate fixture, reconstruct the private helper, reject a `fluid+0x84` mutation, refresh the oracle source baseline and Phase 7 closure, then run Phase 5/6/7 and tooling gates. Do not change public headers.
 
 Status: complete (2026-10-18). The fixture failed to link before implementation; restored output reports `global-call3 row=003681 cases=1 stack=1/1 mismatches=0`; the `fluid+0x84` mutation is rejected (`mismatches=1`, candidate exit 1). Phase 7 advances to 517 closed / 43 deferred. Fresh Phase 5/6/7 gates pass at 2,962/2,962, 1,813/1,813, and 3,098/3,098; the tooling and integrity gates are recorded in the turn evidence. Public headers are unchanged. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-global-call3-003681.md` and its raw bundle. Full DLL reconstruction remains open.
+
+
+### Task 34 — falsify reconstructed report and float-helper rows (`phys_fn_003716`, `003724`, `003728`, `003732`, `003736`, `003740`)
+
+These six Phase 7 functions already have candidate implementations and oracle fixtures but remain deferred because their shared coverage outputs are provisional. Strengthen `NxPhysicsObjectLayoutTests` with a stable per-row marker for each function; mutation-test the report-once helper, the float-returning lock helper, and each assert-report row independently; require restored oracle/candidate exact output and balanced calls. Register the six markers, update source proofs and Phase 7 closure, refresh completion artifacts, and pass fresh Phase 5/6/7 plus tooling/header checks. Do not change public NxPhysics headers.
+
+Status: complete (2026-10-18).

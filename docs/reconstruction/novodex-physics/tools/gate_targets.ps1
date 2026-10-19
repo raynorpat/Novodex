@@ -5719,6 +5719,12 @@ $NxRequiredCoverageLines = [ordered] @{
 		'global-call3 row=003673 cases=1 stack=1/1 mismatches=0',
 		'global-call3 row=003677 cases=1 stack=1/1 mismatches=0',
 		'global-call3 row=003681 cases=1 stack=1/1 mismatches=0',
+		'assertrow row=003736 cases=1 mismatches=0',
+		'assertrow row=003740 cases=1 mismatches=0',
+		'lockhelperF row=003724 cases=1 mismatches=0',
+		'lockhelperF row=003728 cases=1 mismatches=0',
+		'lockhelperF row=003732 cases=1 mismatches=0',
+		'reportonceF row=003716 cases=2 mismatches=0',
 		'global-call2 row=003669 cases=1 stack=1/1 mismatches=0',
 		'global-call2 row=003675 cases=1 stack=1/1 mismatches=0',
 		'global-call3 row=003431 cases=1 failures=0',
@@ -6414,7 +6420,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2962  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
+	'5' = 2968  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6505,7 +6511,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1813  # includes current locked-array, fluid, locked-accessor, and global-call markers
+	'6' = 1819  # includes current locked-array, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6558,7 +6564,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3098  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
+	'7' = 3104  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
