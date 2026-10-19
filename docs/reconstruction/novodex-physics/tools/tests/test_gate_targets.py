@@ -911,8 +911,8 @@ class BipartiteBoxPruningEntryCoverage(unittest.TestCase):
         self.assertEqual(len(matches), 1,
             "phys_fn_004814 needs one row-specific oracle/candidate pair marker")
         self.assertEqual(matches[0],
-            "thirdparty bipartite_pruning row=004814 calls=260 pairs=316 "
-            "digest=27496242 mismatches=0")
+            "thirdparty bipartite_pruning row=004814 calls=260 axis_orders=6 pairs=316 "
+            "digest=1cb8ecc2 mismatches=0")
         for field in ("calls=", "pairs=", "digest=", "mismatches="):
             self.assertIn(field, matches[0])
 

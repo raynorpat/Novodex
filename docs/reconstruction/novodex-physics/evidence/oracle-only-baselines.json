@@ -103,13 +103,13 @@
       "format": "thirdparty_oracle_digest",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsThirdPartyTests.cpp",
-      "fixture_source_sha256": "d3cd41d0efa1f27da7ff16ac974817973bbf6e9a57a81163d1bc4746e873154a",
+      "fixture_source_sha256": "e78af09b7ec1215695266f53507e4c1808288dd8b4b9707130e37155b2b1215e",
       "library_line": "thirdparty libraries qhull=2003.1 opcode=1.3-standalone",
       "generator_line": "thirdparty generator=xorshift32 mode=differential",
       "coverage_line_count": 29,
       "final_coverage_line": "thirdparty coverage driven=117 divergent=26 words=2616207 layout_checks=47",
-      "oracle_digest_fnv32": "cda1de95",
-      "selected_lines_sha256": "184b94263b6787c93d21ffe00e1752aa426432e9e45afd2bed363c9b048f1b1e"
+      "oracle_digest_fnv32": "006d78c3",
+      "selected_lines_sha256": "8333f80c23c1e2d09627ce153b05ee981a924dca3afb0e337c2d90853afe1f98"
     },
     "NxPhysicsCollisionTests": {
       "format": "collision_oracle_digest",

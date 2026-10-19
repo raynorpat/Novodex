@@ -1,0 +1,60 @@
+{
+  "task": "Task 43 reviewer fix: all six bipartite pruning axis orders",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "fixture": "tests/PhysicsThirdPartyTests.cpp",
+  "row": "phys_fn_004814",
+  "calls": 260,
+  "axis_orders": [
+    "AXES_XYZ",
+    "AXES_XZY",
+    "AXES_YXZ",
+    "AXES_YZX",
+    "AXES_ZXY",
+    "AXES_ZYX"
+  ],
+  "pairs": 316,
+  "digest": "1cb8ecc2",
+  "mismatches": 0,
+  "mutation": "candidate B-to-A sweep disabled; expected differential failure",
+  "mutation_mismatches": 90,
+  "phase4": "pass; 567/567 coverage assertions",
+  "phase7": "pass; 3114/3114 coverage assertions",
+  "tooling": "838 tests pass",
+  "files": {
+    "differential.log.gz": {
+      "sha256": "48e3871857d0f56a37ebbea3c36c7de064919a1ad02f1ccde201fa3f6ef9d95a",
+      "uncompressed_sha256": "0202cd063d84a4713fac9f74acf681e781f757affd46988b26ea01c2cec1dc55",
+      "uncompressed_bytes": 142041
+    },
+    "mutant.log.gz": {
+      "sha256": "821e464fd6fab1ffb64e778c40447403eecdb57a77448774e343f91962b530a7",
+      "uncompressed_sha256": "c240a077a45433b99c66645ad755388e97fa8bd1bf48e0aae215aa9f22c56a4f",
+      "uncompressed_bytes": 142050
+    },
+    "restored.log.gz": {
+      "sha256": "48e3871857d0f56a37ebbea3c36c7de064919a1ad02f1ccde201fa3f6ef9d95a",
+      "uncompressed_sha256": "0202cd063d84a4713fac9f74acf681e781f757affd46988b26ea01c2cec1dc55",
+      "uncompressed_bytes": 142041
+    },
+    "phase4.log.gz": {
+      "sha256": "962eddd6b6bd1683ed73f13734b0fedefa77fcf8a6a1e89d8f2530f2ffa907e4",
+      "uncompressed_sha256": "d4c642313ffcea5e0f734fc662c6f3721ddb5a8e09da9c1b897d92591ead4512",
+      "uncompressed_bytes": 1132962
+    },
+    "phase7.log.gz": {
+      "sha256": "4016e49f141d48af5fe19561b92ae9bbc3ba97e5a71051f649eaac38e96df63e",
+      "uncompressed_sha256": "66266fcc15fc839400ff4d0de323c86cc9d5f47c415efaf741b3744086f67055",
+      "uncompressed_bytes": 4716596
+    },
+    "tooling.log.gz": {
+      "sha256": "a91101e22dacbeef8d5c6e402f1ae9e8ae629ae9e7710c475f9514156640c06c",
+      "uncompressed_sha256": "95b852b5cd2a378914cfab93d7673126ef361275cd74e8971772b68faa9c8328",
+      "uncompressed_bytes": 944
+    },
+    "mutation.patch.txt": {
+      "sha256": "47f52153ce37591601b6fb60fb723da6d7551be79bd7f85ac6bc7238ddb8ee06",
+      "uncompressed_sha256": "47f52153ce37591601b6fb60fb723da6d7551be79bd7f85ac6bc7238ddb8ee06",
+      "uncompressed_bytes": 402
+    }
+  }
+}

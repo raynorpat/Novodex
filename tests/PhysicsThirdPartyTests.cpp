@@ -1517,7 +1517,10 @@ static void nxDriveBipartitePruning(const NxOracleRows& o, bool selfOnly)
 	gOracleTape.reset();
 	gCandidateTape.reset();
 	gState = 0x814b1a7e;
-	static const AxisOrder kOrders[] = { AXES_XZY, AXES_XYZ, AXES_ZXY };
+	static const AxisOrder kOrders[] = {
+		AXES_XYZ, AXES_XZY, AXES_YXZ, AXES_YZX, AXES_ZXY, AXES_ZYX
+		};
+	bool orderSeen[sizeof(kOrders) / sizeof(kOrders[0])] = { false };
 	unsigned totalCalls = 0;
 	unsigned totalPairs = 0;
 	unsigned mismatches = 0;
@@ -1559,7 +1562,9 @@ static void nxDriveBipartitePruning(const NxOracleRows& o, bool selfOnly)
 				Point((float)(x + dx), (float)(y + dy), (float)(z + dz)));
 			pointers1[i] = &boxes1[i];
 			}
-		const Axes axes(kOrders[trial % (sizeof(kOrders) / sizeof(kOrders[0]))]);
+		const unsigned orderIndex = trial % (sizeof(kOrders) / sizeof(kOrders[0]));
+		orderSeen[orderIndex] = true;
+		const Axes axes(kOrders[orderIndex]);
 		unsigned char oraclePairs[32];
 		memset(oraclePairs, 0xcd, sizeof(oraclePairs));
 		o.containerCtor(oraclePairs);
@@ -1609,8 +1614,13 @@ static void nxDriveBipartitePruning(const NxOracleRows& o, bool selfOnly)
 		}
 	nxReport("bipartite_pruning", "0x000b4080", "phys_fn_004814", "NovodexBoxPruning.cpp", selfOnly);
 	if(!selfOnly)
-		printf("thirdparty bipartite_pruning row=004814 calls=%u pairs=%u digest=%08x mismatches=%u\n",
-			totalCalls, totalPairs, gOracleTape.digest(), mismatches);
+		{
+		unsigned distinctOrders = 0;
+		for(unsigned i = 0; i < sizeof(orderSeen) / sizeof(orderSeen[0]); ++i)
+			if(orderSeen[i]) ++distinctOrders;
+		printf("thirdparty bipartite_pruning row=004814 calls=%u axis_orders=%u pairs=%u digest=%08x mismatches=%u\n",
+			totalCalls, distinctOrders, totalPairs, gOracleTape.digest(), mismatches);
+		}
 	}
 
 static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)

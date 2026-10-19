@@ -1,0 +1,9 @@
+Candidate-only mutation in Physics/src/opcode/NovodexBoxPruning.cpp:
+
+    while(running0 < last0 && sorted1 < last1)
+
+changed to:
+
+    while(false && running0 < last0 && sorted1 < last1)
+
+The mutation suppresses only the B-to-A sweep. The six-order row reported 90 mismatches and the registered oracle/candidate differential exited 1. Restoring the line returned the exact control transcript.
