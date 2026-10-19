@@ -5570,7 +5570,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision input name=scene_pruner_owner_destroy words=2 input=08cd4c29d1e47d34',
         'collision name=scene_base_dtor_owner index=- rva=0x00026bd0 checks=24 oracle=912abab5feb00ab4',
         'collision coverage name=scene_base_dtor_owner case=owner_scene_pruner_and_slot_cleanup',
-        'collision input name=scene_base_dtor_owner words=1 input=ad2aca7747985764'
+        'collision input name=scene_base_dtor_owner words=1 input=ad2aca7747985764',
+        'collision pruner_pool_reserve row=phys_fn_004855 cases=4 modes=0-3 capacities=matched mismatches=0'
     )
     'NxPhysicsType3PrunerTests' = @(
         'collision type3_pruner refit objects=2 oracle_found=1 candidate_found=1 oracle_hits=1 candidate_hits=1 mismatches=0',

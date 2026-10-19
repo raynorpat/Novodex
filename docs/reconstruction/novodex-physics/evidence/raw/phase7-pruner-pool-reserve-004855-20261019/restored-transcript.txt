@@ -1,0 +1,5 @@
+oracle module path=D:\github\Novodex\oracle\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+oracle base=10000000 control_word=027f
+oracle pin=matched
+collision pruner_pool_reserve row=phys_fn_004855 cases=4 modes=0-3 capacities=matched mismatches=0
+collision pruner_pool_reserve mismatches=0

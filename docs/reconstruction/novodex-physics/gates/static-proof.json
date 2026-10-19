@@ -3,9 +3,9 @@
   "summary": {
     "function_rows": 6338,
     "data_objects": 5138,
-    "findings": 8411,
-    "source_mapped_code_rows": 1085,
-    "distinct_source_files": 85
+    "findings": 8407,
+    "source_mapped_code_rows": 1087,
+    "distinct_source_files": 86
   },
   "analysis_inputs": {
     "reference_manifests_loaded": 2
@@ -14606,7 +14606,7 @@
     {
       "code": "code_row_not_closed",
       "id": "phys_fn_004814",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "expected": "closed"
     },
     {
@@ -14732,7 +14732,7 @@
     {
       "code": "code_row_not_closed",
       "id": "phys_fn_004855",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "expected": "closed"
     },
     {
@@ -41700,12 +41700,6 @@
     },
     {
       "code": "source_mapping_missing",
-      "id": "phys_fn_004814",
-      "implementation": null,
-      "implementation_symbol": null
-    },
-    {
-      "code": "source_mapping_missing",
       "id": "phys_fn_004816",
       "implementation": null,
       "implementation_symbol": null
@@ -41803,12 +41797,6 @@
     {
       "code": "source_mapping_missing",
       "id": "phys_fn_004852",
-      "implementation": null,
-      "implementation_symbol": null
-    },
-    {
-      "code": "source_mapping_missing",
-      "id": "phys_fn_004855",
       "implementation": null,
       "implementation_symbol": null
     },
@@ -44840,10 +44828,6 @@
     },
     {
       "code": "static_proof_missing",
-      "id": "phys_fn_004814"
-    },
-    {
-      "code": "static_proof_missing",
       "id": "phys_fn_004820"
     },
     {
@@ -44885,10 +44869,6 @@
     {
       "code": "static_proof_missing",
       "id": "phys_fn_004852"
-    },
-    {
-      "code": "static_proof_missing",
-      "id": "phys_fn_004855"
     },
     {
       "code": "static_proof_missing",

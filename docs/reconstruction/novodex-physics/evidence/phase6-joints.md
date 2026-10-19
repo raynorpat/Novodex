@@ -11426,3 +11426,6 @@ Phase 7 continuation 2026-10-19 — `phys_fn_002415`: `NxPhysicsSceneConstructor
 
 
 Phase 7 continuation 2026-10-19 — `phys_fn_003503`: the row-specific `NxPhysicsSimulationTests` marker compares one `FluidCreate` invocation and all 14 non-manager arguments (`digest=1d2e206d`, `mismatches=0`). Replacing callback argument 14 with argument 13 changes the marker digest to `de1a8fc9`, records one mismatch, and is rejected by the staged-pair differential (`oracle_exit=0`, `candidate_exit=1`, `stdout_delta=78`). Restoring the source returns exact output. Fresh Phase 5/6/7 gates pass at 2970/2970, 1820/1820 and 3112/3112. Phase 7 now has 527 closed / 33 deferred functions. See `evidence/phase7-fluid-create-entry-003503-20261019.md` and `evidence/raw/phase7-fluid-create-entry-003503-20261019/`.
+
+
+Phase 7 continuation 2026-10-19 — `phys_fn_004855`: the Scene pruning-engine reserve helper now matches the pinned oracle across all four selected pruner modes and both zero-capacity and replacement cases. Disabling both candidate reserve calls is rejected in all four modes (`mismatches=4`); the restored run reports zero mismatches. The full collision differential passes. Phase 7 now has 529 closed / 31 deferred functions. See `evidence/phase7-pruner-pool-reserve-004855-20261019.md` and `evidence/raw/phase7-pruner-pool-reserve-004855-20261019/`.

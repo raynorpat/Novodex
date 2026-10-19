@@ -1508,7 +1508,14 @@
         "phys_fn_001957",
         "phys_fn_001958",
         "phys_fn_001962",
-        "phys_fn_004850"
+        "phys_fn_004850",
+        "phys_fn_004855"
+      ]
+    },
+    {
+      "path": "opcode/NovodexBoxPruning.cpp",
+      "function_ids": [
+        "phys_fn_004814"
       ]
     }
   ],
@@ -8022,6 +8029,18 @@
       "rva": "0x000b5060",
       "path": "opcode/IcePruningEngine.cpp",
       "symbol": "nxSceneEngineDestroyPruners"
+    },
+    {
+      "id": "phys_fn_004855",
+      "rva": "0x000b5140",
+      "path": "opcode/IcePruningEngine.cpp",
+      "symbol": "nxSceneEngineReservePoolsCandidate"
+    },
+    {
+      "id": "phys_fn_004814",
+      "rva": "0x000b4080",
+      "path": "opcode/NovodexBoxPruning.cpp",
+      "symbol": "_BipartiteBoxPruning"
     }
   ],
   "vtable_slots": [],

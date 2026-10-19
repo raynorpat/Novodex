@@ -92184,13 +92184,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1847",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15755",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA oracle decompilation and disassembly at RVA 0x000b5140 show a Scene pruning-engine adapter: for a nonzero static limit it calls phys_fn_005479 on pruner slot 0's pool at +4; for a nonzero dynamic limit it calls phys_fn_005479 on the selected pruner slot's pool at +4; it returns 1. phys_fn_005479 frees old AABB then object arrays, stores the requested 16-bit capacity, allocates 24*capacity and 4*capacity bytes, and does not copy old contents. Physics/src/opcode/IcePruningEngine.cpp implements the adapter; Physics/src/opcode/IcePruner.cpp implements the pool reserve behavior; Scene.cpp passes the descriptor limits from Scene+0x20/+0x24.",
+      "dynamic_proof": "NxPhysicsCollisionTests row-specific differential compares oracle RVA 0x000b5140 with nxSceneEngineReservePoolsCandidate over all selected modes 0-3, a zero-capacity no-op, and replacement capacities 8/16 then 3/5. The pinned oracle and candidate report matching capacities and return values in all four modes (mismatches=0). A mutation disabling both reserve calls is rejected in all four modes (mismatches=4, exit=1); restored fixture exit=0. Full collision target passes.",
+      "notes": "",
+      "implementation": "Physics/src/opcode/IcePruningEngine.cpp",
+      "implementation_symbol": "nxSceneEngineReservePoolsCandidate",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSceneEngineReservePoolsCandidate@@YAEPAXIII@Z",
+        "address": "0x100b2850",
+        "object": "IcePruningEngine.obj"
+      }
     },
     {
       "id": "phys_fn_004856",

@@ -104,10 +104,10 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 528,
-        "deferred_rows": 32,
+        "closed_rows": 529,
+        "deferred_rows": 31,
         "deferred_reasons": {
-          "not_reconstructed_in_phase": 32
+          "not_reconstructed_in_phase": 31
         }
       }
     },
@@ -206258,17 +206258,23 @@
       "size": 62,
       "phase": 7,
       "kind": "code",
-      "state": "discovered",
+      "state": "dynamically_gated",
       "label": "phys_fn_004855",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
+        "path": "Physics/src/opcode/IcePruningEngine.cpp",
+        "role": "reconstruction",
+        "symbol": "nxSceneEngineReservePoolsCandidate",
+        "file_exists": true,
         "oracle_source": null,
         "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxSceneEngineReservePoolsCandidate@@YAEPAXIII@Z",
+          "address": "0x100b2850",
+          "object": "IcePruningEngine.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -206306,25 +206312,17 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsCollisionTests",
+        "falsification_recorded": true
       },
-      "next_packet": {
-        "owner_phase": 7,
-        "row_id": "phys_fn_004855",
-        "rva": "0x000b5140",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "driving_phases": [],
-        "requires_dependency_review": true
-      }
+      "next_packet": null
     },
     {
       "id": "phys_fn_004857",

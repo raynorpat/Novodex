@@ -147,6 +147,19 @@ Pruner* nxPruningEngineCreatePruner(udword type)
 	return null;
 }
 
+// phys_fn_004855 (0x000b5140): reserve the static pool and the pool selected
+// by the Scene's pruning mode. A zero requested count leaves that pool alone;
+// the oracle returns true even when either allocation request fails.
+__declspec(noinline) unsigned char nxSceneEngineReservePoolsCandidate(
+	void* engine, udword staticCapacity, udword dynamicCapacity, udword selectedType)
+{
+	if(staticCapacity && nxEnginePruner(engine, 0))
+		nxEnginePruner(engine, 0)->mPool.Reserve(staticCapacity);
+	if(dynamicCapacity && nxEnginePruner(engine, selectedType))
+		nxEnginePruner(engine, selectedType)->mPool.Reserve(dynamicCapacity);
+	return 1;
+}
+
 void nxPruningEngineDestroyPruner(Pruner* pruner)
 {
 	if(!pruner)

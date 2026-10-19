@@ -93,6 +93,7 @@ class PruningPool
 	public:
 								PruningPool();
 			bool				Resize();
+			bool				Reserve(udword capacity);
 			bool				AddObject(Prunable* object);
 			void				RemoveObject(Prunable* object);
 

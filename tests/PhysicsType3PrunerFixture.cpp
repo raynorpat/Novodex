@@ -37,6 +37,105 @@ struct NxType3TestOwner
 	unsigned updateCalls;
 };
 
+// Row 004855 is the Scene pruning engine's initial-capacity adapter. Keep its
+// oracle differential beside the existing private pruner fixture so both
+// sides use independently constructed pruners and the same allocator bridge.
+unsigned nxDrivePrunerPoolReserve(unsigned char* base)
+{
+	if(!nx2iFoundationBegin())
+		return 1;
+	NxType3TestAllocator allocator;
+	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator =
+		reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk =
+		*reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
+	NxType3SdkAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return 1;
+	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
+	const OracleFactoryFn oracleFactory =
+		reinterpret_cast<OracleFactoryFn>(base + 0x000b5090);
+	typedef unsigned char (__thiscall* OracleReserveFn)(void*, unsigned, unsigned, unsigned);
+	const OracleReserveFn oracleReserve =
+		reinterpret_cast<OracleReserveFn>(base + 0x000b5140);
+	unsigned mismatches = 0;
+	for(unsigned mode = 0; mode != 4; ++mode)
+		{
+		NxU8 oracleEngine[0x2c] = {};
+		NxU8 candidateEngine[0x2c] = {};
+		Pruner* candidatePruners[4] = {};
+		bool setupOkay = true;
+		for(unsigned type = 0; type != 4; ++type)
+			{
+			void* const oraclePruner = oracleFactory(type);
+			candidatePruners[type] = nxPruningEngineCreatePruner(type);
+			*reinterpret_cast<void**>(oracleEngine + 0x1c + type*4) = oraclePruner;
+			*reinterpret_cast<void**>(candidateEngine + 0x1c + type*4) = candidatePruners[type];
+			setupOkay = setupOkay && oraclePruner && candidatePruners[type];
+			}
+		if(!setupOkay)
+			{
+			++mismatches;
+			for(unsigned type = 0; type != 4; ++type)
+				{
+				void* const oraclePruner = *reinterpret_cast<void**>(oracleEngine + 0x1c + type*4);
+				if(oraclePruner)
+					{
+					void** const table = *reinterpret_cast<void***>(oraclePruner);
+					typedef void* (__thiscall* DeleteFn)(void*, unsigned);
+					reinterpret_cast<DeleteFn>(table[0])(oraclePruner, 1);
+					}
+				if(candidatePruners[type]) nxPruningEngineDestroyPruner(candidatePruners[type]);
+				}
+			continue;
+		}
+		const unsigned char oracleZero = oracleReserve(&oracleEngine, 0, 0, mode);
+		const unsigned char oracleFirst = oracleReserve(&oracleEngine, 8, 16, mode);
+		const unsigned char candidateFirst = nxSceneEngineReservePoolsCandidate(
+			&candidateEngine, 8, 16, mode);
+		const unsigned char oracleSecond = oracleReserve(&oracleEngine, 3, 5, mode);
+		const unsigned char candidateSecond = nxSceneEngineReservePoolsCandidate(
+			&candidateEngine, 3, 5, mode);
+		bool capacitiesMatch = oracleFirst == candidateFirst && oracleSecond == candidateSecond;
+		for(unsigned type = 0; type != 4; ++type)
+			{
+			const unsigned oracleCapacity = *reinterpret_cast<unsigned short*>(
+				static_cast<unsigned char*>(*reinterpret_cast<void**>(oracleEngine + 0x1c + type*4)) + 0x12);
+			const unsigned candidateCapacity = *reinterpret_cast<unsigned short*>(
+				reinterpret_cast<unsigned char*>(candidatePruners[type]) + 0x12);
+			const unsigned expected = type == 0 ? (mode == 0 ? 5u : 3u) :
+				(type == mode ? 5u : 0u);
+			capacitiesMatch = capacitiesMatch && oracleCapacity == candidateCapacity &&
+				candidateCapacity == expected;
+			}
+		if(!capacitiesMatch)
+			++mismatches;
+		mismatches += !oracleZero;
+		for(unsigned type = 0; type != 4; ++type)
+			{
+			void* const oraclePruner = *reinterpret_cast<void**>(oracleEngine + 0x1c + type*4);
+			void** const table = *reinterpret_cast<void***>(oraclePruner);
+			typedef void* (__thiscall* DeleteFn)(void*, unsigned);
+			reinterpret_cast<DeleteFn>(table[0])(oraclePruner, 1);
+			nxPruningEngineDestroyPruner(candidatePruners[type]);
+			}
+		}
+	printf("collision pruner_pool_reserve row=phys_fn_004855 cases=4 modes=0-3 capacities=matched mismatches=%u\n",
+		mismatches);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedFoundationAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+}
+
 static void __cdecl nxType3UpdateWorldAabb(void* owner, AABB* bounds)
 {
 	NxType3TestOwner* const testOwner = static_cast<NxType3TestOwner*>(owner);

@@ -4434,7 +4434,6 @@
     "phys_fn_004848",
     "phys_fn_004850",
     "phys_fn_004852",
-    "phys_fn_004855",
     "phys_fn_004857",
     "phys_fn_004859",
     "phys_fn_004861",
@@ -4453,14 +4452,14 @@
     "phys_fn_004886"
    ],
    "rows": {
-    "discovered": 19,
-    "dynamically_gated": 28,
+    "discovered": 18,
+    "dynamically_gated": 29,
     "reconstructed": 19,
     "statically_reviewed": 1
    },
    "bytes": {
-    "discovered": 2298,
-    "dynamically_gated": 3200,
+    "discovered": 2236,
+    "dynamically_gated": 3262,
     "reconstructed": 1514,
     "statically_reviewed": 20
    },

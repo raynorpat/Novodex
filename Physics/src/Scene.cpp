@@ -353,6 +353,8 @@ static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char*
 bool nxSceneEngineAddShape(void* engine, void* shape, unsigned type, unsigned section);
 bool nxSceneEngineRemoveShape(void* engine, void* shape);
 void nxSceneEngineSetExternalBuffer(void* engine, unsigned capacity, void* entries);
+unsigned char nxSceneEngineReservePoolsCandidate(void* engine, unsigned staticCapacity,
+	unsigned dynamicCapacity, unsigned selectedType);
 void nxShapeFactoryInstallPrunable(void* shape);
 bool nxShapeFactoryLoadBox(void* shape, const void* descriptor);
 // 002421 and 002411, keyed on the manager: BodyCreation.cpp's 000801 and
@@ -5410,6 +5412,11 @@ void nxSceneApplyDescriptorFlags(NxSceneInternal* scene, NxU32 broadPhase,
 		memcpy(engine + 0x58, unbounded, sizeof(unbounded));
 		*reinterpret_cast<NxU32*>(engine + 0x70) = 2;
 		}
+	// phys_fn_004855 receives the Scene's shape limits from +0x20/+0x24 and
+	// reserves the static pool and the selected dynamic pruner pool.
+	nxSceneEngineReservePoolsCandidate(engine,
+		*reinterpret_cast<NxU32*>(scene->bytes() + 0x20),
+		*reinterpret_cast<NxU32*>(scene->bytes() + 0x24), engineMode);
 	*reinterpret_cast<NxU32*>(engine + 0x74) = 0;
 	}
 

@@ -99,6 +99,35 @@ PruningPool::PruningPool()
 	mNbObjects[2]	= 0;
 }
 
+// phys_fn_005479 (0x000eff20): replace both arrays with exact-size storage.
+// The Scene pruning-engine adapter calls this before population when a
+// descriptor supplies static or dynamic shape limits. The oracle frees the
+// old arrays first, stores the new 16-bit capacity, then allocates boxes and
+// object pointers in that order without copying existing entries.
+__declspec(noinline) bool PruningPool::Reserve(udword capacity)
+{
+	if(!capacity)
+		return false;
+	if(mWorldBoxes)
+		{
+		nxGetSdkAllocator()->free(mWorldBoxes);
+		mWorldBoxes = null;
+		}
+	if(mObjects)
+		{
+		nxGetSdkAllocator()->free(mObjects);
+		mObjects = null;
+		}
+	mMaxNbObjects = uword(capacity);
+	mWorldBoxes = static_cast<AABB*>(nxGetSdkAllocator()->malloc(
+		sizeof(AABB) * capacity, NX_MEMORY_PERSISTENT));
+	if(!mWorldBoxes)
+		return false;
+	mObjects = static_cast<Prunable**>(nxGetSdkAllocator()->malloc(
+		sizeof(Prunable*) * capacity, NX_MEMORY_PERSISTENT));
+	return mObjects != null;
+}
+
 // phys_fn_005481 (0x000effc0, 252 B)
 // Grows only when full: the capacity doubles, or becomes 4. Both arrays are
 // allocated before either is copied (a failed second allocation returns

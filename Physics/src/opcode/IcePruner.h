@@ -144,6 +144,8 @@ static_assert(sizeof(Type3StaticPruner) == 0xa0,
 bool		nxPruningEngineAddObject(void* engine, Prunable* object);
 bool		nxPruningEngineRemoveObject(void* engine, Prunable* object);
 Pruner*		nxPruningEngineCreatePruner(udword type);
+unsigned char	nxSceneEngineReservePoolsCandidate(void* engine, udword staticCapacity,
+					udword dynamicCapacity, udword selectedType);
 // Destroys a pruner the engine created (its destructor, then its storage).
 void		nxPruningEngineDestroyPruner(Pruner* pruner);
 // Scene destructor row 001963 snapshots and deletes owners in the static and
