@@ -8,6 +8,7 @@ extern "C" void __cdecl nxMeshHeightfieldContact(const NxCollisionShape*,
 #include "NxMeshContactHelpers.h"
 #include "NxUtilities.h"
 #include "Opcode.h"
+#include "NovodexTreeColliderCallback.h"
 
 #include <float.h>
 #include <math.h>
@@ -418,202 +419,17 @@ static void nxMeshMeshTriangleBounds(const Opcode::MeshInterface* mesh, unsigned
 		}
 	}
 
-static bool nxMeshMeshObbOverlap(const NxCollisionShape* shape0, const float bounds0[6],
-	const NxCollisionShape* shape1, const float bounds1[6])
+// The callback phys_fn_001876 hands phys_fn_004982: phys_fn_001874 over the two
+// nodes' boxes (centre then extents), which are the first six floats of a node.
+static void __cdecl nxMeshMeshWalkCallback(const Opcode::AABBNoLeafNode* node0,
+	const Opcode::AABBNoLeafNode* node1)
 	{
-	float center[2][3], extent[2][3], axis[2][3][3];
-	const NxCollisionShape* shapes[2] = { shape0, shape1 };
-	const float* bounds[2] = { bounds0, bounds1 };
-	for(unsigned side = 0; side < 2; ++side)
-		{
-		for(unsigned i = 0; i < 3; ++i)
-			{
-			center[side][i] = shapes[side]->translation[i];
-			for(unsigned j = 0; j < 3; ++j)
-				center[side][i] += shapes[side]->rotation[3 * i + j] * bounds[side][j];
-			}
-		for(unsigned i = 0; i < 3; ++i)
-			{
-			extent[side][i] = bounds[side][i + 3];
-			for(unsigned j = 0; j < 3; ++j)
-				axis[side][i][j] = shapes[side]->rotation[3 * j + i];
-			}
-		}
-	float relative[3][3], absolute[3][3], translation[3];
-	for(unsigned i = 0; i < 3; ++i)
-		for(unsigned j = 0; j < 3; ++j)
-			{
-			relative[i][j] = axis[0][i][0] * axis[1][j][0] +
-				axis[0][i][1] * axis[1][j][1] + axis[0][i][2] * axis[1][j][2];
-			absolute[i][j] = fabsf(relative[i][j]);
-			}
-	for(unsigned i = 0; i < 3; ++i)
-		{
-		const float delta[3] = { center[1][0] - center[0][0], center[1][1] - center[0][1], center[1][2] - center[0][2] };
-		translation[i] = delta[0] * axis[0][i][0] + delta[1] * axis[0][i][1] + delta[2] * axis[0][i][2];
-		const float radius1 = extent[1][0] * absolute[i][0] + extent[1][1] * absolute[i][1] + extent[1][2] * absolute[i][2];
-		if(fabsf(translation[i]) > extent[0][i] + radius1) return false;
-		}
-	for(unsigned j = 0; j < 3; ++j)
-		{
-		const float projected = fabsf(translation[0] * relative[0][j] +
-			translation[1] * relative[1][j] + translation[2] * relative[2][j]);
-		const float radius0 = extent[0][0] * absolute[0][j] +
-			extent[0][1] * absolute[1][j] + extent[0][2] * absolute[2][j];
-		if(projected > radius0 + extent[1][j]) return false;
-		}
-	for(unsigned i = 0; i < 3; ++i)
-		for(unsigned j = 0; j < 3; ++j)
-			{
-		const unsigned i1 = (i + 1) % 3, i2 = (i + 2) % 3;
-		const unsigned j1 = (j + 1) % 3, j2 = (j + 2) % 3;
-		const float projected = fabsf(translation[i2] * relative[i1][j] - translation[i1] * relative[i2][j]);
-		const float radius0 = extent[0][i1] * absolute[i2][j] + extent[0][i2] * absolute[i1][j];
-		const float radius1 = extent[1][j1] * absolute[i][j2] + extent[1][j2] * absolute[i][j1];
-		if(projected > radius0 + radius1) return false;
-		}
-	return true;
-	}
-
-struct NxMeshMeshNodeRef
-	{
-	const Opcode::AABBNoLeafNode* node;
-	bool leaf;
-	unsigned triangle;
-	};
-
-struct NxMeshMeshTriBoxProbe : Opcode::AABBTreeCollider
-	{
-	bool overlap(const IceMaths::Point& v0, const IceMaths::Point& v1, const IceMaths::Point& v2,
-		const IceMaths::Point& center, const IceMaths::Point& extents)
-		{
-		mLeafVerts[0] = v0;
-		mLeafVerts[1] = v1;
-		mLeafVerts[2] = v2;
-		return TriBoxOverlap(center, extents) != FALSE;
-		}
-	bool trianglesOverlap(const IceMaths::Point& a0, const IceMaths::Point& a1, const IceMaths::Point& a2,
-		const IceMaths::Point& b0, const IceMaths::Point& b1, const IceMaths::Point& b2)
-		{
-		mLeafVerts[0] = a0;
-		mLeafVerts[1] = a1;
-		mLeafVerts[2] = a2;
-		return TriTriOverlap(a0, a1, a2, b0, b1, b2) != FALSE;
-		}
-	};
-
-static IceMaths::Point nxMeshMeshTransformPoint(const NxCollisionShape* source,
-	const NxCollisionShape* destination, const IceMaths::Point& point)
-	{
-	float world[3];
-	for(unsigned row = 0; row < 3; ++row)
-		world[row] = source->translation[row]
-			+ source->rotation[3 * row] * point.x
-			+ source->rotation[3 * row + 1] * point.y
-			+ source->rotation[3 * row + 2] * point.z;
-	IceMaths::Point local;
-	local.x = destination->rotation[0] * (world[0] - destination->translation[0])
-		+ destination->rotation[3] * (world[1] - destination->translation[1])
-		+ destination->rotation[6] * (world[2] - destination->translation[2]);
-	local.y = destination->rotation[1] * (world[0] - destination->translation[0])
-		+ destination->rotation[4] * (world[1] - destination->translation[1])
-		+ destination->rotation[7] * (world[2] - destination->translation[2]);
-	local.z = destination->rotation[2] * (world[0] - destination->translation[0])
-		+ destination->rotation[5] * (world[1] - destination->translation[1])
-		+ destination->rotation[8] * (world[2] - destination->translation[2]);
-	return local;
-	}
-
-static bool nxMeshMeshTriangleBoxOverlap(const NxCollisionShape* triangleShape,
-	const Opcode::Model* triangleModel, unsigned triangle, const NxCollisionShape* boxShape,
-	const Opcode::AABBNoLeafNode* boxNode, NxMeshMeshTriBoxProbe& probe)
-	{
-	Opcode::VertexPointers vertices;
-	triangleModel->GetMeshInterface()->GetTriangle(vertices, triangle);
-	const IceMaths::Point v0 = nxMeshMeshTransformPoint(triangleShape, boxShape, *vertices.Vertex[0]);
-	const IceMaths::Point v1 = nxMeshMeshTransformPoint(triangleShape, boxShape, *vertices.Vertex[1]);
-	const IceMaths::Point v2 = nxMeshMeshTransformPoint(triangleShape, boxShape, *vertices.Vertex[2]);
-	return probe.overlap(v0, v1, v2, boxNode->mAABB.mCenter, boxNode->mAABB.mExtents);
-	}
-
-static bool nxMeshMeshTrianglesOverlap(const NxCollisionShape* shape0, const Opcode::Model* model0, unsigned triangle0,
-	const NxCollisionShape* shape1, const Opcode::Model* model1, unsigned triangle1,
-	NxMeshMeshTriBoxProbe& probe)
-	{
-	Opcode::VertexPointers vertices0, vertices1;
-	model0->GetMeshInterface()->GetTriangle(vertices0, triangle0);
-	model1->GetMeshInterface()->GetTriangle(vertices1, triangle1);
-	const IceMaths::Point a0 = *vertices0.Vertex[0];
-	const IceMaths::Point a1 = *vertices0.Vertex[1];
-	const IceMaths::Point a2 = *vertices0.Vertex[2];
-	const IceMaths::Point b0 = nxMeshMeshTransformPoint(shape1, shape0, *vertices1.Vertex[0]);
-	const IceMaths::Point b1 = nxMeshMeshTransformPoint(shape1, shape0, *vertices1.Vertex[1]);
-	const IceMaths::Point b2 = nxMeshMeshTransformPoint(shape1, shape0, *vertices1.Vertex[2]);
-	return probe.trianglesOverlap(a0, a1, a2, b0, b1, b2);
-	}
-
-static NxMeshMeshNodeRef nxMeshMeshChild(const NxMeshMeshNodeRef& parent, bool positive)
-	{
-	NxMeshMeshNodeRef child;
-	const bool leaf = positive ? parent.node->HasPosLeaf() : parent.node->HasNegLeaf();
-	child.leaf = leaf != 0;
-	child.node = child.leaf ? 0 : (positive ? parent.node->GetPos() : parent.node->GetNeg());
-	child.triangle = child.leaf ? (positive ? parent.node->GetPosPrimitive() : parent.node->GetNegPrimitive()) : 0;
-	return child;
-	}
-
-static bool nxMeshMeshTraverseNoLeaf(const NxCollisionShape* shape0, const NxCollisionShape* shape1,
-	const Opcode::Model* model0, const Opcode::Model* model1,
-	const NxMeshMeshNodeRef& node0, const NxMeshMeshNodeRef& node1, int depth,
-	bool& contactFound, NxMeshMeshTriBoxProbe& probe)
-	{
-	if(depth < -64) return false;
-	float bounds0[6], bounds1[6];
-	if(node0.leaf) nxMeshMeshTriangleBounds(model0->GetMeshInterface(), node0.triangle, bounds0);
-	else
-		{
-		const Opcode::CollisionAABB& box = node0.node->mAABB;
-		bounds0[0] = box.mCenter.x; bounds0[1] = box.mCenter.y; bounds0[2] = box.mCenter.z;
-		bounds0[3] = box.mExtents.x; bounds0[4] = box.mExtents.y; bounds0[5] = box.mExtents.z;
-		}
-	if(node1.leaf) nxMeshMeshTriangleBounds(model1->GetMeshInterface(), node1.triangle, bounds1);
-	else
-		{
-		const Opcode::CollisionAABB& box = node1.node->mAABB;
-		bounds1[0] = box.mCenter.x; bounds1[1] = box.mCenter.y; bounds1[2] = box.mCenter.z;
-		bounds1[3] = box.mExtents.x; bounds1[4] = box.mExtents.y; bounds1[5] = box.mExtents.z;
-		}
-	if(node0.leaf && node1.leaf)
-		{
-		if(nxMeshMeshTrianglesOverlap(shape0, model0, node0.triangle, shape1, model1, node1.triangle, probe))
-			contactFound = true;
-		return depth == 0 && contactFound && nxMeshMeshSphereCallback(bounds0, bounds1);
-		}
-	if(!nxMeshMeshObbOverlap(shape0, bounds0, shape1, bounds1)) return false;
-	if(node0.leaf && !node1.leaf
-		&& nxMeshMeshTriangleBoxOverlap(shape0, model0, node0.triangle, shape1, node1.node, probe))
-		contactFound = true;
-	if(!node0.leaf && node1.leaf
-		&& nxMeshMeshTriangleBoxOverlap(shape1, model1, node1.triangle, shape0, node0.node, probe))
-		contactFound = true;
-	const unsigned count0 = node0.leaf ? 1 : 2;
-	const unsigned count1 = node1.leaf ? 1 : 2;
-	for(unsigned i = 0; i < count0; ++i)
-		for(unsigned j = 0; j < count1; ++j)
-			{
-			const NxMeshMeshNodeRef child0 = node0.leaf ? node0 : nxMeshMeshChild(node0, i == 0);
-			const NxMeshMeshNodeRef child1 = node1.leaf ? node1 : nxMeshMeshChild(node1, j == 0);
-			if(nxMeshMeshTraverseNoLeaf(shape0, shape1, model0, model1, child0, child1,
-				depth - 1, contactFound, probe))
-				return true;
-			}
-	return depth == 0 && contactFound && nxMeshMeshSphereCallback(bounds0, bounds1);
+	nxMeshMeshSphereCallback((const float*) &node0->mAABB, (const float*) &node1->mAABB);
 	}
 
 // phys_fn_001876 (0x00046ab0), matrix A [MESH][MESH]. For the common
-// unquantized no-leaf format, traverse the transformed trees, mark a hit only
-// after triangle/triangle or triangle/node SAT succeeds, then invoke 001874 on
-// the root bounds as the oracle does when the contact bit reaches depth zero.
+// unquantized no-leaf format, run phys_fn_004982's depth-zero walk over the two
+// trees, which invokes 001874 on the root bounds once a triangle pair touches.
 // Other Opcode tree layouts use the vendored collider's primitive pairs. The
 // accumulated callback data is reduced to the four extremal points before emission.
 void __cdecl NxContactMeshMesh(const NxCollisionShape* shape0,
@@ -683,11 +499,11 @@ void __cdecl NxContactMeshMesh(const NxCollisionShape* shape0,
 		const Opcode::AABBNoLeafTree* tree1 = (const Opcode::AABBNoLeafTree*) model1->GetTree();
 		if(tree0->GetNbNodes() && tree1->GetNbNodes())
 			{
-			NxMeshMeshNodeRef root0 = { tree0->GetNodes(), false, 0 };
-			NxMeshMeshNodeRef root1 = { tree1->GetNodes(), false, 0 };
-			NxMeshMeshTriBoxProbe probe;
-			bool contactFound = false;
-			nxMeshMeshTraverseNoLeaf(shape0, shape1, model0, model1, root0, root1, 0, contactFound, probe);
+			// phys_fn_004982 with depth zero; the oracle clears the first-contact bit
+			// of the collider it keeps in the contact context before the call.
+			Opcode::NxCallbackTreeCollider walker;
+			walker.SetFirstContact(false);
+			walker.CollideNoLeafCallback(nxMeshMeshWalkCallback, 0, model0, model1, &world0, &world1);
 			}
 		}
 	else

@@ -4743,13 +4743,13 @@
     "phys_fn_005357"
    ],
    "rows": {
-    "discovered": 57,
-    "dynamically_gated": 6,
+    "discovered": 53,
+    "dynamically_gated": 10,
     "reconstructed": 179
    },
    "bytes": {
-    "discovered": 40071,
-    "dynamically_gated": 215,
+    "discovered": 14458,
+    "dynamically_gated": 25828,
     "reconstructed": 169465
    },
    "phases": {

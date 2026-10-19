@@ -1,0 +1,25 @@
+# One-line edits to Physics/src/opcode/NovodexTreeColliderCallback.cpp, applied one at a time to a copy of
+# the committed file, rebuilt (NxPhysicsThirdPartyTests) and run against the pinned oracle; the file is
+# restored between runs. (old text, new text, occurrence) per name. Results: summary.json inside mutants.log.gz.
+muts = {
+ 'm4967_boxreject': ('\tif(!TriBoxOverlap(b->mAABB.mCenter, b->mAABB.mExtents)) return;', '\tTriBoxOverlap(b->mAABB.mCenter, b->mAABB.mExtents);', 0),
+ 'm4967_depth': ('else CollideTriBoxCallback(b->GetPos(), callback, depth - 1, node0);', 'else CollideTriBoxCallback(b->GetPos(), callback, depth, node0);', 0),
+ 'm4967_leafflag': ('if(StepDone(callback, depth, node0, b, b->HasPosLeaf() != 0)) return;', 'if(StepDone(callback, depth, node0, b, false)) return;', 0),
+ 'm4967_negleaf': ('TriTestCallback(mIMesh1, b->GetNegPrimitive());\n\telse CollideTriBoxCallback(b->GetNeg(), callback, depth - 1, node0);', 'TriTestCallback(mIMesh1, b->GetPosPrimitive());\n\telse CollideTriBoxCallback(b->GetNeg(), callback, depth - 1, node0);', 0),
+ 'm4969_cbargs': ('if(StepDone(callback, depth, a, node1, a->HasPosLeaf() != 0)) return;', 'if(StepDone(callback, depth, node1, a, a->HasPosLeaf() != 0)) return;', 0),
+ 'm4969_depth': ('else CollideBoxTriCallback(a->GetNeg(), callback, depth - 1, node1);', 'else CollideBoxTriCallback(a->GetNeg(), callback, depth, node1);', 0),
+ 'm4969_leafflag': ('StepDone(callback, depth, a, node1, a->HasNegLeaf() != 0);', 'StepDone(callback, depth, a, node1, true);', 0),
+ 'm4969_reject': ('\tif(!TriBoxOverlap(a->mAABB.mCenter, a->mAABB.mExtents)) return;', '\tTriBoxOverlap(a->mAABB.mCenter, a->mAABB.mExtents);', 0),
+ 'm4971_depth': ('else CollideCallback(a->GetNeg(), b->GetNeg(), callback, depth - 1);', 'else CollideCallback(a->GetNeg(), b->GetNeg(), callback, depth);', 0),
+ 'm4971_rot': ('FetchLeaf(mIMesh0, a->GetPosPrimitive(), mR0to1, mT0to1);', 'FetchLeaf(mIMesh0, a->GetPosPrimitive(), mR1to0, mT1to0);', 0),
+ 'm4971_stepflag': ('if(StepDone(callback, depth, a, b, bNegLeaf)) return;', 'if(StepDone(callback, depth, a, b, !bNegLeaf)) return;', 0),
+ 'm4971_ud': ('else CollideTriBoxCallback(b->GetPos(), callback, depth - 1, a);', 'else CollideTriBoxCallback(b->GetPos(), callback, depth - 1, b);', 0),
+ 'm4971_boxbox': ('if(!BoxBoxOverlap(a->mAABB.mExtents, a->mAABB.mCenter, b->mAABB.mExtents, b->mAABB.mCenter)) return;', 'if(!BoxBoxOverlap(b->mAABB.mExtents, b->mAABB.mCenter, a->mAABB.mExtents, a->mAABB.mCenter)) return;', 0),
+ 'm4971_fetchb': ('FetchLeaf(mIMesh1, b->GetNegPrimitive(), mR1to0, mT1to0);', 'FetchLeaf(mIMesh1, b->GetNegPrimitive(), mR0to1, mT0to1);', 0),
+ 'm4982_hasleaf0': ('if(model0->HasLeafNodes() ||', 'if(', 0),
+ 'm4982_quant0': ('|| model0->IsQuantized() ||', '||', 0),
+ 'm4982_hasleaf1': ('|| model1->HasLeafNodes() ||', '||', 0),
+ 'm4982_quant1': ('|| model1->IsQuantized())', '|| false)', 0),
+ 'm4982_worlds': ('InitQuery(world0, world1);', 'InitQuery(world1, world0);', 0),
+ 'm4982_null': ('if(!mIMesh0 || !mIMesh1) return false;', 'if(!mIMesh0 && !mIMesh1) return false;', 0),
+}

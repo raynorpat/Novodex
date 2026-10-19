@@ -94334,14 +94334,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1891",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/16745",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "IDA at RVA 0x000ca5a0 (thiscall: this, tree-1 node, callback, depth, tree-0 node). It adds one to the BV/primitive test count at this+0x30, runs the stock triangle/box separating-axis test of the leaf slot at this+0xe8 against the node box (class III axes behind this+0x111), and for each child either recurses with depth-1 or reads the triangle straight out of the mesh at this+0x24 (index array +8, vertex array +0xc, stride 12), runs the inlined triangle/triangle interval test with the 1e-6 clamp and CoplanarTriTri (0x000ba8e0), and sets OPC_CONTACT without recording a pair. After each child it stops once depth is below one and a contact is set, reporting (tree-0 node, this node) when depth is exactly zero; with a positive depth a leaf test that leaves a contact set reports and the walk goes on.",
+      "dynamic_proof": "driven and gated: the transcript lines 'thirdparty name=opcode_treecollider_callback_tribox' and 'thirdparty name=opcode_treecollider_callback_tribox_boundary' are registered coverage assertions in tools/gate_targets.ps1. The exact family is 0 mismatches against the pinned oracle; the _boundary family (queries on the flat grid, which the oracle's separately associated inline copies of the triangle test decide differently in the last bit, and the degenerate set against a rotated twin of itself) is held by a recorded ceiling. A mutation aimed at this row is rejected (mismatches=1). See evidence/phase4-treecollider-callback-walk.md.",
+      "notes": "Reconstructed as NovodeX's depth-limited callback instantiation of the OPCODE no-leaf walk (not a stock OPCODE function) in NxCallbackTreeCollider, which derives from AABBTreeCollider for access to its protected state and adds no data.",
+      "third_party": "opcode",
+      "implementation": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
+      "implementation_symbol": "?CollideTriBoxCallback@NxCallbackTreeCollider@Opcode@@QAEXPBVAABBNoLeafNode@2@P6AX00@ZH0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?CollideTriBoxCallback@NxCallbackTreeCollider@Opcode@@QAEXPBVAABBNoLeafNode@2@P6AX00@ZH0@Z",
+        "address": "0x100b4b70",
+        "object": "NovodexTreeColliderCallback.obj"
+      }
     },
     {
       "id": "phys_fn_004968",
@@ -94371,14 +94379,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1892",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/16832",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "IDA at RVA 0x000cbe50: byte-for-byte the mirror of 0x000ca5a0 with the two trees exchanged. Its leaf reads come from the mesh at this+0x20, and its callback receives (this node, tree-1 node) where 0x000ca5a0 passes (tree-0 node, this node). Same depth rules, same contact-only flag, no pair recorded.",
+      "dynamic_proof": "driven and gated: the transcript lines 'thirdparty name=opcode_treecollider_callback_boxtri' and 'thirdparty name=opcode_treecollider_callback_boxtri_boundary' are registered coverage assertions in tools/gate_targets.ps1. The exact family is 0 mismatches against the pinned oracle; the _boundary family (queries on the flat grid, which the oracle's separately associated inline copies of the triangle test decide differently in the last bit, and the degenerate set against a rotated twin of itself) is held by a recorded ceiling. A mutation aimed at this row is rejected (mismatches=364). See evidence/phase4-treecollider-callback-walk.md.",
+      "notes": "Reconstructed as NovodeX's depth-limited callback instantiation of the OPCODE no-leaf walk (not a stock OPCODE function) in NxCallbackTreeCollider, which derives from AABBTreeCollider for access to its protected state and adds no data.",
+      "third_party": "opcode",
+      "implementation": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
+      "implementation_symbol": "?CollideBoxTriCallback@NxCallbackTreeCollider@Opcode@@QAEXPBVAABBNoLeafNode@2@P6AX00@ZH0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?CollideBoxTriCallback@NxCallbackTreeCollider@Opcode@@QAEXPBVAABBNoLeafNode@2@P6AX00@ZH0@Z",
+        "address": "0x100b3800",
+        "object": "NovodexTreeColliderCallback.obj"
+      }
     },
     {
       "id": "phys_fn_004970",
@@ -94408,14 +94424,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1893",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/16919",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "IDA at RVA 0x000cd700 (thiscall: this, tree-0 node, tree-1 node, callback, depth). It is the no-leaf tree-vs-tree walk of OPC_TreeCollider.cpp with the depth and callback added: the stock box/box test (first query at full strength), the four child combinations in stock order including the stock _CollideBoxTri(a->GetPos()) call for both of b's leaves, the leaf slot filled from the mesh at this+0x20 or +0x24 through the rotation at this+0x58 or +0x7c, the inline leaf/leaf triangle test, and the same depth-and-contact stop after every child step, with callback(a, b) at depth zero.",
+      "dynamic_proof": "driven and gated: the transcript lines 'thirdparty name=opcode_treecollider_callback_collide' and 'thirdparty name=opcode_treecollider_callback_collide_boundary' are registered coverage assertions in tools/gate_targets.ps1. The exact family is 0 mismatches against the pinned oracle; the _boundary family (queries on the flat grid, which the oracle's separately associated inline copies of the triangle test decide differently in the last bit, and the degenerate set against a rotated twin of itself) is held by a recorded ceiling. A mutation aimed at this row is rejected (mismatches=254). See evidence/phase4-treecollider-callback-walk.md.",
+      "notes": "Reconstructed as NovodeX's depth-limited callback instantiation of the OPCODE no-leaf walk (not a stock OPCODE function) in NxCallbackTreeCollider, which derives from AABBTreeCollider for access to its protected state and adds no data.",
+      "third_party": "opcode",
+      "implementation": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
+      "implementation_symbol": "?CollideCallback@NxCallbackTreeCollider@Opcode@@QAEXPBVAABBNoLeafNode@2@0P6AX00@ZH@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?CollideCallback@NxCallbackTreeCollider@Opcode@@QAEXPBVAABBNoLeafNode@2@0P6AX00@ZH@Z",
+        "address": "0x100b40f0",
+        "object": "NovodexTreeColliderCallback.obj"
+      }
     },
     {
       "id": "phys_fn_004972",
@@ -94622,14 +94646,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1899",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17092",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "IDA at RVA 0x000d12b0 (thiscall: this, callback, depth, model 0, model 1, world 0, world 1). It stores each model's mesh interface at this+0x20/0x24, refuses a null interface or any model that has leaf nodes or is quantized, runs InitQuery (0x000bb590) on the two worlds, and enters 0x000cd700 on the two trees' node arrays. Its only caller is phys_fn_001876 (0x00046ab0), which passes phys_fn_001874 as the callback and depth zero.",
+      "dynamic_proof": "driven and gated: the transcript lines 'thirdparty name=opcode_treecollider_callback' and 'thirdparty name=opcode_treecollider_callback_boundary' are registered coverage assertions in tools/gate_targets.ps1. The exact family is 0 mismatches against the pinned oracle; the _boundary family (queries on the flat grid, which the oracle's separately associated inline copies of the triangle test decide differently in the last bit, and the degenerate set against a rotated twin of itself) is held by a recorded ceiling. A mutation aimed at this row is rejected (mismatches=1). See evidence/phase4-treecollider-callback-walk.md.",
+      "notes": "Reconstructed as NovodeX's depth-limited callback instantiation of the OPCODE no-leaf walk (not a stock OPCODE function) in NxCallbackTreeCollider, which derives from AABBTreeCollider for access to its protected state and adds no data.",
+      "third_party": "opcode",
+      "implementation": "Physics/src/opcode/NovodexTreeColliderCallback.cpp",
+      "implementation_symbol": "?CollideNoLeafCallback@NxCallbackTreeCollider@Opcode@@QAE_NP6AXPBVAABBNoLeafNode@2@0@ZHPBVModel@2@2PBVMatrix4x4@IceMaths@@3@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?CollideNoLeafCallback@NxCallbackTreeCollider@Opcode@@QAE_NP6AXPBVAABBNoLeafNode@2@0@ZHPBVModel@2@2PBVMatrix4x4@IceMaths@@3@Z",
+        "address": "0x100b4ae0",
+        "object": "NovodexTreeColliderCallback.obj"
+      }
     },
     {
       "id": "phys_fn_004983",

@@ -37,6 +37,7 @@
 
 #include "Opcode.h"
 #include "IcePrunable.h"
+#include "NovodexTreeColliderCallback.h"
 #include "QhullHost.h"
 
 
@@ -388,6 +389,10 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "opcode_ray_x87", 194, 0, 377, 0, 21, 0, 0, 377ull, 5.1409006118774414e-07 },	// distances and barycentrics only
 	{ "opcode_ray_boundary", 927, 756, 1065353216, 0, 68, 0, 0, 1065353216ull, 8.2039852142333984 },	// one root rejection; the tape is 4 words shorter
 	{ "opcode_treecollider_boundary", 684, 671, 0, 0, 0, 0, 0, 0, 0.0 },	// pair verdicts; the tape is 14 words shorter
+	{ "opcode_treecollider_callback_boundary", 19486, 19471, 0, 0, 0, 0, 0, 0, 0.0 },	// 004982: grid and twin-rotation queries; verdict flips shift the rest of the tape (+16 words)
+	{ "opcode_treecollider_callback_collide_boundary", 3785, 3107, 0xffffffffu, 0, 675, 329, 0, 1077936128ull, 4.75 },	// 004971: the same queries entered at a node pair (+4 words)
+	{ "opcode_treecollider_callback_tribox_boundary", 1286, 655, 0xffffffffu, 0, 630, 321, 0, 1071644672ull, 5.75 },	// 004967 (-2 words)
+	{ "opcode_treecollider_callback_boxtri_boundary", 325, 165, 0xffffffffu, 0, 160, 83, 0, 1082130432ull, 7.0 },	// 004969 (same length)
 	{ "ice_plane_triangle", 947, 0, 2820, 0, 39, 0, 122, 2820ull, 8.3446502685546875e-07 },	// 29 zero-area inputs are `degenerate`
 	{ "ice_matrix4x4", 1815, 0, 106, 0, 109, 0, 19, 106ull, 0.00128173828125 },	// 17 singular inputs are `degenerate`
 	{ "ice_obb", 1204, 0, 512, 0, 72, 0, 0, 512ull, 2.384185791015625e-07 },
@@ -426,6 +431,10 @@ struct NxLengthCeiling
 
 static const NxLengthCeiling kLengthCeilings[] =
 	{
+	{ "opcode_treecollider_callback_boundary", 16 },
+	{ "opcode_treecollider_callback_collide_boundary", 4 },
+	{ "opcode_treecollider_callback_tribox_boundary", -2 },
+	{ "opcode_treecollider_callback_boxtri_boundary", 0 },
 	{ "qhull_paths", 0 },
 	{ "qhull_paths_x87", 0 },
 	};
@@ -2584,6 +2593,7 @@ static const unsigned kOpcPlanesCollide		= 0x000e2b60;	// phys_fn_005138
 static const unsigned kOpcTreeColliderCtor	= 0x000bb510;
 static const unsigned kOpcTreeColliderDtor	= 0x000bb550;
 static const unsigned kOpcTreeColliderBVT	= 0x000d13c0;	// phys_fn_004986
+static const unsigned kOpcTreeColliderCallback	= 0x000d12b0;	// phys_fn_004982
 static const unsigned kOpcSapCtor			= 0x000e7180;
 static const unsigned kOpcSapDtor			= 0x000e71b0;
 static const unsigned kOpcSapInit			= 0x000e6ca0;	// phys_fn_005283
@@ -4051,6 +4061,344 @@ static void nxDriveTreeCollider(const NxOracleRows& o, bool selfOnly)
 	}
 
 //////////////////////////////////////////////////////////////////////////////
+// The depth-limited, callback-reporting no-leaf walk (phys_fn_004982 and the
+// rows under it: 004971, 004967, 004969). Both sides run on the oracle's
+// models; the tape holds every callback's node pair in order, so a walk that
+// stops one step early or late, or reports from the wrong level, shows up.
+//
+// Queries that involve the flat grid (mesh 2) are the boundary family: the
+// grid's vertices line up with the other meshes' on the same x and y lines, so
+// the triangle/triangle verdict there is the last bit of sums that each
+// inlined copy of the test in the image associates differently (the
+// opcode_treecollider_boundary family has the same cause, on the first
+// instantiation). They go on tapes of their own, bounded by a recorded
+// ceiling; every other query is exact.
+
+typedef bool (__thiscall* NxCallbackQueryFn)(void*, NxTreeNodeCallback, int, const void*, const void*,
+	const Matrix4x4*, const Matrix4x4*);
+typedef void (__thiscall* NxInitQueryFn)(void*, const Matrix4x4*, const Matrix4x4*);
+typedef void (__thiscall* NxCollideRowFn)(void*, const AABBNoLeafNode*, const AABBNoLeafNode*, NxTreeNodeCallback, int);
+typedef void (__thiscall* NxLeafRowFn)(void*, const AABBNoLeafNode*, NxTreeNodeCallback, int, const AABBNoLeafNode*);
+static const unsigned kOpcTreeColliderInitQuery	= 0x000bb590;	// phys_fn_004944
+static const unsigned kOpcTreeCallbackCollide	= 0x000cd700;	// phys_fn_004971
+static const unsigned kOpcTreeCallbackTriBox	= 0x000ca5a0;	// phys_fn_004967
+static const unsigned kOpcTreeCallbackBoxTri	= 0x000cbe50;	// phys_fn_004969
+
+static NxTape* gCallbackTape;
+static const AABBNoLeafNode* gCallbackBase0;
+static const AABBNoLeafNode* gCallbackBase1;
+static void __cdecl nxRecordNodePair(const AABBNoLeafNode* node0, const AABBNoLeafNode* node1)
+	{
+	gCallbackTape->push((udword) (node0 - gCallbackBase0));
+	gCallbackTape->push((udword) (node1 - gCallbackBase1));
+	}
+
+// The degenerate set against a rotated copy of itself is the other measured
+// case: every box and triangle has an exact twin, so each verdict is a tie.
+static bool nxCallbackBoundary(int a, int b, int placement)
+	{
+	return a == gModelIndex[2][1] || b == gModelIndex[2][1]
+		|| (a == b && a == gModelIndex[3][1] && placement == 2);
+	}
+
+// One side of one query, onto the exact or the boundary tape. The oracle's
+// collider is raw storage built by the oracle's constructor; the candidate's is
+// the derived class, which has the same layout (checked in main).
+static NxTape& nxCallbackTape(bool boundary, int side)
+	{
+	return boundary ? (side == 0 ? gOracleTapeB : gCandidateTapeB) : (side == 0 ? gOracleTape : gCandidateTape);
+	}
+
+static void nxTapeCallbackState(NxTape& tape, const AABBTreeCollider* tc, const NxTape& callbacks)
+	{
+	tape.push(tc->GetContactStatus() ? 1u : 0u);
+	tape.push(tc->GetNbBVBVTests());
+	tape.push(tc->GetNbBVPrimTests());
+	tape.push(tc->GetNbPrimPrimTests());
+	tape.push(callbacks.count / 2);
+	for(unsigned i = 0; i < callbacks.count; ++i)
+		tape.push(callbacks.words[i]);
+	}
+
+static void nxTreeColliderCallbackQuery(const NxOracleRows& o, const NxTreeQuery& q, int depth, bool selfOnly)
+	{
+	const bool boundary = nxCallbackBoundary(q.a, q.b, q.placement);
+	for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+		{
+		NxTape& tape = nxCallbackTape(boundary, side);
+		const Model* model0 = (const Model*) gModels[q.a].oracle;
+		const Model* model1 = (const Model*) gModels[q.b].oracle;
+		const bool walkable = !model0->HasLeafNodes() && !model1->HasLeafNodes()
+			&& !model0->IsQuantized() && !model1->IsQuantized();
+		gCallbackBase0 = walkable ? ((const AABBNoLeafTree*) model0->GetTree())->GetNodes() : 0;
+		gCallbackBase1 = walkable ? ((const AABBNoLeafTree*) model1->GetTree())->GetNodes() : 0;
+		void* object;
+		if(side == 0)
+			{
+			object = nxOracleAlloc(sizeof(AABBTreeCollider));
+			((NxCtorFn) nxAt(o, kOpcTreeColliderCtor))(object);
+			}
+		else
+			object = new NxCallbackTreeCollider;
+		AABBTreeCollider* tc = (AABBTreeCollider*) object;
+		tc->SetFullBoxBoxTest((q.setting & 1) != 0);
+		tc->SetFullPrimBoxTest((q.setting & 2) != 0);
+		tc->SetFirstContact((q.setting & 4) != 0);
+		static NxTape callbacks;
+		callbacks.reset();
+		gCallbackTape = &callbacks;
+		const bool returned = side == 0
+			? ((NxCallbackQueryFn) nxAt(o, kOpcTreeColliderCallback))(object, nxRecordNodePair, depth, model0, model1,
+				&q.w0, q.placement ? &q.w1 : 0)
+			: ((NxCallbackTreeCollider*) object)->CollideNoLeafCallback(nxRecordNodePair, depth, model0, model1,
+				&q.w0, q.placement ? &q.w1 : 0);
+		nxTapeCollider(tape, returned, object);
+		tape.push(tc->GetNbPairs());
+		nxTapeCallbackState(tape, tc, callbacks);
+		if(side == 0)
+			{
+			((NxDtorFn) nxAt(o, kOpcTreeColliderDtor))(object);
+			nxOracleFree(object, sizeof(AABBTreeCollider));
+			}
+		else
+			delete (NxCallbackTreeCollider*) object;
+		}
+	}
+
+static void nxReportCallbackFamily(const char* name, const char* nameBoundary, const char* rva, const char* owner,
+	bool selfOnly)
+	{
+	static const char* const kSources =
+		"NovodexTreeColliderCallback.cpp,OPC_TriTriOverlap.h,OPC_TriBoxOverlap.h,OPC_BoxBoxOverlap.h";
+	nxReport(name, rva, owner, kSources, selfOnly);
+	nxReportTapes(gOracleTapeB, gCandidateTapeB, nameBoundary, rva, owner, kSources, selfOnly, kDivergent);
+	}
+
+static void nxDriveTreeColliderCallback(const NxOracleRows& o, bool selfOnly)
+	{
+	gState = 0x3c0de004;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeB.reset();
+	gCandidateTapeB.reset();
+	static const int kPairs[][2] = { { 0, 1 }, { 5, 5 }, { 2, 2 }, { 1, 1 }, { 0, 3 }, { 3, 3 }, { 2, 0 } };
+	static const int kDepths[] = { -1, 0, 1, 2, 3, 100 };
+	for(int kind = 0; kind < 4; ++kind)
+		for(unsigned pr = 0; pr < sizeof(kPairs) / sizeof(kPairs[0]); ++pr)
+			for(int placement = 0; placement < 3; ++placement)
+				for(int setting = 0; setting < 8; ++setting)
+					for(unsigned d = 0; d < sizeof(kDepths) / sizeof(kDepths[0]); ++d)
+						{
+						// Only the plain no-leaf trees are walked; the other kinds are refused, once.
+						if(kind != 1 && (d != 1 || setting != 3)) continue;
+						NxTreeQuery q;
+						q.a = gModelIndex[kPairs[pr][0]][kind];
+						q.b = gModelIndex[kPairs[pr][1]][kind];
+						if(!gModels[q.a].built || !gModels[q.b].built)
+							continue;
+						nxWorld(q.w0, placement == 2 ? 2 : 0);
+						nxWorld(q.w1, placement);
+						q.placement = placement;
+						q.setting = setting;
+						q.boundary = false;
+						nxTreeColliderCallbackQuery(o, q, kDepths[d], selfOnly);
+						}
+	// Mixed tree kinds: each of the four refusals (a leaf tree or a quantized one, on either side)
+	// is reached alone, because the other side is a plain no-leaf tree.
+	for(int kindA = 0; kindA < 4; ++kindA)
+		for(int kindB = 0; kindB < 4; ++kindB)
+			{
+			if(kindA == kindB) continue;
+			NxTreeQuery q;
+			q.a = gModelIndex[0][kindA];
+			q.b = gModelIndex[1][kindB];
+			if(!gModels[q.a].built || !gModels[q.b].built)
+				continue;
+			nxWorld(q.w0, 0);
+			nxWorld(q.w1, 1);
+			q.placement = 1;
+			q.setting = 3;
+			q.boundary = false;
+			nxTreeColliderCallbackQuery(o, q, 0, selfOnly);
+			}
+	// A model without a mesh interface is refused as well, on either side.
+	for(int side = 0; side < 2; ++side)
+		{
+		NxTreeQuery q;
+		q.a = gModelIndex[0][1];
+		q.b = gModelIndex[1][1];
+		if(!gModels[q.a].built || !gModels[q.b].built)
+			continue;
+		nxWorld(q.w0, 0);
+		nxWorld(q.w1, 1);
+		q.placement = 1;
+		q.setting = 3;
+		q.boundary = false;
+		void** slot = (void**) ((unsigned char*) gModels[side ? q.b : q.a].oracle + 4);
+		void* saved = *slot;
+		*slot = 0;
+		nxTreeColliderCallbackQuery(o, q, 0, selfOnly);
+		*slot = saved;
+		}
+	nxReportCallbackFamily("opcode_treecollider_callback", "opcode_treecollider_callback_boundary",
+		"0x000d12b0", "phys_fn_004982", selfOnly);
+	}
+
+// The same three rows entered one at a time, with the collider left as 004982
+// leaves it (InitQuery run, mesh interfaces set) and, for the two leaf rows, a
+// triangle in the leaf slot as 004971 leaves it. Node pairs, triangles, depths
+// and settings are drawn once and both sides take them; the tape holds the
+// callbacks, the counters, the contact bit and the leaf slot.
+static const AABBNoLeafNode* nxRandomNode(const AABBNoLeafNode* root, unsigned maxSteps)
+	{
+	const AABBNoLeafNode* node = root;
+	for(unsigned steps = nxNext() % (maxSteps + 1); steps; --steps)
+		{
+		bool pos = (nxNext() & 1) != 0;
+		if(pos ? node->HasPosLeaf() : node->HasNegLeaf())
+			{
+			pos = !pos;
+			if(pos ? node->HasPosLeaf() : node->HasNegLeaf())
+				break;
+			}
+		node = pos ? node->GetPos() : node->GetNeg();
+		}
+	return node;
+	}
+
+struct NxTreeRowCase
+	{
+	int						row;		// 0: 004971, 1: 004967, 2: 004969
+	int						a, b;		// gModels indices
+	int						placement;
+	int						setting;
+	int						depth;
+	const AABBNoLeafNode*	node0;
+	const AABBNoLeafNode*	node1;
+	unsigned				triangle;	// the leaf slot's triangle (rows 1 and 2)
+	Matrix4x4				w0, w1;
+	};
+
+static void nxTreeRowSide(const NxOracleRows& o, const NxTreeRowCase& c, int side)
+	{
+	NxTape& tape = nxCallbackTape(nxCallbackBoundary(c.a, c.b, c.placement), side);
+	const Model* model0 = (const Model*) gModels[c.a].oracle;
+	const Model* model1 = (const Model*) gModels[c.b].oracle;
+	gCallbackBase0 = ((const AABBNoLeafTree*) model0->GetTree())->GetNodes();
+	gCallbackBase1 = ((const AABBNoLeafTree*) model1->GetTree())->GetNodes();
+	void* object;
+	if(side == 0)
+		{
+		object = nxOracleAlloc(sizeof(AABBTreeCollider));
+		((NxCtorFn) nxAt(o, kOpcTreeColliderCtor))(object);
+		}
+	else
+		object = new NxCallbackTreeCollider;
+	AABBTreeCollider* tc = (AABBTreeCollider*) object;
+	tc->SetFullBoxBoxTest((c.setting & 1) != 0);
+	tc->SetFullPrimBoxTest((c.setting & 2) != 0);
+	tc->SetFirstContact((c.setting & 4) != 0);
+	static NxTape callbacks;
+	callbacks.reset();
+	gCallbackTape = &callbacks;
+	const Matrix4x4* world1 = c.placement ? &c.w1 : 0;
+	NxCallbackTreeCollider* mine = side == 1 ? (NxCallbackTreeCollider*) object : 0;
+	unsigned char* raw = (unsigned char*) object;
+	memset(raw + 0xe8, 0, 0x28);	// the leaf slot, 0xe8..0x10f, starts the same on both sides
+	if(side == 0)
+		{
+		((NxInitQueryFn) nxAt(o, kOpcTreeColliderInitQuery))(object, &c.w0, world1);
+		*(const MeshInterface**) (raw + 0x20) = model0->GetMeshInterface();
+		*(const MeshInterface**) (raw + 0x24) = model1->GetMeshInterface();
+		}
+	else
+		mine->Prepare(model0->GetMeshInterface(), model1->GetMeshInterface(), &c.w0, world1);
+	if(c.row != 0)
+		{
+		// The leaf slot, filled by the candidate's own fetch and copied to the oracle.
+		if(side == 1)
+			{
+			if(c.row == 1) mine->FetchLeaf0(c.triangle);
+			else mine->FetchLeaf1(c.triangle);
+			}
+		else
+			{
+			NxCallbackTreeCollider* ref = new NxCallbackTreeCollider;
+			ref->Prepare(model0->GetMeshInterface(), model1->GetMeshInterface(), &c.w0, world1);
+			if(c.row == 1) ref->FetchLeaf0(c.triangle);
+			else ref->FetchLeaf1(c.triangle);
+			memcpy(raw + 0xe8, ref->LeafVerts(), 9 * sizeof(float));
+			*(unsigned*) (raw + 0x10c) = c.triangle;
+			delete ref;
+			}
+		}
+	if(side == 0)
+		{
+		if(c.row == 0)
+			((NxCollideRowFn) nxAt(o, kOpcTreeCallbackCollide))(object, c.node0, c.node1, nxRecordNodePair, c.depth);
+		else if(c.row == 1)
+			((NxLeafRowFn) nxAt(o, kOpcTreeCallbackTriBox))(object, c.node1, nxRecordNodePair, c.depth, c.node0);
+		else
+			((NxLeafRowFn) nxAt(o, kOpcTreeCallbackBoxTri))(object, c.node0, nxRecordNodePair, c.depth, c.node1);
+		}
+	else
+		{
+		if(c.row == 0) mine->CollideCallback(c.node0, c.node1, nxRecordNodePair, c.depth);
+		else if(c.row == 1) mine->CollideTriBoxCallback(c.node1, nxRecordNodePair, c.depth, c.node0);
+		else mine->CollideBoxTriCallback(c.node0, nxRecordNodePair, c.depth, c.node1);
+		}
+	nxTapeCallbackState(tape, tc, callbacks);
+	const float* leaf = (const float*) (raw + 0xe8);
+	for(unsigned i = 0; i < 9; ++i)
+		tape.pushFloat(leaf[i]);
+	tape.push(*(const unsigned*) (raw + 0x10c));
+	if(side == 0)
+		{
+		((NxDtorFn) nxAt(o, kOpcTreeColliderDtor))(object);
+		nxOracleFree(object, sizeof(AABBTreeCollider));
+		}
+	else
+		delete mine;
+	}
+
+static void nxDriveTreeColliderRows(const NxOracleRows& o, bool selfOnly, int row, const char* name,
+	const char* nameBoundary, const char* rva, const char* owner)
+	{
+	gState = 0x3c0de100 + row;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gOracleTapeB.reset();
+	gCandidateTapeB.reset();
+	static const int kPairs[][2] = { { 0, 1 }, { 5, 5 }, { 2, 2 }, { 1, 1 }, { 0, 3 }, { 3, 3 }, { 2, 0 } };
+	static const int kDepths[] = { -1, 0, 1, 2, 3, 100 };
+	for(unsigned pr = 0; pr < sizeof(kPairs) / sizeof(kPairs[0]); ++pr)
+		for(int placement = 0; placement < 3; ++placement)
+			for(unsigned sample = 0; sample < 60; ++sample)
+				{
+				NxTreeRowCase c;
+				c.row = row;
+				c.a = gModelIndex[kPairs[pr][0]][1];
+				c.b = gModelIndex[kPairs[pr][1]][1];
+				if(!gModels[c.a].built || !gModels[c.b].built)
+					continue;
+				nxWorld(c.w0, placement == 2 ? 2 : 0);
+				nxWorld(c.w1, placement);
+				c.placement = placement;
+				c.setting = (int) (nxNext() & 7);
+				c.depth = kDepths[nxNext() % (sizeof(kDepths) / sizeof(kDepths[0]))];
+				const Model* model0 = (const Model*) gModels[c.a].oracle;
+				const Model* model1 = (const Model*) gModels[c.b].oracle;
+				c.node0 = nxRandomNode(((const AABBNoLeafTree*) model0->GetTree())->GetNodes(), 6);
+				c.node1 = nxRandomNode(((const AABBNoLeafTree*) model1->GetTree())->GetNodes(), 6);
+				const MeshInterface* leafMesh = row == 2 ? model1->GetMeshInterface() : model0->GetMeshInterface();
+				c.triangle = nxNext() % leafMesh->GetNbTriangles();
+				nxTreeRowSide(o, c, 0);
+				if(!selfOnly) nxTreeRowSide(o, c, 1);
+				}
+	nxReportCallbackFamily(name, nameBoundary, rva, owner, selfOnly);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
 // BaseModel::Refit after the vertices move. Each side moves its own copy the
 // same way; the no-leaf trees refit, the others report that they cannot.
 
@@ -4830,6 +5178,10 @@ static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
 	for(int k = 0; k < 5; ++k)
 		nxDriveVolume(o, (NxVolumeKind) k, kVolumes[k], kSeeds[k], selfOnly);
 	nxDriveTreeCollider(o, selfOnly);
+	nxDriveTreeColliderCallback(o, selfOnly);
+	nxDriveTreeColliderRows(o, selfOnly, 0, "opcode_treecollider_callback_collide", "opcode_treecollider_callback_collide_boundary", "0x000cd700", "phys_fn_004971");
+	nxDriveTreeColliderRows(o, selfOnly, 1, "opcode_treecollider_callback_tribox", "opcode_treecollider_callback_tribox_boundary", "0x000ca5a0", "phys_fn_004967");
+	nxDriveTreeColliderRows(o, selfOnly, 2, "opcode_treecollider_callback_boxtri", "opcode_treecollider_callback_boxtri_boundary", "0x000cbe50", "phys_fn_004969");
 	nxDriveVanilla(o, selfOnly);
 	nxDriveRefit(o, selfOnly);
 	nxReleaseModels(o);
@@ -5282,6 +5634,8 @@ static void nxCheckLayouts()
 	nxLayout("sizeof_BuildSettings", sizeof(BuildSettings), 20, "0x000e92b0,0x000e91cc");
 	nxLayout("sizeof_OPCODECREATE", sizeof(OPCODECREATE), 32, "0x000e92b0");
 	nxLayout("OPCODECREATE.mSettings", offsetof(OPCODECREATE, mSettings), 8, "0x000e9129");
+	nxLayout("NxCallbackTreeCollider.offsets", NxCallbackTreeCollider::LayoutMatchesOracle() ? 1 : 0, 1, "0x000ca5a0,0x000cbe50,0x000cd700,0x000d12b0");
+	nxLayout("sizeof_NxCallbackTreeCollider", sizeof(NxCallbackTreeCollider), sizeof(AABBTreeCollider), "0x000d12b0");
 	nxLayout("OPCODECREATE.mDeserializeFrom", offsetof(OPCODECREATE, mDeserializeFrom), 4, "0x000e9122");
 	nxLayout("BuildSettings.mLimit", offsetof(BuildSettings, mLimit), 0, "0x000e9129");
 	nxLayout("BuildSettings.mRules", offsetof(BuildSettings, mRules), 4, "0x000e92b2");

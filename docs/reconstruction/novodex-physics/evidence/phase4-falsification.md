@@ -536,3 +536,14 @@ The `Pruner::~Pruner` row `phys_fn_005537` is independently mutation-falsified t
 The candidate-only mutation for rows `phys_fn_002180` and `phys_fn_002182`, comparing the second key word against payload word 2 instead, was caught: the oracle retained digest `a4b713d8`, the candidate changed to `d1450f88`, and the differential reported `stdout_delta=2`. Restoring the comparator and rebuilding returned the focused differential to exact. The full Phase 4 gate passed with 560/560 registered assertions. Focused staged-pair output is archived in `evidence/raw/phase4-triangle-mesh-sort-002180-002182-20261018/focused-differential.log`.
 
 This closes only the two sort rows. The larger TriangleMesh edge/adjacency construction caller remains open, and this direct-row fixture does not claim that the mesh creation path now uses the reconstructed sorter.
+
+## 29. 2026-10-19 NovodeX depth-limited callback walk rows
+
+`phys_fn_004967` (`0x000ca5a0`), `phys_fn_004969` (`0x000cbe50`), `phys_fn_004971` (`0x000cd700`) and `phys_fn_004982` (`0x000d12b0`) were carried as vendored second instantiations of OPCODE's no-leaf walk. The listings show NovodeX code stock OPCODE does not have: the walk takes a callback and a depth, reads triangles straight from the mesh interface, records no pair, and stops on `OPC_CONTACT` alone. They are reconstructed in `Physics/src/opcode/NovodexTreeColliderCallback.cpp`. Eight registered `NxPhysicsThirdPartyTests` families drive them (an exact and a `_boundary` family for each of the entry and the three rows); the exact families have zero mismatches against the pinned oracle (91,354, 20,584, 13,166 and 13,266 words) and the boundary families are held by recorded ceilings. Twenty row-aimed mutations are rejected: seventeen with a tape mismatch and three groups of refusal mutations by a crash. Each row is named in the closure ledger with its own mutation. The full write-up, with the mutation table and the boundary-family cause, is `evidence/phase4-treecollider-callback-walk.md`; `phys_fn_001876` still uses its own approximation and is not closed by this.
+
+Per-row measurements (row, mutation, count):
+
+- `phys_fn_004967`: box rejection of `CollideTriBoxCallback` dropped; `opcode_treecollider_callback_tribox` mismatches=1.
+- `phys_fn_004969`: callback pair swapped after the first child of `CollideBoxTriCallback`; `opcode_treecollider_callback_boxtri` mismatches=364.
+- `phys_fn_004971`: wrong tree-0 node handed from `CollideCallback` to `CollideTriBoxCallback`; `opcode_treecollider_callback_collide` mismatches=254.
+- `phys_fn_004982`: worlds exchanged for `InitQuery`; `opcode_treecollider_callback` mismatches=1.

@@ -1,0 +1,104 @@
+{
+ "task": "NovodeX depth-limited callback walk: phys_fn_004967, 004969, 004971, 004982",
+ "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+ "candidate_sha256": "d36ef98a2c1f2ea2c3b9b33134f169d31a6d23f56e5b4a5f21ea8f6e86ac406c",
+ "thirdparty_harness_sha256": "0f938d58950d893cb3fca0f8febbb9e97757692b2274af341342b2bfea333e3a",
+ "fixture": "tests/PhysicsThirdPartyTests.cpp",
+ "rows": [
+  "phys_fn_004967",
+  "phys_fn_004969",
+  "phys_fn_004971",
+  "phys_fn_004982"
+ ],
+ "exact_families": {
+  "opcode_treecollider_callback": 91354,
+  "opcode_treecollider_callback_collide": 20584,
+  "opcode_treecollider_callback_tribox": 13166,
+  "opcode_treecollider_callback_boxtri": 13266
+ },
+ "boundary_families": {
+  "opcode_treecollider_callback_boundary": [
+   37942,
+   19486
+  ],
+  "opcode_treecollider_callback_collide_boundary": [
+   10746,
+   3785
+  ],
+  "opcode_treecollider_callback_tribox_boundary": [
+   6696,
+   1286
+  ],
+  "opcode_treecollider_callback_boxtri_boundary": [
+   6564,
+   325
+  ]
+ },
+ "mismatches": 0,
+ "mutations": {
+  "applied": 20,
+  "rejected": 20,
+  "rejected_by_tape_mismatch": 14,
+  "rejected_by_crash": 6
+ },
+ "phase3": "pass; 988/988 coverage assertions",
+ "phase4": "pass; 579/579 coverage assertions",
+ "phase5": "pass",
+ "phase6": "pass",
+ "phase7": "pass; 3127/3127 coverage assertions",
+ "tooling": "857 tests pass",
+ "inventory": "6338 functions; 5138 data_objects; 0 unexplained",
+ "files": {
+  "control.log.gz": {
+   "sha256": "966a0595dfedfc416539dd23a78d957b3e5d92671726c788d9870e325159764e",
+   "uncompressed_sha256": "a495bee5b394f207e959b507408e53c6e3d31de92fea14fd86d299cc6e5c6d14",
+   "uncompressed_bytes": 196104
+  },
+  "mutants.log.gz": {
+   "sha256": "87ce8b1948661d25ba8aef80dcb4d6ed39ee0eaed25e6e34238979605ebe489f",
+   "uncompressed_sha256": "cd3b4bda5ed2ab52610afc5e650776a5e7affdd3e119e36b286d4c0a5914fd5c",
+   "uncompressed_bytes": 2968510
+  },
+  "phase3.log.gz": {
+   "sha256": "1ffb0d185ffc22b3b58214e7516917167ccdc87ab6268735172ddc96d5b8d33b",
+   "uncompressed_sha256": "b592bd00334800e90ebb45352ebf823376d019e17fe271438b72ca70b14a4d9f",
+   "uncompressed_bytes": 825945
+  },
+  "phase4.log.gz": {
+   "sha256": "9e9136f22d6341d837c9452abe89626e74af8a2b44b10909d31e53c6a52b8c63",
+   "uncompressed_sha256": "35626791b196f3b1a589664d73a30eb45bbef6899392bd6e76e957719f5283bb",
+   "uncompressed_bytes": 1190370
+  },
+  "phase5.log.gz": {
+   "sha256": "6b9fcc0679d880cf1b5659fb1634e1d686fee474857dab1ee557296bac1db6cf",
+   "uncompressed_sha256": "33bc9699ec0c06026f4d10e933276db18db4ff93532e544c8822ecd8e6a00aab",
+   "uncompressed_bytes": 2890673
+  },
+  "phase6.log.gz": {
+   "sha256": "d5c78143c7e67a158e4d579c30de6f93b33397b35f25c1bff3cd1e504deb4009",
+   "uncompressed_sha256": "77784fb37a1f8eb5b2d7bb208793c56adbe104c110ab08623c8703df5d83ba3f",
+   "uncompressed_bytes": 3142509
+  },
+  "phase7.log.gz": {
+   "sha256": "a5701147dfac6ba9e8080247d822ed7839df385b4d3acee16b0576e9dfcb9563",
+   "uncompressed_sha256": "1160bc2c437b03dcf269534fc7d9b1366381d02fa04b7298e8192bce9ed168c5",
+   "uncompressed_bytes": 4764185
+  },
+  "tooling.log.gz": {
+   "sha256": "6be7bc4312c0ddfd83d029f08a01636b86448887ef76d90b7c7d07c6acb681ad",
+   "uncompressed_sha256": "da2f60d21e6138e2ff0f01630d000bea5faba4813b9364a252910010f9da82f2",
+   "uncompressed_bytes": 84
+  },
+  "mutations.py.txt": {
+   "sha256": "7df4a9efa2d78bbf709ba232c11ee330e17456cd32df9d40ac3ea45426e1ae8a",
+   "uncompressed_sha256": "7df4a9efa2d78bbf709ba232c11ee330e17456cd32df9d40ac3ea45426e1ae8a",
+   "uncompressed_bytes": 3083
+  },
+  "rewire-collision.log.gz": {
+   "sha256": "6e946fe4703f2780178b3636d8d934ae1e7c8a6290e7b9fe6e7e59bed8bf0838",
+   "uncompressed_sha256": "af8166c78ca8d5e35c1362036d5855d66d92c4bd2e340e3d6360aaf5c7a7f8a2",
+   "uncompressed_bytes": 131283
+  }
+ },
+ "rewire": "NxContactMeshMesh runs CollideNoLeafCallback(depth 0); 23 contact_mesh_mesh fixtures exact; depth-one mutant: 5 fixtures differ, exit 1"
+}

@@ -822,6 +822,23 @@ triangle-mesh narrow-phase, general penetration recovery, complete slide/step
 response, callbacks, and the rest of the controller matrix remain open. See
 `docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
 
+### Continuation — NovodeX depth-limited callback walk (2026-10-19)
+
+Phase 4 still carried 25,613 bytes in four rows (`phys_fn_004967`, `004969`, `004971`, `004982`) as
+vendored second instantiations of OPCODE's no-leaf walk. Reading the listings showed they are NovodeX code
+stock OPCODE does not have: a walk that takes a callback and a depth, reads triangles straight from the mesh
+interface, records no pair, stops on `OPC_CONTACT` alone, and reports the node pair at depth zero. It is its
+only caller's engine: `phys_fn_001876` mesh/mesh contact enters it through 004982 with depth zero. The rows
+are reconstructed in `Physics/src/opcode/NovodexTreeColliderCallback.cpp` and gated by eight
+`NxPhysicsThirdPartyTests` families: the entry and each row, an exact family and a bounded `_boundary` family
+(the flat grid and the degenerate set against a rotated twin of itself, whose triangle verdicts the oracle's
+separately associated inline copies decide in the last bit). The exact families match the pinned oracle
+with zero mismatches over 138,370 words, and twenty row-aimed mutations are rejected. Phase 4 now has 50
+closed and 1,003 deferred rows. `NxContactMeshMesh` now runs this walk (depth zero, `phys_fn_001874` as the
+callback) in place of its hand-written traversal; the 23-fixture mesh/mesh differential stays exact and a
+depth-one edit breaks five fixtures. `phys_fn_001876`, `001878` and `001880` remain open. See
+`docs/reconstruction/novodex-physics/evidence/phase4-treecollider-callback-walk.md`.
+
 ### Continuation — controller free-space move slice (2026-10-06)
 
 Added a paired call through the recovered second controller vtable slot. The

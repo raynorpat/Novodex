@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 46 closed and 1,007 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The exported NxCreatePMap wrapper phys_fn_002049 and its PenetrationMap::create compute body phys_fn_002047 are independently mutation-falsified through NxPhysicsTriangleMeshApiTests. Density-32 and density-80 result markers are registered; allocation-failure and alternate-tree branches remain open. The two AABB tree rows phys_fn_005517 and phys_fn_005523 are independently falsified through the registered NxPhysicsTriangleMeshApiTests staged pair; each entry mutation prevents authored PMap mesh creation (candidate_exit=1, stdout_delta=26). The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13. On 2026-10-15, phys_fn_005537 (Pruner::~Pruner) was independently mutation-falsified through generation-tagged slot reuse after Scene destruction; all three dependent phase gates require and pass the lifecycle marker. MemoryStream destructor continuation (2026-10-16): phys_fn_004791 is closed by the Phase 4 NxPhysicsAssetTests row-specific allocator differential; a no-op destructor mutation is rejected across all 16 PMap fixtures (32 oracle frees versus zero candidate frees), and restored control is exact. Evidence: evidence/phase4-memory-stream-dtor-004791.md. On 2026-10-18, TriangleMesh edge-record quicksort rows phys_fn_002180 and phys_fn_002182 were reconstructed in TriangleMesh.cpp and mutation-falsified through NxPhysicsTriangleMeshSortTests; four cases match the pinned oracle and a secondary-key mutation is detected. The row fixture is direct and does not close the larger edge/adjacency caller.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 46 closed and 1,007 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The exported NxCreatePMap wrapper phys_fn_002049 and its PenetrationMap::create compute body phys_fn_002047 are independently mutation-falsified through NxPhysicsTriangleMeshApiTests. Density-32 and density-80 result markers are registered; allocation-failure and alternate-tree branches remain open. The two AABB tree rows phys_fn_005517 and phys_fn_005523 are independently falsified through the registered NxPhysicsTriangleMeshApiTests staged pair; each entry mutation prevents authored PMap mesh creation (candidate_exit=1, stdout_delta=26). The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13. On 2026-10-15, phys_fn_005537 (Pruner::~Pruner) was independently mutation-falsified through generation-tagged slot reuse after Scene destruction; all three dependent phase gates require and pass the lifecycle marker. MemoryStream destructor continuation (2026-10-16): phys_fn_004791 is closed by the Phase 4 NxPhysicsAssetTests row-specific allocator differential; a no-op destructor mutation is rejected across all 16 PMap fixtures (32 oracle frees versus zero candidate frees), and restored control is exact. Evidence: evidence/phase4-memory-stream-dtor-004791.md. On 2026-10-18, TriangleMesh edge-record quicksort rows phys_fn_002180 and phys_fn_002182 were reconstructed in TriangleMesh.cpp and mutation-falsified through NxPhysicsTriangleMeshSortTests; four cases match the pinned oracle and a secondary-key mutation is detected. The row fixture is direct and does not close the larger edge/adjacency caller. On 2026-10-19 the four rows phys_fn_004967, phys_fn_004969, phys_fn_004971 and phys_fn_004982 (25,613 bytes), carried as vendored_not_falsified second instantiations of OPCODE's no-leaf walk, were read off the listing and found to be NovodeX's depth-limited callback walk, which stock OPCODE does not have. They were reconstructed in Physics/src/opcode/NovodexTreeColliderCallback.cpp, matched exactly to the pinned oracle on every query outside the grid and twin-rotation boundary families, and closed by 20 row-aimed mutations. Evidence: evidence/phase4-treecollider-callback-walk.md.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway source copy, rebuilt and run through a registered Phase 4 staged-pair differential. Phase 4 now registers NxPhysicsTriangleMeshApiTests for the live-reference refusal path; bypassing the mReferenceCount guard changes the candidate transcript by stdout_delta=6 while the pinned oracle remains unchanged, and the restored control matches exactly.",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -11,7 +11,7 @@
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this NovodeX row and names nothing that blocks it. A debt, not an obstruction: 234 rows (315 as first written; 313 after later closures; 306 once vendored-correspondence Task 3 moved seven rows it mapped to stock OPCODE functions to vendored_not_falsified; 297 after convex-mesh gap Task 2a reconstructed nine box distance rows; 296 after its Task 2b reconstructed phys_fn_001694; 288 after its Task 2c reconstructed the EdgeList and IceAdjacencies rows; 263 after its Task 2d reconstructed the 25 MeshBuilder2 rows; 260 after its Task 2e reconstructed phys_fn_002144, phys_fn_002186 and phys_fn_002188; 249 after its Task 2f reconstructed phys_fn_001496 with its two continuations and eight support-map rows; 235 after its Task 2g reconstructed the TriangleMesh polygon interface and the hull edge axes and supporting face; 234 after its Task 2i reconstructed phys_fn_002081). No per-row reachability claim is made, for the reason Phase 3 gave -- this component dispatches through vtables and function-pointer tables and a call-edge walk over it undercounts",
     "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation aimed at its own extent produced a measured non-zero count. 533 rows: 148 NovodeX (nine of them the box distance rows convex-mesh gap Task 2a added, one the segment/triangle distance phys_fn_001694 its Task 2b added, eight the EdgeList.cpp and IceAdjacencies.cpp rows its Task 2c added, twenty-five the MeshBuilder2 rows its Task 2d added, three the angle helper and the TriangleMesh topology builders its Task 2e added, eleven the hull support polygon and the support-map rows its Task 2f added, fourteen the polygon interface slots, phys_fn_001514 and phys_fn_001516 with its three continuations its Task 2g added, the vertex-normal builder phys_fn_002081 its Task 2i added), 35 vendored rows later drives confirmed, and 351 vendored rows vendored-correspondence Task 5b promoted to `reconstructed` on the static and execution evidence each row's static_proof records (this text said 110 and 34 before Task 5b; the ledger held 111 and 35). The sharpest are named in their own notes -- six penetration-map rows against which mutations R, S and U come out GREEN because every accepted fixture leaves a uniform grid, the cell-run decoder whose mutation V is green on this branch and was red only by crash at bcf544f, and two compiler-generated deleting destructors whose only mutation edits a class declaration. Fourteen NovodeX rows are the exception to 'no mutation ... produced a measured non-zero count': phys_fn_002081 (convex-mesh gap Task 2i, caught by NxPhysicsCollisionTests; its note), phys_fn_002144, phys_fn_001514, phys_fn_001516, phys_fn_001518, phys_fn_001520, phys_fn_001522, phys_fn_002223 and phys_fn_002249 (convex-mesh gap Task 2g, caught by NxPhysicsThirdPartyTests; their notes), and phys_fn_001496, phys_fn_001550, phys_fn_001560, phys_fn_001573 and phys_fn_001581, whose convex-mesh gap Task 2f mutations NxPhysicsThirdPartyTests caught (their notes); whose convex-mesh gap Task 2e mutation NxPhysicsThirdPartyTests caught (its note); they stay here because a closure needs the inventory at `dynamically_gated` and that plan promotes no row above `reconstructed`. The 2026-10-08 Segment::SquareDistance row phys_fn_005493 has since been closed by its own caught mutation.",
-    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 90 rows, 52,060 bytes: 71 qhull and 19 OPCODE (257 and 113,070 until qhull-gap Task 2 promoted 167 qhull rows, 61,010 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 608 and 344,949 until vendored-correspondence Task 5b promoted 351 rows, 231,879 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 601 and 341,680 until vendored-correspondence Task 3 mapped seven rows the census had filed as NovodeX code to the stock OBB and SweepAndPrune functions they are). With the 553 vendored rows at `reconstructed` that defer `reconstructed_not_falsified` (35 raised by later drives, 351 by Task 5b, 167 by qhull-gap Task 2), 643 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 608, none of them among the seven Task 3 added, owned a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. Task 5b promoted four of them (phys_fn_002493, phys_fn_002505, phys_fn_003308, phys_fn_005357) and left phys_fn_004844, a DIFF group, here. phys_fn_004842, promoted too, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
+    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 86 rows, 26,447 bytes: 71 qhull and 15 OPCODE (90 rows and 52,060 bytes until the callback-walk rows phys_fn_004967, 004969, 004971 and 004982, 25,613 bytes, turned out to be NovodeX code and were closed; 257 and 113,070 until qhull-gap Task 2 promoted 167 qhull rows, 61,010 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 608 and 344,949 until vendored-correspondence Task 5b promoted 351 rows, 231,879 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 601 and 341,680 until vendored-correspondence Task 3 mapped seven rows the census had filed as NovodeX code to the stock OBB and SweepAndPrune functions they are). With the 553 vendored rows at `reconstructed` that defer `reconstructed_not_falsified` (35 raised by later drives, 351 by Task 5b, 167 by qhull-gap Task 2), 643 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 608, none of them among the seven Task 3 added, owned a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. Task 5b promoted four of them (phys_fn_002493, phys_fn_002505, phys_fn_003308, phys_fn_005357) and left phys_fn_004844, a DIFF group, here. phys_fn_004842, promoted too, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
     "vendored_driven_divergent": "Historical Phase 4 reason for a vendored function whose candidate differed against the pinned oracle. The Segment::SquareDistance divergence (phys_fn_005493) was corrected and the row was closed by a caught source mutation on 2026-10-08; see evidence/phase4-falsification.md sections 7 and 13.",
     "data_object_not_dispositioned": "no Phase 4 data object gives it: all 2,813 stand at `classified`, the terminal rung their structural proof gives them, and are accounted for by that state"
   },
@@ -56,8 +56,8 @@
   "counts": {
     "deferred_reconstructed_not_falsified": 747,
     "deferred_not_reconstructed_in_phase": 170,
-    "deferred_vendored_not_falsified": 90,
-    "oracle_differential_falsified": 30,
+    "deferred_vendored_not_falsified": 86,
+    "oracle_differential_falsified": 34,
     "differential_falsified": 16
   },
   "closed": [
@@ -545,6 +545,50 @@
         "detected": "stdout_delta=2"
       },
       "note": "Four cases cover duplicate and high-bit keys, partial subranges, singleton, and empty ranges; restored digest a4b713d8. This proves only the sort rows, not integration into the larger edge/adjacency caller."
+    },
+    {
+      "id": "phys_fn_004967",
+      "rva": "0x000ca5a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of NovodexTreeColliderCallback.cpp, dropped the node-box rejection of CollideTriBoxCallback (the box test's result ignored). Three further mutations aimed at this row were also rejected: recursion without depth-1, the first child's leaf flag forced false, and the negative leaf read from the positive primitive.",
+        "detected": "mismatches=1"
+      },
+      "note": "The exact family opcode_treecollider_callback_tribox is 0 mismatches over the pinned oracle; its _boundary twin is held by a recorded ceiling (kDivergentCeilings). See evidence/phase4-treecollider-callback-walk.md and evidence/raw/phase4-treecollider-callback-walk-20261019/."
+    },
+    {
+      "id": "phys_fn_004969",
+      "rva": "0x000cbe50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of NovodexTreeColliderCallback.cpp, swapped the node pair CollideBoxTriCallback passes to the callback after its first child. Three further mutations aimed at this row were also rejected: recursion without depth-1, the negative child's leaf flag forced true, and the node-box rejection dropped.",
+        "detected": "mismatches=364"
+      },
+      "note": "The exact family opcode_treecollider_callback_boxtri is 0 mismatches over the pinned oracle; its _boundary twin is held by a recorded ceiling (kDivergentCeilings). See evidence/phase4-treecollider-callback-walk.md and evidence/raw/phase4-treecollider-callback-walk-20261019/."
+    },
+    {
+      "id": "phys_fn_004971",
+      "rva": "0x000cd700",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of NovodexTreeColliderCallback.cpp, passed the wrong tree-0 node to CollideTriBoxCallback from CollideCallback. Five further mutations aimed at this row were also rejected: recursion without depth-1, the leaf slot filled through the wrong rotation, the wrong rotation for tree-1's negative leaf, the box test with its arguments exchanged, and a step's leaf flag inverted.",
+        "detected": "mismatches=254"
+      },
+      "note": "The exact family opcode_treecollider_callback_collide is 0 mismatches over the pinned oracle; its _boundary twin is held by a recorded ceiling (kDivergentCeilings). See evidence/phase4-treecollider-callback-walk.md and evidence/raw/phase4-treecollider-callback-walk-20261019/."
+    },
+    {
+      "id": "phys_fn_004982",
+      "rva": "0x000d12b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of NovodexTreeColliderCallback.cpp, exchanged the two worlds passed to InitQuery (mismatches=1). The four model refusals (leaf and quantized, on either side) are each exercised alone by a mixed-kind query; dropping any one makes the candidate walk the wrong tree and the target crash (exit 3221225477), and so does a null-mesh check weakened to require both.",
+        "detected": "mismatches=1"
+      },
+      "note": "The exact family opcode_treecollider_callback is 0 mismatches over the pinned oracle; its _boundary twin is held by a recorded ceiling (kDivergentCeilings). See evidence/phase4-treecollider-callback-walk.md and evidence/raw/phase4-treecollider-callback-walk-20261019/."
     }
   ],
   "deferred": [
@@ -6489,30 +6533,6 @@
       "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004967",
-      "rva": "0x000ca5a0",
-      "size": 6315,
-      "reason": "vendored_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004969",
-      "rva": "0x000cbe50",
-      "size": 6315,
-      "reason": "vendored_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004971",
-      "rva": "0x000cd700",
-      "size": 12843,
-      "reason": "vendored_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_004973",
       "rva": "0x000d0930",
       "size": 46,
@@ -6556,14 +6576,6 @@
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004982",
-      "rva": "0x000d12b0",
-      "size": 140,
-      "reason": "vendored_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_004984",
