@@ -464,13 +464,18 @@ void nxSceneMemberB5720(void* self)
 	static_cast<unsigned char*>(self)[0x8d] = 1;
 	}
 
-// phys_fn_001980 (0x0004ca30, phase 7). Its base 0x000b4fe0 zeroes +0 and
-// +0x1c..+0x28 and writes the bounds +4..+0x18 as +-FLT_MAX; then +0x2c, +0x30
-// zeroed, phys_fn_004147 at +0x34, 0x0002dae0 at +0x50 (+0x50, +0x54 zeroed),
-// +0x58..+0x6c = +-FLT_MAX, +0x70 = 2, +0x74 = 0, phys_fn_004836 at +0x78.
-void nxSceneMember4CA30(void* self)
+// phys_fn_004848 (0x000b4fe0, phase 7) constructs the pruning-engine base.
+// The oracle installs its own vtable at +0, omitted in the reconstruction;
+// the Windows ABI path preserves the observable zero placeholder there.
+class NxScenePruningEngineBase
 	{
-	unsigned* p = static_cast<unsigned*>(self);
+	public:
+		__declspec(noinline) NxScenePruningEngineBase* ConstructPruningEngineBase();
+	};
+
+NxScenePruningEngineBase* NxScenePruningEngineBase::ConstructPruningEngineBase()
+	{
+	unsigned* const p = reinterpret_cast<unsigned*>(this);
 	nxDword(p, 0x00) = 0;
 #if NX_PHYSICS_USE_X87
 	nxDword(p, 0x1c) = 0;
@@ -478,7 +483,7 @@ void nxSceneMember4CA30(void* self)
 	nxDword(p, 0x24) = 0;
 	nxDword(p, 0x28) = 0;
 #else
-	nxScenePrunerCollectionConstruct(nxAt(p, 0x1c));
+	nxScenePrunerCollectionConstruct(reinterpret_cast<unsigned char*>(p) + 0x1c);
 #endif
 	nxDword(p, 0x04) = 0x7f7fffffu;
 	nxDword(p, 0x08) = 0x7f7fffffu;
@@ -486,6 +491,17 @@ void nxSceneMember4CA30(void* self)
 	nxDword(p, 0x10) = 0xff7fffffu;
 	nxDword(p, 0x14) = 0xff7fffffu;
 	nxDword(p, 0x18) = 0xff7fffffu;
+	return this;
+	}
+
+// phys_fn_001980 (0x0004ca30, phase 7). Its base 0x000b4fe0 zeroes +0 and
+// +0x1c..+0x28 and writes the bounds +4..+0x18 as +-FLT_MAX; then +0x2c, +0x30
+// zeroed, phys_fn_004147 at +0x34, 0x0002dae0 at +0x50 (+0x50, +0x54 zeroed),
+// +0x58..+0x6c = +-FLT_MAX, +0x70 = 2, +0x74 = 0, phys_fn_004836 at +0x78.
+void nxSceneMember4CA30(void* self)
+	{
+	unsigned* p = static_cast<unsigned*>(self);
+	reinterpret_cast<NxScenePruningEngineBase*>(self)->ConstructPruningEngineBase();
 	nxDword(p, 0x2c) = 0;
 	nxDword(p, 0x30) = 0;
 	nxSceneArrayHeaderInit(nxAt(p, 0x34));					// phys_fn_004147

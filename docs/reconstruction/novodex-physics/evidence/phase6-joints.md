@@ -11408,3 +11408,5 @@ The direct NxPhysicsCollisionTests oracle differential exercises 16 directed cas
 The direct NxPhysicsCollisionTests oracle differential exercises 16 directed cases under both x87 control words, with exact face and near/far agreement. The <= FLT_EPSILON mutation is rejected with mismatches=2; restored output matches. See docs/reconstruction/novodex-physics/evidence/phase7-ray-aabb-slab-002272.md.
 
 Measurement: phys_fn_002272 direct oracle/candidate differential; the epsilon-threshold mutation is rejected with mismatches=2, restored exact output.
+
+Phase 7 row `phys_fn_004848` is mutation-falsified through the registered `NxPhysicsSceneRaycastTests` constructor marker: the `+0x1c` null-slot mutation is rejected (`stdout_delta=2813`), and the restored output is exact. Details: `evidence/phase7-pruning-engine-base-constructor-004848.md` and `evidence/raw/phase7-pruning-engine-base-constructor-004848-20261018/`.

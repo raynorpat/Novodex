@@ -50,7 +50,7 @@ class CompletionReportTests(unittest.TestCase):
         self.assertEqual(row["implementation"]["candidate_map_reference"], {
             "path": "build/Release/NxPhysics.map",
             "symbol": "?nxForwardSubobjectCall@@YAIPAX0@Z",
-            "address": "0x1003e5f0",
+            "address": "0x1004aa20",
             "object": "ObjectModel.obj",
         })
 
@@ -63,7 +63,7 @@ class CompletionReportTests(unittest.TestCase):
         self.assertEqual(row["implementation"]["candidate_map_reference"], {
             "path": "build/Release/NxPhysics.map",
             "symbol": "?row000010@Row000010Fixture@@QAEXPBVNxBodyDesc@@@Z",
-            "address": "0x1005b9e0",
+            "address": "0x1006ed00",
             "object": "Scene.obj",
         })
 
@@ -76,21 +76,21 @@ class CompletionReportTests(unittest.TestCase):
         self.assertEqual(row["implementation"]["candidate_map_reference"], {
             "path": "build/Release/NxPhysics.map",
             "symbol": "?nxIdAllocNext@@YAIPAX@Z",
-            "address": "0x1003e9e0",
+            "address": "0x1004afd0",
             "object": "ObjectModel.obj",
         })
 
     def test_actor_getters_have_candidate_source_and_map_symbols(self):
         expected = {
-            "phys_fn_000096": ("getCMassLocalPoseVal", "?getCMassLocalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ", "0x1002eee0"),
-            "phys_fn_000098": ("getCMassLocalPositionVal", "?getCMassLocalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002efd0"),
-            "phys_fn_000100": ("getCMassLocalOrientationVal", "?getCMassLocalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ", "0x1002ee20"),
-            "phys_fn_000102": ("getMassSpaceInertiaTensorVal", "?getMassSpaceInertiaTensorVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002fb80"),
-            "phys_fn_000104": ("getLinearVelocityVal", "?getLinearVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002f780"),
-            "phys_fn_000106": ("getAngularVelocityVal", "?getAngularVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002eac0"),
-            "phys_fn_000108": ("getLinearMomentumVal", "?getLinearMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x1002f6d0"),
-            "phys_fn_000146": ("getPointVelocityVal", "?getPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z", "0x1002fd80"),
-            "phys_fn_000148": ("getLocalPointVelocityVal", "?getLocalPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z", "0x1002f860"),
+            "phys_fn_000096": ("getCMassLocalPoseVal", "?getCMassLocalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ", "0x10034910"),
+            "phys_fn_000098": ("getCMassLocalPositionVal", "?getCMassLocalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x10034a00"),
+            "phys_fn_000100": ("getCMassLocalOrientationVal", "?getCMassLocalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ", "0x10034850"),
+            "phys_fn_000102": ("getMassSpaceInertiaTensorVal", "?getMassSpaceInertiaTensorVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x100355b0"),
+            "phys_fn_000104": ("getLinearVelocityVal", "?getLinearVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x100351b0"),
+            "phys_fn_000106": ("getAngularVelocityVal", "?getAngularVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x100344f0"),
+            "phys_fn_000108": ("getLinearMomentumVal", "?getLinearMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ", "0x10035100"),
+            "phys_fn_000146": ("getPointVelocityVal", "?getPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z", "0x100357b0"),
+            "phys_fn_000148": ("getLocalPointVelocityVal", "?getLocalPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z", "0x10035290"),
         }
         report = build_report_from_repo(REPO_DIR)
         for row_id, (symbol, map_symbol, address) in expected.items():
@@ -107,22 +107,22 @@ class CompletionReportTests(unittest.TestCase):
 
     def test_actor_state_and_metadata_rows_have_candidate_map_symbols(self):
         expected = {
-            "phys_fn_000050": ("getLinearDamping", "?getLinearDamping@NpActorVtable@@UBEMXZ", "0x1002f630"),
-            "phys_fn_000052": ("getAngularDamping", "?getAngularDamping@NpActorVtable@@UBEMXZ", "0x1002e860"),
-            "phys_fn_000062": ("isGroupSleeping", "?isGroupSleeping@NpActorVtable@@UBE_NXZ", "0x10030180"),
-            "phys_fn_000064": ("isSleeping", "?isSleeping@NpActorVtable@@UBE_NXZ", "0x10030230"),
-            "phys_fn_000066": ("getSleepLinearVelocity", "?getSleepLinearVelocity@NpActorVtable@@UBEMXZ", "0x10030080"),
-            "phys_fn_000068": ("getSleepAngularVelocity", "?getSleepAngularVelocity@NpActorVtable@@UBEMXZ", "0x10030010"),
-            "phys_fn_000074": ("raiseActorFlag", "?raiseActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z", "0x100347d0"),
-            "phys_fn_000076": ("clearActorFlag", "?clearActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z", "0x1002e5d0"),
-            "phys_fn_000078": ("readActorFlag", "?readActorFlag@NpActorVtable@@UBE_NW4NxActorFlag@@@Z", "0x100348d0"),
-            "phys_fn_000080": ("readBodyFlag", "?readBodyFlag@NpActorVtable@@UBE_NW4NxBodyFlag@@@Z", "0x10034940"),
-            "phys_fn_000086": ("getName", "?getName@NpActorVtable@@UBEPBDXZ", "0x1002fc40"),
-            "phys_fn_000088": ("setName", "?setName@NpActorVtable@@UAEXPBD@Z", "0x10036160"),
-            "phys_fn_000112": ("setGroup", "?setGroup@NpActorVtable@@UAEXG@Z", "0x10035ba0"),
-            "phys_fn_000120": ("saveToDesc", "?saveToDesc@NpActorVtable@@UAEXAAVNxActorDescBase@@@Z", "0x10034aa0"),
-            "phys_fn_000130": ("getGlobalPoseVal", "?getGlobalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ", "0x1002f4c0"),
-            "phys_fn_000132": ("getGlobalOrientationVal", "?getGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ", "0x1002f2b0"),
+            "phys_fn_000050": ("getLinearDamping", "?getLinearDamping@NpActorVtable@@UBEMXZ", "0x10035060"),
+            "phys_fn_000052": ("getAngularDamping", "?getAngularDamping@NpActorVtable@@UBEMXZ", "0x10034290"),
+            "phys_fn_000062": ("isGroupSleeping", "?isGroupSleeping@NpActorVtable@@UBE_NXZ", "0x10035bb0"),
+            "phys_fn_000064": ("isSleeping", "?isSleeping@NpActorVtable@@UBE_NXZ", "0x10035c60"),
+            "phys_fn_000066": ("getSleepLinearVelocity", "?getSleepLinearVelocity@NpActorVtable@@UBEMXZ", "0x10035ab0"),
+            "phys_fn_000068": ("getSleepAngularVelocity", "?getSleepAngularVelocity@NpActorVtable@@UBEMXZ", "0x10035a40"),
+            "phys_fn_000074": ("raiseActorFlag", "?raiseActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z", "0x1003ad90"),
+            "phys_fn_000076": ("clearActorFlag", "?clearActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z", "0x10034000"),
+            "phys_fn_000078": ("readActorFlag", "?readActorFlag@NpActorVtable@@UBE_NW4NxActorFlag@@@Z", "0x1003ae90"),
+            "phys_fn_000080": ("readBodyFlag", "?readBodyFlag@NpActorVtable@@UBE_NW4NxBodyFlag@@@Z", "0x1003af00"),
+            "phys_fn_000086": ("getName", "?getName@NpActorVtable@@UBEPBDXZ", "0x10035670"),
+            "phys_fn_000088": ("setName", "?setName@NpActorVtable@@UAEXPBD@Z", "0x1003c720"),
+            "phys_fn_000112": ("setGroup", "?setGroup@NpActorVtable@@UAEXG@Z", "0x1003c160"),
+            "phys_fn_000120": ("saveToDesc", "?saveToDesc@NpActorVtable@@UAEXAAVNxActorDescBase@@@Z", "0x1003b060"),
+            "phys_fn_000130": ("getGlobalPoseVal", "?getGlobalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ", "0x10034ef0"),
+            "phys_fn_000132": ("getGlobalOrientationVal", "?getGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ", "0x10034ce0"),
         }
         report = build_report_from_repo(REPO_DIR)
         for row_id, (symbol, map_symbol, address) in expected.items():
@@ -139,9 +139,9 @@ class CompletionReportTests(unittest.TestCase):
 
     def test_body_shape_helpers_have_candidate_source_and_map_symbols(self):
         expected = {
-            "phys_fn_000019": ("Physics/src/ObjectModel.cpp", "nxBodyCollisionObject", "?nxBodyCollisionObject@@YAPAXPAX@Z", "0x1003c430", "ObjectModel.obj"),
-            "phys_fn_000030": ("Physics/src/Scene.cpp", "nxActorDestroy", "?nxActorDestroy@@YAXPAE@Z", "0x10055a80", "Scene.obj"),
-            "phys_fn_000032": ("Physics/src/Scene.cpp", "nxActorShapeFactory", "?nxActorShapeFactory@@YAPAEPBVNxShapeDesc@@PAE@Z", "0x10056200", "Scene.obj"),
+            "phys_fn_000019": ("Physics/src/ObjectModel.cpp", "nxBodyCollisionObject", "?nxBodyCollisionObject@@YAPAXPAX@Z", "0x100487f0", "ObjectModel.obj"),
+            "phys_fn_000030": ("Physics/src/Scene.cpp", "nxActorDestroy", "?nxActorDestroy@@YAXPAE@Z", "0x10066dc0", "Scene.obj"),
+            "phys_fn_000032": ("Physics/src/Scene.cpp", "nxActorShapeFactory", "?nxActorShapeFactory@@YAPAEPBVNxShapeDesc@@PAE@Z", "0x10067540", "Scene.obj"),
         }
         report = build_report_from_repo(REPO_DIR)
         for row_id, (path, symbol, map_symbol, address, obj) in expected.items():

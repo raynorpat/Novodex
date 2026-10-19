@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "evidence": "phase7-pruning-engine-base-constructor-004848.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "e4b7a4c39f3526733f32fae34c1c59c0b44eed703b3b728cffa763bdd2d32123",
+      "uncompressed_sha256": "21a64d54126d3060a55f3b1941d13646ee67648a1b9e6239293e6be67654f921",
+      "bytes": 801992,
+      "source": "build\\scene-pruning-engine-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "2aebddb290bf1d54d0fc41a62ddd5753c3f438b900f937de250e5315159fa1ed",
+      "uncompressed_sha256": "e14717c186d833959381d606efa5b7d97370ca8a3706e74306c1054e5fd8d79f",
+      "bytes": 405136,
+      "source": "build\\scene-pruning-engine-mutation.log"
+    },
+    "restored.log.gz": {
+      "sha256": "dedd86e1cccd8cd19b92ae1cf467d920147b7d1618ec9d414fee0b3418951ab2",
+      "uncompressed_sha256": "b56e0ac937a3f22fff357b466aab87886eebf6e06f1160a5e4268a697ab61f7e",
+      "bytes": 801992,
+      "source": "build\\scene-pruning-engine-final.log"
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "bfb23e02ca50804d58313b264184661139a2567e67e5a2cf352c2c5f0de7f257",
+      "uncompressed_sha256": "35e3d9ad3f62391c1b604cf0d97aef79d0401e510857ad8d6c24f23d245014a1",
+      "bytes": 1133661,
+      "source": "build\\task36-phase4-gate.log"
+    },
+    "phase5-gate.log.gz": {
+      "sha256": "9603709e63c41eb987a5f40345e88435dc191c4a4eda012fefcfac118cc6efb0",
+      "uncompressed_sha256": "d147b7676b08d4506ff8c91f6d57800e44486bf3b56daf96d81831a0d9ff143f",
+      "bytes": 2892445,
+      "source": "build\\task36-phase5-gate.log"
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "8e6488019101ae889305227cfc0d1f8a1669aa70360d901936f19e8a11b256b3",
+      "uncompressed_sha256": "b4088a79a6cd652371a23055466da3ff59b3027383e9bf889aca61e8de64476c",
+      "bytes": 4707039,
+      "source": "build\\task36-phase7-gate.log"
+    }
+  },
+  "candidate_sha256": "78b89d58b44df825d5b79c9056ec9106413ea78f851ea1dc78c936c994c3679a",
+  "phase_gates": {
+    "4": "pass; coverage_assertions_evaluated=563 floor=563",
+    "5": "pass; coverage_assertions_evaluated=2969 floor=2969",
+    "7": "pass; coverage_assertions_evaluated=3107 floor=3107"
+  }
+}

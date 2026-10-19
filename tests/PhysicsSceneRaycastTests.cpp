@@ -493,10 +493,17 @@ static bool nxCheckPruningEngineConstructorBounds(NxScene* wrapper)
 	const bool empty = bounds[0] == 0x7f7fffff && bounds[1] == 0x7f7fffff &&
 		bounds[2] == 0x7f7fffff && bounds[3] == 0xff7fffff &&
 		bounds[4] == 0xff7fffff && bounds[5] == 0xff7fffff;
+	NxU32 prunerSlots[4];
+	memcpy(prunerSlots, engine + 0x1c, sizeof(prunerSlots));
+	const bool nullPrunerSlots = prunerSlots[0] == 0 && prunerSlots[1] == 0 &&
+		prunerSlots[2] == 0 && prunerSlots[3] == 0;
 	printf("scene_pruning_engine ctor_empty_bounds=%u words=%08x.%08x.%08x.%08x.%08x.%08x\n",
 		empty ? 1u : 0u, bounds[0], bounds[1], bounds[2],
 		bounds[3], bounds[4], bounds[5]);
-	return empty;
+	printf("scene_pruning_engine base_null_pruner_slots=%u words=%08x.%08x.%08x.%08x\n",
+		nullPrunerSlots ? 1u : 0u, prunerSlots[0], prunerSlots[1],
+		prunerSlots[2], prunerSlots[3]);
+	return empty && nullPrunerSlots;
 	}
 
 static bool nxPrunerHandleReuseFailed = false;

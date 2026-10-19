@@ -666,3 +666,5 @@ Task 33: complete (phys_fn_003681; red link test confirms missing helper; restor
 Task 34: complete (six reconstructed Phase 7 rows now have independent registered mismatch markers and fail the target on differences; four isolated mutations rejected; restored differential exact; Phase 5/6/7 pass 2968/2968, 1819/1819, 3104/3104; Phase 7 523 closed / 37 deferred; public headers unchanged).
 
 Task 35: complete (phys_fn_002272 committed in 58f655efc; direct oracle fixture covers 16 cases under two x87 control words, <= epsilon mutation rejected in two boundary cases; Phase 7 freshly passes 3106/3106; plan records Phase 3/5/6/7 gates and tooling/header checks).
+
+Task 36: complete (phys_fn_004848 maps to NxScenePruningEngineBase::ConstructPruningEngineBase; SceneRaycast restored differential exact; +0x1c mutation rejected with stdout_delta=2813; Phase 4/5/7 pass 563/563, 2969/2969, 3107/3107; inventory 6338 functions / 5138 data objects / 0 unexplained; 80 public headers unchanged).

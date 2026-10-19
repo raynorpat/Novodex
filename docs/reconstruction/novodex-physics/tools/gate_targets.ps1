@@ -2936,6 +2936,7 @@ $NxRequiredCoverageLines = [ordered] @{
     # at its new place (the static pruner's tree was never dropped).
     'NxPhysicsSceneRaycastTests' = @(
 		'scene_pruning_engine ctor_empty_bounds=1 words=7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
+		'scene_pruning_engine base_null_pruner_slots=1 words=00000000.00000000.00000000.00000000',
         'scene_pruner row000965 owner_query_match=1 null=0 opaque=0',
         'scene_pruner row001958 section1_owner=1 indices=2 mismatches=0',
         'scene_pruner row001962 selected_section1_owner=1 selector=2 indices=2 mismatches=0',
@@ -6408,9 +6409,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 562  # plus the direct actual-DLL sort rows 002180/002182 differential
+	'4' = 563  # plus the direct actual-DLL sort rows 002180/002182 differential
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
-	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
+	           # row 004848 adds the four null-base-slot assertion; row 001980 covers the full constructor bounds
 	           # plus hit, no-normal, cutoff, translation and miss coverage
                # adds direct row 004791 MemoryStream destructor allocator-free differential
                # adds direct row 000965 Prunable owner-query result
@@ -6422,7 +6423,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2968  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
+	'5' = 2969  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6430,7 +6431,7 @@ $NxPhaseCoverageFloor = [ordered] @{
 	           # includes phys_fn_003690 NxFluid base deleting-destructor differential
 	           # rows 001957/001960 add static and selected-pruner object count assertions
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
-	           # row 001980 adds the pruning-engine constructor assertion to the shared SceneRaycast target
+	           # row 004848 adds the four null-base-slot assertion; row 001980 covers the full constructor bounds
 	           # plus actual triangle-mesh shape raycast slot 5 front/backface and rotated-transform coverage
 	           # plus hit, no-normal, cutoff, translation and miss coverage
 	           # previous 2850 plus the single-body and compound-body phys_fn_001943 assertions
@@ -6566,7 +6567,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3106  # includes current locked-array, fluid, global-call, and ray/AABB slab markers
+	'7' = 3107  # includes current locked-array, fluid, global-call, and ray/AABB slab markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker

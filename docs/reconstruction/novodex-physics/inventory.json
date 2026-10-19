@@ -110,7 +110,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "_phys_fn_000002@16",
-        "address": "0x1005abd0",
+        "address": "0x1005ba90",
         "object": "RecoveredRows.obj"
       }
     },
@@ -154,7 +154,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxForwardSubobjectCall@@YAIPAX0@Z",
-        "address": "0x1003e5f0",
+        "address": "0x1004aa20",
         "object": "ObjectModel.obj"
       }
     },
@@ -272,7 +272,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?row000010@Row000010Fixture@@QAEXPBVNxBodyDesc@@@Z",
-        "address": "0x1005b9e0",
+        "address": "0x1006ed00",
         "object": "Scene.obj"
       }
     },
@@ -316,7 +316,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxIdAllocNext@@YAIPAX@Z",
-        "address": "0x1003e9e0",
+        "address": "0x1004afd0",
         "object": "ObjectModel.obj"
       }
     },
@@ -454,7 +454,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBodyCollisionObject@@YAPAXPAX@Z",
-        "address": "0x1003c430",
+        "address": "0x100487f0",
         "object": "ObjectModel.obj"
       }
     },
@@ -668,7 +668,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxActorDestroy@@YAXPAE@Z",
-        "address": "0x10055a80",
+        "address": "0x10066dc0",
         "object": "Scene.obj"
       }
     },
@@ -712,7 +712,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxActorShapeFactory@@YAPAEPBVNxShapeDesc@@PAE@Z",
-        "address": "0x10056200",
+        "address": "0x10067540",
         "object": "Scene.obj"
       }
     },
@@ -1047,7 +1047,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getLinearDamping@NpActorVtable@@UBEMXZ",
-        "address": "0x1002f630",
+        "address": "0x10035060",
         "object": "NpActor.obj"
       }
     },
@@ -1091,7 +1091,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getAngularDamping@NpActorVtable@@UBEMXZ",
-        "address": "0x1002e860",
+        "address": "0x10034290",
         "object": "NpActor.obj"
       }
     },
@@ -1282,7 +1282,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?isGroupSleeping@NpActorVtable@@UBE_NXZ",
-        "address": "0x10030180",
+        "address": "0x10035bb0",
         "object": "NpActor.obj"
       }
     },
@@ -1326,7 +1326,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?isSleeping@NpActorVtable@@UBE_NXZ",
-        "address": "0x10030230",
+        "address": "0x10035c60",
         "object": "NpActor.obj"
       }
     },
@@ -1370,7 +1370,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getSleepLinearVelocity@NpActorVtable@@UBEMXZ",
-        "address": "0x10030080",
+        "address": "0x10035ab0",
         "object": "NpActor.obj"
       }
     },
@@ -1414,7 +1414,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getSleepAngularVelocity@NpActorVtable@@UBEMXZ",
-        "address": "0x10030010",
+        "address": "0x10035a40",
         "object": "NpActor.obj"
       }
     },
@@ -1532,7 +1532,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?raiseActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z",
-        "address": "0x100347d0",
+        "address": "0x1003ad90",
         "object": "NpActor.obj"
       }
     },
@@ -1576,7 +1576,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?clearActorFlag@NpActorVtable@@UAEXW4NxActorFlag@@@Z",
-        "address": "0x1002e5d0",
+        "address": "0x10034000",
         "object": "NpActor.obj"
       }
     },
@@ -1620,7 +1620,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?readActorFlag@NpActorVtable@@UBE_NW4NxActorFlag@@@Z",
-        "address": "0x100348d0",
+        "address": "0x1003ae90",
         "object": "NpActor.obj"
       }
     },
@@ -1664,7 +1664,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?readBodyFlag@NpActorVtable@@UBE_NW4NxBodyFlag@@@Z",
-        "address": "0x10034940",
+        "address": "0x1003af00",
         "object": "NpActor.obj"
       }
     },
@@ -1784,7 +1784,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getName@NpActorVtable@@UBEPBDXZ",
-        "address": "0x1002fc40",
+        "address": "0x10035670",
         "object": "NpActor.obj"
       }
     },
@@ -1828,7 +1828,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setName@NpActorVtable@@UAEXPBD@Z",
-        "address": "0x10036160",
+        "address": "0x1003c720",
         "object": "NpActor.obj"
       }
     },
@@ -1983,7 +1983,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getCMassLocalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ",
-        "address": "0x1002eee0",
+        "address": "0x10034910",
         "object": "NpActor.obj"
       }
     },
@@ -2027,7 +2027,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getCMassLocalPositionVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
-        "address": "0x1002efd0",
+        "address": "0x10034a00",
         "object": "NpActor.obj"
       }
     },
@@ -2071,7 +2071,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getCMassLocalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ",
-        "address": "0x1002ee20",
+        "address": "0x10034850",
         "object": "NpActor.obj"
       }
     },
@@ -2115,7 +2115,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getMassSpaceInertiaTensorVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
-        "address": "0x1002fb80",
+        "address": "0x100355b0",
         "object": "NpActor.obj"
       }
     },
@@ -2159,7 +2159,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getLinearVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
-        "address": "0x1002f780",
+        "address": "0x100351b0",
         "object": "NpActor.obj"
       }
     },
@@ -2203,7 +2203,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getAngularVelocityVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
-        "address": "0x1002eac0",
+        "address": "0x100344f0",
         "object": "NpActor.obj"
       }
     },
@@ -2247,7 +2247,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getLinearMomentumVal@NpActorVtable@@UBE?AVNxVec3@@XZ",
-        "address": "0x1002f6d0",
+        "address": "0x10035100",
         "object": "NpActor.obj"
       }
     },
@@ -2328,7 +2328,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setGroup@NpActorVtable@@UAEXG@Z",
-        "address": "0x10035ba0",
+        "address": "0x1003c160",
         "object": "NpActor.obj"
       }
     },
@@ -2480,7 +2480,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?saveToDesc@NpActorVtable@@UAEXAAVNxActorDescBase@@@Z",
-        "address": "0x10034aa0",
+        "address": "0x1003b060",
         "object": "NpActor.obj"
       }
     },
@@ -2673,7 +2673,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getGlobalPoseVal@NpActorVtable@@UBE?AVNxMat34@@XZ",
-        "address": "0x1002f4c0",
+        "address": "0x10034ef0",
         "object": "NpActor.obj"
       }
     },
@@ -2717,7 +2717,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getGlobalOrientationVal@NpActorVtable@@UBE?AVNxMat33@@XZ",
-        "address": "0x1002f2b0",
+        "address": "0x10034ce0",
         "object": "NpActor.obj"
       }
     },
@@ -2989,7 +2989,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z",
-        "address": "0x1002fd80",
+        "address": "0x100357b0",
         "object": "NpActor.obj"
       }
     },
@@ -3033,7 +3033,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getLocalPointVelocityVal@NpActorVtable@@UBE?AVNxVec3@@ABV2@@Z",
-        "address": "0x1002f860",
+        "address": "0x10035290",
         "object": "NpActor.obj"
       }
     },
@@ -5611,7 +5611,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??0NpScene@@QAE@PAVNxSceneInternal@@@Z",
-        "address": "0x10041b70",
+        "address": "0x10042520",
         "object": "NpScene.obj"
       }
     },
@@ -5693,7 +5693,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setGravity@NpScene@@UAEXABVNxVec3@@@Z",
-        "address": "0x10043dd0",
+        "address": "0x10044960",
         "object": "NpScene.obj"
       }
     },
@@ -5737,7 +5737,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getGravity@NpScene@@UAEXAAVNxVec3@@@Z",
-        "address": "0x10042660",
+        "address": "0x100431f0",
         "object": "NpScene.obj"
       }
     },
@@ -6123,7 +6123,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getActorPairFlags@NpScene@@UBEIAAVNxActor@@0@Z",
-        "address": "0x100410e0",
+        "address": "0x100430d0",
         "object": "NpScene.obj"
       }
     },
@@ -6205,7 +6205,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getShapePairFlags@NpScene@@UBEIAAVNxShape@@0@Z",
-        "address": "0x10041530",
+        "address": "0x10043620",
         "object": "NpScene.obj"
       }
     },
@@ -6248,7 +6248,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getNbPairs@NpScene@@UBEIXZ",
-        "address": "0x10042a90",
+        "address": "0x10043440",
         "object": "NpScene.obj"
       },
       "implementation": "Physics/src/NpScene.cpp"
@@ -6292,7 +6292,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getPairFlagArray@NpScene@@UBE_NPAUNxPairFlag@@I@Z",
-        "address": "0x10042bb0",
+        "address": "0x10043560",
         "object": "NpScene.obj"
       },
       "implementation": "Physics/src/NpScene.cpp"
@@ -6564,7 +6564,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?flushStream@NpScene@@UAEXXZ",
-        "address": "0x10042530",
+        "address": "0x100430c0",
         "object": "NpScene.obj"
       },
       "implementation": "Physics/src/NpScene.cpp"
@@ -6608,7 +6608,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?startRun@NpScene@@UAEXM@Z",
-        "address": "0x100442d0",
+        "address": "0x10044e60",
         "object": "NpScene.obj"
       },
       "implementation": "Physics/src/NpScene.cpp"
@@ -6634,7 +6634,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?finishRun@NpScene@@UAEXXZ",
-        "address": "0x100424e0",
+        "address": "0x10043070",
         "object": "NpScene.obj"
       },
       "implementation": "Physics/src/NpScene.cpp"
@@ -6679,7 +6679,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setTiming@NpScene@@UAEXMIW4NxTimeStepMethod@@@Z",
-        "address": "0x10044150",
+        "address": "0x10044af0",
         "object": "NpScene.obj"
       }
     },
@@ -6723,7 +6723,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getTiming@NpScene@@UBEXAAMAAIAAW4NxTimeStepMethod@@@Z",
-        "address": "0x10042ca0",
+        "address": "0x10043650",
         "object": "NpScene.obj"
       }
     },
@@ -6767,7 +6767,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?runFor@NpScene@@UAEXMMIW4NxTimeStepMethod@@@Z",
-        "address": "0x10043e40",
+        "address": "0x100447f0",
         "object": "NpScene.obj"
       }
     },
@@ -6962,7 +6962,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getUserNotify@NpScene@@UBEPAVNxUserNotify@@XZ",
-        "address": "0x10042da0",
+        "address": "0x10043750",
         "object": "NpScene.obj"
       }
     },
@@ -7044,7 +7044,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getUserTriggerReport@NpScene@@UBEPAVNxUserTriggerReport@@XZ",
-        "address": "0x10042df0",
+        "address": "0x100437a0",
         "object": "NpScene.obj"
       }
     },
@@ -7126,7 +7126,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getUserContactReport@NpScene@@UBEPAVNxUserContactReport@@XZ",
-        "address": "0x10042d10",
+        "address": "0x100436c0",
         "object": "NpScene.obj"
       }
     },
@@ -7170,7 +7170,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setUserFluidContactReport@NpScene@@UAEXPAVNxUserFluidContactReport@@@Z",
-        "address": "0x100442c0",
+        "address": "0x10044c60",
         "object": "NpScene.obj"
       }
     },
@@ -7214,7 +7214,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getUserFluidContactReport@NpScene@@UBEPAVNxUserFluidContactReport@@XZ",
-        "address": "0x10042d70",
+        "address": "0x10043720",
         "object": "NpScene.obj"
       }
     },
@@ -7789,7 +7789,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?simulate@NpScene@@UAEXM@Z",
-        "address": "0x100443d0",
+        "address": "0x10044d70",
         "object": "NpScene.obj"
       }
     },
@@ -7833,7 +7833,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?checkResults@NpScene@@UAE_NW4NxSimulationStatus@@_N@Z",
-        "address": "0x100421a0",
+        "address": "0x10042b50",
         "object": "NpScene.obj"
       }
     },
@@ -7915,7 +7915,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?createFluid@NpScene@@UAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
-        "address": "0x100422c0",
+        "address": "0x10042c70",
         "object": "NpScene.obj"
       }
     },
@@ -7959,7 +7959,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?releaseFluid@NpScene@@UAEXAAVNxFluid@@@Z",
-        "address": "0x10043bf0",
+        "address": "0x100445a0",
         "object": "NpScene.obj"
       }
     },
@@ -8003,7 +8003,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?createImplicitMesh@NpScene@@UAEPAVNxImplicitMesh@@ABVNxImplicitMeshDesc@@@Z",
-        "address": "0x100423c0",
+        "address": "0x10042d70",
         "object": "NpScene.obj"
       }
     },
@@ -8047,7 +8047,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?releaseImplicitMesh@NpScene@@UAEXAAVNxImplicitMesh@@@Z",
-        "address": "0x10042cb0",
+        "address": "0x10044660",
         "object": "NpScene.obj"
       }
     },
@@ -8091,7 +8091,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getNbImplicitMeshes@NpScene@@UBEIXZ",
-        "address": "0x10042a10",
+        "address": "0x100433c0",
         "object": "NpScene.obj"
       }
     },
@@ -8135,7 +8135,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getImplicitMeshes@NpScene@@UAEPAPAVNxImplicitMesh@@XZ",
-        "address": "0x100428a0",
+        "address": "0x10043250",
         "object": "NpScene.obj"
       }
     },
@@ -8179,8 +8179,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ENpScene@@W7AEPAXI@Z",
-        "address": "0x10040e97",
-        "object": "NpScene.obj"
+        "address": "0x10042887",
+        "object": "i"
       }
     },
     {
@@ -8223,7 +8223,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??1NpScene@@UAE@XZ",
-        "address": "0x10040d50",
+        "address": "0x10042740",
         "object": "NpScene.obj"
       }
     },
@@ -8267,7 +8267,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getNbActors@NpScene@@UBEIXZ",
-        "address": "0x10041830",
+        "address": "0x100432e0",
         "object": "NpScene.obj"
       }
     },
@@ -8311,7 +8311,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getActors@NpScene@@UAEPAPAVNxActor@@XZ",
-        "address": "0x10041710",
+        "address": "0x10043140",
         "object": "NpScene.obj"
       }
     },
@@ -8355,7 +8355,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getNbFluids@NpScene@@UBEIXZ",
-        "address": "0x100418e0",
+        "address": "0x10043350",
         "object": "NpScene.obj"
       }
     },
@@ -8381,7 +8381,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getFluids@NpScene@@UAEPAPAVNxFluid@@XZ",
-        "address": "0x10041760",
+        "address": "0x10043190",
         "object": "NpScene.obj"
       }
     },
@@ -9009,7 +9009,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGetSdkPointerBinding@@YAPAXPAX@Z",
-        "address": "0x100534e0",
+        "address": "0x10054370",
         "object": "PhysicsInternal.obj"
       }
     },
@@ -9495,7 +9495,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSetSdkPointerBinding@@YA_NPAX0@Z",
-        "address": "0x100535c0",
+        "address": "0x10054450",
         "object": "PhysicsInternal.obj"
       }
     },
@@ -9863,8 +9863,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setToDefault@NxPlaneShapeDesc@@UAEXXZ",
-        "address": "0x1006e3b0",
-        "object": "Scene.obj"
+        "address": "0x1006f510",
+        "object": "i"
       }
     },
     {
@@ -9943,7 +9943,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSceneUpdateActorCount@@YAXPAXI@Z",
-        "address": "0x1006c610",
+        "address": "0x1006d8c0",
         "object": "Scene.obj"
       },
       "implementation": "Physics/src/Scene.cpp"
@@ -9988,7 +9988,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxScratchStamp@@YIIPAX@Z",
-        "address": "0x100789d0",
+        "address": "0x1007aa70",
         "object": "TriangleMeshPolygons.obj"
       }
     },
@@ -10032,7 +10032,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setGravity@NxSceneInternal@@QAEXABVNxVec3@@@Z",
-        "address": "0x100683d0",
+        "address": "0x1006f200",
         "object": "Scene.obj"
       }
     },
@@ -10227,7 +10227,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z",
-        "address": "0x1005e810",
+        "address": "0x1005f6d0",
         "object": "Scene.obj"
       }
     },
@@ -10271,7 +10271,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?NxSceneRemoveOwnerPairRecords@@YAXPAXPBX@Z",
-        "address": "0x1005e810",
+        "address": "0x1005f6d0",
         "object": "Scene.obj"
       }
     },
@@ -10315,7 +10315,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?removeActorOwnerPairRecords@NxSceneInternal@@QAEXPBX@Z",
-        "address": "0x1006c8f0",
+        "address": "0x1006ea30",
         "object": "Scene.obj"
       }
     },
@@ -10396,7 +10396,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getPairFlagArray@NxSceneInternal@@QBE_NPAUNxPairFlag@@I@Z",
-        "address": "0x100617c0",
+        "address": "0x100625d0",
         "object": "Scene.obj"
       }
     },
@@ -10440,7 +10440,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getPairFlagArray@NxSceneInternal@@QBE_NPAUNxPairFlag@@I@Z",
-        "address": "0x100617c0",
+        "address": "0x100625d0",
         "object": "Scene.obj"
       }
     },
@@ -10484,7 +10484,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?NxFilterShapePair@@YA_NPBIPBXPBUNxCollisionShape@@2@Z",
-        "address": "0x10031670",
+        "address": "0x10031690",
         "object": "NarrowPhase.obj"
       }
     },
@@ -10639,7 +10639,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?simulateFrame@NxSceneInternal@@QAEXXZ",
-        "address": "0x1006e4d0",
+        "address": "0x1006f630",
         "object": "Scene.obj"
       }
     },
@@ -10776,7 +10776,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSceneApplyDescriptorFlags@@YAXPAVNxSceneInternal@@IPBVNxBounds3@@@Z",
-        "address": "0x1006a570",
+        "address": "0x1006b350",
         "object": "Scene.obj"
       }
     },
@@ -12269,7 +12269,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?destroy@NxSceneAuxiliaryArrayBlock@@QAEXXZ",
-        "address": "0x1006edd0",
+        "address": "0x10070b40",
         "object": "SceneAuxiliary.obj"
       }
     },
@@ -12610,7 +12610,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?processSimulationCallbacks@NxSceneInternal@@QAEXXZ",
-        "address": "0x1006cd70",
+        "address": "0x1006e3a0",
         "object": "Scene.obj"
       }
     },
@@ -12654,7 +12654,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?processSimulationCallbacks@NxSceneInternal@@QAEXXZ",
-        "address": "0x1006cd70",
+        "address": "0x1006e3a0",
         "object": "Scene.obj"
       }
     },
@@ -12680,7 +12680,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
-        "address": "0x1005ff10",
+        "address": "0x10060fc0",
         "object": "Scene.obj"
       }
     },
@@ -12874,7 +12874,7 @@
       "candidate_map_reference": {
         "path": "build/phase-mainline/Release/NxPhysics.map",
         "symbol": "?simulateSubstep@NxSceneInternal@@QAEXXZ",
-        "address": "0x1006e800",
+        "address": "0x1006f850",
         "object": "Scene.obj"
       }
     },
@@ -12955,7 +12955,7 @@
       "candidate_map_reference": {
         "path": "build/phase-mainline/Release/NxPhysics.map",
         "symbol": "?simulateFrame@NxSceneInternal@@QAEXXZ",
-        "address": "0x1006e5e0",
+        "address": "0x1006f630",
         "object": "Scene.obj"
       }
     },
@@ -13128,7 +13128,7 @@
       "candidate_map_reference": {
         "path": "build-nxphysics-next-row/Release/NxPhysics.map",
         "symbol": "?scalarDeletingDestructor@NxSceneInternal@@QAEPAXH@Z",
-        "address": "0x1006dff0",
+        "address": "0x1006f130",
         "object": "Scene.obj"
       }
     },
@@ -18654,7 +18654,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?shapeOwnerQuery@@YAIPAX@Z",
-        "address": "0x1004f0d0",
+        "address": "0x1004fee0",
         "object": "ObjectModel.obj"
       }
     },
@@ -20138,7 +20138,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBoxHandleSetFlag@@YIXPAX0W4NxShapeFlag@@_N@Z",
-        "address": "0x10036a50",
+        "address": "0x10036b10",
         "object": "NpActor.obj"
       }
     },
@@ -20314,7 +20314,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBoxHandleSetGlobalPose@@YIXPAX0ABVNxMat34@@@Z",
-        "address": "0x10036b10",
+        "address": "0x10036bd0",
         "object": "NpActor.obj"
       }
     },
@@ -20358,7 +20358,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBoxHandleSetGlobalPosition@@YIXPAX0ABVNxVec3@@@Z",
-        "address": "0x10036b50",
+        "address": "0x10036c10",
         "object": "NpActor.obj"
       }
     },
@@ -20402,7 +20402,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBoxHandleSetGlobalOrientation@@YIXPAX0ABVNxMat33@@@Z",
-        "address": "0x10036ad0",
+        "address": "0x10036b90",
         "object": "NpActor.obj"
       }
     },
@@ -20526,7 +20526,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBoxHandleSetName@@YIXPAX0PBD@Z",
-        "address": "0x10036de0",
+        "address": "0x10036e20",
         "object": "NpActor.obj"
       }
     },
@@ -20570,7 +20570,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxShapeHandleGetGlobalOrientation@@YIXPAX0AAVNxMat33@@@Z",
-        "address": "0x10039e40",
+        "address": "0x10039f00",
         "object": "NpActor.obj"
       }
     },
@@ -20650,7 +20650,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBoxHandleSetDimensions@@YIXPAX0ABVNxVec3@@@Z",
-        "address": "0x10036aa0",
+        "address": "0x10036af0",
         "object": "NpActor.obj"
       }
     },
@@ -20730,7 +20730,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxBoxHandleGetWorldOBB@@YIXPAX0AAVNxBox@@@Z",
-        "address": "0x100369b0",
+        "address": "0x100369c0",
         "object": "NpActor.obj"
       }
     },
@@ -20811,8 +20811,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ECollisionObjectBox@@WM@AEPAXI@Z",
-        "address": "0x100464c5",
-        "object": "ObjectModel.obj"
+        "address": "0x10046565",
+        "object": "i"
       }
     },
     {
@@ -21008,7 +21008,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetLocalPose@@YIXPAX0ABVNxMat34@@@Z",
-        "address": "0x10037540",
+        "address": "0x10037620",
         "object": "NpActor.obj"
       }
     },
@@ -21052,7 +21052,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetLocalPosition@@YIXPAX0ABVNxVec3@@@Z",
-        "address": "0x100375a0",
+        "address": "0x10037680",
         "object": "NpActor.obj"
       }
     },
@@ -21096,7 +21096,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetLocalOrientation@@YIXPAX0ABVNxMat33@@@Z",
-        "address": "0x100374e0",
+        "address": "0x100375c0",
         "object": "NpActor.obj"
       }
     },
@@ -21140,7 +21140,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetGlobalPose@@YIXPAX0ABVNxMat34@@@Z",
-        "address": "0x100373f0",
+        "address": "0x100374d0",
         "object": "NpActor.obj"
       }
     },
@@ -21184,7 +21184,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetGlobalPosition@@YIXPAX0ABVNxVec3@@@Z",
-        "address": "0x10037440",
+        "address": "0x10037520",
         "object": "NpActor.obj"
       }
     },
@@ -21228,7 +21228,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetGlobalOrientation@@YIXPAX0ABVNxMat33@@@Z",
-        "address": "0x100373a0",
+        "address": "0x10037480",
         "object": "NpActor.obj"
       }
     },
@@ -21454,7 +21454,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleIs@@YIPAXPAX0W4NxShapeType@@@Z",
-        "address": "0x10036f60",
+        "address": "0x10037320",
         "object": "NpActor.obj"
       }
     },
@@ -21498,7 +21498,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetMaterial@@YIXPAX0G@Z",
-        "address": "0x10037010",
+        "address": "0x100376f0",
         "object": "NpActor.obj"
       }
     },
@@ -21542,7 +21542,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetDimensions@@YIXPAX0MM@Z",
-        "address": "0x10036f40",
+        "address": "0x100373a0",
         "object": "NpActor.obj"
       }
     },
@@ -21586,7 +21586,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetRadius@@YIXPAX0M@Z",
-        "address": "0x10036fc0",
+        "address": "0x10037740",
         "object": "NpActor.obj"
       }
     },
@@ -21630,7 +21630,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleSetHeight@@YIXPAX0M@Z",
-        "address": "0x10036f00",
+        "address": "0x10037570",
         "object": "NpActor.obj"
       }
     },
@@ -21674,7 +21674,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleGetRadius@@YIMPAX0@Z",
-        "address": "0x10036ed0",
+        "address": "0x100372b0",
         "object": "NpActor.obj"
       }
     },
@@ -21718,7 +21718,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxCapsuleHandleGetHeight@@YIMPAX0@Z",
-        "address": "0x10036e60",
+        "address": "0x10037240",
         "object": "NpActor.obj"
       }
     },
@@ -21799,8 +21799,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ECollisionObjectCapsule@@WM@AEPAXI@Z",
-        "address": "0x100464cd",
-        "object": "ObjectModel.obj"
+        "address": "0x1004656d",
+        "object": "i"
       }
     },
     {
@@ -22459,8 +22459,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ECollisionObjectPlane@@WM@AEPAXI@Z",
-        "address": "0x100464dd",
-        "object": "ObjectModel.obj"
+        "address": "0x1004657d",
+        "object": "i"
       }
     },
     {
@@ -22612,7 +22612,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSphereHandleSetLocalPose@@YIXPAX0ABVNxMat34@@@Z",
-        "address": "0x1003aa00",
+        "address": "0x1003aaf0",
         "object": "NpActor.obj"
       }
     },
@@ -22656,7 +22656,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSphereHandleSetLocalPosition@@YIXPAX0ABVNxVec3@@@Z",
-        "address": "0x1003aa60",
+        "address": "0x1003ab50",
         "object": "NpActor.obj"
       }
     },
@@ -22700,7 +22700,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSphereHandleSetLocalOrientation@@YIXPAX0ABVNxMat33@@@Z",
-        "address": "0x1003a9a0",
+        "address": "0x1003aa90",
         "object": "NpActor.obj"
       }
     },
@@ -22744,7 +22744,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSphereHandleSetGlobalPose@@YIXPAX0ABVNxMat34@@@Z",
-        "address": "0x1003a900",
+        "address": "0x1003a9f0",
         "object": "NpActor.obj"
       }
     },
@@ -22788,7 +22788,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSphereHandleSetGlobalPosition@@YIXPAX0ABVNxVec3@@@Z",
-        "address": "0x1003a950",
+        "address": "0x1003aa40",
         "object": "NpActor.obj"
       }
     },
@@ -22832,7 +22832,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSphereHandleSetGlobalOrientation@@YIXPAX0ABVNxMat33@@@Z",
-        "address": "0x1003a8b0",
+        "address": "0x1003a9a0",
         "object": "NpActor.obj"
       }
     },
@@ -23131,8 +23131,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ECollisionObjectSphere@@WM@AEPAXI@Z",
-        "address": "0x100464e5",
-        "object": "ObjectModel.obj"
+        "address": "0x10046585",
+        "object": "i"
       }
     },
     {
@@ -23212,8 +23212,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_GCollisionObject@@UAEPAXI@Z",
-        "address": "0x100464f0",
-        "object": "ObjectModel.obj"
+        "address": "0x10046590",
+        "object": "i"
       }
     },
     {
@@ -23256,7 +23256,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxOwnerValue@CollisionObject@@UAEPAXXZ",
-        "address": "0x1004d1e0",
+        "address": "0x1004d520",
         "object": "ObjectModel.obj"
       }
     },
@@ -24027,8 +24027,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ECollisionObjectMesh@@WM@AEPAXI@Z",
-        "address": "0x100464d5",
-        "object": "ObjectModel.obj"
+        "address": "0x10046575",
+        "object": "i"
       }
     },
     {
@@ -36774,7 +36774,7 @@
       "candidate_map_reference": {
         "path": "build/phase7-physfn-001937-fullgate/Release/NxPhysics.map",
         "symbol": "?nxVisualizeFreePrunerWorldBoxes@@YAEPAVPruner@@@Z",
-        "address": "0x10074740",
+        "address": "0x10074be0",
         "object": "SceneVisualize.obj"
       }
     },
@@ -36818,7 +36818,7 @@
       "candidate_map_reference": {
         "path": "build/phase7-physfn-001939-fullgate/Release/NxPhysics.map",
         "symbol": "?nxSceneVisualizeCollisionPruners@@YAXPAXPAVNxDebugRenderable@@@Z",
-        "address": "0x10073aa0",
+        "address": "0x10073e80",
         "object": "SceneVisualize.obj"
       }
     },
@@ -36899,7 +36899,7 @@
       "candidate_map_reference": {
         "path": "build/phase5-current-goal/Release/NxPhysics.map",
         "symbol": "?nxSceneAddShape@@YAXPAVNxSceneInternal@@PAE_N@Z",
-        "address": "0x1006a100",
+        "address": "0x1006afb0",
         "object": "Scene.obj"
       }
     },
@@ -37176,7 +37176,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?StaticPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
-        "address": "0x100b0770",
+        "address": "0x100b2380",
         "object": "IcePruningEngine.obj"
       }
     },
@@ -37202,7 +37202,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?SectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z",
-        "address": "0x100b06e0",
+        "address": "0x100b22f0",
         "object": "IcePruningEngine.obj"
       }
     },
@@ -37246,7 +37246,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?SelectedPrunerObjectCount@NxScenePrunerCountQueries@@QAEIXZ",
-        "address": "0x100b0710",
+        "address": "0x100b2320",
         "object": "IcePruningEngine.obj"
       }
     },
@@ -37290,7 +37290,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?SelectedSectionOneOwner@NxScenePrunerOwnerQueries@@QAEPAXI@Z",
-        "address": "0x100b0710",
+        "address": "0x100b2340",
         "object": "IcePruningEngine.obj"
       }
     },
@@ -37504,7 +37504,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSceneApplyDescriptorFlags@@YAXPAVNxSceneInternal@@IPBVNxBounds3@@@Z",
-        "address": "0x1006a570",
+        "address": "0x1006b350",
         "object": "Scene.obj"
       }
     },
@@ -37530,7 +37530,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSceneEngineReleaseCoherent@@YAXPAX@Z",
-        "address": "0x1009e190",
+        "address": "0x100b2770",
         "object": "IcePruningEngine.obj"
       }
     },
@@ -37618,7 +37618,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSceneVisualizeCollisionPruners@@YAXPAXPAVNxDebugRenderable@@@Z",
-        "address": "0x1006dce0",
+        "address": "0x10073e80",
         "object": "SceneVisualize.obj"
       }
     },
@@ -37662,7 +37662,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSceneMember4CA30@@YAXPAX@Z",
-        "address": "0x1006bf50",
+        "address": "0x1006cd30",
         "object": "Scene.obj"
       }
     },
@@ -42881,7 +42881,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?NxContinuousCdSweep@@YA_NPBUNxCollisionShape@@0PAUNxContactSink@@@Z",
-        "address": "0x1000fbc0",
+        "address": "0x1000fc00",
         "object": "ContactGeneration.obj"
       }
     },
@@ -42925,7 +42925,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?NxContinuousCdPair@@YA_NPBUNxCollisionShape@@0PAUNxContactSink@@@Z",
-        "address": "0x1000fb70",
+        "address": "0x1000fbb0",
         "object": "ContactGeneration.obj"
       }
     },
@@ -44978,7 +44978,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxLockApiWorkerStart2379@@YGKPAX@Z",
-        "address": "0x1007a020",
+        "address": "0x1007b410",
         "object": "ZzLockApiByteRows.obj"
       },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/890",
@@ -45022,7 +45022,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?start@NxLockApiWorkerStarter2381@@QAEPAXXZ",
-        "address": "0x1007a040",
+        "address": "0x1007b430",
         "object": "ZzLockApiByteRows.obj"
       },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/891",
@@ -45408,7 +45408,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxLockApiWorkerScalarDelete2402@@YIPAXPAX0I@Z",
-        "address": "0x1007a020",
+        "address": "0x1007b3b0",
         "object": "ZzLockApiByteRows.obj"
       },
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/901",
@@ -45731,7 +45731,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSceneAuxRegisterRecord@@YAXPAX0@Z",
-        "address": "0x1006a550",
+        "address": "0x1006b840",
         "object": "Scene.obj"
       },
       "implementation": "Physics/src/Scene.cpp"
@@ -65044,7 +65044,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidInitializeParticles@@YAXPAXABVNxParticleData@@@Z",
-        "address": "0x10067fb0",
+        "address": "0x10068f00",
         "object": "Scene.obj"
       }
     },
@@ -65220,7 +65220,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
-        "address": "0x1004ace0",
+        "address": "0x1004ad10",
         "object": "ObjectModel.obj"
       }
     },
@@ -65308,7 +65308,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
-        "address": "0x1004ace0",
+        "address": "0x1004ad10",
         "object": "ObjectModel.obj"
       }
     },
@@ -65396,7 +65396,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
-        "address": "0x1004ace0",
+        "address": "0x1004ad10",
         "object": "ObjectModel.obj"
       }
     },
@@ -65484,7 +65484,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
-        "address": "0x1004ace0",
+        "address": "0x1004ad10",
         "object": "ObjectModel.obj"
       }
     },
@@ -65572,7 +65572,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
-        "address": "0x1004ace0",
+        "address": "0x1004ad10",
         "object": "ObjectModel.obj"
       }
     },
@@ -65616,7 +65616,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
-        "address": "0x1004ace0",
+        "address": "0x1004ad10",
         "object": "ObjectModel.obj"
       }
     },
@@ -65660,7 +65660,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallN@@YAXPAXP6AXIII@ZHII@Z",
-        "address": "0x1004ace0",
+        "address": "0x1004ad10",
         "object": "ObjectModel.obj"
       }
     },
@@ -65880,7 +65880,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallReciprocalDouble@@YANPAXP6ANII@Z@Z",
-        "address": "0x1004ad60",
+        "address": "0x1004ad90",
         "object": "ObjectModel.obj"
       }
     },
@@ -66243,7 +66243,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxArrayDataIfNonEmpty@@YAPAXPAX@Z",
-        "address": "0x10048090",
+        "address": "0x10048190",
         "object": "ObjectModel.obj"
       }
     },
@@ -66555,7 +66555,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "@nxNpFluidStep@12",
-        "address": "0x1003eae0",
+        "address": "0x10040130",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -66599,7 +66599,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
-        "address": "0x10060050",
+        "address": "0x10060fc0",
         "object": "Scene.obj"
       }
     },
@@ -66642,7 +66642,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidScalarDelete3499@@YIPAXPAX0E@Z",
-        "address": "0x1005ade0",
+        "address": "0x1005bad0",
         "object": "Scene.obj"
       },
       "notes": ""
@@ -66725,7 +66725,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
-        "address": "0x1005c690",
+        "address": "0x10060fc0",
         "object": "Scene.obj"
       }
     },
@@ -66807,7 +66807,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "_nxFluidCollisionBuildStaticCollision",
-        "address": "0x10024630",
+        "address": "0x10024640",
         "object": "FluidCollision.obj"
       }
     },
@@ -68497,7 +68497,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallNResult@@YAIPAXP6AIIII@ZHII@Z",
-        "address": "0x1004ac30",
+        "address": "0x1004ad50",
         "object": "ObjectModel.obj"
       }
     },
@@ -68541,7 +68541,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallNResult@@YAIPAXP6AIIII@ZHII@Z",
-        "address": "0x1004ac30",
+        "address": "0x1004ad50",
         "object": "ObjectModel.obj"
       }
     },
@@ -69118,7 +69118,7 @@
       "candidate_map_reference": {
         "path": "build/approved-five-family-current/Release/NxPhysics.map",
         "symbol": "@nxFluidManagerStep@12",
-        "address": "0x10067e90",
+        "address": "0x10070080",
         "object": "Scene.obj"
       }
     },
@@ -69162,7 +69162,7 @@
       "candidate_map_reference": {
         "path": "build/approved-five-family-current/Release/NxPhysics.map",
         "symbol": "?nxFluidManagerGenerateSurfaceMeshesDisabled@@YAXPAX@Z",
-        "address": "0x10061e20",
+        "address": "0x10069600",
         "object": "Scene.obj"
       }
     },
@@ -69206,7 +69206,7 @@
       "candidate_map_reference": {
         "path": "build/approved-five-family-current/Release/NxPhysics.map",
         "symbol": "_nxNpFluidEmitterGenerateSurfaceMesh",
-        "address": "0x1003e6c0",
+        "address": "0x100401b0",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -69305,7 +69305,7 @@
       "candidate_map_reference": {
         "path": "build/approved-five-family-current/Release/NxPhysics.map",
         "symbol": "_nxNpFluidManagerNotifyReleasedActor",
-        "address": "0x10067ef0",
+        "address": "0x10070ad0",
         "object": "Scene.obj"
       }
     },
@@ -69349,7 +69349,7 @@
       "candidate_map_reference": {
         "path": "build/approved-five-family-current/Release/NxPhysics.map",
         "symbol": "?nxFluidManagerDestroyArrays@@YAXPAX@Z",
-        "address": "0x10061d70",
+        "address": "0x10069540",
         "object": "Scene.obj"
       }
     },
@@ -69429,7 +69429,7 @@
       "candidate_map_reference": {
         "path": "build/approved-five-family-current/Release/NxPhysics.map",
         "symbol": "?nxSceneCreateFluidManager@@YAPAXPAVNxSceneInternal@@@Z",
-        "address": "0x100647e0",
+        "address": "0x1006c4c0",
         "object": "Scene.obj"
       }
     },
@@ -69473,7 +69473,7 @@
       "candidate_map_reference": {
         "path": "build/approved-five-family-current/Release/NxPhysics.map",
         "symbol": "?nxFluidManagerDeletingDestructor@@YIPAXPAX0E@Z",
-        "address": "0x100586d0",
+        "address": "0x1005d6f0",
         "object": "Scene.obj"
       }
     },
@@ -69517,7 +69517,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?createFluid@NxSceneInternal@@QAEPAVNxFluid@@ABVNxFluidDesc@@@Z",
-        "address": "0x1005ff10",
+        "address": "0x10060fc0",
         "object": "Scene.obj"
       }
     },
@@ -69675,7 +69675,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "@nxFluidPostStepImplicitMeshUpdate@8",
-        "address": "0x1006f730",
+        "address": "0x100700a0",
         "object": "Scene.obj"
       }
     },
@@ -69719,7 +69719,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "@nxImplicitFluidMeshRun@8",
-        "address": "0x1003fff0",
+        "address": "0x100400d0",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -69881,7 +69881,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxGlobalCallVia4Result3Arg003667@@YAIPAXIP6AIIII@Z@Z",
-        "address": "0x1004adf0",
+        "address": "0x1004ae30",
         "object": "ObjectModel.obj"
       }
     },
@@ -70197,7 +70197,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setValue@SdkPointerBindingThunk@@QAE_NPAX@Z",
-        "address": "0x10053b90",
+        "address": "0x10054840",
         "object": "PhysicsInternal.obj"
       }
     },
@@ -70241,7 +70241,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??0NxFluidSurfaceMeshManager@@QAE@XZ",
-        "address": "0x1005d660",
+        "address": "0x1005e4f0",
         "object": "Scene.obj"
       }
     },
@@ -70338,7 +70338,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidSolverBaseDeletingDestructor@@YIPAXPAX0E@Z",
-        "address": "0x1005c210",
+        "address": "0x1005d080",
         "object": "Scene.obj"
       },
       "implementation": "Physics/src/Scene.cpp"
@@ -70533,7 +70533,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?elementCount@NxLockedFluidArrayAccessor@@QAEHXZ",
-        "address": "0x10046970",
+        "address": "0x100469a0",
         "object": "ObjectModel.obj"
       }
     },
@@ -70577,7 +70577,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?intervalData@NxLockedFluidArrayAccessor@@QAEIXZ",
-        "address": "0x10046a10",
+        "address": "0x10046a40",
         "object": "ObjectModel.obj"
       }
     },
@@ -71423,7 +71423,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidSetCollisionGroup@@YIXPAX0G@Z",
-        "address": "0x1005c9f0",
+        "address": "0x1005cc30",
         "object": "Scene.obj"
       }
     },
@@ -71467,7 +71467,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidGetCollisionGroup@@YIIPAX0@Z",
-        "address": "0x1005ca20",
+        "address": "0x1005cc60",
         "object": "Scene.obj"
       }
     },
@@ -71511,7 +71511,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidSetFluidGroup@@YIXPAX0G@Z",
-        "address": "0x1005ca50",
+        "address": "0x1005cc90",
         "object": "Scene.obj"
       }
     },
@@ -71555,7 +71555,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidGetFluidGroup@@YIIPAX0@Z",
-        "address": "0x1005ca80",
+        "address": "0x1005ccc0",
         "object": "Scene.obj"
       }
     },
@@ -71599,7 +71599,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidSetOnSeparationAction@@YIXPAX0W4NxFluidParticleAction@@_N@Z",
-        "address": "0x1005cab0",
+        "address": "0x1005ccf0",
         "object": "Scene.obj"
       }
     },
@@ -71643,7 +71643,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidGetOnSeparationAction@@YIHPAX0W4NxFluidParticleAction@@@Z",
-        "address": "0x1005cae0",
+        "address": "0x1005cd20",
         "object": "Scene.obj"
       }
     },
@@ -71687,7 +71687,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidSetOnCollision@@YIXPAX0W4NxFluidParticleAction@@_N@Z",
-        "address": "0x1005cb10",
+        "address": "0x1005cd50",
         "object": "Scene.obj"
       }
     },
@@ -71731,7 +71731,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidGetOnCollision@@YIHPAX0W4NxFluidParticleAction@@@Z",
-        "address": "0x1005cb40",
+        "address": "0x1005cd80",
         "object": "Scene.obj"
       }
     },
@@ -71775,7 +71775,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidSetOnLifetimeExpired@@YIXPAX0W4NxFluidParticleAction@@_N@Z",
-        "address": "0x1005cb70",
+        "address": "0x1005cdb0",
         "object": "Scene.obj"
       }
     },
@@ -71819,7 +71819,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxFluidGetOnLifetimeExpired@@YIHPAX0W4NxFluidParticleAction@@@Z",
-        "address": "0x1005cba0",
+        "address": "0x1005cde0",
         "object": "Scene.obj"
       }
     },
@@ -72262,8 +72262,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ENxFluidEmitter@@MAEPAXI@Z",
-        "address": "0x1003cea0",
-        "object": "NpFluidEmitter.obj"
+        "address": "0x1003d820",
+        "object": "i"
       }
     },
     {
@@ -72344,8 +72344,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ENpFluidEmitter@@UAEPAXI@Z",
-        "address": "0x1003ce40",
-        "object": "NpFluidEmitter.obj"
+        "address": "0x1003d7c0",
+        "object": "i"
       }
     },
     {
@@ -72424,7 +72424,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setGlobalPose@NpFluidEmitter@@UAEXABVNxMat34@@@Z",
-        "address": "0x1003ed00",
+        "address": "0x1003f6d0",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -72468,7 +72468,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setGlobalPosition@NpFluidEmitter@@UAEXABVNxVec3@@@Z",
-        "address": "0x1003edd0",
+        "address": "0x1003f7b0",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -72512,7 +72512,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setGlobalOrientation@NpFluidEmitter@@UAEXABVNxMat33@@@Z",
-        "address": "0x1003ecb0",
+        "address": "0x1003f680",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -72898,7 +72898,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setFrameActor@NpFluidEmitter@@UAEXPAVNxActor@@@Z",
-        "address": "0x1003ebf0",
+        "address": "0x1003f570",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -73564,7 +73564,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?setName@NpFluidEmitter@@UAEXPBD@Z",
-        "address": "0x1003df60",
+        "address": "0x1003fa90",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -73606,7 +73606,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getName@NpFluidEmitter@@UBEPBDXZ",
-        "address": "0x1003cda0",
+        "address": "0x1003e230",
         "object": "NpFluidEmitter.obj"
       }
     },
@@ -73650,8 +73650,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ENpFluidEmitter@@W7AEPAXI@Z",
-        "address": "0x1003ce2b",
-        "object": "NpFluidEmitter.obj"
+        "address": "0x1003d7ab",
+        "object": "i"
       }
     },
     {
@@ -73840,7 +73840,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getMeshData@NpImplicitMesh@@UAE?AVNxMeshData@@XZ",
-        "address": "0x1002e1c0",
+        "address": "0x1002e1d0",
         "object": "ImplicitMesh.obj"
       }
     },
@@ -74080,7 +74080,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?getBlend@NpImplicitMesh@@UBEMXZ",
-        "address": "0x1002e190",
+        "address": "0x1002e1a0",
         "object": "ImplicitMesh.obj"
       }
     },
@@ -74358,8 +74358,8 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??_ENpImplicitMesh@@W7AEPAXI@Z",
-        "address": "0x1002e0f3",
-        "object": "ImplicitMesh.obj"
+        "address": "0x1002e103",
+        "object": "i"
       }
     },
     {
@@ -74440,7 +74440,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "_nxFluidModelUnloadLibrary",
-        "address": "0x1006f3a0",
+        "address": "0x100706c0",
         "object": "Scene.obj"
       }
     },
@@ -77872,7 +77872,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?row004087@Joint@@UAEXMABVNxVec3@@M@Z",
-        "address": "0x1006edb0",
+        "address": "0x10085e30",
         "object": "Joint.obj"
       }
     },
@@ -77953,7 +77953,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?row004091@Joint@@QAEXXZ",
-        "address": "0x1006ee00",
+        "address": "0x10085e80",
         "object": "Joint.obj"
       }
     },
@@ -79030,7 +79030,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "@nxReleaseAllocatorFields004149@4",
-        "address": "0x10047b00",
+        "address": "0x10050ad0",
         "object": "ObjectModel.obj"
       }
     },
@@ -79074,7 +79074,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "@nxReleaseAllocatorFields004151@4",
-        "address": "0x10047b50",
+        "address": "0x10050b20",
         "object": "ObjectModel.obj"
       }
     },
@@ -80060,7 +80060,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?row004204@D6Joint@@QAEXABVNxD6JointDesc@@@Z",
-        "address": "0x100682c0",
+        "address": "0x1007f360",
         "object": "D6Joint.obj"
       }
     },
@@ -90956,7 +90956,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "??1MemoryStream@@QAE@XZ",
-        "address": "0x10030d80",
+        "address": "0x10030da0",
         "object": "MemoryStream.obj"
       }
     },
@@ -91219,7 +91219,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?nxSetSdkAllocatorBridge@@YA_NPAVSdkAllocator@@@Z",
-        "address": "0x100535a0",
+        "address": "0x10054440",
         "object": "PhysicsInternal.obj"
       }
     },
@@ -91263,7 +91263,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?malloc@SdkDefaultAllocator@@UAEPAXIW4NxMemoryType@@@Z",
-        "address": "0x10052e60",
+        "address": "0x10053d00",
         "object": "PhysicsInternal.obj"
       }
     },
@@ -91289,7 +91289,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?realloc@SdkDefaultAllocator@@UAEPAXPAXI@Z",
-        "address": "0x10052e90",
+        "address": "0x10053d30",
         "object": "PhysicsInternal.obj"
       }
     },
@@ -91333,7 +91333,7 @@
       "candidate_map_reference": {
         "path": "build/Release/NxPhysics.map",
         "symbol": "?free@SdkDefaultAllocator@@UAEXPAX@Z",
-        "address": "0x10052eb0",
+        "address": "0x10053d50",
         "object": "PhysicsInternal.obj"
       }
     },
@@ -92022,13 +92022,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1844",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15745",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at oracle RVA 0x000b4fe0 confirms the base constructor clears the +0 vtable placeholder and four pruner pointers at +0x1c..+0x28, writes +FLT_MAX to +0x04..+0x0c and -FLT_MAX to +0x10..+0x18, then returns this. Candidate vtable words are intentionally not installed from the oracle image.",
+      "dynamic_proof": "NxPhysicsSceneRaycastTests reads the four pruning-engine slots immediately after Scene creation. Restored oracle/candidate output matches exactly (stdout_delta=0); changing the candidate +0x1c store to 1 is rejected (oracle_exit=0, candidate_exit=1, stdout_delta=2813). The same fixture checks the six empty-world bound words. See evidence/phase7-pruning-engine-base-constructor-004848.md.",
+      "notes": "The Scene constructor delegates this base initialization to NxScenePruningEngineBase::ConstructPruningEngineBase; its portable arm still constructs the platform-specific pruning collection.",
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxScenePruningEngineBase::ConstructPruningEngineBase",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?ConstructPruningEngineBase@NxScenePruningEngineBase@@QAEPAV1@XZ",
+        "address": "0x1005f650",
+        "object": "Scene.obj"
+      }
     },
     {
       "id": "phys_fn_004849",
