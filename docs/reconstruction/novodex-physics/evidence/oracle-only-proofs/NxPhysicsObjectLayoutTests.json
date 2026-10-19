@@ -3,7 +3,7 @@
   "target": "NxPhysicsObjectLayoutTests",
   "format": "layout_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "54479f60609ffde564f1b9b932cbd194f2acc4ce470e95e4b48f7e7c0197f72f",
+  "fixture_source_sha256": "8b58077e8ae68493d4341fb5d514b860adbba6ca62dc83e9f6fd196c2348120d",
   "fixture_sources": [
     "tests/PhysicsObjectLayoutTests.cpp",
     "tests/PhysicsElementCountRowFixture.inl",
@@ -11,9 +11,9 @@
     "tests/PhysicsGlobalCallResultRowsFixture.inl",
     "tests/PhysicsLockedArrayDataRowFixture.inl"
   ],
-  "proof_lines_sha256": "9b1954cede510785c91f8895004ecc420459b7682b26029bbee162ce7bde5c4c",
-  "baseline_sha256": "0d69cec72ff317c2ded77c742d48b0ab4f8042cdd16c6b25be7b75ff53067f76",
+  "proof_lines_sha256": "3861419ca2917de2c1c7bebda82ae2318a20e883f5f29f1583a7d61dca04fd28",
+  "baseline_sha256": "327d37e211d1d6fda92e0364d09bab0e58c8f3607fd7232a7e0dc298b48ad2b3",
   "oracle_digest_fnv32": "3acf0dc7",
-  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=7 globalcall2=1 reciprocal003461=6 copy6003483=1",
-  "proof_sha256": "45e55a57b632882280ac079df308d6a23cd4f90a77b642405d4b4c8bbd6c0001"
+  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=8 globalcall2=1 reciprocal003461=6 copy6003483=1",
+  "proof_sha256": "0b9ac7b32dbff31149223600f581945c7322550c1a0baf6ff2ed14ac53ee26a4"
 }

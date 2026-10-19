@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003671",
+  "rva": "0x0008ada0",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "aa0996d58abd056fc0eeb894bd92c55d2b39285083b6d45eb31286220727753b",
+  "candidate_map_symbol": "?nxGlobalCallVia4Result3Arg003671@@YAIPAXIP6AIIII@Z@Z",
+  "candidate_map_address": "0x1004ae30",
+  "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result3Arg003671.",
+  "mutation_result": "NxPhysicsObjectLayoutTests reports global-call3 row=003671 mismatches=1; candidate exit=1.",
+  "restored_result": "global-call3 row=003671 cases=1 stack=1/1 mismatches=0; Phase 5/6/7 gates pass at 2958/2958, 1809/1809, and 3094/3094.",
+  "raw_logs": [
+    {
+      "path": "focused.log.gz",
+      "sha256": "0c049ece1bae98d012102fae178747cbdbbd62559e96e0d86a68cdbab76f1044",
+      "uncompressed_sha256": "8e45c053ba816548f7d8656b512f1c009f099f0923ddd72c716e7927173c4b55"
+    },
+    {
+      "path": "mutation.log.gz",
+      "sha256": "a3b2433a170d9f19c42f48f4f9fc2ad4d25c6189c33f475ef1d7a7cedfc7e4f9",
+      "uncompressed_sha256": "a64ab16f65ccfd14dc5102316921382a2aaa8745e091421ddaac83d80468c4f9"
+    },
+    {
+      "path": "restored.log.gz",
+      "sha256": "16d504f2bf29a1d902e13d363043f3220be088384ad95874992300474662bf4c",
+      "uncompressed_sha256": "8c255e18e8490415186cbefd278df59c8935e3208365f08cdb9d8afc81c7bc32"
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "sha256": "f1f4f05a577fccc8d534ccdd66e5d3d7017c7f6c93757b3a734bd971d302603d",
+      "uncompressed_sha256": "65137930f082897772c637e6774c1d66e5b36067557664aedee561e9dd19e5ab"
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "sha256": "1e53db8f49870daf27ecfd54adb46a95faf244712219b9d4ba68583357027e46",
+      "uncompressed_sha256": "fbeaeac0d806addad5ad77747c83994c9be1e4413c79c50ebb11b434300a66be"
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "sha256": "192fc36dd5fbacc051c9ceed19eafd430f2d81f2fbe4127a14cbb85b54e3b7e1",
+      "uncompressed_sha256": "5339ce6239557fafd94c2fb69e94272fdc01adbe0369e1845add1e10d96aa468"
+    }
+  ]
+}

@@ -3381,6 +3381,19 @@ unsigned nxGlobalCallVia4Result3Arg003667(void* self, unsigned extraArg,
 	return fn(context, handle, extraArg);
 	}
 
+// phys_fn_003671 forwards the fluid context, handle, and caller argument.
+unsigned nxGlobalCallVia4Result3Arg003671(void* self, unsigned extraArg,
+	unsigned (__cdecl* fn)(unsigned, unsigned, unsigned))
+	{
+	unsigned char* const fluid = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(self) + 4);
+	void* const backend = *reinterpret_cast<void**>(fluid + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned handle = *reinterpret_cast<unsigned*>(fluid + 0x80);
+	return fn(context, handle, extraArg);
+	}
+
 // phys_fn_003461 preserves the callback's x87 double result through reciprocal.
 double nxGlobalCallReciprocalDouble(void* self, NxGlobalFn2ReciprocalDouble fn)
 	{
