@@ -3,7 +3,7 @@
   "target": "NxPhysicsObjectLayoutTests",
   "format": "layout_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "bb905800cae459a81e897d4bcd8bedf945bb1d90b00dcc78ff1a5422f9508079",
+  "fixture_source_sha256": "f49187161b76cc739286c5811a20da0e8693f5a075edb564c374742a3960281c",
   "fixture_sources": [
     "tests/PhysicsObjectLayoutTests.cpp",
     "tests/PhysicsElementCountRowFixture.inl",
@@ -11,9 +11,9 @@
     "tests/PhysicsGlobalCallResultRowsFixture.inl",
     "tests/PhysicsLockedArrayDataRowFixture.inl"
   ],
-  "proof_lines_sha256": "5f3d4c7b3e9bd662c28853592adc3f8ed1b3098077c16fdeb8369a7e91ec3959",
-  "baseline_sha256": "15439ee41b2f5eae1a8550c8bb912c9d5c0c7ba71585c4601ce88f352cb32880",
+  "proof_lines_sha256": "84653872b19e70559f80955353ab673991e87e1ecb9fbf19f7194b5f9566ad5a",
+  "baseline_sha256": "c231aaa3038075fe06da6a6f90b45d495da72a065cfbed3badbdc61140a7686f",
   "oracle_digest_fnv32": "3acf0dc7",
-  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=9 globalcall2=2 reciprocal003461=6 copy6003483=1",
-  "proof_sha256": "e416a681e2a5e035a4fe0b5d8f22c3477904bdc416b77d6dcb7256ad5e95e596"
+  "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=10 globalcall2=2 reciprocal003461=6 copy6003483=1",
+  "proof_sha256": "472f74117199d0f1580d2f1bde5bbad1f931b56d0a2ff481db99806b1bff48f9"
 }
