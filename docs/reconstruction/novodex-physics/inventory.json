@@ -14797,14 +14797,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/307",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2139",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 5fc6534573c8cd34, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 146/146 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6) Fresh registered NxPhysicsJointSlotTests oracle/candidate differential matches exactly (stdout_delta=0, stderr_exact=True). Setting candidate m[0] to zero is rejected (stdout_delta=2795); restored output is exact. Full restored Phase 6 gate passes at 1819/1819. See evidence/phase2-row-000758-quaternion-matrix.md and evidence/raw/phase6-joint-slot-row-000758-20261018/.",
       "notes": "",
-      "implementation": "Physics/src/core/JointSupport.cpp"
+      "implementation": "Physics/src/core/JointSupport.cpp",
+      "implementation_symbol": "Row000758Fixture::row000758"
     },
     {
       "id": "phys_fn_000759",
@@ -222263,7 +222264,7 @@
     {
       "phase": 6,
       "name": "Joints and effectors",
-      "status": "pending"
+      "status": "closed"
     },
     {
       "phase": 7,

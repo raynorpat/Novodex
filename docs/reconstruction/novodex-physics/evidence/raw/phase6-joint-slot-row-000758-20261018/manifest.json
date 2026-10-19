@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000758-quaternion-matrix.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "97702dcd8166a4cbf71764952c5b87fcad612e36464d137921215a9d80e5d3bb",
+      "uncompressed_sha256": "411dabcf527043b82b89050efe58ed9dd760472698179579f7574d28541a0ac3",
+      "bytes": 329486,
+      "source": "build\\row758-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "9fb47ada1c6506f931bf72dd49e215c3c773edc9de238f45253f5f0301e73eb9",
+      "uncompressed_sha256": "4e6538803361c9b4877c2b817adce539f0dd379380a9c90b9f60358b01c54784",
+      "bytes": 327853,
+      "source": "build\\row758-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "0633989974feb51ddc5ce6780c4b3a5e2345411ef8ecd0c3ecdf4ed0a3ca3ef5",
+      "uncompressed_sha256": "15b37096a024f6b0c7453a36ebe54453b37ac80a69601444fa2e5dfc6e56c717",
+      "bytes": 329486,
+      "source": "build\\row758-restored.log"
+    },
+    "phase6-gate.log.gz": {
+      "sha256": "cd9fd3695c9d8a760f26727a615421df0158548251bd44dec4ffa252cd2302bf",
+      "uncompressed_sha256": "1d945ef13591d9e469a808d026a8930e9a480489a3a8cb5d8cdde5f5237f6541",
+      "bytes": 3152798,
+      "source": "build\\row758-phase6-restored.log"
+    }
+  },
+  "candidate_source_commit": "b23fe7cfeb860ad8b2445b2850a0fb1d5c972b6e"
+}

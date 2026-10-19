@@ -11410,3 +11410,6 @@ The direct NxPhysicsCollisionTests oracle differential exercises 16 directed cas
 Measurement: phys_fn_002272 direct oracle/candidate differential; the epsilon-threshold mutation is rejected with mismatches=2, restored exact output.
 
 Phase 7 row `phys_fn_004848` is mutation-falsified through the registered `NxPhysicsSceneRaycastTests` constructor marker: the `+0x1c` null-slot mutation is rejected (`stdout_delta=2813`), and the restored output is exact. Details: `evidence/phase7-pruning-engine-base-constructor-004848.md` and `evidence/raw/phase7-pruning-engine-base-constructor-004848-20261018/`.
+
+
+Fresh mainline Phase 6 gate on 2026-10-18 passes at 1819/1819 coverage assertions. The `phys_fn_000758` matrix-zero mutation is rejected by `NxPhysicsJointSlotTests` (`stdout_delta=2795`); restored differential is exact. Full transcript: `evidence/raw/phase6-joint-slot-row-000758-20261018/phase6-gate.log.gz`.

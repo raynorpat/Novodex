@@ -1397,6 +1397,7 @@
         "phys_fn_004167",
         "phys_fn_004395",
         "phys_fn_000722",
+        "phys_fn_000758",
         "phys_fn_004397",
         "phys_fn_004399",
         "phys_fn_004403"
@@ -7787,6 +7788,12 @@
       "rva": "0x00016130",
       "path": "core/JointSupport.cpp",
       "symbol": "Row000722Fixture::row000722"
+    },
+    {
+      "id": "phys_fn_000758",
+      "rva": "0x00017630",
+      "path": "core/JointSupport.cpp",
+      "symbol": "Row000758Fixture::row000758"
     },
     {
       "id": "phys_fn_004397",
