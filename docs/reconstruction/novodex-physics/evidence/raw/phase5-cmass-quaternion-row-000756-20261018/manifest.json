@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000756-cmass-quaternion.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "c3f2de095d6e8d4ab9be8622e331925336f4f3aaa2a9471b7a46e4045170f5b7",
+      "uncompressed_sha256": "398b6a07202f3ff18fdb8cfffbc155183f8306e1b7c697237a0df0d026ae5ebc",
+      "bytes": 195760,
+      "source": "build\\row756-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "058b9125e85088b36b7fd938c74d32f6fc10e93bd87180888dc5264bfd34e450",
+      "uncompressed_sha256": "ee4c81d79e1d6e95895d7eb5d3370cd0424956a654b7675037a442aa4a96a9a4",
+      "bytes": 195461,
+      "source": "build\\row756-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "c94fd9774856d7f12113c3d32d8aee9c0f20c2b89b20b86fc375fd6c809d180c",
+      "uncompressed_sha256": "11c66f8beb4001bd9e7ef44163578df7e2e4942354f46c312db47ac303b88678",
+      "bytes": 195760,
+      "source": "build\\row756-restored.log"
+    }
+  },
+  "candidate_source_commit": "1d70c5cc6895d30573baf6759866050a20c5a345"
+}

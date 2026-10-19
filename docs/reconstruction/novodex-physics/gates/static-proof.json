@@ -3,8 +3,8 @@
   "summary": {
     "function_rows": 6338,
     "data_objects": 5138,
-    "findings": 8416,
-    "source_mapped_code_rows": 1081,
+    "findings": 8415,
+    "source_mapped_code_rows": 1082,
     "distinct_source_files": 85
   },
   "analysis_inputs": {
@@ -2330,7 +2330,7 @@
     {
       "code": "code_row_not_closed",
       "id": "phys_fn_000756",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "expected": "closed"
     },
     {
@@ -33728,12 +33728,6 @@
       "code": "source_mapping_missing",
       "id": "phys_fn_000754",
       "implementation": "Physics/src/core/JointSupport.cpp",
-      "implementation_symbol": null
-    },
-    {
-      "code": "source_mapping_missing",
-      "id": "phys_fn_000756",
-      "implementation": "Physics/src/include/NpActorDynamicMath.h",
       "implementation_symbol": null
     },
     {

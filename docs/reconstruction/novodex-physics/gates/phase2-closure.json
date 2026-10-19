@@ -58,11 +58,11 @@
     "rows_reachable_through_any_phase": 499
   },
   "counts": {
-    "differential_falsified": 85,
+    "differential_falsified": 86,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 8,
     "deferred_homeless_shared_code": 11,
-    "deferred_reconstructed_not_falsified": 24,
+    "deferred_reconstructed_not_falsified": 23,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
     "deferred_not_independently_falsifiable": 1
@@ -1271,6 +1271,22 @@
         "detected": "stdout_delta=18"
       },
       "note": "The public force-mode fixture checks the impulse accumulator and rejects the zero-scaling mutant; restored output is exact. Discharged by the passing Phase 5 force target. See evidence/phase2-row-000782-force-accumulator.md and evidence/raw/phase5-force-accumulator-row-000782-20261018/."
+    },
+    {
+      "id": "phys_fn_000756",
+      "rva": "0x00017420",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5
+      ],
+      "falsification": {
+        "mutation": "Overwrote quaternion X at record +0x124 with zero after nxNpActorUpdateCMassQuaternion and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=40"
+      },
+      "note": "The public CMass pose/orientation fixture exposes the converted quaternion across rotated cases. The mutant is rejected; restored output is exact. Discharged by the passing Phase 5 CMass target. See evidence/phase2-row-000756-cmass-quaternion.md and evidence/raw/phase5-cmass-quaternion-row-000756-20261018/."
     }
   ],
   "deferred": [
@@ -1378,21 +1394,6 @@
         7
       ],
       "callers": 2,
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000756",
-      "rva": "0x00017420",
-      "size": 525,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "callers": 3,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {

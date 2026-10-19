@@ -1475,6 +1475,7 @@
     {
       "path": "include/NpActorDynamicMath.h",
       "function_ids": [
+        "phys_fn_000756",
         "phys_fn_000746"
       ]
     },
@@ -7904,6 +7905,12 @@
       "rva": "0x0005b680",
       "path": "include/ContactStreamLifecycle.inl",
       "symbol": "nxContactStreamConstruct002356"
+    },
+    {
+      "id": "phys_fn_000756",
+      "rva": "0x00017420",
+      "path": "include/NpActorDynamicMath.h",
+      "symbol": "nxNpActorUpdateCMassQuaternion"
     },
     {
       "id": "phys_fn_000746",
