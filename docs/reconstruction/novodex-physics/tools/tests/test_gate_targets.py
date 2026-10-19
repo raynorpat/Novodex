@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 987, "4": 559, "5": 2914, "6": 1769, "7": 3109}
+    MINIMUM = {"2": 18, "3": 987, "4": 565, "5": 2914, "6": 1769, "7": 3110}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -874,6 +874,15 @@ class ThirdPartyReconstructedOwners(unittest.TestCase):
         self.assertEqual(len(lines), 1,
             "phys_fn_001502 must have one independently registered edge-builder coverage marker")
         self.assertIn("rva=0x0002cb50 owner=phys_fn_001502", lines[0])
+
+
+class ConvexHullTriangleAreaCoverage(unittest.TestCase):
+    def test_triangle_area_has_row_specific_invocation_coverage(self):
+        lines = registered_lines().get("NxPhysicsThirdPartyTests", [])
+        marker = "thirdparty coverage name=hull_triangle_area_entry rva=0x0002a620 owner=phys_fn_001441 "
+        expected = marker + "oracle_calls=900 candidate_calls=900"
+        self.assertEqual([line for line in lines if line.startswith(marker)], [expected],
+            "the hull leaf direct-area corpus needs a pinned row-specific marker")
 
 
 class ConvexMeshEntryCoverage(unittest.TestCase):

@@ -27638,13 +27638,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/577",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3739",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002a620..0x0002a6d1: thiscall on a 16-bit triangle, `ret 4`; 0.0f without vertices; else |(p0-p2) x (p0-p1)| with the first edge on the stack, the second's x and y and the cross product's x and y stored narrow, the root of ((z^2 + y^2) + x^2) times 0.5f, returned in st(0); the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
-      "dynamic_proof": "convex-mesh gap Task 2f: nxHullTriangleArea hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 25e8d5625e5cb87a...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words; see evidence/convex-mesh-gap.md, Task 2f",
-      "notes": "",
+      "dynamic_proof": "The registered NxPhysicsThirdPartyTests hull_triangle_area_entry marker records 900 direct calls per side at RVA 0x0002a620. Changing the squared-length faddp at RVA 0x0002a6b8 to fsubp produces 607 hull_leaf mismatches (1,473 total target mismatches) and exits 1 without an access violation; the restored differential is exact. See evidence/phase3-row-001441-convex-hull-triangle-area.md.",
+      "notes": "Task 40 pins direct invocation counts for phys_fn_001441 and repeats the arithmetic mutation against the current tree; public headers are unchanged.",
       "implementation": "Physics/src/ConvexHull.cpp"
     },
     {

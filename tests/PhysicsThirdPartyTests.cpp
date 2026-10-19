@@ -9521,7 +9521,7 @@ static const int kSupportFamily = 12;
 // Oracle-side coverage for the three families' lines.
 struct NxChCoverage
 	{
-	unsigned areaCalls, centerCalls, centroidCalls, centroidTrue, supportCalls, supportPosed, gatherCases,
+	unsigned areaCalls, areaCandidateCalls, centerCalls, centroidCalls, centroidTrue, supportCalls, supportPosed, gatherCases,
 		gatherFaces, reverseCalls, vectorCalls, leafSnan, leafX87;
 	unsigned meshes, splitMeshes, polygonsTrue, polygonsFalse, polygons, edgesTrue, edgesFalse, edges,
 		edgesAlone, rebuilt, edgeCalls, edgeRebuildCalls, edgeDirectWithoutPolygon, planeCalls, planeSplit, hullSupport;
@@ -9686,6 +9686,8 @@ static void nxChLeafTriangles(const NxIceSide& s)
 			if(cw == 0x0f7f)
 				++c.leafX87;
 			}
+		else
+			++c.areaCandidateCalls;
 		}
 	}
 
@@ -10606,6 +10608,8 @@ static void nxDriveConvexHull(const NxOracleRows& o, bool selfOnly)
 		" support_posed=%u gather=%u gather_faces=%u reverse=%u vector=%u input_snan=%u x87_0f7f=%u reports=%u\n",
 		c.areaCalls, c.centerCalls, c.centroidCalls, c.centroidTrue, c.supportCalls, c.supportPosed,
 		c.gatherCases, c.gatherFaces, c.reverseCalls, c.vectorCalls, c.leafSnan, c.leafX87, gIceReports);
+	printf("thirdparty coverage name=hull_triangle_area_entry rva=0x0002a620 owner=phys_fn_001441 oracle_calls=%u candidate_calls=%u\n",
+		c.areaCalls, c.areaCandidateCalls);
 
 	gIceReports = 0;
 	gIceReportLine318 = 0;

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "description": "phys_fn_001441 convex-hull triangle-area direct differential, arithmetic mutation, restored run, oracle proof and Phase 3/4/7 gate transcripts",
+  "files": [
+    {
+      "path": "baseline.log.gz",
+      "source_log": "build/phase3-row1441-baseline.log",
+      "sha256": "7432a0b78691639578ef7c13e6e240a8b868a8accba6dcf38b38be6fcac342ad",
+      "uncompressed_sha256": "9f63bae4b9887b868fdc65f1946e29302bf706a9788b6c1086247946ed3aab24",
+      "uncompressed_bytes": 141951
+    },
+    {
+      "path": "mutation.log.gz",
+      "source_log": "build/phase3-row1441-mutation.log",
+      "sha256": "69ca20e63faba2ad921854125cca70b11a0d2c28d33f484c842b9f87c8f30dc5",
+      "uncompressed_sha256": "dad40cccd060dd417821be50dbaea9097f8e53d3b753018e7382db6df94ce560",
+      "uncompressed_bytes": 144771
+    },
+    {
+      "path": "restored.log.gz",
+      "source_log": "build/phase3-row1441-restored.log",
+      "sha256": "1a627a9c280cc82867fa4b25bedaf1abc14dff325aca2e86e2072f856d8268b5",
+      "uncompressed_sha256": "84d61d6aca8be62f5442e786092130d92a739b6346162b1dbc43cb5f014b6224",
+      "uncompressed_bytes": 141951
+    },
+    {
+      "path": "phase3-gate.log.gz",
+      "source_log": "build/phase3-row1441-gate.log",
+      "sha256": "f61fdfc0db36e89e5d1cd2761c8e6c3dbb9614dff2fc0d99a38917301af0f202",
+      "uncompressed_sha256": "a5d26fe2a0fa61d5bcf82f6750b31843573c1f5ced1bde808a3433eabe2f087b",
+      "uncompressed_bytes": 829972
+    },
+    {
+      "path": "phase4-gate.log.gz",
+      "source_log": "build/phase4-row1441-gate.log",
+      "sha256": "6501511b705a325b9b6a72ff9224d7b23606f276037016eda9724f9f36547bc2",
+      "uncompressed_sha256": "725ec71d4cbfd577063da9fbf761cf611b369a82f571fc02259df235407d769f",
+      "uncompressed_bytes": 1134141
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source_log": "build/phase7-row1441-gate.log",
+      "sha256": "71bb0651d223da614d9c6a0861b01ceb43309aca35d4564efa3477f692a5cf31",
+      "uncompressed_sha256": "b07fbd7a982bfbd6b296bd88a0a7640787490ddde83e91e9684599b3d1085cb0",
+      "uncompressed_bytes": 4725760
+    },
+    {
+      "path": "oracle-transcript.txt.gz",
+      "source_log": "build/oracle-proofs/NxPhysicsThirdPartyTests.stdout.txt",
+      "sha256": "8fb7527b583befa5b425c8e066eb0c719e60208d29a15671dc960e4fb20b1022",
+      "uncompressed_sha256": "70c01e259d6ae40dcf221e572475afc167c51c6c080ebd32ef64a191add8c8be",
+      "uncompressed_bytes": 137876
+    }
+  ]
+}

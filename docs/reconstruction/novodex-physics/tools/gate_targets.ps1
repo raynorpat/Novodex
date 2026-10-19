@@ -6352,6 +6352,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=hull_leaf words=181380 input=9279a52e',
         'thirdparty name=hull_leaf rva=0x0002a620 owner=phys_fn_001441 source=ConvexHull.cpp,IceMeshTools.cpp words=21813 oracle=106d7907 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=hull_leaf area=900 center=900 centroid=400 centroid_true=379 support=1500 support_posed=752 gather=300 gather_faces=1639 reverse=24 vector=18 input_snan=7706 x87_0f7f=450 reports=0',
+        'thirdparty coverage name=hull_triangle_area_entry rva=0x0002a620 owner=phys_fn_001441 oracle_calls=900 candidate_calls=900',
         'thirdparty input name=convex_hull words=74098 input=d03735ea',
         'thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=32993 oracle=c722f53c mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578',
@@ -6412,7 +6413,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 564  # plus the direct actual-DLL sort rows 002180/002182 differential and the 001502 edge-builder marker
+	'4' = 565  # plus the direct actual-DLL sort rows 002180/002182 differential, 001502 edge-builder and 001441 area markers
 	           # rows 001958/001962 add section-one static and selected-pruner owner query assertions
 	           # row 004848 adds the four null-base-slot assertion; row 001980 covers the full constructor bounds
 	           # plus hit, no-normal, cutoff, translation and miss coverage
@@ -6570,7 +6571,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3109  # plus row-specific contact-convex-mesh thunk coverage (001853)
+	'7' = 3110  # plus row-specific contact-convex-mesh thunk coverage (001853) and hull triangle area (001441)
 	          # includes current locked-array, fluid, global-call, ray/AABB slab, and 001502 edge-builder markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
