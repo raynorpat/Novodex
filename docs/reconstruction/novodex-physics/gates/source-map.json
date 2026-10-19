@@ -928,6 +928,7 @@
         "phys_fn_001089",
         "phys_fn_001111",
         "phys_fn_001115",
+        "phys_fn_000782",
         "phys_fn_000092",
         "phys_fn_000152",
         "phys_fn_000150",
@@ -5551,6 +5552,12 @@
       "rva": "0x00023b90",
       "path": "NpActor.cpp",
       "symbol": "nxCapsuleHandleSetRadius"
+    },
+    {
+      "id": "phys_fn_000782",
+      "rva": "0x00018730",
+      "path": "NpActor.cpp",
+      "symbol": "nxNpActorApplyForce"
     },
     {
       "id": "phys_fn_000092",

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000782-force-accumulator.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "b20feee1d93832a2c33b54f7a987744660036652efe03cc622c1fe1480d79c66",
+      "uncompressed_sha256": "97553636224f2a796e8b21d10b50a7b66c2835844286daf8f28a4d5929882d84",
+      "bytes": 26188,
+      "source": "build\\row782-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "025842347d54d9b0bfed3ce82cc4138c9288ad3dcf139ec8fcd699a5108cf42e",
+      "uncompressed_sha256": "b9951f5c64f179efb363414f0fe68e60e723182482a0bd96eeb65edc94ae1a25",
+      "bytes": 25987,
+      "source": "build\\row782-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "df3c1bfeae308728f1a79a287af5d876e2ea1171e0c2810dc410a1fff2121f80",
+      "uncompressed_sha256": "2a13219f73f757b182b036a933d90751b2ee2f5df813c614fc8d812a28d10b24",
+      "bytes": 26188,
+      "source": "build\\row782-restored.log"
+    }
+  },
+  "candidate_source_commit": "85a3ac6fed6bcccc968efc37b9943e54a341e5f5"
+}
