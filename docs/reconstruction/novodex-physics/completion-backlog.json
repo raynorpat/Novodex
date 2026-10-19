@@ -57,13 +57,13 @@
     "intermediate_closure_ledgers": {
       "2": {
         "phase": 2,
-        "closed_rows": 102,
-        "deferred_rows": 41,
+        "closed_rows": 103,
+        "deferred_rows": 40,
         "deferred_reasons": {
           "blocked_on_later_phase": 3,
           "homeless_shared_code": 11,
           "not_independently_falsifiable": 1,
-          "reconstructed_not_falsified": 21,
+          "reconstructed_not_falsified": 20,
           "unreachable_in_phase_2": 5
         }
       },
@@ -120,8 +120,8 @@
         "rows_without_implementation_mapping": 23,
         "rows_with_unresolved_indirect_calls": 69,
         "by_state": {
-          "dynamically_gated": 96,
-          "reconstructed": 41,
+          "dynamically_gated": 97,
+          "reconstructed": 40,
           "statically_reviewed": 6
         }
       },
@@ -63551,7 +63551,7 @@
       "size": 749,
       "phase": 2,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001504",
       "implementation": {
         "path": "Physics/src/ConvexHull.cpp",
@@ -63566,7 +63566,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsThirdPartyTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -63635,31 +63635,30 @@
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
-        "four_digit_hex_literals": [
-          "027f",
-          "0f7f"
-        ],
+        "four_digit_hex_literals": [],
         "simulation_mentioned": false,
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 2,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsThirdPartyTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 2,
+        "owner_phase": 8,
         "row_id": "phys_fn_001504",
         "rva": "0x0002cc80",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          4
+        ],
         "requires_dependency_review": true
       }
     },
@@ -232061,12 +232060,12 @@
     }
   ],
   "source": {
-    "inventory_sha256": "9c909ec394447afce24cdb82aa2f200a2d648ab8be0dcf3f3f0b2f6ae92548fe",
+    "inventory_sha256": "8a520a06ed3ea502fe65d9ff977174cd801a2901d86400f282835a84ea20de4b",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
-      "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "15fcb714f00cfe891aa8abe986180822a1ce6872f9557cf0b69f1c1f2b630803",
+      "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "afc733f60d68e5b79db664c3f0de527d43a66e1beb7e79df8a54e9be0a42f899",
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "3ff1f3bd505d1a847ef894ee50b3a40bc8ac4b0b56cf8fd5c17b6aaf46f6beb3",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "d45f027f468c2a408ccbca4775db46e7faad9b414d97e337449a3a4ce4883c0e",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",

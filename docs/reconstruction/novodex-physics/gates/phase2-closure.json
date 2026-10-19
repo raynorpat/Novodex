@@ -60,9 +60,9 @@
   "counts": {
     "differential_falsified": 88,
     "static_proof_falsified": 6,
-    "oracle_differential_falsified": 8,
+    "oracle_differential_falsified": 9,
     "deferred_homeless_shared_code": 11,
-    "deferred_reconstructed_not_falsified": 21,
+    "deferred_reconstructed_not_falsified": 20,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
     "deferred_not_independently_falsifiable": 1
@@ -358,7 +358,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSDKTests",
       "falsification": {
-        "mutation": "Replaced the successful PhysicsSDK::purgeMaterials dispatch with a no-op while retaining lock handling. The unlocked public purge then left two materials instead of the oracle’s one.",
+        "mutation": "Replaced the successful PhysicsSDK::purgeMaterials dispatch with a no-op while retaining lock handling. The unlocked public purge then left two materials instead of the oracle\u2019s one.",
         "detected": "stdout_delta=20"
       },
       "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
@@ -439,7 +439,7 @@
       "proof": "differential_falsified",
       "gate": "NxPhysicsSDKTests",
       "falsification": {
-        "mutation": "Forced the successful PhysicsSDK::setPerformanceInspector dispatch result to false. The unlocked public call then returned false instead of the oracle’s true.",
+        "mutation": "Forced the successful PhysicsSDK::setPerformanceInspector dispatch result to false. The unlocked public call then returned false instead of the oracle\u2019s true.",
         "detected": "stdout_delta=18"
       },
       "note": "The two-live-Scene public fixture also verifies the pinned lock refusal and unlocked success. Restored oracle/candidate output is exact. See evidence/phase2-sdk-purge-inspector-lock-000263-000265-000277-000279.md."
@@ -873,6 +873,104 @@
       "note": "Six public actor-creation records expose the row result at +0x1cc. The wrong-offset mutant changes all six markers; the restored DLL is exact. Discharged by the Phase 3 body-creation target. See evidence/phase2-row-000722-body-record-root-wake.md and evidence/raw/phase2-row-000722-20261018/."
     },
     {
+      "id": "phys_fn_000746",
+      "rva": "0x00016e80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5,
+        7
+      ],
+      "falsification": {
+        "mutation": "Replaced the world inverse-inertia diagonal out[0] calculation with zero in nxNpActorWorldTensorRDRt and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=210"
+      },
+      "note": "The rotated center-of-mass fixture exposes the world inverse-inertia tensor. The mutant is rejected; the restored candidate is exact. Discharged by the passing Phase 5 center-of-mass target. See evidence/phase2-row-000746-world-inertia.md and evidence/raw/phase5-world-inertia-row-000746-20261018/."
+    },
+    {
+      "id": "phys_fn_000756",
+      "rva": "0x00017420",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorCMassTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5
+      ],
+      "falsification": {
+        "mutation": "Overwrote quaternion X at record +0x124 with zero after nxNpActorUpdateCMassQuaternion and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=40"
+      },
+      "note": "The public CMass pose/orientation fixture exposes the converted quaternion across rotated cases. The mutant is rejected; restored output is exact. Discharged by the passing Phase 5 CMass target. See evidence/phase2-row-000756-cmass-quaternion.md and evidence/raw/phase5-cmass-quaternion-row-000756-20261018/."
+    },
+    {
+      "id": "phys_fn_000758",
+      "rva": "0x00017630",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointSlotTests",
+      "discharged_by_phase": 6,
+      "driving_phases": [
+        3,
+        6,
+        7
+      ],
+      "falsification": {
+        "mutation": "Replaced the candidate quaternion-derived matrix assignment m[0] with zero and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=2795"
+      },
+      "note": "The registered joint-slot differential exposes the body matrix. The mutant is rejected; restored output is exact. Phase 6 passes at 1819/1819 coverage assertions. See evidence/phase2-row-000758-quaternion-matrix.md and evidence/raw/phase6-joint-slot-row-000758-20261018/."
+    },
+    {
+      "id": "phys_fn_000776",
+      "rva": "0x00018570",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        7
+      ],
+      "falsification": {
+        "mutation": "Omitted nxU32VectorPushBack(scene + 0x6f8, bodyWord(this, 0x11c)) from DynamicBody::destruct and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=10"
+      },
+      "note": "The public release/recreate fixture directly observes the recycled record ID. The restored candidate reports ID 2 with stdout_delta=0 and exact stderr. See evidence/phase2-row-000776-record-id-recycling.md and evidence/raw/phase2-row-000776-20261018/."
+    },
+    {
+      "id": "phys_fn_000782",
+      "rva": "0x00018730",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorForceTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        7
+      ],
+      "falsification": {
+        "mutation": "Replaced impulse-mode inverseMass * force->x with zero in nxNpActorApplyForce and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=18"
+      },
+      "note": "The public force-mode fixture checks the impulse accumulator and rejects the zero-scaling mutant; restored output is exact. Discharged by the passing Phase 5 force target. See evidence/phase2-row-000782-force-accumulator.md and evidence/raw/phase5-force-accumulator-row-000782-20261018/."
+    },
+    {
+      "id": "phys_fn_000791",
+      "rva": "0x0001a2c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorForceTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6
+      ],
+      "falsification": {
+        "mutation": "Replaced torque.x = d.y * force.z - d.z * force.y with zero in Row000791Fixture::row000791 and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=24"
+      },
+      "note": "The public addForceAtPos fixture exposes the torque X component. Its expected value changes under the mutant; the restored candidate is exact. Discharged by the passing Phase 5 force target. See evidence/phase2-row-000791-force-torque.md and evidence/raw/phase5-actor-force-torque-row-000791-20261018/."
+    },
+    {
       "id": "phys_fn_000915",
       "rva": "0x00020020",
       "proof": "oracle_differential_falsified",
@@ -919,6 +1017,54 @@
         "detected": "stdout_delta=2806"
       },
       "note": "The restored staged pair is exact (stdout_delta=0, stderr_exact=True). Direct probe resolves oracle RVA 0x000213e0 and candidate map symbol ?shapeOwnerQuery@@YAIPAX@Z. Phase 4 passes at 542/542. Evidence: evidence/phase4-prunable-owner-query-000965.md and evidence/raw/phase4-row-000965-20261015/."
+    },
+    {
+      "id": "phys_fn_000973",
+      "rva": "0x00021420",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the +X box hull face distance calculation with zero in BoxShape::nxBoxRebuildHull and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=18"
+      },
+      "note": "The public box raycast fixture exercises the rebuilt hull and rejects the erased +X plane; the restored differential is exact. Discharged by the passing Phase 5 raycast target. See evidence/phase2-row-000973-box-hull.md and evidence/raw/phase5-box-hull-row-000973-20261019/."
+    },
+    {
+      "id": "phys_fn_001472",
+      "rva": "0x0002b6f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "discharged_by_phase": 4,
+      "driving_phases": [
+        3,
+        4,
+        6
+      ],
+      "falsification": {
+        "mutation": "Changed the hull polygon-count store at +0x24 to zero in nxHullComputePolygons and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=28"
+      },
+      "note": "The public convex-mesh differential exposes the polygon count for precomputed tetrahedra; the zero-count mutant is rejected and restored output is exact. Discharged by the passing Phase 4 convex-mesh target. See evidence/phase2-row-001472-convex-hull-polygons.md and evidence/raw/phase4-convex-hull-polygons-row-001472-20261019/."
+    },
+    {
+      "id": "phys_fn_001504",
+      "rva": "0x0002cc80",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "discharged_by_phase": 4,
+      "driving_phases": [
+        4
+      ],
+      "falsification": {
+        "mutation": "Reverse the unsigned endpoint-order branch at RVA 0x0002cc9b from jbe L2cca3 to jae L2cca3 in the phys_fn_001504 continuation.",
+        "detected": "mismatches=9619"
+      },
+      "note": "The registered oracle differential rejects the reversed edge endpoint ordering in the convex-hull corpus. Restored convex_hull output is exact (0 mismatches); the separately pinned plane_divergent case remains within its established ceiling (1595). See evidence/phase2-row-001504-convex-hull-edge-order.md and evidence/raw/phase2-convex-hull-edge-order-001504-20261019/."
     },
     {
       "id": "phys_fn_001583",
@@ -1189,137 +1335,6 @@
         "mutation": "the accessor hands back null instead of installing the built-in default",
         "detected": "check_failed accessor installs a default when nothing is registered"
       }
-    },
-    {
-      "id": "phys_fn_000776",
-      "rva": "0x00018570",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsBodyCreationTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        5,
-        7
-      ],
-      "falsification": {
-        "mutation": "Omitted nxU32VectorPushBack(scene + 0x6f8, bodyWord(this, 0x11c)) from DynamicBody::destruct and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=10"
-      },
-      "note": "The public release/recreate fixture directly observes the recycled record ID. The restored candidate reports ID 2 with stdout_delta=0 and exact stderr. See evidence/phase2-row-000776-record-id-recycling.md and evidence/raw/phase2-row-000776-20261018/."
-    },
-    {
-      "id": "phys_fn_000758",
-      "rva": "0x00017630",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsJointSlotTests",
-      "discharged_by_phase": 6,
-      "driving_phases": [
-        3,
-        6,
-        7
-      ],
-      "falsification": {
-        "mutation": "Replaced the candidate quaternion-derived matrix assignment m[0] with zero and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=2795"
-      },
-      "note": "The registered joint-slot differential exposes the body matrix. The mutant is rejected; restored output is exact. Phase 6 passes at 1819/1819 coverage assertions. See evidence/phase2-row-000758-quaternion-matrix.md and evidence/raw/phase6-joint-slot-row-000758-20261018/."
-    },
-    {
-      "id": "phys_fn_000791",
-      "rva": "0x0001a2c0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorForceTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        5,
-        6
-      ],
-      "falsification": {
-        "mutation": "Replaced torque.x = d.y * force.z - d.z * force.y with zero in Row000791Fixture::row000791 and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=24"
-      },
-      "note": "The public addForceAtPos fixture exposes the torque X component. Its expected value changes under the mutant; the restored candidate is exact. Discharged by the passing Phase 5 force target. See evidence/phase2-row-000791-force-torque.md and evidence/raw/phase5-actor-force-torque-row-000791-20261018/."
-    },
-    {
-      "id": "phys_fn_000746",
-      "rva": "0x00016e80",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorCMassTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        3,
-        5,
-        7
-      ],
-      "falsification": {
-        "mutation": "Replaced the world inverse-inertia diagonal out[0] calculation with zero in nxNpActorWorldTensorRDRt and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=210"
-      },
-      "note": "The rotated center-of-mass fixture exposes the world inverse-inertia tensor. The mutant is rejected; the restored candidate is exact. Discharged by the passing Phase 5 center-of-mass target. See evidence/phase2-row-000746-world-inertia.md and evidence/raw/phase5-world-inertia-row-000746-20261018/."
-    },
-    {
-      "id": "phys_fn_000782",
-      "rva": "0x00018730",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorForceTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        5,
-        7
-      ],
-      "falsification": {
-        "mutation": "Replaced impulse-mode inverseMass * force->x with zero in nxNpActorApplyForce and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=18"
-      },
-      "note": "The public force-mode fixture checks the impulse accumulator and rejects the zero-scaling mutant; restored output is exact. Discharged by the passing Phase 5 force target. See evidence/phase2-row-000782-force-accumulator.md and evidence/raw/phase5-force-accumulator-row-000782-20261018/."
-    },
-    {
-      "id": "phys_fn_000756",
-      "rva": "0x00017420",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsActorCMassTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        3,
-        5
-      ],
-      "falsification": {
-        "mutation": "Overwrote quaternion X at record +0x124 with zero after nxNpActorUpdateCMassQuaternion and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=40"
-      },
-      "note": "The public CMass pose/orientation fixture exposes the converted quaternion across rotated cases. The mutant is rejected; restored output is exact. Discharged by the passing Phase 5 CMass target. See evidence/phase2-row-000756-cmass-quaternion.md and evidence/raw/phase5-cmass-quaternion-row-000756-20261018/."
-    },
-    {
-      "id": "phys_fn_000973",
-      "rva": "0x00021420",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsSceneRaycastTests",
-      "discharged_by_phase": 5,
-      "driving_phases": [
-        3,
-        5
-      ],
-      "falsification": {
-        "mutation": "Replaced the +X box hull face distance calculation with zero in BoxShape::nxBoxRebuildHull and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=18"
-      },
-      "note": "The public box raycast fixture exercises the rebuilt hull and rejects the erased +X plane; the restored differential is exact. Discharged by the passing Phase 5 raycast target. See evidence/phase2-row-000973-box-hull.md and evidence/raw/phase5-box-hull-row-000973-20261019/."
-    },
-    {
-      "id": "phys_fn_001472",
-      "rva": "0x0002b6f0",
-      "proof": "differential_falsified",
-      "gate": "NxPhysicsConvexMeshTests",
-      "discharged_by_phase": 4,
-      "driving_phases": [
-        3,
-        4,
-        6
-      ],
-      "falsification": {
-        "mutation": "Changed the hull polygon-count store at +0x24 to zero in nxHullComputePolygons and rebuilt NxPhysics.dll.",
-        "detected": "stdout_delta=28"
-      },
-      "note": "The public convex-mesh differential exposes the polygon count for precomputed tetrahedra; the zero-count mutant is rejected and restored output is exact. Discharged by the passing Phase 4 convex-mesh target. See evidence/phase2-row-001472-convex-hull-polygons.md and evidence/raw/phase4-convex-hull-polygons-row-001472-20261019/."
     }
   ],
   "deferred": [
@@ -1513,18 +1528,6 @@
         4
       ],
       "callers": 10,
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001504",
-      "rva": "0x0002cc80",
-      "size": 749,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap ConvexHull.cpp .. IceAdjacencies.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [],
-      "callers": 1,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {

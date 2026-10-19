@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-001504-convex-hull-edge-order.md",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_source_sha256": "696a606fa3d4ccf75e62035a48345f5974311c8ccb465d472a61ad70ecda0d7a",
+  "test_executable_sha256": "f8135538fbabeed0d026f5e0ac5e24c3e3ea76c20d2a4834471516f9f89b6c22",
+  "mutation": "At oracle RVA 0x0002cc9b, reverse the unsigned endpoint-order branch jbe L2cca3 to jae L2cca3 in the phys_fn_001504 continuation.",
+  "results": {
+    "baseline_exit": 0,
+    "mutation_exit": 1,
+    "mutation_convex_hull_plane_divergent_mismatches": 9619,
+    "mutation_ceiling": 1595,
+    "restored_exit": 0,
+    "restored_convex_hull_mismatches": 0,
+    "restored_divergent_mismatches": 1595,
+    "restored_candidate_mismatches": 0,
+    "phase4_gate_exit": 0,
+    "phase4_coverage_assertions": 563
+  },
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "f168f0abb1cc42492a360fdfbff219924bc11f92f48e79ed391e77f529636dbe",
+      "uncompressed_sha256": "f4b17ca1e2e48904e966b45ad588c8a0e13fdabe2c4294a1e7ec32ed3a0c3c7d",
+      "bytes": 137585,
+      "source": "build/row1502-oracle-baseline.log",
+      "note": "registered oracle/candidate-linked baseline; exit 0"
+    },
+    "mutation.log.gz": {
+      "sha256": "ed54ef89b883867403e0af76f4147f25ea4f7b73d69c434f8fc0a8397e73362a",
+      "uncompressed_sha256": "2662dfe15c768de9db5ded997695cbcf28126ec11f77e400766ab4e557ce46d4",
+      "bytes": 138471,
+      "source": "build/row1502-mutation3.log",
+      "note": "phys_fn_001504 endpoint-order mutation; exit 1"
+    },
+    "restored.log.gz": {
+      "sha256": "a9e6b4860c40914194cea3e75ac37701f7fd986d5183e09d71e6972b34453f80",
+      "uncompressed_sha256": "68c440da3365b718f2deeaa3b05596d8969d0776de010f4e39d206b91d365362",
+      "bytes": 137585,
+      "source": "build/row1504-restored-final.log",
+      "note": "restored source control; exit 0"
+    },
+    "phase4-gate.log.gz": {
+      "sha256": "daa9d3fbce461c7250db21e2ed6fd5c10ba8f58bad655558fe56ef5339a066a4",
+      "uncompressed_sha256": "c0a028b663139367448d1d9ce951e92b5493e562da7b662aab6407ce0acf21ac",
+      "bytes": 1134659,
+      "source": "build/phase4-row1504-gate.log",
+      "note": "fresh CMake Win32 Release Phase 4 gate; all 563 coverage assertions pass"
+    }
+  }
+}
