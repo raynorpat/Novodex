@@ -243,6 +243,7 @@ if(NX_PHYSICS_USE_X87)
 		Physics/src/ContactSphereMesh.cpp
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/ContactMeshMesh.cpp
+		Physics/src/ContactMeshPMap.cpp
 		Physics/src/opcode/NovodexTreeColliderCallback.cpp
 		Physics/src/ContactPlaneMesh.cpp
 		Physics/src/EdgeList.cpp
@@ -1215,7 +1216,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp
 		Physics/src/Distance.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
-		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/opcode/NovodexTreeColliderCallback.cpp Physics/src/ContactPlaneMesh.cpp
+		Physics/src/ContactBoxMeshICE.cpp Physics/src/ContactCapsuleMesh.cpp Physics/src/ContactMeshHeightfield.cpp Physics/src/ContactMeshMesh.cpp Physics/src/ContactMeshPMap.cpp Physics/src/opcode/NovodexTreeColliderCallback.cpp Physics/src/ContactPlaneMesh.cpp
 		Physics/src/ContactConvexConvex.cpp Physics/src/TriangleMeshPolygons.cpp
 		Physics/src/ContactConvexHeightfield.cpp Physics/src/ContactSphereMesh.cpp
 		Physics/src/TriangleMeshTopology.cpp Physics/src/TriangleMesh.cpp Physics/src/InternalTriangleMesh.cpp Physics/src/PMap.cpp

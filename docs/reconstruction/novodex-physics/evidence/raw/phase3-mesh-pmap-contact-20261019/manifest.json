@@ -1,0 +1,97 @@
+{
+ "task": "mesh contact against a penetration map: phys_fn_001878, 001880; cell sampler phys_fn_002029 re-transcribed",
+ "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+ "candidate_sha256": "a6e7f6e20114aaaeb663c04c7b574261fce3097fd325ed81542d1f7c0b855d78",
+ "collision_harness_sha256": "dc8b1fd20c0d0e88f749c81aec3df6ff73d414a45cb2f604c4fb871ef17c0dfb",
+ "fixture": "tests/PhysicsCollisionTests.cpp",
+ "rows": [
+  "phys_fn_001878",
+  "phys_fn_001880",
+  "phys_fn_002029"
+ ],
+ "pmap_sample_dense": {
+  "samples": 4000,
+  "accepted": 2521,
+  "mismatches": 0,
+  "previous_cpp_mismatches": 1583
+ },
+ "contact_mesh_pmap": {
+  "fixtures": 21,
+  "contact_cases": 18,
+  "separated_cases": 3,
+  "contacts": 155,
+  "mismatches": 0,
+  "routes": [
+   "0x00047e50 direct",
+   "0x00046ab0 dispatch"
+  ]
+ },
+ "listing_compare": "848 + 31 + 1054 instructions, 0 differing, mappings unexpected=0",
+ "mutations": {
+  "applied": 11,
+  "rejected": 9,
+  "not_rejected_equivalent": [
+   "m1878_planes",
+   "m1878_negate"
+  ]
+ },
+ "phase3": "pass; 997/997 coverage assertions",
+ "phase4": "pass; 579/579",
+ "phase5": "pass; 2970/2970",
+ "phase6": "pass; 1820/1820",
+ "phase7": "pass; 3136/3136",
+ "tooling": "857 tests pass",
+ "inventory": "6338 functions; 5138 data_objects; 0 unexplained",
+ "files": {
+  "control.log.gz": {
+   "sha256": "0b8a3ce008bde01f1be5be254f350227766c5255574db88ee770f4feac1d4088",
+   "uncompressed_sha256": "5a40ebe80f10a0704bd22b6971c38c09566cf20aa1da6cb8d7ae9cd76cc2dfb8",
+   "uncompressed_bytes": 63289
+  },
+  "mutants.log.gz": {
+   "sha256": "d09380e4db686c0fc7874f66284a690fc7a6abdf03074e2b8f0d9e2d82ca5fec",
+   "uncompressed_sha256": "a1cbebb28b4175fb4250464f708c06a572df09cd4c9922e2a9da5997f22e2f1d",
+   "uncompressed_bytes": 721473
+  },
+  "listing-compare.log.gz": {
+   "sha256": "1f0a60845fcea2c9947f2ec69458c9fb8ace3906499d23af57082f76ba7a7770",
+   "uncompressed_sha256": "724fd384c9a6377b3cb4de3454712cf72548ab37dfd7adc10668fcfad3c6a3d1",
+   "uncompressed_bytes": 2274
+  },
+  "phase3.log.gz": {
+   "sha256": "0a543a81acde4b33f13b731657367795b9ad99f0d403fe296988e4e890c01ba8",
+   "uncompressed_sha256": "cec06ec3c6cacc0e2e6620144ba90bb2a5888999a03ba9d84ff16553ac1ee72e",
+   "uncompressed_bytes": 828083
+  },
+  "phase4.log.gz": {
+   "sha256": "83f9053521945365fdc95d2fc84a249fea670c9bb7b99aa6fc69f580442d18c2",
+   "uncompressed_sha256": "18b1d9e63b0d72ddd74bdc8b4d05c27fa17f43bc0d8bc6ff695c1388585118ba",
+   "uncompressed_bytes": 1190370
+  },
+  "phase5.log.gz": {
+   "sha256": "056b958d002c32c5eae98f11bc6d319b31188890da871f1b04c8bf8b1cb559fa",
+   "uncompressed_sha256": "5840aa48cb6183ffc47c67add759f5df4f811083cd5a5e58073c51e405c966ce",
+   "uncompressed_bytes": 2882096
+  },
+  "phase6.log.gz": {
+   "sha256": "cc249340f56719080c5a9033c20c346e012440f96ca1bdb4f03cdc1035c1849a",
+   "uncompressed_sha256": "1beb9e74d203174b3a8b23d5bf771ef4cae7eb76e63c0c1ecb1f3d2fb3a27939",
+   "uncompressed_bytes": 3142509
+  },
+  "phase7.log.gz": {
+   "sha256": "614dbdb06b0b6afd0dfbdfa241bbf424dffeb101a2d51bcb593e5fe21ebdadde",
+   "uncompressed_sha256": "5d350bbe858e007c65fa43513d2ad6f0f5b03c7c90aae128ef1785866cc7e029",
+   "uncompressed_bytes": 4766816
+  },
+  "tooling.log.gz": {
+   "sha256": "418ea96f7b5458e8e6ec9189f857ae8abc4666882692b9f341393741eb9e87ae",
+   "uncompressed_sha256": "ab2536775f473ba976233dddefcf5a1e6a54bb616a75ff64837852425ad4347f",
+   "uncompressed_bytes": 1064
+  },
+  "mutations.py.txt": {
+   "sha256": "fa68b1cf4014183638c0a65bb178d8cc96022bb5dd5cb2e733ad13ec9607fc6c",
+   "uncompressed_sha256": "fa68b1cf4014183638c0a65bb178d8cc96022bb5dd5cb2e733ad13ec9607fc6c",
+   "uncompressed_bytes": 1222
+  }
+ }
+}

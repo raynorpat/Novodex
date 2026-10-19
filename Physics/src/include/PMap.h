@@ -78,8 +78,11 @@ RECONSTRUCTED AND DRIVEN:
     through the same public differential.
   * phys_fn_002029 (0x0004f070) samples the eight Morton-indexed corners,
     separates the high-bit cell classes, and applies its optional direction
-    transform and final acceptance tests. Seven direct oracle fixtures match
-    the return and all output words; swapping the class accumulators is caught.
+    transform and final acceptance tests. It is a listing transcription (naked,
+    1,054 instructions equal to the oracle's): the C++ version it replaced matched
+    seven direct fixtures and disagreed with the oracle on 40% of 4,000 drawn
+    samples. Seven direct fixtures and the 4,000 samples match the return and all
+    output words.
 
 STILL OPEN:
 
@@ -90,9 +93,10 @@ STILL OPEN:
   * Allocation-failure and alternate OPCODE-tree branches in the compute arm
     need dedicated branch fixtures before their exact failure behavior is
     claimed.
-  * The mesh contact caller phys_fn_001878 and its path into this query remain
-    open; this row's direct probe does not claim the caller or end-to-end mesh
-    contact dispatch.
+  * Maps cooked by NxCreatePMap are not yet run through the contact path; the
+    mesh contact rows phys_fn_001878 and 001880 (ContactMeshPMap.cpp) and this
+    sampler are gated over lattice maps built from the harness meshes
+    (docs/reconstruction/novodex-physics/evidence/phase3-mesh-pmap-contact.md).
 */
 class PenetrationMap
 	{

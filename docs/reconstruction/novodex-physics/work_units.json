@@ -1786,12 +1786,10 @@
     "phys_fn_001893"
    ],
    "rows": {
-    "discovered": 2,
-    "dynamically_gated": 7
+    "dynamically_gated": 9
    },
    "bytes": {
-    "discovered": 3486,
-    "dynamically_gated": 2200
+    "dynamically_gated": 5686
    },
    "phases": {
     "3": 9

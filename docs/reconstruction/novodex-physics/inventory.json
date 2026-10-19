@@ -35705,13 +35705,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactMeshPMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/737",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5651",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x000470f0 (cdecl with the mesh shape's pose block in ebx: the map's owner, the owner's pose, the mesh shape, the sink, the context). It inverts the owner's rotation, carries the owner's map box into the mesh's frame as six planes (OBB::ComputePlanes, 0x000e4580), asks the scene's PlanesCollider (0x000e2b60) for the mesh faces the box touches, and for each vertex of those faces, once per query by the context stamp (0x00010190), tests it against the map's bounds and cell class bit, asks PenetrationMap::sampleCell (phys_fn_002029) for the displacement with the vertex's normal (built on first use by phys_fn_002081) as the direction, and emits a contact along the displacement (phys_fn_000873), the separation its negated length.",
+      "dynamic_proof": "driven and gated: the transcript lines 'collision name=contact_mesh_pmap' and 'collision name=contact_mesh_pmap_dispatch' are registered coverage assertions in tools/gate_targets.ps1. The harness gives both shapes' meshes penetration maps (16 cells a side, every lattice corner holding its nearest face), fixes the shapes' vtables, and runs the oracle's entries (0x00047e50 directly, 0x00046ab0 through the dispatcher) against the candidate's over 21 fixtures: 18 contact cases and 3 separated, 155 contacts, zero mismatches, including one-map and no-map fixtures. A mutation aimed at this row is rejected (mismatches=128). The listing compare is evidence/phase3-mesh-pmap-listing-compare.py (848 + 31 + 1,054 instructions equal). See evidence/phase3-mesh-pmap-contact.md.",
+      "notes": "Transcribed listing-exact into a naked row, in the style of the other mesh-contact rows, and reached from NxContactMeshMesh's PenetrationMap branch.",
+      "implementation": "Physics/src/ContactMeshPMap.cpp",
+      "implementation_symbol": "_nxMeshPMapContact",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_nxMeshPMapContact",
+        "address": "0x100145f0",
+        "object": "ContactMeshPMap.obj"
+      }
     },
     {
       "id": "phys_fn_001879",
@@ -35741,13 +35749,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactMeshPMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/738",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5668",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00047e50: runs phys_fn_001878 twice, once with each shape as the map's owner and the other as the mesh (arguments: owner, owner pose, mesh, sink, context; the mesh's pose block in ebx). phys_fn_001876 takes it when both shapes' meshes carry a penetration map (mesh + 0x9c), after the terrain cases and before the convex ones.",
+      "dynamic_proof": "driven and gated: the transcript lines 'collision name=contact_mesh_pmap' and 'collision name=contact_mesh_pmap_dispatch' are registered coverage assertions in tools/gate_targets.ps1. The harness gives both shapes' meshes penetration maps (16 cells a side, every lattice corner holding its nearest face), fixes the shapes' vtables, and runs the oracle's entries (0x00047e50 directly, 0x00046ab0 through the dispatcher) against the candidate's over 21 fixtures: 18 contact cases and 3 separated, 155 contacts, zero mismatches, including one-map and no-map fixtures. A mutation aimed at this row is rejected (mismatches=1723). The listing compare is evidence/phase3-mesh-pmap-listing-compare.py (848 + 31 + 1,054 instructions equal). See evidence/phase3-mesh-pmap-contact.md.",
+      "notes": "Transcribed listing-exact into a naked row, in the style of the other mesh-contact rows, and reached from NxContactMeshMesh's PenetrationMap branch.",
+      "implementation": "Physics/src/ContactMeshPMap.cpp",
+      "implementation_symbol": "_nxMeshPMapContacts",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_nxMeshPMapContacts",
+        "address": "0x10015350",
+        "object": "ContactMeshPMap.obj"
+      }
     },
     {
       "id": "phys_fn_001881",
@@ -38565,8 +38581,16 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/788",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6379",
       "static_proof": null,
-      "dynamic_proof": "Pinned NxPhysicsAssetTests direct-oracle differential at 0x0004f070: seven cell-query fixtures match the return and three output words exactly, including mixed face classes, a rejected classification split, opposing direction, transformed direction, and the (1,1,1) boundary. An isolated candidate mutation that swaps the high-bit class accumulators is detected (candidate mismatches=1); restored control is zero. Evidence: evidence/phase3-pmap-sample-002029.md and evidence/raw/phase3-pmap-sample-002029/.",
-      "notes": "The eight-corner PenetrationMap sampler is directly driven through the Phase 4 asset oracle differential; its phase-3 deferral is discharged by Phase 4."
+      "dynamic_proof": "Pinned NxPhysicsAssetTests direct-oracle differential at 0x0004f070: seven cell-query fixtures match the return and three output words exactly (mixed face classes, a rejected classification split, opposing direction, transformed direction, the (1,1,1) boundary), and NxPhysicsCollisionTests drives 4,000 drawn cells, points, directions and matrices over maps built from the harness meshes: oracle and candidate agree on every return and output word. The earlier C++ reconstruction matched the seven fixtures and disagreed with the oracle on 1,583 of those 4,000 samples; the row is now a listing transcription (1,054 instructions equal). Isolated candidate mutations of the listing -- the final acceptance test inverted (`jnp` to `jp` at 0x0004fe85) and one accumulation made a subtraction (0x0004fe44) -- are detected (pmap_sample_dense mismatches=2659 and 1,848); restored control is zero. Evidence: evidence/phase3-pmap-sample-002029.md, evidence/phase3-mesh-pmap-contact.md and evidence/raw/phase3-mesh-pmap-contact-20261019/.",
+      "notes": "The eight-corner PenetrationMap sampler is directly driven through the Phase 4 asset oracle differential and, since the mesh/PMap contact rows, through 4,000 drawn samples in the Phase 3 collision harness; its phase-3 deferral is discharged by Phase 4.",
+      "implementation": "Physics/src/PMap.cpp",
+      "implementation_symbol": "?sampleCell@PenetrationMap@@QBE_NIIIPAMPBM11@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?sampleCell@PenetrationMap@@QBE_NIIIPAMPBM11@Z",
+        "address": "0x10052fc0",
+        "object": "PMap.obj"
+      }
     },
     {
       "id": "phys_fn_002030",

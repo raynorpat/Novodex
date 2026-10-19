@@ -79,6 +79,7 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            # convex-mesh gap Task 2l
                            "mesh_contact_accumulator", "mesh_adjacent_normal",
                            "overlap_mesh_mesh", "contact_mesh_mesh", "contact_mesh_mesh_sphere_callback",
+                           "pmap_sample_dense", "contact_mesh_pmap", "contact_mesh_pmap_dispatch",
                            "contact_mesh_heightfield", "contact_mesh_mesh_heightfield_dispatch",
                            "contact_sink_reset",
                            "contact_plane_mesh",

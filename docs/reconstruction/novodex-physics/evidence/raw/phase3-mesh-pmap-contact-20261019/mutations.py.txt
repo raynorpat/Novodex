@@ -1,0 +1,20 @@
+# One-line edits applied one at a time to a copy of the committed listing (found by its address
+# comment) or the dispatcher, rebuilt (NxPhysicsCollisionTests) and run against the pinned oracle;
+# restored between runs. (file, address marker, old text, new text). Results are in mutants.log.gz.
+muts = {
+ # phys_fn_001878
+ 'm1878_planes':   (CP, '0x000479b0', 'push 6', 'push 5'),
+ 'm1878_stamp':    (CP, '0x00047a59', 'je L47e2c', 'jne L47e2c'),
+ 'm1878_cellflag': (CP, '0x00047c13', '0x40', '0x80'),
+ 'm1878_negate':   (CP, '0x00047e05', 'fchs', 'nop'),
+ 'm1878_negate_add': (CP, '0x00047e05', 'fchs', 'fadd dword ptr [nxPMapOne]'),
+ 'm1878_corners':  (CP, '0x00047e31', 'cmp eax, 3', 'cmp eax, 2'),
+ # phys_fn_001880
+ 'm1880_xform':    (CP, '0x00047e6b', 'lea ebx, [ebp + 0xc]', 'lea ebx, [esi + 0xc]'),
+ 'm1880_second':   (CP, '0x00047e7e', 'push esi', 'push ebp'),
+ # phys_fn_002029
+ 'm2029_accept':   (PM, '0x0004fe85', 'jnp L4ff04', 'jp L4ff04'),
+ 'm2029_sum':      (PM, '0x0004fe44', 'fadd dword ptr [edx]', 'fsub dword ptr [edx]'),
+ # the 001876 branch
+ 'm1876_branch':   (MM, 'LITERAL', '(image0 + 0x9c) && *(const void* const*) (image1 + 0x9c))', '(image0 + 0x9c) || *(const void* const*) (image1 + 0x9c))'),
+}

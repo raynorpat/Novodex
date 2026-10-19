@@ -9959,6 +9959,7 @@ totalMismatch += nxDrivePSceneBaseDtorOwner(base);
 #undef max
 #include "TriangleMeshPolygons.h"
 #include "EdgeList.h"
+#include "PMap.h"
 #pragma pop_macro("random")
 #pragma pop_macro("max")
 #pragma pop_macro("min")
@@ -13712,6 +13713,372 @@ static unsigned nxDriveTask2lMeshMeshContact(unsigned char* base, Nx2iSide* side
 	nx2iFoundationEnd();
 	return mismatches || oracleContactCases < 1 || separatedCases < 1 || oracleContacts < 1;
 	}
+
+// phys_fn_001880 / phys_fn_001878: mesh contact against a penetration map. Both
+// shapes' meshes carry a PenetrationMap (mesh + 0x9c), built here from the
+// harness meshes on a 16-cell lattice and filled in directly: every lattice
+// corner holds the nearest face of its mesh, with the high bit set when the
+// corner lies behind that face. The oracle and the candidate read the same map
+// objects, so the input is whatever these are; what the differential checks is
+// that the two walks over them, the samples they ask for and the contacts they
+// emit come out word for word.
+extern "C" void __cdecl nxMeshPMapContacts(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*);
+
+static void* __fastcall nxPMapFakeBaseShape(void* self) { return self; }
+static void* nxPMapFakeVtable[32];
+
+static void nxPMapClosestPoint(const double p[3], const double a[3], const double b[3], const double c[3],
+	double out[3])
+	{
+	// Ericson, Real-Time Collision Detection, ClosestPtPointTriangle.
+	double ab[3], ac[3], ap[3];
+	for(int i = 0; i < 3; ++i) { ab[i] = b[i] - a[i]; ac[i] = c[i] - a[i]; ap[i] = p[i] - a[i]; }
+	const double d1 = ab[0] * ap[0] + ab[1] * ap[1] + ab[2] * ap[2];
+	const double d2 = ac[0] * ap[0] + ac[1] * ap[1] + ac[2] * ap[2];
+	if(d1 <= 0 && d2 <= 0) { memcpy(out, a, 3 * sizeof(double)); return; }
+	double bp[3];
+	for(int i = 0; i < 3; ++i) bp[i] = p[i] - b[i];
+	const double d3 = ab[0] * bp[0] + ab[1] * bp[1] + ab[2] * bp[2];
+	const double d4 = ac[0] * bp[0] + ac[1] * bp[1] + ac[2] * bp[2];
+	if(d3 >= 0 && d4 <= d3) { memcpy(out, b, 3 * sizeof(double)); return; }
+	const double vc = d1 * d4 - d3 * d2;
+	if(vc <= 0 && d1 >= 0 && d3 <= 0)
+		{
+		const double v = d1 / (d1 - d3);
+		for(int i = 0; i < 3; ++i) out[i] = a[i] + v * ab[i];
+		return;
+		}
+	double cp[3];
+	for(int i = 0; i < 3; ++i) cp[i] = p[i] - c[i];
+	const double d5 = ab[0] * cp[0] + ab[1] * cp[1] + ab[2] * cp[2];
+	const double d6 = ac[0] * cp[0] + ac[1] * cp[1] + ac[2] * cp[2];
+	if(d6 >= 0 && d5 <= d6) { memcpy(out, c, 3 * sizeof(double)); return; }
+	const double vb = d5 * d2 - d1 * d6;
+	if(vb <= 0 && d2 >= 0 && d6 <= 0)
+		{
+		const double w = d2 / (d2 - d6);
+		for(int i = 0; i < 3; ++i) out[i] = a[i] + w * ac[i];
+		return;
+		}
+	const double va = d3 * d6 - d5 * d4;
+	if(va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0)
+		{
+		const double w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+		for(int i = 0; i < 3; ++i) out[i] = b[i] + w * (c[i] - b[i]);
+		return;
+		}
+	const double denom = 1.0 / (va + vb + vc);
+	const double v = vb * denom, w = vc * denom;
+	for(int i = 0; i < 3; ++i) out[i] = a[i] + ab[i] * v + ac[i] * w;
+	}
+
+static PenetrationMap* nxBuildTestPMap(const Nx2hMesh& mesh, unsigned* image)
+	{
+	static const unsigned kResolution = 16;
+	const float* verts = (const float*) mesh.verts;
+	float mn[3] = { 1e30f, 1e30f, 1e30f }, mx[3] = { -1e30f, -1e30f, -1e30f };
+	for(unsigned v = 0; v < mesh.nbVerts; ++v)
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			if(verts[3 * v + i] < mn[i]) mn[i] = verts[3 * v + i];
+			if(verts[3 * v + i] > mx[i]) mx[i] = verts[3 * v + i];
+			}
+	for(unsigned i = 0; i < 3; ++i) { mn[i] -= 0.5f; mx[i] += 0.5f; }
+	PenetrationMap* pm = new PenetrationMap;
+	unsigned char* raw = (unsigned char*) pm;
+	const unsigned* spread = *(const unsigned* const*) (raw + 4);
+	float* f = (float*) raw;
+	const float n1 = (float) (kResolution - 1);
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		const float extent = mx[i] - mn[i];
+		f[2 + i] = mn[i];
+		f[5 + i] = mx[i];
+		f[8 + i] = (mn[i] + mx[i]) * 0.5f;
+		f[11 + i] = (mx[i] - mn[i]) * 0.5f;
+		f[14 + i] = extent;
+		f[17 + i] = n1 / extent;
+		f[20 + i] = extent / n1;
+		}
+	*(unsigned*) (raw + 0x5c) = kResolution;
+	*(unsigned*) (raw + 0x60) = kResolution * kResolution;
+	*(float*) (raw + 0x64) = n1;
+	*(float*) (raw + 0x68) = 1.0f / n1;
+	const unsigned cells = kResolution * kResolution * kResolution;
+	*(unsigned*) (raw + 0x6c) = cells;
+	unsigned* grid = (unsigned*) malloc(cells * sizeof(unsigned));
+	for(unsigned c = 0; c < cells; ++c)
+		grid[c] = 0xffffffffu;
+	*(unsigned**) (raw + 0x70) = grid;
+	*(unsigned**) (raw + 0x74) = image;
+	for(unsigned z = 0; z < kResolution; ++z)
+		for(unsigned y = 0; y < kResolution; ++y)
+			for(unsigned x = 0; x < kResolution; ++x)
+				{
+				const double p[3] = {
+					x * (double) f[20] - f[11] + f[8], y * (double) f[21] - f[12] + f[9],
+					z * (double) f[22] - f[13] + f[10] };
+				double best = 1e300, bestNormal[3] = { 0, 0, 1 }, bestPoint[3] = { 0, 0, 0 };
+				unsigned bestFace = 0;
+				for(unsigned t = 0; t < mesh.nbTris; ++t)
+					{
+					double a[3], b[3], c[3];
+					for(unsigned i = 0; i < 3; ++i)
+						{
+						a[i] = verts[3 * mesh.tris[3 * t] + i];
+						b[i] = verts[3 * mesh.tris[3 * t + 1] + i];
+						c[i] = verts[3 * mesh.tris[3 * t + 2] + i];
+						}
+					double q[3];
+					nxPMapClosestPoint(p, a, b, c, q);
+					const double d = (p[0] - q[0]) * (p[0] - q[0]) + (p[1] - q[1]) * (p[1] - q[1])
+						+ (p[2] - q[2]) * (p[2] - q[2]);
+					if(d < best)
+						{
+						best = d; bestFace = t;
+						memcpy(bestPoint, q, sizeof(q));
+						const double e1[3] = { b[0] - a[0], b[1] - a[1], b[2] - a[2] };
+						const double e2[3] = { c[0] - a[0], c[1] - a[1], c[2] - a[2] };
+						bestNormal[0] = e1[1] * e2[2] - e1[2] * e2[1];
+						bestNormal[1] = e1[2] * e2[0] - e1[0] * e2[2];
+						bestNormal[2] = e1[0] * e2[1] - e1[1] * e2[0];
+						}
+					}
+				const double side = (p[0] - bestPoint[0]) * bestNormal[0] + (p[1] - bestPoint[1]) * bestNormal[1]
+					+ (p[2] - bestPoint[2]) * bestNormal[2];
+				grid[spread[x] + 2 * spread[y] + 4 * spread[z]] = bestFace | (side < 0 ? 0x80000000u : 0u);
+				}
+	return pm;
+	}
+
+static unsigned nxDriveMeshPMapContact(unsigned char* base, Nx2iSide* sides)
+	{
+	typedef void (__cdecl * EntryFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+	const EntryFn oracleDirect = (EntryFn)(base + 0x00047e50);		// phys_fn_001880
+	const EntryFn oracleDispatch = (EntryFn)(base + 0x00046ab0);	// phys_fn_001876
+	static unsigned char shapeStore[2][2][kShapeBytes];
+	static NxContactWorld world[2][2];
+	struct Fixture { unsigned mesh0, mesh1, orientation; float x, y, z; unsigned maps; };
+	static const Fixture fixtures[] = {
+		{ 0, 0, 0, 0.0f, 0.0f, -0.25f, 3 },
+		{ 0, 0, 1, 0.5f, 0.0f, -0.5f, 3 },
+		{ 1, 1, 0, 0.0f, 0.0f, -0.5f, 3 },
+		{ 1, 1, 1, 0.0f, 0.0f, -1.0f, 3 },
+		{ 1, 3, 0, 0.0f, 0.0f, -0.25f, 3 },
+		{ 0, 1, 0, 0.25f, -0.25f, -0.5f, 3 },
+		{ 1, 0, 1, 0.0f, 0.5f, -0.75f, 3 },
+		{ 7, 7, 1, 0.0f, 0.0f, -1.0f, 3 },
+		{ 2, 3, 1, 0.0f, 0.0f, -1.0f, 3 },
+		{ 3, 2, 0, 0.5f, -0.5f, 0.0f, 3 },
+		{ 4, 5, 0, -0.5f, 0.5f, -0.5f, 3 },
+		{ 0, 7, 0, 0.0f, 0.0f, -1.0f, 3 },
+		{ 6, 7, 0, 0.0f, 0.0f, -0.5f, 3 },
+		{ 8, 9, 1, 0.0f, 0.0f, -0.5f, 3 },
+		{ 1, 1, 0, 0.0f, 0.0f, 12.0f, 3 },
+		{ 0, 7, 0, 0.0f, 0.0f, 9.0f, 3 },
+		// One map or none: the dispatcher takes the plain mesh/mesh walk (001876).
+		{ 0, 1, 0, 0.25f, -0.25f, -0.5f, 1 },
+		{ 0, 1, 0, 0.25f, -0.25f, -0.5f, 2 },
+		{ 0, 7, 0, 0.0f, 0.0f, -1.0f, 1 },
+		{ 0, 7, 0, 0.0f, 0.0f, -1.0f, 2 },
+		{ 0, 1, 1, 0.5f, 0.0f, -0.5f, 0 },
+	};
+	if(!nx2iFoundationBegin())
+		return 1;
+	for(unsigned i = 0; i < 32; ++i)
+		nxPMapFakeVtable[i] = (void*) 0;
+	nxPMapFakeVtable[14] = (void*) &nxPMapFakeBaseShape;
+	// The scene's PlanesCollider and cache, as the plane/mesh rows expect them.
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		unsigned char* const context = sides[side].context;
+		if(side == 0)
+			nx2gCall0(base + 0x000e1510, context + 0x60);
+		else
+			new(context + 0x60) Opcode::PlanesCollider;
+		Opcode::PlanesCache* const cache = new(context + 0xa8) Opcode::PlanesCache;
+		cache->TouchedPrimitives = reinterpret_cast<decltype(cache->TouchedPrimitives)>(context + 0x4e0);
+		}
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderConstruct(sides[side].context + 0x32c);
+	PenetrationMap* maps[kNb2iMeshes];
+	for(unsigned m = 0; m < kNb2iMeshes; ++m)
+		maps[m] = nxBuildTestPMap(nx2iMesh(m), sides[0].meshes[m].image);
+	unsigned mismatches = 0, oracleContacts = 0, contactCases = 0, separatedCases = 0, checks[2] = { 0, 0 };
+	NxDigest inputDigest, oracleDigest[2], candidateDigest[2];
+	nxDigestInit(&inputDigest);
+	for(unsigned i = 0; i < 2; ++i) { nxDigestInit(&oracleDigest[i]); nxDigestInit(&candidateDigest[i]); }
+	// The cell sampler on these maps: the oracle's 0x0004f070 against the candidate's
+	// PenetrationMap::sampleCell over drawn cells, points, directions and matrices.
+	{
+	typedef char (__thiscall * SampleFn)(void*, unsigned, unsigned, unsigned, float*, const float*, const float*, const float*);
+	const SampleFn oracleSample = (SampleFn)(base + 0x0004f070);
+	unsigned state = 0x5a3c91e7u, sampleMismatches = 0, samples = 0, accepted = 0;
+	NxDigest sampleOracle, sampleCandidate, sampleInput;
+	nxDigestInit(&sampleOracle); nxDigestInit(&sampleCandidate); nxDigestInit(&sampleInput);
+	for(unsigned m = 0; m < kNb2iMeshes; ++m)
+		{
+		const unsigned char* raw = (const unsigned char*) maps[m];
+		const float* f = (const float*) raw;
+		for(unsigned k = 0; k < 400; ++k)
+			{
+			const unsigned x = nxNext(&state) % 15, y = nxNext(&state) % 15, z = nxNext(&state) % 15;
+			float point[3], direction[3], matrix[9], out[2][3];
+			for(unsigned i = 0; i < 3; ++i)
+				{
+				const unsigned c = i == 0 ? x : i == 1 ? y : z;
+				point[i] = (c + (nxNext(&state) & 1023) / 1023.0f) * f[20 + i] - f[11 + i] + f[8 + i];
+				direction[i] = (nxNext(&state) & 2047) / 1023.5f - 1.0f;
+				}
+			for(unsigned i = 0; i < 9; ++i)
+				matrix[i] = (nxNext(&state) & 2047) / 1023.5f - 1.0f;
+			const unsigned variant = k % 3;
+			const unsigned cell[4] = { m, x, y, z };
+			nxFoldInput(&sampleInput, cell, sizeof(cell));
+			nxFoldInput(&sampleInput, point, sizeof(point));
+			nxFoldInput(&sampleInput, direction, sizeof(direction));
+			nxFoldInput(&sampleInput, matrix, sizeof(matrix));
+			memset(out, 0xcd, sizeof(out));
+			const bool oracleResult = oracleSample(maps[m], x, y, z, out[0], point,
+				variant ? direction : 0, variant == 2 ? matrix : 0) != 0;
+			const bool candidateResult = maps[m]->sampleCell(x, y, z, out[1], point,
+				variant ? direction : 0, variant == 2 ? matrix : 0);
+			nxFoldInput(&sampleOracle, &oracleResult, sizeof(oracleResult));
+			nxFoldInput(&sampleOracle, out[0], sizeof(out[0]));
+			nxFoldInput(&sampleCandidate, &candidateResult, sizeof(candidateResult));
+			nxFoldInput(&sampleCandidate, out[1], sizeof(out[1]));
+			++samples;
+			accepted += oracleResult;
+			if(oracleResult != candidateResult || memcmp(out[0], out[1], sizeof(out[0])))
+				++sampleMismatches;
+			}
+		}
+	mismatches += sampleMismatches;
+	printf("collision name=pmap_sample_dense index=- rva=0x0004f070 owner=phys_fn_002029 checks=%u oracle=%016llx candidate=%016llx mismatches=%u accepted=%u\n",
+		samples, sampleOracle.state, sampleCandidate.state, sampleMismatches, accepted);
+	printf("collision coverage name=pmap_sample_dense maps=%u samples=%u accepted=%u\n", kNb2iMeshes, samples, accepted);
+	nxPrintInput("pmap_sample_dense", &sampleInput);
+	}
+	for(unsigned fixtureIndex = 0; fixtureIndex < sizeof(fixtures) / sizeof(fixtures[0]); ++fixtureIndex)
+		{
+		const Fixture& fixture = fixtures[fixtureIndex];
+		const unsigned meshIds[2] = { fixture.mesh0, fixture.mesh1 };
+		for(unsigned route = 0; route < 2; ++route)
+			{
+			for(unsigned side = 0; side < 2; ++side)
+				{
+				NxCollisionShape* shape0 = (NxCollisionShape*) shapeStore[side][0];
+				NxCollisionShape* shape1 = (NxCollisionShape*) shapeStore[side][1];
+				memset(shapeStore[side], 0, sizeof(shapeStore[side]));
+				nxIdentity(shape0); nxIdentity(shape1);
+				// 001878 asks each shape for its base through slot 14 of its vtable.
+				*(void**) shapeStore[side][0] = nxPMapFakeVtable;
+				*(void**) shapeStore[side][1] = nxPMapFakeVtable;
+				shape0->type = shape1->type = 4;
+				shape0->translation[0] = fixture.x;
+				shape0->translation[1] = fixture.y;
+				shape0->translation[2] = fixture.z;
+				if(fixture.orientation)
+					{
+					shape1->rotation[0] = 0; shape1->rotation[2] = 1;
+					shape1->rotation[6] = -1; shape1->rotation[8] = 0;
+					}
+				for(unsigned slot = 0; slot < 2; ++slot)
+					{
+					Nx2iMeshSide& mesh = sides[side].meshes[meshIds[slot]];
+					*(unsigned**) (shapeStore[side][slot] + 0xe0) = mesh.image;
+					mesh.image[0x7c / 4] = 0xff;
+					mesh.image[0x9c / 4] = (fixture.maps >> slot) & 1 ? (unsigned) (size_t) maps[meshIds[slot]] : 0;
+					mesh.image[0xa0 / 4] = 0;
+					}
+				nxResetWorld(&world[route][side]);
+				nxStageWorld(&world[route][side], shape0, shape1, true, true, 3, 5, false, false, false);
+				// Each mesh's lazily built vertex normals start unbuilt on every case.
+				for(unsigned slot = 0; slot < 2; ++slot)
+					sides[side].meshes[meshIds[slot]].image[0x20 / 4] = 0;
+				*(unsigned*) (sides[side].context + 0x64) = 0;
+				sides[side].touched[1] = 0;
+				memset(sides[side].visited, 0, sizeof(sides[side].visited));
+				}
+			if(route == 0)
+				{
+				const unsigned selectors[3] = { fixture.mesh0, fixture.mesh1, fixture.orientation };
+				nxFoldInput(&inputDigest, selectors, sizeof(selectors));
+				nxFoldInput(&inputDigest, &fixture.x, sizeof(fixture.x));
+				nxFoldInput(&inputDigest, &fixture.y, sizeof(fixture.y));
+				nxFoldInput(&inputDigest, &fixture.z, sizeof(fixture.z));
+				nxFoldInput(&inputDigest, &fixture.maps, sizeof(fixture.maps));
+				for(unsigned slot = 0; slot < 2; ++slot)
+					{
+					const Nx2hMesh& m = nx2iMesh(meshIds[slot]);
+					nxFoldInput(&inputDigest, m.verts, 12 * m.nbVerts);
+					nxFoldInput(&inputDigest, m.tris, 12 * m.nbTris);
+					nxFoldInput(&inputDigest, maps[meshIds[slot]]->getGrid(), 4 * 4096);
+					}
+				}
+			nxSetControl(kControlDefault);
+			if(route == 0)
+				oracleDirect(world[0][0].plane, world[0][0].sphere, &world[0][0].sink, sides[0].context);
+			else
+				oracleDispatch(world[1][0].plane, world[1][0].sphere, &world[1][0].sink, sides[0].context);
+			const unsigned contacts = world[route][0].sink.contactCount;
+			const unsigned oracleStreamCount = world[route][0].sink.streamCount;
+			nxSetControl(kControlDefault);
+			if(route == 0)
+				nxMeshPMapContacts(world[0][1].plane, world[0][1].sphere, &world[0][1].sink, sides[1].context);
+			else
+				NxContactMeshMesh(world[1][1].plane, world[1][1].sphere, &world[1][1].sink, sides[1].context);
+			const unsigned caseMismatches = nxCompareStreams(&world[route][0], &world[route][1], 0) +
+				(world[route][1].sink.contactCount != contacts) +
+				(world[route][1].sink.streamCount != oracleStreamCount);
+			mismatches += caseMismatches;
+			++checks[route];
+			if(route == 0)
+				{
+				oracleContacts += contacts;
+				contactCases += contacts != 0;
+				separatedCases += contacts == 0;
+				}
+			nxFoldStream(&oracleDigest[route], &world[route][0]);
+			nxFoldStream(&candidateDigest[route], &world[route][1]);
+			if(caseMismatches)
+				printf("collision contact_mesh_pmap fixture=%u route=%u oracle_contacts=%u candidate_contacts=%u oracle_stream=%u candidate_stream=%u\n",
+					fixtureIndex, route, contacts, world[route][1].sink.contactCount, oracleStreamCount,
+					world[route][1].sink.streamCount);
+			}
+		}
+	for(unsigned side = 0; side < 2; ++side)
+		{
+		unsigned char* const context = sides[side].context;
+		if(side == 0) nx2gCall0(base + 0x000e2b30, context + 0x60);
+		else ((Opcode::PlanesCollider*) (context + 0x60))->~PlanesCollider();
+		memset(context + 0x60, 0, 0x50);
+		}
+	for(unsigned m = 0; m < kNb2iMeshes; ++m)
+		{
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			sides[side].meshes[m].image[0x9c / 4] = 0;
+			sides[side].meshes[m].image[0x20 / 4] = 0;
+			}
+		delete maps[m];
+		}
+	for(unsigned side = 0; side < 2; ++side)
+		nx2lCandidateAabbTreeColliderDestruct(sides[side].context + 0x32c);
+	nx2iFoundationEnd();
+	printf("collision name=contact_mesh_pmap index=- rva=0x00047e50 owner=phys_fn_001880 checks=%u oracle=%016llx candidate=%016llx mismatches=%u contacts=%u\n",
+		checks[0], oracleDigest[0].state, candidateDigest[0].state, mismatches, oracleContacts);
+	printf("collision name=contact_mesh_pmap_dispatch index=- rva=0x00046ab0 owner=phys_fn_001876 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		checks[1], oracleDigest[1].state, candidateDigest[1].state, mismatches);
+	printf("collision coverage name=contact_mesh_pmap fixtures=%u contact_cases=%u separated_cases=%u contacts=%u\n",
+		(unsigned) (sizeof(fixtures) / sizeof(fixtures[0])), contactCases, separatedCases, oracleContacts);
+	nxPrintInput("contact_mesh_pmap", &inputDigest);
+	printf("collision coverage name=contact_mesh_pmap_dispatch fixtures=%u one_map_or_none=%u\n",
+		(unsigned) (sizeof(fixtures) / sizeof(fixtures[0])), 5u);
+	nxPrintInput("contact_mesh_pmap_dispatch", &inputDigest);
+	return mismatches || contactCases < 1 || separatedCases < 1;
+	}
 // Words of the height field's placement: translations (0..3 across, heights -1..1).
 static const unsigned kMeshPlace2i[8] =
 	{
@@ -14530,6 +14897,7 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 	// Exercise the mesh/height-field entry through its AABB callback and OBB pass.
 	total += nxDriveTask2lMeshHeightfield(base, sides);
 	total += nxDriveTask2lMeshMeshContact(base, sides);
+	total += nxDriveMeshPMapContact(base, sides);
 	unsigned edgeListsBuilt = 0;
 	buildMismatches += nx2iCompareEdgeLists(sides[0], sides[1], &edgeListsBuilt);
 	// The hulls' vertex normals 001461 built inside 001844, word for word.

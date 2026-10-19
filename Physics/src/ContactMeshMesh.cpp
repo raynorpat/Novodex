@@ -3,6 +3,8 @@
 #include "NxPhysicsSDK.h"
 #include "ContactGeneration.h"
 
+extern "C" void __cdecl nxMeshPMapContacts(const NxCollisionShape*, const NxCollisionShape*,
+	NxContactSink*, void*);
 extern "C" void __cdecl nxMeshHeightfieldContact(const NxCollisionShape*,
 	const NxCollisionShape*, NxContactSink*, void*);
 #include "NxMeshContactHelpers.h"
@@ -463,6 +465,13 @@ void __cdecl NxContactMeshMesh(const NxCollisionShape* shape0,
 			if(convex0) NxContactConvexHeightfield(shape0, shape1, sink, context);
 			else nxMeshHeightfieldContact(shape0, shape1, sink, context);
 			}
+		return;
+		}
+	// Both meshes carry a penetration map (mesh + 0x9c): 001880 runs 001878 once per
+	// owner. This sits after the terrain cases and before the convex ones, as in the oracle.
+	if(*(const void* const*) (image0 + 0x9c) && *(const void* const*) (image1 + 0x9c))
+		{
+		nxMeshPMapContacts(shape0, shape1, sink, context);
 		return;
 		}
 	if(convex0)

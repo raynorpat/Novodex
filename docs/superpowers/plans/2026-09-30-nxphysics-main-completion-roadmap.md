@@ -822,6 +822,19 @@ triangle-mesh narrow-phase, general penetration recovery, complete slide/step
 response, callbacks, and the rest of the controller matrix remain open. See
 `docs/reconstruction/novodex-physics/evidence/scene-controller-factory.md`.
 
+### Continuation — mesh contact against a penetration map (2026-10-19)
+
+`phys_fn_001876`'s branch for two meshes that both carry a `PenetrationMap` had no candidate: `phys_fn_001880`
+runs `phys_fn_001878` once per owner, which walks the other mesh's faces inside the map's box and asks the
+cell sampler `phys_fn_002029` for a displacement per vertex. Both rows are listing transcriptions now
+(`Physics/src/ContactMeshPMap.cpp`), and `NxContactMeshMesh` takes the branch. Building maps from the harness
+meshes also showed the sampler was wrong: its C++ reconstruction matched seven fixtures and disagreed with the
+oracle on 1,583 of 4,000 drawn samples; as a listing transcription it matches all of them. 21 contact fixtures
+(18 with contacts, 155 contacts, one-map and no-map cases included) are exact on both the direct and the
+dispatcher route, and nine of eleven mutations are rejected (the two that are not are equivalent at the
+stream). Phase 3 now has 127 closed and 265 deferred rows. See
+`docs/reconstruction/novodex-physics/evidence/phase3-mesh-pmap-contact.md`.
+
 ### Continuation — NovodeX depth-limited callback walk (2026-10-19)
 
 Phase 4 still carried 25,613 bytes in four rows (`phys_fn_004967`, `004969`, `004971`, `004982`) as

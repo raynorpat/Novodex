@@ -5519,6 +5519,16 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=contact_mesh_mesh fixture=16 pair=7,7 orientation=1 z=-1 checks=48 oracle=f1e2c663ca30c48c',
         'collision coverage name=contact_mesh_mesh fixtures=23 contact_cases=4 separated_cases=19 contacts=4',
         'collision input name=contact_mesh_mesh words=11237 input=95d40c348b59f0a5',
+        # mesh contact against penetration maps (rows 001878/001880/001876 PMap branch) and the cell sampler (002029) on dense draws.
+        'collision name=pmap_sample_dense index=- rva=0x0004f070 owner=phys_fn_002029 checks=4000 oracle=a58297b5d8fff1e1',
+        'collision coverage name=pmap_sample_dense maps=10 samples=4000 accepted=2521',
+        'collision input name=pmap_sample_dense words=76000 input=c892c17344d3974b',
+        'collision name=contact_mesh_pmap index=- rva=0x00047e50 owner=phys_fn_001880 checks=21 oracle=f177fcc78e5c0ee8',
+        'collision name=contact_mesh_pmap_dispatch index=- rva=0x00046ab0 owner=phys_fn_001876 checks=21 oracle=ecf2466f3826b362',
+        'collision coverage name=contact_mesh_pmap fixtures=21 contact_cases=18 separated_cases=3 contacts=155',
+        'collision input name=contact_mesh_pmap words=178935 input=93bcdb3a23bc7d8b',
+        'collision coverage name=contact_mesh_pmap_dispatch fixtures=21 one_map_or_none=5',
+        'collision input name=contact_mesh_pmap_dispatch words=178935 input=93bcdb3a23bc7d8b',
         # convex-mesh gap Task 2m: P-Sphere sink reset, preallocated and growth paths.
         'collision name=contact_sink_reset index=- rva=0x0005b620 checks=416 oracle=80effc8beac4d285',
         'collision coverage name=contact_sink_reset preallocated_cases=6 growth_cases=2 control_words=2',
@@ -6412,7 +6422,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
-    '3' = 988  # plus row-specific contact-convex-mesh thunk coverage (001853) and pruning entry
+    '3' = 997  # plus the nine mesh/PMap contact and dense cell-sampler lines (001878, 001880, 002029)
+               # previous 988: row-specific contact-convex-mesh thunk coverage (001853) and pruning entry
               # includes the direct row 002272 ray/AABB slab differential
                # plus the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
                # previous 973 includes nine populated-SDK teardown assertions
@@ -6591,7 +6602,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3127  # plus the eight callback-walk families (rows 004967/004969/004971/004982) and two layout lines
+	'7' = 3136  # plus the nine mesh/PMap contact and dense cell-sampler lines (001878, 001880, 002029)
+	           # previous 3127: the eight callback-walk families (rows 004967/004969/004971/004982) and two layout lines
 	           # previous 3117 plus rows 004814/004826 pruning markers and row 003503 FluidCreate marker
 	          # includes current locked-array, fluid, global-call, ray/AABB slab, and 001502 edge-builder markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
