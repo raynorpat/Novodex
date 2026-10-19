@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000791-force-torque.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "b305554f2aff960df423ecba93cb44b14616488fc856860d3051f74a4fc9ef0b",
+      "uncompressed_sha256": "1cf0a73e5b26391e085e6a2c93d95d9151e1605327772b7b1c7ae5d7451049a4",
+      "bytes": 26188,
+      "source": "build\\row791-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "e5aef1b89e9254ea7efa129d2c296a213b3be89c7654915435c1d78749694c6b",
+      "uncompressed_sha256": "ba4757e8601ffa919cdbf2f5972ffcb7ad8a11d7ffc3cc5eb7781e8478fc15b3",
+      "bytes": 25966,
+      "source": "build\\row791-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "956c630e2fd891aded76fcb0e78476697efdaf253d2d073eee90c021623e1324",
+      "uncompressed_sha256": "dacf8996e891501481d84ea652badef5f26d7f88b281663206f9b4731a4259e4",
+      "bytes": 26188,
+      "source": "build\\row791-restored.log"
+    }
+  },
+  "candidate_source_commit": "aba5955f768e987e9afc86c830466dac4c80bcb4"
+}
