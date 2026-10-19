@@ -22,9 +22,9 @@
   "counts": {
     "differential_falsified": 330,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 183,
+    "oracle_differential_falsified": 184,
     "deferred_not_reconstructed_in_phase": 37,
-    "deferred_reconstructed_not_falsified": 9
+    "deferred_reconstructed_not_falsified": 8
   },
   "closed": [
     {
@@ -5541,6 +5541,16 @@
         "detected": "stdout_delta=5545"
       },
       "note": "The source label was corrected: RVA 0xB5410 is phys_fn_004868; phys_fn_004865 is padding at 0xB53B1. See evidence/phase7-aabb-pruner-loop-004868.md."
+    },
+    {
+      "id": "phys_fn_003675",
+      "rva": "0x0008ae00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result003675.",
+        "detected": "mismatches=1"
+      }
     }
   ],
   "deferred": [
@@ -5783,15 +5793,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_003675",
-      "rva": "0x0008ae00",
-      "size": 27,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003677",

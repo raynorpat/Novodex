@@ -4,9 +4,9 @@
     "NxPhysicsObjectLayoutTests": {
       "format": "layout_digest",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-      "fixture_source_sha256": "54c9695876e5c7184b44ebd84f73303b84776a3e9f646b90850aee75ccb1e30c",
+      "fixture_source_sha256": "bb905800cae459a81e897d4bcd8bedf945bb1d90b00dcc78ff1a5422f9508079",
       "oracle_digest_fnv32": "3acf0dc7",
-      "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=9 globalcall2=1 reciprocal003461=6 copy6003483=1",
+      "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=9 globalcall2=2 reciprocal003461=6 copy6003483=1",
       "fixture_sources": [
         "tests/PhysicsObjectLayoutTests.cpp",
         "tests/PhysicsElementCountRowFixture.inl",

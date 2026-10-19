@@ -3368,6 +3368,19 @@ unsigned nxGlobalCallVia4Result003669(void* self,
 	return fn(context, handle);
 	}
 
+// phys_fn_003675 shares the fluid/context loads but targets its adjacent slot.
+unsigned nxGlobalCallVia4Result003675(void* self,
+	unsigned (__cdecl* fn)(unsigned, unsigned))
+	{
+	unsigned char* const fluid = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(self) + 4);
+	void* const backend = *reinterpret_cast<void**>(fluid + 0x7c);
+	const unsigned context = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(backend) + 0x30);
+	const unsigned handle = *reinterpret_cast<unsigned*>(fluid + 0x80);
+	return fn(context, handle);
+	}
+
 // phys_fn_003667 forwards a caller-supplied third value and returns the result.
 unsigned nxGlobalCallVia4Result3Arg003667(void* self, unsigned extraArg,
 	unsigned (__cdecl* fn)(unsigned, unsigned, unsigned))
