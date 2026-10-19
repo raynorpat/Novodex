@@ -1,0 +1,56 @@
+{
+  "purpose": "Phase 7 scene auxiliary constructor oracle/candidate differential, one-store mutation falsification, restored control, full gate, and tooling verification.",
+  "date": "2026-10-19",
+  "row": {
+    "id": "phys_fn_002415",
+    "rva": "0x0005bc10"
+  },
+  "oracle_nxphysics_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "gated_candidate_sha256": "6c3d8c8d94f4cd1e0b86aaec3ac6d0e0fa035e5d6d470280bc1514f1ee47daec",
+  "mutation_result": "Changing the first zero store in nxSceneAuxConstruct to 0xcdcdcdcd produces 20 zero words and 10 mismatches; candidate exits 1 while oracle remains at 30 zero words.",
+  "restored_result": "Oracle and candidate each report one allocation, 30 zero words, 11 untouched words, owner_match=1, and mismatches=0. Restored differential has oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True.",
+  "phase_gates": {
+    "7": "phase_gate=7 status=pass; coverage_assertions_evaluated=3111 floor=3111"
+  },
+  "integrity": {
+    "inventory": "pass; functions=6338; data_objects=5138; unexplained=0",
+    "tooling_tests": "unittest: 836 passed",
+    "public_headers": "both UE3 and candidate trees pass 80/80 files"
+  },
+  "phase7_closure": {
+    "closed": 526,
+    "deferred": 34
+  },
+  "logs": {
+    "baseline-differential.log.gz": {
+      "sha256": "67538a383f479263a7b0ca1e6a6dbc45f5a44092e9b4c7185fbd1716500498b6",
+      "uncompressed_sha256": "7abb5dfebe55330204b18897a3a37deb4b8aff3577925cf02c7a334e8eda55b2",
+      "compressed_bytes": 1279,
+      "uncompressed_bytes": 7720
+    },
+    "one-store-mutation-differential.log.gz": {
+      "sha256": "499711337c7ac952327b756eb8032e890044f6dad63c4c50389b269480090127",
+      "uncompressed_sha256": "6f031c7b92c08afde8a29c171309de5d351a5ef64420d0a4b9848d7d99252095",
+      "compressed_bytes": 1269,
+      "uncompressed_bytes": 7079
+    },
+    "restored-differential.log.gz": {
+      "sha256": "e4c037989ca4ac8ec0f371e939474bd70f95250ddaf601168c6c1a33e07cc4ca",
+      "uncompressed_sha256": "61e8f54a6820c4640b3138e59bbcde72dddd4ca9eeed521ba0129acf7922f297",
+      "compressed_bytes": 1276,
+      "uncompressed_bytes": 7720
+    },
+    "phase7-gate.log.gz": {
+      "sha256": "04ff16b916221c53c63dea5c44098f53576e8c5da656343df2ddc5d1f3175611",
+      "uncompressed_sha256": "9f3266292c9a25b267a5adf8bd1d6ebb2f6f982c7fc85e171b372ac224ed3fa0",
+      "compressed_bytes": 382944,
+      "uncompressed_bytes": 4727444
+    },
+    "tooling-tests.log.gz": {
+      "sha256": "29cc08881e63be416832fc13c5f6a440c378f5d6adfd5845e93c1827fcbcf698",
+      "uncompressed_sha256": "db3142a620223a902fdb2fa1e7cedf1d40367248d4bb8e0e80194e8408a3deb0",
+      "compressed_bytes": 67,
+      "uncompressed_bytes": 942
+    }
+  }
+}

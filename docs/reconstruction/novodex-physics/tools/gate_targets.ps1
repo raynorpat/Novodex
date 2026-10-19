@@ -1970,6 +1970,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsSceneConstructorTests' = @(
         'scene constructor internal_link=1'
+        'scene auxiliary row=002415 allocations=1 zero_words=30 untouched_words=11 owner_match=1 mismatches=0'
         'scene secondary dtor nondeleting root=1 primary_transition=1 secondary_transition=1 frees=6'
         'scene secondary dtor deleting root=1 frees=7'
         'scene secondary dtor member-only mutant detected=1'
@@ -6571,7 +6572,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3110  # plus row-specific contact-convex-mesh thunk coverage (001853) and hull triangle area (001441)
+	'7' = 3111  # plus row-specific contact-convex-mesh thunk coverage (001853), hull triangle area (001441), and scene auxiliary layout (002415)
 	          # includes current locked-array, fluid, global-call, ray/AABB slab, and 001502 edge-builder markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059

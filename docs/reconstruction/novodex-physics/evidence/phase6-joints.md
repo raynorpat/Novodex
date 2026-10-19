@@ -11413,3 +11413,6 @@ Phase 7 row `phys_fn_004848` is mutation-falsified through the registered `NxPhy
 
 
 Fresh mainline Phase 6 gate on 2026-10-18 passes at 1819/1819 coverage assertions. The `phys_fn_000758` matrix-zero mutation is rejected by `NxPhysicsJointSlotTests` (`stdout_delta=2795`); restored differential is exact. Full transcript: `evidence/raw/phase6-joint-slot-row-000758-20261018/phase6-gate.log.gz`.
+
+
+Phase 7 continuation 2026-10-19 — `phys_fn_002415`: `NxPhysicsSceneConstructorTests` compares the 0xa8-byte auxiliary object initialized during scene creation. Its registered differential marker matches at one allocation, 30 zero words, 11 untouched words, owner pointer, and zero mismatches. Replacing the helper's first zero store with `0xcdcdcdcd` is rejected (`candidate_exit=1`, `zero_words=20`, `mismatches=10`; `stdout_delta=7`). Restoring the source gives `stdout_delta=0` and exact stderr. The candidate helper is `nxSceneAuxConstruct` at map address `0x1006b540`. See `evidence/phase7-row-002415-scene-aux-20261019.md` and `evidence/raw/phase7-row-002415-scene-aux-20261019/`.

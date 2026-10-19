@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 987, "4": 565, "5": 2914, "6": 1769, "7": 3110}
+    MINIMUM = {"2": 18, "3": 987, "4": 565, "5": 2914, "6": 1769, "7": 3111}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -883,6 +883,15 @@ class ConvexHullTriangleAreaCoverage(unittest.TestCase):
         expected = marker + "oracle_calls=900 candidate_calls=900"
         self.assertEqual([line for line in lines if line.startswith(marker)], [expected],
             "the hull leaf direct-area corpus needs a pinned row-specific marker")
+
+
+class SceneAuxiliaryConstructorCoverage(unittest.TestCase):
+    def test_scene_auxiliary_constructor_has_pinned_word_coverage(self):
+        lines = registered_lines().get("NxPhysicsSceneConstructorTests", [])
+        expected = ("scene auxiliary row=002415 allocations=1 zero_words=30 "
+                    "untouched_words=11 owner_match=1 mismatches=0")
+        self.assertIn(expected, lines,
+            "phys_fn_002415 must have an oracle/candidate sentinel differential marker")
 
 
 class ConvexMeshEntryCoverage(unittest.TestCase):

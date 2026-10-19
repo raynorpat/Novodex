@@ -1305,6 +1305,7 @@
         "phys_fn_001943",
         "phys_fn_000544",
         "phys_fn_001973",
+        "phys_fn_002415",
         "phys_fn_002419",
         "phys_fn_002411",
         "phys_fn_000600",
@@ -7517,6 +7518,12 @@
       "rva": "0x0004c1b0",
       "path": "Scene.cpp",
       "symbol": "nxSceneApplyDescriptorFlags"
+    },
+    {
+      "id": "phys_fn_002415",
+      "rva": "0x0005bc10",
+      "path": "Scene.cpp",
+      "symbol": "nxSceneAuxConstruct"
     },
     {
       "id": "phys_fn_002419",

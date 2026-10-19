@@ -1653,3 +1653,14 @@ The `NxPhysicsThirdPartyTests` `hull_leaf` family calls `nxHullTriangleArea` dir
 **Verification:** marker reports exactly 900 calls per side; registry test fails before implementation; arithmetic mutation is rejected; restored output matches; Phase 3/4/7, tooling, inventory, and both public-header checks pass.
 
 Status: complete (2026-10-19). The registered hull_triangle_area_entry marker reports 900 oracle calls and 900 candidate calls, with exact restored output. Changing the squared-length faddp to fsubp at RVA 0x0002a6b8 is rejected with 607 hull_leaf mismatches and 1,473 total target mismatches, without an access violation. Fresh Phase 3/4/7 gates pass at 987/987, 565/565, and 3,110/3,110; all 835 tooling tests pass. Inventory reports 6,338 functions, 5,138 data objects, and zero unexplained rows; both public-header trees pass 80/80 files. Phase 3 advances to 125 closed / 267 deferred. Evidence: `docs/reconstruction/novodex-physics/evidence/phase3-row-001441-convex-hull-triangle-area.md` and its raw bundle. Full reconstruction remains open; Phase 8 retains 8,413 findings.
+
+
+### Task 41 — verify the Phase 7 scene auxiliary constructor (`phys_fn_002415`)
+
+The inventory still marks `phys_fn_002415` discovered although `Scene.cpp` contains `nxSceneAuxConstruct`, called during scene initialization for the 0xa8-byte auxiliary object. Extend `NxPhysicsSceneConstructorTests` with a sentinel-backed allocator for that allocation and compare the auxiliary object's 30 zeroed words, 11 untouched words, and owner pointer on each staged DLL. Add a unique gate marker and registry test first; then remove one zero store from the candidate helper and require the differential to reject it. Restore the helper, register its source mapping and proof, update Phase 7 closure/backlog/work units and evidence, and pass Phase 7, tooling, inventory, and public-header checks. Do not change public headers.
+
+**Files:** the scene-constructor test and gate registry/test, Phase 7 closure/inventory and generated snapshots, the completion plan, and evidence/raw logs.
+
+**Verification:** the marker reports one matching auxiliary allocation, 30 zero words, 11 untouched sentinel words, owner match, and zero mismatches per control; the one-store mutation fails; restored Phase 7 and integrity checks pass.
+
+Status: complete (2026-10-19). The registered scene auxiliary marker reports one allocation, 30 zero words, 11 untouched words, owner_match=1, and zero mismatches on both oracle and candidate. A one-store mutation is detected (candidate zero_words=20, mismatches=10, exit=1); restoring the source gives stdout_delta=0 and exact stderr. Phase 7 now has 526 closed / 34 deferred functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-row-002415-scene-aux-20261019.md` and its raw bundle.
