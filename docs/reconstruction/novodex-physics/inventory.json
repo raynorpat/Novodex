@@ -43029,13 +43029,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/Geometry.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/849",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7106",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA shows a three-axis ray/AABB slab helper at RVA 0x00056ad0. Direction is passed in ECX; box minimum, maximum, origin, and two output pointers are caller-cleaned stack arguments. The helper initializes [-FLT_MAX, FLT_MAX], treats direction values strictly inside (-FLT_EPSILON, FLT_EPSILON) as parallel, computes the entry face and rejects intervals behind the ray. Candidate source reuses NxRayAABBSlab with a test bridge for the different internal calling convention.",
+      "dynamic_proof": "NxPhysicsCollisionTests directly compares oracle RVA 0x00056ad0 with NxRayAABBSlab for 16 directed cases under x87 control words 0x027f and 0x0f7f. Return face and both output floats match bit-for-bit. Changing the parallel test from < FLT_EPSILON to <= FLT_EPSILON is rejected in two boundary cases (mismatches=2, candidate exit 1); restored output is exact. See evidence/phase7-ray-aabb-slab-002272.md.",
+      "notes": "Reuses the existing candidate slab implementation with an ABI bridge in the oracle differential; no public header change.",
+      "implementation": "Physics/src/Geometry.cpp",
+      "implementation_symbol": "NxRayAABBSlab",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxRayAABBSlab@@YAHPBM000PAM1@Z",
+        "address": "0x100265b0",
+        "object": "Geometry.obj"
+      }
     },
     {
       "id": "phys_fn_002273",

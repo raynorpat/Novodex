@@ -1,0 +1,7 @@
+# Ray/AABB slab helper (`phys_fn_002272`)
+
+IDA decompiles oracle RVA `0x00056ad0` as the three-axis ray/AABB slab test: initialize the near/far interval to `[-FLT_MAX, FLT_MAX]`, treat direction components strictly inside `(-FLT_EPSILON, FLT_EPSILON)` as parallel, track the entering face, and reject misses or intervals behind the ray. The oracle receives its direction in `ECX`; the remaining five pointers are caller-cleaned stack arguments.
+
+The candidate already contains this behavior in `NxRayAABBSlab` (`Physics/src/Geometry.cpp`). A direct fixture bridges the oracle calling convention and compares the face plus both output floats bit-for-bit across 16 directed cases and x87 control words `0x027f` and `0x0f7f`. Restored output matches exactly. Changing the candidate threshold from `< FLT_EPSILON` to `<= FLT_EPSILON` is rejected in the two outside-box exact-boundary cases (`mismatches=2`, candidate exit 1).
+
+The registered `NxPhysicsCollisionTests` full target includes this row and its input digest. Fresh Win32 Release gates pass: Phase 3 986/986, Phase 5 2,968/2,968, Phase 6 1,819/1,819, and Phase 7 3,106/3,106. The reconstruction-tool suite passes all 823 tests; inventory validation reports zero unexplained records, and all 80 public headers remain byte-identical. Compressed focused, mutation, full-differential, gate, build, and tool-test transcripts with SHA-256 manifest are in `docs/reconstruction/novodex-physics/evidence/raw/phase7-ray-aabb-slab-002272-20261018/`.

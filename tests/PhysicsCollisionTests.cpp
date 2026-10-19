@@ -4218,6 +4218,94 @@ void __cdecl NxContactMeshMesh(const NxCollisionShape*, const NxCollisionShape*,
 bool __cdecl NxOverlapCapsuleMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 static unsigned nxDrivePlaneMesh(unsigned char* base);
 
+static unsigned nxDriveRayAabbSlabRow002272(unsigned char* base)
+	{
+	const void* const oracle = base + 0x00056ad0;
+	struct Case
+		{
+		NxReal minimum[3];
+		NxReal maximum[3];
+		NxReal origin[3];
+		NxReal direction[3];
+		};
+	static const Case cases[] =
+		{
+			{{-1,-1,-1}, {1,1,1}, {-2,0,0}, {1,0,0}},
+			{{-1,-1,-1}, {1,1,1}, {2,0,0}, {-1,0,0}},
+			{{-1,-1,-1}, {1,1,1}, {0,2,0}, {0,-1,0}},
+			{{-1,-1,-1}, {1,1,1}, {2,2,0}, {0,-1,0}},
+			{{-1,-1,-1}, {1,1,1}, {0,0,0}, {1,0,0}},
+			{{-1,-1,-1}, {1,1,1}, {2,0,0}, {1,0,0}},
+			{{0,0,0}, {0,0,0}, {-1,-1,-1}, {1,1,1}},
+			{{-1,-1,-1}, {1,1,1}, {-2,-2,-2}, {1,1,1}},
+			{{-1,-1,-1}, {1,1,1}, {0,0,0}, {FLT_EPSILON,0,1}},
+			{{-1,-1,-1}, {1,1,1}, {0,0,0}, {-FLT_EPSILON,0,1}},
+			{{-1,-1,-1}, {1,1,1}, {0,0,0}, {nextafterf(FLT_EPSILON, 0.0f),0,1}},
+			{{-1,-1,-1}, {1,1,1}, {0,0,0}, {nextafterf(FLT_EPSILON, 1.0f),0,1}},
+			{{-1,-1,-1}, {1,1,1}, {-2,0,0}, {FLT_EPSILON,0,0}},
+			{{-1,-1,-1}, {1,1,1}, {2,0,0}, {-FLT_EPSILON,0,0}},
+			{{-2,-1,-3}, {4,2,5}, {3,0,0}, {-2,0.5f,0.25f}},
+			{{-2,-1,-3}, {4,2,5}, {-3,0,0}, {-2,0.5f,0.25f}},
+		};
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0;
+	for(unsigned mode = 0; mode < 2; ++mode)		{
+		nxSetControl(mode ? kControlSimulate : kControlDefault);
+		for(unsigned c = 0; c < ARRAYSIZE(cases); ++c)			{
+			const Case& item = cases[c];
+			NxReal oracleNear = 0, oracleFar = 0;
+			NxReal candidateNear = 0, candidateFar = 0;
+			const NxReal* const minimum = item.minimum;
+			const NxReal* const maximum = item.maximum;
+			const NxReal* const origin = item.origin;
+			const NxReal* const direction = item.direction;
+			NxReal* const nearOutput = &oracleNear;
+			NxReal* const farOutput = &oracleFar;
+			int oracleFace;
+			__asm
+				{
+				mov eax, farOutput
+				push eax
+				mov eax, nearOutput
+				push eax
+				mov eax, origin
+				push eax
+				mov eax, maximum
+				push eax
+				mov eax, minimum
+				push eax
+				mov ecx, direction
+				mov eax, oracle
+				call eax
+				add esp, 20
+				mov oracleFace, eax
+				}
+			const int candidateFace = NxRayAABBSlab(minimum, maximum,
+				origin, direction, &candidateNear, &candidateFar);
+			const bool exact = oracleFace == candidateFace &&
+				memcmp(&oracleNear, &candidateNear, sizeof(oracleNear)) == 0 &&
+				memcmp(&oracleFar, &candidateFar, sizeof(oracleFar)) == 0;
+			mismatches += exact ? 0u : 1u;
+			nxDigestByte(&oracleDigest, (unsigned char) oracleFace);
+			nxDigestByte(&candidateDigest, (unsigned char) candidateFace);
+			nxFoldInput(&oracleDigest, &oracleNear, sizeof(oracleNear));
+			nxFoldInput(&oracleDigest, &oracleFar, sizeof(oracleFar));
+			nxFoldInput(&candidateDigest, &candidateNear, sizeof(candidateNear));
+			nxFoldInput(&candidateDigest, &candidateFar, sizeof(candidateFar));
+			nxFoldInput(&inputDigest, &item, sizeof(item));
+			}
+		nxFoldInput(&inputDigest, &mode, sizeof(mode));
+		}
+	nxSetControl(kControlDefault);
+	printf("collision ray_aabb_slab row=002272 rva=0x00056ad0 cases=%u control_words=2 oracle=%016llx candidate=%016llx mismatches=%u\n",
+		(unsigned) ARRAYSIZE(cases), oracleDigest.state, candidateDigest.state, mismatches);
+	nxPrintInput("ray_aabb_slab_002272", &inputDigest);
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -4232,7 +4320,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool sceneBaseDtorOwnerOnly = argc == 4 && wcscmp(argv[3], L"--scene-base-dtor-owner-only") == 0;
 	const bool sceneTriggerPairDuplicatesOnly = argc == 4 && wcscmp(argv[3], L"--scene-trigger-pair-duplicates-only") == 0;
 	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly)
+	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !rayAabbSlabOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4270,6 +4359,11 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(rayAabbSlabOnly)
+		{
+		const unsigned mismatches = nxDriveRayAabbSlabRow002272(base);
+		return mismatches ? 1 : 0;
+		}
 	if(type3PrunerOnly)
 		{
 		const unsigned mismatches = nxDriveType3PrunerRefit(base);
@@ -9717,6 +9811,8 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2b's families (units/convex-mesh-gap-contract.md,
 	// sub-units E, F, I and N), in a function of their own; see nxDriveTask2b.
 	totalMismatch += nxDriveTask2b(base);
+	// Phase 7 row 002272 is the same slab kernel with direction passed in ECX.
+	totalMismatch += nxDriveRayAabbSlabRow002272(base);
 
 	// The kernel fuzz harness's signalling-NaN variants; see nxDriveFuzzSnan.
 	totalMismatch += nxDriveFuzzSnan(physics);

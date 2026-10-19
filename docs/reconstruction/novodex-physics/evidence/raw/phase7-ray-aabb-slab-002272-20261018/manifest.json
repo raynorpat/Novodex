@@ -1,0 +1,86 @@
+{
+  "task": "phys_fn_002272 ray/AABB slab helper differential",
+  "created": "2026-10-18",
+  "artifacts": [
+    {
+      "file": "focused.txt.gz",
+      "source": "build/phase7-row002272-focused.log",
+      "bytes": 436,
+      "sha256": "4d8dcb1bad226f4a60c80015e0cfb6ed1914ff35f919f0eca573c004133f3cac",
+      "gzip_bytes": 299,
+      "gzip_sha256": "4a7a93bb4b0e8bf7201b79016a657fccad9b9cb84aeac334b52307b3a2c7a8ad"
+    },
+    {
+      "file": "mutation.txt.gz",
+      "source": "build/phase7-row002272-mutation.log",
+      "bytes": 436,
+      "sha256": "8f8a80d567efed8c73f01530728367730013aea5fe217b1e920cebd599cb4570",
+      "gzip_bytes": 307,
+      "gzip_sha256": "354008f8f9dcb92da6a767c106b0990db1e191f1ad18983de2414c98fa7c91b5"
+    },
+    {
+      "file": "collision-differential.txt.gz",
+      "source": "build/phase7-row002272-differential.log",
+      "bytes": 66209,
+      "sha256": "695b9bba3985a07260c37f9f71018745d6841a5c7a753a38b8982c47091c4026",
+      "gzip_bytes": 13755,
+      "gzip_sha256": "70f33738abd267c0c84e6712aa492d50d877fb1d2b86dd5ab1e61868a12a6dd9"
+    },
+    {
+      "file": "phase3-gate.txt.gz",
+      "source": "build/phase7-row002272-phase3-final-gate.log",
+      "bytes": 828476,
+      "sha256": "c12c1084e77ce16a25b121a4acb9b1a366cc69d23b5b495097c5cf834af67910",
+      "gzip_bytes": 90455,
+      "gzip_sha256": "38f61a8dddef04cd7faaa300b4a25c92ab16732ebe224ccce2289f996b69da27"
+    },
+    {
+      "file": "phase5-gate.txt.gz",
+      "source": "build/phase7-row002272-phase5-gate.log",
+      "bytes": 2906810,
+      "sha256": "fab58b78cdd074fa5867e41875bf4fb29f98012748ece9761aad1dfe09695fd4",
+      "gzip_bytes": 217909,
+      "gzip_sha256": "b9391d859047d407f226166098062a5cd8956497a3b4de5f302d3efdaaba450c"
+    },
+    {
+      "file": "phase6-gate.txt.gz",
+      "source": "build/phase7-row002272-phase6-gate.log",
+      "bytes": 3153051,
+      "sha256": "781b274fe4ccdf80c5c5d26314a1bdb6fc98a7afacc2a366accc96dc4bd951a9",
+      "gzip_bytes": 259840,
+      "gzip_sha256": "200d3f2e4455db2fbfcdcabe4e7ff2546084e61bc5d1ab4f7083eb29265d6423"
+    },
+    {
+      "file": "phase7-gate.txt.gz",
+      "source": "build/phase7-row002272-phase7-final-gate.log",
+      "bytes": 4726269,
+      "sha256": "126986ce947208980e336e8ad6a0beef206a35644595592a22fa29b702321170",
+      "gzip_bytes": 382851,
+      "gzip_sha256": "0be4aa03b6f8f5cefe07bf88ced94b1a90cd83dd05b2e1293eed9cf10fe3b1f2"
+    },
+    {
+      "file": "tool-tests.txt.gz",
+      "source": "build/phase7-row002272-tool-tests-final.log",
+      "bytes": 929,
+      "sha256": "ff8451d37058b5207c505296c3e4be2fa8d54d3a272288102b21a8258e25db55",
+      "gzip_bytes": 67,
+      "gzip_sha256": "fc8ba39c0bb84294908a0db7e74c782c27e0c347ecb87482df807eacbe960205"
+    },
+    {
+      "file": "mutation-build.txt.gz",
+      "source": "build/phase7-row002272-mutation-build.log",
+      "bytes": 659,
+      "sha256": "05d77d4f35a0b5aa68c08a5fd88e27849dee57d7dd89b1e8f1b351ee14746f02",
+      "gzip_bytes": 312,
+      "gzip_sha256": "56c4f67b50215b1b31e0e233dbaff32bac1bbd14e840641cd25c36eafd8899e5"
+    },
+    {
+      "file": "restored-build.txt.gz",
+      "source": "build/phase7-row002272-final-restored-build.log",
+      "bytes": 659,
+      "sha256": "05d77d4f35a0b5aa68c08a5fd88e27849dee57d7dd89b1e8f1b351ee14746f02",
+      "gzip_bytes": 312,
+      "gzip_sha256": "56c4f67b50215b1b31e0e233dbaff32bac1bbd14e840641cd25c36eafd8899e5"
+    }
+  ]
+}

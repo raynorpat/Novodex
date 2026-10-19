@@ -22,8 +22,8 @@
   "counts": {
     "differential_falsified": 330,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 192,
-    "deferred_not_reconstructed_in_phase": 37
+    "oracle_differential_falsified": 193,
+    "deferred_not_reconstructed_in_phase": 36
   },
   "closed": [
     {
@@ -2693,6 +2693,17 @@
       }
     },
     {
+      "id": "phys_fn_002272",
+      "rva": "0x00056ad0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Changed the parallel-axis comparison from dir < FLT_EPSILON to dir <= FLT_EPSILON. The exact-epsilon outside-box cases diverge.",
+        "detected": "mismatches=2"
+      },
+      "note": "Ray/AABB slab return face and near/far values match the oracle across 16 directed cases and both x87 control words. The oracle uses direction in ECX; the harness bridges to NxRayAABBSlab. Restored control is exact. See evidence/phase7-ray-aabb-slab-002272.md."
+    },
+    {
       "id": "phys_fn_002314",
       "rva": "0x0005a0a0",
       "proof": "oracle_differential_falsified",
@@ -4319,6 +4330,26 @@
       }
     },
     {
+      "id": "phys_fn_003675",
+      "rva": "0x0008ae00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result003675.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_003677",
+      "rva": "0x0008ae20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result3Arg003677.",
+        "detected": "mismatches=1"
+      }
+    },
+    {
       "id": "phys_fn_003679",
       "rva": "0x0008ae50",
       "proof": "oracle_differential_falsified",
@@ -4328,6 +4359,16 @@
         "detected": "mismatches=11"
       },
       "note": "See evidence/phase7-global-call2-thunks-003429-003469.md."
+    },
+    {
+      "id": "phys_fn_003681",
+      "rva": "0x0008ae70",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result3Arg003681.",
+        "detected": "mismatches=1"
+      }
     },
     {
       "id": "phys_fn_003683",
@@ -4512,6 +4553,17 @@
       "note": "Public NxFluid::setParticlesWriteData copies the record under the Scene write lock and callback reentry guard; its mutation is rejected by the public simulation differential. See evidence/phase7-npfluid-particle-write-data-003712-003714.md."
     },
     {
+      "id": "phys_fn_003716",
+      "rva": "0x0008b610",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed `nxOnceReportThunkFloat` to return `1.0f` on the report branch; row 003716 reports cases=2 mismatches=1.",
+        "detected": "mismatches=1"
+      },
+      "note": "report-once float callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
+    },
+    {
       "id": "phys_fn_003718",
       "rva": "0x0008b680",
       "proof": "differential_falsified",
@@ -4545,6 +4597,17 @@
       "note": "Public NxFluid::setViscosity callback dispatch; checks the scalar bits and manager/fluid arguments. See evidence/phase7-npfluid-set-viscosity-003720-003722.md."
     },
     {
+      "id": "phys_fn_003724",
+      "rva": "0x0008b8b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed `nxLockedHelperCallF` to return `1.0f` instead of the callback result; row 003724 reports cases=1 mismatches=1.",
+        "detected": "mismatches=1"
+      },
+      "note": "float-returning locked callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
+    },
+    {
       "id": "phys_fn_003726",
       "rva": "0x0008b8e0",
       "proof": "differential_falsified",
@@ -4554,6 +4617,17 @@
         "detected": "stdout_delta=52"
       },
       "note": "Public NxFluid::setDamping callback dispatch; checks the scalar bits and manager/fluid arguments. See evidence/phase7-npfluid-set-damping-003726.md."
+    },
+    {
+      "id": "phys_fn_003728",
+      "rva": "0x0008b990",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed `nxLockedHelperCallF` to return `1.0f` instead of the callback result; row 003728 reports cases=1 mismatches=1.",
+        "detected": "mismatches=1"
+      },
+      "note": "float-returning locked callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
     },
     {
       "id": "phys_fn_003730",
@@ -4567,6 +4641,17 @@
       "note": "Public NxFluid::setStaticCollisionRestitution callback dispatch; checks scalar bits and manager/fluid arguments. See evidence/phase7-npfluid-static-rest-restitution-003730.md."
     },
     {
+      "id": "phys_fn_003732",
+      "rva": "0x0008ba70",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed `nxLockedHelperCallF` to return `1.0f` instead of the callback result; row 003732 reports cases=1 mismatches=1.",
+        "detected": "mismatches=1"
+      },
+      "note": "float-returning locked callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
+    },
+    {
       "id": "phys_fn_003734",
       "rva": "0x0008baa0",
       "proof": "differential_falsified",
@@ -4578,6 +4663,17 @@
       "note": "Public NxFluid::setStaticCollisionAdhesion callback dispatch; checks scalar bits and manager/fluid arguments. See evidence/phase7-npfluid-static-adhesion-003734.md."
     },
     {
+      "id": "phys_fn_003736",
+      "rva": "0x0008bb50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the row line argument from 0x0bc to 0x0bd; row 003736 reports cases=1 mismatches=1, while 003740 remains exact.",
+        "detected": "mismatches=1"
+      },
+      "note": "assert-report callback tuple; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
+    },
+    {
       "id": "phys_fn_003738",
       "rva": "0x0008bb90",
       "proof": "differential_falsified",
@@ -4586,6 +4682,17 @@
         "mutation": "In a candidate-only build, applied a disabled FluidSetDynamicCollisionRestitution forwarding mutant and ran the registered public NxFluid staged-pair differential against the pinned oracle. The mutant exited 1 with stdout_delta=52; the restored candidate reports stdout_delta=0 and stderr_exact=True.",
         "detected": "stdout_delta=52"
       }
+    },
+    {
+      "id": "phys_fn_003740",
+      "rva": "0x0008bc70",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "Changed the row line argument from 0x0cb to 0x0cc; row 003740 reports cases=1 mismatches=1, while 003736 remains exact.",
+        "detected": "mismatches=1"
+      },
+      "note": "assert-report callback tuple; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
     },
     {
       "id": "phys_fn_003742",
@@ -5540,102 +5647,6 @@
         "detected": "stdout_delta=5545"
       },
       "note": "The source label was corrected: RVA 0xB5410 is phys_fn_004868; phys_fn_004865 is padding at 0xB53B1. See evidence/phase7-aabb-pruner-loop-004868.md."
-    },
-    {
-      "id": "phys_fn_003675",
-      "rva": "0x0008ae00",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result003675.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_003677",
-      "rva": "0x0008ae20",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result3Arg003677.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_003681",
-      "rva": "0x0008ae70",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result3Arg003681.",
-        "detected": "mismatches=1"
-      }
-    },
-    {
-      "id": "phys_fn_003716",
-      "rva": "0x0008b610",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed `nxOnceReportThunkFloat` to return `1.0f` on the report branch; row 003716 reports cases=2 mismatches=1.",
-        "detected": "mismatches=1"
-      },
-      "note": "report-once float callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
-    },
-    {
-      "id": "phys_fn_003724",
-      "rva": "0x0008b8b0",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed `nxLockedHelperCallF` to return `1.0f` instead of the callback result; row 003724 reports cases=1 mismatches=1.",
-        "detected": "mismatches=1"
-      },
-      "note": "float-returning locked callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
-    },
-    {
-      "id": "phys_fn_003728",
-      "rva": "0x0008b990",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed `nxLockedHelperCallF` to return `1.0f` instead of the callback result; row 003728 reports cases=1 mismatches=1.",
-        "detected": "mismatches=1"
-      },
-      "note": "float-returning locked callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
-    },
-    {
-      "id": "phys_fn_003732",
-      "rva": "0x0008ba70",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed `nxLockedHelperCallF` to return `1.0f` instead of the callback result; row 003732 reports cases=1 mismatches=1.",
-        "detected": "mismatches=1"
-      },
-      "note": "float-returning locked callback helper; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
-    },
-    {
-      "id": "phys_fn_003736",
-      "rva": "0x0008bb50",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the row line argument from 0x0bc to 0x0bd; row 003736 reports cases=1 mismatches=1, while 003740 remains exact.",
-        "detected": "mismatches=1"
-      },
-      "note": "assert-report callback tuple; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
-    },
-    {
-      "id": "phys_fn_003740",
-      "rva": "0x0008bc70",
-      "proof": "oracle_differential_falsified",
-      "gate": "NxPhysicsObjectLayoutTests",
-      "falsification": {
-        "mutation": "Changed the row line argument from 0x0cb to 0x0cc; row 003740 reports cases=1 mismatches=1, while 003736 remains exact.",
-        "detected": "mismatches=1"
-      },
-      "note": "assert-report callback tuple; restored oracle/candidate fixture reports zero mismatches=0. See evidence/phase7-reconstructed-helper-mutations-003716-003740.md."
     }
   ],
   "deferred": [
@@ -5651,14 +5662,6 @@
       "id": "phys_fn_002270",
       "rva": "0x00056700",
       "size": 974,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002272",
-      "rva": "0x00056ad0",
-      "size": 57,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []

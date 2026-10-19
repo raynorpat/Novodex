@@ -11398,3 +11398,13 @@ Phase 7 row `phys_fn_003677` (`0x8ae20`) now has a direct three-argument fluid-c
 Phase 7 row `phys_fn_003681` (`0x8ae70`) now has a direct three-argument fluid-context callback differential through slot RVA `0x1264b8`. It checks context, handle, forwarded argument, callback return, and x86 stack cleanup. A `+0x84` candidate handle mutation is rejected (`mismatches=1`); restored output reports `global-call3 row=003681 cases=1 stack=1/1 mismatches=0`. See `phase7-global-call3-003681.md`.
 
 Phase 7 reconstructed-helper mutation closure: `phys_fn_003716` `reportonceF row=003716 cases=2 mismatches=1`; `phys_fn_003724`, `phys_fn_003728`, and `phys_fn_003732` each have `lockhelperF ... cases=1 mismatches=1`; `phys_fn_003736` and `phys_fn_003740` have independent assert-row mutations with `mismatches=1`. Restored controls report zero mismatches. Evidence: `phase7-reconstructed-helper-mutations-003716-003740.md`.
+
+### Phase 7 continuation — ray/AABB slab helper (phys_fn_002272)
+
+The direct NxPhysicsCollisionTests oracle differential exercises 16 directed cases under both x87 control words, with exact face and near/far agreement. The <= FLT_EPSILON mutation fails the two exact-boundary outside-box cases; restored output matches. See docs/reconstruction/novodex-physics/evidence/phase7-ray-aabb-slab-002272.md.
+
+### Phase 7 continuation — ray/AABB slab helper (phys_fn_002272)
+
+The direct NxPhysicsCollisionTests oracle differential exercises 16 directed cases under both x87 control words, with exact face and near/far agreement. The <= FLT_EPSILON mutation is rejected with mismatches=2; restored output matches. See docs/reconstruction/novodex-physics/evidence/phase7-ray-aabb-slab-002272.md.
+
+Measurement: phys_fn_002272 direct oracle/candidate differential; the epsilon-threshold mutation is rejected with mismatches=2, restored exact output.

@@ -1,4 +1,4 @@
-﻿# The one registry of differential test targets per reconstruction phase.
+# The one registry of differential test targets per reconstruction phase.
 # run_phase_gate.ps1 and run_differential.ps1 both dot-source this file and
 # neither keeps a second list, so target registration is centralized here.
 # The phase plans address it through `run_differential.ps1 -Phase N`.
@@ -4762,6 +4762,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision generator=xorshift32 pair_iterations=60000 aimed_iterations=60000',
         'collision seeds pair=c0ffee11 aimed=5eed10ad',
         'collision control_words default=027f simulate=0f7f',
+        'collision ray_aabb_slab row=002272 rva=0x00056ad0 cases=16 control_words=2 oracle=712482657f58c775 candidate=712482657f58c775 mismatches=0',
+        'collision input name=ray_aabb_slab_002272 words=386 input=0831dbb8de072744',
         'matrix slots=72 null=33 wrong=0',
         # 2592 probes: for each of the 36 ordered type pairs and each of the 36
         # slots, the oracle's own dispatcher is handed a matrix with only that
@@ -6389,7 +6391,7 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
-    '3' = 984
+    '3' = 986  # includes the direct row 002272 ray/AABB slab differential
                # plus the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
                # previous 973 includes nine populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
@@ -6564,7 +6566,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3104  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
+	'7' = 3106  # includes current locked-array, fluid, global-call, and ray/AABB slab markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
