@@ -58,11 +58,11 @@
     "rows_reachable_through_any_phase": 499
   },
   "counts": {
-    "differential_falsified": 80,
+    "differential_falsified": 81,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 8,
     "deferred_homeless_shared_code": 11,
-    "deferred_reconstructed_not_falsified": 29,
+    "deferred_reconstructed_not_falsified": 28,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
     "deferred_not_independently_falsifiable": 1
@@ -1189,6 +1189,22 @@
         "mutation": "the accessor hands back null instead of installing the built-in default",
         "detected": "check_failed accessor installs a default when nothing is registered"
       }
+    },
+    {
+      "id": "phys_fn_000776",
+      "rva": "0x00018570",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsBodyCreationTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        7
+      ],
+      "falsification": {
+        "mutation": "Omitted nxU32VectorPushBack(scene + 0x6f8, bodyWord(this, 0x11c)) from DynamicBody::destruct and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=10"
+      },
+      "note": "The public release/recreate fixture directly observes the recycled record ID. The restored candidate reports ID 2 with stdout_delta=0 and exact stderr. See evidence/phase2-row-000776-record-id-recycling.md and evidence/raw/phase2-row-000776-20261018/."
     }
   ],
   "deferred": [
@@ -1358,21 +1374,6 @@
       "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
       "reachability": "reachable_via_other_phase",
       "callers": 6,
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000776",
-      "rva": "0x00018570",
-      "size": 117,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        5,
-        7
-      ],
-      "callers": 3,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {

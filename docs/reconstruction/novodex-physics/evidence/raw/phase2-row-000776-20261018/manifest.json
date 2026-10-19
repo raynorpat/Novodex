@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000776-record-id-recycling.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "1a10ee0bc23e9de9dde455ad28a6ccaf4d4199db14e45e99aa7d4ecc4a461c67",
+      "uncompressed_sha256": "3a90e4d74dec0cf982d976f8808931d828fba6aba9c0a385c4471b46de7669c8",
+      "bytes": 24489,
+      "source": "build\\row776-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "61dcebf3c4e7e0ee49688a2415af0462eef9cfdfa84755fdd518ff02b6977ae3",
+      "uncompressed_sha256": "46a9a353a142038de5c3341e4110ad3bcbfba66e5ca33e7bfb0dfec63f5d82b0",
+      "bytes": 24553,
+      "source": "build\\row776-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "d6a6510e3357f9e8c7d9e960aa44cdc86ab1edf6c779956e08cc8d6148f370db",
+      "uncompressed_sha256": "127f63ab85d453b37ea5bf719a9195bd0271cf0d5bdf5dd583bfed1b5221d6cb",
+      "bytes": 24714,
+      "source": "build\\row776-restored.log"
+    }
+  },
+  "git_head": "19e7015bb33f92208b3ca00e5277ab6e63017323"
+}

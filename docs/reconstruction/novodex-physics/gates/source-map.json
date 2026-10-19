@@ -2,6 +2,12 @@
   "schema_version": 1,
   "source_files": [
     {
+      "path": "BodyCreation.cpp",
+      "function_ids": [
+        "phys_fn_000776"
+      ]
+    },
+    {
       "path": "ContactBoxMeshICE.cpp",
       "function_ids": [
         "phys_fn_001772",
@@ -1494,6 +1500,12 @@
     }
   ],
   "functions": [
+    {
+      "id": "phys_fn_000776",
+      "rva": "0x00018570",
+      "path": "BodyCreation.cpp",
+      "symbol": "DynamicBody::destruct"
+    },
     {
       "id": "phys_fn_001772",
       "rva": "0x0003d500",
