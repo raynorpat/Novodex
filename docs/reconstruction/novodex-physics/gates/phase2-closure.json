@@ -58,11 +58,11 @@
     "rows_reachable_through_any_phase": 499
   },
   "counts": {
-    "differential_falsified": 86,
+    "differential_falsified": 87,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 8,
     "deferred_homeless_shared_code": 11,
-    "deferred_reconstructed_not_falsified": 23,
+    "deferred_reconstructed_not_falsified": 22,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
     "deferred_not_independently_falsifiable": 1
@@ -1287,6 +1287,22 @@
         "detected": "stdout_delta=40"
       },
       "note": "The public CMass pose/orientation fixture exposes the converted quaternion across rotated cases. The mutant is rejected; restored output is exact. Discharged by the passing Phase 5 CMass target. See evidence/phase2-row-000756-cmass-quaternion.md and evidence/raw/phase5-cmass-quaternion-row-000756-20261018/."
+    },
+    {
+      "id": "phys_fn_000973",
+      "rva": "0x00021420",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5
+      ],
+      "falsification": {
+        "mutation": "Replaced the +X box hull face distance calculation with zero in BoxShape::nxBoxRebuildHull and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=18"
+      },
+      "note": "The public box raycast fixture exercises the rebuilt hull and rejects the erased +X plane; the restored differential is exact. Discharged by the passing Phase 5 raycast target. See evidence/phase2-row-000973-box-hull.md and evidence/raw/phase5-box-hull-row-000973-20261019/."
     }
   ],
   "deferred": [
@@ -1466,21 +1482,6 @@
         7
       ],
       "callers": 2
-    },
-    {
-      "id": "phys_fn_000973",
-      "rva": "0x00021420",
-      "size": 913,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "callers": 2,
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001472",

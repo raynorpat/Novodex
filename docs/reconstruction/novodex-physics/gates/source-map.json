@@ -1092,6 +1092,7 @@
         "phys_fn_001201",
         "phys_fn_004149",
         "phys_fn_004151",
+        "phys_fn_000973",
         "phys_fn_001401",
         "phys_fn_003700",
         "phys_fn_003702",
@@ -6417,6 +6418,12 @@
       "rva": "0x0009a560",
       "path": "ObjectModel.cpp",
       "symbol": "@nxReleaseAllocatorFields004151@4"
+    },
+    {
+      "id": "phys_fn_000973",
+      "rva": "0x00021420",
+      "path": "ObjectModel.cpp",
+      "symbol": "BoxShape::nxBoxRebuildHull"
     },
     {
       "id": "phys_fn_001401",

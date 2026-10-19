@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000973-box-hull.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "3a1fa2b07f2422f85091b3cf9f2f58e171cff6774b6673120fce8682c0e0f599",
+      "uncompressed_sha256": "b494e4a5ce0bbd368b6ee886a8594908cf041846eb4b3cbcfde49749724d4ebd",
+      "bytes": 802396,
+      "source": "build\\row973-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "f37e2c5a8b8d25c09d70447729385f59d5da4d3f0c109025dc77bcaec7e85dda",
+      "uncompressed_sha256": "0662f40417bc8d008dfe26e8ab78b51fce28da8af4cfc181868d79a068240b1a",
+      "bytes": 802237,
+      "source": "build\\row973-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "a1b35b50308434cbb91070c2566d1894055c3ee729a719ef427bb877b237ab59",
+      "uncompressed_sha256": "cf769844a654fdda78cae36a32007bbafce259cff8457aa7276a68750e21348b",
+      "bytes": 802396,
+      "source": "build\\row973-restored.log"
+    }
+  },
+  "candidate_source_commit": "57aebb52c1b7a6c73c7288e1fefb17333fdf3c4e"
+}
