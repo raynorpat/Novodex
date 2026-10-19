@@ -1472,6 +1472,12 @@
       ]
     },
     {
+      "path": "include/NpActorDynamicMath.h",
+      "function_ids": [
+        "phys_fn_000746"
+      ]
+    },
+    {
       "path": "include/NxSdkAllocatorAccess.inl",
       "function_ids": [
         "phys_fn_004810",
@@ -7891,6 +7897,12 @@
       "rva": "0x0005b680",
       "path": "include/ContactStreamLifecycle.inl",
       "symbol": "nxContactStreamConstruct002356"
+    },
+    {
+      "id": "phys_fn_000746",
+      "rva": "0x00016e80",
+      "path": "include/NpActorDynamicMath.h",
+      "symbol": "nxNpActorWorldTensorRDRt"
     },
     {
       "id": "phys_fn_004810",

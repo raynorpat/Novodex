@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000746-world-inertia.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "a41feee095ac9581865b48e3bab394866a8b5b2885e75a2694c6936026ffb54d",
+      "uncompressed_sha256": "5082b9462f82930530ffc0ba0f5c7994213d0ae6dfbd0965700e3bc18c4f768e",
+      "bytes": 195760,
+      "source": "build\\row746-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "617b6763d8108ae6b407e002c6f67cc3c44b969d7417e54583d502143aa03bd0",
+      "uncompressed_sha256": "819168431f5a67ffcd84778a20c43bea2166fe3345239332b830d3a1f6afb31b",
+      "bytes": 194867,
+      "source": "build\\row746-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "792b6411f1b39f6c3766b56cfa851e0278cb4779ec5059608e3889169383bef8",
+      "uncompressed_sha256": "c78e2efa548910ae8d4e354df6c86374f6ca167ca9505baa5b708fed8135c762",
+      "bytes": 195760,
+      "source": "build\\row746-restored.log"
+    }
+  },
+  "candidate_source_commit": "03ca7394735768ee823580939892cd8f594e2396"
+}
