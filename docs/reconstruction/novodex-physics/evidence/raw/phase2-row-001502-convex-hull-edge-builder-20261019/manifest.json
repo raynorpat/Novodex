@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "description": "phys_fn_001502 row-specific convex-hull entry mutation and restored Phase 4 gate transcripts",
+  "files": [
+    {
+      "path": "baseline.log.gz",
+      "source_log": "build/phase2-row1502-baseline.log",
+      "sha256": "d7bdc57ddf7ebf68e31618b69d315eb8c0f7e0e68d24aaad58711020dab04be2",
+      "uncompressed_sha256": "ad4e5f71b44953914292d555cc8d723d7c86f8b7fdd368a6969dd3915960252e",
+      "uncompressed_bytes": 141715
+    },
+    {
+      "path": "mutation.log.gz",
+      "source_log": "build/phase2-row1502-mutation.log",
+      "sha256": "4a4a23b1fc92c3bb5cf60ca8a937405246c2ced87e0c6072cc6641d4153f564c",
+      "uncompressed_sha256": "8f5cee304224d47b8f7b672e0c1fc4976507f0bc4daeaf29218b9192a505767f",
+      "uncompressed_bytes": 142263
+    },
+    {
+      "path": "restored.log.gz",
+      "source_log": "build/phase2-row1502-restored.log",
+      "sha256": "729d7923bd1b6e0daff06db8e925b45cd71a331ca80d311c982f03ff9d380b92",
+      "uncompressed_sha256": "2aa8858465134701d7d8b84a289dbd0a817cebec595e11dba226e40f0980a8c8",
+      "uncompressed_bytes": 141719
+    },
+    {
+      "path": "phase4-gate.log.gz",
+      "source_log": "build/phase4-row1502-gate-restored.log",
+      "sha256": "2a16d4cdb89a74087317e8733cdbeca96afbc1f6e0c5f9a70ae24fc521f4c829",
+      "uncompressed_sha256": "7e8b34a0dddab1690e85a6b7cfccfc377d7167a77b2c204d2363bd4855983119",
+      "uncompressed_bytes": 1132411
+    }
+  ]
+}

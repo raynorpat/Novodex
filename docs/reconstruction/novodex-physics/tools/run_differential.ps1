@@ -131,7 +131,7 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
     # Most probes receive only the pair directory. Direct oracle fixtures pin
     # the exact staged Physics image before making private RVA calls.
     $arguments = @('"' + $Pair.Directory + '"')
-    if ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsJointSupportTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
+    if ($Target -ceq 'NxPhysicsThirdPartyTests' -or $Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsJointSupportTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
         # This probe hashes the staged oracle before loading it. Supplying the
         # staged pair's identity keeps direct invocations bound to the exact
         # DLL selected by the differential runner.
@@ -175,6 +175,10 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
         $expectedOracle = "oracle module path=$(Join-Path $Pair.Directory 'NxPhysics.dll') sha256=$($Pair.PhysicsSha256)"
         Assert-True ($lines -ccontains $expectedOracle) "$Target/$($Pair.Name) reported the staged oracle identity: $expectedOracle"
     }
+    if ($Target -ceq 'NxPhysicsThirdPartyTests') {
+        $expectedThirdPartyOracle = "oracle module path=$(Join-Path $Pair.Directory 'NxPhysics.dll') sha256=$($Pair.PhysicsSha256)"
+        Assert-True ($lines -ccontains $expectedThirdPartyOracle) "$Target/$($Pair.Name) reported the staged oracle identity: $expectedThirdPartyOracle"
+    }
     if ($Target -ceq 'NxPhysicsObjectLayoutTests') {
         $expectedLayoutOracle = "layout module path=$(Join-Path $Pair.Directory 'NxPhysics.dll') sha256=$($Pair.PhysicsSha256)"
         Assert-True ($lines -ccontains $expectedLayoutOracle) "$Target/$($Pair.Name) reported the staged oracle identity: $expectedLayoutOracle"
@@ -185,7 +189,7 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
         $expectedFoundation = "binding NxComputeSquareDistance path=$candidateFoundation sha256=$candidateFoundationSha256"
         Assert-True ($lines -ccontains $expectedFoundation) "$Target/$($Pair.Name) reported the staged Foundation binding: $expectedFoundation"
     }
-    $loadedModules = if ($Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests') {
+    $loadedModules = if ($Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsThirdPartyTests') {
         @()
     }
     elseif ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
@@ -297,6 +301,16 @@ Assert-True ($candidatePair.PhysicsSha256 -cne $oraclePair.PhysicsSha256) 'candi
 $differences = 0
 foreach ($target in $Targets) {
     $oracleRun = Invoke-Child $target $oraclePair $candidatePair.PhysicsSha256
+    if ($target -ceq 'NxPhysicsThirdPartyTests') {
+        # This executable links the candidate third-party/reconstruction sources
+        # into itself and compares them with private RVAs from the pinned oracle.
+        # Launching it again with the candidate DLL as its oracle makes those
+        # oracle RVAs refer to unrelated candidate functions and can crash.
+        $exitExact = $oracleRun.ExitCode -eq 0
+        Write-Host "differential target=$target oracle_exit=$($oracleRun.ExitCode) candidate_sources_in_harness=True"
+        if (-not $exitExact) { $differences++ }
+        continue
+    }
     if ($target -ceq 'NxPhysicsPlaneShapeDescValidationTests') {
         # This fixture loads the candidate DLL beside itself and compares its
         # map-resolved row to the explicitly loaded oracle. A second launch

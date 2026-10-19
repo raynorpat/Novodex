@@ -28748,13 +28748,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3997",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002cb50..0x0002cc79: thiscall; the polygons built when absent (001472, re-tested per polygon); the total of the polygons' counts; four temporary arrays of that many dwords (slot 0, type 1), false when one fails; continued in 001504..001512; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
-      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeEdges hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 25e8d5625e5cb87a...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes, under 0x027f, and the unit box, bar and separate cubes under 0x0f7f on power-of-two steps -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 32,993 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
-      "notes": "",
+      "dynamic_proof": "Phase 4 row-specific registered third-party differential: nxHullComputeEdges RVA 0x0002cb50 was called 91 times (66 normal calls, 3 direct calls without polygons, 25 rebuild calls), exact restored output. Inverting the first allocator-success branch at RVA 0x0002cbb9 changed the candidate convex_hull word count from 32993 to 18611 and the oracle differential exited 1 without a crash. See evidence/phase2-row-001502-convex-hull-edge-builder.md.",
+      "notes": "Task 38 closes the row with an independent allocator-branch mutation and registered per-row coverage. The four-array allocation and false-return path are now differentially falsified; no public headers changed.",
       "implementation": "Physics/src/ConvexHull.cpp"
     },
     {

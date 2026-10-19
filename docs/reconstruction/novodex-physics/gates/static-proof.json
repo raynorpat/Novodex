@@ -4586,7 +4586,7 @@
     {
       "code": "code_row_not_closed",
       "id": "phys_fn_001502",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "expected": "closed"
     },
     {

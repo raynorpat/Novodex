@@ -868,6 +868,44 @@ class ThirdPartyReconstructedOwners(unittest.TestCase):
             "no driven family owns a non-third-party row; either the registry lost the P4 "
             "Task 2b families or the census started calling them third-party")
 
+    def test_convex_hull_edge_builder_has_row_specific_coverage_marker(self):
+        lines = [line for line in self.registered
+                 if line.startswith("thirdparty coverage name=convex_hull_edges ")]
+        self.assertEqual(len(lines), 1,
+            "phys_fn_001502 must have one independently registered edge-builder coverage marker")
+        self.assertIn("rva=0x0002cb50 owner=phys_fn_001502", lines[0])
+
+
+class DifferentialArgumentTests(unittest.TestCase):
+    def test_thirdparty_target_receives_the_staged_physics_hash(self):
+        runner = RUN_DIFFERENTIAL.read_text(encoding="utf-8")
+        match = re.search(
+            r"if \(([^)]*)\) \{\s*# This probe hashes the staged oracle",
+            runner,
+        )
+        self.assertIsNotNone(match, "could not find the staged-image identity argument branch")
+        self.assertIn("NxPhysicsThirdPartyTests", match.group(1),
+            "the third-party differential requires the staged NxPhysics hash as argv[2]")
+
+    def test_thirdparty_target_verifies_its_oracle_module_identity(self):
+        runner = RUN_DIFFERENTIAL.read_text(encoding="utf-8")
+        self.assertIn("if ($Target -ceq 'NxPhysicsThirdPartyTests')", runner,
+            "the third-party harness reports oracle module identity, not loaded module identity")
+        self.assertIn('$expectedThirdPartyOracle = "oracle module path=', runner,
+            "the staged third-party oracle path and digest must be checked")
+
+    def test_thirdparty_target_runs_candidate_sources_only_against_the_oracle(self):
+        runner = RUN_DIFFERENTIAL.read_text(encoding="utf-8")
+        match = re.search(
+            r"if \(\$target -ceq 'NxPhysicsThirdPartyTests'\) \{(?P<body>.*?)\n\s*\}",
+            runner,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(match,
+            "the source-linked third-party test must not launch a second time with candidate DLL as oracle")
+        self.assertIn("candidate_sources_in_harness=True", match.group("body"))
+        self.assertIn("continue", match.group("body"))
+
 
 class OwnersSitAtTheAddressTheyClaim(unittest.TestCase):
     """`owner=` and `rva=` on the same registered line have to be the same row.

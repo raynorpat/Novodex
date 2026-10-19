@@ -9524,7 +9524,7 @@ struct NxChCoverage
 	unsigned areaCalls, centerCalls, centroidCalls, centroidTrue, supportCalls, supportPosed, gatherCases,
 		gatherFaces, reverseCalls, vectorCalls, leafSnan, leafX87;
 	unsigned meshes, splitMeshes, polygonsTrue, polygonsFalse, polygons, edgesTrue, edgesFalse, edges,
-		edgesAlone, rebuilt, planeCalls, planeSplit, hullSupport;
+		edgesAlone, rebuilt, edgeCalls, edgeRebuildCalls, edgeDirectWithoutPolygon, planeCalls, planeSplit, hullSupport;
 	unsigned faceCalls, lookupCalls, maps, initTrue, initFalse, samples, freed, mapLookups, mapSnan;
 	};
 static NxChCoverage gChCoverage;
@@ -10205,12 +10205,23 @@ static void nxChHullCase(const NxIceSide& s, const NxChMesh& m, unsigned index)
 	unsigned okPolygons = 0xffu;
 	unsigned okEdges = 0xffu;
 	if(index % 5 == 4 && m.buildable)
+		{
+		if(s.oracle)
+			{
+			++c.edgeCalls;
+			++c.edgeDirectWithoutPolygon;
+			}
 		okEdges = nxChCall0(edges, hull) & 0xff;
+		}
 	else
 		{
 		okPolygons = nxChCall0(polygons, hull) & 0xff;
 		if(okPolygons && hull[9])
+			{
+			if(s.oracle)
+				++c.edgeCalls;
 			okEdges = nxChCall0(edges, hull) & 0xff;
+			}
 		}
 	nxMb2SetControlWord(saved);
 	t.push(okPolygons);
@@ -10236,6 +10247,8 @@ static void nxChHullCase(const NxIceSide& s, const NxChMesh& m, unsigned index)
 		{
 		const unsigned short saved2 = nxMb2SetControlWord(cw);
 		const unsigned again = nxChCall0(polygons, hull) & 0xff;
+		if(s.oracle)
+			++c.edgeRebuildCalls;
 		const unsigned againEdges = nxChCall0(edges, hull) & 0xff;
 		nxMb2SetControlWord(saved2);
 		t.push(again);
@@ -10605,6 +10618,9 @@ static void nxDriveConvexHull(const NxOracleRows& o, bool selfOnly)
 		c.meshes, c.splitMeshes, c.polygonsTrue, c.polygonsFalse, c.edgesAlone, c.polygons, c.edgesTrue, c.edgesFalse,
 		c.edges, c.rebuilt, c.hullSupport, c.planeCalls, c.planeSplit, gIceReports, gIceReportLine318,
 		gIceReportLine321);
+	printf("thirdparty coverage name=convex_hull_edges rva=0x0002cb50 owner=phys_fn_001502 source=ConvexHull.cpp"
+		" calls=%u main_calls=%u direct_without_polygon=%u rebuild_calls=%u\n",
+		c.edgeCalls + c.edgeRebuildCalls, c.edgeCalls, c.edgeDirectWithoutPolygon, c.edgeRebuildCalls);
 
 	gIceReports = 0;
 	nxIceFamily(o, selfOnly, nxChSupportDrive, "support_maps", "0x0002e2f0", "phys_fn_001558",
