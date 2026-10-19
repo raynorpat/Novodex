@@ -38396,13 +38396,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/785",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6305",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0004e540: the ray-parity count used by the classification. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_classify' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: zeroed the FLT_MAX store at 0x0004e5a5 (mismatches=148). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapRayParity_row@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapRayParity_row@@YAXXZ",
+        "address": "0x10056420",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_002020",
@@ -38432,13 +38440,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/786",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6306",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0004e5d0: the inside/outside classification of a point against the mesh (rays drawn from rand). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_classify' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fmul` to `fdiv` at 0x0004e719 (mismatches=7). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapClassify@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapClassify@@YAXXZ",
+        "address": "0x100545d0",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_002022",
@@ -38468,13 +38484,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/786",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6324",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0004e5d0"
+      "static_proof": "IDA/capstone at RVA 0x0004e830: the classification's result materialisation. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_classify' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `seta` to `setb` at 0x0004e859 (mismatches=360). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapClassify@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapClassify@@YAXXZ",
+        "address": "0x100545d0",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_002024",
@@ -38504,13 +38528,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/787",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6327",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0004e870: the corner-marking entry (grid sweep). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_corners' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `jbe` to `ja` at 0x0004e89c (mismatches=30073). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapMarkCorners_row@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapMarkCorners_row@@YAXXZ",
+        "address": "0x100548b0",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_002026",
@@ -38540,13 +38572,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/787",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6328",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0004e870"
+      "static_proof": "IDA/capstone at RVA 0x0004e8b0: the corner-marking body (per-cell nearest query, class bit, skip flag). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_corners' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fmul` to `fdiv` at 0x0004ea87 (mismatches=19499). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapMarkCorners_row@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapMarkCorners_row@@YAXXZ",
+        "address": "0x100548b0",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_002028",
@@ -101187,13 +101227,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2032",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18416",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e7c50: the nearest-face collider's point-to-triangle distance (Ericson regions). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` at 0x000e7f13 (mismatches=687). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestTriangle@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestTriangle@@YAXXZ",
+        "address": "0x10055590",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005325",
@@ -101223,13 +101271,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2033",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18444",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8180: the collider's point-to-node-box pruning test. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` at 0x000e821c (mismatches=917). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestNodeBox@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestNodeBox@@YAXXZ",
+        "address": "0x10055470",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005327",
@@ -101259,13 +101315,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "init [this]=vptr and [this+0x38]=-1 (0xe82a0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2034",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18453",
-      "static_proof": "mov dword[ecx],0x1011ba40; mov dword[ecx+0x38],0xffffffff; ret",
-      "dynamic_proof": "confirmed via zeroinit drive (3z51): failures=0",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e82a0: the nearest-face collider constructor (vptr, face = -1). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: zeroed the vtable-pointer store at 0x000e82a2 (mismatches=1600). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestInit@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestInit@@YAXXZ",
+        "address": "0x10055280",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005329",
@@ -101277,13 +101341,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
-      "source": "vptr store [this]=0x1011ba40 (0xe82b0)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2035",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18454",
-      "static_proof": "mov dword ptr [ecx],0x1011ba40; ret",
-      "dynamic_proof": "confirmed via setget3 drive (3z50): failures=0",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e82b0: the collider's destructor body (vptr reset); the harness also checks the object after fini and destroy. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: zeroed the vtable-pointer store at 0x000e82b0 (mismatches=800). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestFini@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestFini@@YAXXZ",
+        "address": "0x10055270",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005330",
@@ -101313,13 +101385,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2581",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18455",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e82c0: the collider's scalar deleting destructor (flag 0 path). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: zeroed the vtable-pointer store at 0x000e82c8 (mismatches=800). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestDelete@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestDelete@@YAXXZ",
+        "address": "0x10054550",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005332",
@@ -101349,13 +101429,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2036",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18457",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e82e0: the collider's leaf visit (triangle fetch, distance, best-so-far update). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fmul` to `fdiv` at 0x000e8354 (mismatches=415). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestLeaf@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestLeaf@@YAXXZ",
+        "address": "0x10055290",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005334",
@@ -101385,13 +101473,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2037",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18462",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e84c0: the tree walk over no-leaf nodes, first arm. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` at 0x000e851b (mismatches=645). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestWalkA@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestWalkA@@YAXXZ",
+        "address": "0x10055ac0",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005336",
@@ -101421,13 +101517,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2038",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18468",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8650: the tree walk, quantized-node arm (row shared with 005339). Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: field offset 0x2c changed to 0x30 at 0x000e8668 (mismatches=743). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestWalkB@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestWalkB@@YAXXZ",
+        "address": "0x10055c50",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005338",
@@ -101457,13 +101561,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2038",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18469",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000e8650"
+      "static_proof": "IDA/capstone at RVA 0x000e8680: the quantized-node walk's second child step. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: field offset 0x2c changed to 0x30 at 0x000e87c3 (mismatches=558). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestWalkB@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestWalkB@@YAXXZ",
+        "address": "0x10055c50",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005340",
@@ -101493,13 +101605,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2039",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18478",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8900: the collider's walk (third arm), reached by the corner marking's queries. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_corners' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fmul` to `fdiv` at 0x000e8986 (mismatches=21). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestWalkC@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestWalkC@@YAXXZ",
+        "address": "0x10055f00",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005342",
@@ -101529,13 +101649,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2040",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18484",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8ae0: the collider's walk, fourth arm. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `je` at 0x000e8b7f (mismatches=768). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestWalkD@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestWalkD@@YAXXZ",
+        "address": "0x100560e0",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005344",
@@ -101565,13 +101693,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2041",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18494",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8de0: the entry stub that takes the square root of the distance for the first tree kind. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fsqrt` replaced by `nop` at 0x000e8e0b (mismatches=200). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestEntryA@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestEntryA@@YAXXZ",
+        "address": "0x10055110",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005346",
@@ -101601,13 +101737,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2042",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18495",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8e20: the entry stub for the second tree kind. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fsqrt` replaced by `nop` at 0x000e8e4b (mismatches=200). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestEntryB@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestEntryB@@YAXXZ",
+        "address": "0x10055150",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005348",
@@ -101637,13 +101781,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2043",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18496",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8e60: the entry stub for the third tree kind. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fsqrt` replaced by `nop` at 0x000e8eb8 (mismatches=200). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestEntryC@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestEntryC@@YAXXZ",
+        "address": "0x10055190",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005350",
@@ -101673,13 +101825,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2044",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18497",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8ed0: the entry stub for the fourth tree kind. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: `fsqrt` replaced by `nop` at 0x000e8f28 (mismatches=200). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearestEntryD@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearestEntryD@@YAXXZ",
+        "address": "0x10055200",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005352",
@@ -101709,13 +101869,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/PMapCompute.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2045",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18498",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e8f40: the nearest-face query: picks the tree kind and enters the stub. Transcribed instruction for instruction into a naked row in Physics/src/PMapCompute.cpp; evidence/phase4-pmap-compute-listing-compare.py disassembles the built candidate and the oracle and finds the 2,308 instructions of the 18 PMap compute rows equal, with the 58 call and data mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=pmap_nearest' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same oracle-built models and compares the tape word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` that admits a non-null model at 0x000e8f46 (mismatches=9600). See evidence/phase4-pmap-compute-rows.md.",
+      "notes": "PenetrationMap::create's compute arm (phys_fn_002047) runs this row for models with a tree.",
+      "implementation": "Physics/src/PMapCompute.cpp",
+      "implementation_symbol": "?nxPMapNearest@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPMapNearest@@YAXXZ",
+        "address": "0x100550b0",
+        "object": "PMapCompute.obj"
+      }
     },
     {
       "id": "phys_fn_005354",

@@ -90,6 +90,11 @@ STILL OPEN:
     at 0x0005017b that builds its own stream when the caller passes none. The
     bit-packed serializer called by the public size/data accessors is
     reconstructed below, but these alternate load sources remain open.
+  * The compute arm's nearest-face collider, ray parity, classification and corner
+    marking (phys_fn_005324-005353, 002019-002027) are listing transcriptions in
+    PMapCompute.cpp, gated by NxPhysicsThirdPartyTests; create runs them for models
+    with a tree (evidence/phase4-pmap-compute-rows.md). Tree-less models keep the
+    old path, which the oracle has no case for.
   * Allocation-failure and alternate OPCODE-tree branches in the compute arm
     need dedicated branch fixtures before their exact failure behavior is
     claimed.

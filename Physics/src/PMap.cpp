@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PMap.h"
+#include "PMapCompute.h"
 #include "NxPhysicsBackend.h"
 #if !NX_PHYSICS_USE_X87
 #include "portable/NxScalarGeometry.h"
@@ -2291,6 +2292,9 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 	// model. Its nearest-distance query uses the temporary model above, but the
 	// classifier does not.
 	const Opcode::Model& rayModel = *static_cast<const Opcode::Model*>(source->mModel);
+	// The oracle's nearest-face query has no case for a model without a tree (a one-triangle
+	// mesh builds one); that case keeps the brute-force path below, which has no oracle behavior.
+	const bool useRows = pmapModel.GetTree() != 0;
 
 	for(NxU32 z = 0; z < mResolution; ++z)
 		for(NxU32 y = 0; y < mResolution; ++y)
@@ -2302,16 +2306,32 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 					nxPMapCellCoordinate(y, mUnitsPerCell[1], mHalfExtents[1], mCentre[1]),
 					nxPMapCellCoordinate(z, mUnitsPerCell[2], mHalfExtents[2], mCentre[2])
 					};
-				NxF32 bestDistanceSquared = 3.402823466e+38F;
-				double bestDistance = 3.402823466e+38F;
 				NxU32 nearestFace = 0;
-				nxPMapNearestFace(*source, point, pmapModel, faceOrder,
-					nearestFace, bestDistanceSquared);
-				bestDistance = bestDistanceSquared;
-				NxF32 distance = static_cast<NxF32>(sqrt(static_cast<double>(bestDistanceSquared)));
+				NxF32 distance;
+				if(useRows)
+					{
+					// phys_fn_005353 leaves the distance, not its square, at +0x2c.
+					NxPMapNearest nearest;
+					nearest.init();
+					NxU32 hint = 0xffffffffu;
+					nearest.query(point, &pmapModel, 0, &hint);
+					nearestFace = nearest.face();
+					distance = nearest.distanceSquared();
+					nearest.fini();
+					}
+				else
+					{
+					NxF32 bestDistanceSquared = 3.402823466e+38F;
+					nxPMapNearestFace(*source, point, pmapModel, faceOrder,
+						nearestFace, bestDistanceSquared);
+					distance = static_cast<NxF32>(sqrt(static_cast<double>(bestDistanceSquared)));
+					}
 				bool inside;
 				if(classified[index])
 					inside = classified[index] != 1;
+				else if(useRows)
+					// phys_fn_002021, entered with mode 3 as the oracle's loop does.
+					inside = nxPMapClassifyPoint(3, point, sourceMesh);
 				else
 					{
 					unsigned insideVotes = 0;
@@ -2421,57 +2441,63 @@ bool PenetrationMap::create(const void* mesh, NxU32 resolution, const char* file
 	// phys_fn_002025 marks the eight corners of any cell touching a surface
 	// seed. A grid word whose filled bit is already set is either untouched
 	// empty (0xffffffff) or was handled on an earlier cell.
-	for(NxU32 z = 0; z < mResolution; ++z)
-		for(NxU32 y = 0; y < mResolution; ++y)
-			for(NxU32 x = 0; x < mResolution; ++x)
-				{
-				const NxU32 base = z * mResolutionSquared + y * mResolution + x;
-				NxI32 corners[8] = {
-					static_cast<NxI32>(base), static_cast<NxI32>(base + 1),
-					static_cast<NxI32>(base + mResolution),
-					static_cast<NxI32>(base + mResolution + 1),
-					static_cast<NxI32>(base + mResolutionSquared),
-					static_cast<NxI32>(base + mResolutionSquared + 1),
-					static_cast<NxI32>(base + mResolutionSquared + mResolution),
-					static_cast<NxI32>(base + mResolutionSquared + mResolution + 1)
-					};
-				if(x == mResolution - 1)
-					corners[1] = corners[3] = corners[5] = corners[7] = -1;
-				if(y == mResolution - 1)
-					corners[2] = corners[3] = corners[6] = corners[7] = -1;
-				if(z == mResolution - 1)
-					corners[4] = corners[5] = corners[6] = corners[7] = -1;
-				bool touchesSurface = false;
-				for(unsigned c = 0; c < 8; ++c)
-					if(corners[c] != -1 && !(mGrid[corners[c]] & kPMapCellFilled))
-						touchesSurface = true;
-				if(!touchesSurface) continue;
-				for(unsigned c = 0; c < 8; ++c)
+	if(useRows)
+		nxPMapMarkCorners(this, &pmapModel);
+	else
+		{
+		for(NxU32 z = 0; z < mResolution; ++z)
+			for(NxU32 y = 0; y < mResolution; ++y)
+				for(NxU32 x = 0; x < mResolution; ++x)
 					{
-					if(corners[c] == -1 || !(mGrid[corners[c]] & kPMapCellFilled)) continue;
-					const NxU32 corner = static_cast<NxU32>(corners[c]);
-					const NxU32 cx = corner % mResolution;
-					const NxU32 cy = (corner / mResolution) % mResolution;
-					const NxU32 cz = corner / mResolutionSquared;
-#if NX_PHYSICS_USE_X87
-                    const NxF32 point[3] = {
-                        (static_cast<NxF32>(cx) * mUnitsPerCell[0] - mHalfExtents[0]) + mCentre[0],
-                        (static_cast<NxF32>(cy) * mUnitsPerCell[1] - mHalfExtents[1]) + mCentre[1],
-                        (static_cast<NxF32>(cz) * mUnitsPerCell[2] - mHalfExtents[2]) + mCentre[2]
-                        };
-#else
-                    const NxF32 point[3] = {
-                        nxPMapCellCoordinate(cx, mUnitsPerCell[0], mHalfExtents[0], mCentre[0]),
-                        nxPMapCellCoordinate(cy, mUnitsPerCell[1], mHalfExtents[1], mCentre[1]),
-                        nxPMapCellCoordinate(cz, mUnitsPerCell[2], mHalfExtents[2], mCentre[2])
-                    };
-#endif
-					NxU32 face;
-					NxF32 distanceSquared;
-						nxPMapNearestFace(*source, point, pmapModel, faceOrder, face, distanceSquared);
-					mGrid[corner] = face | kPMapCellFilled;
+					const NxU32 base = z * mResolutionSquared + y * mResolution + x;
+					NxI32 corners[8] = {
+						static_cast<NxI32>(base), static_cast<NxI32>(base + 1),
+						static_cast<NxI32>(base + mResolution),
+						static_cast<NxI32>(base + mResolution + 1),
+						static_cast<NxI32>(base + mResolutionSquared),
+						static_cast<NxI32>(base + mResolutionSquared + 1),
+						static_cast<NxI32>(base + mResolutionSquared + mResolution),
+						static_cast<NxI32>(base + mResolutionSquared + mResolution + 1)
+						};
+					if(x == mResolution - 1)
+						corners[1] = corners[3] = corners[5] = corners[7] = -1;
+					if(y == mResolution - 1)
+						corners[2] = corners[3] = corners[6] = corners[7] = -1;
+					if(z == mResolution - 1)
+						corners[4] = corners[5] = corners[6] = corners[7] = -1;
+					bool touchesSurface = false;
+					for(unsigned c = 0; c < 8; ++c)
+						if(corners[c] != -1 && !(mGrid[corners[c]] & kPMapCellFilled))
+							touchesSurface = true;
+					if(!touchesSurface) continue;
+					for(unsigned c = 0; c < 8; ++c)
+						{
+						if(corners[c] == -1 || !(mGrid[corners[c]] & kPMapCellFilled)) continue;
+						const NxU32 corner = static_cast<NxU32>(corners[c]);
+						const NxU32 cx = corner % mResolution;
+						const NxU32 cy = (corner / mResolution) % mResolution;
+						const NxU32 cz = corner / mResolutionSquared;
+	#if NX_PHYSICS_USE_X87
+	                    const NxF32 point[3] = {
+	                        (static_cast<NxF32>(cx) * mUnitsPerCell[0] - mHalfExtents[0]) + mCentre[0],
+	                        (static_cast<NxF32>(cy) * mUnitsPerCell[1] - mHalfExtents[1]) + mCentre[1],
+	                        (static_cast<NxF32>(cz) * mUnitsPerCell[2] - mHalfExtents[2]) + mCentre[2]
+	                        };
+	#else
+	                    const NxF32 point[3] = {
+	                        nxPMapCellCoordinate(cx, mUnitsPerCell[0], mHalfExtents[0], mCentre[0]),
+	                        nxPMapCellCoordinate(cy, mUnitsPerCell[1], mHalfExtents[1], mCentre[1]),
+	                        nxPMapCellCoordinate(cz, mUnitsPerCell[2], mHalfExtents[2], mCentre[2])
+	                    };
+	#endif
+						NxU32 face;
+						NxF32 distanceSquared;
+							nxPMapNearestFace(*source, point, pmapModel, faceOrder, face, distanceSquared);
+						mGrid[corner] = face | kPMapCellFilled;
+						}
 					}
-				}
+
+		}
 	free(faceOrder);
 	const bool serialized = serialize(*stream);
 	const bool finished = finish();

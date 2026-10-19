@@ -547,3 +547,31 @@ Per-row measurements (row, mutation, count):
 - `phys_fn_004969`: callback pair swapped after the first child of `CollideBoxTriCallback`; `opcode_treecollider_callback_boxtri` mismatches=364.
 - `phys_fn_004971`: wrong tree-0 node handed from `CollideCallback` to `CollideTriBoxCallback`; `opcode_treecollider_callback_collide` mismatches=254.
 - `phys_fn_004982`: worlds exchanged for `InitQuery`; `opcode_treecollider_callback` mismatches=1.
+
+## 30. 2026-10-19 PenetrationMap compute-arm rows
+
+The twenty-one rows under `PenetrationMap::create`'s compute arm (`phys_fn_002047`) -- the nearest-face collider (`phys_fn_005324` to `005353`, sixteen rows), the ray parity `phys_fn_002019`, the classification `phys_fn_002021`/`002023` and the corner marking `phys_fn_002025`/`002027` -- are listing transcriptions in `Physics/src/PMapCompute.cpp` and are closed by `NxPhysicsThirdPartyTests`. `Create` runs them for every model with a tree (the oracle has no case for a tree-less single-triangle model, so the old path stays for that). Three registered families drive the oracle's rows and the candidate's over the same oracle-built models: `pmap_nearest` (800 queries, 15,200 words), `pmap_classify` (1,080) and `pmap_corners` (93,500), all exact with zero mismatches. Write-up: `evidence/phase4-pmap-compute-rows.md`.
+
+Per-row measurements (row, mutation, count):
+
+- `phys_fn_005324`: inverted the `jne` at 0x000e7f13; `pmap_nearest` mismatches=687.
+- `phys_fn_005326`: inverted the `jne` at 0x000e821c; `pmap_nearest` mismatches=917.
+- `phys_fn_005328`: zeroed the vtable-pointer store at 0x000e82a2; `pmap_nearest` mismatches=1600.
+- `phys_fn_005329`: zeroed the vtable-pointer store at 0x000e82b0; `pmap_nearest` mismatches=800.
+- `phys_fn_005331`: zeroed the vtable-pointer store at 0x000e82c8; `pmap_nearest` mismatches=800.
+- `phys_fn_005333`: `fmul` to `fdiv` at 0x000e8354; `pmap_nearest` mismatches=415.
+- `phys_fn_005335`: inverted the `jne` at 0x000e851b; `pmap_nearest` mismatches=645.
+- `phys_fn_005337`: field offset 0x2c changed to 0x30 at 0x000e8668; `pmap_nearest` mismatches=743.
+- `phys_fn_005339`: field offset 0x2c changed to 0x30 at 0x000e87c3; `pmap_nearest` mismatches=558.
+- `phys_fn_005341`: `fmul` to `fdiv` at 0x000e8986; `pmap_corners` mismatches=21.
+- `phys_fn_005343`: inverted the `je` at 0x000e8b7f; `pmap_nearest` mismatches=768.
+- `phys_fn_005345`: `fsqrt` replaced by `nop` at 0x000e8e0b; `pmap_nearest` mismatches=200.
+- `phys_fn_005347`: `fsqrt` replaced by `nop` at 0x000e8e4b; `pmap_nearest` mismatches=200.
+- `phys_fn_005349`: `fsqrt` replaced by `nop` at 0x000e8eb8; `pmap_nearest` mismatches=200.
+- `phys_fn_005351`: `fsqrt` replaced by `nop` at 0x000e8f28; `pmap_nearest` mismatches=200.
+- `phys_fn_005353`: inverted the `jne` that admits a non-null model at 0x000e8f46; `pmap_nearest` mismatches=9600.
+- `phys_fn_002019`: zeroed the FLT_MAX store at 0x0004e5a5; `pmap_classify` mismatches=148.
+- `phys_fn_002021`: `fmul` to `fdiv` at 0x0004e719; `pmap_classify` mismatches=7.
+- `phys_fn_002023`: `seta` to `setb` at 0x0004e859; `pmap_classify` mismatches=360.
+- `phys_fn_002025`: `jbe` to `ja` at 0x0004e89c; `pmap_corners` mismatches=30073.
+- `phys_fn_002027`: `fmul` to `fdiv` at 0x0004ea87; `pmap_corners` mismatches=19499.

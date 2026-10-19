@@ -1898,13 +1898,13 @@
     "phys_fn_002045"
    ],
    "rows": {
-    "discovered": 23,
-    "dynamically_gated": 36,
+    "discovered": 18,
+    "dynamically_gated": 41,
     "reconstructed": 17
    },
    "bytes": {
-    "discovered": 10971,
-    "dynamically_gated": 13083,
+    "discovered": 8138,
+    "dynamically_gated": 15916,
     "reconstructed": 7371
    },
    "phases": {
@@ -4741,14 +4741,14 @@
     "phys_fn_005357"
    ],
    "rows": {
-    "discovered": 53,
-    "dynamically_gated": 10,
-    "reconstructed": 179
+    "discovered": 39,
+    "dynamically_gated": 26,
+    "reconstructed": 177
    },
    "bytes": {
-    "discovered": 14458,
-    "dynamically_gated": 25828,
-    "reconstructed": 169465
+    "discovered": 9653,
+    "dynamically_gated": 30656,
+    "reconstructed": 169442
    },
    "phases": {
     "4": 242

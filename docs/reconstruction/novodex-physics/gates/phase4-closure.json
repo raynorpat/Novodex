@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 46 closed and 1,007 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The exported NxCreatePMap wrapper phys_fn_002049 and its PenetrationMap::create compute body phys_fn_002047 are independently mutation-falsified through NxPhysicsTriangleMeshApiTests. Density-32 and density-80 result markers are registered; allocation-failure and alternate-tree branches remain open. The two AABB tree rows phys_fn_005517 and phys_fn_005523 are independently falsified through the registered NxPhysicsTriangleMeshApiTests staged pair; each entry mutation prevents authored PMap mesh creation (candidate_exit=1, stdout_delta=26). The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13. On 2026-10-15, phys_fn_005537 (Pruner::~Pruner) was independently mutation-falsified through generation-tagged slot reuse after Scene destruction; all three dependent phase gates require and pass the lifecycle marker. MemoryStream destructor continuation (2026-10-16): phys_fn_004791 is closed by the Phase 4 NxPhysicsAssetTests row-specific allocator differential; a no-op destructor mutation is rejected across all 16 PMap fixtures (32 oracle frees versus zero candidate frees), and restored control is exact. Evidence: evidence/phase4-memory-stream-dtor-004791.md. On 2026-10-18, TriangleMesh edge-record quicksort rows phys_fn_002180 and phys_fn_002182 were reconstructed in TriangleMesh.cpp and mutation-falsified through NxPhysicsTriangleMeshSortTests; four cases match the pinned oracle and a secondary-key mutation is detected. The row fixture is direct and does not close the larger edge/adjacency caller. On 2026-10-19 the four rows phys_fn_004967, phys_fn_004969, phys_fn_004971 and phys_fn_004982 (25,613 bytes), carried as vendored_not_falsified second instantiations of OPCODE's no-leaf walk, were read off the listing and found to be NovodeX's depth-limited callback walk, which stock OPCODE does not have. They were reconstructed in Physics/src/opcode/NovodexTreeColliderCallback.cpp, matched exactly to the pinned oracle on every query outside the grid and twin-rotation boundary families, and closed by 20 row-aimed mutations. Evidence: evidence/phase4-treecollider-callback-walk.md.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 46 closed and 1,007 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. The 32-command PMap cell-run matrix adds one closure through mutation AA and a pinned oracle differential (asset digest 1daa095e). The 2026-10-08 Segment mutation adds one closure for phys_fn_005493. The 2026-10-09 TriangleMesh release-guard mutation adds one staged-pair closure for phys_fn_002258. The exported NxCreatePMap wrapper phys_fn_002049 and its PenetrationMap::create compute body phys_fn_002047 are independently mutation-falsified through NxPhysicsTriangleMeshApiTests. Density-32 and density-80 result markers are registered; allocation-failure and alternate-tree branches remain open. The two AABB tree rows phys_fn_005517 and phys_fn_005523 are independently falsified through the registered NxPhysicsTriangleMeshApiTests staged pair; each entry mutation prevents authored PMap mesh creation (candidate_exit=1, stdout_delta=26). The 2026-10-10 bounded octree query setup row phys_fn_005564 is falsified by omitting the registered root dispatch (stdout_delta=14), and its recursive traversal row phys_fn_005562 is independently falsified by omitting child slot 8 in the same staged pair. The 2026-10-09 TriangleMesh::release live-reference guard row phys_fn_002258 is independently mutation-falsified through NxPhysicsTriangleMeshApiTests; see evidence/phase4-falsification.md section 14. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10, 11 and 13. On 2026-10-15, phys_fn_005537 (Pruner::~Pruner) was independently mutation-falsified through generation-tagged slot reuse after Scene destruction; all three dependent phase gates require and pass the lifecycle marker. MemoryStream destructor continuation (2026-10-16): phys_fn_004791 is closed by the Phase 4 NxPhysicsAssetTests row-specific allocator differential; a no-op destructor mutation is rejected across all 16 PMap fixtures (32 oracle frees versus zero candidate frees), and restored control is exact. Evidence: evidence/phase4-memory-stream-dtor-004791.md. On 2026-10-18, TriangleMesh edge-record quicksort rows phys_fn_002180 and phys_fn_002182 were reconstructed in TriangleMesh.cpp and mutation-falsified through NxPhysicsTriangleMeshSortTests; four cases match the pinned oracle and a secondary-key mutation is detected. The row fixture is direct and does not close the larger edge/adjacency caller. On 2026-10-19 the four rows phys_fn_004967, phys_fn_004969, phys_fn_004971 and phys_fn_004982 (25,613 bytes), carried as vendored_not_falsified second instantiations of OPCODE's no-leaf walk, were read off the listing and found to be NovodeX's depth-limited callback walk, which stock OPCODE does not have. They were reconstructed in Physics/src/opcode/NovodexTreeColliderCallback.cpp, matched exactly to the pinned oracle on every query outside the grid and twin-rotation boundary families, and closed by 20 row-aimed mutations. Evidence: evidence/phase4-treecollider-callback-walk.md. On 2026-10-19 the 21 rows of PenetrationMap::create's compute arm -- the nearest-face collider (phys_fn_005324 to 005353), the ray parity 002019, the classification 002021/002023 and the corner marking 002025/002027 -- were transcribed from their listings and closed by NxPhysicsThirdPartyTests (evidence/phase4-pmap-compute-rows.md). The ledger now records 71 closed and 982 deferred rows.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway source copy, rebuilt and run through a registered Phase 4 staged-pair differential. Phase 4 now registers NxPhysicsTriangleMeshApiTests for the live-reference refusal path; bypassing the mReferenceCount guard changes the candidate transcript by stdout_delta=6 while the pinned oracle remains unchanged, and the restored control matches exactly.",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -54,10 +54,10 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 747,
-    "deferred_not_reconstructed_in_phase": 170,
+    "deferred_reconstructed_not_falsified": 745,
+    "deferred_not_reconstructed_in_phase": 151,
     "deferred_vendored_not_falsified": 86,
-    "oracle_differential_falsified": 34,
+    "oracle_differential_falsified": 55,
     "differential_falsified": 16
   },
   "closed": [
@@ -585,10 +585,220 @@
       "proof": "oracle_differential_falsified",
       "gate": "NxPhysicsThirdPartyTests",
       "falsification": {
-        "mutation": "In a throwaway edit of NovodexTreeColliderCallback.cpp, exchanged the two worlds passed to InitQuery (mismatches=1). The four model refusals (leaf and quantized, on either side) are each exercised alone by a mixed-kind query; dropping any one makes the candidate walk the wrong tree and the target crash (exit 3221225477), and so does a null-mesh check weakened to require both.",
+        "mutation": "In a throwaway edit of NovodexTreeColliderCallback.cpp, exchanged the two worlds passed to InitQuery (mismatches=1). The four model refusals (leaf and quantized, on either side) are each exercised alone by a mixed-kind query; dropping any one makes the candidate walk the wrong tree and the target crash , and so does a null-mesh check weakened to require both.",
         "detected": "mismatches=1"
       },
       "note": "The exact family opcode_treecollider_callback is 0 mismatches over the pinned oracle; its _boundary twin is held by a recorded ceiling (kDivergentCeilings). See evidence/phase4-treecollider-callback-walk.md and evidence/raw/phase4-treecollider-callback-walk-20261019/."
+    },
+    {
+      "id": "phys_fn_005324",
+      "rva": "0x000e7c50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, inverted the `jne` at 0x000e7f13; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=687"
+      }
+    },
+    {
+      "id": "phys_fn_005326",
+      "rva": "0x000e8180",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, inverted the `jne` at 0x000e821c; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=917"
+      }
+    },
+    {
+      "id": "phys_fn_005328",
+      "rva": "0x000e82a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, zeroed the vtable-pointer store at 0x000e82a2; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=1600"
+      }
+    },
+    {
+      "id": "phys_fn_005329",
+      "rva": "0x000e82b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, zeroed the vtable-pointer store at 0x000e82b0; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=800"
+      }
+    },
+    {
+      "id": "phys_fn_005331",
+      "rva": "0x000e82c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, zeroed the vtable-pointer store at 0x000e82c8; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=800"
+      }
+    },
+    {
+      "id": "phys_fn_005333",
+      "rva": "0x000e82e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fmul` to `fdiv` at 0x000e8354; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=415"
+      }
+    },
+    {
+      "id": "phys_fn_005335",
+      "rva": "0x000e84c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, inverted the `jne` at 0x000e851b; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=645"
+      }
+    },
+    {
+      "id": "phys_fn_005337",
+      "rva": "0x000e8650",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, field offset 0x2c changed to 0x30 at 0x000e8668; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=743"
+      }
+    },
+    {
+      "id": "phys_fn_005339",
+      "rva": "0x000e8680",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, field offset 0x2c changed to 0x30 at 0x000e87c3; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=558"
+      }
+    },
+    {
+      "id": "phys_fn_005341",
+      "rva": "0x000e8900",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fmul` to `fdiv` at 0x000e8986; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=21"
+      }
+    },
+    {
+      "id": "phys_fn_005343",
+      "rva": "0x000e8ae0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, inverted the `je` at 0x000e8b7f; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=768"
+      }
+    },
+    {
+      "id": "phys_fn_005345",
+      "rva": "0x000e8de0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fsqrt` replaced by `nop` at 0x000e8e0b; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=200"
+      }
+    },
+    {
+      "id": "phys_fn_005347",
+      "rva": "0x000e8e20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fsqrt` replaced by `nop` at 0x000e8e4b; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=200"
+      }
+    },
+    {
+      "id": "phys_fn_005349",
+      "rva": "0x000e8e60",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fsqrt` replaced by `nop` at 0x000e8eb8; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=200"
+      }
+    },
+    {
+      "id": "phys_fn_005351",
+      "rva": "0x000e8ed0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fsqrt` replaced by `nop` at 0x000e8f28; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=200"
+      }
+    },
+    {
+      "id": "phys_fn_005353",
+      "rva": "0x000e8f40",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, inverted the `jne` that admits a non-null model at 0x000e8f46; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=9600"
+      }
+    },
+    {
+      "id": "phys_fn_002019",
+      "rva": "0x0004e540",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, zeroed the FLT_MAX store at 0x0004e5a5; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=148"
+      }
+    },
+    {
+      "id": "phys_fn_002021",
+      "rva": "0x0004e5d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fmul` to `fdiv` at 0x0004e719; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=7"
+      }
+    },
+    {
+      "id": "phys_fn_002023",
+      "rva": "0x0004e830",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `seta` to `setb` at 0x0004e859; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=360"
+      }
+    },
+    {
+      "id": "phys_fn_002025",
+      "rva": "0x0004e870",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `jbe` to `ja` at 0x0004e89c; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=30073"
+      }
+    },
+    {
+      "id": "phys_fn_002027",
+      "rva": "0x0004e8b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "In a throwaway edit of PMapCompute.cpp, `fmul` to `fdiv` at 0x0004ea87; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase4-pmap-compute-rows-20261019/).",
+        "detected": "mismatches=19499"
+      }
     }
   ],
   "deferred": [
@@ -1220,46 +1430,6 @@
       "id": "phys_fn_002017",
       "rva": "0x0004e1a0",
       "size": 915,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002019",
-      "rva": "0x0004e540",
-      "size": 143,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002021",
-      "rva": "0x0004e5d0",
-      "size": 605,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002023",
-      "rva": "0x0004e830",
-      "size": 49,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002025",
-      "rva": "0x0004e870",
-      "size": 55,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002027",
-      "rva": "0x0004e8b0",
-      "size": 1981,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []
@@ -7942,118 +8112,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_005324",
-      "rva": "0x000e7c50",
-      "size": 1314,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005326",
-      "rva": "0x000e8180",
-      "size": 282,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005331",
-      "rva": "0x000e82c0",
-      "size": 31,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005333",
-      "rva": "0x000e82e0",
-      "size": 472,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005335",
-      "rva": "0x000e84c0",
-      "size": 392,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005337",
-      "rva": "0x000e8650",
-      "size": 42,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005339",
-      "rva": "0x000e8680",
-      "size": 636,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005341",
-      "rva": "0x000e8900",
-      "size": 475,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005343",
-      "rva": "0x000e8ae0",
-      "size": 765,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005345",
-      "rva": "0x000e8de0",
-      "size": 54,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005347",
-      "rva": "0x000e8e20",
-      "size": 54,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005349",
-      "rva": "0x000e8e60",
-      "size": 100,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005351",
-      "rva": "0x000e8ed0",
-      "size": 100,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005353",
-      "rva": "0x000e8f40",
-      "size": 88,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_005357",
       "rva": "0x000e8fd0",
       "size": 80,
@@ -9224,24 +9282,6 @@
       "id": "phys_fn_005320",
       "rva": "0x000e7c10",
       "size": 44,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_005328",
-      "rva": "0x000e82a0",
-      "size": 16,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_005329",
-      "rva": "0x000e82b0",
-      "size": 7,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],

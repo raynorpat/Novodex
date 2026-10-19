@@ -38,6 +38,7 @@
 #include "Opcode.h"
 #include "IcePrunable.h"
 #include "NovodexTreeColliderCallback.h"
+#include "PMapCompute.h"
 #include "QhullHost.h"
 
 
@@ -4399,6 +4400,343 @@ static void nxDriveTreeColliderRows(const NxOracleRows& o, bool selfOnly, int ro
 	}
 
 //////////////////////////////////////////////////////////////////////////////
+// The rows under PenetrationMap's compute arm (phys_fn_002047): the nearest-face
+// collider it queries (005328 constructor, 005353 query and the walks under it), the
+// ray parity (002019), the inside/outside classification (002021) and the corner
+// marking (002025). Every row is entered with the oracle's registers by a small
+// trampoline, once for the oracle's address and once for the candidate's naked
+// transcription (PMapCompute.cpp), over the same oracle-built models.
+
+static const unsigned kPMapInit			= 0x000e82a0;	// phys_fn_005328
+static const unsigned kPMapFini			= 0x000e82b0;	// phys_fn_005329
+static const unsigned kPMapDelete		= 0x000e82c0;	// phys_fn_005331
+static const unsigned kPMapNearestQuery	= 0x000e8f40;	// phys_fn_005353
+static const unsigned kPMapRayParity	= 0x0004e540;	// phys_fn_002019
+static const unsigned kPMapClassify		= 0x0004e5d0;	// phys_fn_002021
+static const unsigned kPMapMarkCorners	= 0x0004e870;	// phys_fn_002025
+static const unsigned kPMapGetPtd		= 0x000fcd97;	// the oracle CRT's per-thread data
+static const unsigned kPMapRand			= 0x000f7ab1;	// the oracle CRT's rand
+
+static void nxPMapOracleInit(void* fn, void* object)
+	{
+	__asm
+		{
+		mov ecx, object
+		call fn
+		}
+	}
+
+static void* nxPMapOracleDelete(void* fn, void* object, unsigned flags)
+	{
+	void* result;
+	__asm
+		{
+		push flags
+		mov ecx, object
+		call fn
+		mov result, eax
+		}
+	return result;
+	}
+
+static bool nxPMapOracleQuery(void* fn, void* object, const float* point, const void* model, const void* world,
+	unsigned* hint)
+	{
+	unsigned char result;
+	__asm
+		{
+		push hint
+		push world
+		push model
+		push point
+		mov ecx, object
+		call fn
+		mov result, al
+		}
+	return result != 0;
+	}
+
+static unsigned nxPMapOracleRayParity(void* fn, const float* direction, const float* origin, const void* mesh)
+	{
+	unsigned result;
+	__asm
+		{
+		mov eax, direction
+		mov edi, origin
+		push mesh
+		call fn
+		add esp, 4
+		mov result, eax
+		}
+	return result;
+	}
+
+static bool nxPMapOracleClassify(void* fn, unsigned mode, const float* point, const void* mesh)
+	{
+	unsigned char result;
+	__asm
+		{
+		mov eax, mode
+		mov ecx, point
+		push mesh
+		call fn
+		add esp, 4
+		mov result, al
+		}
+	return result != 0;
+	}
+
+static unsigned nxPMapOracleMarkCorners(void* fn, void* map, const void* model)
+	{
+	unsigned result;
+	__asm
+		{
+		mov ecx, map
+		push model
+		call fn
+		mov result, eax
+		}
+	return result;
+	}
+
+// Both CRTs' rand are the same generator; put the host's at the oracle's state so that a row that
+// draws from it draws the same numbers on both sides, and so that a row that draws a different
+// count shows.
+static unsigned nxPMapOracleRandState(const NxOracleRows& o)
+	{
+	typedef unsigned char* (__cdecl* GetPtdFn)(void);
+	return *(const unsigned*) (((GetPtdFn) nxAt(o, kPMapGetPtd))() + 0x14);
+	}
+
+// A PenetrationMap's memory (PMap.h has the layout), built by hand: the rows only read it.
+struct NxPMapRaw
+	{
+	unsigned char	bytes[0x78];
+	unsigned		spread[256];
+	unsigned		resolution, cells;
+	unsigned*		grid;
+	};
+
+static NxPMapRaw* nxPMapTestMap(const NxMesh& mesh, unsigned resolution)
+	{
+	NxPMapRaw* pm = new NxPMapRaw;
+	memset(pm, 0, sizeof(*pm));
+	for(unsigned c = 0; c < 256; ++c)
+		for(unsigned bit = 0; bit < 8; ++bit)
+			pm->spread[c] |= ((c >> bit) & 1u) << (3 * bit);
+	unsigned char* raw = pm->bytes;
+	*(const unsigned**) (raw + 4) = pm->spread;
+	float* f = (float*) raw;
+	const float n1 = (float) (resolution - 1);
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		const float lo = mesh.minB[i] - 0.5f, hi = mesh.maxB[i] + 0.5f, extent = hi - lo;
+		f[2 + i] = lo;
+		f[5 + i] = hi;
+		f[8 + i] = (lo + hi) * 0.5f;
+		f[11 + i] = extent * 0.5f;
+		f[14 + i] = extent;
+		f[17 + i] = n1 / extent;
+		f[20 + i] = extent / n1;
+		}
+	pm->resolution = resolution;
+	pm->cells = resolution * resolution * resolution;
+	*(unsigned*) (raw + 0x5c) = resolution;
+	*(unsigned*) (raw + 0x60) = resolution * resolution;
+	*(float*) (raw + 0x64) = n1;
+	*(float*) (raw + 0x68) = 1.0f / n1;
+	*(unsigned*) (raw + 0x6c) = pm->cells;
+	pm->grid = (unsigned*) calloc(pm->cells, sizeof(unsigned));
+	*(unsigned**) (raw + 0x70) = pm->grid;
+	return pm;
+	}
+
+static void nxDrivePMapCompute(const NxOracleRows& o, bool selfOnly)
+	{
+	gState = 0x6d11a5e1;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	NxPMapNearest candidate;
+	unsigned char oracleObject[0x3c + 16];
+	void* const oracleInit = nxAt(o, kPMapInit);
+	void* const oracleQuery = nxAt(o, kPMapNearestQuery);
+
+	// ---- the nearest-face query, every tree kind over every mesh ----------------------------------
+	unsigned queries = 0;
+	for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+		for(int kind = 0; kind < 4; ++kind)
+			{
+			const int index = gModelIndex[mesh][kind];
+			if(!gModels[index].built)
+				continue;
+			const Model* model = (const Model*) gModels[index].oracle;
+			// A single-triangle mesh builds a model with no tree; the oracle's query has no case for it.
+			if(!model->GetTree())
+				continue;
+			const NxMesh& m = gMeshes[mesh];
+			for(unsigned k = 0; k < 40; ++k)
+				{
+				float point[3];
+				for(unsigned i = 0; i < 3; ++i)
+					point[i] = nxRange(m.minB[i] - 2.0f, m.maxB[i] + 2.0f).value;
+				Matrix4x4 world;
+				const bool useWorld = (k % 3) == 2;
+				if(useWorld)
+					nxWorld(world, 1 + (int) (k % 2));
+				unsigned hintValue[2];
+				hintValue[0] = hintValue[1] = (k % 4) == 3 ? nxNext() % m.nbTris : 0xffffffffu;
+				const bool useHint = (k % 5) != 4;
+				for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+					{
+					NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+					memset(oracleObject, 0xcd, sizeof(oracleObject));
+					memset(&candidate, 0xcd, sizeof(candidate));
+					bool result;
+					unsigned char* raw;
+					if(side == 0)
+						{
+						nxPMapOracleInit(oracleInit, oracleObject);
+						result = nxPMapOracleQuery(oracleQuery, oracleObject, point, model, useWorld ? &world : 0,
+							useHint ? &hintValue[0] : 0);
+						raw = oracleObject;
+						}
+					else
+						{
+						candidate.init();
+						result = candidate.query(point, model, useWorld ? &world : 0, useHint ? &hintValue[1] : 0);
+						raw = candidate.raw;
+						}
+					tape.push(result ? 1u : 0u);
+					// Word 1 is the model's mesh interface, an address; the rest is fields.
+					tape.push(((const unsigned*) raw)[1] == (unsigned) (size_t) model->GetMeshInterface() ? 1u : 0u);
+					for(unsigned w = 2; w < 0x3c / 4; ++w)
+						tape.push(((const unsigned*) raw)[w]);
+					tape.push(hintValue[side]);
+					// The destructors: 005329 puts the vtable pointer back, and 005331 with its free bit clear
+					// returns the object with the pointer in place (the free branch needs a heap object).
+					const unsigned vptrBefore = ((const unsigned*) raw)[0];
+					((unsigned*) raw)[0] = 0;
+					if(side == 0)
+						nxPMapOracleInit(nxAt(o, kPMapFini), oracleObject);
+					else
+						candidate.fini();
+					tape.push(((const unsigned*) raw)[0] == vptrBefore ? 1u : 0u);
+					((unsigned*) raw)[0] = 0;
+					void* returned = side == 0 ? nxPMapOracleDelete(nxAt(o, kPMapDelete), oracleObject, 0)
+						: candidate.destroy(0);
+					tape.push(returned == (void*) raw ? 1u : 0u);
+					tape.push(((const unsigned*) raw)[0] == vptrBefore ? 1u : 0u);
+					}
+				++queries;
+				}
+			}
+	nxReport("pmap_nearest", "0x000e8f40", "phys_fn_005353", "PMapCompute.cpp", selfOnly);
+
+	// ---- the ray parity and the classification ---------------------------------------------------
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+		{
+		const int index = gModelIndex[mesh][mesh & 3];
+		if(!gModels[index].built)
+			continue;
+		const Model* model = (const Model*) gModels[index].oracle;
+		const NxMesh& m = gMeshes[mesh];
+		unsigned char meshBlock[0x40];
+		memset(meshBlock, 0, sizeof(meshBlock));
+		*(const Model**) (meshBlock + 0x28) = model;
+		for(unsigned k = 0; k < 60; ++k)
+			{
+			float point[3], direction[3];
+			for(unsigned i = 0; i < 3; ++i)
+				{
+				point[i] = nxRange(m.minB[i] - 0.5f, m.maxB[i] + 0.5f).value;
+				direction[i] = nxRange(-1.0f, 1.0f).value;
+				}
+			const float length = sqrtf(direction[0] * direction[0] + direction[1] * direction[1] + direction[2] * direction[2]);
+			if(length > 0.0f)
+				for(unsigned i = 0; i < 3; ++i)
+					direction[i] /= length;
+			const unsigned mode = k % 5;
+			// The host's rand starts where the oracle's does, so a draw that differs is a different row.
+			const unsigned randStart = nxPMapOracleRandState(o);
+			for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+				{
+				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+				if(side == 1)
+					srand(randStart);
+				if(side == 0)
+					{
+					tape.push(nxPMapOracleRayParity(nxAt(o, kPMapRayParity), direction, point, meshBlock));
+					tape.push(nxPMapOracleClassify(nxAt(o, kPMapClassify), mode, point, meshBlock) ? 1u : 0u);
+					}
+				else
+					{
+					tape.push(nxPMapRayParity(direction, point, meshBlock));
+					tape.push(nxPMapClassifyPoint(mode, point, meshBlock) ? 1u : 0u);
+					}
+				// How far each drew from rand: the next draw shows it.
+				tape.push(side == 0 ? (unsigned) ((int (__cdecl*)(void)) nxAt(o, kPMapRand))() : (unsigned) rand());
+				}
+			}
+		}
+	nxReport("pmap_classify", "0x0004e5d0", "phys_fn_002021", "PMapCompute.cpp", selfOnly);
+
+	// ---- the corner marking ---------------------------------------------------------------------
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(int mesh = 0; mesh < kNbMeshes; ++mesh)
+		for(int kind = 0; kind < 4; ++kind)
+			{
+			const int index = gModelIndex[mesh][kind];
+			if(!gModels[index].built)
+				continue;
+			const Model* model = (const Model*) gModels[index].oracle;
+			if(!model->GetTree())
+				continue;
+			const NxMesh& m = gMeshes[mesh];
+			for(unsigned variant = 0; variant < 3; ++variant)
+				{
+				NxPMapRaw* maps[2];
+				for(int side = 0; side < 2; ++side)
+					maps[side] = nxPMapTestMap(m, 4u << variant);	// powers of two: the Morton index stays under n^3
+				unsigned state = nxNext();
+				const unsigned cells = maps[0]->cells;
+				const unsigned* spread = maps[0]->spread;
+				const unsigned res = maps[0]->resolution;
+				for(unsigned z = 0; z < res; ++z)
+					for(unsigned y = 0; y < res; ++y)
+						for(unsigned x = 0; x < res; ++x)
+							{
+							state = state * 1664525u + 1013904223u;
+							// A third of the cells are filled (high bit), the rest are not; every word
+							// names a face the mesh has.
+							const unsigned word = ((state >> 8) % m.nbTris) | ((state >> 5) % 3 == 0 ? 0x80000000u : 0u);
+							const unsigned slot = spread[x] + 2 * spread[y] + 4 * spread[z];
+							maps[0]->grid[slot] = word;
+							maps[1]->grid[slot] = word;
+							}
+				for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+					{
+					NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+					const unsigned count = side == 0
+						? nxPMapOracleMarkCorners(nxAt(o, kPMapMarkCorners), maps[0]->bytes, model)
+						: nxPMapMarkCorners(maps[1]->bytes, model);
+					tape.push(count);
+					const unsigned* grid = maps[side]->grid;
+					for(unsigned c = 0; c < cells; ++c)
+						tape.push(grid[c]);
+					}
+				for(int side = 0; side < 2; ++side)
+					{ free(maps[side]->grid); delete maps[side]; }
+				}
+			}
+	nxReport("pmap_corners", "0x0004e870", "phys_fn_002025", "PMapCompute.cpp", selfOnly);
+	if(!selfOnly)
+		printf("thirdparty pmap_compute queries=%u\n", queries);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
 // BaseModel::Refit after the vertices move. Each side moves its own copy the
 // same way; the no-leaf trees refit, the others report that they cannot.
 
@@ -5182,6 +5520,7 @@ static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
 	nxDriveTreeColliderRows(o, selfOnly, 0, "opcode_treecollider_callback_collide", "opcode_treecollider_callback_collide_boundary", "0x000cd700", "phys_fn_004971");
 	nxDriveTreeColliderRows(o, selfOnly, 1, "opcode_treecollider_callback_tribox", "opcode_treecollider_callback_tribox_boundary", "0x000ca5a0", "phys_fn_004967");
 	nxDriveTreeColliderRows(o, selfOnly, 2, "opcode_treecollider_callback_boxtri", "opcode_treecollider_callback_boxtri_boundary", "0x000cbe50", "phys_fn_004969");
+	nxDrivePMapCompute(o, selfOnly);
 	nxDriveVanilla(o, selfOnly);
 	nxDriveRefit(o, selfOnly);
 	nxReleaseModels(o);

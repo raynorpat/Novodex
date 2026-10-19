@@ -1,0 +1,121 @@
+"""Generate Physics/src/PMapCompute.cpp: naked transcriptions of the PMap compute-arm rows."""
+import capstone, struct, re, sys
+
+ORACLE = r'D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll'
+f = open(ORACLE, 'rb').read()
+pe = struct.unpack_from('<I', f, 0x3c)[0]
+nsec = struct.unpack_from('<H', f, pe + 6)[0]
+opt = struct.unpack_from('<H', f, pe + 20)[0]
+secs = pe + 24 + opt
+
+
+def off(r):
+    for i in range(nsec):
+        n, vs, va, rs, ro = struct.unpack_from('<8sIIII', f, secs + 40 * i)
+        if va <= r < va + max(vs, rs):
+            return ro + r - va
+
+
+# (symbol, entry rva, end rva, rows)
+ROWS = [
+ ('nxPMapNearestTriangle', 0xe7c50, 0xe8172, 'phys_fn_005324'),
+ ('nxPMapNearestNodeBox', 0xe8180, 0xe829a, 'phys_fn_005326'),
+ ('nxPMapNearestInit', 0xe82a0, 0xe82b0, 'phys_fn_005328'),
+ ('nxPMapNearestFini', 0xe82b0, 0xe82b7, 'phys_fn_005329'),
+ ('nxPMapNearestDelete', 0xe82c0, 0xe82df, 'phys_fn_005331'),
+ ('nxPMapNearestLeaf', 0xe82e0, 0xe84b8, 'phys_fn_005333'),
+ ('nxPMapNearestWalkA', 0xe84c0, 0xe8648, 'phys_fn_005335'),
+ ('nxPMapNearestWalkB', 0xe8650, 0xe88fc, 'phys_fn_005337, phys_fn_005339'),
+ ('nxPMapNearestWalkC', 0xe8900, 0xe8adb, 'phys_fn_005341'),
+ ('nxPMapNearestWalkD', 0xe8ae0, 0xe8ddd, 'phys_fn_005343'),
+ ('nxPMapNearestEntryA', 0xe8de0, 0xe8e16, 'phys_fn_005345'),
+ ('nxPMapNearestEntryB', 0xe8e20, 0xe8e56, 'phys_fn_005347'),
+ ('nxPMapNearestEntryC', 0xe8e60, 0xe8ec4, 'phys_fn_005349'),
+ ('nxPMapNearestEntryD', 0xe8ed0, 0xe8f34, 'phys_fn_005351'),
+ ('nxPMapNearest', 0xe8f40, 0xe8f98, 'phys_fn_005353'),
+ ('nxPMapRayParity_row', 0x4e540, 0x4e5cf, 'phys_fn_002019'),
+ ('nxPMapClassify', 0x4e5d0, 0x4e861, 'phys_fn_002021, phys_fn_002023'),
+ ('nxPMapMarkCorners_row', 0x4e870, 0x4f06d, 'phys_fn_002025, phys_fn_002027'),
+]
+SYM = {0x10000000 + r[1]: r[0] for r in ROWS}
+EXTERN = {
+    0x100e4200: 'nxPMapCallInvertPR',
+    0x100f4669: 'nxPMapCallAtexit',
+    0x100f41f0: 'nxPMapCallDelete',
+    0x100b5720: 'nxPMapCallRayCtor',
+    0x100b5760: 'nxPMapCallRayDtor',
+    0x100ba6f0: 'nxPMapCallRayCollide',
+    0x100e7c40: 'nxPMapCallRand',
+}
+CONST = {
+    0x101041ec: 'nxPMapOne', 0x101041f0: 'nxPMapZero', 0x10106858: 'nxPMapFltMax', 0x101066f8: 'nxPMapTwo32',
+    0x10107f3c: 'nxPMapInv32768', 0x101043cc: 'nxPMapHalf',
+    0x10128504: 'nxPMapNearestIdx0', 0x10128508: 'nxPMapNearestIdx1', 0x1012850c: 'nxPMapNearestIdx2',
+    0x10128510: 'nxPMapNearestGuard',
+}
+NULLSUB = 0x101030d0
+
+
+def gen(entry, end):
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    o = off(entry)
+    ins = list(md.disasm(f[o:o + (end - entry)], 0x10000000 + entry))
+    got = ins[-1].address + ins[-1].size - 0x10000000
+    assert got == end, (hex(entry), hex(got), hex(end))
+    lo, hi = 0x10000000 + entry, 0x10000000 + end
+    addrs = {i.address for i in ins}
+    targets = set()
+    for i in ins:
+        if (i.mnemonic.startswith('j') or i.mnemonic == 'loop') and i.op_str.startswith('0x'):
+            t = int(i.op_str, 16)
+            if lo <= t < hi:
+                assert t in addrs, hex(t)
+                targets.add(t)
+    out = []
+    for i in ins:
+        if i.address in targets:
+            out.append('L%x:' % (i.address - 0x10000000))
+        m, op = i.mnemonic, i.op_str
+        if (m.startswith('j') or m == 'loop' or m == 'call') and op.startswith('0x'):
+            t = int(op, 16)
+            if lo <= t < hi and m != 'call':
+                op = 'L%x' % (t - 0x10000000)
+            elif t in SYM:
+                op = SYM[t]
+            elif t in EXTERN:
+                op = EXTERN[t]
+            else:
+                raise Exception('unmapped target %x from %x' % (t, i.address))
+        elif m == 'mov' and op.endswith(', 0x1011ba40'):
+            op = op[:-len('0x1011ba40')] + 'offset nxPMapNearestVtable'
+        elif m == 'push' and op.startswith('0x') and int(op, 16) == NULLSUB:
+            op = 'offset nxPMapNullsub'
+        else:
+            def sub(mm):
+                return '%s ptr [%s]' % (mm.group(1), CONST[int(mm.group(2), 16)])
+            op = re.sub(r'(byte|word|dword|qword) ptr \[(0x1[0-9a-f]{7})\]', sub, op)
+            if m in ('faddp', 'fsubp', 'fmulp', 'fdivp', 'fsubrp', 'fdivrp') and ',' not in op:
+                op += ', st(0)'
+            if m in ('fadd', 'fsub', 'fmul', 'fdiv', 'fsubr', 'fdivr') and re.fullmatch(r'st\(\d\)', op):
+                op = 'st(0), ' + op
+            if m.startswith('rep'):
+                op = ''
+        text = (m + (' ' + op if op else '')).rstrip()
+        out.append('\t\t%s\t\t// 0x%08x' % (text, i.address - 0x10000000))
+    return '\n'.join(out), len(ins)
+
+
+def main(path):
+    parts = []
+    total = 0
+    for sym, lo, hi, rows in ROWS:
+        body, n = gen(lo, hi)
+        total += n
+        parts.append('// %s (0x%08x, %d B), %d instructions\n'
+                     '__declspec(naked) void %s()\n\t{\n\t__asm\n\t\t{\n%s\n\t\t}\n\t}\n' % (rows, lo, hi - lo, n, sym, body))
+    open(path, 'w').write('\n'.join(parts))
+    print(total, 'instructions in', len(ROWS), 'rows')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1])
