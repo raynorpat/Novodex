@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-000722-body-record-root-wake.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "0e09f0885ed57ac5fa0f147e9d2058d627738925fcfc9c7c1b20f7e1db5845fe",
+      "uncompressed_sha256": "cacdfd889f81a4795d520dda6cb05313cf2b115ae65a6f4bf051f4f625e48e07",
+      "bytes": 24960,
+      "source": "build\\phase2-row-000722-current.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "a7903686c2b6f7ba4b6e726e1d392f9330aa7113f0ef117b53cca4409659743b",
+      "uncompressed_sha256": "d9c5a1721e0823fe612be080b828a3c00dd12dc315f27aaa31bda5497b739dc2",
+      "bytes": 25527,
+      "source": "build\\phase2-row-000722-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "94e6566be16ca3dae030af756ecf7108a83fc56048910715a1b304c419b53c9d",
+      "uncompressed_sha256": "3b850b54176efc7050f685aa66b1b25f7aee46982e5f35f1f0bea582e8c14261",
+      "bytes": 24985,
+      "source": "build\\phase2-row-000722-restored.log"
+    }
+  },
+  "candidate_dll_sha256": "7def394475a402d6de2e1baacfd769082e38c811626dde9a7554b40b492ec6b4",
+  "implementation_source_sha256": "5aa19f7651a86f9a2f370b4164fd7fbdaee73f089b2fefa8313b3367076a2259"
+}
