@@ -90,7 +90,7 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
 
 # Direct coverage-only fixtures have no generated input digest or collision
 # oracle-output digest. Their dedicated coverage assertion pins the matrix run.
-COLLISION_COVERAGE_ONLY_NAMES = ("trigger_pair_duplicates",)
+COLLISION_COVERAGE_ONLY_NAMES = ("trigger_pair_duplicates", "contact_convex_mesh_entry")
 
 # Fixed-input splits of a direct block, divergent under an enforced ceiling:
 # registered up to their oracle digest, with no input or coverage line of their
@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 986, "4": 559, "5": 2914, "6": 1769, "7": 3052}
+    MINIMUM = {"2": 18, "3": 987, "4": 559, "5": 2914, "6": 1769, "7": 3109}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -874,6 +874,15 @@ class ThirdPartyReconstructedOwners(unittest.TestCase):
         self.assertEqual(len(lines), 1,
             "phys_fn_001502 must have one independently registered edge-builder coverage marker")
         self.assertIn("rva=0x0002cb50 owner=phys_fn_001502", lines[0])
+
+
+class ConvexMeshEntryCoverage(unittest.TestCase):
+    def test_convex_mesh_entry_has_row_specific_invocation_coverage(self):
+        lines = registered_lines().get("NxPhysicsCollisionTests", [])
+        marker = "collision coverage name=contact_convex_mesh_entry rva=0x00044500 owner=phys_fn_001853 "
+        expected = marker + "oracle_calls=10000 candidate_calls=10000 oracle_checks=7964768 candidate_checks=7964768 mismatches=0"
+        self.assertEqual([line for line in lines if line.startswith(marker)], [expected],
+            "the contact_convex_mesh entry's direct oracle/candidate calls need a pinned row-specific marker")
 
 
 class DifferentialArgumentTests(unittest.TestCase):

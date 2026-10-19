@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "description": "phys_fn_001853 convex-mesh contact thunk baseline, no-op mutation, restored differential, oracle proof transcript, and Phase 3/4/7 gate logs",
+  "files": [
+    {
+      "path": "baseline.log.gz",
+      "source_log": "build/phase3-row1853-baseline.log",
+      "sha256": "2d2bae6a9327b61d7a0ff39c985b72278350bf789d52c6038f3cbb3896babc1e",
+      "uncompressed_sha256": "415bfb7fe656e4f609cc1586f9d5cd20da29d4c8ef352fd72acf4c4ad57cdd72",
+      "uncompressed_bytes": 66373
+    },
+    {
+      "path": "mutation.log.gz",
+      "source_log": "build/phase3-row1853-mutation.log",
+      "sha256": "1abdfe0fb5f974c22212f07a34ec3b90ffdf381020b5df78ae5a97aafa96d589",
+      "uncompressed_sha256": "4cc4152e7049632ac0a05c1f61e7fd71f91aaaf35306f73cf2e9fe5f523328d2",
+      "uncompressed_bytes": 1382209
+    },
+    {
+      "path": "restored.log.gz",
+      "source_log": "build/phase3-row1853-restored.log",
+      "sha256": "9a8885dc499542cce721ae2c1b2e65bf5d2dc5b9461cf67786411df0949d0ea3",
+      "uncompressed_sha256": "82603e71f8aeaab03e7a4b50c4d7a55512fd26e4a9f51f419b735e703241e006",
+      "uncompressed_bytes": 66373
+    },
+    {
+      "path": "oracle-transcript.txt.gz",
+      "source_log": "build/phase3-row1853-oracle-transcript.txt",
+      "sha256": "d2b3793c8c6b6cc4e346778e94125f0de5b5e645d3ba97c1edab7cc56ed584bc",
+      "uncompressed_sha256": "48657b58bf36826ea52c9e8fd844f7343d43e403d994163aa66ec97a88100f6d",
+      "uncompressed_bytes": 62200
+    },
+    {
+      "path": "phase3-gate.log.gz",
+      "source_log": "build/phase3-row1853-gate.log",
+      "sha256": "f9b814282e0743832dcfdb2fc4d3e49a459709d7ce96c25674847239b3d88743",
+      "uncompressed_sha256": "c14e11382740dde930282344e4e589589fd0177ade94e3f5eafb1bc9dfae99f1",
+      "uncompressed_bytes": 829493
+    },
+    {
+      "path": "phase4-gate.log.gz",
+      "source_log": "build/phase4-row1853-gate.log",
+      "sha256": "d63b61ffc0df13bbff81434365f9fb71f85dc924fb241ee27d175fb7903e1db5",
+      "uncompressed_sha256": "57cd32f043a29c8200e6afeed726b33538e97542589268c8a7ea72e3a99d177c",
+      "uncompressed_bytes": 1132836
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "source_log": "build/phase7-row1853-gate.log",
+      "sha256": "dde02744916bd0045bd2e86416abf57822dd2223e4ca19462bbcd3eb7eeba233",
+      "uncompressed_sha256": "91f9140f3c58f2d1070731b84fcdd8f36827a24205b72e399ea96f6823daed39",
+      "uncompressed_bytes": 4725421
+    }
+  ]
+}

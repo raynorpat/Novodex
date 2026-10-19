@@ -14256,6 +14256,7 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 	unsigned cases = 0, withContacts = 0, contacts = 0, headers = 0, touchedTotal = 0, failed = 0, polytopeCases = 0,
 		rotated = 0, layouts[3] = { 0, 0, 0 }, axes = 0, largeMesh = 0, maxStream = 0, simulateContacts = 0,
 		ccdPairs = 0;
+	unsigned oracleEntryCalls = 0, candidateEntryCalls = 0;
 	unsigned local = 0x2e8b2000u;
 	for(unsigned i = 0; i < kConvexMesh2iCases; ++i)
 		{
@@ -14353,10 +14354,12 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 				}
 			nx2iTakeReports(reports[0], 4);
 			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			++oracleEntryCalls;
 			oracleEntry(world[0].plane, world[0].sphere, &world[0].sink, sides[0].context);
 			nxSetControl(kControlDefault);
 			nbReports[0] = nx2iTakeReports(reports[0], 4);
 			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			++candidateEntryCalls;
 			NxContactConvexMesh(world[1].plane, world[1].sphere, &world[1].sink, sides[1].context);
 			nxSetControl(kControlDefault);
 			nbReports[1] = nx2iTakeReports(reports[1], 4);
@@ -14420,6 +14423,9 @@ static __declspec(noinline) unsigned nxDriveTask2i(unsigned char* base)
 	printf("collision coverage name=contact_convex_mesh hulls=%u meshes=%u cases=%u cases_with_contacts=%u contacts=%u headers=%u touched=%u axes=%u failed=%u polytope_cases=%u rotated=%u layouts=%u/%u/%u large_mesh=%u ccd_pairs=%u simulate_runs_with_contacts=%u max_stream=%u\n",
 		kNb2gHulls + kNb2gPolytopeHulls, kNb2iMeshes, cases, withContacts, contacts, headers, touchedTotal, axes, failed,
 		polytopeCases, rotated, layouts[0], layouts[1], layouts[2], largeMesh, ccdPairs, simulateContacts, maxStream);
+	printf("collision coverage name=contact_convex_mesh_entry rva=0x%08x owner=phys_fn_001853 oracle_calls=%u candidate_calls=%u oracle_checks=%u candidate_checks=%u mismatches=%u\n",
+		kContactConvexMeshRva, oracleEntryCalls, candidateEntryCalls, oracleDigest.checks, candidateDigest.checks,
+		perMode[0] + perMode[1]);
 	}
 
 	// -----------------------------------------------------------------------

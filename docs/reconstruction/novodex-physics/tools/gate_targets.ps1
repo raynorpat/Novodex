@@ -5457,6 +5457,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=contact_convex_mesh.callee_divergent index=- rva=0x00044500 owner=phys_fn_001853 checks=63316 oracle=ede64a9b7519f9e2',
         'collision input name=contact_convex_mesh words=305002 input=c583b56ee11c4382',
         'collision coverage name=contact_convex_mesh hulls=22 meshes=10 cases=5000 cases_with_contacts=417 contacts=3014 headers=481 touched=6258 axes=19164 failed=76 polytope_cases=2520 rotated=3124 layouts=1686/1612/1702 large_mesh=968 ccd_pairs=632 simulate_runs_with_contacts=404 max_stream=632',
+        'collision coverage name=contact_convex_mesh_entry rva=0x00044500 owner=phys_fn_001853 oracle_calls=10000 candidate_calls=10000 oracle_checks=7964768 candidate_checks=7964768 mismatches=0',
         'collision name=mesh_vertex_normals index=- rva=0x00052240 owner=phys_fn_002081 checks=45408 oracle=4ac98b29b7f5d50f',
         'collision input name=mesh_vertex_normals words=14574 input=5cb05b03a5962493',
         'collision coverage name=mesh_vertex_normals meshes=10 variants=4 runs=80 normals=1852 raw_words=90 input_snan=6',
@@ -6393,7 +6394,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
-    '3' = 986  # includes the direct row 002272 ray/AABB slab differential
+    '3' = 987  # plus row-specific contact-convex-mesh thunk coverage (001853)
+              # includes the direct row 002272 ray/AABB slab differential
                # plus the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
                # previous 973 includes nine populated-SDK teardown assertions
                # adds the two-scene SDK material/purge/inspector locks and 378 core-dump assertions
@@ -6568,7 +6570,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3108  # includes current locked-array, fluid, global-call, ray/AABB slab, and 001502 edge-builder markers
+	'7' = 3109  # plus row-specific contact-convex-mesh thunk coverage (001853)
+	          # includes current locked-array, fluid, global-call, ray/AABB slab, and 001502 edge-builder markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker

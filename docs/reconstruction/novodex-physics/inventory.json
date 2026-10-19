@@ -35247,13 +35247,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/ContactConvexHeightfield.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/729",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5527",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (sub-unit M, second half; Task 2i); listing 0x00044500..0x00044504: `jmp` to 001851; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID or the vendored / CRT function the listing calls, import slots by their imported names, absolute operands by the bytes they read in each image, pushed strings by their bytes; evidence/convex-mesh-gap-2i-listing-compare.py); no /GS cookie or fs: frame in the built DLL, as in the oracle",
-      "dynamic_proof": "convex-mesh gap Task 2i: NxContactConvexMesh hit in the full run (evidence/convex-mesh-gap-trace-2i.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4f7d6076b838018e...)); oracle differential contact_convex_mesh (NxPhysicsCollisionTests: 001853 at its address with the matrix-A signature over 5,000 cases -- the small Task 2g hulls on all ten meshes, three convex / flat part layouts (+0x94 / +0x98), permutation, dyadic and rotated poses on both shapes, 76 failed queries, CCD-guard pairs; 417 cases with contacts, 3,014 contacts; both x87 control words) against the pinned oracle, mismatches=0 over 7,964,768 checks (the split .callee_divergent, a frozen list of 44 runs on which the vendored OBBCollider::Collide (005067) returns a different touched list, 51 words, 0 with the oracle's bound in); see evidence/convex-mesh-gap.md, Task 2i",
-      "notes": "",
+      "dynamic_proof": "The registered NxPhysicsCollisionTests contact_convex_mesh differential invokes the row at RVA 0x00044500 10,000 times per side across 5,000 cases, with 7,964,768 checks and zero restored mismatches. Replacing its jump with xor eax,eax; ret produces 11,580 mismatches and exit 1 without an access violation. See evidence/phase3-row-001853-convex-mesh-contact-entry.md.",
+      "notes": "Task 39 adds a row-specific invocation marker and safe independent falsification for the five-byte cdecl entry thunk; public headers are unchanged.",
       "implementation": "Physics/src/ContactConvexHeightfield.cpp"
     },
     {

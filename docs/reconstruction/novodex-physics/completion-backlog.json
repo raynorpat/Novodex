@@ -69,12 +69,12 @@
       },
       "3": {
         "phase": 3,
-        "closed_rows": 123,
-        "deferred_rows": 269,
+        "closed_rows": 124,
+        "deferred_rows": 268,
         "deferred_reasons": {
           "blocked_on_later_phase": 5,
           "not_reconstructed_in_phase": 163,
-          "reconstructed_not_falsified": 101
+          "reconstructed_not_falsified": 100
         }
       },
       "4": {
@@ -133,8 +133,8 @@
         "rows_with_unresolved_indirect_calls": 153,
         "by_state": {
           "discovered": 90,
-          "dynamically_gated": 123,
-          "reconstructed": 179
+          "dynamically_gated": 124,
+          "reconstructed": 178
         }
       },
       "4": {
@@ -77945,7 +77945,7 @@
       "size": 5,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001853",
       "implementation": {
         "path": "Physics/src/ContactConvexHeightfield.cpp",
@@ -77960,7 +77960,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsCollisionTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -77983,23 +77983,25 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
         "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsCollisionTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001853",
         "rva": "0x00044500",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          4
+        ],
         "requires_dependency_review": true
       }
     },
@@ -79014,7 +79016,7 @@
           {
             "id": "phys_fn_001853",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_001869",
@@ -232053,13 +232055,13 @@
     }
   ],
   "source": {
-    "inventory_sha256": "a443a73313fd93ade4dcb69bc546fdc74a95bac6920810163ab88678b1b83729",
+    "inventory_sha256": "7663a5e17ff7ddd7eccf0108f20ea496c885e5caa04b1fa90e774c7d88b4152e",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "e0b4d1bf4df8a25263fa53dc601f65ca9452f3685f6903805d9c3dacfbe6d20a",
-      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "3ff1f3bd505d1a847ef894ee50b3a40bc8ac4b0b56cf8fd5c17b6aaf46f6beb3",
+      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "781af87e91c6030889cefe4987f1564e1df540fcc136f9c845bbc8027230fb8e",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "d45f027f468c2a408ccbca4775db46e7faad9b414d97e337449a3a4ce4883c0e",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "761038da93887e034f5d6531b57dfb586e1dd8f2881bc28896b7b651aa7af0ef",
