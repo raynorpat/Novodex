@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-row-001472-convex-hull-polygons.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "ed114a065262cdaaa3de61c0a6f248f7a5b0cfa45fed40f45048a2708d01f176",
+      "uncompressed_sha256": "a278c07232a0be716e0529968fd581206352126b22f9da593e111a0fc41c5289",
+      "bytes": 18241,
+      "source": "build\\row1472-baseline.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "fbe0c391cb0e07d96902b9f43395bce6a6cec1ea3cb25ae3a6e4a73b68eba48c",
+      "uncompressed_sha256": "2a67a78e5153e89b4c6d795a295503e866e89f4116c603addd4bf0c8fd76af85",
+      "bytes": 18082,
+      "source": "build\\row1472-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "8f1cf66e5bb2c468d82ae6d901a27cdea280fb62559649c587d1205fbddb9c40",
+      "uncompressed_sha256": "8976d5dbaf90ba61fa3fa3b939dc00f0feadb90927282c96ab01d8fe07240a55",
+      "bytes": 18241,
+      "source": "build\\row1472-restored.log"
+    }
+  },
+  "candidate_source_commit": "1125e6f6e8b7ff79d07c63aa756c57e0f0d83f54"
+}

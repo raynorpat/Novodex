@@ -58,11 +58,11 @@
     "rows_reachable_through_any_phase": 499
   },
   "counts": {
-    "differential_falsified": 87,
+    "differential_falsified": 88,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 8,
     "deferred_homeless_shared_code": 11,
-    "deferred_reconstructed_not_falsified": 22,
+    "deferred_reconstructed_not_falsified": 21,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
     "deferred_not_independently_falsifiable": 1
@@ -1303,6 +1303,23 @@
         "detected": "stdout_delta=18"
       },
       "note": "The public box raycast fixture exercises the rebuilt hull and rejects the erased +X plane; the restored differential is exact. Discharged by the passing Phase 5 raycast target. See evidence/phase2-row-000973-box-hull.md and evidence/raw/phase5-box-hull-row-000973-20261019/."
+    },
+    {
+      "id": "phys_fn_001472",
+      "rva": "0x0002b6f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "discharged_by_phase": 4,
+      "driving_phases": [
+        3,
+        4,
+        6
+      ],
+      "falsification": {
+        "mutation": "Changed the hull polygon-count store at +0x24 to zero in nxHullComputePolygons and rebuilt NxPhysics.dll.",
+        "detected": "stdout_delta=28"
+      },
+      "note": "The public convex-mesh differential exposes the polygon count for precomputed tetrahedra; the zero-count mutant is rejected and restored output is exact. Discharged by the passing Phase 4 convex-mesh target. See evidence/phase2-row-001472-convex-hull-polygons.md and evidence/raw/phase4-convex-hull-polygons-row-001472-20261019/."
     }
   ],
   "deferred": [
@@ -1482,22 +1499,6 @@
         7
       ],
       "callers": 2
-    },
-    {
-      "id": "phys_fn_001472",
-      "rva": "0x0002b6f0",
-      "size": 664,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap ConvexHull.cpp .. IceAdjacencies.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        3,
-        4,
-        6
-      ],
-      "callers": 16,
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001472-mutation.patch (the `fchs` of the plane's first word at 0x0002b898 removed) gave convex_hull mismatches=87 and support_maps 230. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
       "id": "phys_fn_001502",

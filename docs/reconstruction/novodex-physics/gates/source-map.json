@@ -71,6 +71,7 @@
     {
       "path": "ConvexHull.cpp",
       "function_ids": [
+        "phys_fn_001472",
         "phys_fn_000001"
       ]
     },
@@ -1702,6 +1703,12 @@
       "rva": "0x0004c290",
       "path": "ContactPairManager.cpp",
       "symbol": "nxSceneRefreshPairs"
+    },
+    {
+      "id": "phys_fn_001472",
+      "rva": "0x0002b6f0",
+      "path": "ConvexHull.cpp",
+      "symbol": "nxHullComputePolygons"
     },
     {
       "id": "phys_fn_000001",

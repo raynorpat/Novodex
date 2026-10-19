@@ -3,8 +3,8 @@
   "summary": {
     "function_rows": 6338,
     "data_objects": 5138,
-    "findings": 8414,
-    "source_mapped_code_rows": 1083,
+    "findings": 8413,
+    "source_mapped_code_rows": 1084,
     "distinct_source_files": 85
   },
   "analysis_inputs": {
@@ -4496,7 +4496,7 @@
     {
       "code": "code_row_not_closed",
       "id": "phys_fn_001472",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "expected": "closed"
     },
     {
@@ -35510,12 +35510,6 @@
       "code": "source_mapping_missing",
       "id": "phys_fn_001471",
       "implementation": null,
-      "implementation_symbol": null
-    },
-    {
-      "code": "source_mapping_missing",
-      "id": "phys_fn_001472",
-      "implementation": "Physics/src/ConvexHull.cpp",
       "implementation_symbol": null
     },
     {
