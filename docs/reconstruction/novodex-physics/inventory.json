@@ -17714,14 +17714,15 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/379",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2936",
       "static_proof": "Transcribed from oracle/capstone/manifest.json extents and listing; Ghidra manifest cross-check; implementation and field offsets recorded in evidence/convex-mesh-gap.md (P-Sphere/scene follow-up).",
-      "dynamic_proof": "Direct oracle/candidate differential, NxPhysicsCollisionTests Phase 3 target: non-null unlink-and-free and null no-op match (4 checks, digest 4d25767f9dce13f5, two frees). Candidate executable SHA-256 E140B0F73F89A1DAC4B5A956C4468BF68440F09A0ADA508FF0652D921029961B; pinned oracle NxPhysics.dll SHA-256 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c. Candidate breakpoint hit; see evidence/convex-mesh-gap-pruner-final-cdb.txt and evidence/convex-mesh-gap-001955-phase3.txt.",
+      "dynamic_proof": "NxPhysicsCollisionTests directly calls the candidate-linked cpmDeletePairNode0915 against oracle RVA 0x00020020. The non-null case checks list head/tail, node links, free count, and a full fixture digest; the null case checks the no-op. Restored control matches with oracle digest 4d25767f9dce13f5, mismatches=0, two frees, stdout_delta=0, stderr_exact=True. Omitting cpmPairNodeUnlink0903 is caught with mismatches=1. See evidence/phase2-pair-node-delete-000915.md and evidence/raw/phase2-pair-node-delete-000915-20261018/.",
       "notes": "reconstructed_not_falsified: reconstructed and driven against the pinned oracle; no mutation aimed at this row is recorded.",
-      "implementation": "Physics/src/ContactPairManager.cpp"
+      "implementation": "Physics/src/ContactPairManager.cpp",
+      "implementation_symbol": "cpmDeletePairNode0915"
     },
     {
       "id": "phys_fn_000916",

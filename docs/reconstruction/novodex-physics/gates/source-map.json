@@ -52,6 +52,7 @@
         "phys_fn_000919",
         "phys_fn_000921",
         "phys_fn_000511",
+        "phys_fn_000915",
         "phys_fn_000913",
         "phys_fn_004155",
         "phys_fn_001971",
@@ -1629,6 +1630,12 @@
       "rva": "0x00010230",
       "path": "ContactPairManager.cpp",
       "symbol": "cpmClearActorPairFlags"
+    },
+    {
+      "id": "phys_fn_000915",
+      "rva": "0x00020020",
+      "path": "ContactPairManager.cpp",
+      "symbol": "cpmDeletePairNode0915"
     },
     {
       "id": "phys_fn_000913",

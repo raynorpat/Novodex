@@ -3,8 +3,8 @@
   "summary": {
     "function_rows": 6338,
     "data_objects": 5138,
-    "findings": 8423,
-    "source_mapped_code_rows": 1074,
+    "findings": 8422,
+    "source_mapped_code_rows": 1075,
     "distinct_source_files": 83
   },
   "analysis_inputs": {
@@ -2810,7 +2810,7 @@
     {
       "code": "code_row_not_closed",
       "id": "phys_fn_000915",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "expected": "closed"
     },
     {
@@ -34207,12 +34207,6 @@
     {
       "code": "source_mapping_missing",
       "id": "phys_fn_000911",
-      "implementation": "Physics/src/ContactPairManager.cpp",
-      "implementation_symbol": null
-    },
-    {
-      "code": "source_mapping_missing",
-      "id": "phys_fn_000915",
       "implementation": "Physics/src/ContactPairManager.cpp",
       "implementation_symbol": null
     },

@@ -2749,6 +2749,8 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base);
 unsigned nxDriveType3PrunerRefit(unsigned char* base);
 extern "C" void __fastcall NxScenePrunerNodeRemove(void* node);
 extern "C" void __stdcall NxScenePrunerNodeDestroy(void* node);
+struct NxPairNode;
+void __stdcall cpmDeletePairNode0915(NxPairNode* node);
 extern "C" void __fastcall NxScenePrunerShapeRemove(void* group, void* owner);
 extern "C" void __fastcall NxScenePrunerRecordCleanup(void* record);
 extern "C" void __fastcall NxScenePrunerRecordCleanupTail(void* record);
@@ -3126,7 +3128,8 @@ static unsigned nxDrivePScenePrunerNodeDestroy(unsigned char* base) {
   if(kind==0){nodeO=(NxU8*)testAllocator.malloc(0x200);nodeC=(NxU8*)testAllocator.malloc(0x200);memset(nodeO,0,0x200);memset(nodeC,0,0x200);*(void**)(ownerO)=nodeO;*(void**)(ownerO+4)=nodeO;*(void**)(ownerC)=nodeC;*(void**)(ownerC+4)=nodeC;*(void**)(nodeO+0x10)=ownerO;*(void**)(nodeC+0x10)=ownerC;}
   if(kind==0){nx2gCall0(base+0x0005b680,nodeO+0x24);nx2gCall0((const void*)nxIceCallContainerCtor,nodeC+0x4c);NxContactSinkResetState((NxU32*)(nodeC+0x24));}
   const unsigned before=testAllocator.frees;unsigned word=kind;nxFoldInput(&id,&word,sizeof(word));
-  oracle(kind?0:nodeO);NxScenePrunerNodeDestroy(kind?0:nodeC);
+  oracle(kind?0:nodeO);cpmDeletePairNode0915(
+   reinterpret_cast<NxPairNode*>(kind?0:nodeC));
   nxDigestByte(&od,*(void**)ownerO?1:0);nxDigestByte(&od,*(void**)(ownerO+4)?1:0);
   nxDigestByte(&cd,*(void**)ownerC?1:0);nxDigestByte(&cd,*(void**)(ownerC+4)?1:0);
   if(*(void**)ownerO!=*(void**)ownerC||*(void**)(ownerO+4)!=*(void**)(ownerC+4)||testAllocator.frees-before!=(kind?0u:2u)){++mismatches;printf("collision mismatch name=scene_pruner_node_destroy case=%u oracle_head=%p candidate_head=%p oracle_tail=%p candidate_tail=%p free_delta=%u\n",kind,*(void**)ownerO,*(void**)ownerC,*(void**)(ownerO+4),*(void**)(ownerC+4),testAllocator.frees-before);}

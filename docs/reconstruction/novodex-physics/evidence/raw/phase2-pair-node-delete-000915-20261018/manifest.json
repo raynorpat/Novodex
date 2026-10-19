@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "evidence": "phase2-pair-node-delete-000915.md",
+  "files": {
+    "baseline.log.gz": {
+      "sha256": "6a34427d3358b1a0dacbaafb4a80fbaeac8744970440725b5677a23399db7e55",
+      "uncompressed_sha256": "7f2edee25ddb4faae4e03cffa3b7aadcceb9f2f9e34982ba2cf3ee99d59af641",
+      "bytes": 66459,
+      "source": "build\\phase2-pruner-delete-direct-candidate-differential.log"
+    },
+    "mutation.log.gz": {
+      "sha256": "e0d92ded9c59bcd149640ac285f736255413d4727eb11d7ca40553045784fd63",
+      "uncompressed_sha256": "fe1fa6f19e3ca3514f92699ec1061a284a5d34fa6440aba3fcf7af1505418e3f",
+      "bytes": 67138,
+      "source": "build\\phase2-pruner-delete-direct-candidate-mutant.log"
+    },
+    "restored.log.gz": {
+      "sha256": "4b4317d8f77384009a40164bff511e6933678515d8ae8c324cb008008ae30222",
+      "uncompressed_sha256": "1a77050357798cc67417e1a01dacb327ee3405ac0eee680acfb6b717cc3e85d5",
+      "bytes": 66447,
+      "source": "build\\phase2-pruner-delete-direct-candidate-restored.log"
+    }
+  },
+  "candidate_sha256": "35a767e98149d69b76221d98f5c5adbabb3158239bed40f20ad93bdfcf7b5ee2",
+  "candidate_dll_sha256": "494ab40acf0c050556e75bb493763af0db25ac7cf8cd2ac9cb4ab091d2febd8e",
+  "test_source_sha256": "0592551c4413dc8cba0029de20e83fc6341f1d1927093d90c0501d27dc5f794e",
+  "implementation_source_sha256": "303619c1bab139eef7843caf7119dcc9418cbde278fbd526c91d92e9026160a3"
+}
