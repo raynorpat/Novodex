@@ -55,13 +55,11 @@
       "bytes": 10964,
       "sha256": "d959779aa70c7bd80db3f7760120a4a1b1a2cc671bd04f13a41aad44399378d5"
     },
-    "phase3-gate.log": {
-      "bytes": 842778,
-      "sha256": "d24485ea3d55c97586bb3b65995698ca676a4ec6103df92025a7f9653a6a87eb"
-    },
     "phase3-gate.log.gz": {
       "bytes": 90128,
-      "sha256": "0b83804fc567d52e31487537fb8c6a616f51544f17a9ca4532d89688679dad51"
+      "sha256": "0b83804fc567d52e31487537fb8c6a616f51544f17a9ca4532d89688679dad51",
+      "uncompressed_bytes": 842778,
+      "uncompressed_sha256": "d24485ea3d55c97586bb3b65995698ca676a4ec6103df92025a7f9653a6a87eb"
     },
     "phase7-gate.log.gz": {
       "bytes": 292740,

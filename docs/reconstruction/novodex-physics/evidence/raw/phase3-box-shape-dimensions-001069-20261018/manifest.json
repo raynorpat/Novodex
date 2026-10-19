@@ -5,9 +5,18 @@
   "restored_result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=true; differential=pass",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
   "restored_candidate_sha256": "5cf5f7a6c7c31570a5d394d8eac48897c861cc00347aa8f82bcc19bd0bdc51b8",
-  "files": [
-    "mutant.log",
-    "restored.log",
-    "transcripts.zip"
-  ]
+  "files": {
+    "mutant.log": {
+      "bytes": 76779,
+      "sha256": "4a99ce9f4892e4dc4c4c9a3fda8473ff34ddb7d1e14082c198e33145786f0614"
+    },
+    "restored.log": {
+      "bytes": 76888,
+      "sha256": "ea1f01c64d3efa3f6ac8cd0611a4354b77d2536261cd8f6c215f57e461eaa7b6"
+    },
+    "transcripts.zip": {
+      "bytes": 18057,
+      "sha256": "1dd3c8e0b49cb92ab92381c300f318ce41f1991eccca450f3be94bda043507e8"
+    }
+  }
 }

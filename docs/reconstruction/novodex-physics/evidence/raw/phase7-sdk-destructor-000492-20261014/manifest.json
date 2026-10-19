@@ -32,8 +32,8 @@
       "sha256": "c811fff46d542536cf7e8b05d8fdda53729de62566bb41438b2d06faaef4f027"
     },
     "mutant-differential.log": {
-      "bytes": 11314,
-      "sha256": "ca0b79c8120ad9988b6822ff902d9bfc83741d862328fe97bb9385d865f4a9a3"
+      "bytes": 11315,
+      "sha256": "fcf452ae6ced8206d3097a7d1b712fdfaa07da2d7851927afcd73fc0132ad837"
     },
     "phase7-gate.log.gz": {
       "bytes": 292737,
