@@ -88,6 +88,7 @@ static const unsigned kContainerSetSize		= 0x000b4e90;	// :153
 static const unsigned kContainerCopyCtor	= 0x000b4f00;	// :67
 static const unsigned kContainerDtor		= 0x000b4f50;	// :81
 static const unsigned kCompletePruning		= 0x000b4530;	// phys_fn_004816
+static const unsigned kBipartitePruning		= 0x000b4080;	// phys_fn_004814
 
 // OPCODE -- Ice/IceRevisitedRadix.cpp
 static const unsigned kRadixCtor			= 0x000e32c0;	// :170
@@ -160,6 +161,7 @@ typedef float	(__thiscall* SegmentSqrDistFn)(const void*, const void*, float*);
 typedef unsigned (__thiscall* MeshCheckTopologyFn)(const void*);
 typedef bool	(__thiscall* MeshSetPointersFn)(void*, const void*, const void*);
 typedef bool	(__cdecl* CompletePruningFn)(unsigned, const AABB**, void*, const Axes*);
+typedef bool	(__cdecl* BipartitePruningFn)(unsigned, const AABB*, unsigned, const AABB*, void*, const Axes*);
 
 // P4 Task 2b.
 typedef bool	(__thiscall* RadixSetRankBuffersFn)(void*, unsigned*, unsigned*);
@@ -191,6 +193,7 @@ struct NxOracleRows
 	CopyCtorFn			containerCopyCtor;
 	VoidThisFn			containerDtor;
 	CompletePruningFn	completePruning;
+	BipartitePruningFn	bipartitePruning;
 
 	VoidThisFn			radixCtor;
 	VoidThisFn			radixDtor;
@@ -1504,6 +1507,110 @@ static void nxDriveCompletePruning(const NxOracleRows& o, bool selfOnly)
 			}
 		}
 	nxReport("complete_pruning", "0x000b4530", "phys_fn_004816", "NovodexBoxPruning.cpp", selfOnly);
+	}
+
+// phys_fn_004814, the two-pool sweep-and-prune pass. Pair order is observable:
+// the oracle emits the sorted A->B sweep first and then the remaining B->A
+// sweep, including duplicates at equal-minimum boundaries.
+static void nxDriveBipartitePruning(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gState = 0x814b1a7e;
+	static const AxisOrder kOrders[] = { AXES_XZY, AXES_XYZ, AXES_ZXY };
+	unsigned totalCalls = 0;
+	unsigned totalPairs = 0;
+	unsigned mismatches = 0;
+	for(unsigned trial = 0; trial < 260; ++trial)
+		{
+		unsigned count0 = 1u + nxNext() % 8u;
+		unsigned count1 = 1u + nxNext() % 8u;
+		if(trial == 0) count0 = 0;
+		if(trial == 1) count1 = 0;
+		AABB boxes0[8];
+		AABB boxes1[8];
+		const AABB* pointers0[8];
+		const AABB* pointers1[8];
+		for(unsigned i = 0; i < count0; ++i)
+			{
+			int x = (int)(nxNext() % 13u) - 6;
+			int y = (int)(nxNext() % 13u) - 6;
+			int z = (int)(nxNext() % 13u) - 6;
+			int dx = (int)(nxNext() % 6u);
+			int dy = (int)(nxNext() % 6u);
+			int dz = (int)(nxNext() % 6u);
+			if(trial == 2 && i == 0) { x = 1; y = 0; z = 0; dx = 2; dy = 2; dz = 2; }
+			if(trial == 3 && i == 0) { x = 0; y = -1; z = -1; dx = 2; dy = 2; dz = 2; }
+			boxes0[i].SetMinMax(Point((float)x, (float)y, (float)z),
+				Point((float)(x + dx), (float)(y + dy), (float)(z + dz)));
+			pointers0[i] = &boxes0[i];
+			}
+		for(unsigned i = 0; i < count1; ++i)
+			{
+			int x = (int)(nxNext() % 13u) - 6;
+			int y = (int)(nxNext() % 13u) - 6;
+			int z = (int)(nxNext() % 13u) - 6;
+			int dx = (int)(nxNext() % 6u);
+			int dy = (int)(nxNext() % 6u);
+			int dz = (int)(nxNext() % 6u);
+			if(trial == 2 && i == 0) { x = 0; y = 0; z = 0; dx = 2; dy = 2; dz = 2; }
+			if(trial == 3 && i == 0) { x = 0; y = -1; z = -1; dx = 2; dy = 2; dz = 2; }
+			boxes1[i].SetMinMax(Point((float)x, (float)y, (float)z),
+				Point((float)(x + dx), (float)(y + dy), (float)(z + dz)));
+			pointers1[i] = &boxes1[i];
+			}
+		const Axes axes(kOrders[trial % (sizeof(kOrders) / sizeof(kOrders[0]))]);
+		unsigned char oraclePairs[32];
+		memset(oraclePairs, 0xcd, sizeof(oraclePairs));
+		o.containerCtor(oraclePairs);
+		// The oracle takes count before the packed AABB buffer and requires both
+		// buffers to be non-null even for a zero count. The candidate helper takes
+		// arrays of AABB pointers, so keep that conversion below.
+		const bool oracleResult = o.bipartitePruning(count0, boxes0,
+			count1, boxes1, oraclePairs, &axes);
+		const unsigned oracleWords = ((unsigned*)oraclePairs)[1];
+		const unsigned* oracleEntries = (const unsigned*)((const unsigned**)oraclePairs)[2];
+		gOracleTape.push(oracleResult ? 1u : 0u);
+		gOracleTape.push(oracleWords);
+		if(oracleWords > 256u || (oracleWords & 1u))
+			{
+			fprintf(stderr, "FAIL bipartite pruning oracle emitted %u words\n", oracleWords);
+			++mismatches;
+			}
+		else for(unsigned i = 0; i < oracleWords; ++i)
+			gOracleTape.push(oracleEntries[i]);
+		totalPairs += oracleWords / 2u;
+		++totalCalls;
+
+		if(!selfOnly)
+			{
+			Pairs candidatePairs;
+			const bool candidateResult = Opcode::BipartiteBoxPruning(count0,
+				count0 ? pointers0 : 0, count1, count1 ? pointers1 : 0,
+				candidatePairs, axes);
+			const unsigned candidateWords = candidatePairs.GetNbPairs() * 2u;
+			const unsigned* candidateEntries = (const unsigned*)candidatePairs.GetPairs();
+			gCandidateTape.push(candidateResult ? 1u : 0u);
+			gCandidateTape.push(candidateWords);
+			if(candidateWords > 256u || (candidateWords & 1u))
+				{
+				fprintf(stderr, "FAIL bipartite pruning candidate emitted %u words\n", candidateWords);
+				++mismatches;
+				}
+			else for(unsigned i = 0; i < candidateWords; ++i)
+				gCandidateTape.push(candidateEntries[i]);
+			bool same = oracleResult == candidateResult && oracleWords == candidateWords;
+			if(same)
+				for(unsigned i = 0; i < oracleWords; ++i)
+					if(oracleEntries[i] != candidateEntries[i]) { same = false; break; }
+			if(!same) ++mismatches;
+			}
+		o.containerDtor(oraclePairs);
+		}
+	nxReport("bipartite_pruning", "0x000b4080", "phys_fn_004814", "NovodexBoxPruning.cpp", selfOnly);
+	if(!selfOnly)
+		printf("thirdparty bipartite_pruning row=004814 calls=%u pairs=%u digest=%08x mismatches=%u\n",
+			totalCalls, totalPairs, gOracleTape.digest(), mismatches);
 	}
 
 static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)
@@ -12111,6 +12218,7 @@ int wmain(int argc, wchar_t** argv)
 	o.containerCopyCtor	= (CopyCtorFn)			(o.base + kContainerCopyCtor);
 	o.containerDtor		= (VoidThisFn)			(o.base + kContainerDtor);
 	o.completePruning	= (CompletePruningFn)	(o.base + kCompletePruning);
+	o.bipartitePruning	= (BipartitePruningFn)	(o.base + kBipartitePruning);
 	o.radixCtor			= (VoidThisFn)			(o.base + kRadixCtor);
 	o.radixDtor			= (VoidThisFn)			(o.base + kRadixDtor);
 	o.radixSortDwords	= (RadixSortDwordsFn)	(o.base + kRadixSortDwords);
@@ -12144,6 +12252,7 @@ int wmain(int argc, wchar_t** argv)
 	nxDriveContainerCopy(o, selfOnly);
 	nxDriveRadix(o, selfOnly);
 	nxDriveCompletePruning(o, selfOnly);
+	nxDriveBipartitePruning(o, selfOnly);
 	nxDriveSegment(o, selfOnly);
 	nxDriveMeshInterface(o, selfOnly);
 

@@ -1,0 +1,9 @@
+Candidate-only mutation applied in Physics/src/opcode/NovodexBoxPruning.cpp:
+
+    while(running0 < last0 && sorted1 < last1)
+
+changed to:
+
+    while(false && running0 < last0 && sorted1 < last1)
+
+The mutation suppresses only the B-to-A sweep. It was rebuilt and run through NxPhysicsThirdPartyTests, then restored before the exact control run.

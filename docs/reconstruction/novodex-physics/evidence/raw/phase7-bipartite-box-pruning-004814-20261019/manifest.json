@@ -1,0 +1,59 @@
+{
+  "task": "phys_fn_004814 bipartite box pruning",
+  "date": "2026-10-19",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "7337a477cda039044124531739eef9d55f1b4a9bf0910a37fa30f23f49a40c70",
+  "baseline": {
+    "calls": 260,
+    "pairs": 316,
+    "digest": "27496242",
+    "mismatches": 0,
+    "target_exit": 0
+  },
+  "mutation": {
+    "changed": "skip B-to-A sweep",
+    "row_mismatches": 85,
+    "oracle_words": 1152,
+    "candidate_words": 904,
+    "target_exit": 1
+  },
+  "phase4": {
+    "status": "pass",
+    "coverage_assertions": "567/567"
+  },
+  "phase7": {
+    "status": "pass",
+    "coverage_assertions": "3114/3114"
+  },
+  "files": [
+    {
+      "path": "differential.log.gz",
+      "sha256": "3dff24e4b94ea32db3be3784b960dc9d789ae00b0d8c4efa2418bb72e0a6f1df",
+      "uncompressed_sha256": "372a09d921286e722dad780b22c60cf73a50506012074d5916e4f4e9c4d06d26"
+    },
+    {
+      "path": "mutant.log.gz",
+      "sha256": "f29facb5b8d185439299ccc98dab3a881ce7c1512c6914f560e7a485896e0a3f",
+      "uncompressed_sha256": "3d1d66b9a293be2c5dc1e4a9388207bc421ae4c350f46a11057d11e49ec0af24"
+    },
+    {
+      "path": "phase4.log.gz",
+      "sha256": "bf3645d6875eb47869354e24efa2cdcd39f45e2f8656c415fb897c9778423c1f",
+      "uncompressed_sha256": "0154e873461862aefca9263aa0029db6ed16f7bea3e04d1132da4a1a42de4e34"
+    },
+    {
+      "path": "phase7.log.gz",
+      "sha256": "8ab079393b5a944693534abed0608909dd8136898776a37405148b08472305d1",
+      "uncompressed_sha256": "4899450a648c81c33ee0019dc740ab0d1378f9b9c5b4f202b89460378091725e"
+    },
+    {
+      "path": "restored.log.gz",
+      "sha256": "85f0de8fa520ca2ac9b36d331cb4ce102e4ab2714c57597536b2e9222040dba3",
+      "uncompressed_sha256": "213ad62b92ac1333d7ae3de31d8c30d0f11e858251c5bf69a7ea9fa5db893c9e"
+    },
+    {
+      "path": "mutation.patch.txt",
+      "sha256": "ad221cf988d4122ef932be33ef6e6305a2a99e5220174fbb168c9ed80a671c90"
+    }
+  ]
+}

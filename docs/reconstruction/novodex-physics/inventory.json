@@ -91420,13 +91420,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexBoxPruning.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1828",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15620",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at 0x100b4080 confirms six arguments: count0, packed AABB array0, count1, packed AABB array1, Pairs*, and Axes*. It allocates minima arrays, sorts each pool on the selected primary axis, emits A-to-B pairs before B-to-A pairs, and checks both remaining axes before appending each pair.",
+      "dynamic_proof": "The registered NxPhysicsThirdPartyTests differential drives 260 deterministic two-pool cases, including empty sides, equal boundaries, three axis orders, and generated boxes. Oracle and candidate emit 316 ordered pairs with digest 27496242 and zero mismatches. Disabling the candidate's B-to-A sweep yields 85 row mismatches (oracle 1152 words, candidate 904) and exits 1; restored output is exact. See evidence/phase7-bipartite-box-pruning-004814.md.",
+      "notes": "The candidate API uses AABB pointer arrays while the shipped oracle consumes packed contiguous AABB buffers.",
+      "implementation": "Physics/src/opcode/NovodexBoxPruning.cpp",
+      "implementation_symbol": "_BipartiteBoxPruning",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_BipartiteBoxPruning",
+        "address": "0x100b2900",
+        "object": "NovodexBoxPruning.obj"
+      }
     },
     {
       "id": "phys_fn_004815",

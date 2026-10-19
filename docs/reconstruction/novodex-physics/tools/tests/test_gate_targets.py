@@ -903,6 +903,20 @@ class FluidCreateEntryCoverage(unittest.TestCase):
             "phys_fn_003503 needs its own callback-argument differential marker")
 
 
+class BipartiteBoxPruningEntryCoverage(unittest.TestCase):
+    def test_bipartite_pruning_has_row_specific_pair_coverage(self):
+        lines = registered_lines().get("NxPhysicsThirdPartyTests", [])
+        marker = "thirdparty bipartite_pruning row=004814 "
+        matches = [line for line in lines if line.startswith(marker)]
+        self.assertEqual(len(matches), 1,
+            "phys_fn_004814 needs one row-specific oracle/candidate pair marker")
+        self.assertEqual(matches[0],
+            "thirdparty bipartite_pruning row=004814 calls=260 pairs=316 "
+            "digest=27496242 mismatches=0")
+        for field in ("calls=", "pairs=", "digest=", "mismatches="):
+            self.assertIn(field, matches[0])
+
+
 class ConvexMeshEntryCoverage(unittest.TestCase):
     def test_convex_mesh_entry_has_row_specific_invocation_coverage(self):
         lines = registered_lines().get("NxPhysicsCollisionTests", [])

@@ -1,5 +1,12 @@
 # Phase 6 joints and effectors — reconstruction evidence
 
+Phase 7 sweep-and-prune row `phys_fn_004814` is now reconstructed by
+`Opcode::BipartiteBoxPruning` and mapped at `0x100b2900` in
+`NovodexBoxPruning.obj`. The direct oracle fixture drives 260 cases across
+three axis orders and compares ordered pairs; the restored result has 316
+pairs and zero mismatches. `phys_fn_004814` mutation detection is `mismatches=85` when the B-to-A pass is disabled. See
+`evidence/phase7-bipartite-box-pruning-004814.md` and its raw bundle.
+
 Phase 7 fluid-emitter local aggregate-copy rows `phys_fn_003563`,
 `phys_fn_003565`, and `phys_fn_003567` are mutation-falsified by the registered
 `NxPhysicsFluidEmitterAbiTests` oracle differential. Shifting each source range

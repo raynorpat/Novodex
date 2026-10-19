@@ -739,8 +739,8 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                                  "thirdparty generator=xorshift32 mode=differential")
                 self.assertEqual(expected["coverage_line_count"], 29)
                 self.assertEqual(expected["final_coverage_line"],
-                                 "thirdparty coverage driven=116 divergent=26 words=2615055 layout_checks=47")
-                self.assertEqual(expected["oracle_digest_fnv32"], "e2a266c1")
+                                 "thirdparty coverage driven=117 divergent=26 words=2616207 layout_checks=47")
+                self.assertEqual(expected["oracle_digest_fnv32"], "cda1de95")
                 self.assertEqual(len(expected["selected_lines_sha256"]), 64)
             elif expected["format"] == "collision_oracle_digest":
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsCollisionTests.cpp")

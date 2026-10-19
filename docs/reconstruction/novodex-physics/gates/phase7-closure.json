@@ -22,8 +22,8 @@
   "counts": {
     "differential_falsified": 333,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 193,
-    "deferred_not_reconstructed_in_phase": 33
+    "oracle_differential_falsified": 194,
+    "deferred_not_reconstructed_in_phase": 32
   },
   "closed": [
     {
@@ -5679,7 +5679,17 @@
         "mutation": "In a temporary Release build, substituted FluidCreate callback argument 14 with argument 13 in NxSceneInternal::createFluid. The row marker changed from digest 1d2e206d / mismatches=0 to digest de1a8fc9 / mismatches=1, and the staged-pair differential rejected the candidate (oracle_exit=0, candidate_exit=1, stdout_delta=78). Restoring the source returned the exact oracle transcript (stdout_delta=0, stderr_exact=True).",
         "detected": "stdout_delta=78"
       },
-      "note": "The row-specific marker checks all 14 non-manager FluidCreate arguments; existing fixtures cover descriptor state, callback ordering, emitters, manager refresh and initial-particle behavior. See evidence/phase7-fluid-create-entry-003503-20261019.md and evidence/raw/phase7-fluid-create-entry-003503-20261019/."
+      "note": "The row-specific marker checks all 14 non-manager FluidCreate arguments; existing fixtures cover descriptor state, callback ordering, emitters, manager refresh and initial-particle behavior. See evidence/phase7-fluid-create-entry-003503-20261019.md and evidence/raw/phase7-fluid-create-entry-003503-20261019/"
+    },
+    {
+      "id": "phys_fn_004814",
+      "rva": "0x000b4080",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "Changed the candidate B-to-A sweep guard in Physics/src/opcode/NovodexBoxPruning.cpp to skip the second pass, rebuilt NxPhysicsThirdPartyTests, and ran it against the pinned oracle DLL. The row-specific differential compared 260 two-pool cases, including equal boundaries, empty sides, and three axis orders.",
+        "detected": "mismatches=85"
+      }
     }
   ],
   "deferred": [
@@ -5897,14 +5907,6 @@
       "size": 2452,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004814",
-      "rva": "0x000b4080",
-      "size": 1197,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
       "driving_phases": []
     },
     {
