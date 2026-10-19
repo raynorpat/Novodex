@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "row": "phys_fn_003673",
+  "rva": "0x0008add0",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "62cd54952e40d1471c94f5d5e676bbc2426d69ef63c45ce7847152bc7ddd14e4",
+  "candidate_map_symbol": "?nxGlobalCallVia4Result3Arg003673@@YAIPAXIP6AIIII@Z@Z",
+  "candidate_map_address": "0x1004ae50",
+  "mutation": "Read the forwarded fluid handle from fluid+0x84 instead of fluid+0x80 in nxGlobalCallVia4Result3Arg003673.",
+  "mutation_result": "NxPhysicsObjectLayoutTests reports global-call3 row=003673 mismatches=1; candidate exit=1.",
+  "red_result": "The row-specific fixture failed to link before the helper existed (unresolved nxGlobalCallVia4Result3Arg003673).",
+  "restored_result": "global-call3 row=003673 cases=1 stack=1/1 mismatches=0; Phase 5/6/7 gates pass at 2959/2959, 1810/1810, and 3095/3095.",
+  "raw_logs": [
+    {
+      "path": "red-build.log.gz",
+      "sha256": "3439d9f12bb8ceff2d54a16377f6102e3c87185d74e1d2372c8f19ba75d3c2c5",
+      "uncompressed_sha256": "81c03f674ec4d1b64abfac505c16b329cb51e9aed27ed3ac0a2f4c9bd7de98c3"
+    },
+    {
+      "path": "focused.log.gz",
+      "sha256": "1d9b303014cda396c3c4db634cc71731c4706981a9e982b581471d5119d8b1d3",
+      "uncompressed_sha256": "acb13eff9ac6620f77e04f843c5e159d8e9a018e898a0c553516f4146c197ac1"
+    },
+    {
+      "path": "mutation.log.gz",
+      "sha256": "df00284a3602480c97c96b081f84f502eb1e3d89c732aa8abd7a240ad871c8d4",
+      "uncompressed_sha256": "ad56404e2edd2a18a4e2cda37de579af761287e2085c850665259e9f0e8ae7b3"
+    },
+    {
+      "path": "restored.log.gz",
+      "sha256": "c833174fb5bcd4c18600f1d2f449da1ba3eb2deb429b707f6f8c0df84592fb05",
+      "uncompressed_sha256": "2de0c0bc2f9d4c6fe6611c19c30c3aa45edb7e3786b3de5074e2081622d7c555"
+    },
+    {
+      "path": "phase5-gate.log.gz",
+      "sha256": "1bb94c80a0f0690b11aa46c73d6489d1fdf4d05a25930259cd0b6888f3631d64",
+      "uncompressed_sha256": "f8f119046d3bc56b5b05e36a051c3b7784f1275e494ef4ab5b9aa2114f611a1e"
+    },
+    {
+      "path": "phase6-gate.log.gz",
+      "sha256": "fd041363fd45be10f5c41ab18b17432d98015ea8d44c50ce15c72037dfcf26e2",
+      "uncompressed_sha256": "7aaa486eddea2a4f30dc2067c810f9bf6f3c18e03b53b2465514756cc9c7e0ae"
+    },
+    {
+      "path": "phase7-gate.log.gz",
+      "sha256": "8ccdc1d1fdee049fead2db167a00e5f23ea53fb2bb5667ef3cf4e3462e0ff45e",
+      "uncompressed_sha256": "4c8fdfd272347ae607f9c6ada58218c19183f8342a0f68ee4fae1b4fdac9ee17"
+    }
+  ]
+}
