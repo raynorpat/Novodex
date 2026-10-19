@@ -7792,21 +7792,32 @@ int wmain(int argc, wchar_t** argv)
 		1024u, createArgumentDesc.maxParticles, 1u, 1u
 		};
 	unsigned createArgumentDigest = 2166136261u;
+	unsigned createArgumentMismatches = 0;
 	bool createArgumentMapMatches = createArgumentFluid != 0 &&
 		createArgumentCallbacks.fluidCreate == 1 &&
 		createArgumentCallbacks.fluidCreateArguments[0] != 0 &&
 		surfaceMeshLicenseOverride.ready;
+	if(!createArgumentFluid || createArgumentCallbacks.fluidCreate != 1 ||
+		createArgumentCallbacks.fluidCreateArguments[0] == 0 ||
+		!surfaceMeshLicenseOverride.ready)
+		++createArgumentMismatches;
 	for(unsigned argument = 1; argument != 15; ++argument)
 		{
 		const unsigned value = createArgumentCallbacks.fluidCreateArguments[argument];
 		if(value != expectedCreateArguments[argument])
+			{
 			createArgumentMapMatches = false;
+			++createArgumentMismatches;
+			}
 		for(unsigned byte = 0; byte != 4; ++byte)
 			createArgumentDigest = (createArgumentDigest ^
 				static_cast<unsigned char>(value >> (byte * 8))) * 16777619u;
 		}
 	printf("simulation row3649 create-args arguments=14 digest=%08x manager=1 exact=%u\n",
 		createArgumentDigest, createArgumentMapMatches ? 1u : 0u);
+	printf("simulation fluid create row=003503 calls=%u arguments=14 digest=%08x mismatches=%u\n",
+		createArgumentCallbacks.fluidCreate, createArgumentDigest,
+		createArgumentMismatches);
 	if(createArgumentFluid)
 		surfaceMeshScene->releaseFluid(*createArgumentFluid);
 	resetFluidManagerCallbacks();

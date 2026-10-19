@@ -1664,3 +1664,12 @@ The inventory still marks `phys_fn_002415` discovered although `Scene.cpp` conta
 **Verification:** the marker reports one matching auxiliary allocation, 30 zero words, 11 untouched sentinel words, owner match, and zero mismatches per control; the one-store mutation fails; restored Phase 7 and integrity checks pass.
 
 Status: complete (2026-10-19). The registered scene auxiliary marker reports one allocation, 30 zero words, 11 untouched words, owner_match=1, and zero mismatches on both oracle and candidate. A one-store mutation is detected (candidate zero_words=20, mismatches=10, exit=1); restoring the source gives stdout_delta=0 and exact stderr. Phase 7 now has 526 closed / 34 deferred functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-row-002415-scene-aux-20261019.md` and its raw bundle.
+
+
+### Task 42 — close the Phase 7 FluidCreate callback argument map (`phys_fn_003503`)
+
+Add a row-specific marker for the existing enabled-fluid simulation fixture, recording the single `FluidCreate` call and digest of all 14 non-manager callback arguments. Register the marker in every owning phase gate and pin it with a tooling regression test. Mutate one callback argument in a temporary candidate build, require the differential to reject the changed digest, restore the source, update Phase 7 closure and generated reports, and retain oracle/candidate evidence. Do not change public headers.
+
+**Verification:** marker is exact on both DLLs; the single-argument mutation reports one mismatch and fails (`stdout_delta=78`); restored output is exact. Fresh Phase 5/6/7 gates, reconstruction tooling tests, inventory validation, static proof audit, and public-header checks pass.
+
+Status: complete (2026-10-19). Row 003503 now has a specific callback argument differential. The candidate mutation changed the argument digest from `1d2e206d` to `de1a8fc9`, yielded one mismatch and `stdout_delta=78`; restored control is exact. Phase 5/6/7 pass at 2970/2970, 1820/1820 and 3112/3112. Phase 7 advances to 527 closed / 33 deferred functions. Evidence: `docs/reconstruction/novodex-physics/evidence/phase7-fluid-create-entry-003503-20261019.md` and its raw bundle. Full DLL reconstruction remains open.

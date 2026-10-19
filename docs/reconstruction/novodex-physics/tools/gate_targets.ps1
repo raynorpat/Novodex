@@ -3741,6 +3741,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'simulation fluid-surface-manager-ctor row=003685 returned=1 vptr=1 fields=1 type=4 storage=1 mismatches=0'
         # Row 003649 pins all non-pointer FluidCreate arguments against distinct descriptor values.
         'simulation row3649 create-args arguments=14 digest=1d2e206d manager=1 exact=1'
+        'simulation fluid create row=003503 calls=1 arguments=14 digest=1d2e206d mismatches=0'
         # Rows 003653/003655 copy implicit-mesh vertex, normal, and index streams after simulation.
         'simulation implicit-mesh post-step-row row=003657 mapped=1'
         'simulation implicit-mesh post-step-copy rows=003653.003655 matched=1 ready=1 fetched=1 data-match=1 vertices=1 triangles=1 data=3f800001.3f800002.3f800003/40000001.40000002.40000003/3f000001.3f000002.3f000003'
@@ -6428,7 +6429,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 263 plus invalid triangle-mesh descriptor diagnostics
                # 36 asset, 215 third-party and 8 convex-mesh actor/mass assertions
                # plus actual-DLL MemoryStream appendBlock and flushBits rows 004766/004786
-	'5' = 2969  # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
+	'5' = 2970  # includes the row 003503 FluidCreate argument digest marker
+	          # includes current locked-array, ElementCount, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
                # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6519,7 +6521,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1819  # includes current locked-array, fluid, locked-accessor, and global-call markers
+	'6' = 1820  # includes the row 003503 FluidCreate argument digest marker
+	          # includes current locked-array, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
 	           # plus phys_fn_003493 paired-array emitter release marker
@@ -6572,7 +6575,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3111  # plus row-specific contact-convex-mesh thunk coverage (001853), hull triangle area (001441), and scene auxiliary layout (002415)
+	'7' = 3112  # plus row 003503 FluidCreate marker, contact-convex-mesh (001853), hull area (001441), scene aux (002415)
 	          # includes current locked-array, fluid, global-call, ray/AABB slab, and 001502 edge-builder markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059

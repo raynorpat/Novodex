@@ -523,7 +523,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 987, "4": 565, "5": 2914, "6": 1769, "7": 3111}
+    MINIMUM = {"2": 18, "3": 987, "4": 565, "5": 2970, "6": 1820, "7": 3112}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -892,6 +892,15 @@ class SceneAuxiliaryConstructorCoverage(unittest.TestCase):
                     "untouched_words=11 owner_match=1 mismatches=0")
         self.assertIn(expected, lines,
             "phys_fn_002415 must have an oracle/candidate sentinel differential marker")
+
+
+class FluidCreateEntryCoverage(unittest.TestCase):
+    def test_fluid_create_wrapper_has_row_specific_callback_coverage(self):
+        lines = registered_lines().get("NxPhysicsSimulationTests", [])
+        expected = ("simulation fluid create row=003503 calls=1 arguments=14 "
+                    "digest=1d2e206d mismatches=0")
+        self.assertIn(expected, lines,
+            "phys_fn_003503 needs its own callback-argument differential marker")
 
 
 class ConvexMeshEntryCoverage(unittest.TestCase):

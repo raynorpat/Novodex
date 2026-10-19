@@ -1,0 +1,52 @@
+{
+  "files": [
+    {
+      "file": "baseline-differential.log.gz",
+      "sha256": "6b5fee50ab2c4d3bd1374b52c0bb3ed69ca79938ec62e4900db0e96ef903babc",
+      "compressed_bytes": 58464,
+      "source_bytes": 872981
+    },
+    {
+      "file": "mutation-differential.log.gz",
+      "sha256": "7928a95957b088a31a5284c70cde3050384026647148a5dcbc66e00af9c74704",
+      "compressed_bytes": 57410,
+      "source_bytes": 865519
+    },
+    {
+      "file": "restored-differential.log.gz",
+      "sha256": "781ce997f8dd7bfdbb38ccea04a57c9cf91865dc718619c22a270b6e5059507d",
+      "compressed_bytes": 58466,
+      "source_bytes": 872981
+    },
+    {
+      "file": "phase5-gate.log.gz",
+      "sha256": "f82c0d9ebab7b6c9b4e8b4f5bda2e72bb04a5aabf8c1c962744800eb6f4774cc",
+      "compressed_bytes": 217808,
+      "source_bytes": 2900378
+    },
+    {
+      "file": "phase6-gate.log.gz",
+      "sha256": "9d489aaec97de737757582b2eaf25b10373e5b4eb7fd5fe611adaa133abc6613",
+      "compressed_bytes": 259955,
+      "source_bytes": 3155040
+    },
+    {
+      "file": "phase7-gate.log.gz",
+      "sha256": "964faf3daee08af6853f5e48e73793b54f18821b76cbaaaaa4e99501b5451aab",
+      "compressed_bytes": 383026,
+      "source_bytes": 4728556
+    },
+    {
+      "file": "tooling-tests.log.gz",
+      "sha256": "eb3204de6b2b629f95a4ed286464f498e95cc5f8f2bc76f4ec6e4485bb6dcc2f",
+      "compressed_bytes": 67,
+      "source_bytes": 943
+    },
+    {
+      "file": "static-proof-audit.log.gz",
+      "sha256": "8693a5e01917b58e72286952f80d2889d8bfc1fda81441496b4e1e51fb727c88",
+      "compressed_bytes": 90,
+      "source_bytes": 80
+    }
+  ]
+}
