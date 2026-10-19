@@ -1,0 +1,7 @@
+*** Begin Patch
+*** Update File: Physics/src/opcode/NovodexBoxPruning.cpp
+@@
+-            if(boxes[first].Intersect(boxes[second]))
++            if(false && boxes[first].Intersect(boxes[second]))
+                 pairs.AddPair(first, second);
+*** End Patch

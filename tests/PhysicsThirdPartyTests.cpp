@@ -44,6 +44,11 @@ using namespace Opcode;
 using namespace IceCore;
 using namespace IceMaths;
 
+namespace Opcode
+	{
+bool PairwiseBoxPruning(udword count, const AABB* boxes, Pairs& pairs);
+	}
+
 // The vendored qhull entry points this harness drives. Declared here rather than
 // included, because the merged tree's user.h carries the fprintf redirection and
 // the `qh` macro machinery, and neither belongs in a test.
@@ -89,6 +94,7 @@ static const unsigned kContainerCopyCtor	= 0x000b4f00;	// :67
 static const unsigned kContainerDtor		= 0x000b4f50;	// :81
 static const unsigned kCompletePruning		= 0x000b4530;	// phys_fn_004816
 static const unsigned kBipartitePruning		= 0x000b4080;	// phys_fn_004814
+static const unsigned kPairwisePruning		= 0x000b4b20;	// phys_fn_004826
 
 // OPCODE -- Ice/IceRevisitedRadix.cpp
 static const unsigned kRadixCtor			= 0x000e32c0;	// :170
@@ -162,6 +168,7 @@ typedef unsigned (__thiscall* MeshCheckTopologyFn)(const void*);
 typedef bool	(__thiscall* MeshSetPointersFn)(void*, const void*, const void*);
 typedef bool	(__cdecl* CompletePruningFn)(unsigned, const AABB**, void*, const Axes*);
 typedef bool	(__cdecl* BipartitePruningFn)(unsigned, const AABB*, unsigned, const AABB*, void*, const Axes*);
+typedef bool	(__cdecl* PairwisePruningFn)(unsigned, const AABB*, void*);
 
 // P4 Task 2b.
 typedef bool	(__thiscall* RadixSetRankBuffersFn)(void*, unsigned*, unsigned*);
@@ -194,6 +201,7 @@ struct NxOracleRows
 	VoidThisFn			containerDtor;
 	CompletePruningFn	completePruning;
 	BipartitePruningFn	bipartitePruning;
+	PairwisePruningFn	pairwisePruning;
 
 	VoidThisFn			radixCtor;
 	VoidThisFn			radixDtor;
@@ -1621,6 +1629,79 @@ static void nxDriveBipartitePruning(const NxOracleRows& o, bool selfOnly)
 		printf("thirdparty bipartite_pruning row=004814 calls=%u axis_orders=%u pairs=%u digest=%08x mismatches=%u\n",
 			totalCalls, distinctOrders, totalPairs, gOracleTape.digest(), mismatches);
 		}
+	}
+
+// phys_fn_004826 is the scalar all-pairs AABB pass. It reads a packed array
+// of six-float boxes and appends every inclusive overlap as (i,j), i<j.
+static void nxDrivePairwisePruning(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gState = 0x826b4a21;
+	unsigned totalPairs = 0;
+	unsigned mismatches = 0;
+	for(unsigned trial = 0; trial < 128; ++trial)
+		{
+		const unsigned count = trial == 0 ? 0u : 1u + nxNext() % 8u;
+		AABB boxes[8];
+		for(unsigned i = 0; i < count; ++i)
+			{
+			int x = (int)(nxNext() % 17u) - 8;
+			int y = (int)(nxNext() % 17u) - 8;
+			int z = (int)(nxNext() % 17u) - 8;
+			int dx = (int)(nxNext() % 7u);
+			int dy = (int)(nxNext() % 7u);
+			int dz = (int)(nxNext() % 7u);
+			if(trial == 1 && i < 2)
+				{ x = (int)i; y = 0; z = 0; dx = 2; dy = 2; dz = 2; }
+			boxes[i].SetMinMax(Point((float)x, (float)y, (float)z),
+				Point((float)(x + dx), (float)(y + dy), (float)(z + dz)));
+			}
+		unsigned char oraclePairs[32];
+		memset(oraclePairs, 0xcd, sizeof(oraclePairs));
+		o.containerCtor(oraclePairs);
+		const bool oracleResult = o.pairwisePruning(count, boxes, oraclePairs);
+		const unsigned oracleWords = ((unsigned*)oraclePairs)[1];
+		const unsigned* oracleEntries = (const unsigned*)((const unsigned**)oraclePairs)[2];
+		gOracleTape.push(oracleResult ? 1u : 0u);
+		gOracleTape.push(oracleWords);
+		if(oracleWords > 128u || (oracleWords & 1u))
+			{
+			fprintf(stderr, "FAIL pairwise pruning oracle emitted %u words\n", oracleWords);
+			++mismatches;
+			}
+		else for(unsigned i = 0; i < oracleWords; ++i)
+			gOracleTape.push(oracleEntries[i]);
+		totalPairs += oracleWords / 2u;
+
+		if(!selfOnly)
+			{
+			Pairs candidatePairs;
+			const bool candidateResult = Opcode::PairwiseBoxPruning(count,
+				count ? boxes : 0, candidatePairs);
+			const unsigned candidateWords = candidatePairs.GetNbPairs() * 2u;
+			const unsigned* candidateEntries = (const unsigned*)candidatePairs.GetPairs();
+			gCandidateTape.push(candidateResult ? 1u : 0u);
+			gCandidateTape.push(candidateWords);
+			if(candidateWords > 128u || (candidateWords & 1u))
+				{
+				fprintf(stderr, "FAIL pairwise pruning candidate emitted %u words\n", candidateWords);
+				++mismatches;
+				}
+			else for(unsigned i = 0; i < candidateWords; ++i)
+				gCandidateTape.push(candidateEntries[i]);
+			bool same = oracleResult == candidateResult && oracleWords == candidateWords;
+			if(same)
+				for(unsigned i = 0; i < oracleWords; ++i)
+					if(oracleEntries[i] != candidateEntries[i]) { same = false; break; }
+			if(!same) ++mismatches;
+			}
+		o.containerDtor(oraclePairs);
+		}
+	nxReport("pairwise_pruning", "0x000b4b20", "phys_fn_004826", "NovodexBoxPruning.cpp", selfOnly);
+	if(!selfOnly)
+		printf("thirdparty pairwise_pruning row=004826 calls=128 pairs=%u digest=%08x mismatches=%u\n",
+			totalPairs, gOracleTape.digest(), mismatches);
 	}
 
 static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)
@@ -12229,6 +12310,7 @@ int wmain(int argc, wchar_t** argv)
 	o.containerDtor		= (VoidThisFn)			(o.base + kContainerDtor);
 	o.completePruning	= (CompletePruningFn)	(o.base + kCompletePruning);
 	o.bipartitePruning	= (BipartitePruningFn)	(o.base + kBipartitePruning);
+	o.pairwisePruning	= (PairwisePruningFn)	(o.base + kPairwisePruning);
 	o.radixCtor			= (VoidThisFn)			(o.base + kRadixCtor);
 	o.radixDtor			= (VoidThisFn)			(o.base + kRadixDtor);
 	o.radixSortDwords	= (RadixSortDwordsFn)	(o.base + kRadixSortDwords);
@@ -12263,6 +12345,7 @@ int wmain(int argc, wchar_t** argv)
 	nxDriveRadix(o, selfOnly);
 	nxDriveCompletePruning(o, selfOnly);
 	nxDriveBipartitePruning(o, selfOnly);
+	nxDrivePairwisePruning(o, selfOnly);
 	nxDriveSegment(o, selfOnly);
 	nxDriveMeshInterface(o, selfOnly);
 

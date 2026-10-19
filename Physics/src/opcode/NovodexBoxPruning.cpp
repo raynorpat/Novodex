@@ -1,5 +1,10 @@
 #include "Opcode.h"
 
+namespace Opcode
+	{
+bool PairwiseBoxPruning(udword count, const AABB* boxes, Pairs& pairs);
+	}
+
 namespace
 	{
 RadixSort* gBipartiteSorter0 = 0;
@@ -117,5 +122,18 @@ bool Opcode::CompleteBoxPruning(udword count, const AABB** boxes, Pairs& pairs,
 			}
 		}
 	delete[] minima;
+	return true;
+}
+
+// phys_fn_004826 (0x000b4b20): the fallback all-pairs pass walks the packed
+// AABB array in source order and records each inclusive overlap once.
+bool Opcode::PairwiseBoxPruning(udword count, const AABB* boxes, Pairs& pairs)
+{
+	if(!count || !boxes)
+		return false;
+	for(udword first = 0; first + 1 < count; ++first)
+		for(udword second = first + 1; second < count; ++second)
+			if(boxes[first].Intersect(boxes[second]))
+				pairs.AddPair(first, second);
 	return true;
 }

@@ -91644,13 +91644,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexBoxPruning.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1832",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15704",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x000b4b20 confirms the all-pairs AABB helper rejects zero count or null input, then tests the six inclusive bounds for each source-order pair i<j and appends matching indices to Pairs.",
+      "dynamic_proof": "The registered NxPhysicsThirdPartyTests differential drives 128 deterministic packed-AABB cases. Oracle and candidate emit 53 ordered pairs with digest da98b5fb and zero mismatches. Disabling the candidate overlap test is rejected with 36 mismatches (oracle 362 words, candidate 256) and exit 1; restored output is exact. See evidence/phase7-pairwise-box-pruning-004826.md.",
+      "notes": "Reconstructed the shipped all-pairs fallback; public NxPhysics headers are unchanged.",
+      "implementation": "Physics/src/opcode/NovodexBoxPruning.cpp",
+      "implementation_symbol": "_PairwiseBoxPruning",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_PairwiseBoxPruning",
+        "address": "0x100b3020",
+        "object": "NovodexBoxPruning.obj"
+      }
     },
     {
       "id": "phys_fn_004827",

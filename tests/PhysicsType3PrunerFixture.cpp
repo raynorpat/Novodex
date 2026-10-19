@@ -127,8 +127,6 @@ unsigned nxDrivePrunerPoolReserve(unsigned char* base)
 			nxPruningEngineDestroyPruner(candidatePruners[type]);
 			}
 		}
-	printf("collision pruner_pool_reserve row=phys_fn_004855 cases=4 modes=0-3 capacities=matched mismatches=%u\n",
-		mismatches);
 	oracleSetAllocator(savedOracleSdk);
 	nxSetSdkAllocatorBridge(savedCandidateSdk);
 	nxFoundationSDKAllocator = savedFoundationAllocator;

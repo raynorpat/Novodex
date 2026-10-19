@@ -11429,3 +11429,5 @@ Phase 7 continuation 2026-10-19 — `phys_fn_003503`: the row-specific `NxPhysic
 
 
 Phase 7 continuation 2026-10-19 — `phys_fn_004855`: the Scene pruning-engine reserve helper now matches the pinned oracle across all four selected pruner modes and both zero-capacity and replacement cases. Disabling both candidate reserve calls is rejected in all four modes (`mismatches=4`); the restored run reports zero mismatches. The full collision differential passes. Phase 7 now has 529 closed / 31 deferred functions. See `evidence/phase7-pruner-pool-reserve-004855-20261019.md` and `evidence/raw/phase7-pruner-pool-reserve-004855-20261019/`.
+
+Phase 7 continuation 2026-10-19 — `phys_fn_004826`: the pairwise AABB helper matches the pinned oracle over 128 deterministic cases, emitting 53 ordered pairs (`digest=da98b5fb`, `mismatches=0`). Disabling candidate overlap emission is rejected (`mismatches=36`; oracle 362 words, candidate 256; exit 1), and the restored differential is exact. Phase 7 now has 530 closed / 30 deferred functions. See `evidence/phase7-pairwise-box-pruning-004826.md` and `evidence/raw/phase7-pairwise-box-pruning-004826-20261019/`.

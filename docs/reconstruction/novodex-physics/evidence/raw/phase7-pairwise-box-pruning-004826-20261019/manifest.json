@@ -1,0 +1,59 @@
+{
+  "task": "Task 44: pairwise AABB pruning phys_fn_004826",
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "candidate_sha256": "fcc0b0a328235a5f070040bcc561619c19478666f20949d5d01df02d4215c2af",
+  "fixture": "tests/PhysicsThirdPartyTests.cpp",
+  "row": "phys_fn_004826",
+  "calls": 128,
+  "pairs": 53,
+  "digest": "da98b5fb",
+  "mismatches": 0,
+  "mutation": "candidate overlap predicate disabled; expected differential failure",
+  "mutation_mismatches": 36,
+  "mutation_oracle_words": 362,
+  "mutation_candidate_words": 256,
+  "phase3": "pass; 988/988 coverage assertions",
+  "phase4": "pass; 569/569 coverage assertions",
+  "phase7": "pass; 3117/3117 coverage assertions",
+  "tooling": "838 tests pass",
+  "inventory": "6338 functions; 5138 data_objects; 0 unexplained",
+  "public_headers": "pass; 80 local and 80 engine files",
+  "vendored_sources": "pass; 152 checked; 43 authorized overlays; 0 failures",
+  "files": {
+    "restored.log.gz": {
+      "sha256": "2160fb49ce30f72dab4479f76587dd5f282e9ee7bc41b7c320c172fec39302c6",
+      "uncompressed_sha256": "5bec432315861348e1675378a42ec227255510247bf6e96abbf6edc2926ddb31",
+      "uncompressed_bytes": 138411
+    },
+    "mutant.log.gz": {
+      "sha256": "397f1221c92f75243a02803728a70ac0789ac2a08607107317b13252fbc3cbc2",
+      "uncompressed_sha256": "f73285458c7f5fe5724cd321c6fb26e8378453aa96c6171fe278821c3cbbc671",
+      "uncompressed_bytes": 138528
+    },
+    "phase3.log.gz": {
+      "sha256": "bda552618f78e45cb897d14916b9b0b57511c43ec2a8bfffc42617b60b816e35",
+      "uncompressed_sha256": "048b3f640b98f638cdadd171541718b935dd3c063e2363772092ebf8508c7423",
+      "uncompressed_bytes": 827232
+    },
+    "phase4.log.gz": {
+      "sha256": "5d6b373e31a88b5260c86a79115f50509c3dd6d427718ab914b2fe1cf30ec336",
+      "uncompressed_sha256": "1057600f1819d73be4a78f2cd748ddb3454480208841d3f7b0cafb041ea43e79",
+      "uncompressed_bytes": 1132885
+    },
+    "phase7.log.gz": {
+      "sha256": "6ebec71a4b3f0004407f844198a54b0b253f0eab9acf16f0b4363c2054926d5e",
+      "uncompressed_sha256": "6d6011a06090c1a081d25208ac2e12c73c9764c546b5ec514dda733577aa7847",
+      "uncompressed_bytes": 4710981
+    },
+    "tooling.log.gz": {
+      "sha256": "f0c7cfb8275b41b6d80a81c768f02697245202c1bde207d59429842f3695685b",
+      "uncompressed_sha256": "35153014d42143e9ace1680ba626e99be7d71a1d835bc1df9a11e1333a8fd0af",
+      "uncompressed_bytes": 944
+    },
+    "mutation.patch.txt": {
+      "sha256": "e561268429c39146db41c834439b38cc553f7722215a3b7de86903ae6f3f2fcd",
+      "uncompressed_sha256": "e561268429c39146db41c834439b38cc553f7722215a3b7de86903ae6f3f2fcd",
+      "uncompressed_bytes": 256
+    }
+  }
+}

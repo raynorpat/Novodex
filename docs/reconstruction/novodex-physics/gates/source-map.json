@@ -1515,7 +1515,8 @@
     {
       "path": "opcode/NovodexBoxPruning.cpp",
       "function_ids": [
-        "phys_fn_004814"
+        "phys_fn_004814",
+        "phys_fn_004826"
       ]
     }
   ],
@@ -8041,6 +8042,12 @@
       "rva": "0x000b4080",
       "path": "opcode/NovodexBoxPruning.cpp",
       "symbol": "_BipartiteBoxPruning"
+    },
+    {
+      "id": "phys_fn_004826",
+      "rva": "0x000b4b20",
+      "path": "opcode/NovodexBoxPruning.cpp",
+      "symbol": "_PairwiseBoxPruning"
     }
   ],
   "vtable_slots": [],

@@ -4378,7 +4378,6 @@ int wmain(int argc, wchar_t** argv)
 	if(prunerPoolReserveOnly)
 		{
 		const unsigned mismatches = nxDrivePrunerPoolReserve(base);
-		printf("collision pruner_pool_reserve mismatches=%u\n", mismatches);
 		return mismatches ? 1 : 0;
 		}
 	if(planeMeshOnly)
@@ -9863,7 +9862,10 @@ totalMismatch += nxDrivePScenePrunerOwnerDestroy(base);
 totalMismatch += nxDrivePSceneBaseDtorOwner(base);
 	// Scene broad-phase descriptor limits reserve the static and selected
 	// pruner pools through phys_fn_004855.
-	totalMismatch += nxDrivePrunerPoolReserve(base);
+	const unsigned prunerReserveMismatches = nxDrivePrunerPoolReserve(base);
+	printf("collision pruner_pool_reserve row=phys_fn_004855 cases=4 modes=0-3 capacities=matched mismatches=%u\n",
+		prunerReserveMismatches);
+	totalMismatch += prunerReserveMismatches;
 
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)
