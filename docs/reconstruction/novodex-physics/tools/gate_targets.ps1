@@ -5492,6 +5492,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=shape_raycast_mesh index=- rva=0x00029230 owner=phys_fn_001405 checks=1440 oracle=3881d9fbf624c0bf',
         'collision coverage name=shape_raycast_mesh meshes=6 cases=1440 hits=331 with_normal=165 posed_hits=163',
         'collision input name=shape_raycast_mesh words=13148 input=f40128c8ed0c4061',
+        # mesh shape debug visualisation (rows 001393, 001395) and cached mass frame (rows 001397, 002241, 002156, 000835)
+        'collision name=mesh_debug index=- rva=0x00027f10 owner=phys_fn_001393 checks=720 oracle=0663883559b33053',
+        'collision coverage name=mesh_debug meshes=6 hull_kinds=6 params=12 cases=720 with_lines=486 lines=18728 posed=294 hulls=600 gated=182 normals_built=48 edges_built=50 empty=10 control_words=2',
+        'collision input name=mesh_debug words=15260 input=db1979cd37b286ee',
+        'collision name=mesh_mass index=- rva=0x00028e10 owner=phys_fn_001397 checks=480 oracle=fd44dcc74b7f50c8',
+        'collision coverage name=mesh_mass meshes=15 cases=480 computed=60 failed=28 true=452 reports=16',
+        'collision input name=mesh_mass words=12000 input=842ec1b6656f951d',
         'collision input name=overlap_sphere_mesh words=7460 input=d6044094834e3ecd',
         'collision input name=contact_sphere_mesh words=7460 input=d6044094834e3ecd',
         # Plane/mesh Task: exercise the runtime's PlanesCollider/PlanesCache
@@ -6449,7 +6456,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
-    '3' = 1007  # plus the three mesh-raycast lines (001405)
+    '3' = 1013  # plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
+               # previous 1007: the three mesh-raycast lines (001405)
                # previous 1004: the seven sphere/mesh lines (001925, 001927, 001929)
                # previous 997: the nine mesh/PMap contact and dense cell-sampler lines (001878, 001880, 002029)
                # previous 988: row-specific contact-convex-mesh thunk coverage (001853) and pruning entry
@@ -6635,7 +6643,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3161  # plus the three mesh-raycast lines (001405)
+	'7' = 3167  # plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
+	           # previous 3161: the three mesh-raycast lines (001405)
 	           # previous 3158: the two hull-shape families (rows 001411, 001415 to 001419)
 	           # previous 3156: the three P-Hull class families (rows 001443 to 001494)
 	           # previous 3153: the seven hull-flood families (rows 001423 to 001437, 001655)

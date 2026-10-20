@@ -2738,6 +2738,8 @@ void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape
 bool __cdecl NxOverlapSphereMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 static unsigned nxDriveSphereMesh(unsigned char* base);
 static unsigned nxDriveMeshRaycast(unsigned char* base);
+static unsigned nxDriveMeshDebug(unsigned char* base);
+static unsigned nxDriveMeshMass(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
 static unsigned nxDriveTask2lSinkReset(unsigned char* base);
@@ -4319,6 +4321,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
 	const bool task2kOnly = argc == 4 && wcscmp(argv[3], L"--task2k-only") == 0;
 	const bool sphereMeshOnly = argc == 4 && wcscmp(argv[3], L"--sphere-mesh-only") == 0;
+	const bool meshDebugOnly = argc == 4 && wcscmp(argv[3], L"--mesh-debug-only") == 0;
+	const bool meshMassOnly = argc == 4 && wcscmp(argv[3], L"--mesh-mass-only") == 0;
 	const bool planeMeshOnly = argc == 4 && wcscmp(argv[3], L"--plane-mesh-only") == 0;
 	const bool ownerPairOnly = argc == 4 && wcscmp(argv[3], L"--owner-pair-only") == 0;
 	const bool sceneOwnerPairRecordsOnly = argc == 4 && wcscmp(argv[3], L"--scene-owner-pair-records-only") == 0;
@@ -4331,7 +4335,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
 	const bool prunerPoolReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-pool-reserve-only") == 0;
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4403,6 +4407,18 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned mismatches = nxDriveTask2j(base);
 		printf("collision matrix_wrong=0 index_wrong=0 mismatches=%u\n", mismatches);
 		printf("collision=%s\n", mismatches ? "fail" : "pass");
+		return mismatches ? 1 : 0;
+		}
+	if(meshMassOnly)
+		{
+		const unsigned mismatches = nxDriveMeshMass(base);
+		printf("collision mesh_mass mismatches=%u\n", mismatches);
+		return mismatches ? 1 : 0;
+		}
+	if(meshDebugOnly)
+		{
+		const unsigned mismatches = nxDriveMeshDebug(base);
+		printf("collision mesh_debug mismatches=%u\n", mismatches);
 		return mismatches ? 1 : 0;
 		}
 	if(sphereMeshOnly)
@@ -9861,6 +9877,12 @@ int wmain(int argc, wchar_t** argv)
 
 	// Mesh shape raycast (001405); see nxDriveMeshRaycast.
 	totalMismatch += nxDriveMeshRaycast(base);
+
+	// Mesh shape debug visualisation (001393, 001395); see nxDriveMeshDebug.
+	totalMismatch += nxDriveMeshDebug(base);
+
+	// Mesh shape cached mass frame (001397, 002241, 002156, 000835); see nxDriveMeshMass.
+	totalMismatch += nxDriveMeshMass(base);
 
 	// Plane/mesh contact and overlap use the scene's PlanesCollider/PlanesCache
 	// pair and must remain part of the pinned oracle differential.
@@ -16005,5 +16027,409 @@ static unsigned nxDrivePlaneMesh(unsigned char* base)
 	printf("collision coverage name=contact_plane_mesh cases=%u control_words=2\n",
 		(unsigned)(sizeof(planeCases) / sizeof(planeCases[0])));
 	nxPrintInput("contact_plane_mesh", &inputDigest);
+	return mismatches;
+	}
+
+// Mesh shape slot 3 (phys_fn_001393 and 001395, 0x00027f10): debug visualisation. The oracle's row and the
+// candidate's naked transcription draw through a recording renderer (vtable slot 8, +0x20: a line, a colour)
+// over the Task 2i meshes, a hull of each kind the row meets (none; polygons and edges absent; polygons built,
+// edges absent; both built; hand-built polytopes), identity and posed shapes, the four visualisation parameters
+// and the axes guard drawn from sets that include zero, NaN and a scale of zero, the flag gate, the mesh's lazily
+// built vertex normals and edge list present or absent, and random per-triangle flags. The draws (count, colour
+// and the six float words of each line) are digested; the lazily built state is compared.
+extern "C" void nxMDTestCandidate();
+extern "C" void nxMDTestHullPolygons();
+extern "C" void nxMDTestHullEdges();
+#pragma comment(linker, "/alternatename:_nxMDTestCandidate=?nxMeshDebugRender@MeshShape@@QBEXPBX@Z")
+#pragma comment(linker, "/alternatename:_nxMDTestHullPolygons=?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z")
+#pragma comment(linker, "/alternatename:_nxMDTestHullEdges=?nxHullComputeEdges@@YI_NPAVConvexHull@@@Z")
+const NxReal* nxPhysicsSDKParameters();
+
+static NxDigest* gMDDigest;
+static unsigned gMDLines;
+
+static void __fastcall nxMDLine(void* /*renderer*/, void* /*edx*/, const float* from, const float* to, unsigned color)
+	{
+	nxFoldInput(gMDDigest, &color, 4);
+	nxFoldInput(gMDDigest, from, 12);
+	nxFoldInput(gMDDigest, to, 12);
+	++gMDLines;
+	}
+
+static void nxMDMakeHull(Nx2gSide& s, Nx2gHullSide& h, const Nx2gBox& box, unsigned stage)
+	{
+	memset(h.hull, 0, sizeof(h.hull));
+	h.handBuilt = false;
+	h.hasMap = false;
+	h.hull[0] = 0xcdcd8000u;
+	h.hull[1] = 12;
+	h.hull[2] = (unsigned) (size_t) box.tris;
+	h.hull[3] = 8;
+	h.hull[4] = (unsigned) (size_t) box.verts;
+	h.hull[6] = box.centre[0];
+	h.hull[7] = box.centre[1];
+	h.hull[8] = box.centre[2];
+	nxSetControl(kControlDefault);
+	if(stage >= 1)
+		nx2gCall0(s.oracle ? (const void*) (s.base + 0x0002b6f0) : (const void*) &nxMDTestHullPolygons, h.hull);
+	if(stage >= 2)
+		nx2gCall0(s.oracle ? (const void*) (s.base + 0x0002cb50) : (const void*) &nxMDTestHullEdges, h.hull);
+	}
+
+static unsigned nxDriveMeshDebug(unsigned char* base)
+	{
+	unsigned mismatches = 0;
+	static const unsigned picks[6] = { 0, 1, 2, 3, 4, 6 };
+	static Nx2gSide owners[2];
+	static Nx2iSide sides[2];
+	static Nx2iMeshWords words[kNb2iMeshes];
+	static Nx2gBox boxes[3];
+	static Nx2gGraph graphs[5];
+	static unsigned char shapeStorage[2][0x100];
+	static unsigned char poseStorage[kShapeBytes];
+	static unsigned char rendererStorage[2][8];
+	static void* rendererTable[16];
+	NxDigest oracleDigest, candidateDigest, fixture;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&fixture);
+	if(!nx2iFoundationBegin())
+		return 1;
+	unsigned state = 0x5bd1e995u, buildFailures = 0;
+	for(unsigned i = 0; i < 6; ++i)
+		nx2iDrawMeshWords(&state, &fixture, picks[i], words[picks[i]]);
+	for(unsigned b = 0; b < 3; ++b)
+		{
+		nx2gBuildBox(&state, boxes[b], false);
+		nxFoldInput(&fixture, boxes[b].verts, sizeof(boxes[b].verts));
+		}
+	for(unsigned k = 0; k < 5; ++k)
+		nx2gBuildPolytopeGraph(kPolytopes2g[k], graphs[k]);
+	for(int side = 0; side < 2; ++side)
+		{
+		owners[side].oracle = side == 0;
+		owners[side].base = base;
+		nx2iInitSide(owners[side], sides[side], words, &buildFailures);
+		}
+	rendererTable[8] = (void*) &nxMDLine;
+	// The candidate's parameter array, written through; the oracle's live elements.
+	float* const candidateParams = const_cast<float*>(nxPhysicsSDKParameters());
+	float* const oracleParams = (float*) (base + 0x00123b18);
+	DWORD oldProtection;
+	if(!VirtualProtect(oracleParams, 0x100, PAGE_READWRITE, &oldProtection))
+		return 2;
+	nxBindDebugRenderGuards(candidateParams + 44, candidateParams + 48, candidateParams + 13, (float*) (base + 0x001041f0));
+	static const unsigned kNaN = 0x7fc00000u;
+	struct Params { unsigned scale, shapes, vnormals, fnormals, axes; };
+	static const Params kParams[12] =
+		{
+		{ 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u },	// shapes off
+		{ 0x3f800000u, 0x3f800000u, 0x00000000u, 0x00000000u, 0x00000000u },	// outlines only
+		{ 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x00000000u, 0x00000000u },	// vertex normals
+		{ 0x3f800000u, 0x3f800000u, 0x00000000u, 0x3f800000u, 0x00000000u },	// face normals
+		{ 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x00000000u },	// both
+		{ 0x40200000u, 0x3f800000u, 0x3f000000u, 0x3e800000u, 0x00000000u },	// scaled
+		{ 0x3f800000u, kNaN, 0x3f800000u, 0x3f800000u, 0x00000000u },		// NaN shapes
+		{ 0x3f800000u, 0x3f800000u, kNaN, 0x3f800000u, 0x00000000u },		// NaN vertex normals
+		{ 0x3f800000u, 0x3f800000u, 0x3f800000u, kNaN, 0x00000000u },		// NaN face normals
+		{ 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3fc00000u },	// axes drawn too
+		{ 0x00000000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x00000000u },	// scale zero
+		{ 0x40000000u, 0x40000000u, 0x40000000u, 0x40000000u, 0x40000000u },	// everything on, doubled
+		};
+	unsigned cases = 0, withLines = 0, linesTotal = 0, posed = 0, hullCases = 0, gated = 0;
+	unsigned normalBuilds = 0, edgeBuilds = 0, empty = 0;
+	for(unsigned pi = 0; pi < 6; ++pi)
+		for(unsigned kind = 0; kind < 6; ++kind)
+			for(unsigned k = 0; k < 20; ++k)
+				{
+				const unsigned m = picks[pi];
+				const Nx2hMesh& mesh = nx2iMesh(m);
+				const unsigned draw = nxNext(&state);
+				const Params& p = kParams[(draw >> 4) % 12];
+				// The axes the candidate's model of 001305 draws (guard A) agree with the oracle's only for exact poses, so a posed
+				// shape keeps that guard at zero.
+				const bool isPosed = (draw & 1) != 0 && p.axes == 0;
+				const bool freshNormals = (draw & 2) != 0;
+				const bool freshEdges = (draw & 4) != 0;
+				const unsigned flags = (draw & 8) ? 0x0008u : ((draw & 0x100) ? 0x000fu : 0x0000u);
+				const unsigned mode = k & 1;
+				// Now and then a mesh with no triangles or no vertices (the loops' empty arms).
+				// (Normals built from no triangles are never written, so the mesh needs its normals already.)
+				const bool emptyAllowed = !freshNormals && sides[0].meshes[m].image[0x20 / 4] != 0;
+				const bool noVerts = emptyAllowed && ((draw >> 13) & 15) == 0, noTris = noVerts || (emptyAllowed && ((draw >> 9) & 3) == 0);
+				unsigned flagWords[512];
+				for(unsigned t = 0; t < mesh.nbTris; ++t)
+					flagWords[t] = nxNext(&state);
+				nxFoldInput(&fixture, &draw, 4);
+				nxFoldInput(&fixture, flagWords, 4 * mesh.nbTris);
+				NxCollisionShape& pose = *(NxCollisionShape*) poseStorage;
+				nxIdentity(&pose);
+				float translation[3] = { 0.0f, 0.0f, 0.0f };
+				if(isPosed)
+					{
+					nxRandomRotation(&state, &pose);
+					for(unsigned a = 0; a < 3; ++a)
+						translation[a] = nxUnit(&state).value * 2.0f - 1.0f;
+					}
+				nxFoldInput(&fixture, pose.rotation, 36);
+				nxFoldInput(&fixture, translation, 12);
+				NxDigest caseDigest[2];
+				unsigned caseLines[2] = { 0, 0 }, builtNormals[2] = { 0, 0 }, builtEdges[2] = { 0, 0 };
+				unsigned hullState[2][3] = { { 0, 0, 0 }, { 0, 0, 0 } };
+				for(int side = 0; side < 2; ++side)
+					{
+					nxSetControl(mode ? kControlSimulate : kControlDefault);
+					float* params = side == 0 ? oracleParams : candidateParams;
+					memcpy(&params[13], &p.scale, 4);
+					memcpy(&params[43], &p.shapes, 4);
+					memcpy(&params[46], &p.vnormals, 4);
+					memcpy(&params[47], &p.fnormals, 4);
+					memcpy(&params[44], &p.axes, 4);
+					Nx2gHullSide& hs = owners[side].hulls[0];
+					unsigned* hull = 0;
+					if(kind == 0)
+						hull = 0;
+					else if(kind <= 3)
+						{
+						nxMDMakeHull(owners[side], hs, boxes[k % 3], kind - 1);
+						hull = hs.hull;
+						}
+					else
+						{
+						nx2gBuildPolytope(owners[side], hs, kPolytopes2g[kind - 4], &graphs[kind - 4], 0);
+						hull = hs.hull;
+						}
+					Nx2iMeshSide& ms = sides[side].meshes[m];
+					if(freshNormals)
+						ms.image[0x20 / 4] = 0;
+					if(freshEdges)
+						ms.image[0x88 / 4] = 0;
+					const unsigned hadNormals = ms.image[0x20 / 4] != 0, hadEdges = ms.image[0x88 / 4] != 0;
+					ms.image[0xa0 / 4] = (unsigned) (size_t) hull;
+					const unsigned savedVerts = ms.image[0x08 / 4], savedTris = ms.image[0x0c / 4];
+					const unsigned savedNormals = ms.image[0x20 / 4], savedEdges = ms.image[0x88 / 4];
+					if(noVerts) ms.image[0x08 / 4] = 0;
+					if(noTris) ms.image[0x0c / 4] = 0;
+					for(unsigned t = 0; t < mesh.nbTris; ++t)
+						ms.triangleFlags[t][3] = flagWords[t];
+					unsigned char* shape = shapeStorage[side];
+					memset(shape, 0, 0x100);
+					memcpy(shape + 0x0c, pose.rotation, 36);
+					memcpy(shape + 0x30, translation, 12);
+					*(unsigned short*) (shape + 0xde) = (unsigned short) flags;
+					*(unsigned char**) (shape + 0xe0) = (unsigned char*) ms.image;
+					nxDigestInit(&caseDigest[side]);
+					gMDDigest = &caseDigest[side];
+					gMDLines = 0;
+					*(void***) rendererStorage[side] = rendererTable;
+					const void* fn = side == 0 ? (const void*) (base + 0x00027f10) : (const void*) &nxMDTestCandidate;
+					nx2gCall1(fn, shape, (unsigned) (size_t) rendererStorage[side]);
+					caseLines[side] = gMDLines;
+					builtNormals[side] = !hadNormals && ms.image[0x20 / 4] != 0;
+					builtEdges[side] = !hadEdges && ms.image[0x88 / 4] != 0;
+					if(hull)
+						{
+						hullState[side][0] = hull[10] != 0;
+						hullState[side][1] = hull[15] != 0;
+						hullState[side][2] = hull[14];
+						}
+					ms.image[0xa0 / 4] = 0;
+					ms.image[0x08 / 4] = savedVerts;
+					ms.image[0x0c / 4] = savedTris;
+					// What an empty mesh makes lazily must not outlive it: the next case has its real counts.
+					if(noVerts || noTris)
+						{
+						ms.image[0x20 / 4] = savedNormals;
+						ms.image[0x88 / 4] = savedEdges;
+						}
+					if(hull)
+						nx2gReleaseHull(owners[side], hs);
+					}
+				nxSetControl(kControlDefault);
+				++cases;
+				posed += isPosed;
+				empty += noTris || noVerts;
+				hullCases += kind != 0;
+				gated += (flags & 8) == 0;
+				linesTotal += caseLines[0];
+				withLines += caseLines[0] != 0;
+				normalBuilds += builtNormals[0];
+				edgeBuilds += builtEdges[0];
+				bool different = caseLines[0] != caseLines[1] || caseDigest[0].state != caseDigest[1].state
+					|| builtNormals[0] != builtNormals[1] || builtEdges[0] != builtEdges[1]
+					|| memcmp(hullState[0], hullState[1], sizeof(hullState[0])) != 0;
+				mismatches += different;
+				nxFoldInput(&oracleDigest, &caseLines[0], 4);
+				nxFoldInput(&oracleDigest, &caseDigest[0].state, 8);
+				nxFoldInput(&candidateDigest, &caseLines[1], 4);
+				nxFoldInput(&candidateDigest, &caseDigest[1].state, 8);
+				}
+	printf("collision name=mesh_debug index=- rva=0x00027f10 owner=phys_fn_001393 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=mesh_debug meshes=6 hull_kinds=6 params=12 cases=%u with_lines=%u lines=%u posed=%u hulls=%u gated=%u normals_built=%u edges_built=%u empty=%u control_words=2\n",
+		cases, withLines, linesTotal, posed, hullCases, gated, normalBuilds, edgeBuilds, empty);
+	nxPrintInput("mesh_debug", &fixture);
+	VirtualProtect(oracleParams, 0x100, oldProtection, &oldProtection);
+	nxBindDebugRenderGuards(0, 0, 0, 0);
+	for(int side = 0; side < 2; ++side) nx2iReleaseSide(owners[side], sides[side]);
+	nx2iFoundationEnd();
+	return mismatches + buildFailures;
+	}
+
+// Mesh shape slot 4 (phys_fn_001397, 0x00028e10) and the rows it calls that are the mesh's own: 002241 (0x00054bb0,
+// the cached mass block: volume integrals, finite checks, negative-volume report and sign flip), 002156 (nine doubles
+// to nine floats) and 000835 (the payload fold and translation); the volume integrals themselves are the Foundation's
+// export both sides share. The oracle's slot and the candidate's naked transcription run over the Task 2i meshes and
+// closed and pathological ones (a cube, a tetrahedron, one too large for a float, one with a NaN vertex, an empty
+// one), wound both ways (the reversed ones report a negative volume and flip the signs), a cache that is negative,
+// NaN or valid, the flag gate, and a random pose payload. The return, the destination frame, the cache block and
+// the Foundation's reports are compared.
+unsigned nx2iTakeReports(unsigned* out, unsigned max);
+
+static unsigned nxMMCall(const void* fn, void* shape, void* dst, unsigned densityBits, unsigned reserved)
+	{
+	unsigned r;
+	__asm
+		{
+		push	reserved
+		push	densityBits
+		push	dst
+		mov		ecx, shape
+		xor		edx, edx
+		call	fn
+		movzx	eax, al
+		mov		r, eax
+		}
+	return r;
+	}
+
+static unsigned nxDriveMeshMass(unsigned char* base)
+	{
+	static const unsigned kCubeVerts[24] =
+		{
+		0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u,
+		0x00000000u, 0x3f800000u, 0x3f800000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x3f800000u,
+		0x00000000u, 0x3f800000u, 0x00000000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u
+		};
+	static const unsigned kCubeTris[36] =
+		{
+		0, 2, 3, 0, 3, 1, 4, 5, 7, 4, 7, 6, 0, 1, 5, 0, 5, 4, 2, 6, 7, 2, 7, 3, 0, 4, 6, 0, 6, 2, 1, 3, 7, 1, 7, 5
+		};
+	static const unsigned kTetraVerts[12] =
+		{
+		0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u,
+		0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u
+		};
+	static const unsigned kTetraTris[12] = { 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3 };
+	static unsigned hugeVerts[12], nanVerts[12];
+	memcpy(hugeVerts, kTetraVerts, sizeof(hugeVerts));
+	memcpy(nanVerts, kTetraVerts, sizeof(nanVerts));
+	for(unsigned v = 0; v < 12; ++v)
+		if(hugeVerts[v] == 0x40000000u)
+			hugeVerts[v] = 0x7a000000u;			// 2.6e35: the volume overflows a float
+	nanVerts[3] = 0x7fc00000u;
+	struct Mesh { unsigned nbVerts, nbTris; const unsigned* verts; const unsigned* tris; };
+	static Mesh meshes[16];
+	unsigned nbMeshes = 0;
+	for(unsigned m = 0; m < kNb2iMeshes; ++m)
+		{
+		const Nx2hMesh& mesh = nx2iMesh(m);
+		meshes[nbMeshes++] = Mesh{ mesh.nbVerts, mesh.nbTris, mesh.verts, mesh.tris };
+		}
+	meshes[nbMeshes++] = Mesh{ 8, 12, kCubeVerts, kCubeTris };
+	meshes[nbMeshes++] = Mesh{ 4, 4, kTetraVerts, kTetraTris };
+	meshes[nbMeshes++] = Mesh{ 4, 4, hugeVerts, kTetraTris };
+	meshes[nbMeshes++] = Mesh{ 4, 4, nanVerts, kTetraTris };
+	meshes[nbMeshes++] = Mesh{ 0, 0, kTetraVerts, kTetraTris };
+	static unsigned reversed[2000];
+	static unsigned char meshRecords[2][0x100], shapes[2][0x100];
+	unsigned mismatches = 0, cases = 0, computed = 0, negative = 0, failedCompute = 0, returnedTrue = 0, reportsSeen = 0;
+	NxDigest oracleDigest, candidateDigest, fixture;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&fixture);
+	if(!nx2iFoundationBegin())
+		return 1;
+	unsigned state = 0x7f4a7c15u;
+	static const unsigned kCaches[4] = { 0xbf800000u, 0x7fc00000u, 0x40a00000u, 0x80000000u };
+	static const unsigned short kFlags[5] = { 0, 1, 4, 7, 8 };
+	for(unsigned mi = 0; mi < nbMeshes; ++mi)
+		for(unsigned wind = 0; wind < 2; ++wind)
+			for(unsigned cache = 0; cache < 4; ++cache)
+				for(unsigned fl = 0; fl < 5; ++fl)
+					{
+					if(cache >= 2 && fl >= 1 && wind)
+						continue;
+					const Mesh& mesh = meshes[mi];
+					const unsigned* tris = mesh.tris;
+					if(wind)
+						{
+						for(unsigned t = 0; t < mesh.nbTris; ++t)
+							{
+							reversed[3 * t] = mesh.tris[3 * t];
+							reversed[3 * t + 1] = mesh.tris[3 * t + 2];
+							reversed[3 * t + 2] = mesh.tris[3 * t + 1];
+							}
+						tris = reversed;
+						}
+					float payload[12], destination[13];
+					for(unsigned k = 0; k < 12; ++k)
+						payload[k] = nxUnit(&state).value * 2.0f - 1.0f;
+					for(unsigned k = 0; k < 13; ++k)
+						destination[k] = nxUnit(&state).value * 4.0f - 2.0f;
+					nxFoldInput(&fixture, payload, sizeof(payload));
+					nxFoldInput(&fixture, destination, sizeof(destination));
+					unsigned result[2], dest[2][13], block[2][13], reportCount[2], reports[2][8][4];
+					for(int side = 0; side < 2; ++side)
+						{
+						unsigned char* record = meshRecords[side];
+						memset(record, 0xcd, 0x100);
+						*(unsigned*) (record + 0x08) = mesh.nbVerts;
+						*(unsigned*) (record + 0x0c) = mesh.nbTris;
+						*(const unsigned**) (record + 0x10) = mesh.verts;
+						*(const unsigned**) (record + 0x14) = tris;
+						*(unsigned*) (record + 0xb0) = kCaches[cache];
+						unsigned char* shape = shapes[side];
+						memset(shape, 0, 0x100);
+						*(unsigned short*) (shape + 0xde) = kFlags[fl];
+						*(unsigned char**) (shape + 0xe0) = record;
+						memcpy(shape + 0x6c, payload, sizeof(payload));
+						memcpy(dest[side], destination, sizeof(destination));
+						nxSetControl((cases & 1) ? kControlSimulate : kControlDefault);
+						nx2iTakeReports(reports[side][0], 0);
+						if(side == 0)
+							result[side] = nxMMCall(base + 0x00028e10, shape, dest[side], 0x3f800000u, 0);
+						else
+							result[side] = ((MeshShape*) shape)->nxMeshAccumulateMassCached((MassFrame*) dest[side], 1.0f, 0) ? 1u : 0u;
+						memcpy(block[side], record + 0xb0, sizeof(block[side]));
+						reportCount[side] = nx2iTakeReports(&reports[side][0][0], 8);
+						}
+					++cases;
+					const bool wasCompute = (kCaches[cache] == 0xbf800000u) && (kFlags[fl] & 7) == 0;
+					computed += wasCompute;
+					returnedTrue += result[0];
+					reportsSeen += reportCount[0];
+					negative += reportCount[0] != 0;
+					failedCompute += wasCompute && !result[0];
+					bool different = result[0] != result[1] || memcmp(dest[0], dest[1], sizeof(dest[0])) != 0
+						|| memcmp(block[0], block[1], sizeof(block[0])) != 0 || reportCount[0] != reportCount[1]
+						|| (reportCount[0] <= 8 && memcmp(reports[0], reports[1], reportCount[0] * 16) != 0);
+					mismatches += different;
+					nxFoldInput(&oracleDigest, &result[0], 4);
+					nxFoldInput(&oracleDigest, dest[0], sizeof(dest[0]));
+					nxFoldInput(&oracleDigest, block[0], sizeof(block[0]));
+					nxFoldInput(&oracleDigest, &reportCount[0], 4);
+					nxFoldInput(&candidateDigest, &result[1], 4);
+					nxFoldInput(&candidateDigest, dest[1], sizeof(dest[1]));
+					nxFoldInput(&candidateDigest, block[1], sizeof(block[1]));
+					nxFoldInput(&candidateDigest, &reportCount[1], 4);
+					}
+	printf("collision name=mesh_mass index=- rva=0x00028e10 owner=phys_fn_001397 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=mesh_mass meshes=%u cases=%u computed=%u failed=%u true=%u reports=%u\n",
+		nbMeshes, cases, computed, failedCompute, returnedTrue, reportsSeen);
+	nxPrintInput("mesh_mass", &fixture);
+	nxSetControl(kControlDefault);
+	nx2iFoundationEnd();
 	return mismatches;
 	}

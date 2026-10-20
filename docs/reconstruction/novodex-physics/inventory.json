@@ -16240,13 +16240,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "combination via nxMassFrameFoldPayload + nxMassFrameTranslate",
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/343",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2550",
-      "static_proof": "two-record mass combo (0x1c5a0, __thiscall ret 4): pushes param and calls 000831 (payload fold over {d;K}), then adds 0x24 and calls 000833 (translate by the second record's d); both helpers already reconstructed",
-      "dynamic_proof": "differential 6/6 (build/r26-restore.log mfcombo run=6 failures=0) vs oracle 0x1c5a0 over varied two-record payloads",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0001c5a0: the payload fold (000831) of the argument and then the translation (000833) by the record 0x24 bytes on. Transcribed instruction for instruction into a naked row in Physics/src/ObjectModel.cpp; evidence/phase3-mesh-debug-listing-compare.py disassembles the built candidate and the oracle and finds the 1,457 instructions of the six rows equal, with the 32 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'collision name=mesh_mass' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's row and the candidate's naked transcription over the same inputs under both x87 control words, zero mismatches and equal digests. A mutation aimed at this row is rejected: the translation record offset `add edi, 0x24` at 0x0001c5ae made 0x28 (mismatches=35). See evidence/phase3-mesh-debug-mass.md.",
+      "notes": "Listing transcription. Slot 3 reads four visualisation parameters from statics its wrapper fills from nxPhysicsSDKParameters(); the Foundation imports are the candidate's own IAT slots.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxMassFrameRow835@@YIXPAX0PBX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMassFrameRow835@@YIXPAX0PBX@Z",
+        "address": "0x1004e340",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_000836",
@@ -26771,13 +26779,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/684",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3551",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00027f10: the first part of the mesh shape's slot 3, debug visualisation: the flag gate, the shape's axes (001305), and the hull's polygons, polygon normals and edges through the renderer's slot 8. Transcribed instruction for instruction into a naked row in Physics/src/ObjectModel.cpp; evidence/phase3-mesh-debug-listing-compare.py disassembles the built candidate and the oracle and finds the 1,457 instructions of the six rows equal, with the 32 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'collision name=mesh_debug' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's row and the candidate's naked transcription over the same inputs under both x87 control words, zero mismatches and equal digests. A mutation aimed at this row is rejected: the flag gate `je` at 0x00027f22 made `jne` (mismatches=653). See evidence/phase3-mesh-debug-mass.md.",
+      "notes": "Listing transcription. Slot 3 reads four visualisation parameters from statics its wrapper fills from nxPhysicsSDKParameters(); the Foundation imports are the candidate's own IAT slots.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxMeshDebugBody@@YIXPBXPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMeshDebugBody@@YIXPBXPAX0@Z",
+        "address": "0x1004e870",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001394",
@@ -26807,13 +26823,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/685",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3566",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00027f10"
+      "static_proof": "IDA/capstone at RVA 0x00028370: the second part of the mesh shape's slot 3 (the inventory splits the function at the jump target 0x00028370): the triangle edges by the per-triangle flag bits, the edge list (002188), the vertex normals (002081) and the face normals. Transcribed instruction for instruction into a naked row in Physics/src/ObjectModel.cpp; evidence/phase3-mesh-debug-listing-compare.py disassembles the built candidate and the oracle and finds the 1,457 instructions of the six rows equal, with the 32 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'collision name=mesh_debug' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's row and the candidate's naked transcription over the same inputs under both x87 control words, zero mismatches and equal digests. A mutation aimed at this row is rejected: the per-triangle flag table null test at 0x00028709 inverted (mismatches=84). See evidence/phase3-mesh-debug-mass.md.",
+      "notes": "Listing transcription. Slot 3 reads four visualisation parameters from statics its wrapper fills from nxPhysicsSDKParameters(); the Foundation imports are the candidate's own IAT slots.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxMeshDebugBody@@YIXPBXPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMeshDebugBody@@YIXPBXPAX0@Z",
+        "address": "0x1004e870",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001396",
@@ -26843,13 +26867,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/559",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3587",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Low-flag bypass and nonnegative cached-mass path are differentially checked across 48 cases; negative-cache recomputation at 0x54bb0 remains open."
+      "static_proof": "IDA/capstone at RVA 0x00028e10: the mesh shape's slot 4: with the low three flag bits clear it takes the cached mass block from 002241, builds a MassFrame from it (000827, 002156), folds the shape's payload in (000835, 000839) and returns true, or false when the block is null. Transcribed instruction for instruction into a naked row in Physics/src/ObjectModel.cpp; evidence/phase3-mesh-debug-listing-compare.py disassembles the built candidate and the oracle and finds the 1,457 instructions of the six rows equal, with the 32 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'collision name=mesh_mass' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's row and the candidate's naked transcription over the same inputs under both x87 control words, zero mismatches and equal digests. A mutation aimed at this row is rejected: the success `mov al, 1` at 0x00028e66 made `mov al, 0` (mismatches=452). See evidence/phase3-mesh-debug-mass.md.",
+      "notes": "Listing transcription. Slot 3 reads four visualisation parameters from statics its wrapper fills from nxPhysicsSDKParameters(); the Foundation imports are the candidate's own IAT slots.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z",
+        "address": "0x1004e800",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001398",
@@ -41247,12 +41279,20 @@
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "nine doubles to nine floats (0x538e0, ret 4)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/821",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6831",
-      "static_proof": "converts the nine consecutive doubles at [self+0x18..0x60) into nine floats at out[0..8] (dst[k] = (float)src[k]); the image interleaves the read/write order; ret 4",
-      "dynamic_proof": "confirmed via d2f9 differential (3z131): 3 magnitude classes failures=0",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000538e0: nine doubles at +0x18 to nine floats. Transcribed instruction for instruction into a naked row in Physics/src/ObjectModel.cpp; evidence/phase3-mesh-debug-listing-compare.py disassembles the built candidate and the oracle and finds the 1,457 instructions of the six rows equal, with the 32 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'collision name=mesh_mass' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's row and the candidate's naked transcription over the same inputs under both x87 control words, zero mismatches and equal digests. A mutation aimed at this row is rejected: the row count `mov ecx, 3` at 0x000538ea made 2 (mismatches=60). See evidence/phase3-mesh-debug-mass.md.",
+      "notes": "Listing transcription. Slot 3 reads four visualisation parameters from statics its wrapper fills from nxPhysicsSDKParameters(); the Foundation imports are the candidate's own IAT slots.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxMeshRow2156@@YIXPAX0PAM@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMeshRow2156@@YIXPAX0PAM@Z",
+        "address": "0x1004fb40",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_002157",
@@ -42811,14 +42851,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/TriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/836",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6988",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "static_proof": "IDA/capstone at RVA 0x00054bb0: the mesh's cached mass block: returns it when the cached mass at +0xb0 is not negative, otherwise runs the Foundation's NxComputeVolumeIntegrals, narrows the result, checks it with _fpclass, reports and flips a negative volume, and stores the block. Transcribed instruction for instruction into a naked row in Physics/src/ObjectModel.cpp; evidence/phase3-mesh-debug-listing-compare.py disassembles the built candidate and the oracle and finds the 1,457 instructions of the six rows equal, with the 32 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'collision name=mesh_mass' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's row and the candidate's naked transcription over the same inputs under both x87 control words, zero mismatches and equal digests. A mutation aimed at this row is rejected: the cache sign test `jp` at 0x00054bd8 made `jnp` (mismatches=210). See evidence/phase3-mesh-debug-mass.md.",
+      "notes": "Listing transcription. Slot 3 reads four visualisation parameters from statics its wrapper fills from nxPhysicsSDKParameters(); the Foundation imports are the candidate's own IAT slots.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxMeshMassRow2241@@YIPAXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMeshMassRow2241@@YIPAXPAX@Z",
+        "address": "0x1004f880",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_002242",

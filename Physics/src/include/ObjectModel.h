@@ -2366,6 +2366,8 @@ class MeshShape
 	//! MESH-table slot 7, phys_fn_001407 (0x00029610): the null-classifier
 	//! arm and the prepared arm, through the product 001556 and 001472.
 	bool				nxMeshSweepPrepared(float* out, const float* point) const;
+	//! phys_fn_001393/001395 (0x00027f10), slot 3: debug visualisation (MeshDebug body in ObjectModel.cpp).
+	void				nxMeshDebugRender(const void* renderer) const;
 
 	//! MESH-table slot 4, phys_fn_001397 (0x00028e10), for a mesh whose
 	//! cached mass at +0xb0 is nonnegative. Low flag bits bypass the cache.

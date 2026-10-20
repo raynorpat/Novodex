@@ -1,0 +1,4 @@
+0x28e66 mov al, 0 exit 1 mismatches 452
+0x1c5ae add edi, 0x28 exit 1 mismatches 35
+0x54bd8 jnp L54e52 exit 1 mismatches 210
+0x538ea mov ecx, 2 exit 1 mismatches 60

@@ -1,0 +1,22 @@
+0x54bd8 jnp L54e52 exit 1 mismatches 210
+0x54bc1 fld dword ptr [edi + 0xb4] exit 1 mismatches 150
+0x54bde mov ecx, dword ptr [edi + 0x8] exit 3221225477 mismatches ?
+0x54c05 mov eax, dword ptr [edi + 0x10] exit 3221225477 mismatches ?
+0x54c0c push 0x40000000 exit 1 mismatches 40
+0x54c29 jne L54e5b exit 1 mismatches 60
+0x54c4b mov dword ptr [edi + 0xdc], eax exit 1 mismatches 60
+0x54c6d test eax, 0x206 exit 0 mismatches 0
+0x54de1 jnp L54e50 exit 1 mismatches 32
+0x54e1d fstp dword ptr [esi + 0xc] exit 1 mismatches 16
+0x54e0e fstp dword ptr [esi + 4] exit 1 mismatches 16
+0x54dec push 0x2f8 exit 1 mismatches 16
+0x54df6 push 0xcf exit 1 mismatches 16
+0x28e16 test byte ptr [esi + 0xde], 3 exit 0 mismatches 0
+0x28e2e mov ecx, dword ptr [eax + 4] exit 1 mismatches 182
+0x28e31 lea edx, [eax + 0x2c] exit 1 mismatches 32
+0x28e42 add esi, 0x70 exit 1 mismatches 122
+0x28e2c jne L28e6f exit 3221225477 mismatches ?
+0x28e66 mov al, 0 exit 1 mismatches 362
+0x1c5ae add edi, 0x28 exit 1 mismatches 47
+0x538ea mov ecx, 2 exit 1 mismatches 60
+0x538e4 lea eax, [ecx + 0x34] exit 1 mismatches 60

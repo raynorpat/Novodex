@@ -1,0 +1,21 @@
+0x27f22 jne L28e01 exit 1 mismatches 657
+0x27f4b jp L28e00 exit 1 mismatches 538
+0x27f89 cmp dword ptr [ebx + 0x28], ecx exit 0 mismatches 0
+0x28000 mov ecx, dword ptr [ebx + 0x14] exit 3221225477 mismatches ?
+0x28022 fmul dword ptr [esi + 0x10] exit 1 mismatches 156
+0x28104 push 0xff8041 exit 1 mismatches 400
+0x281b0 fdiv dword ptr [nxMDK101041ec_4] exit 1 mismatches 287
+0x2825b push 0x4080fe exit 1 mismatches 287
+0x28316 mov eax, dword ptr [ebx + 0x3c] exit 0 mismatches 0
+0x28460 push 0xff00fe00 exit 1 mismatches 286
+0x28561 jb L2878f exit 0 mismatches 0
+0x28709 jne L28716 exit 1 mismatches 90
+0x2870f mov bl, byte ptr [eax + edx + 8] exit 1 mismatches 90
+0x28716 test bl, 2 exit 1 mismatches 88
+0x2879d je L287a6 exit 1 mismatches 90
+0x28961 mov eax, dword ptr [edi + 4] exit 1 mismatches 90
+0x289f8 je L28a01 exit 3221225477 mismatches ?
+0x28b16 push 0x2266ab exit 1 mismatches 61
+0x28b73 mov edi, dword ptr [eax + 0x20] exit 3221225477 mismatches ?
+0x28d23 fmul dword ptr [nxMDK101043cc_4] exit 1 mismatches 57
+0x28d83 push 0xaa6623 exit 1 mismatches 57

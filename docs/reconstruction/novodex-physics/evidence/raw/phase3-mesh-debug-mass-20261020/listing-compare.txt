@@ -1,0 +1,39 @@
+nxMeshDebugBody ?nxMeshDebugBody@@YIXPBXPAX0@Z instructions=1200 differing=0
+nxMeshRow2156 ?nxMeshRow2156@@YIXPAX0PAM@Z instructions=16 differing=0
+nxMassFrameRow835 ?nxMassFrameRow835@@YIXPAX0PBX@Z instructions=13 differing=0
+nxMeshMassRow2241 ?nxMeshMassRow2241@@YIPAXPAX@Z instructions=193 differing=0
+?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z ?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z instructions=35 differing=0
+ALL EQUAL
+  call nxMeshDebugBody -> oracle 0x100257d0 ; candidate ?nxFlagBitsDE@ShapeBase@@QBEII@Z
+  call nxMeshDebugBody -> oracle 0x10025960 ; candidate ?nxDebugRender@BoxShape@@QBEXPBX@Z
+  call nxMeshDebugBody -> oracle 0x1002b6f0 ; candidate ?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z
+  call nxMeshDebugBody -> oracle 0x1002b6f0 ; candidate ?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z
+  call nxMeshDebugBody -> oracle 0x1002b6f0 ; candidate ?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z
+  call nxMeshDebugBody -> oracle 0x1002b6f0 ; candidate ?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z
+  call nxMeshDebugBody -> oracle 0x1002cb50 ; candidate ?nxHullComputeEdges@@YI_NPAVConvexHull@@@Z
+  call nxMeshDebugBody -> oracle 0x1002cb50 ; candidate ?nxHullComputeEdges@@YI_NPAVConvexHull@@@Z
+  call nxMeshDebugBody -> oracle 0x1002cb50 ; candidate ?nxHullComputeEdges@@YI_NPAVConvexHull@@@Z
+  call nxMeshDebugBody -> oracle 0x10054460 ; candidate ?createEdgeList@TriangleMesh@@QAEXXZ
+  call nxMeshDebugBody -> oracle 0x10052240 ; candidate ?nxMeshComputeVertexNormals@@YAXXZ
+  call nxMassFrameRow835 -> oracle 0x1001bdc0 ; candidate ?nxMassFrameFoldPayload@MassFrame@@QAEXPBX@Z
+  call nxMassFrameRow835 -> oracle 0x1001c040 ; candidate ?nxMassFrameTranslate@MassFrame@@QAEXPBX@Z
+  call nxMeshMassRow2241 -> oracle 0x100538e0 ; candidate ?nxMeshRow2156@@YIXPAX0PAM@Z
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call nxMeshMassRow2241 -> oracle 0x100f4140 ; candidate __fpclass
+  call ?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z -> oracle 0x10054bb0 ; candidate ?nxMeshMassRow2241@@YIPAXPAX@Z
+  call ?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z -> oracle 0x1001bcc0 ; candidate ?nxPoseCopyWithTail0827@BoxShape@@QAEXPBXPBII@Z
+  call ?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z -> oracle 0x1001c5a0 ; candidate ?nxMassFrameRow835@@YIXPAX0PBX@Z
+  call ?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z -> oracle 0x1001c630 ; candidate ?nxMassFrameMerge@MassFrame@@QAEXABV1@@Z
+  call ?nxMeshAccumulateMassCached@MeshShape@@QBE_NPAVMassFrame@@MI@Z -> oracle 0x1002ea70 ; candidate ?nxSupportMapNoop@@YIXPAUIceSupportMap@@@Z
+MAPPINGS checked=32 unexpected=0
