@@ -237,7 +237,7 @@ if(NX_PHYSICS_USE_X87)
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp Physics/src/ContactPolygon.cpp Physics/src/ContactStream.cpp
 		Physics/src/Distance.cpp
-		Physics/src/PMap.cpp Physics/src/PMapCompute.cpp Physics/src/HullFlood.cpp Physics/src/HullBuild.cpp
+		Physics/src/PMap.cpp Physics/src/PMapCompute.cpp Physics/src/HullFlood.cpp Physics/src/HullBuild.cpp Physics/src/HullShape.cpp
 		Physics/src/ContactBoxMeshICE.cpp
 		Physics/src/ContactCapsuleMesh.cpp
 		Physics/src/ContactSphereMesh.cpp
@@ -952,7 +952,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/PhysicsInternalMeshContactStubs.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp Physics/src/PrunerRegistration.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp Physics/src/opcode/NovodexTreeColliderCallback.cpp
-		Physics/src/PMap.cpp Physics/src/PMapCompute.cpp Physics/src/HullFlood.cpp Physics/src/HullBuild.cpp Physics/src/TriangleMesh.cpp Physics/src/InternalTriangleMesh.cpp
+		Physics/src/PMap.cpp Physics/src/PMapCompute.cpp Physics/src/HullFlood.cpp Physics/src/HullBuild.cpp Physics/src/HullShape.cpp Physics/src/TriangleMesh.cpp Physics/src/InternalTriangleMesh.cpp
 		Physics/src/MemoryStream.cpp
 		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
 		Physics/src/IceMeshBuilder2.cpp Physics/src/ConvexHull.cpp Physics/src/TriangleMeshTopology.cpp

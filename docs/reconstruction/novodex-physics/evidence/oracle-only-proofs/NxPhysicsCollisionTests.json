@@ -6,10 +6,10 @@
   "fixture_source_sha256": "84ec5d9d89c92a03ff0beebe7eeed4b71476f9971c887414bdce3b1b77dca289",
   "fixture_source": "tests/PhysicsCollisionTests.cpp",
   "proof_lines_sha256": "9e21cf712083d7cc86474c43601994d9ae0e3d953cacec81e19f318d2a27c0a4",
-  "baseline_sha256": "154fb722dbbf3a4a0b82c0a3675608501e26e09d3fa2314cd08d469498bf780e",
+  "baseline_sha256": "e115881908719c4389dab3e92efcec1eb9559f14ec7562ec6f1e3665847bddd1",
   "input_line_count": 114,
   "coverage_line_count": 142,
   "oracle_output_line_count": 141,
   "selected_lines_sha256": "9e21cf712083d7cc86474c43601994d9ae0e3d953cacec81e19f318d2a27c0a4",
-  "proof_sha256": "30f1a4e7fa396d4c1c0534ed711f2450bff8b34826ccfeca1866fd46a7317504"
+  "proof_sha256": "52ff554e06197a32f6e94046e4eda184aef5eb2092b838a3a3169add4b143d15"
 }

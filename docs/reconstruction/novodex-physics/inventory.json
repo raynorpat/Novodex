@@ -27098,13 +27098,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/566",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3613",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00029780: after a successful build: allocates the Valencies (0x14 bytes) at +0x64, computes it from the hull's vertices and faces (freeing it again if that fails), and stores the vertices' bounding box (minimum at +0x4c, maximum at +0x58). Transcribed instruction for instruction into a naked row in Physics/src/HullShape.cpp; evidence/phase3-hull-shape-listing-compare.py disassembles the built candidate and the oracle and finds the 208 instructions of the five functions equal, with the 16 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_shape_init' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same faces and point clouds, each side's arrays from its own allocator, and compares the hull, the bounding box and the valencies word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jp` of the first bounding-box comparison at 0x00029886 (mismatches=42). See evidence/phase3-hull-shape.md.",
+      "notes": "The convex mesh's hull subclass (vtable 0x1010767c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullShape.cpp",
+      "implementation_symbol": "?nxHullShapeExtras@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullShapeExtras@@YAXXZ",
+        "address": "0x1002b730",
+        "object": "HullShape.obj"
+      }
     },
     {
       "id": "phys_fn_001412",
@@ -27170,13 +27178,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/568",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3630",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00029940: the destructor body: sets the subclass vtable, releases and frees the Valencies at +0x64 and clears the pointer, then tail-jumps to the base release. Transcribed instruction for instruction into a naked row in Physics/src/HullShape.cpp; evidence/phase3-hull-shape-listing-compare.py disassembles the built candidate and the oracle and finds the 208 instructions of the five functions equal, with the 16 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_shape_init' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same faces and point clouds, each side's arrays from its own allocator, and compares the hull, the bounding box and the valencies word for word, zero mismatches. A mutation aimed at this row is rejected: stored 1 (not 0) to the Valencies pointer after its release at 0x00029965 (mismatches=42). See evidence/phase3-hull-shape.md.",
+      "notes": "The convex mesh's hull subclass (vtable 0x1010767c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullShape.cpp",
+      "implementation_symbol": "?nxHullShapeDestruct@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullShapeDestruct@@YAXXZ",
+        "address": "0x1002b6f0",
+        "object": "HullShape.obj"
+      }
     },
     {
       "id": "phys_fn_001416",
@@ -27206,13 +27222,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/696",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3632",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00029980: virtual slot 1: the base builder, then (when it succeeds) 001411. Transcribed instruction for instruction into a naked row in Physics/src/HullShape.cpp; evidence/phase3-hull-shape-listing-compare.py disassembles the built candidate and the oracle and finds the 208 instructions of the five functions equal, with the 16 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_shape_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same faces and point clouds, each side's arrays from its own allocator, and compares the hull, the bounding box and the valencies word for word, zero mismatches. A mutation aimed at this row is rejected: dropped the call to the extras after a successful base build (0x00029997) (mismatches=1). See evidence/phase3-hull-shape.md.",
+      "notes": "The convex mesh's hull subclass (vtable 0x1010767c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullShape.cpp",
+      "implementation_symbol": "?nxHullShapeBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullShapeBuild@@YAXXZ",
+        "address": "0x1002b660",
+        "object": "HullShape.obj"
+      }
     },
     {
       "id": "phys_fn_001418",
@@ -27224,13 +27248,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/696",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3634",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000299a0: virtual slot 2: the base initialiser, then (when it succeeds) 001411. Transcribed instruction for instruction into a naked row in Physics/src/HullShape.cpp; evidence/phase3-hull-shape-listing-compare.py disassembles the built candidate and the oracle and finds the 208 instructions of the five functions equal, with the 16 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_shape_init' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same faces and point clouds, each side's arrays from its own allocator, and compares the hull, the bounding box and the valencies word for word, zero mismatches. A mutation aimed at this row is rejected: dropped the call to the extras after a successful base initialiser (0x000299b7) (mismatches=1). See evidence/phase3-hull-shape.md.",
+      "notes": "The convex mesh's hull subclass (vtable 0x1010767c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullShape.cpp",
+      "implementation_symbol": "?nxHullShapeInit@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullShapeInit@@YAXXZ",
+        "address": "0x1002b680",
+        "object": "HullShape.obj"
+      }
     },
     {
       "id": "phys_fn_001419",
@@ -27242,13 +27274,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/569",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3636",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000299c0: virtual slot 0, the scalar deleting destructor: the destructor body inline, then the object freed through the SDK allocator when bit 0 of the flag is set. Transcribed instruction for instruction into a naked row in Physics/src/HullShape.cpp; evidence/phase3-hull-shape-listing-compare.py disassembles the built candidate and the oracle and finds the 208 instructions of the five functions equal, with the 16 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_shape_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same faces and point clouds, each side's arrays from its own allocator, and compares the hull, the bounding box and the valencies word for word, zero mismatches. A mutation aimed at this row is rejected: stored 1 (not 0) to the Valencies pointer after its release at 0x000299e5 (mismatches=18). See evidence/phase3-hull-shape.md.",
+      "notes": "The convex mesh's hull subclass (vtable 0x1010767c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullShape.cpp",
+      "implementation_symbol": "?nxHullShapeScalarDelete@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullShapeScalarDelete@@YAXXZ",
+        "address": "0x1002b6a0",
+        "object": "HullShape.obj"
+      }
     },
     {
       "id": "phys_fn_001420",

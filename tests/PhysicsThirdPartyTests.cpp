@@ -4553,6 +4553,7 @@ static NxPMapRaw* nxPMapTestMap(const NxMesh& mesh, unsigned resolution)
 
 static void nxDriveHullFlood(const NxOracleRows& o, bool selfOnly);
 static void nxDriveHullBuild(const NxOracleRows& o, bool selfOnly);
+static void nxDriveHullShape(const NxOracleRows& o, bool selfOnly);
 static void nxDrivePMapCompute(const NxOracleRows& o, bool selfOnly)
 	{
 	gState = 0x6d11a5e1;
@@ -5525,6 +5526,7 @@ static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
 	nxDrivePMapCompute(o, selfOnly);
 	nxDriveHullFlood(o, selfOnly);
 	nxDriveHullBuild(o, selfOnly);
+	nxDriveHullShape(o, selfOnly);
 	nxDriveVanilla(o, selfOnly);
 	nxDriveRefit(o, selfOnly);
 	nxReleaseModels(o);
@@ -13877,6 +13879,197 @@ static void nxDriveHullBuild(const NxOracleRows& o, bool selfOnly)
 	nxReport("hull_delete", "0x0002b990", "phys_fn_001474", "HullBuild.cpp", selfOnly);
 	if(!selfOnly)
 		printf("thirdparty hull_build init=%u/%u build=%u/%u\n", initTrue, initCases, buildTrue, buildCases);
+	}
+
+// ===========================================================================================================
+// The convex mesh's hull subclass (phys_fn_001411, 001415, 001417, 001418, 001419, Physics/src/HullShape.cpp):
+// the builder and initialiser overrides (the base's, then the valencies and the vertices' bounding box), the
+// destructor body and the scalar deleting destructor. Entered the way nxDriveHullBuild enters the base rows,
+// over the same kind of inputs; the object it leaves (the hull, the box at +0x4c and the valencies at +0x64)
+// is taped, and the destructor's result.
+
+extern void* nxHullShapeVtable[4];
+void nxHullShapeExtras();
+void nxHullShapeDestruct();
+void nxHullShapeBuild();
+void nxHullShapeInit();
+void nxHullShapeScalarDelete();
+
+struct NxHullShapeSide
+	{
+	bool		oracle;
+	void*		vtable;
+	void *extras, *destruct, *build, *init, *scalarDelete, *getAllocator;
+	};
+
+static void nxHullShapeMakeSide(NxHullShapeSide& s, const NxOracleRows& o, bool oracle)
+	{
+	s.oracle = oracle;
+	if(oracle)
+		{
+		s.vtable = nxAt(o, 0x0010767c);
+		s.extras = nxAt(o, 0x00029780); s.destruct = nxAt(o, 0x00029940);
+		s.build = nxAt(o, 0x00029980); s.init = nxAt(o, 0x000299a0); s.scalarDelete = nxAt(o, 0x000299c0);
+		s.getAllocator = nxAt(o, 0x000b4000);
+		}
+	else
+		{
+		s.vtable = nxHullShapeVtable;
+		s.extras = (void*) &nxHullShapeExtras; s.destruct = (void*) &nxHullShapeDestruct;
+		s.build = (void*) &nxHullShapeBuild; s.init = (void*) &nxHullShapeInit;
+		s.scalarDelete = (void*) &nxHullShapeScalarDelete;
+		s.getAllocator = 0;
+		}
+	}
+
+// The words past the base hull: the box (+0x4c .. +0x60) and the valencies (+0x64): counts, the three arrays.
+static void nxHullShapeTape(NxTape& tape, const unsigned* object)
+	{
+	nxHullTapeHull(tape, object);
+	for(unsigned w = 0x13; w < 0x19; ++w)
+		tape.push(object[w]);
+	const unsigned* valencies = (const unsigned*) (size_t) object[0x19];
+	tape.push(valencies != 0);
+	if(valencies)
+		{
+		tape.push(valencies[0]); tape.push(valencies[1]);
+		tape.push(valencies[2] != 0); tape.push(valencies[3] != 0); tape.push(valencies[4] != 0);
+		if(valencies[2])
+			for(unsigned i = 0; i < valencies[0]; ++i)
+				tape.push(((const unsigned*) (size_t) valencies[2])[i]);
+		if(valencies[3])
+			for(unsigned i = 0; i < valencies[0]; ++i)
+				tape.push(((const unsigned*) (size_t) valencies[3])[i]);
+		if(valencies[4])
+			for(unsigned i = 0; i < valencies[1]; ++i)
+				tape.push(((const unsigned*) (size_t) valencies[4])[i]);
+		}
+	}
+
+static void nxHullShapeObjectInit(const NxHullShapeSide& s, unsigned* object)
+	{
+	memset(object, 0, 0x80);
+	object[0] = (unsigned) (size_t) s.vtable;
+	}
+
+static void nxDriveHullShape(const NxOracleRows& o, bool selfOnly)
+	{
+	NxHullShapeSide sides[2];
+	nxHullShapeMakeSide(sides[0], o, true);
+	nxHullShapeMakeSide(sides[1], o, false);
+	const int nbSides = selfOnly ? 1 : 2;
+	NxHullBuildSide baseSides[2];
+	nxHullBuildMakeSide(baseSides[0], o, true);
+	nxHullBuildMakeSide(baseSides[1], o, false);
+	static NxHullInput inputs[10];
+	unsigned nbInputs = 0;
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[5]);
+	nxHullSphere(inputs[nbInputs++], 4, 6, 1.0f);
+	nxHullSphere(inputs[nbInputs++], 6, 8, 1.5f);
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[0]);
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[2]);
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[4]);
+	// Shifted copies, so that every vertex is on one side of zero on each axis (the box seeds are then what decides it).
+	static const float kShift[3][3] = { { 10.0f, 10.0f, 10.0f }, { -10.0f, -10.0f, -10.0f }, { 3.0f, -7.0f, 2.0f } };
+	for(unsigned k = 0; k < 3; ++k)
+		{
+		NxHullInput& shifted = inputs[nbInputs++];
+		shifted = inputs[k == 2 ? 0 : 1];
+		for(unsigned v = 0; v < shifted.nbVerts; ++v)
+			for(int a = 0; a < 3; ++a)
+				shifted.verts[3 * v + a] += kShift[k][a];
+		}
+
+	// ---- the initialiser override (001418), then the destructor body (001415) ------------------------------
+	gState = 0x62c1f0a9;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	unsigned initCases = 0, initTrue = 0;
+	for(unsigned in = 0; in < nbInputs; ++in)
+		for(unsigned variant = 0; variant < 6; ++variant)
+			for(unsigned form = 0; form < 2; ++form)
+				{
+				if(in >= 3 && variant >= 2)
+					continue;
+				NxHullInput input = inputs[in];
+				nxHullInputVariant(input, variant);
+				unsigned short wfaces[3 * 800];
+				for(unsigned i = 0; i < 3 * input.nbTris; ++i)
+					wfaces[i] = (unsigned short) input.tris[i];
+				for(int side = 0; side < nbSides; ++side)
+					{
+					NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+					unsigned object[0x20];
+					nxHullShapeObjectInit(sides[side], object);
+					unsigned create[5];
+					create[0] = input.nbVerts;
+					create[1] = (unsigned) (size_t) input.verts;
+					create[2] = input.nbTris;
+					create[3] = form ? 0 : (unsigned) (size_t) input.tris;
+					create[4] = form ? (unsigned) (size_t) wfaces : 0;
+					const unsigned al = nxHullRun(sides[side].init, object, 0, (unsigned) (size_t) create) & 0xff;
+					tape.push(al);
+					nxHullShapeTape(tape, object);
+					if(side == 0)
+						{
+						++initCases;
+						initTrue += al != 0;
+						}
+					nxHullRun(sides[side].destruct, object);
+					nxHullTapeRaw(tape, object);
+					tape.push(object[0x19] != 0);
+					}
+				}
+	nxReport("hull_shape_init", "0x000299a0", "phys_fn_001418", "HullShape.cpp", selfOnly);
+
+	// ---- the builder override (001417), the extras (001411) and the scalar deleting destructor (001419) -----
+	gState = 0x3c9d5e17;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	unsigned buildCases = 0, buildTrue = 0;
+	static const unsigned kBuildInputs[6] = { 0, 1, 2, 6, 7, 8 };
+	for(unsigned bi = 0; bi < 6; ++bi)
+		for(unsigned flags = 0; flags < 4; ++flags)
+			{
+			const unsigned in = kBuildInputs[bi];
+			if(flags == 2)
+				continue;
+			for(unsigned flag = 0; flag < 2; ++flag)
+				for(int side = 0; side < nbSides; ++side)
+					{
+					NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+					unsigned* object = (unsigned*) nxHullAllocate(baseSides[side], 0x80);
+					nxHullShapeObjectInit(sides[side], object);
+					unsigned create[4] = { inputs[in].nbVerts, (unsigned) (size_t) inputs[in].verts, 0,
+						(flags & 1) | (((flags >> 1) & 1) << 8) };
+					const unsigned al = nxHullRun(sides[side].build, object, 0, (unsigned) (size_t) create) & 0xff;
+					tape.push(al);
+					nxHullShapeTape(tape, object);
+					if(side == 0)
+						{
+						++buildCases;
+						buildTrue += al != 0;
+						}
+					// extras again by itself, on the object as it stands
+					if(flag)
+						{
+						tape.push(nxHullRun(sides[side].extras, object) & 0xff);
+						nxHullShapeTape(tape, object);
+						}
+					// flag 1 frees the object; flag 0 leaves it to be freed here after the release it ran.
+					const unsigned result = nxHullRun(sides[side].scalarDelete, object, 0, flag ? 0 : 1);
+					tape.push(result == (unsigned) (size_t) object);
+					if(flag)
+						{
+						nxHullTapeRaw(tape, object);
+						tape.push(object[0x19] != 0);
+						nxHullFree(baseSides[side], object);
+						}
+					}
+			}
+	nxReport("hull_shape_build", "0x00029980", "phys_fn_001417", "HullShape.cpp", selfOnly);
+	if(!selfOnly)
+		printf("thirdparty hull_shape init=%u/%u build=%u/%u\n", initTrue, initCases, buildTrue, buildCases);
 	}
 
 int wmain(int argc, wchar_t** argv)
