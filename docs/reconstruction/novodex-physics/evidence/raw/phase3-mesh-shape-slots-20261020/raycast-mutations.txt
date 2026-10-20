@@ -1,0 +1,10 @@
+const NxReal w = (NxReal)(1.0 - (double)u - (doubl -> const NxReal w = (NxReal)(1.0 - (double)u + (doubl exit 1 mismatches 275
+mesh->mInternal.mFaceRemap[face.mFaceID] : face.mF -> mesh->mInternal.mFaceRemap[0] : face.mFaceID; exit 1 mismatches 131
+if(face.mDistance > maxDistance) -> if(face.mDistance > maxDistance * 0.5f) exit 1 mismatches 14
+collider.SetClosestHit(true); -> collider.SetClosestHit(false); exit 1 mismatches 1
+(double)localX * r[3] + (double)localY * r[4] + (d -> (double)localX * r[4] + (double)localY * r[4] + (d exit 1 mismatches 331
+(double)w * n0.x + (double)v * n2.x + (double)u *  -> (double)w * n0.x + (double)v * n1.x + (double)u *  exit 1 mismatches 68
+| NX_RAYCAST_FACE_INDEX | NX_RAYCAST_UV; -> | NX_RAYCAST_FACE_INDEX; exit 1 mismatches 331
+hit->u = u; -> hit->u = v; exit 1 mismatches 331
+world.Set(r[0], r[3], r[6], 0.0f, -> world.Set(r[0], r[3], r[7], 0.0f, exit 1 mismatches 175
+hit->faceID = mesh->mInternal.mFaceRemap -> hit->faceID = !mesh->mInternal.mFaceRemap exit 3221225477 mismatches ?

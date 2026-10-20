@@ -744,9 +744,9 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                 self.assertEqual(len(expected["selected_lines_sha256"]), 64)
             elif expected["format"] == "collision_oracle_digest":
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsCollisionTests.cpp")
-                self.assertEqual(expected["input_line_count"], 114)
-                self.assertEqual(expected["coverage_line_count"], 142)
-                self.assertEqual(expected["oracle_output_line_count"], 141)
+                self.assertEqual(expected["input_line_count"], 115)
+                self.assertEqual(expected["coverage_line_count"], 143)
+                self.assertEqual(expected["oracle_output_line_count"], 142)
                 self.assertEqual(expected["seed_line"],
                                  "collision seeds pair=c0ffee11 aimed=5eed10ad")
                 self.assertEqual(len(expected["selected_lines_sha256"]), 64)

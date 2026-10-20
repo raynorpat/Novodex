@@ -2737,6 +2737,7 @@ static unsigned nxDriveTask2k(unsigned char* base);
 void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
 bool __cdecl NxOverlapSphereMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
 static unsigned nxDriveSphereMesh(unsigned char* base);
+static unsigned nxDriveMeshRaycast(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
 static unsigned nxDriveTask2lSinkReset(unsigned char* base);
@@ -9858,6 +9859,9 @@ int wmain(int argc, wchar_t** argv)
 	// Sphere/mesh entries (001925, 001927, 001929); see nxDriveSphereMesh.
 	totalMismatch += nxDriveSphereMesh(base);
 
+	// Mesh shape raycast (001405); see nxDriveMeshRaycast.
+	totalMismatch += nxDriveMeshRaycast(base);
+
 	// Plane/mesh contact and overlap use the scene's PlanesCollider/PlanesCache
 	// pair and must remain part of the pinned oracle differential.
 	totalMismatch += nxDrivePlaneMesh(base);
@@ -15475,6 +15479,202 @@ static unsigned nxDriveSphereMesh(unsigned char* base)
 	nx2iFoundationEnd();
 	return total;
 	}
+
+// Mesh shape raycast (phys_fn_001405, MESH vtable slot 5). The oracle row takes the scene's RayCollider from
+// the shape's owner chain (shape + 4 -> +4 -> +0x450); the candidate keeps one of its own. Both are asked the
+// same ray over the Task 2i mesh trees: identity and posed shapes, with and without a face remap, with and
+// without the normal in the hint, and several distance limits. The return value and the whole hit record are
+// compared (the shape pointer as whether it is the shape's collision object).
+extern const NxCollisionShape* __fastcall NxShapeRaycastMesh(const NxCollisionShape* shape, void* edxUnused,
+	const NxRay* worldRay, NxReal maxDistance, NxU32 unread, NxU32 hintFlags, NxRaycastHit* hit);
+
+static unsigned nxDriveMeshRaycast(unsigned char* base)
+	{
+	unsigned mismatches = 0;
+	static const unsigned picks[6] = { 0, 1, 2, 3, 4, 6 };
+	static Nx2gSide owners[2];
+	static Nx2iSide sides[2];
+	static Nx2iMeshWords words[kNb2iMeshes];
+	static unsigned char shapeStorage[2][kShapeBytes];
+	static unsigned char ownerStorage[2][0x40];
+	static unsigned char sceneHolder[2][0x40];
+	static unsigned char sceneBlock[2][0x600];
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest); nxDigestInit(&candidateDigest);
+	if(!nx2iFoundationBegin())
+		return 1;
+	unsigned buildFailures = 0, state = 0x7d2e91c4u;
+	NxDigest fixture;
+	nxDigestInit(&fixture);
+	for(unsigned i = 0; i < 6; ++i)
+		nx2iDrawMeshWords(&state, &fixture, picks[i], words[picks[i]]);
+	for(int side = 0; side < 2; ++side)
+		{
+		owners[side].oracle = side == 0;
+		owners[side].base = base;
+		nx2iInitSide(owners[side], sides[side], words, &buildFailures);
+		}
+	// The oracle's scene RayCollider, constructed by the oracle's constructor.
+	memset(sceneBlock, 0, sizeof(sceneBlock));
+	nx2gCall0(base + 0x000b5720, sceneBlock[0] + 0x450);
+	typedef const void*(__thiscall* OracleRaycastFn)(void* shape, const NxRay*, float, unsigned, unsigned, void* hit);
+	const OracleRaycastFn oracleRaycast = (OracleRaycastFn)(base + 0x00029230);
+	unsigned cases = 0, hits = 0, withNormal = 0, posedHits = 0, inexactWords = 0, worstUlp = 0;
+	for(unsigned pi = 0; pi < 6; ++pi)
+		{
+		const unsigned m = picks[pi];
+		const Nx2hMesh& mesh = nx2iMesh(m);
+		float lo[3] = { FLT_MAX, FLT_MAX, FLT_MAX }, hi[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+		for(unsigned v = 0; v < mesh.nbVerts; ++v)
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float x = ((const float*)mesh.verts)[3 * v + a];
+				if(x < lo[a]) lo[a] = x;
+				if(x > hi[a]) hi[a] = x;
+				}
+		for(unsigned variant = 0; variant < 4; ++variant)
+			for(unsigned k = 0; k < 60; ++k)
+				{
+				const bool posed = (variant & 1) != 0;
+				const bool remap = (variant & 2) != 0;
+				float centre[3], target[3], origin[3], direction[3];
+				for(unsigned a = 0; a < 3; ++a)
+					{
+					centre[a] = 0.5f * (lo[a] + hi[a]);
+					target[a] = lo[a] + (hi[a] - lo[a]) * nxUnit(&state).value;
+					origin[a] = centre[a] + (nxUnit(&state).value * 2.0f - 1.0f) * (hi[a] - lo[a] + 2.0f);
+					}
+				float length = 0.0f;
+				for(unsigned a = 0; a < 3; ++a)
+					{
+					direction[a] = target[a] - origin[a];
+					length += direction[a] * direction[a];
+					}
+				length = sqrtf(length);
+				for(unsigned a = 0; a < 3; ++a)
+					direction[a] = length > 0.0f ? direction[a] / length : (a == 0 ? 1.0f : 0.0f);
+				static const float kLimits[4] = { 0.4f, 3.0f, 40.0f, 1.0e30f };
+				const float maxDistance = kLimits[nxNext(&state) & 3];
+				const unsigned hint = (k & 1) ? NX_RAYCAST_NORMAL : 0;
+				NxCollisionShape* shapes[2];
+				// A random pose, drawn once for both sides.
+				static unsigned char poseStorage[kShapeBytes];
+				NxCollisionShape& pose = *(NxCollisionShape*)poseStorage;
+				nxIdentity(&pose);
+				float poseTranslation[3] = { 0.0f, 0.0f, 0.0f };
+				if(posed)
+					{
+					nxRandomRotation(&state, &pose);
+					for(unsigned a = 0; a < 3; ++a)
+						poseTranslation[a] = nxUnit(&state).value * 2.0f - 1.0f;
+					}
+				// The ray is given in the world: when the shape is posed, carry the local ray out by the pose.
+				float worldOrigin[3], worldDirection[3];
+				for(unsigned a = 0; a < 3; ++a)
+					{
+					worldOrigin[a] = posed ? pose.rotation[3 * a] * origin[0] + pose.rotation[3 * a + 1] * origin[1]
+						+ pose.rotation[3 * a + 2] * origin[2] + poseTranslation[a] : origin[a];
+					worldDirection[a] = posed ? pose.rotation[3 * a] * direction[0] + pose.rotation[3 * a + 1] * direction[1]
+						+ pose.rotation[3 * a + 2] * direction[2] : direction[a];
+					}
+				NxRay ray;
+				ray.orig.set(worldOrigin[0], worldOrigin[1], worldOrigin[2]);
+				ray.dir.set(worldDirection[0], worldDirection[1], worldDirection[2]);
+				nxFoldInput(&fixture, &variant, sizeof(variant));
+				nxFoldInput(&fixture, &ray, sizeof(ray));
+				nxFoldInput(&fixture, &maxDistance, sizeof(maxDistance));
+				nxFoldInput(&fixture, &hint, sizeof(hint));
+				unsigned char hitStorage[2][0x30];
+				const void* result[2] = { 0, 0 };
+				for(int side = 0; side < 2; ++side)
+					{
+					shapes[side] = (NxCollisionShape*)shapeStorage[side];
+					NxCollisionShape& shape = *shapes[side];
+					nxIdentity(&shape);
+					shape.type = 4;
+					memcpy(shape.rotation, pose.rotation, 9 * sizeof(float));
+					memcpy(shape.translation, poseTranslation, sizeof(poseTranslation));
+					Nx2iMeshSide& ms = sides[side].meshes[m];
+					*(unsigned char**)(&shape.geometry[0]) = (unsigned char*)ms.image;
+					ms.image[0x18 / 4] = remap ? (unsigned)(size_t)ms.materials : 0;
+					ms.image[0x1c / 4] = remap ? (unsigned)(size_t)ms.remap : 0;
+					ms.image[0x28 / 4] = (unsigned)(size_t)ms.model;
+					// +0x70 is copied into the oracle collider; zero, as a real mesh has it, lets the collider run.
+					ms.image[0x70 / 4] = 0;
+					memcpy(sides[side].meshes[m].remap, words[m].remap, 4 * nx2iMesh(m).nbTris);
+					// The collision object pointer the hit reports, and the owner chain the oracle row walks.
+					*(unsigned char**)((unsigned char*)&shape + 0x9c) = (unsigned char*)&ownerStorage[side];
+					memset(ownerStorage[side], 0, sizeof(ownerStorage[side]));
+					memset(sceneHolder[side], 0, sizeof(sceneHolder[side]));
+					*(unsigned char**)((unsigned char*)&shape + 4) = ownerStorage[side];
+					*(unsigned char**)(ownerStorage[side] + 4) = sceneBlock[side];
+					memset(hitStorage[side], 0xcd, sizeof(hitStorage[side]));
+					if(side == 0)
+						result[side] = oracleRaycast(shapes[0], &ray, maxDistance, 0, hint, hitStorage[0]);
+					else
+						result[side] = NxShapeRaycastMesh(shapes[1], 0, &ray, maxDistance, 0, hint, (NxRaycastHit*)hitStorage[1]);
+					}
+				++cases;
+				const bool hitOracle = result[0] != 0;
+				hits += hitOracle;
+				withNormal += hitOracle && (hint & NX_RAYCAST_NORMAL);
+				posedHits += hitOracle && posed;
+				bool different = (result[0] != 0) != (result[1] != 0);
+				if(!different)
+					{
+					const unsigned* a = (const unsigned*)hitStorage[0];
+					const unsigned* b = (const unsigned*)hitStorage[1];
+					if((a[0] != 0) != (b[0] != 0))
+						different = true;
+					// The floats the collider computes (the impact, the normal, the distance and u, v) come out of the
+					// vendored RayCollider, which the candidate compiles differently from the oracle: they may differ by
+					// a few units in the last place. Everything else -- the face, the flags, an untouched word -- is exact.
+					for(unsigned w = 1; w < 12; ++w)
+						{
+						const bool isFloat = w <= 6 || w >= 8 && w <= 10;
+						if(a[w] == b[w])
+							continue;
+						if(!isFloat || (a[w] >> 31) != (b[w] >> 31) || a[w] == 0xcdcdcdcdu || b[w] == 0xcdcdcdcdu)
+							{
+							different = true;
+							continue;
+							}
+						float fa, fb;
+						memcpy(&fa, &a[w], 4);
+						memcpy(&fb, &b[w], 4);
+						const float delta = fa > fb ? fa - fb : fb - fa;
+						const float scale = 1.0f + (fa < 0 ? -fa : fa) + (fb < 0 ? -fb : fb);
+						++inexactWords;
+						const unsigned relative = (unsigned)(delta / scale * 1.0e9f);
+						if(relative > worstUlp)
+							worstUlp = relative;
+						if(delta > 2.0e-6f * scale)
+							different = true;
+						}
+					}
+				mismatches += different;
+				nxDigestByte(&oracleDigest, (unsigned char)hitOracle);
+				nxDigestByte(&candidateDigest, (unsigned char)(result[1] != 0));
+				for(unsigned w = 1; w < 12; ++w)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char)((const unsigned*)hitStorage[0])[w]);
+					nxDigestByte(&candidateDigest, (unsigned char)((const unsigned*)hitStorage[1])[w]);
+					}
+				}
+		}
+	printf("collision name=shape_raycast_mesh index=- rva=0x00029230 owner=phys_fn_001405 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=shape_raycast_mesh meshes=6 cases=%u hits=%u with_normal=%u posed_hits=%u\n",
+		cases, hits, withNormal, posedHits);
+	printf("collision shape_raycast_mesh float_words_inexact=%u worst_relative_nano=%u\n", inexactWords, worstUlp);
+	nxPrintInput("shape_raycast_mesh", &fixture);
+	nx2gCall0(base + 0x000b5760, sceneBlock[0] + 0x450);
+	const unsigned total = mismatches + buildFailures;
+	for(int side = 0; side < 2; ++side) nx2iReleaseSide(owners[side], sides[side]);
+	nx2iFoundationEnd();
+	return total;
+	}
+
 
 
 extern "C" void __stdcall nxMeshContactAccumulate(unsigned, unsigned, unsigned, const unsigned*, const float*);

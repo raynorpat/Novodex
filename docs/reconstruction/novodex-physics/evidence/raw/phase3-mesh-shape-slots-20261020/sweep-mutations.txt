@@ -1,0 +1,6 @@
+static_cast<double>(dz) * r[6] + -> static_cast<double>(dz) * r[7] + exit 1 slot7_failures 20
+const unsigned planeIndex = map[index]; -> const unsigned planeIndex = map[0]; exit 1 slot7_failures 11
+memcpy(&ray.orig, tree + 0x18, 12); -> memcpy(&ray.orig, tree + 0x1c, 12); exit 1 slot7_failures 20
+if(classifier == nullptr) 		{ 		memcpy(out, mesh + -> if(classifier != nullptr) 		{ 		memcpy(out, mesh + exit 3221225477 slot7_failures 0
+memcpy(out, mesh + 0x68, 4); -> memcpy(out, mesh + 0x6c, 4); exit 1 slot7_failures 4
+const double dx = static_cast<double>(point[0]) -  -> const double dx = static_cast<double>(point[0]) +  exit 1 slot7_failures 20

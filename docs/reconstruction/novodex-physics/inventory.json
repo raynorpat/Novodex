@@ -26990,13 +26990,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ShapeRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/563",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3600",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA at RVA 0x00029230 (slot 5 of the mesh shape's vtable, thiscall, five stack arguments, `ret 0x14`): takes the scene's RayCollider from the shape's owner chain (shape + 4 -> + 4 -> + 0x450), puts it in closest-hit mode with the distance limit, collides the world ray with the mesh's OPCODE model through the shape's pose, and expands the closest face into a hit record (impact, face with the optional remap, distance, u, v, and, when asked, the normal from the lazily built smooth vertex normals). The earlier model in ShapeRaycast.cpp keeps a collider of its own in place of the scene's.",
+      "dynamic_proof": "driven and gated: the transcript lines 'collision name=shape_raycast_mesh' and 'collision coverage name=shape_raycast_mesh' are registered coverage assertions in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's row (with a RayCollider the oracle's own constructor built, in a stand-in scene block) and the candidate's over 1,440 rays on the six Task 2i meshes (identity and posed, with and without the face remap, with and without the normal, four distance limits; 331 hits, 165 with normals): the return, the face, the flags and every untouched word are exact, and the floats the vendored collider computes agree to 1.7e-7 relative (the candidate compiles the collider differently); zero mismatches. Ten mutations of the model are rejected (mismatches 1 to 331). See evidence/phase3-mesh-shape-slots.md.",
+      "notes": "The row is modelled, not transcribed: the oracle reads the scene's RayCollider through the shape's owner chain and the candidate keeps one of its own; the collider's float outputs differ from the oracle's by a few parts in 10^7, so the gate compares them to 2e-6 relative. mesh + 0x70, which the row copies into the collider, is zero in the harness.",
+      "implementation": "Physics/src/ShapeRaycast.cpp",
+      "implementation_symbol": "?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z",
+        "address": "0x1007b810",
+        "object": "ShapeRaycast.obj"
+      }
     },
     {
       "id": "phys_fn_001406",
@@ -27026,13 +27034,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/564",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3609",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Null-classifier and prepared-plane arms are differentially checked in MeshShape::nxMeshSweepPrepared (the ObjectModel.cpp model; NxPhysicsShapeVtableTests). Since convex-mesh gap Task 2f the model takes the sample from the product lookup 001556 and builds the hull's polygons when absent through the product 001472 (Physics/src/IceSupportMaps.cpp, ConvexHull.cpp), as the listing calls them (0x000296a7, 0x000296c8); the row itself is not reconstructed."
+      "static_proof": "IDA at RVA 0x00029610 (slot 7 of the mesh shape's vtable, thiscall, `ret 8`): with no classifier at mesh + 0xac it returns false and copies the mesh's + 0x68 word; otherwise it carries the point into the mesh's frame, picks the polygon plane the support map names for that direction (001556), builds the hull's polygons first if absent (001472), and writes the ray/plane distance from the hull's origin.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests calls the oracle's row at 0x00029610 and the candidate's MeshShape::nxMeshSweepPrepared over 24 samples (four with no classifier, twenty with a prepared plane table, pose and bin count varied), comparing the return and both output words: all match. Six mutations of the model are rejected (4 to 20 of the 24 samples differ). See evidence/phase3-mesh-shape-slots.md.",
+      "notes": "The model is C++, not a listing transcription; the support map and the polygons come from the product rows 001556 and 001472. The fixture is hand-built (a three-plane table and a 54-entry map), not a cooked mesh.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z",
+        "address": "0x1004edf0",
+        "object": "ObjectModel.obj"
+      }
     },
     {
       "id": "phys_fn_001408",
