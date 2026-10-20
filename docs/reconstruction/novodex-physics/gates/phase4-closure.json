@@ -55,11 +55,11 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 744,
-    "deferred_not_reconstructed_in_phase": 144,
+    "deferred_not_reconstructed_in_phase": 126,
     "deferred_vendored_not_falsified": 86,
     "oracle_differential_falsified": 55,
     "differential_falsified": 16,
-    "deferred_blocked_on_later_phase": 8
+    "deferred_blocked_on_later_phase": 26
   },
   "closed": [
     {
@@ -8072,73 +8072,109 @@
       "id": "phys_fn_005295",
       "rva": "0x000e7250",
       "size": 217,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7253 (fld dword ptr [ecx + 0xc]) made `fld dword ptr [ecx + 0x10]`; mismatches=366). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005303",
       "rva": "0x000e7380",
       "size": 452,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e73bd (mov ebx, dword ptr [edx + 0x10]) made `mov ebx, dword ptr [edx + 0x14]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005305",
       "rva": "0x000e7570",
       "size": 89,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7582 (mov eax, dword ptr [esp + 0x18]) made `mov eax, dword ptr [esp + 0x1c]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005307",
       "rva": "0x000e75d0",
       "size": 21,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e75d6 (je Le75e2) made `jne Le75e2`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005309",
       "rva": "0x000e75f0",
       "size": 117,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7605 (shr eax, 5) made `shr eax, 6`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005313",
       "rva": "0x000e7690",
       "size": 33,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e76a5 (push 0) made `push 1`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005315",
       "rva": "0x000e76c0",
       "size": 391,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e771a (mov edx, dword ptr [eax]) made `mov edx, dword ptr [eax + 4]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005317",
       "rva": "0x000e7850",
       "size": 816,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7879 (fld dword ptr [eax + 0x10]) made `fld dword ptr [eax + 0x14]`; mismatches=22). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005318",
       "rva": "0x000e7b80",
       "size": 136,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7bbe (lea ecx, [esp + 0x18]) made `lea ecx, [esp + 0x1c]`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005357",
@@ -8387,73 +8423,109 @@
       "id": "phys_fn_005545",
       "rva": "0x000f1970",
       "size": 178,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f197a (fld dword ptr [ecx]) made `fld dword ptr [ecx + 4]`; mismatches=2). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005547",
       "rva": "0x000f1a30",
       "size": 56,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1a39 (mov esi, dword ptr [esp + 0xc]) made `mov esi, dword ptr [esp + 0x10]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005549",
       "rva": "0x000f1a70",
       "size": 80,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1a8f (je Lf1abd) made `jne Lf1abd`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005550",
       "rva": "0x000f1ac0",
       "size": 412,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1af6 (fadd dword ptr [ecx]) made `fadd dword ptr [ecx + 4]`; mismatches=16). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005552",
       "rva": "0x000f1c60",
       "size": 70,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1c66 (mov ecx, dword ptr [ecx + 0x4c]) made `mov ecx, dword ptr [ecx + 0x50]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005554",
       "rva": "0x000f1cb0",
       "size": 93,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1cd1 (mov eax, dword ptr [edi + 0xc]) made `mov eax, dword ptr [edi + 0x10]`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005556",
       "rva": "0x000f1d10",
       "size": 49,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1d13 (mov eax, dword ptr [ecx + 0x48]) made `mov eax, dword ptr [ecx + 0x4c]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005558",
       "rva": "0x000f1d50",
       "size": 93,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1d5c (jae Lf1daa) made `jb Lf1daa`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005560",
       "rva": "0x000f1db0",
       "size": 49,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "Pruner",
+      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1dc7 (mov eax, dword ptr [esp + 0x14]) made `mov eax, dword ptr [esp + 0x18]`; mismatches=18). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_005566",

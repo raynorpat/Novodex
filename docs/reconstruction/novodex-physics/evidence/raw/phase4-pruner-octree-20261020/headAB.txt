@@ -1,0 +1,40 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// PrunerOctree.cpp: the loose octree the bounded dynamic pruner (the scene's type-1 pruner) keeps: a 0x50-byte
+// header (the world box, its centre negated, the root side and six level scales, the depth, the node count and the
+// node array at +0x4c) over 32-byte node records (a box, an object count and the head of a list of objects).
+// Naked listing transcriptions of phys_fn_005295 (0x000e7250), 005303 (0x000e7380), 005305 (0x000e7570), 005307
+// (0x000e75d0), 005309 (0x000e75f0), 005313 (0x000e7690), 005315 (0x000e76c0), 005317 (0x000e7850) and 005318
+// (0x000e7b80), with the two helpers they inline from elsewhere (000923, AABB::SetCenterExtents, and 005145,
+// AABB::IsInside), and of the queries over it: 005545 (0x000f1970, sphere against a box), 005547 (0x000f1a30, a
+// node's objects appended), 005549 (0x000f1a70, a subtree's), 005550 and 005552 (0x000f1ac0 and 0x000f1c60, the
+// plane walk and its entry), 005554 and 005556 (0x000f1cb0 and 0x000f1d10, the segment walk and entry) and 005558
+// and 005560 (0x000f1d50 and 0x000f1db0, the ray walk and entry). The octree's jump table (0x000e7544, eight cases) is a chain of compares here: the inline
+// assembler cannot emit a table of label addresses; the compare script checks the chain against the table.
+// Compare script: docs/reconstruction/novodex-physics/evidence/phase4-pruner-octree-listing-compare.py.
+#include "Opcode.h"
+#include "IcePrunable.h"
+
+extern "C" void nxPOCallAllocator();
+extern "C" void nxPOCallMakeCube();
+extern "C" void nxPOCallFtol();
+extern "C" void nxPQCallContainerResize();
+extern "C" void nxPQCallSegmentAABB();
+extern "C" void nxPQCallRayAABB();
+extern "C" void* nxPOAdapterNotify;
+#pragma comment(linker, "/alternatename:_nxPOCallAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
+#pragma comment(linker, "/alternatename:_nxPOCallMakeCube=?MakeCube@AABB@IceMaths@@QBEMAAV12@@Z")
+#pragma comment(linker, "/alternatename:_nxPOCallFtol=__ftol2")
+#pragma comment(linker, "/alternatename:_nxPQCallContainerResize=?resize@SdkContainer@@QAE_NI@Z")
+#pragma comment(linker, "/alternatename:_nxPQCallSegmentAABB=?nxSegmentAABB@@YA_NABVSegment@IceMaths@@ABVPoint@2@1@Z")
+#pragma comment(linker, "/alternatename:_nxPQCallRayAABB=?nxRayAABB@@YA_NABVRay@IceMaths@@ABVPoint@2@1@Z")
+#pragma comment(linker, "/alternatename:_nxPOAdapterNotify=?gPrunableAdapterNotify@@3P6AXPAVPrunable@@PAVAABB@IceMaths@@@ZA")
+
+@@PROTOS@@
+@@BODY@@

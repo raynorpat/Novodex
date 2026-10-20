@@ -2741,6 +2741,8 @@ static unsigned nxDriveMeshRaycast(unsigned char* base);
 static unsigned nxDriveMeshDebug(unsigned char* base);
 static unsigned nxDriveMeshMass(unsigned char* base);
 static unsigned nxDriveMeshTopology(unsigned char* base);
+static unsigned nxDrivePrunerOctreeQueries(unsigned char* base);
+static unsigned nxDrivePrunerOctree(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
 static unsigned nxDriveTask2lSinkReset(unsigned char* base);
@@ -4325,6 +4327,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool meshDebugOnly = argc == 4 && wcscmp(argv[3], L"--mesh-debug-only") == 0;
 	const bool meshMassOnly = argc == 4 && wcscmp(argv[3], L"--mesh-mass-only") == 0;
 	const bool meshTopologyOnly = argc == 4 && wcscmp(argv[3], L"--mesh-topology-only") == 0;
+	const bool pruner_octree_queryOnly = argc == 4 && wcscmp(argv[3], L"--pruner-octree-query-only") == 0;
+	const bool pruner_octreeOnly = argc == 4 && wcscmp(argv[3], L"--pruner-octree-only") == 0;
 	const bool planeMeshOnly = argc == 4 && wcscmp(argv[3], L"--plane-mesh-only") == 0;
 	const bool ownerPairOnly = argc == 4 && wcscmp(argv[3], L"--owner-pair-only") == 0;
 	const bool sceneOwnerPairRecordsOnly = argc == 4 && wcscmp(argv[3], L"--scene-owner-pair-records-only") == 0;
@@ -4337,7 +4341,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
 	const bool prunerPoolReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-pool-reserve-only") == 0;
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4409,6 +4413,18 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned mismatches = nxDriveTask2j(base);
 		printf("collision matrix_wrong=0 index_wrong=0 mismatches=%u\n", mismatches);
 		printf("collision=%s\n", mismatches ? "fail" : "pass");
+		return mismatches ? 1 : 0;
+		}
+	if(pruner_octreeOnly)
+		{
+		const unsigned mismatches = nxDrivePrunerOctree(base);
+		printf("collision pruner_octree mismatches=%u\n", mismatches);
+		return mismatches ? 1 : 0;
+		}
+	if(pruner_octree_queryOnly)
+		{
+		const unsigned mismatches = nxDrivePrunerOctreeQueries(base);
+		printf("collision pruner_octree_query mismatches=%u\n", mismatches);
 		return mismatches ? 1 : 0;
 		}
 	if(meshTopologyOnly)
@@ -9894,6 +9910,12 @@ int wmain(int argc, wchar_t** argv)
 
 	// InternalTriangleMesh topology, release and destructor rows (002067, 002085, 002087 to 002093); see nxDriveMeshTopology.
 	totalMismatch += nxDriveMeshTopology(base);
+
+	// Bounded dynamic pruner octree queries (005545 to 005560); see nxDrivePrunerOctreeQueries.
+	totalMismatch += nxDrivePrunerOctreeQueries(base);
+
+	// Bounded dynamic pruner octree (005295 to 005318); see nxDrivePrunerOctree.
+	totalMismatch += nxDrivePrunerOctree(base);
 
 	// Plane/mesh contact and overlap use the scene's PlanesCollider/PlanesCache
 	// pair and must remain part of the pinned oracle differential.
@@ -16674,6 +16696,650 @@ static unsigned nxDriveMeshTopology(unsigned char* base)
 		nbSources, cases, rebuilt, failed, split, withMaterials, withRemap, releases);
 	nxPrintInput("mesh_topology", &fixture);
 	nxSetControl(kControlDefault);
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
+// The bounded dynamic pruner's loose octree (phys_fn_005295, 005303, 005305, 005307, 005309, 005313, 005315, 005317,
+// 005318) and the two AABB helpers it inlines (000923, 005145): the oracle's rows and the candidate's naked
+// transcriptions build octrees of depth 0 to 5 over random boxes, insert objects (the box given, or asked of the
+// adapter hook), update them after the hook's boxes move, remove them and walk the tree. The 0x50-byte header, every
+// node record (the object counts and list heads as indices), every object's links, the return values, the walk
+// callbacks' arguments, the hook's calls and the SDK allocator's malloc and free sequence are compared.
+bool __fastcall nxPOBuild(void* tree, void* edxUnused, unsigned depth, const void* bounds);
+bool __fastcall nxPOInsert(void* tree, void* edxUnused, void* object, const void* bounds);
+bool __fastcall nxPOUpdate(void* tree, void* edxUnused, void* object);
+bool __fastcall nxPORemove(void* tree, void* edxUnused, void* object);
+bool __fastcall nxPOForEach(void* tree, void* edxUnused, void* callback, void* user);
+void __fastcall nxPOWalk(void* tree, void* edxUnused, unsigned node, void* parent, void* callback, void* user);
+void __fastcall nxPOScaleBounds(void* bounds, void* edxUnused, float scale);
+bool __cdecl nxPOLeafCallback(void* a, void* b);
+void __fastcall nxPOSetCenterExtents(void* aabb, void* edxUnused, const void* center, const void* extents);
+bool __fastcall nxPOIsInside(const void* self, void* edxUnused, const void* other);
+extern "C" void* nxPOTestNotify;
+#pragma comment(linker, "/alternatename:_nxPOTestNotify=?gPrunableAdapterNotify@@3P6AXPAVPrunable@@PAVAABB@IceMaths@@@ZA")
+
+class NxPOAllocator : public NxUserAllocator
+	{
+	public:
+	unsigned log[4096], nbLog;
+	NxPOAllocator() : nbLog(0) {}
+	void* mallocDEBUG(size_t size, const char*, int) override { return take(size); }
+	void* malloc(size_t size) override { return take(size); }
+	void* realloc(void* memory, size_t size) override { return ::realloc(memory, size); }
+	void free(void* memory) override { if(nbLog < 4096) log[nbLog++] = 0xffffffffu; ::free(memory); }
+	void* take(size_t size) { if(nbLog < 4096) log[nbLog++] = (unsigned) size; return ::malloc(size ? size : 1); }
+	};
+
+class NxPOSdkAllocator : public SdkAllocator
+	{
+	public:
+	explicit NxPOSdkAllocator(NxUserAllocator* value) : allocator(value) {}
+	void* malloc(size_t size, NxMemoryType type) override { return allocator->malloc(size, type); }
+	void* mallocDEBUG(size_t size, const char* file, int line, const char* name, NxMemoryType type) override
+		{ return allocator->mallocDEBUG(size, file, line, name, type); }
+	void* realloc(void* memory, size_t size) override { return allocator->realloc(memory, size); }
+	void free(void* memory) override { allocator->free(memory); }
+	NxUserAllocator* allocator;
+	};
+
+static const unsigned kPONbObjects = 48;
+static float gPOBoxes[2][kPONbObjects][6];
+static unsigned gPOPhase, gPOHookCalls;
+
+// The adapter hook: the object's owner word is its index.
+static void __cdecl nxPOHook(void* owner, void* sphere)
+	{
+	// The rows hand the hook sixteen bytes: a centre and a radius (here the box's centre and half extent in x).
+	++gPOHookCalls;
+	const float* box = gPOBoxes[gPOPhase][(size_t) owner % kPONbObjects];
+	float out[4] = { 0.5f * (box[0] + box[3]), 0.5f * (box[1] + box[4]), 0.5f * (box[2] + box[5]), 0.5f * (box[3] - box[0]) };
+	memcpy(sphere, out, 16);
+	}
+
+// A walk callback: records (parent node index, node index, user) and stops once the user's budget is spent.
+static unsigned char* gPONodes;
+static unsigned gPOWalkLog[2048], gPOWalkCount, gPOWalkBudget;
+static bool __cdecl nxPOWalkCallback(void* parent, void* node, void* user)
+	{
+	if(gPOWalkCount + 3 <= 2048)
+		{
+		gPOWalkLog[gPOWalkCount++] = parent ? (unsigned) (((unsigned char*) parent - gPONodes) / 32) : 0xffffffffu;
+		gPOWalkLog[gPOWalkCount++] = (unsigned) (((unsigned char*) node - gPONodes) / 32);
+		gPOWalkLog[gPOWalkCount++] = (unsigned) (size_t) user;
+		}
+	return gPOWalkBudget == 0 || --gPOWalkBudget != 0;
+	}
+
+static unsigned nxPOCallN(const void* fn, void* self, unsigned n, unsigned a0, unsigned a1, unsigned a2, unsigned a3)
+	{
+	unsigned r;
+	__asm
+		{
+		cmp		n, 4
+		jb		l3
+		push	a3
+		l3:
+		cmp		n, 3
+		jb		l2
+		push	a2
+		l2:
+		cmp		n, 2
+		jb		l1
+		push	a1
+		l1:
+		cmp		n, 1
+		jb		l0
+		push	a0
+		l0:
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+
+struct NxPOSide
+	{
+	bool oracle;
+	unsigned char* base;
+	unsigned char tree[0x50];
+	unsigned objects[kPONbObjects][8];
+	};
+
+// A side's tree, objects and (normalised) results into a digest: the header without its pointer, the nodes with
+// the list heads as object indices, every object's links as indices.
+static void nxPODigest(NxDigest* d, NxPOSide& s)
+	{
+	nxFoldInput(d, s.tree, 0x4c);
+	const unsigned count = *(unsigned*) (s.tree + 0x48);
+	const unsigned char* nodes = *(unsigned char**) (s.tree + 0x4c);
+	if(!nodes)
+		return;
+	for(unsigned n = 0; n < count; ++n)
+		{
+		unsigned record[8];
+		memcpy(record, nodes + 32 * n, 32);
+		unsigned head = record[7];
+		record[7] = 0xffffffffu;
+		for(unsigned i = 0; i < kPONbObjects; ++i)
+			if(head == (unsigned) (size_t) s.objects[i])
+				record[7] = i;
+		if(head && record[7] == 0xffffffffu)
+			record[7] = 0xfffffffeu;
+		nxFoldInput(d, record, 32);
+		}
+	for(unsigned i = 0; i < kPONbObjects; ++i)
+		{
+		unsigned o[5] = { s.objects[i][1], 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu };
+		for(unsigned j = 0; j < kPONbObjects; ++j)
+			{
+			if(s.objects[i][2] == (unsigned) (size_t) s.objects[j]) o[1] = j;
+			if(s.objects[i][3] == (unsigned) (size_t) s.objects[j]) o[2] = j;
+			}
+		if(s.objects[i][4])
+			o[3] = nodes ? (unsigned) (((unsigned char*) (size_t) s.objects[i][4] - nodes) / 32) : 0xfffffffeu;
+		else
+			o[3] = 0xffffffffu;
+		nxFoldInput(d, o, sizeof(o));
+		}
+	}
+
+static unsigned nxDrivePrunerOctree(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return 1;
+	NxPOAllocator allocator;
+	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
+	NxPOSdkAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return 1;
+	void** const oracleNotify = (void**) (base + 0x00128500);
+	void* const savedOracleNotify = *oracleNotify;
+	void* const savedCandidateNotify = nxPOTestNotify;
+	*oracleNotify = (void*) &nxPOHook;
+	nxPOTestNotify = (void*) &nxPOHook;
+	DWORD oldProtection;
+	VirtualProtect(oracleNotify, 4, PAGE_READWRITE, &oldProtection);
+	*oracleNotify = (void*) &nxPOHook;
+
+	static NxPOSide sides[2];
+	for(int side = 0; side < 2; ++side)
+		{
+		sides[side].oracle = side == 0;
+		sides[side].base = base;
+		}
+	NxDigest oracleDigest, candidateDigest, fixture;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&fixture);
+	unsigned mismatches = 0, cases = 0, built = 0, inserted = 0, rejected = 0, updated = 0, removed = 0, walked = 0, hooks = 0;
+	unsigned state = 0x6a09e667u;
+	const unsigned depths[] = { 0, 1, 2, 3, 4, 5, 1, 2, 3, 0, 4, 2 };
+
+	for(unsigned c = 0; c < sizeof(depths) / sizeof(depths[0]); ++c)
+		{
+		const unsigned depth = depths[c];
+		// The root box and two generations of object boxes.
+		float root[6], boxes[2][kPONbObjects][6];
+		for(unsigned a = 0; a < 3; ++a)
+			{
+			root[a] = -2.0f - 8.0f * nxUnit(&state).value;
+			root[3 + a] = 1.0f + 8.0f * nxUnit(&state).value;
+			}
+		for(unsigned phase = 0; phase < 2; ++phase)
+			for(unsigned i = 0; i < kPONbObjects; ++i)
+				{
+				const unsigned kind = nxNext(&state) % 8;
+				for(unsigned a = 0; a < 3; ++a)
+					{
+					const float centre = root[a] + (root[3 + a] - root[a]) * (kind == 7 ? 1.4f * nxUnit(&state).value - 0.2f : nxUnit(&state).value);
+					float half = (kind == 0 ? 0.01f : kind == 1 ? 3.0f : 0.1f + 0.7f * nxUnit(&state).value);
+					boxes[phase][i][a] = centre - half;
+					boxes[phase][i][3 + a] = centre + half;
+					}
+				}
+		memcpy(gPOBoxes, boxes, sizeof(boxes));
+		nxFoldInput(&fixture, root, sizeof(root));
+		nxFoldInput(&fixture, boxes, sizeof(boxes));
+		for(unsigned mode = 0; mode < 2; ++mode)
+			{
+			unsigned results[2][400], nbResults[2] = { 0, 0 };
+			unsigned logs[2][2][4096], logCounts[2] = { 0, 0 };
+			NxDigest digests[2];
+			nxDigestInit(&digests[0]);
+			nxDigestInit(&digests[1]);
+			for(int side = 0; side < 2; ++side)
+				{
+				NxPOSide& s = sides[side];
+				unsigned* R = results[side];
+				unsigned& nr = nbResults[side];
+				NxDigest& d = digests[side];
+				memset(s.tree, 0, sizeof(s.tree));
+				memset(s.objects, 0, sizeof(s.objects));
+				for(unsigned i = 0; i < kPONbObjects; ++i)
+					s.objects[i][1] = i;
+				gPOPhase = 0;
+				gPOHookCalls = 0;
+				allocator.nbLog = 0;
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				const bool o = side == 0;
+				// Calls, oracle by address and candidate directly.
+				#define PO_BUILD(depth_, bounds_) (o ? (nxPOCallN(base + 0x000e76c0, s.tree, 2, (depth_), (unsigned) (size_t) (bounds_), 0, 0) & 0xff) : (unsigned) nxPOBuild(s.tree, 0, (depth_), (bounds_)))
+				#define PO_INSERT(obj_, bounds_) (o ? (nxPOCallN(base + 0x000e7850, s.tree, 2, (unsigned) (size_t) (obj_), (unsigned) (size_t) (bounds_), 0, 0) & 0xff) : (unsigned) nxPOInsert(s.tree, 0, (obj_), (bounds_)))
+				#define PO_UPDATE(obj_) (o ? (nxPOCallN(base + 0x000e7b80, s.tree, 1, (unsigned) (size_t) (obj_), 0, 0, 0) & 0xff) : (unsigned) nxPOUpdate(s.tree, 0, (obj_)))
+				#define PO_REMOVE(obj_) (o ? (nxPOCallN(base + 0x000e75f0, s.tree, 1, (unsigned) (size_t) (obj_), 0, 0, 0) & 0xff) : (unsigned) nxPORemove(s.tree, 0, (obj_)))
+				#define PO_FOREACH(cb_, user_) (o ? (nxPOCallN(base + 0x000e7690, s.tree, 2, (unsigned) (size_t) (cb_), (user_), 0, 0) & 0xff) : (unsigned) nxPOForEach(s.tree, 0, (cb_), (void*) (size_t) (user_)))
+				R[nr++] = PO_BUILD(depth, root);
+				gPONodes = *(unsigned char**) (s.tree + 0x4c);
+				nxPODigest(&d, s);
+				for(unsigned i = 0; i < kPONbObjects; ++i)
+					R[nr++] = PO_INSERT(s.objects[i] + 0, (i % 3 == 0) ? (void*) boxes[0][i] : (void*) 0);
+				nxPODigest(&d, s);
+				R[nr++] = gPOHookCalls;
+				// The tree walked, whole and cut short, and from inner nodes.
+				for(unsigned budget = 0; budget < 4; ++budget)
+					{
+					gPOWalkCount = 0;
+					gPOWalkBudget = budget == 0 ? 0 : budget * 5;
+					R[nr++] = PO_FOREACH(nxPOWalkCallback, 0x1234 + budget);
+					R[nr++] = gPOWalkCount;
+					nxFoldInput(&d, gPOWalkLog, 4 * gPOWalkCount);
+					}
+				if(depth)
+					for(unsigned node = 1; node <= 3 && node < *(unsigned*) (s.tree + 0x48); ++node)
+						{
+						gPOWalkCount = 0;
+						gPOWalkBudget = 0;
+						if(o) nxPOCallN(base + 0x000e7570, s.tree, 4, node, 0, (unsigned) (size_t) nxPOWalkCallback, 77);
+						else nxPOWalk(s.tree, 0, node, 0, (void*) nxPOWalkCallback, (void*) 77);
+						R[nr++] = gPOWalkCount;
+						nxFoldInput(&d, gPOWalkLog, 4 * gPOWalkCount);
+						}
+				// The hook's boxes move: every object is updated.
+				gPOPhase = 1;
+				for(unsigned i = 0; i < kPONbObjects; ++i)
+					R[nr++] = PO_UPDATE(s.objects[i] + 0);
+				nxPODigest(&d, s);
+				// Every third object is removed (and some twice, and one that was never inserted).
+				for(unsigned i = 0; i < kPONbObjects; i += 3)
+					R[nr++] = PO_REMOVE(s.objects[i] + 0);
+				for(unsigned i = 0; i < kPONbObjects; i += 6)
+					R[nr++] = PO_REMOVE(s.objects[i] + 0);
+				nxPODigest(&d, s);
+				// The leaf callback loosens every node's box.
+				if(o)
+					R[nr++] = nxPOCallN(base + 0x000e7690, s.tree, 2, (unsigned) (size_t) (base + 0x000e75d0), 0, 0, 0) & 0xff;
+				else
+					R[nr++] = nxPOForEach(s.tree, 0, (void*) nxPOLeafCallback, 0);
+				nxPODigest(&d, s);
+				R[nr++] = gPOHookCalls;
+				// A rebuild over the same header (the old nodes released first).
+				for(unsigned i = 0; i < kPONbObjects; ++i)
+					s.objects[i][2] = s.objects[i][3] = s.objects[i][4] = 0;	// the old nodes go; the objects are no longer in them
+				R[nr++] = PO_BUILD(depth > 1 ? depth - 1 : depth, root);
+				gPONodes = *(unsigned char**) (s.tree + 0x4c);
+				nxPODigest(&d, s);
+				// A last rejected build (no memory is asked for a box the header copies).
+				unsigned char* nodes = *(unsigned char**) (s.tree + 0x4c);
+				if(nodes)
+					allocator.free(nodes - 4);
+				memset(s.tree, 0, sizeof(s.tree));
+				logCounts[side] = allocator.nbLog;
+				memcpy(logs[side][0], allocator.log, 4 * (allocator.nbLog < 4096 ? allocator.nbLog : 4096));
+				nxSetControl(kControlDefault);
+				#undef PO_BUILD
+				#undef PO_INSERT
+				#undef PO_UPDATE
+				#undef PO_REMOVE
+				#undef PO_FOREACH
+				}
+			++cases;
+			built += results[0][0];
+			bool different = nbResults[0] != nbResults[1] || digests[0].state != digests[1].state || logCounts[0] != logCounts[1]
+				|| memcmp(results[0], results[1], 4 * nbResults[0]) != 0
+				|| memcmp(logs[0][0], logs[1][0], 4 * (logCounts[0] < 4096 ? logCounts[0] : 4096)) != 0;
+			mismatches += different;
+			for(unsigned k = 1; k <= kPONbObjects; ++k)
+				{
+				inserted += results[0][k] != 0;
+				rejected += results[0][k] == 0;
+				}
+			for(unsigned k = 0; k < nbResults[0]; ++k)
+				walked += 0;
+			nxFoldInput(&oracleDigest, results[0], 4 * nbResults[0]);
+			nxFoldInput(&oracleDigest, &digests[0].state, 8);
+			nxFoldInput(&oracleDigest, logs[0][0], 4 * (logCounts[0] < 4096 ? logCounts[0] : 4096));
+			nxFoldInput(&candidateDigest, results[1], 4 * nbResults[1]);
+			nxFoldInput(&candidateDigest, &digests[1].state, 8);
+			nxFoldInput(&candidateDigest, logs[1][0], 4 * (logCounts[1] < 4096 ? logCounts[1] : 4096));
+			hooks += gPOHookCalls;
+			}
+		}
+
+	// The three small helpers, directly: the loosening of a box, SetCenterExtents and IsInside (NaN and tied words).
+	unsigned helperCases = 0, helperMismatches = 0;
+	static const unsigned special[] = { 0x00000000u, 0x80000000u, 0x3f800000u, 0xbf800000u, 0x40400000u, 0x7fc00000u, 0x7f800000u, 0xff800000u, 0x3dcccccdu };
+	for(unsigned k = 0; k < 600; ++k)
+		{
+		unsigned a[6], b[6], out[2][6];
+		for(unsigned w = 0; w < 6; ++w)
+			{
+			a[w] = (nxNext(&state) % 3 == 0) ? special[nxNext(&state) % 9] : (0x3f000000u + (nxNext(&state) & 0x00ffffffu));
+			b[w] = (nxNext(&state) % 4 == 0) ? a[w] : (nxNext(&state) % 3 == 0) ? special[nxNext(&state) % 9] : (0x3f000000u + (nxNext(&state) & 0x00ffffffu));
+			}
+		const unsigned scaleBits = special[nxNext(&state) % 9];
+		nxFoldInput(&fixture, a, sizeof(a));
+		nxFoldInput(&fixture, b, sizeof(b));
+		nxSetControl((k & 1) ? kControlSimulate : kControlDefault);
+		unsigned res[2][3] = { { 0, 0, 0 }, { 0, 0, 0 } };
+		// Scale: out = a scaled by the float, in place.
+		memcpy(out[0], a, 24);
+		nxPOCallN(base + 0x000e7250, out[0], 1, scaleBits, 0, 0, 0);
+		memcpy(out[1], a, 24);
+		{ float s; memcpy(&s, &scaleBits, 4); nxPOScaleBounds(out[1], 0, s); }
+		res[0][0] = memcmp(out[0], out[1], 24) != 0;
+		// SetCenterExtents(c = a[0..2], e = b[0..2]).
+		unsigned box[2][6];
+		memset(box, 0xcd, sizeof(box));
+		nxPOCallN(base + 0x000203c0, box[0], 2, (unsigned) (size_t) a, (unsigned) (size_t) b, 0, 0);
+		nxPOSetCenterExtents(box[1], 0, a, b);
+		res[0][1] = memcmp(box[0], box[1], 24) != 0;
+		// IsInside.
+		const bool io = (nxPOCallN(base + 0x000e2f70, a, 1, (unsigned) (size_t) b, 0, 0, 0) & 0xff) != 0;
+		const bool ic = nxPOIsInside(a, 0, b);
+		res[0][2] = io != ic;
+		++helperCases;
+		helperMismatches += res[0][0] | res[0][1] | res[0][2];
+		nxFoldInput(&oracleDigest, out[0], 24);
+		nxFoldInput(&candidateDigest, out[1], 24);
+		nxFoldInput(&oracleDigest, box[0], 24);
+		nxFoldInput(&candidateDigest, box[1], 24);
+		unsigned flags = io;
+		nxFoldInput(&oracleDigest, &flags, 4);
+		flags = ic;
+		nxFoldInput(&candidateDigest, &flags, 4);
+		}
+	nxSetControl(kControlDefault);
+	mismatches += helperMismatches;
+	printf("collision name=pruner_octree index=- rva=0x000e76c0 owner=phys_fn_005315 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases + helperCases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pruner_octree cases=%u built=%u inserted=%u rejected=%u hook_calls=%u helper_cases=%u control_words=2\n",
+		cases, built, inserted, rejected, hooks, helperCases);
+	nxPrintInput("pruner_octree", &fixture);
+	*oracleNotify = savedOracleNotify;
+	nxPOTestNotify = savedCandidateNotify;
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedFoundationAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
+// The bounded dynamic pruner's octree queries (phys_fn_005545, 005547, 005549, 005550, 005552, 005554, 005556,
+// 005558, 005560): the sphere-box test, the node list append, the subtree append and the plane, segment and ray
+// walks. The oracle's rows and the candidate's naked transcriptions query octrees of depth 0 to 5 holding the same
+// 48 objects (built and filled by each side's own rows, which the octree family has shown equal); the containers
+// the walks fill (as object indices), the Foundation SDK allocator's malloc and free sequence from container growth,
+// and the direct helpers' results are compared.
+bool __cdecl nxPQSphereAABB(const float* center, float radius, const float* boxMin, const float* boxMax);
+void __fastcall nxPQAppendNode(void* node, void* edxUnused, void* container);
+void __cdecl nxPQAppendSubtree(unsigned node, unsigned count, void* nodes, void* container);
+void __fastcall nxPQPlaneQuery(void* tree, void* edxUnused, const void* planes, unsigned nbPlanes, void* containerA, void* containerB);
+void __fastcall nxPQSegmentQuery(void* tree, void* edxUnused, const void* segment, void* container);
+void __fastcall nxPQRayQuery(void* tree, void* edxUnused, const void* ray, void* container);
+
+struct NxPQContainer
+	{
+	unsigned capacity, count;
+	unsigned* entries;
+	float growth;
+	};
+
+static unsigned nxPQDigestContainer(NxDigest* d, const NxPQContainer& c, NxPOSide& s)
+	{
+	nxFoldInput(d, &c.count, 4);
+	for(unsigned k = 0; k < c.count; ++k)
+		{
+		unsigned index = 0xffffffffu;
+		for(unsigned i = 0; i < kPONbObjects; ++i)
+			if(c.entries[k] == (unsigned) (size_t) s.objects[i])
+				index = i;
+		nxFoldInput(d, &index, 4);
+		}
+	return c.count;
+	}
+
+static unsigned nxDrivePrunerOctreeQueries(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return 1;
+	NxPOAllocator allocator;
+	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
+	NxPOSdkAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return 1;
+	void** const oracleNotify = (void**) (base + 0x00128500);
+	void* const savedOracleNotify = *oracleNotify;
+	void* const savedCandidateNotify = nxPOTestNotify;
+	DWORD oldProtection;
+	VirtualProtect(oracleNotify, 4, PAGE_READWRITE, &oldProtection);
+	*oracleNotify = (void*) &nxPOHook;
+	nxPOTestNotify = (void*) &nxPOHook;
+
+	static NxPOSide sides[2];
+	for(int side = 0; side < 2; ++side)
+		{
+		sides[side].oracle = side == 0;
+		sides[side].base = base;
+		}
+	NxDigest oracleDigest, candidateDigest, fixture;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&fixture);
+	unsigned mismatches = 0, cases = 0, queries = 0, hits = 0, helperCases = 0;
+	unsigned state = 0x3c6ef372u;
+	const unsigned depths[] = { 0, 1, 2, 3, 4, 5, 2, 3, 1, 4 };
+	for(unsigned c = 0; c < sizeof(depths) / sizeof(depths[0]); ++c)
+		{
+		const unsigned depth = depths[c];
+		float root[6], boxes[kPONbObjects][6];
+		for(unsigned a = 0; a < 3; ++a)
+			{
+			root[a] = -2.0f - 8.0f * nxUnit(&state).value;
+			root[3 + a] = 1.0f + 8.0f * nxUnit(&state).value;
+			}
+		for(unsigned i = 0; i < kPONbObjects; ++i)
+			{
+			const unsigned kind = nxNext(&state) % 8;
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float centre = root[a] + (root[3 + a] - root[a]) * (kind == 7 ? 1.4f * nxUnit(&state).value - 0.2f : nxUnit(&state).value);
+				const float half = (kind == 0 ? 0.01f : kind == 1 ? 3.0f : 0.1f + 0.7f * nxUnit(&state).value);
+				boxes[i][a] = centre - half;
+				boxes[i][3 + a] = centre + half;
+				}
+			}
+		memcpy(gPOBoxes[0], boxes, sizeof(boxes));
+		memcpy(gPOBoxes[1], boxes, sizeof(boxes));
+		nxFoldInput(&fixture, root, sizeof(root));
+		nxFoldInput(&fixture, boxes, sizeof(boxes));
+		// The queries: planes (one to three), segments and rays, drawn once for both sides.
+		const unsigned nbQueries = 24;
+		float planes[nbQueries][3][4], segments[nbQueries][6];
+		unsigned nbPlanes[nbQueries];
+		for(unsigned q = 0; q < nbQueries; ++q)
+			{
+			nbPlanes[q] = 1 + nxNext(&state) % 3;
+			for(unsigned k = 0; k < 3; ++k)
+				{
+				float n[3], len = 0.0f;
+				for(unsigned a = 0; a < 3; ++a)
+					{
+					n[a] = nxUnit(&state).value * 2.0f - 1.0f;
+					len += n[a] * n[a];
+					}
+				len = sqrtf(len > 0.0f ? len : 1.0f);
+				const float mid = 0.5f * (root[0] + root[3]) * n[0] / len + 0.5f * (root[1] + root[4]) * n[1] / len + 0.5f * (root[2] + root[5]) * n[2] / len;
+				for(unsigned a = 0; a < 3; ++a)
+					planes[q][k][a] = n[a] / len;
+				planes[q][k][3] = -mid + (nxUnit(&state).value * 2.0f - 1.0f) * 5.0f;
+				}
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				segments[q][a] = root[a] + (root[3 + a] - root[a]) * (nxUnit(&state).value * 1.6f - 0.3f);
+				segments[q][3 + a] = (q & 1) ? root[a] + (root[3 + a] - root[a]) * (nxUnit(&state).value * 1.6f - 0.3f) : nxUnit(&state).value * 2.0f - 1.0f;
+				}
+			}
+		nxFoldInput(&fixture, planes, sizeof(planes));
+		nxFoldInput(&fixture, segments, sizeof(segments));
+		nxFoldInput(&fixture, nbPlanes, sizeof(nbPlanes));
+		for(unsigned mode = 0; mode < 2; ++mode)
+			{
+			NxDigest digests[2];
+			nxDigestInit(&digests[0]);
+			nxDigestInit(&digests[1]);
+			unsigned logs[2][4096], logCounts[2] = { 0, 0 };
+			unsigned results[2][1024], nbResults[2] = { 0, 0 };
+			for(int side = 0; side < 2; ++side)
+				{
+				NxPOSide& s = sides[side];
+				NxDigest& d = digests[side];
+				unsigned* R = results[side];
+				unsigned& nr = nbResults[side];
+				const bool o = side == 0;
+				memset(s.tree, 0, sizeof(s.tree));
+				memset(s.objects, 0, sizeof(s.objects));
+				for(unsigned i = 0; i < kPONbObjects; ++i)
+					s.objects[i][1] = i;
+				gPOPhase = 0;
+				allocator.nbLog = 0;
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				if(o) nxPOCallN(base + 0x000e76c0, s.tree, 2, depth, (unsigned) (size_t) root, 0, 0);
+				else nxPOBuild(s.tree, 0, depth, root);
+				for(unsigned i = 0; i < kPONbObjects; ++i)
+					{
+					if(o) nxPOCallN(base + 0x000e7850, s.tree, 2, (unsigned) (size_t) s.objects[i], (unsigned) (size_t) boxes[i], 0, 0);
+					else nxPOInsert(s.tree, 0, s.objects[i], boxes[i]);
+					}
+				gPONodes = *(unsigned char**) (s.tree + 0x4c);
+				const unsigned count = *(unsigned*) (s.tree + 0x48);
+				// The queries.
+				for(unsigned q = 0; q < nbQueries; ++q)
+					{
+					NxPQContainer a = { 0, 0, 0, 2.0f }, b = { 0, 0, 0, 2.0f };
+					if(q % 3 == 0)
+						{
+						if(o) nxPOCallN(base + 0x000f1c60, s.tree, 4, (unsigned) (size_t) planes[q], nbPlanes[q], (unsigned) (size_t) &a, (unsigned) (size_t) &b);
+						else nxPQPlaneQuery(s.tree, 0, planes[q], nbPlanes[q], &a, &b);
+						}
+					else if(q % 3 == 1)
+						{
+						if(o) nxPOCallN(base + 0x000f1d10, s.tree, 2, (unsigned) (size_t) segments[q], (unsigned) (size_t) &a, 0, 0);
+						else nxPQSegmentQuery(s.tree, 0, segments[q], &a);
+						}
+					else
+						{
+						// A ray: the segment's start and a direction (a unit vector from the drawn words, or the zero vector).
+						float ray[6];
+						memcpy(ray, segments[q], 12);
+						const float dx = segments[q][3] - segments[q][0], dy = segments[q][4] - segments[q][1], dz = segments[q][5] - segments[q][2];
+						float len = sqrtf(dx * dx + dy * dy + dz * dz);
+						if(len == 0.0f) len = 1.0f;
+						ray[3] = dx / len; ray[4] = dy / len; ray[5] = dz / len;
+						if(o) nxPOCallN(base + 0x000f1db0, s.tree, 2, (unsigned) (size_t) ray, (unsigned) (size_t) &a, 0, 0);
+						else nxPQRayQuery(s.tree, 0, ray, &a);
+						}
+					nxPQDigestContainer(&d, a, s);
+					nxPQDigestContainer(&d, b, s);
+					R[nr++] = a.count;
+					R[nr++] = b.count;
+					if(a.entries) allocator.free(a.entries);
+					if(b.entries) allocator.free(b.entries);
+					}
+				// The helpers directly: the node append over a few nodes, the subtree append over a few roots, and the sphere test.
+				for(unsigned node = 0; node < count && node < 12; node += (node < 3 ? 1 : 4))
+					{
+					NxPQContainer a = { 0, 0, 0, 2.0f }, b = { 0, 0, 0, 2.0f };
+					if(o)
+						{
+						nxPOCallN(base + 0x000f1a30, gPONodes + 32 * node, 1, (unsigned) (size_t) &a, 0, 0, 0);
+						typedef void (__cdecl* SubtreeFn)(unsigned, unsigned, void*, void*);
+						((SubtreeFn) (base + 0x000f1a70))(node, count, gPONodes, &b);
+						}
+					else
+						{
+						nxPQAppendNode(gPONodes + 32 * node, 0, &a);
+						nxPQAppendSubtree(node, count, gPONodes, &b);
+						}
+					nxPQDigestContainer(&d, a, s);
+					nxPQDigestContainer(&d, b, s);
+					R[nr++] = a.count;
+					R[nr++] = b.count;
+					if(a.entries) allocator.free(a.entries);
+					if(b.entries) allocator.free(b.entries);
+					}
+				for(unsigned k = 0; k < 12; ++k)
+					{
+					const float* box = boxes[(c + 5 * k) % kPONbObjects];
+					const float centre[3] = { root[0] + k * 0.7f, root[1] + k * 0.3f, root[2] };
+					const float radius = 0.25f * (k + 1);
+					typedef unsigned (__cdecl* SphereFn)(const float*, float, const float*, const float*);
+					unsigned r = o ? ((SphereFn) (base + 0x000f1970))(centre, radius, box, box + 3) & 0xff : nxPQSphereAABB(centre, radius, box, box + 3) ? 1u : 0u;
+					R[nr++] = r;
+					}
+				logCounts[side] = allocator.nbLog;
+				memcpy(logs[side], allocator.log, 4 * (allocator.nbLog < 4096 ? allocator.nbLog : 4096));
+				unsigned char* nodes = *(unsigned char**) (s.tree + 0x4c);
+				if(nodes)
+					allocator.free(nodes - 4);
+				nxSetControl(kControlDefault);
+				}
+			++cases;
+			queries += nbQueries;
+			bool different = nbResults[0] != nbResults[1] || digests[0].state != digests[1].state || logCounts[0] != logCounts[1]
+				|| memcmp(results[0], results[1], 4 * nbResults[0]) != 0
+				|| memcmp(logs[0], logs[1], 4 * (logCounts[0] < 4096 ? logCounts[0] : 4096)) != 0;
+			mismatches += different;
+			for(unsigned k = 0; k < nbResults[0]; ++k)
+				hits += results[0][k] != 0;
+			nxFoldInput(&oracleDigest, results[0], 4 * nbResults[0]);
+			nxFoldInput(&oracleDigest, &digests[0].state, 8);
+			nxFoldInput(&oracleDigest, logs[0], 4 * (logCounts[0] < 4096 ? logCounts[0] : 4096));
+			nxFoldInput(&candidateDigest, results[1], 4 * nbResults[1]);
+			nxFoldInput(&candidateDigest, &digests[1].state, 8);
+			nxFoldInput(&candidateDigest, logs[1], 4 * (logCounts[1] < 4096 ? logCounts[1] : 4096));
+			helperCases += 24;
+			}
+		}
+	nxSetControl(kControlDefault);
+	printf("collision name=pruner_octree_query index=- rva=0x000f1c60 owner=phys_fn_005552 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pruner_octree_query trees=%u cases=%u queries=%u nonzero_results=%u control_words=2\n",
+		(unsigned) (sizeof(depths) / sizeof(depths[0])), cases, queries, hits);
+	nxPrintInput("pruner_octree_query", &fixture);
+	*oracleNotify = savedOracleNotify;
+	nxPOTestNotify = savedCandidateNotify;
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedFoundationAllocator;
 	nx2iFoundationEnd();
 	return mismatches;
 	}

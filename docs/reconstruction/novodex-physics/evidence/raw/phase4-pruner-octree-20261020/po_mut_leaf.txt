@@ -1,0 +1,4 @@
+0x000e75d6  je Le75e2  ->  jne Le75e2  :  exit 1 mismatches 24
+0x000e75d8  push 0x40000000  ->  push 0x40000001  :  exit 1 mismatches 24
+0x000e75e2  mov al, 1  ->  mov al, 2  :  exit 0 mismatches 0
+DONE

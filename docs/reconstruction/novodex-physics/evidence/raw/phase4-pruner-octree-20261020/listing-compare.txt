@@ -1,0 +1,60 @@
+nxPQSphereAABB ?nxPQSphereAABB@@YA_NPBMM00@Z instructions=72 differing=0
+nxPQAppendNode ?nxPQAppendNode@@YIXPAX00@Z instructions=23 differing=0
+nxPQAppendSubtree ?nxPQAppendSubtree@@YAXIIPAX0@Z instructions=35 differing=0
+nxPQPlaneWalk ?nxPQPlaneWalk@@YAXIIPAX@Z instructions=148 differing=0
+nxPQPlaneQuery ?nxPQPlaneQuery@@YIXPAX0PBXI00@Z instructions=22 differing=0
+nxPQSegmentWalk ?nxPQSegmentWalk@@YAXIPAX@Z instructions=40 differing=0
+nxPQSegmentQuery ?nxPQSegmentQuery@@YIXPAX0PBX0@Z instructions=15 differing=0
+nxPQRayWalk ?nxPQRayWalk@@YAXIPAX@Z instructions=40 differing=0
+nxPQRayQuery ?nxPQRayQuery@@YIXPAX0PBX0@Z instructions=15 differing=0
+nxPOSetCenterExtents ?nxPOSetCenterExtents@@YIXPAX0PBX1@Z instructions=41 differing=0
+nxPOIsInside ?nxPOIsInside@@YI_NPBXPAX0@Z instructions=35 differing=0
+nxPOScaleBounds ?nxPOScaleBounds@@YIXPAX0M@Z instructions=59 differing=0
+nxPOSetNodeBounds ?nxPOSetNodeBounds@@YIXPAX0IPBX@Z instructions=137 differing=0
+nxPOWalk ?nxPOWalk@@YIXPAX0I000@Z instructions=40 differing=0
+nxPOLeafCallback ?nxPOLeafCallback@@YA_NPAX0@Z instructions=7 differing=0
+nxPORemove ?nxPORemove@@YI_NPAX00@Z instructions=49 differing=0
+nxPOForEach ?nxPOForEach@@YI_NPAX000@Z instructions=13 differing=0
+nxPOBuild ?nxPOBuild@@YI_NPAX0IPBX@Z instructions=149 differing=0
+nxPOInsert ?nxPOInsert@@YI_NPAX00PBX@Z instructions=287 differing=0
+nxPOUpdate ?nxPOUpdate@@YI_NPAX00@Z instructions=52 differing=0
+ALL EQUAL
+  call nxPQAppendNode -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxPQAppendSubtree -> oracle 0x100f1a30 ; candidate ?nxPQAppendNode@@YIXPAX00@Z
+  call nxPQAppendSubtree -> oracle 0x100f1a70 ; candidate ?nxPQAppendSubtree@@YAXIIPAX0@Z
+  call nxPQPlaneWalk -> oracle 0x100f1a70 ; candidate ?nxPQAppendSubtree@@YAXIIPAX0@Z
+  call nxPQPlaneWalk -> oracle 0x100f1a30 ; candidate ?nxPQAppendNode@@YIXPAX00@Z
+  call nxPQPlaneWalk -> oracle 0x100f1ac0 ; candidate ?nxPQPlaneWalk@@YAXIIPAX@Z
+  call nxPQPlaneQuery -> oracle 0x100f1ac0 ; candidate ?nxPQPlaneWalk@@YAXIIPAX@Z
+  call nxPQSegmentWalk -> oracle 0x100f1600 ; candidate ?nxSegmentAABB@@YA_NABVSegment@IceMaths@@ABVPoint@2@1@Z
+  call nxPQSegmentWalk -> oracle 0x100f1a30 ; candidate ?nxPQAppendNode@@YIXPAX00@Z
+  call nxPQSegmentWalk -> oracle 0x100f1cb0 ; candidate ?nxPQSegmentWalk@@YAXIPAX@Z
+  call nxPQSegmentQuery -> oracle 0x100f1cb0 ; candidate ?nxPQSegmentWalk@@YAXIPAX@Z
+  call nxPQRayWalk -> oracle 0x100f17c0 ; candidate ?nxRayAABB@@YA_NABVRay@IceMaths@@ABVPoint@2@1@Z
+  call nxPQRayWalk -> oracle 0x100f1a30 ; candidate ?nxPQAppendNode@@YIXPAX00@Z
+  call nxPQRayWalk -> oracle 0x100f1d50 ; candidate ?nxPQRayWalk@@YAXIPAX@Z
+  call nxPQRayQuery -> oracle 0x100f1d50 ; candidate ?nxPQRayWalk@@YAXIPAX@Z
+  call nxPOScaleBounds -> oracle 0x100203c0 ; candidate ?nxPOSetCenterExtents@@YIXPAX0PBX1@Z
+  call nxPOSetNodeBounds -> oracle 0x100e7380 ; candidate ?nxPOSetNodeBounds@@YIXPAX0IPBX@Z
+  call nxPOWalk -> oracle 0x100e7570 ; candidate ?nxPOWalk@@YIXPAX0I000@Z
+  call nxPOLeafCallback -> oracle 0x100e7250 ; candidate ?nxPOScaleBounds@@YIXPAX0M@Z
+  call nxPOForEach -> oracle 0x100e7570 ; candidate ?nxPOWalk@@YIXPAX0I000@Z
+  call nxPOBuild -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxPOBuild -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxPOBuild -> oracle 0x100e2e50 ; candidate ?MakeCube@AABB@IceMaths@@QBEMAAV12@@Z
+  call nxPOBuild -> oracle 0x100e7380 ; candidate ?nxPOSetNodeBounds@@YIXPAX0IPBX@Z
+  mov nxPOBuild -> oracle ecx, 0x100e75d0 ; candidate ?nxPOLeafCallback@@YA_NPAX0@Z
+  push nxPOBuild -> oracle 0x100e75d0 ; candidate ?nxPOLeafCallback@@YA_NPAX0@Z
+  call nxPOBuild -> oracle 0x100e7570 ; candidate ?nxPOWalk@@YIXPAX0I000@Z
+  call nxPOInsert -> oracle 0x100203c0 ; candidate ?nxPOSetCenterExtents@@YIXPAX0PBX1@Z
+  call nxPOInsert -> oracle 0x100f7a3c ; candidate __ftol2
+  call nxPOInsert -> oracle 0x100f7a3c ; candidate __ftol2
+  call nxPOInsert -> oracle 0x100f7a3c ; candidate __ftol2
+  call nxPOInsert -> oracle 0x100f7a3c ; candidate __ftol2
+  call nxPOInsert -> oracle 0x100e2f70 ; candidate ?nxPOIsInside@@YI_NPBXPAX0@Z
+  call nxPOInsert -> oracle 0x100e2f70 ; candidate ?nxPOIsInside@@YI_NPBXPAX0@Z
+  call nxPOUpdate -> oracle 0x100203c0 ; candidate ?nxPOSetCenterExtents@@YIXPAX0PBX1@Z
+  call nxPOUpdate -> oracle 0x100e2f70 ; candidate ?nxPOIsInside@@YI_NPBXPAX0@Z
+  call nxPOUpdate -> oracle 0x100e75f0 ; candidate ?nxPORemove@@YI_NPAX00@Z
+  call nxPOUpdate -> oracle 0x100e7850 ; candidate ?nxPOInsert@@YI_NPAX00PBX@Z
+MAPPINGS checked=38 unexpected=0

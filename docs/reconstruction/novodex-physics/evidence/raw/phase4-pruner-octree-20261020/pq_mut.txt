@@ -1,0 +1,41 @@
+0x000f197a  fld dword ptr [ecx]  ->  fld dword ptr [ecx + 4]  :  exit 1 mismatches 2
+0x000f1989  test ah, 5  ->  test ah, 6  :  exit 1 mismatches 10
+0x000f1998  fcomp dword ptr [esi]  ->  fcomp dword ptr [esi + 4]  :  exit 1 mismatches 6
+0x000f19a9  fmulp st(1), st(0)  ->  faddp st(1), st(0)  :  exit 1 mismatches 14
+0x000f19c8  jne Lf19d8  ->  je Lf19d8  :  exit 1 mismatches 4
+0x000f19e6  jp Lf19ed  ->  jnp Lf19ed  :  exit 1 mismatches 20
+0x000f19ff  fmul st(0), st(1)  ->  fadd st(0), st(1)  :  exit 1 mismatches 20
+0x000f1a14  test ah, 0x41  ->  test ah, 0x42  :  exit 1 mismatches 8
+0x000f1a39  mov esi, dword ptr [esp + 0xc]  ->  mov esi, dword ptr [esp + 0x10]  :  exit 3221225477 mismatches ?
+0x000f1a5c  mov edi, dword ptr [edi + 0xc]  ->  mov edi, dword ptr [edi + 0x10]  :  exit 3221225477 mismatches ?
+0x000f1a8f  je Lf1abd  ->  jne Lf1abd  :  exit 1 mismatches 20
+0x000f1ab6  cmp esi, 8  ->  cmp esi, 9  :  exit 1 mismatches 14
+0x000f1acc  mov eax, dword ptr [edi]  ->  mov eax, dword ptr [edi + 4]  :  exit 3221225477 mismatches ?
+0x000f1af6  fadd dword ptr [ecx]  ->  fadd dword ptr [ecx + 4]  :  exit 1 mismatches 16
+0x000f1b05  fld dword ptr [ecx + 0x14]  ->  fld dword ptr [ecx + 0x18]  :  exit 1 mismatches 16
+0x000f1b1b  fstp dword ptr [esp + 0x18]  ->  fstp dword ptr [esp + 0x1c]  :  exit 1 mismatches 18
+0x000f1b31  mov edx, dword ptr [esp + 0x1c]  ->  mov edx, dword ptr [esp + 0x20]  :  exit 1 mismatches 18
+0x000f1b47  mov edx, dword ptr [esp + 0x20]  ->  mov edx, dword ptr [esp + 0x24]  :  exit 1 mismatches 18
+0x000f1b5a  fsub dword ptr [esp + 0x24]  ->  fsub dword ptr [esp + 0x28]  :  exit 1 mismatches 18
+0x000f1b6c  mov dword ptr [esp + 0x20], edx  ->  mov dword ptr [esp + 0x24], edx  :  exit 1 mismatches 18
+0x000f1b83  fld dword ptr [esp + 0x20]  ->  fld dword ptr [esp + 0x24]  :  exit 1 mismatches 18
+0x000f1b93  je Lf1bf2  ->  jne Lf1bf2  :  exit 1 mismatches 20
+0x000f1bb1  fst dword ptr [esp + 0x3c]  ->  fst dword ptr [esp + 0x40]  :  exit 3221225477 mismatches ?
+0x000f1bc2  fld dword ptr [esp + 0x2c]  ->  fld dword ptr [esp + 0x30]  :  exit 1 mismatches 18
+0x000f1bd1  faddp st(1), st(0)  ->  fsubp st(1), st(0)  :  exit 1 mismatches 18
+0x000f1bee  jp Lf1bf2  ->  jnp Lf1bf2  :  exit 1 mismatches 20
+0x000f1c03  mov ecx, dword ptr [edi + 0xc]  ->  mov ecx, dword ptr [edi + 0x10]  :  exit 3221225477 mismatches ?
+0x000f1c1e  add esp, 0x20  ->  add esp, 0x21  :  exit 3221225477 mismatches ?
+0x000f1c46  jbe Lf1c30  ->  ja Lf1c30  :  exit 1 mismatches 18
+0x000f1c66  mov ecx, dword ptr [ecx + 0x4c]  ->  mov ecx, dword ptr [ecx + 0x50]  :  exit 3221225477 mismatches ?
+0x000f1c80  mov dword ptr [esp + 0x10], ecx  ->  mov dword ptr [esp + 0x14], ecx  :  exit 3221225477 mismatches ?
+0x000f1cb6  mov edi, dword ptr [esp + 0x10]  ->  mov edi, dword ptr [esp + 0x14]  :  exit 3221225477 mismatches ?
+0x000f1cd1  mov eax, dword ptr [edi + 0xc]  ->  mov eax, dword ptr [edi + 0x10]  :  exit 1 mismatches 20
+0x000f1d00  add esp, 8  ->  add esp, 9  :  exit 3221225477 mismatches ?
+0x000f1d13  mov eax, dword ptr [ecx + 0x48]  ->  mov eax, dword ptr [ecx + 0x4c]  :  exit 3221225477 mismatches ?
+0x000f1d2e  mov dword ptr [esp + 0x10], edx  ->  mov dword ptr [esp + 0x14], edx  :  exit 3221225477 mismatches ?
+0x000f1d5c  jae Lf1daa  ->  jb Lf1daa  :  exit 1 mismatches 20
+0x000f1d7f  add esp, 0xc  ->  add esp, 0xd  :  exit 3221225477 mismatches ?
+0x000f1da7  jbe Lf1d96  ->  ja Lf1d96  :  exit 1 mismatches 18
+0x000f1dc7  mov eax, dword ptr [esp + 0x14]  ->  mov eax, dword ptr [esp + 0x18]  :  exit 1 mismatches 18
+DONE

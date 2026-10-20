@@ -287,7 +287,7 @@ if(NX_PHYSICS_USE_X87)
 	# (/arch:IA32 /GR-) so the kept copies are OPCODE's code (scene-raycast
 	# Task 3 review). Its own rows run at API time under 0x027f, where the x87
 	# at 53 bits is what the listing does.
-	set_property(SOURCE Physics/src/opcode/IcePruner.cpp
+	set_property(SOURCE Physics/src/opcode/IcePruner.cpp Physics/src/opcode/PrunerOctree.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/arch:IA32" "/GR-")
 endif()
 
@@ -341,7 +341,7 @@ if(MSVC)
 	set_property(SOURCE
 		Physics/src/SceneRaycast.cpp
 		Physics/src/BodyCreation.cpp
-		Physics/src/opcode/IcePruner.cpp
+		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/PrunerOctree.cpp
 		Physics/src/opcode/IcePruningEngine.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
@@ -950,7 +950,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/PhysicsNoSdkStubs.cpp
 		Physics/src/Containers.cpp tests/PhysicsInternalContactStubs.cpp
 		tests/PhysicsInternalMeshContactStubs.cpp
-		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp Physics/src/PrunerRegistration.cpp
+		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/IcePruner.cpp Physics/src/opcode/PrunerOctree.cpp Physics/src/PrunerRegistration.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp Physics/src/opcode/NovodexTreeColliderCallback.cpp
 		Physics/src/PMap.cpp Physics/src/PMapCompute.cpp Physics/src/HullFlood.cpp Physics/src/HullBuild.cpp Physics/src/HullShape.cpp Physics/src/TriangleMesh.cpp Physics/src/InternalTriangleMesh.cpp
 		Physics/src/MemoryStream.cpp
@@ -1029,7 +1029,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/TriangleMeshPolygons.cpp Physics/src/TriangleMeshTopology.cpp Physics/src/PMap.cpp Physics/src/PMapCompute.cpp
 		Physics/src/QhullHost.cpp Physics/src/Quantizer.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
-		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/PrunerOctree.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/PrunerRegistration.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
@@ -1231,7 +1231,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ObjectModel.cpp Physics/src/BodyStep.cpp Physics/src/Island.cpp
 		Physics/src/ContactPairManager.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
-		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp
+		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/PrunerOctree.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/PrunerRegistration.cpp
 		Physics/src/opcode/NovodexBoxPruning.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp

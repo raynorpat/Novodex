@@ -1,0 +1,56 @@
+0x000203c0  sub esp, 0xc  ->  sub esp, 0xd  :  exit 3221225477 mismatches ?
+0x000203eb  fsub dword ptr [edx + 8]  ->  fadd dword ptr [edx + 8]  :  exit 1 mismatches 563
+0x0002041c  fadd dword ptr [eax + 8]  ->  fsub dword ptr [eax + 8]  :  exit 1 mismatches 563
+0x000e2f94  test ah, 0x41  ->  test ah, 0x42  :  exit 1 mismatches 50
+0x000e2fae  test ah, 5  ->  test ah, 6  :  exit 1 mismatches 50
+0x000e7253  fld dword ptr [ecx + 0xc]  ->  fld dword ptr [ecx + 0x10]  :  exit 1 mismatches 366
+0x000e727a  fmul dword ptr [nxPOK101043cc_4]  ->  fadd dword ptr [nxPOK101043cc_4]  :  exit 1 mismatches 322
+0x000e72aa  fsub dword ptr [ecx + 4]  ->  fadd dword ptr [ecx + 4]  :  exit 1 mismatches 295
+0x000e72db  mov dword ptr [esp + 0x10], eax  ->  mov dword ptr [esp + 0x14], eax  :  exit 1 mismatches 24
+0x000e730a  fmul dword ptr [esp + 0x30]  ->  fmul dword ptr [esp + 0x34]  :  exit 1 mismatches 542
+0x000e7387  cmp eax, dword ptr [ecx + 0x48]  ->  cmp eax, dword ptr [ecx + 0x4c]  :  exit 3221225477 mismatches ?
+0x000e73bd  mov ebx, dword ptr [edx + 0x10]  ->  mov ebx, dword ptr [edx + 0x14]  :  exit 1 mismatches 24
+0x000e73e3  mov dword ptr [esp + 0x54], 8  ->  mov dword ptr [esp + 0x58], 8  :  TIMEOUT
+0x000e740c  fstp dword ptr [esp + 0x24]  ->  fstp dword ptr [esp + 0x28]  :  exit 1 mismatches 20
+0x000e7434  cmp esi, 7  ->  cmp esi, 8  :  exit 0 mismatches 0
+0x000e745b  mov eax, dword ptr [edx]  ->  mov eax, dword ptr [edx + 4]  :  exit 1 mismatches 20
+0x000e7486  fstp dword ptr [esp + 0x20]  ->  fstp dword ptr [esp + 0x24]  :  exit 1 mismatches 20
+0x000e74b0  fstp dword ptr [esp + 0x14]  ->  fstp dword ptr [esp + 0x18]  :  exit 1 mismatches 20
+0x000e74d4  fstp dword ptr [esp + 0x28]  ->  fstp dword ptr [esp + 0x2c]  :  exit 1 mismatches 20
+0x000e74fe  mov dword ptr [esp + 0x40], eax  ->  mov dword ptr [esp + 0x44], eax  :  exit 1 mismatches 20
+0x000e7529  mov eax, dword ptr [esp + 0x54]  ->  mov eax, dword ptr [esp + 0x58]  :  TIMEOUT
+0x000e7582  mov eax, dword ptr [esp + 0x18]  ->  mov eax, dword ptr [esp + 0x1c]  :  exit 1 mismatches 24
+0x000e75bd  cmp esi, 8  ->  cmp esi, 9  :  exit 1 mismatches 16
+0x000e7605  shr eax, 5  ->  shr eax, 6  :  exit 1 mismatches 20
+0x000e7627  jne Le7610  ->  je Le7610  :  exit 1 mismatches 20
+0x000e764d  cmp dword ptr [ecx + 0x1c], esi  ->  cmp dword ptr [ecx + 0x20], esi  :  exit 1 mismatches 20
+0x000e76a5  push 0  ->  push 1  :  exit 1 mismatches 24
+0x000e76e5  mov ecx, dword ptr [esp + 0x2c]  ->  mov ecx, dword ptr [esp + 0x30]  :  TIMEOUT
+0x000e771a  mov edx, dword ptr [eax]  ->  mov edx, dword ptr [eax + 4]  :  exit 1 mismatches 24
+0x000e7743  mov edx, dword ptr [eax]  ->  mov edx, dword ptr [eax + 4]  :  exit 3221225477 mismatches ?
+0x000e776a  mov dword ptr [eax], ebx  ->  mov dword ptr [eax + 4], ebx  :  exit 1 mismatches 19
+0x000e779d  lea eax, [esi + 0x18]  ->  lea eax, [esi + 0x1c]  :  exit 1 mismatches 24
+0x000e77ca  fstp dword ptr [esi + 0x2c]  ->  fstp dword ptr [esi + 0x30]  :  exit 1 mismatches 24
+0x000e77f9  fmul dword ptr [nxPOK1011ba24_4]  ->  fadd dword ptr [nxPOK1011ba24_4]  :  exit 1 mismatches 24
+0x000e7854  sub esp, 0x4c  ->  sub esp, 0x4d  :  exit 3221225477 mismatches ?
+0x000e7879  fld dword ptr [eax + 0x10]  ->  fld dword ptr [eax + 0x14]  :  exit 1 mismatches 22
+0x000e789d  fmul dword ptr [nxPOK101043cc_4]  ->  fadd dword ptr [nxPOK101043cc_4]  :  exit 1 mismatches 24
+0x000e78c1  mov dword ptr [esp + 0x4c], ecx  ->  mov dword ptr [esp + 0x50], ecx  :  exit 1 mismatches 24
+0x000e78f2  lea eax, [esp + 0x20]  ->  lea eax, [esp + 0x24]  :  exit 1 mismatches 14
+0x000e791f  fld dword ptr [esp + 0x44]  ->  fld dword ptr [esp + 0x48]  :  exit 1 mismatches 14
+0x000e793a  fld dword ptr [esp + 0x48]  ->  fld dword ptr [esp + 0x4c]  :  exit 1 mismatches 20
+0x000e795a  fcomp dword ptr [ebx + 0x14]  ->  fcomp dword ptr [ebx + 0x18]  :  exit 1 mismatches 12
+0x000e7984  fdivr dword ptr [ebx + 0x24]  ->  fdivr dword ptr [ebx + 0x28]  :  exit 1 mismatches 18
+0x000e79b8  mov eax, 2  ->  mov eax, 3  :  exit 3221225477 mismatches ?
+0x000e79f1  fadd dword ptr [nxPOK101066f8_4]  ->  fsub dword ptr [nxPOK101066f8_4]  :  exit 0 mismatches 0
+0x000e7a13  fmul st(0), st(1)  ->  fadd st(0), st(1)  :  exit 1 mismatches 20
+0x000e7a3a  mov edi, 2  ->  mov edi, 3  :  exit 3221225477 mismatches ?
+0x000e7a8d  jb Le7a40  ->  jae Le7a40  :  TIMEOUT
+0x000e7ab6  cmp ecx, dword ptr [ebx + 0x48]  ->  cmp ecx, dword ptr [ebx + 0x4c]  :  exit 3221225477 mismatches ?
+0x000e7ada  mov dword ptr [esp + 0x64], ecx  ->  mov dword ptr [esp + 0x68], ecx  :  exit 3221225477 mismatches ?
+0x000e7b10  je Le7b2d  ->  jne Le7b2d  :  exit 3221225477 mismatches ?
+0x000e7b33  mov ecx, dword ptr [ebx + 0x4c]  ->  mov ecx, dword ptr [ebx + 0x50]  :  exit 3221225477 mismatches ?
+0x000e7b59  add esp, 0x4c  ->  add esp, 0x4d  :  exit 3221225477 mismatches ?
+0x000e7b84  mov esi, dword ptr [esp + 0x3c]  ->  mov esi, dword ptr [esp + 0x40]  :  exit 3221225477 mismatches ?
+0x000e7bbe  lea ecx, [esp + 0x18]  ->  lea ecx, [esp + 0x1c]  :  exit 1 mismatches 20
+DONE
