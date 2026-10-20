@@ -27314,13 +27314,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/571",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3640",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00029a30: the clusterer's two owned buffers (+0x28 and +0x30): each freed and zeroed when set. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_free' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `je` that skips the first free at 0x00029a38 (mismatches=6). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullFreeBuffers@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullFreeBuffers@@YAXXZ",
+        "address": "0x10029e80",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001424",
@@ -27350,13 +27358,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/572",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3643",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00029a70: the coplanarity test of one triangle against the polygon being grown: the plane of each member triangle (Plane::Set), every candidate vertex within 0.001 of it, then the triangle and its vertices added to the polygon lists. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_coplanar' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: `fmul` to `fdiv` in the plane distance at 0x00029afb (mismatches=915). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullCoplanar@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullCoplanar@@YAXXZ",
+        "address": "0x10029770",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001426",
@@ -27386,13 +27402,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/573",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3657",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00029c80: the flood from one triangle (first two edges): claim the triangle for the polygon if it is coplanar with it, then queue every unclaimed neighbour across an edge that is not sharp, with the neighbour's vertex opposite the edge. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_flood' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` of the second edge's first-neighbour test at 0x00029ea7 (mismatches=57). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullFlood@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullFlood@@YAXXZ",
+        "address": "0x10029970",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001428",
@@ -27422,13 +27446,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/573",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3683",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00029c80"
+      "static_proof": "IDA/capstone at RVA 0x00029fa0: the flood's third edge, reached by a jump into the middle of 001427 (the listing splits the one function into two rows). Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_flood' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` of the third edge's neighbour test at 0x00029fd9 (mismatches=46). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullFlood@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullFlood@@YAXXZ",
+        "address": "0x10029970",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001430",
@@ -27458,13 +27490,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/574",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3696",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002a0a0: the flood driver: queue the start triangle, pop (triangle, vertex) pairs and run the flood on each until the queue is empty. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_cluster' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: swapped the second push (`push edx` to `push eax`) at 0x0002a134 (hull_flood_start itself differs in one word, mismatches=1) (mismatches=1388). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullFloodStart@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullFloodStart@@YAXXZ",
+        "address": "0x10029dc0",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001432",
@@ -27494,13 +27534,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/575",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3701",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002a160: the flood entry: false for a start triangle at or past the bound; otherwise clears the count and the stamp and runs the driver. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_flood_entry' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: stored the wrong register to the stamp at 0x0002a177 (mismatches=105). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullFloodEntry@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullFloodEntry@@YAXXZ",
+        "address": "0x10029d90",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001434",
@@ -27530,13 +27578,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/576",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3703",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002a190: the clustering pass: per edge, whether it is flat (both faces coplanar to 0.01) or sharp; per triangle, a group; the groups ordered by a radix sort; then a flood from every group's first triangle. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_cluster' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` at 0x0002a229 (mismatches=4584). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullCluster@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullCluster@@YAXXZ",
+        "address": "0x100292f0",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001436",
@@ -27566,13 +27622,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/576",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3731",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002a190"
+      "static_proof": "IDA/capstone at RVA 0x0002a570: the clustering pass's loop tail (reached by a jump from 001435): the next group's first triangle, the flood, the polygon count and the buffers' release. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_cluster' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: `sub` to `add` in the group-rank index at 0x0002a5a9 (mismatches=2224). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullCluster@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullCluster@@YAXXZ",
+        "address": "0x100292f0",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001438",
@@ -31570,13 +31634,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "buffer-pop (0x32410, ret 4)",
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullFlood.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/653",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4584",
-      "static_proof": "if [this+4] non-null: read slot [this+8][idx] into the arg, inc [this+0x10], reset to 0 when reaching capacity; returns a byte flag",
-      "dynamic_proof": "confirmed via bufp op drive (3z70): failures=0",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00032410: the queue pop: the next entry of a Container read through an index, the container emptied and the index reset when the last entry is taken. Transcribed instruction for instruction into a naked row in Physics/src/HullFlood.cpp; evidence/phase3-hull-flood-listing-compare.py disassembles the built candidate and the oracle and finds the 1,060 instructions of the seven functions equal, with the 39 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_queue_pop' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and edge lists, with the containers each built by its own side's allocator, and compares the whole state word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` that wraps the read index at 0x00032436 (mismatches=154). See evidence/phase3-hull-flood.md.",
+      "notes": "The hull's triangle-to-polygon clustering; no reconstructed row calls it yet (its caller, phys_fn_002247, is open).",
+      "implementation": "Physics/src/HullFlood.cpp",
+      "implementation_symbol": "?nxHullQueuePop@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullQueuePop@@YAXXZ",
+        "address": "0x10029ec0",
+        "object": "HullFlood.obj"
+      }
     },
     {
       "id": "phys_fn_001656",

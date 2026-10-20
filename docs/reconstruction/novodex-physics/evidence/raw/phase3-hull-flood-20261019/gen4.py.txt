@@ -1,0 +1,104 @@
+"""Generate Physics/src/PMapCompute.cpp: naked transcriptions of the PMap compute-arm rows."""
+import capstone, struct, re, sys
+
+ORACLE = r'D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll'
+f = open(ORACLE, 'rb').read()
+pe = struct.unpack_from('<I', f, 0x3c)[0]
+nsec = struct.unpack_from('<H', f, pe + 6)[0]
+opt = struct.unpack_from('<H', f, pe + 20)[0]
+secs = pe + 24 + opt
+
+
+def off(r):
+    for i in range(nsec):
+        n, vs, va, rs, ro = struct.unpack_from('<8sIIII', f, secs + 40 * i)
+        if va <= r < va + max(vs, rs):
+            return ro + r - va
+
+
+# (symbol, entry rva, end rva, rows)
+ROWS = [
+ ('nxHullQueuePop', 0x32410, 0x32452, 'phys_fn_001655'),
+ ('nxHullFreeBuffers', 0x29a30, 0x29a63, 'phys_fn_001423'),
+ ('nxHullCoplanar', 0x29a70, 0x29c74, 'phys_fn_001425'),
+ ('nxHullFlood', 0x29c80, 0x2a09d, 'phys_fn_001427, phys_fn_001429'),
+ ('nxHullFloodStart', 0x2a0a0, 0x2a15a, 'phys_fn_001431'),
+ ('nxHullFloodEntry', 0x2a160, 0x2a187, 'phys_fn_001433'),
+ ('nxHullCluster', 0x2a190, 0x2a608, 'phys_fn_001435, phys_fn_001437'),
+]
+SYM = {0x10000000 + r[1]: r[0] for r in ROWS}
+EXTERN = {
+    0x100b4d70: 'nxHullCallContainerCtor',
+    0x100b4de0: 'nxHullCallContainerResize',
+    0x100b4f50: 'nxHullCallContainerDtor',
+    0x100e31c0: 'nxHullCallPlaneSet',
+    0x100e32c0: 'nxHullCallRadixCtor',
+    0x100e33c0: 'nxHullCallRadixSort',
+    0x100e32e0: 'nxHullCallRadixDtor',
+    0x100f47b0: 'nxHullCallAlloca',
+    0x100f48c0: 'nxHullCallNew',
+    0x100f48bb: 'nxHullCallDelete',
+}
+CONST = {0x101041ec: 'nxHullOne', 0x101041f0: 'nxHullZero', 0x10107690: 'nxHullEpsilonSmall', 0x1010691c: 'nxHullEpsilon',
+         0x10123c74: 'nxHullStamp'}
+NULLSUB = 0
+
+def gen(entry, end):
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    o = off(entry)
+    ins = list(md.disasm(f[o:o + (end - entry)], 0x10000000 + entry))
+    got = ins[-1].address + ins[-1].size - 0x10000000
+    assert got == end, (hex(entry), hex(got), hex(end))
+    lo, hi = 0x10000000 + entry, 0x10000000 + end
+    addrs = {i.address for i in ins}
+    targets = set()
+    for i in ins:
+        if (i.mnemonic.startswith('j') or i.mnemonic == 'loop') and i.op_str.startswith('0x'):
+            t = int(i.op_str, 16)
+            if lo <= t < hi:
+                assert t in addrs, hex(t)
+                targets.add(t)
+    out = []
+    for i in ins:
+        if i.address in targets:
+            out.append('L%x:' % (i.address - 0x10000000))
+        m, op = i.mnemonic, i.op_str
+        if (m.startswith('j') or m == 'loop' or m == 'call') and op.startswith('0x'):
+            t = int(op, 16)
+            if lo <= t < hi and m != 'call':
+                op = 'L%x' % (t - 0x10000000)
+            elif t in SYM:
+                op = SYM[t]
+            elif t in EXTERN:
+                op = EXTERN[t]
+            else:
+                raise Exception('unmapped target %x from %x' % (t, i.address))
+        else:
+            def sub(mm):
+                return '%s ptr [%s]' % (mm.group(1), CONST[int(mm.group(2), 16)])
+            op = re.sub(r'(byte|word|dword|qword) ptr \[(0x1[0-9a-f]{7})\]', sub, op)
+            if m in ('faddp', 'fsubp', 'fmulp', 'fdivp', 'fsubrp', 'fdivrp') and ',' not in op:
+                op += ', st(0)'
+            if m in ('fadd', 'fsub', 'fmul', 'fdiv', 'fsubr', 'fdivr') and re.fullmatch(r'st\(\d\)', op):
+                op = 'st(0), ' + op
+            if m.startswith('rep'):
+                op = ''
+        text = (m + (' ' + op if op else '')).rstrip()
+        out.append('\t\t%s\t\t// 0x%08x' % (text, i.address - 0x10000000))
+    return '\n'.join(out), len(ins)
+
+
+def main(path):
+    parts = []
+    total = 0
+    for sym, lo, hi, rows in ROWS:
+        body, n = gen(lo, hi)
+        total += n
+        parts.append('// %s (0x%08x, %d B), %d instructions\n'
+                     '__declspec(naked) void %s()\n\t{\n\t__asm\n\t\t{\n%s\n\t\t}\n\t}\n' % (rows, lo, hi - lo, n, sym, body))
+    open(path, 'w').write('\n'.join(parts))
+    print(total, 'instructions in', len(ROWS), 'rows')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1])

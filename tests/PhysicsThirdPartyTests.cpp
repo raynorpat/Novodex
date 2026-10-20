@@ -4551,6 +4551,7 @@ static NxPMapRaw* nxPMapTestMap(const NxMesh& mesh, unsigned resolution)
 	return pm;
 	}
 
+static void nxDriveHullFlood(const NxOracleRows& o, bool selfOnly);
 static void nxDrivePMapCompute(const NxOracleRows& o, bool selfOnly)
 	{
 	gState = 0x6d11a5e1;
@@ -5521,6 +5522,7 @@ static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
 	nxDriveTreeColliderRows(o, selfOnly, 1, "opcode_treecollider_callback_tribox", "opcode_treecollider_callback_tribox_boundary", "0x000ca5a0", "phys_fn_004967");
 	nxDriveTreeColliderRows(o, selfOnly, 2, "opcode_treecollider_callback_boxtri", "opcode_treecollider_callback_boxtri_boundary", "0x000cbe50", "phys_fn_004969");
 	nxDrivePMapCompute(o, selfOnly);
+	nxDriveHullFlood(o, selfOnly);
 	nxDriveVanilla(o, selfOnly);
 	nxDriveRefit(o, selfOnly);
 	nxReleaseModels(o);
@@ -12932,6 +12934,549 @@ static void nxPrintTotals()
 	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
 		gDriven, gDivergent, gWordsCompared, gLayoutChecks);
 	printf("thirdparty oracle digest=%08x\n", gRunDigest);
+	}
+
+// ===========================================================================================================
+// The hull flood rows (phys_fn_001423 to 001437 and 001655, Physics/src/HullFlood.cpp): the edge-adjacency
+// traversal that groups a hull's triangles into polygons. Each row is entered with the oracle's registers
+// by a trampoline, once for the oracle's address and once for the candidate's naked transcription, over
+// the same meshes and the same edge lists (read-only; built by the candidate's EdgeList, whose layout the
+// edge_list family has already compared with the oracle's).
+
+extern unsigned nxHullStamp;
+void nxHullQueuePop();
+void nxHullFreeBuffers();
+void nxHullCoplanar();
+void nxHullFlood();
+void nxHullFloodStart();
+void nxHullFloodEntry();
+void nxHullCluster();
+extern "C" void nxHullCallContainerCtor();
+extern "C" void nxHullCallContainerDtor();
+extern "C" void nxHullCallContainerResize();
+
+struct NxHullCall
+	{
+	void*		fn;			// +0
+	void*		self;		// +4  ecx
+	unsigned	eax;		// +8
+	unsigned	arg[5];		// +12 .. +28, the stack arguments in order
+	unsigned	result;		// +32 eax on return
+	};
+
+// Every row pops its own arguments (ret n), whatever n is, so the caller's esp is restored from esi.
+static void __declspec(noinline) nxHullInvoke(NxHullCall* call)
+	{
+	__asm
+		{
+		mov edx, call
+		push ebx
+		push esi
+		mov ebx, edx
+		mov esi, esp
+		push dword ptr [ebx + 28]
+		push dword ptr [ebx + 24]
+		push dword ptr [ebx + 20]
+		push dword ptr [ebx + 16]
+		push dword ptr [ebx + 12]
+		mov ecx, dword ptr [ebx + 4]
+		mov eax, dword ptr [ebx + 8]
+		call dword ptr [ebx]
+		mov esp, esi
+		mov dword ptr [ebx + 32], eax
+		pop esi
+		pop ebx
+		}
+	}
+
+static unsigned nxHullRun(void* fn, void* self, unsigned eaxIn = 0, unsigned a0 = 0, unsigned a1 = 0,
+	unsigned a2 = 0, unsigned a3 = 0, unsigned a4 = 0)
+	{
+	NxHullCall call;
+	call.fn = fn; call.self = self; call.eax = eaxIn;
+	call.arg[0] = a0; call.arg[1] = a1; call.arg[2] = a2; call.arg[3] = a3; call.arg[4] = a4;
+	call.result = 0;
+	nxHullInvoke(&call);
+	return call.result;
+	}
+
+struct NxHullSide
+	{
+	bool		oracle;
+	unsigned*	stamp;
+	void*		newFn;
+	void *queuePop, *freeBuffers, *coplanar, *flood, *start, *entry, *cluster;
+	void *ctor, *dtor, *resize;
+	};
+
+static void nxHullMakeSide(NxHullSide& s, const NxOracleRows& o, bool oracle)
+	{
+	s.oracle = oracle;
+	if(oracle)
+		{
+		s.stamp = (unsigned*) nxAt(o, 0x00123c74);
+		s.newFn = nxAt(o, 0x000f48c0);
+		s.queuePop = nxAt(o, 0x00032410); s.freeBuffers = nxAt(o, 0x00029a30); s.coplanar = nxAt(o, 0x00029a70);
+		s.flood = nxAt(o, 0x00029c80); s.start = nxAt(o, 0x0002a0a0); s.entry = nxAt(o, 0x0002a160);
+		s.cluster = nxAt(o, 0x0002a190);
+		s.ctor = nxAt(o, 0x000b4d70); s.dtor = nxAt(o, 0x000b4f50); s.resize = nxAt(o, 0x000b4de0);
+		}
+	else
+		{
+		s.stamp = &nxHullStamp;
+		s.newFn = (void*) (void* (*)(size_t)) &operator new;
+		s.queuePop = (void*) &nxHullQueuePop; s.freeBuffers = (void*) &nxHullFreeBuffers;
+		s.coplanar = (void*) &nxHullCoplanar; s.flood = (void*) &nxHullFlood; s.start = (void*) &nxHullFloodStart;
+		s.entry = (void*) &nxHullFloodEntry; s.cluster = (void*) &nxHullCluster;
+		s.ctor = (void*) &nxHullCallContainerCtor; s.dtor = (void*) &nxHullCallContainerDtor;
+		s.resize = (void*) &nxHullCallContainerResize;
+		}
+	}
+
+// An IceCore::Container (four words: capacity, count, entries, growth) built by the side's own
+// constructor and grown by its own Resize, so the storage belongs to that side's allocator. `capacity` 0
+// leaves it empty; otherwise it holds `count` entries in room for exactly max(2, capacity). A `full`
+// container has its count set to the capacity, over entries that read as zero.
+static void nxHullContainerMake(const NxHullSide& s, unsigned* c, const unsigned* values, unsigned count,
+	unsigned capacity, bool full)
+	{
+	memset(c, 0xcd, 4 * sizeof(unsigned));
+	nxHullRun(s.ctor, c);
+	if(capacity)
+		{
+		nxHullRun(s.resize, c, 0, capacity);
+		for(unsigned i = 0; i < c[0]; ++i)
+			((unsigned*) c[2])[i] = 0;
+		for(unsigned i = 0; i < count && i < c[0]; ++i)
+			((unsigned*) c[2])[i] = values[i];
+		c[1] = full ? c[0] : count;
+		}
+	}
+
+static void nxHullTapeContainer(NxTape& tape, const unsigned* c)
+	{
+	tape.push(c[0]);
+	tape.push(c[1]);
+	tape.push(c[3]);
+	for(unsigned i = 0; i < c[1]; ++i)
+		tape.push(((const unsigned*) c[2])[i]);
+	}
+
+static void nxHullContainerFree(const NxHullSide& s, unsigned* c)
+	{
+	nxHullRun(s.dtor, c);
+	}
+
+// ---- the host's view of one mesh -----------------------------------------------------------------------
+struct NxHullMesh
+	{
+	EdgeList	edges;
+	bool		built;
+	unsigned	nbTris;
+	unsigned	nbVerts;
+	unsigned char sharp[1200];
+	};
+
+static bool nxHullPlaneOfTri(const NxMesh& m, unsigned t, double n[3], double& d)
+	{
+	const unsigned* tri = &m.tris[3 * t];
+	const float* p0 = &m.verts[3 * tri[0]];
+	const float* p1 = &m.verts[3 * tri[1]];
+	const float* p2 = &m.verts[3 * tri[2]];
+	double e1[3], e2[3];
+	for(int a = 0; a < 3; ++a)
+		{
+		e1[a] = (double) p1[a] - p0[a];
+		e2[a] = (double) p2[a] - p0[a];
+		}
+	n[0] = e1[1] * e2[2] - e1[2] * e2[1];
+	n[1] = e1[2] * e2[0] - e1[0] * e2[2];
+	n[2] = e1[0] * e2[1] - e1[1] * e2[0];
+	const double length = sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+	if(length == 0.0)
+		return false;
+	for(int a = 0; a < 3; ++a)
+		n[a] /= length;
+	d = -(n[0] * p0[0] + n[1] * p0[1] + n[2] * p0[2]);
+	return true;
+	}
+
+static void nxHullDistance(const NxMesh& m, unsigned t, unsigned v, double* out)
+	{
+	double n[3], d;
+	if(!nxHullPlaneOfTri(m, t, n, d))
+		{
+		*out = 1e9;
+		return;
+		}
+	const float* p = &m.verts[3 * v];
+	*out = n[0] * p[0] + n[1] * p[1] + n[2] * p[2] + d;
+	}
+
+static void nxHullBuildMesh(NxHullMesh& h, const NxMesh& m)
+	{
+	h.nbTris = m.nbTris;
+	h.nbVerts = m.nbVerts;
+	EDGELISTCREATE create;
+	memset(&create, 0, sizeof(create));
+	create.NbFaces = m.nbTris;
+	create.DFaces = m.tris;
+	create.FacesToEdges = true;
+	create.VerticesToEdges = true;
+	create.Epsilon = 0.1f;
+	h.built = h.edges.Init(create) && h.edges.mEdgeFaces && h.edges.mEdgeToTriangles && h.edges.mFacesByEdges
+		&& h.edges.mNbEdges <= sizeof(h.sharp);
+	if(!h.built)
+		return;
+	for(unsigned e = 0; e < h.edges.mNbEdges; ++e)
+		{
+		const EdgeDesc& desc = h.edges.mEdgeToTriangles[e];
+		unsigned char sharp = 1;
+		if(desc.Count == 2)
+			{
+			const unsigned a = h.edges.mFacesByEdges[desc.Offset], b = h.edges.mFacesByEdges[desc.Offset + 1];
+			const unsigned* tb = &m.tris[3 * b];
+			double worst = 0.0;
+			for(int k = 0; k < 3; ++k)
+				{
+				double signedDist;
+				nxHullDistance(m, a, tb[k], &signedDist);
+				const double dist = fabs(signedDist);
+				if(dist > worst) worst = dist;
+				}
+			sharp = worst > 0.01 ? 1 : 0;
+			}
+		h.sharp[e] = sharp;
+		}
+	}
+
+static void nxDriveHullFlood(const NxOracleRows& o, bool selfOnly)
+	{
+	// The six harness meshes, then six more of them with a quarter, or half, of the triangles wound the other way: a mesh whose
+	// neighbours do not agree on the winding takes every orientation of the flood's shared-edge search.
+	const int kNbHullMeshes = kNbMeshes + 6;
+	static NxHullMesh meshes[kNbMeshes + 6];
+	static NxMesh flipped[6];
+	NxHullSide sides[2];
+	nxHullMakeSide(sides[0], o, true);
+	nxHullMakeSide(sides[1], o, false);
+	unsigned builtMeshes = 0;
+	static const int kFlipSource[6] = { 0, 2, 5, 0, 2, 5 };
+	const NxMesh* hullMesh[kNbMeshes + 6];
+	for(int m = 0; m < kNbHullMeshes; ++m)
+		{
+		if(m < kNbMeshes)
+			hullMesh[m] = &gMeshes[m];
+		else
+			{
+			NxMesh& f = flipped[m - kNbMeshes];
+			f = gMeshes[kFlipSource[m - kNbMeshes]];
+			for(unsigned t = 0; t < f.nbTris; ++t)
+				{
+				unsigned* tri = &f.tris[3 * t];
+				// A cyclic rotation changes no geometry; it moves each triangle's first vertex, so every pairing
+				// of a triangle's edge with its neighbour's vertices turns up.
+				const unsigned rotation = (((t + 7u * (unsigned) m) * 40503u) >> 5) % 3;
+				for(unsigned r = 0; r < rotation; ++r)
+					{
+					const unsigned first = tri[0];
+					tri[0] = tri[1]; tri[1] = tri[2]; tri[2] = first;
+					}
+				if((((t + (unsigned) m) * 2654435761u) >> (9 + 2 * (m - kNbMeshes)) & (m - kNbMeshes < 3 ? 3u : 1u)) == 0)
+					{
+					const unsigned swap = tri[1];
+					tri[1] = tri[2];
+					tri[2] = swap;
+					}
+				}
+			hullMesh[m] = &f;
+			}
+		nxHullBuildMesh(meshes[m], *hullMesh[m]);
+		builtMeshes += meshes[m].built ? 1 : 0;
+		}
+	const int nbSides = selfOnly ? 1 : 2;
+
+	// ---- the queue pop (001655) -----------------------------------------------------------------------
+	gState = 0x71b2c0d3;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(unsigned k = 0; k < 90; ++k)
+		{
+		const unsigned count = k % 7;
+		unsigned read = count ? nxNext() % count : 0;
+		if(k % 5 == 4 && count)
+			read = count - 1;
+		unsigned values[8];
+		for(unsigned i = 0; i < 8; ++i)
+			values[i] = nxNext();
+		for(int side = 0; side < nbSides; ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			unsigned queue[5];
+			unsigned entries[8];
+			memcpy(entries, values, sizeof(entries));
+			queue[0] = 8; queue[1] = count; queue[2] = (unsigned) (size_t) entries; queue[3] = 0x40000000u; queue[4] = read;
+			unsigned out = 0xdeadbeefu;
+			const unsigned al = nxHullRun(sides[side].queuePop, queue, 0, (unsigned) (size_t) &out) & 0xff;
+			tape.push(al);
+			tape.push(out);
+			tape.push(queue[0]); tape.push(queue[1]); tape.push(queue[3]); tape.push(queue[4]);
+			}
+		}
+	nxReport("hull_queue_pop", "0x00032410", "phys_fn_001655", "HullFlood.cpp", selfOnly);
+
+	// ---- the two owned buffers (001423) ---------------------------------------------------------------
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(unsigned k = 0; k < 12; ++k)
+		for(int side = 0; side < nbSides; ++side)
+			{
+			NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+			unsigned char object[0x40];
+			memset(object, 0xcd, sizeof(object));
+			*(unsigned*) (object + 0x28) = 0;
+			*(unsigned*) (object + 0x30) = 0;
+			if(k & 1)
+				*(unsigned*) (object + 0x28) = nxHullRun(sides[side].newFn, 0, 0, 24);
+			if(k & 2)
+				*(unsigned*) (object + 0x30) = nxHullRun(sides[side].newFn, 0, 0, 40);
+			if(k & 4)
+				*(unsigned*) (object + 0x34) = 0x1234u;
+			nxHullRun(sides[side].freeBuffers, object);
+			tape.push(*(unsigned*) (object + 0x28));
+			tape.push(*(unsigned*) (object + 0x30));
+			tape.push(*(unsigned*) (object + 0x34));
+			}
+	nxReport("hull_free", "0x00029a30", "phys_fn_001423", "HullFlood.cpp", selfOnly);
+
+	// ---- the coplanarity test (001425) ----------------------------------------------------------------
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	unsigned coplanarCases = 0, coplanarTrue = 0;
+	for(int mi = 0; mi < kNbMeshes; ++mi)
+		{
+		const NxMesh& m = gMeshes[mi];
+		for(unsigned k = 0; k < 60; ++k)
+			{
+			const unsigned t0 = nxNext() % m.nbTris;
+			// The triangles in t0's plane, to give the test accepting cases.
+			unsigned flat[400];
+			unsigned nbFlat = 0;
+			for(unsigned t = 0; t < m.nbTris; ++t)
+				{
+				double worst = 0.0;
+				for(int c = 0; c < 3; ++c)
+					{
+					double signedDist;
+					nxHullDistance(m, t0, m.tris[3 * t + c], &signedDist);
+					const double dist = fabs(signedDist);
+					if(dist > worst) worst = dist;
+					}
+				if(worst < 0.0005)
+					flat[nbFlat++] = t;
+				}
+			if(!nbFlat)
+				flat[nbFlat++] = t0;
+			const unsigned polygonSize = k % 4;
+			unsigned polygon[4], polygonVerts[16];
+			unsigned nbVerts = 0;
+			for(unsigned i = 0; i < polygonSize; ++i)
+				polygon[i] = (nxNext() & 3) ? flat[nxNext() % nbFlat] : nxNext() % m.nbTris;
+			const unsigned vertSource = polygonSize ? polygon[0] : flat[nxNext() % nbFlat];
+			for(int c = 0; c < 3; ++c)
+				polygonVerts[nbVerts++] = m.tris[3 * vertSource + c];
+			for(unsigned i = 1; i < polygonSize; ++i)
+				for(int c = 0; c < 3 && nbVerts < 15; ++c)
+					polygonVerts[nbVerts++] = m.tris[3 * polygon[i] + c];
+			if(k % 9 == 8)
+				polygonVerts[nbVerts++] = nxNext() % m.nbVerts;
+			const unsigned t = (nxNext() & 3) ? flat[nxNext() % nbFlat] : nxNext() % m.nbTris;
+			const unsigned vertex = (k % 3 == 0) ? 0xffffffffu : m.tris[3 * t + nxNext() % 3];
+			const bool exactRoom = (k & 1) != 0;
+			const unsigned nullWhich = (k % 17 == 16) ? 1 + (k / 17) % 2 : 0;
+			for(int side = 0; side < nbSides; ++side)
+				{
+				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+				unsigned tris[2][4], verts[2][4];
+				unsigned object[0x10];
+				memset(object, 0xcd, sizeof(object));
+				object[0] = (unsigned) (size_t) m.tris;
+				object[1] = (unsigned) (size_t) m.verts;
+				nxHullContainerMake(sides[side], tris[side], polygon, polygonSize, exactRoom ? polygonSize : polygonSize + 6, false);
+				nxHullContainerMake(sides[side], verts[side], polygonVerts, nbVerts, exactRoom ? nbVerts : nbVerts + 6, false);
+				object[3] = nullWhich == 1 ? 0 : (unsigned) (size_t) tris[side];
+				object[4] = nullWhich == 2 ? 0 : (unsigned) (size_t) verts[side];
+				const unsigned al = nxHullRun(sides[side].coplanar, object, vertex, t) & 0xff;
+				tape.push(al);
+				nxHullTapeContainer(tape, tris[side]);
+				nxHullTapeContainer(tape, verts[side]);
+				if(side == 0)
+					{
+					++coplanarCases;
+					coplanarTrue += al != 0;
+					}
+				nxHullContainerFree(sides[side], tris[side]);
+				nxHullContainerFree(sides[side], verts[side]);
+				}
+			}
+		}
+	nxReport("hull_coplanar", "0x00029a70", "phys_fn_001425", "HullFlood.cpp", selfOnly);
+
+	// ---- the flood rows (001427 + 001429, 001431, 001433) --------------------------------------------
+	unsigned floodCalls = 0, floodTris = 0;
+	struct FloodFamily { const char* name; const char* rva; const char* owner; };
+	for(int family = 0; family < 3; ++family)
+		{
+		gState = 0x3a96e1f5u + family;
+		gOracleTape.reset();
+		gCandidateTape.reset();
+		for(int mi = 0; mi < kNbHullMeshes; ++mi)
+			{
+			const NxMesh& m = *hullMesh[mi];
+			NxHullMesh& h = meshes[mi];
+			if(!h.built)
+				continue;
+			for(unsigned round = 0; round < (family == 0 ? 3u : 4u); ++round)
+				{
+				unsigned char sharp[1200];
+				memcpy(sharp, h.sharp, sizeof(sharp));
+				for(unsigned e = 0; e < h.edges.mNbEdges; ++e)
+					if((nxNext() & 7) == 0)
+						sharp[e] ^= 1;
+				unsigned state[2][0x10];
+				unsigned marks[2][400];
+				unsigned queue[2][4], polyTris[2][4], polyVerts[2][4];
+				const unsigned initialId = nxNext() & 0xff;
+				const unsigned stampStart = nxNext();
+				const unsigned preMarked = nxNext() % 4;
+				unsigned preset[4];
+				for(unsigned i = 0; i < 4; ++i)
+					preset[i] = nxNext() % m.nbTris;
+				const bool fullQueue = (round & 1) != 0;
+				for(int side = 0; side < nbSides; ++side)
+					{
+					memset(state[side], 0xcd, sizeof(state[side]));
+					for(unsigned t = 0; t < m.nbTris; ++t)
+						marks[side][t] = 0xffffffffu;
+					for(unsigned i = 0; i < preMarked; ++i)
+						marks[side][preset[i]] = 7;
+					nxHullContainerMake(sides[side], polyTris[side], 0, 0, 4, false);
+					nxHullContainerMake(sides[side], polyVerts[side], 0, 0, 4, false);
+					nxHullContainerMake(sides[side], queue[side], 0, 0, 4, fullQueue);
+					state[side][0] = (unsigned) (size_t) m.tris;
+					state[side][1] = (unsigned) (size_t) m.verts;
+					state[side][2] = (unsigned) (size_t) &h.edges;
+					state[side][3] = (unsigned) (size_t) polyTris[side];
+					state[side][4] = (unsigned) (size_t) polyVerts[side];
+					state[side][5] = (unsigned) (size_t) sharp;
+					state[side][6] = (unsigned) (size_t) marks[side];
+					state[side][7] = initialId;
+					state[side][8] = 0;
+					state[side][9] = 0;
+					}
+				const unsigned calls = family == 0 ? 10 : 3;
+				for(unsigned call = 0; call < calls; ++call)
+					{
+					const unsigned tri = nxNext() % m.nbTris;
+					const unsigned vertex = (nxNext() & 1) ? 0xffffffffu : m.tris[3 * tri + nxNext() % 3];
+					const unsigned bound = (call & 1) ? m.nbTris : m.nbTris / 2 + 1;
+					const bool resetPolygon = (nxNext() & 1) != 0;
+					const unsigned stampNow = stampStart + call;
+					for(int side = 0; side < nbSides; ++side)
+						{
+						NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+						if(resetPolygon)
+							{
+							polyTris[side][1] = 0;
+							polyVerts[side][1] = 0;
+							}
+						queue[side][1] = fullQueue && family == 0 && call == 0 ? queue[side][0] : 0;
+						*sides[side].stamp = stampNow;
+						unsigned result;
+						if(family == 0)
+							result = nxHullRun(sides[side].flood, state[side], 0, (unsigned) (size_t) queue[side], tri, vertex) & 0xff;
+						else if(family == 1)
+							result = nxHullRun(sides[side].start, state[side], 0, tri, 0xffffffffu) & 0xff;
+						else
+							result = nxHullRun(sides[side].entry, state[side], 0, tri, bound) & 0xff;
+						if(family == 2)
+							tape.push(result);
+						tape.push(*sides[side].stamp);
+						tape.push(state[side][7]); tape.push(state[side][8]); tape.push(state[side][9]);
+						for(unsigned t = 0; t < m.nbTris; ++t)
+							tape.push(marks[side][t]);
+						nxHullTapeContainer(tape, polyTris[side]);
+						nxHullTapeContainer(tape, polyVerts[side]);
+						nxHullTapeContainer(tape, queue[side]);
+						if(side == 0)
+							{
+							++floodCalls;
+							floodTris += state[0][8];
+							}
+						}
+					}
+				for(int side = 0; side < nbSides; ++side)
+					{
+					nxHullContainerFree(sides[side], polyTris[side]);
+					nxHullContainerFree(sides[side], polyVerts[side]);
+					nxHullContainerFree(sides[side], queue[side]);
+					}
+				}
+			}
+		if(family == 0)
+			nxReport("hull_flood", "0x00029c80", "phys_fn_001427", "HullFlood.cpp", selfOnly);
+		else if(family == 1)
+			nxReport("hull_flood_start", "0x0002a0a0", "phys_fn_001431", "HullFlood.cpp", selfOnly);
+		else
+			nxReport("hull_flood_entry", "0x0002a160", "phys_fn_001433", "HullFlood.cpp", selfOnly);
+		}
+
+	// ---- the clustering pass (001435 + 001437) -------------------------------------------------------
+	gState = 0x9d2c47b1;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	unsigned clusterRuns = 0, clusterPolygons = 0;
+	for(int mi = 0; mi < kNbHullMeshes; ++mi)
+		{
+		const NxMesh& m = *hullMesh[mi];
+		NxHullMesh& h = meshes[mi];
+		if(!h.built)
+			continue;
+		for(unsigned round = 0; round < 4; ++round)
+			for(int side = 0; side < nbSides; ++side)
+				{
+				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+				unsigned char object[0x40];
+				memset(object, 0xcd, sizeof(object));
+				*sides[side].stamp = 0x55aa0000u + round;
+				const unsigned al = nxHullRun(sides[side].cluster, object, 0, m.nbTris, (unsigned) (size_t) m.tris, 0,
+					(unsigned) (size_t) m.verts, (unsigned) (size_t) &h.edges) & 0xff;
+				tape.push(al);
+				tape.push(*sides[side].stamp);
+				if(al)
+					{
+					const unsigned* words = (const unsigned*) object;
+					tape.push(words[8]); tape.push(words[9]); tape.push(words[11]);
+					const unsigned* groupOf = (const unsigned*) (size_t) words[12];
+					const unsigned* rank = (const unsigned*) (size_t) words[10];
+					for(unsigned t = 0; t < m.nbTris; ++t)
+						{
+						tape.push(groupOf[t]);
+						tape.push(rank[t]);
+						}
+					if(side == 0)
+						{
+						++clusterRuns;
+						clusterPolygons += words[9];
+						}
+					nxHullRun(sides[side].freeBuffers, object);
+					}
+				}
+		}
+	nxReport("hull_cluster", "0x0002a190", "phys_fn_001435", "HullFlood.cpp", selfOnly);
+	if(!selfOnly)
+		printf("thirdparty hull_flood meshes=%u coplanar=%u/%u floods=%u flood_tris=%u clusters=%u polygons=%u\n",
+			builtMeshes, coplanarTrue, coplanarCases, floodCalls, floodTris, clusterRuns, clusterPolygons);
 	}
 
 int wmain(int argc, wchar_t** argv)
