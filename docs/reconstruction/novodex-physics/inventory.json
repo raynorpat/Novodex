@@ -27739,13 +27739,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/578",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3741",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002a6e0: the unnormalised normal of a 16-bit indexed triangle (thiscall, ecx = the triangle, vertices and output on the stack). Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_delete' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `je` of the null-vertices test at 0x0002a6ea (mismatches=6). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullTriangleNormal@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullTriangleNormal@@YAXXZ",
+        "address": "0x1002a990",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001444",
@@ -27812,13 +27820,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/580",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3745",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002a830: whether a point lies on or in front of a 16-bit indexed triangle (the dot product of its normal with the vector to the point is not negative). Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_delete' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: `fsub` to `fadd` in the first edge at 0x0002a85f (mismatches=6). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullPointInFront@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullPointInFront@@YAXXZ",
+        "address": "0x1002a7a0",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001448",
@@ -27885,13 +27901,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/582",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3754",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002a9a0: drops the faces that repeat another face exactly: the face triples are reduced as a point cloud (ReducedVertices) and the survivors written back when editing is allowed; reports whether the faces were already unique. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_init' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jbe` at 0x0002aa2c (mismatches=388). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullDedupFaces@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullDedupFaces@@YAXXZ",
+        "address": "0x1002a290",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001452",
@@ -27921,13 +27945,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/583",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3761",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002aa90: collapses faces whose shortest edge is under the tolerance (re-pointing one end at the other everywhere), drops the faces left with a repeated index, and repeats until nothing collapses; fails when fewer than four faces remain. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_delete' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `je` of the null-arguments test at 0x0002aab0 (mismatches=6). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullDropDegenerate@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullDropDegenerate@@YAXXZ",
+        "address": "0x1002a380",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001454",
@@ -28177,13 +28209,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/590",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3825",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002b3b0: the winding fix: the average of the vertices as the interior point, then every face that does not face away from it has two indices swapped (when editing is allowed); reports whether every face already faced outward. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_init' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: `fmul` to `fdiv` in the centroid sum at 0x0002b483 (mismatches=384). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullOrientFaces@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullOrientFaces@@YAXXZ",
+        "address": "0x1002a5d0",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001468",
@@ -28213,13 +28253,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/591",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3837",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002b580: the validating pass: runs the duplicate, orientation and degenerate checks without editing and reports whether all three accepted the faces. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_delete' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` after the first pass at 0x0002b595 (mismatches=6). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullClean@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullClean@@YAXXZ",
+        "address": "0x1002a240",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001470",
@@ -28249,13 +28297,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/592",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3840",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002b5d0: frees every array the hull owns (edge tables, polygon arrays, faces, vertices, normals) and the edge-axes container, and resets the vtable pointer. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_init' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `je` before the edge-axes release at 0x0002b6d7 (mismatches=48). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullRelease@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullRelease@@YAXXZ",
+        "address": "0x1002a870",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001472",
@@ -28305,13 +28361,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/594",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3870",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002b990: the scalar deleting destructor: release, then free the object through the SDK allocator when bit 0 of the flag is set. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_delete' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: zeroed the returned pointer (`mov eax, esi` to `xor eax, eax`) at 0x0002b9ac (mismatches=4). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullScalarDelete@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullScalarDelete@@YAXXZ",
+        "address": "0x100292f0",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001475",
@@ -28341,13 +28405,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3872",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002b9c0: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the entry and the per-vertex double copy. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jle` at 0x0002bab9 (mismatches=1). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001477",
@@ -28377,13 +28449,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3877",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002bac0: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the running extremes of the cloud. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: `fsub` to `fadd` at 0x0002bb45 (mismatches=1). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001479",
@@ -28413,13 +28493,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3890",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002bb80: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the extent test and the tolerance scaling. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jge` at 0x0002bbd6 (mismatches=6627). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001481",
@@ -28449,13 +28537,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3895",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002bcb0: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the initial simplex. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: `fadd` to `fsub` at 0x0002bcbf (mismatches=1). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001483",
@@ -28485,13 +28581,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3905",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002beb0: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the visibility pass over the faces. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jl` at 0x0002bef5 (mismatches=1). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001485",
@@ -28521,13 +28625,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3924",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002c080: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the plane distances of the vertices to the faces. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: `fadd` to `fsub` at 0x0002c0b5 (mismatches=10445). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001487",
@@ -28557,13 +28669,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3927",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002c1f0: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the horizon expansion. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: `fmul` to `fdiv` at 0x0002c20c (mismatches=1). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001489",
@@ -28593,13 +28713,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3940",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002c310: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the release of the working faces. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `jne` at 0x0002c34f (mismatches=1). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001491",
@@ -28629,13 +28757,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3950",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002b9c0"
+      "static_proof": "IDA/capstone at RVA 0x0002c400: the point-cloud builder (virtual slot 1; the listing splits its single function over rows 001476 to 001492): copies the vertices into doubles, reduces duplicates, builds the hull from a simplex by repeated horizon expansion, then runs the face clean-up, copies the result into the hull and, when asked, builds the polygons -- here the copy into the hull, the clean-up and the polygons. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_build' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `je` at 0x0002c6b9 (mismatches=1). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullBuild@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullBuild@@YAXXZ",
+        "address": "0x10029320",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001493",
@@ -28665,13 +28801,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/HullBuild.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/596",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3974",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0002c720: the from-faces initialiser (virtual slot 2): copies the vertices and the faces (dword or 16-bit triples) into the hull, cleans the faces up (duplicates, orientation, degenerates), validates them, builds the polygons and the centroid. Transcribed instruction for instruction into a naked row in Physics/src/HullBuild.cpp; evidence/phase3-hull-build-listing-compare.py disassembles the built candidate and the oracle and finds the 2,120 instructions of the ten functions equal, with the 71 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=hull_init' is a registered coverage assertion in tools/gate_targets.ps1 (NxPhysicsThirdPartyTests, Phases 4 and 7). The harness enters the oracle's row and the candidate's naked transcription with the oracle's registers over the same meshes and point clouds, each side's arrays from its own allocator, and compares the whole hull object word for word, zero mismatches. A mutation aimed at this row is rejected: inverted the `je` at 0x0002c8c9 (mismatches=30). See evidence/phase3-hull-build.md.",
+      "notes": "Part of the P-Hull class (ConvexHull, vtable 0x1010769c); no reconstructed row calls it yet.",
+      "implementation": "Physics/src/HullBuild.cpp",
+      "implementation_symbol": "?nxHullInit@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxHullInit@@YAXXZ",
+        "address": "0x1002a070",
+        "object": "HullBuild.obj"
+      }
     },
     {
       "id": "phys_fn_001495",

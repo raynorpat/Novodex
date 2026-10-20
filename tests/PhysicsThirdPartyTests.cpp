@@ -4552,6 +4552,7 @@ static NxPMapRaw* nxPMapTestMap(const NxMesh& mesh, unsigned resolution)
 	}
 
 static void nxDriveHullFlood(const NxOracleRows& o, bool selfOnly);
+static void nxDriveHullBuild(const NxOracleRows& o, bool selfOnly);
 static void nxDrivePMapCompute(const NxOracleRows& o, bool selfOnly)
 	{
 	gState = 0x6d11a5e1;
@@ -5523,6 +5524,7 @@ static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
 	nxDriveTreeColliderRows(o, selfOnly, 2, "opcode_treecollider_callback_boxtri", "opcode_treecollider_callback_boxtri_boundary", "0x000cbe50", "phys_fn_004969");
 	nxDrivePMapCompute(o, selfOnly);
 	nxDriveHullFlood(o, selfOnly);
+	nxDriveHullBuild(o, selfOnly);
 	nxDriveVanilla(o, selfOnly);
 	nxDriveRefit(o, selfOnly);
 	nxReleaseModels(o);
@@ -13477,6 +13479,404 @@ static void nxDriveHullFlood(const NxOracleRows& o, bool selfOnly)
 	if(!selfOnly)
 		printf("thirdparty hull_flood meshes=%u coplanar=%u/%u floods=%u flood_tris=%u clusters=%u polygons=%u\n",
 			builtMeshes, coplanarTrue, coplanarCases, floodCalls, floodTris, clusterRuns, clusterPolygons);
+	}
+
+// ===========================================================================================================
+// The P-Hull class rows (phys_fn_001443 to 001494, Physics/src/HullBuild.cpp): the from-faces initialiser
+// (slot 2) with the face clean-up it runs (001451, 001467, 001453, 001469 and the two triangle tests under
+// them), the point-cloud builder (slot 1), the release (001471) and the scalar deleting destructor (001474).
+// Each is entered with the oracle's registers by a trampoline, once for the oracle's address and once for
+// the candidate's naked transcription, over the same inputs; the hull object each leaves is taped field by
+// field. The arrays each side allocates come from its own SDK allocator.
+
+extern void* nxHullVtable[3];
+void nxHullInit();
+void nxHullBuild();
+void nxHullRelease();
+void nxHullScalarDelete();
+
+struct NxHullBuildSide
+	{
+	bool		oracle;
+	void*		vtable;
+	void *init, *build, *release, *scalarDelete, *getAllocator;
+	};
+
+static void nxHullBuildMakeSide(NxHullBuildSide& s, const NxOracleRows& o, bool oracle)
+	{
+	s.oracle = oracle;
+	if(oracle)
+		{
+		s.vtable = nxAt(o, 0x0010769c);
+		s.init = nxAt(o, 0x0002c720); s.build = nxAt(o, 0x0002b9c0);
+		s.release = nxAt(o, 0x0002b5d0); s.scalarDelete = nxAt(o, 0x0002b990);
+		s.getAllocator = nxAt(o, 0x000b4000);
+		}
+	else
+		{
+		s.vtable = nxHullVtable;
+		s.init = (void*) &nxHullInit; s.build = (void*) &nxHullBuild;
+		s.release = (void*) &nxHullRelease; s.scalarDelete = (void*) &nxHullScalarDelete;
+		s.getAllocator = 0;
+		}
+	}
+
+// A hull object: 0x4c bytes of ConvexHull plus room, vptr set, everything else zero.
+static void nxHullObjectInit(const NxHullBuildSide& s, unsigned* object)
+	{
+	memset(object, 0, 0x80);
+	object[0] = (unsigned) (size_t) s.vtable;
+	}
+
+static void nxHullTapeHull(NxTape& tape, const unsigned* object)
+	{
+	const unsigned nbFaces = object[1], nbVerts = object[3], nbPolygons = object[9];
+	tape.push(nbFaces); tape.push(nbVerts); tape.push(nbPolygons);
+	tape.push(object[2] != 0); tape.push(object[4] != 0); tape.push(object[10] != 0);
+	if(object[2])
+		for(unsigned i = 0; i < nbFaces * 3 / 2; ++i)
+			tape.push(((const unsigned*) (size_t) object[2])[i]);
+	if(object[4])
+		for(unsigned i = 0; i < nbVerts * 3; ++i)
+			tape.push(((const unsigned*) (size_t) object[4])[i]);
+	for(unsigned i = 6; i < 9; ++i)
+		tape.push(object[i]);
+	if(object[10])
+		{
+		const unsigned* polygons = (const unsigned*) (size_t) object[10];
+		unsigned refs = 0;
+		for(unsigned p = 0; p < nbPolygons; ++p)
+			{
+			const unsigned* poly = polygons + p * 9;
+			tape.push(poly[0]);
+			refs += poly[0];
+			}
+		if(object[11])
+			for(unsigned i = 0; i < refs; ++i)
+				tape.push(((const unsigned*) (size_t) object[11])[i]);
+		}
+	}
+
+struct NxHullInput
+	{
+	unsigned	nbVerts;
+	float		verts[3 * 400];
+	unsigned	nbTris;
+	unsigned	tris[3 * 800];
+	};
+
+static void nxHullInputFromMesh(NxHullInput& in, const NxMesh& m)
+	{
+	in.nbVerts = m.nbVerts;
+	memcpy(in.verts, m.verts, sizeof(float) * 3 * m.nbVerts);
+	in.nbTris = m.nbTris;
+	memcpy(in.tris, m.tris, sizeof(unsigned) * 3 * m.nbTris);
+	}
+
+// A closed convex mesh: a latitude/longitude sphere, poles included.
+static void nxHullSphere(NxHullInput& in, unsigned rings, unsigned segments, float radius)
+	{
+	in.nbVerts = 0;
+	in.nbTris = 0;
+	in.verts[0] = 0.0f; in.verts[1] = radius; in.verts[2] = 0.0f;
+	in.nbVerts = 1;
+	for(unsigned r = 1; r < rings; ++r)
+		{
+		const float phi = 3.14159265f * (float) r / (float) rings;
+		for(unsigned s = 0; s < segments; ++s)
+			{
+			const float theta = 6.28318531f * (float) s / (float) segments;
+			float* v = &in.verts[3 * in.nbVerts++];
+			v[0] = radius * (float) sin(phi) * (float) cos(theta);
+			v[1] = radius * (float) cos(phi);
+			v[2] = radius * (float) sin(phi) * (float) sin(theta);
+			}
+		}
+	float* south = &in.verts[3 * in.nbVerts++];
+	south[0] = 0.0f; south[1] = -radius; south[2] = 0.0f;
+	for(unsigned s = 0; s < segments; ++s)
+		{
+		unsigned* t = &in.tris[3 * in.nbTris++];
+		t[0] = 0; t[1] = 1 + (s + 1) % segments; t[2] = 1 + s;
+		}
+	for(unsigned r = 1; r + 1 < rings; ++r)
+		for(unsigned s = 0; s < segments; ++s)
+			{
+			const unsigned a = 1 + (r - 1) * segments + s, b = 1 + (r - 1) * segments + (s + 1) % segments;
+			const unsigned c = a + segments, d = b + segments;
+			unsigned* t0 = &in.tris[3 * in.nbTris++];
+			t0[0] = a; t0[1] = b; t0[2] = c;
+			unsigned* t1 = &in.tris[3 * in.nbTris++];
+			t1[0] = b; t1[1] = d; t1[2] = c;
+			}
+	const unsigned last = in.nbVerts - 1;
+	for(unsigned s = 0; s < segments; ++s)
+		{
+		unsigned* t = &in.tris[3 * in.nbTris++];
+		t[0] = last; t[1] = 1 + (rings - 2) * segments + s; t[2] = 1 + (rings - 2) * segments + (s + 1) % segments;
+		}
+	}
+
+static void nxHullInputVariant(NxHullInput& in, unsigned variant)
+	{
+	switch(variant)
+		{
+		case 1:		// every face wound the other way
+			for(unsigned t = 0; t < in.nbTris; ++t)
+				{
+				const unsigned swap = in.tris[3 * t + 1];
+				in.tris[3 * t + 1] = in.tris[3 * t + 2];
+				in.tris[3 * t + 2] = swap;
+				}
+			break;
+		case 2:		// every third face wound the other way
+			for(unsigned t = 0; t < in.nbTris; t += 3)
+				{
+				const unsigned swap = in.tris[3 * t + 1];
+				in.tris[3 * t + 1] = in.tris[3 * t + 2];
+				in.tris[3 * t + 2] = swap;
+				}
+			break;
+		case 3:		// a duplicate of the first face, rotated, and of the last
+			if(in.nbTris + 2 <= 800)
+				{
+				unsigned* a = &in.tris[3 * in.nbTris++];
+				a[0] = in.tris[1]; a[1] = in.tris[2]; a[2] = in.tris[0];
+				unsigned* b = &in.tris[3 * in.nbTris++];
+				const unsigned* last = &in.tris[3 * (in.nbTris - 3)];
+				b[0] = last[0]; b[1] = last[1]; b[2] = last[2];
+				}
+			break;
+		case 4:		// faces with a repeated vertex
+			if(in.nbTris + 2 <= 800)
+				{
+				unsigned* a = &in.tris[3 * in.nbTris++];
+				a[0] = in.tris[0]; a[1] = in.tris[0]; a[2] = in.tris[1];
+				unsigned* b = &in.tris[3 * in.nbTris++];
+				b[0] = in.tris[2]; b[1] = in.tris[1]; b[2] = in.tris[1];
+				}
+			break;
+		case 5:		// a zero-area face (three collinear vertices of the first edge, repeated midpoints)
+			if(in.nbTris + 1 <= 800 && in.nbVerts + 1 <= 400)
+				{
+				float* mid = &in.verts[3 * in.nbVerts];
+				const float* p = &in.verts[3 * in.tris[0]];
+				const float* q = &in.verts[3 * in.tris[1]];
+				for(int a = 0; a < 3; ++a)
+					mid[a] = 0.5f * (p[a] + q[a]);
+				unsigned* t = &in.tris[3 * in.nbTris++];
+				t[0] = in.tris[0]; t[1] = in.nbVerts; t[2] = in.tris[1];
+				++in.nbVerts;
+				}
+			break;
+		default:
+			break;
+		}
+	}
+
+// Words of a hull object as a tape: the counts and the centroid as they are, a pointer as whether it is set.
+static void nxHullTapeRaw(NxTape& tape, const unsigned* object)
+	{
+	static const unsigned char kCount[0x13] = { 0,1,0,1,0,0,2,2,2,1,0,0,0,0,1,0,0,0,0 };
+	static const unsigned char kPointer[0x13] = { 0,0,1,0,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1 };
+	for(unsigned w = 1; w < 0x13; ++w)
+		if(kCount[w])
+			tape.push(object[w]);
+		else if(kPointer[w])
+			tape.push(object[w] != 0);
+	}
+
+static void* nxHullAllocate(const NxHullBuildSide& s, unsigned size)
+	{
+	if(!s.oracle)
+		return nxIceAlloc(size, (NxMemoryType) 0);
+	void* const allocator = (void*) (size_t) nxHullRun(s.getAllocator, 0);
+	void* const mallocSlot = *(void**) *(void**) allocator;
+	return (void*) (size_t) nxHullRun(mallocSlot, allocator, 0, size, 0);
+	}
+
+static void nxHullFree(const NxHullBuildSide& s, void* memory)
+	{
+	if(!s.oracle)
+		{
+		nxIceFree(memory);
+		return;
+		}
+	void* const allocator = (void*) (size_t) nxHullRun(s.getAllocator, 0);
+	void* const freeSlot = *(void**) ((unsigned char*) *(void**) allocator + 0xc);
+	nxHullRun(freeSlot, allocator, 0, (unsigned) (size_t) memory);
+	}
+
+static void nxDriveHullBuild(const NxOracleRows& o, bool selfOnly)
+	{
+	NxHullBuildSide sides[2];
+	nxHullBuildMakeSide(sides[0], o, true);
+	nxHullBuildMakeSide(sides[1], o, false);
+	const int nbSides = selfOnly ? 1 : 2;
+	static NxHullInput inputs[12];
+	unsigned nbInputs = 0;
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[5]);			// the box
+	nxHullSphere(inputs[nbInputs++], 4, 6, 1.0f);
+	nxHullSphere(inputs[nbInputs++], 6, 8, 1.5f);
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[0]);			// a bumpy grid (open, not convex)
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[2]);			// a flat grid
+	nxHullInputFromMesh(inputs[nbInputs++], gMeshes[4]);			// one triangle
+
+	// ---- the from-faces initialiser (001494) and the clean-up under it, then the release (001471) ---------
+	gState = 0x4e0c92b7;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	unsigned initCases = 0, initTrue = 0;
+	for(unsigned in = 0; in < nbInputs; ++in)
+		for(unsigned variant = 0; variant < 6; ++variant)
+			for(unsigned form = 0; form < 2; ++form)
+				{
+				if(in >= 3 && variant >= 2)
+					continue;
+				NxHullInput input = inputs[in];
+				nxHullInputVariant(input, variant);
+				// form 1 gives the faces as 16-bit triples (create +0x10) in place of the dword triples (+0xc).
+				unsigned short wfaces[3 * 800];
+				for(unsigned i = 0; i < 3 * input.nbTris; ++i)
+					wfaces[i] = (unsigned short) input.tris[i];
+				for(int side = 0; side < nbSides; ++side)
+					{
+					NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+					unsigned object[0x20];
+					nxHullObjectInit(sides[side], object);
+					unsigned create[5];
+					create[0] = input.nbVerts;
+					create[1] = (unsigned) (size_t) input.verts;
+					create[2] = input.nbTris;
+					create[3] = form ? 0 : (unsigned) (size_t) input.tris;
+					create[4] = form ? (unsigned) (size_t) wfaces : 0;
+					const unsigned al = nxHullRun(sides[side].init, object, 0, (unsigned) (size_t) create) & 0xff;
+					tape.push(al);
+					nxHullTapeHull(tape, object);
+					if(side == 0)
+						{
+						++initCases;
+						initTrue += al != 0;
+						}
+					nxHullRun(sides[side].release, object);
+					nxHullTapeRaw(tape, object);
+					}
+				}
+	nxReport("hull_init", "0x0002c720", "phys_fn_001494", "HullBuild.cpp", selfOnly);
+
+	// ---- the point-cloud builder (slot 1: 001476 to 001492) -----------------------------------------------
+	gState = 0x1b7a40d5;
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	static NxHullInput clouds[24];
+	unsigned nbClouds = 0;
+	nxHullInputFromMesh(clouds[nbClouds++], gMeshes[5]);
+	nxHullSphere(clouds[nbClouds++], 4, 6, 1.0f);
+	nxHullSphere(clouds[nbClouds++], 6, 8, 1.5f);
+	nxHullInputFromMesh(clouds[nbClouds++], gMeshes[2]);
+	for(unsigned c = 0; c < 14; ++c)
+		{
+		NxHullInput& cloud = clouds[nbClouds++];
+		cloud.nbVerts = 10 + 9 * c;
+		cloud.nbTris = 0;
+		for(unsigned v = 0; v < cloud.nbVerts; ++v)
+			{
+			float p[3], length;
+			do
+				{
+				for(int a = 0; a < 3; ++a)
+					p[a] = nxRange(-1.0f, 1.0f).value;
+				length = p[0] * p[0] + p[1] * p[1] + p[2] * p[2];
+				}
+			while(length > 1.0f);
+			for(int a = 0; a < 3; ++a)
+				cloud.verts[3 * v + a] = p[a] * (1.0f + (float) (c % 4)) * (a == 1 ? 0.5f + (float) (c % 3) : 1.0f);
+			}
+		}
+	// a box with interior points
+		{
+		NxHullInput& cloud = clouds[nbClouds++];
+		nxHullInputFromMesh(cloud, gMeshes[5]);
+		for(unsigned k = 0; k < 10; ++k)
+			for(int a = 0; a < 3; ++a)
+				cloud.verts[3 * (cloud.nbVerts + k) + a] = nxRange(-0.9f, 0.9f).value;
+		cloud.nbVerts += 10;
+		}
+	// the sphere again with its first vertices repeated, and a cloud of near-duplicates
+		{
+		NxHullInput& cloud = clouds[nbClouds++];
+		cloud = clouds[2];
+		for(unsigned k = 0; k < 6; ++k)
+			memcpy(&cloud.verts[3 * (cloud.nbVerts + k)], &cloud.verts[3 * k], 3 * sizeof(float));
+		cloud.nbVerts += 6;
+		}
+		{
+		NxHullInput& cloud = clouds[nbClouds++];
+		cloud = clouds[1];
+		for(unsigned k = 0; k < 6; ++k)
+			{
+			memcpy(&cloud.verts[3 * (cloud.nbVerts + k)], &cloud.verts[3 * k], 3 * sizeof(float));
+			cloud.verts[3 * (cloud.nbVerts + k)] += 1e-6f;
+			}
+		cloud.nbVerts += 6;
+		}
+	unsigned buildCases = 0, buildTrue = 0;
+	for(unsigned c = 0; c < nbClouds; ++c)
+		for(unsigned flags = 0; flags < 4; ++flags)
+			for(int side = 0; side < nbSides && flags != 2; ++side)
+				{
+				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+				unsigned object[0x20];
+				nxHullObjectInit(sides[side], object);
+				unsigned create[4];
+				create[0] = clouds[c].nbVerts;
+				create[1] = (unsigned) (size_t) clouds[c].verts;
+				create[2] = 0;
+				// create + 0xc: orient the faces; create + 0xd: build the polygons (without it the call reports failure; polygons without the orientation pass crash both sides, so that combination is not driven).
+				create[3] = (flags & 1) | (((flags >> 1) & 1) << 8);
+				const unsigned al = nxHullRun(sides[side].build, object, 0, (unsigned) (size_t) create) & 0xff;
+				tape.push(al);
+				nxHullTapeHull(tape, object);
+				if(side == 0)
+					{
+					++buildCases;
+					buildTrue += al != 0;
+					}
+				nxHullRun(sides[side].release, object);
+				nxHullTapeRaw(tape, object);
+				}
+	nxReport("hull_build", "0x0002b9c0", "phys_fn_001476", "HullBuild.cpp", selfOnly);
+
+	// ---- the scalar deleting destructor (001474) ----------------------------------------------------------
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(unsigned flag = 0; flag < 2; ++flag)
+		for(unsigned filled = 0; filled < 2; ++filled)
+			for(int side = 0; side < nbSides; ++side)
+				{
+				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
+				unsigned* object = (unsigned*) nxHullAllocate(sides[side], 0x80);
+				nxHullObjectInit(sides[side], object);
+				if(filled)
+					{
+					const NxHullInput& input = inputs[1];
+					unsigned create[5] = { input.nbVerts, (unsigned) (size_t) input.verts, input.nbTris,
+						(unsigned) (size_t) input.tris, 0 };
+					tape.push(nxHullRun(sides[side].init, object, 0, (unsigned) (size_t) create) & 0xff);
+					}
+				const unsigned result = nxHullRun(sides[side].scalarDelete, object, 0, flag);
+				tape.push(result == (unsigned) (size_t) object);
+				if(!flag)
+					{
+					nxHullTapeRaw(tape, object);
+					tape.push(object[0] != 0);
+					nxHullRun(sides[side].release, object);
+					nxHullFree(sides[side], object);
+					}
+				}
+	nxReport("hull_delete", "0x0002b990", "phys_fn_001474", "HullBuild.cpp", selfOnly);
+	if(!selfOnly)
+		printf("thirdparty hull_build init=%u/%u build=%u/%u\n", initTrue, initCases, buildTrue, buildCases);
 	}
 
 int wmain(int argc, wchar_t** argv)

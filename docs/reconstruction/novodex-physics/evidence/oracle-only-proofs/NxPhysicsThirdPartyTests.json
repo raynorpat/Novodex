@@ -3,13 +3,13 @@
   "target": "NxPhysicsThirdPartyTests",
   "format": "thirdparty_oracle_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "e639a121db37e37186f4fb38b892e343ca8dfe2b68f4ad83b8f226a01fb80a74",
+  "fixture_source_sha256": "0ef1460fb8fc461b08056c243f97b84dc9608e36323472626c03e317e367c72a",
   "fixture_source": "tests/PhysicsThirdPartyTests.cpp",
-  "proof_lines_sha256": "259540c5359d58df4251e2eced81299ac825810236e37468e5a8db1b5aee7488",
-  "baseline_sha256": "35c0b06884d1b0750a5c0011e3359812eef507a8934ce3e07ad46e7ea617edc8",
+  "proof_lines_sha256": "8c324b6e9e23eb0818aed2af35f3e3b05e71f6b5c967fd1937223c2fbad7d374",
+  "baseline_sha256": "154fb722dbbf3a4a0b82c0a3675608501e26e09d3fa2314cd08d469498bf780e",
   "coverage_line_count": 29,
-  "final_coverage_line": "thirdparty coverage driven=136 divergent=30 words=2992819 layout_checks=49",
-  "oracle_digest_fnv32": "f1ea3c84",
-  "selected_lines_sha256": "259540c5359d58df4251e2eced81299ac825810236e37468e5a8db1b5aee7488",
-  "proof_sha256": "3755f9b014f8a3fd24c03da39467be4083070aec5d555abfed089a94cd185759"
+  "final_coverage_line": "thirdparty coverage driven=139 divergent=30 words=3019604 layout_checks=49",
+  "oracle_digest_fnv32": "d156428a",
+  "selected_lines_sha256": "8c324b6e9e23eb0818aed2af35f3e3b05e71f6b5c967fd1937223c2fbad7d374",
+  "proof_sha256": "f8f034139d7df8390a82b2a966f2d2008ea4540638238d6552c5c53829c9b821"
 }

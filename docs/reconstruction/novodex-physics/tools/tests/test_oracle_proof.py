@@ -290,7 +290,7 @@ class OracleProofTests(unittest.TestCase):
         generator_line = "thirdparty generator=xorshift32 mode=self"
         coverage_lines = [
             "thirdparty coverage name=fixture cases=2 accepted=1 rejected=1",
-            "thirdparty coverage driven=136 divergent=30 words=2992819 layout_checks=49",
+            "thirdparty coverage driven=139 divergent=30 words=3019604 layout_checks=49",
         ]
         oracle_digest_line = "thirdparty oracle digest=1a2b3c4d"
         selected = "\n".join(
@@ -739,8 +739,8 @@ class CheckedInOracleBaselineTests(unittest.TestCase):
                                  "thirdparty generator=xorshift32 mode=differential")
                 self.assertEqual(expected["coverage_line_count"], 29)
                 self.assertEqual(expected["final_coverage_line"],
-                                 "thirdparty coverage driven=136 divergent=30 words=2992819 layout_checks=49")
-                self.assertEqual(expected["oracle_digest_fnv32"], "f1ea3c84")
+                                 "thirdparty coverage driven=139 divergent=30 words=3019604 layout_checks=49")
+                self.assertEqual(expected["oracle_digest_fnv32"], "d156428a")
                 self.assertEqual(len(expected["selected_lines_sha256"]), 64)
             elif expected["format"] == "collision_oracle_digest":
                 self.assertEqual(expected["fixture_source"], "tests/PhysicsCollisionTests.cpp")
