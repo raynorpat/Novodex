@@ -1,0 +1,36 @@
+// Listing transcriptions of phys_fn_002067 (0x00051ef0, the release of an InternalTriangleMesh's arrays),
+// phys_fn_002085 (0x000523a0, the destructor body: the release, then the embedded MeshInterface's no-op) and
+// phys_fn_002087, 002089, 002091 and 002093 (0x000523c0, 2,460 bytes: the inventory splits one function at its jump
+// targets): the topology rebuild through MeshBuilder2, the new arrays from the Foundation allocator, and the split of
+// vertices shared by edges of more than two faces. The allocator is the Foundation's own exported global (the
+// candidate's import slot, loaded as in the listing). The callers keep the cdecl entries after the rows. Compare
+// script: docs/reconstruction/novodex-physics/evidence/phase4-mesh-topology-listing-compare.py.
+extern "C" void nxMTCallNoop();
+extern "C" void nxMTCallBuilderCtor();
+extern "C" void nxMTCallBuilderInit();
+extern "C" void nxMTCallBuilderAddFace();
+extern "C" void nxMTCallBuilderBuild();
+extern "C" void nxMTCallBuilderDtor();
+extern "C" void nxMTCallEdgeListCtor();
+extern "C" void nxMTCallEdgeListInit();
+extern "C" void nxMTCallEdgeListDtor();
+extern "C" void nxMTCallContainerCtor();
+extern "C" void nxMTCallContainerDtor();
+extern "C" void nxMTCallAddPoint();
+extern "C" void nxMTCallReplaceVertex();
+extern "C" void* nxMTAllocSlot;
+#pragma comment(linker, "/alternatename:_nxMTCallNoop=?nxSupportMapNoop@@YIXPAUIceSupportMap@@@Z")
+#pragma comment(linker, "/alternatename:_nxMTCallBuilderCtor=??0MeshBuilder2@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxMTCallBuilderInit=?Init@MeshBuilder2@@QAE_NABUMBCREATE@@@Z")
+#pragma comment(linker, "/alternatename:_nxMTCallBuilderAddFace=?AddFace@MeshBuilder2@@QAE_NABUMBFACEINFO@@@Z")
+#pragma comment(linker, "/alternatename:_nxMTCallBuilderBuild=?Build@MeshBuilder2@@QAE_NAAUMBRESULT@@@Z")
+#pragma comment(linker, "/alternatename:_nxMTCallBuilderDtor=??1MeshBuilder2@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxMTCallEdgeListCtor=??0EdgeList@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxMTCallEdgeListInit=?Init@EdgeList@@QAE_NABUEDGELISTCREATE@@@Z")
+#pragma comment(linker, "/alternatename:_nxMTCallEdgeListDtor=??1EdgeList@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxMTCallContainerCtor=??0Container@IceCore@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxMTCallContainerDtor=??1Container@IceCore@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxMTCallAddPoint=?nxIceContainerAddPoint@@YIAAVContainer@IceCore@@PAV12@IPBI@Z")
+#pragma comment(linker, "/alternatename:_nxMTCallReplaceVertex=?ReplaceVertex@IndexedTriangle@IceMaths@@QAE_NII@Z")
+#pragma comment(linker, "/alternatename:_nxMTAllocSlot=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
+

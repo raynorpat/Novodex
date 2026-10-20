@@ -260,14 +260,16 @@ class Nx2iAllocator : public NxUserAllocator
 	{
 	public:
 	unsigned mallocs, frees, lastSize;
-	Nx2iAllocator() : mallocs(0), frees(0), lastSize(0) {}
+	// Each malloc's size and each free (as 0xffffffff), in order, since the last nx2iTakeAllocLog.
+	unsigned log[512], nbLog;
+	Nx2iAllocator() : mallocs(0), frees(0), lastSize(0), nbLog(0) {}
 	virtual void* mallocDEBUG(size_t size, const char*, int) { return take(size); }
 	virtual void* mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType) { return take(size); }
 	virtual void* malloc(size_t size) { return take(size); }
 	virtual void* malloc(size_t size, NxMemoryType) { return take(size); }
 	virtual void* realloc(void* memory, size_t size) { return ::realloc(memory, size); }
-	virtual void free(void* memory) { if(memory) ++frees; ::free(memory); }
-	void* take(size_t size) { ++mallocs; lastSize = (unsigned) size; return ::malloc(size ? size : 1); }
+	virtual void free(void* memory) { if(memory) { ++frees; if(nbLog < 512) log[nbLog++] = 0xffffffffu; } ::free(memory); }
+	void* take(size_t size) { ++mallocs; lastSize = (unsigned) size; if(nbLog < 512) log[nbLog++] = (unsigned) size; return ::malloc(size ? size : 1); }
 	};
 
 static Nx2iStream gStream;
@@ -309,10 +311,27 @@ unsigned nx2iTakeReports(unsigned* out, unsigned max)
 	return total;
 	}
 
+// A block from the Foundation allocator (a mesh's arrays, which the topology row releases itself).
+void* nx2iFoundationAlloc(unsigned size)
+	{
+	return gAllocator.malloc(size);
+	}
+
 // A block the Foundation allocator handed out (002081's normals), released.
 void nx2iFoundationFree(void* block)
 	{
 	gAllocator.free(block);
+	}
+
+// The allocator's log (sizes of mallocs, 0xffffffff for frees) since the last call; the count comes back.
+unsigned nx2iTakeAllocLog(unsigned* out, unsigned max)
+	{
+	unsigned n = gAllocator.nbLog < max ? gAllocator.nbLog : max;
+	for(unsigned i = 0; i < n; ++i)
+		out[i] = gAllocator.log[i];
+	const unsigned total = gAllocator.nbLog;
+	gAllocator.nbLog = 0;
+	return total;
 	}
 
 void nx2iFoundationCounts(unsigned* mallocs, unsigned* frees, unsigned* lastSize)

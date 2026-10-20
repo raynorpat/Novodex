@@ -106,6 +106,7 @@ void nxInternalMeshAllocateMaterials(InternalTriangleMesh* mesh);             //
 void nxInternalMeshAllocateFaceRemap(InternalTriangleMesh* mesh);             // 002075
 void nxInternalMeshBuildTriangleData(InternalTriangleMesh* mesh);              // 002079
 bool nxInternalMeshBuildTopology(InternalTriangleMesh* mesh);                  // 002087
+void __fastcall nxInternalMeshDestruct(void* mesh);                              // 002085
 bool nxInternalMeshBuildModel(InternalTriangleMesh* mesh, NxU32 extendAxis, NxReal extendValue,
 	const void* deserializeFrom);                                                  // 002083
 

@@ -1,0 +1,30 @@
+import subprocess, re, sys, os, time
+REPO = r'D:\github\Novodex'
+SRC = REPO + r'\Physics\src\InternalTriangleMesh.cpp'; TGT = 'NxPhysicsCollisionTests'
+pat = r'name=mesh_topology .*? mismatches=(\d+)'
+muts = [(0x52422,'mov byte ptr [esp + 0x58], 0'),(0x524bb,'mov dword ptr [esp + 0x11c], 0'),(0x524c6,'mov dword ptr [esp + 0x120], 2'),(0x52786,'mov dword ptr [esp + 0xa0], 0x3a83126e'),
+ (0x525e8,'shl edx, 3'),(0x52684,'shl eax, 3'),(0x526a6,'shl eax, 3'),(0x5260e,'jne L5266c'),(0x52492,'jb L524fe'),
+ (0x51efb,'jne L51f06'),(0x51eff,'push 0'),(0x51f06,'mov eax, dword ptr [esi + 0x18]'),(0x51f3d,'mov ecx, dword ptr [nxMTAllocSlot]'),(0x51f6b,'jne L51f7e'),
+ (0x523a8,'lea ecx, [esi + 0x28]'),(0x5298d,'call nxMTCallReplaceVertex'),(0x52992,'mov edx, dword ptr [esp + 0x20]'),(0x529ac,'add ecx, 8'),(0x529b5,'jbe L52887')]
+which = 'md'
+orig = open(SRC, encoding='utf-8', newline='').read()
+for addr, new in muts:
+    rx = re.compile(r'^(\t\t)[^\r\n]*?(\t\t// 0x%08x)(\r?)$' % addr, re.M)
+    assert len(rx.findall(orig)) == 1, hex(addr)
+    mut = rx.sub(lambda m: m.group(1) + new + m.group(2) + m.group(3), orig)
+    open(SRC, 'w', encoding='utf-8', newline='').write(mut)
+    try:
+        r = subprocess.run('cmake --build build --config Release --target ' + TGT, shell=True, capture_output=True, text=True, cwd=REPO)
+        if ': error' in r.stdout:
+            print(hex(addr), new, 'BUILD FAIL', [x for x in r.stdout.splitlines() if ': error' in x][:1], flush=True); continue
+        try:
+            r = subprocess.run(['D:/github/Novodex/build/Release/' + TGT + '.exe', 'D:/FlamingEnt__/Unreal_3/Binaries',
+                '4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c', '--mesh-topology-only'], capture_output=True, text=True, cwd=REPO, timeout=240)
+            rc = r.returncode
+        except subprocess.TimeoutExpired:
+            print(hex(addr), new, 'TIMEOUT (detected)', flush=True); continue
+    finally:
+        open(SRC, 'w', encoding='utf-8', newline='').write(orig)
+    out = r.stdout + r.stderr
+    m = re.search(pat, out); res = 'mismatches %s' % (m.group(1) if m else '?')
+    print(hex(addr), new, 'exit', rc, res, flush=True)

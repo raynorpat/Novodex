@@ -7,7 +7,7 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 2128,
+    "mapped_code_rows": 2133,
     "source_correspondence_only_rows": 330,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
@@ -82,8 +82,8 @@
         "closed_rows": 71,
         "deferred_rows": 982,
         "deferred_reasons": {
-          "blocked_on_later_phase": 2,
-          "not_reconstructed_in_phase": 150,
+          "blocked_on_later_phase": 8,
+          "not_reconstructed_in_phase": 144,
           "reconstructed_not_falsified": 744,
           "vendored_not_falsified": 86
         }
@@ -142,12 +142,12 @@
         "rows": 1053,
         "bytes": 441595,
         "open_rows": 1053,
-        "rows_without_implementation_mapping": 292,
+        "rows_without_implementation_mapping": 287,
         "rows_with_unresolved_indirect_calls": 313,
         "by_state": {
-          "discovered": 218,
+          "discovered": 213,
           "dynamically_gated": 71,
-          "reconstructed": 764
+          "reconstructed": 769
         }
       },
       "5": {
@@ -87747,12 +87747,18 @@
       "implementation": {
         "path": "Physics/src/InternalTriangleMesh.cpp",
         "role": "reconstruction",
-        "symbol": null,
+        "symbol": "?nxMTReleaseRow@@YIXPAX@Z",
         "file_exists": true,
         "oracle_source": "Physics/src/InternalTriangleMesh.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxMTReleaseRow@@YIXPAX@Z",
+          "address": "0x10031ad0",
+          "object": "InternalTriangleMesh.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -87787,7 +87793,9 @@
           "0x00051f78",
           "0x00051f90"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -87799,10 +87807,10 @@
         "strength": "proof_text_recorded",
         "inventory_state": "reconstructed",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "blocked_on_later_phase",
         "gate": null,
         "falsification_recorded": false
       },
@@ -87811,8 +87819,10 @@
         "row_id": "phys_fn_002067",
         "rva": "0x00051ef0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "driving_phases": [],
+        "ledger_reason": "blocked_on_later_phase",
+        "driving_phases": [
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -88441,17 +88451,23 @@
       "size": 17,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002085",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/InternalTriangleMesh.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxInternalMeshDestruct@@YIXPAX@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/InternalTriangleMesh.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxInternalMeshDestruct@@YIXPAX@Z",
+          "address": "0x100313d0",
+          "object": "InternalTriangleMesh.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -88480,7 +88496,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -88489,13 +88507,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "blocked_on_later_phase",
         "gate": null,
         "falsification_recorded": false
       },
@@ -88503,9 +88521,11 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002085",
         "rva": "0x000523a0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "driving_phases": [],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
+        "driving_phases": [
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -88515,17 +88535,23 @@
       "size": 216,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002087",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/InternalTriangleMesh.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/InternalTriangleMesh.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+          "address": "0x10031430",
+          "object": "InternalTriangleMesh.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -88568,7 +88594,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -88577,13 +88605,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "blocked_on_later_phase",
         "gate": null,
         "falsification_recorded": false
       },
@@ -88591,9 +88619,11 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002087",
         "rva": "0x000523c0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "driving_phases": [],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
+        "driving_phases": [
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -88603,17 +88633,23 @@
       "size": 541,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002089",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/InternalTriangleMesh.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/InternalTriangleMesh.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+          "address": "0x10031430",
+          "object": "InternalTriangleMesh.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -88667,7 +88703,9 @@
           "0x00052688",
           "0x000526aa"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -88676,13 +88714,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "blocked_on_later_phase",
         "gate": null,
         "falsification_recorded": false
       },
@@ -88690,9 +88728,11 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002089",
         "rva": "0x000524a0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "driving_phases": [],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
+        "driving_phases": [
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -88702,17 +88742,23 @@
       "size": 461,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002091",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/InternalTriangleMesh.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/InternalTriangleMesh.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+          "address": "0x10031430",
+          "object": "InternalTriangleMesh.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -88776,7 +88822,9 @@
         ],
         "unmapped_direct_targets": [],
         "indirect_call_sites": [],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": false
       },
       "applicable_contexts": {
@@ -88785,13 +88833,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "blocked_on_later_phase",
         "gate": null,
         "falsification_recorded": false
       },
@@ -88799,9 +88847,11 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002091",
         "rva": "0x000526c0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "driving_phases": [],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
+        "driving_phases": [
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -88811,17 +88861,23 @@
       "size": 460,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002093",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/InternalTriangleMesh.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/InternalTriangleMesh.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+          "address": "0x10031430",
+          "object": "InternalTriangleMesh.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -88884,7 +88940,9 @@
           "0x000529f1",
           "0x00052a08"
         ],
-        "schedule_blockers": [],
+        "schedule_blockers": [
+          7
+        ],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -88893,13 +88951,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "blocked_on_later_phase",
         "gate": null,
         "falsification_recorded": false
       },
@@ -88907,9 +88965,11 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002093",
         "rva": "0x00052890",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
-        "driving_phases": [],
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "blocked_on_later_phase",
+        "driving_phases": [
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -95599,7 +95659,7 @@
           {
             "id": "phys_fn_002087",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002247",
@@ -95688,7 +95748,7 @@
           {
             "id": "phys_fn_002085",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002239",
@@ -232574,14 +232634,14 @@
     }
   ],
   "source": {
-    "inventory_sha256": "bf519df655111b338fede9f48d7f613f888060fc0bc672d3733deec0eb4c9579",
+    "inventory_sha256": "4bb28df2fdf8e4b7756ea2b2696c2d2f85cc5b218b53ea500b84300798a66a91",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "e0b4d1bf4df8a25263fa53dc601f65ca9452f3685f6903805d9c3dacfbe6d20a",
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "d66709655a59d83b524bce28a6a211e9cd2cca46db0f02c8d01f60e35e753e69",
-      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "62325fd1340e7fb00f32db16cf6004fb92acef78f926806e9465f99213cba8da",
+      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "7ab9e8a67e69fa419b3fb67f3a7cb6bdd15f94a135aa62bc6f62b5052eaf9cbe",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "761038da93887e034f5d6531b57dfb586e1dd8f2881bc28896b7b651aa7af0ef",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "59ad2044e721b387c5757b5b2b03ad72a242d485760f376a5a6bb4d5eb5da126"

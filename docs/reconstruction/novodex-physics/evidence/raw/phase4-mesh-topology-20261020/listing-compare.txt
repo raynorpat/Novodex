@@ -1,0 +1,25 @@
+nxMTReleaseRow ?nxMTReleaseRow@@YIXPAX@Z instructions=68 differing=0
+nxInternalMeshDestruct ?nxInternalMeshDestruct@@YIXPAX@Z instructions=6 differing=0
+nxMTBuildTopologyRow ?nxMTBuildTopologyRow@@YI_NPAX@Z instructions=485 differing=0
+ALL EQUAL
+  call nxInternalMeshDestruct -> oracle 0x10051ef0 ; candidate ?nxMTReleaseRow@@YIXPAX@Z
+  jmp nxInternalMeshDestruct -> oracle 0x1002ea70 ; candidate ?nxSupportMapNoop@@YIXPAUIceSupportMap@@@Z
+  call nxMTBuildTopologyRow -> oracle 0x1002ebe0 ; candidate ??0MeshBuilder2@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x10030420 ; candidate ?Init@MeshBuilder2@@QAE_NABUMBCREATE@@@Z
+  call nxMTBuildTopologyRow -> oracle 0x10030d10 ; candidate ??1MeshBuilder2@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x1002eda0 ; candidate ?AddFace@MeshBuilder2@@QAE_NABUMBFACEINFO@@@Z
+  call nxMTBuildTopologyRow -> oracle 0x10030f50 ; candidate ?Build@MeshBuilder2@@QAE_NAAUMBRESULT@@@Z
+  call nxMTBuildTopologyRow -> oracle 0x10051060 ; candidate ??0EdgeList@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x10051dd0 ; candidate ?Init@EdgeList@@QAE_NABUEDGELISTCREATE@@@Z
+  call nxMTBuildTopologyRow -> oracle 0x100515d0 ; candidate ??1EdgeList@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x10030d10 ; candidate ??1MeshBuilder2@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x100b4d70 ; candidate ??0Container@IceCore@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x1002eb50 ; candidate ?nxIceContainerAddPoint@@YIAAVContainer@IceCore@@PAV12@IPBI@Z
+  call nxMTBuildTopologyRow -> oracle 0x1002eb50 ; candidate ?nxIceContainerAddPoint@@YIAAVContainer@IceCore@@PAV12@IPBI@Z
+  call nxMTBuildTopologyRow -> oracle 0x1002eb50 ; candidate ?nxIceContainerAddPoint@@YIAAVContainer@IceCore@@PAV12@IPBI@Z
+  call nxMTBuildTopologyRow -> oracle 0x100e4160 ; candidate ?ReplaceVertex@IndexedTriangle@IceMaths@@QAE_NII@Z
+  call nxMTBuildTopologyRow -> oracle 0x100e4160 ; candidate ?ReplaceVertex@IndexedTriangle@IceMaths@@QAE_NII@Z
+  call nxMTBuildTopologyRow -> oracle 0x100b4f50 ; candidate ??1Container@IceCore@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x100515d0 ; candidate ??1EdgeList@@QAE@XZ
+  call nxMTBuildTopologyRow -> oracle 0x10030d10 ; candidate ??1MeshBuilder2@@QAE@XZ
+MAPPINGS checked=20 unexpected=0

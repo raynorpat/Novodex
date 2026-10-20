@@ -2740,6 +2740,7 @@ static unsigned nxDriveSphereMesh(unsigned char* base);
 static unsigned nxDriveMeshRaycast(unsigned char* base);
 static unsigned nxDriveMeshDebug(unsigned char* base);
 static unsigned nxDriveMeshMass(unsigned char* base);
+static unsigned nxDriveMeshTopology(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
 static unsigned nxDriveTask2lSinkReset(unsigned char* base);
@@ -4323,6 +4324,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool sphereMeshOnly = argc == 4 && wcscmp(argv[3], L"--sphere-mesh-only") == 0;
 	const bool meshDebugOnly = argc == 4 && wcscmp(argv[3], L"--mesh-debug-only") == 0;
 	const bool meshMassOnly = argc == 4 && wcscmp(argv[3], L"--mesh-mass-only") == 0;
+	const bool meshTopologyOnly = argc == 4 && wcscmp(argv[3], L"--mesh-topology-only") == 0;
 	const bool planeMeshOnly = argc == 4 && wcscmp(argv[3], L"--plane-mesh-only") == 0;
 	const bool ownerPairOnly = argc == 4 && wcscmp(argv[3], L"--owner-pair-only") == 0;
 	const bool sceneOwnerPairRecordsOnly = argc == 4 && wcscmp(argv[3], L"--scene-owner-pair-records-only") == 0;
@@ -4335,7 +4337,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
 	const bool prunerPoolReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-pool-reserve-only") == 0;
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4407,6 +4409,12 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned mismatches = nxDriveTask2j(base);
 		printf("collision matrix_wrong=0 index_wrong=0 mismatches=%u\n", mismatches);
 		printf("collision=%s\n", mismatches ? "fail" : "pass");
+		return mismatches ? 1 : 0;
+		}
+	if(meshTopologyOnly)
+		{
+		const unsigned mismatches = nxDriveMeshTopology(base);
+		printf("collision mesh_topology mismatches=%u\n", mismatches);
 		return mismatches ? 1 : 0;
 		}
 	if(meshMassOnly)
@@ -9883,6 +9891,9 @@ int wmain(int argc, wchar_t** argv)
 
 	// Mesh shape cached mass frame (001397, 002241, 002156, 000835); see nxDriveMeshMass.
 	totalMismatch += nxDriveMeshMass(base);
+
+	// InternalTriangleMesh topology, release and destructor rows (002067, 002085, 002087 to 002093); see nxDriveMeshTopology.
+	totalMismatch += nxDriveMeshTopology(base);
 
 	// Plane/mesh contact and overlap use the scene's PlanesCollider/PlanesCache
 	// pair and must remain part of the pinned oracle differential.
@@ -16429,6 +16440,239 @@ static unsigned nxDriveMeshMass(unsigned char* base)
 	printf("collision coverage name=mesh_mass meshes=%u cases=%u computed=%u failed=%u true=%u reports=%u\n",
 		nbMeshes, cases, computed, failedCompute, returnedTrue, reportsSeen);
 	nxPrintInput("mesh_mass", &fixture);
+	nxSetControl(kControlDefault);
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
+// InternalTriangleMesh's topology rebuild (phys_fn_002087, 002089, 002091 and 002093: one function at 0x000523c0),
+// its release (002067) and its destructor body (002085). The oracle's rows and the candidate's naked
+// transcriptions rebuild the same meshes through MeshBuilder2 (zero-area faces killed, vertices reduced, the
+// face remap and the materials carried through) and split the vertices of edges shared by more than two faces;
+// the arrays, counts, return, and the Foundation allocator's malloc and free sequence are compared. The release
+// and destructor rows run over images with every array set and a fake model object whose scalar deleting
+// destructor records the call.
+extern "C" void nxMTTestBuild();
+extern "C" void nxMTTestRelease();
+extern "C" void nxMTTestDestruct();
+#pragma comment(linker, "/alternatename:_nxMTTestBuild=?nxMTBuildTopologyRow@@YI_NPAX@Z")
+#pragma comment(linker, "/alternatename:_nxMTTestRelease=?nxMTReleaseRow@@YIXPAX@Z")
+#pragma comment(linker, "/alternatename:_nxMTTestDestruct=?nxInternalMeshDestruct@@YIXPAX@Z")
+
+unsigned nx2iTakeAllocLog(unsigned* out, unsigned max);
+void nx2iFoundationFree(void* block);
+void* nx2iFoundationAlloc(unsigned size);
+
+static unsigned gMTModelCalls[2], gMTModelFlags[2];
+static unsigned gMTSide;
+
+static void __fastcall nxMTFakeModelDelete(void* /*object*/, void* /*edx*/, unsigned flag)
+	{
+	++gMTModelCalls[gMTSide];
+	gMTModelFlags[gMTSide] = flag;
+	}
+
+static unsigned nxDriveMeshTopology(unsigned char* base)
+	{
+	static const unsigned kCubeVerts[24] =
+		{
+		0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u,
+		0x00000000u, 0x3f800000u, 0x3f800000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x3f800000u, 0x3f800000u,
+		0x00000000u, 0x3f800000u, 0x00000000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u
+		};
+	static const unsigned kCubeTris[36] =
+		{
+		0, 2, 3, 0, 3, 1, 4, 5, 7, 4, 7, 6, 0, 1, 5, 0, 5, 4, 2, 6, 7, 2, 7, 3, 0, 4, 6, 0, 6, 2, 1, 3, 7, 1, 7, 5
+		};
+	static const unsigned kTetraVerts[12] =
+		{
+		0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u,
+		0x00000000u, 0x00000000u, 0x00000000u, 0x40000000u
+		};
+	static const unsigned kTetraTris[12] = { 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3 };
+	// A cube whose vertices are doubled and whose second copy some faces use.
+	static unsigned doubledVerts[48], doubledTris[36];
+	memcpy(doubledVerts, kCubeVerts, sizeof(kCubeVerts));
+	memcpy(doubledVerts + 24, kCubeVerts, sizeof(kCubeVerts));
+	for(unsigned i = 0; i < 36; ++i)
+		doubledTris[i] = kCubeTris[i] + ((i / 3) & 1 ? 8 : 0);
+	// A cube with a zero-area face appended.
+	static unsigned flatTris[39];
+	memcpy(flatTris, kCubeTris, sizeof(kCubeTris));
+	flatTris[36] = 0; flatTris[37] = 0; flatTris[38] = 1;
+	// Books: n triangles sharing the edge 0-1 (more than two faces on an edge).
+	static unsigned bookVerts[3 * 24], bookTris[3 * 22];
+	for(unsigned v = 0; v < 24; ++v)
+		{
+		const unsigned x = v == 0 ? 0u : v == 1 ? 0x3f800000u : 0x3f000000u;
+		bookVerts[3 * v] = x;
+		bookVerts[3 * v + 1] = v < 2 ? 0u : (0x3f800000u + 0x00100000u * (v - 2));
+		bookVerts[3 * v + 2] = v < 2 ? 0u : (v & 1 ? 0x3f800000u : 0xbf800000u);
+		}
+	for(unsigned page = 0; page < 22; ++page)
+		{
+		bookTris[3 * page] = 0;
+		bookTris[3 * page + 1] = 1;
+		bookTris[3 * page + 2] = 2 + page;
+		}
+	struct Source { unsigned nbVerts, nbTris; const unsigned* verts; const unsigned* tris; };
+	static Source sources[24];
+	unsigned nbSources = 0;
+	for(unsigned m = 0; m < kNb2iMeshes; ++m)
+		{
+		const Nx2hMesh& mesh = nx2iMesh(m);
+		sources[nbSources++] = Source{ mesh.nbVerts, mesh.nbTris, mesh.verts, mesh.tris };
+		}
+	sources[nbSources++] = Source{ 8, 12, kCubeVerts, kCubeTris };
+	sources[nbSources++] = Source{ 4, 4, kTetraVerts, kTetraTris };
+	sources[nbSources++] = Source{ 16, 12, doubledVerts, doubledTris };
+	sources[nbSources++] = Source{ 8, 13, kCubeVerts, flatTris };
+	sources[nbSources++] = Source{ 6, 4, bookVerts, bookTris };
+	sources[nbSources++] = Source{ 12, 10, bookVerts, bookTris };
+	sources[nbSources++] = Source{ 24, 22, bookVerts, bookTris };
+	sources[nbSources++] = Source{ 3, 1, kTetraVerts, kTetraTris };
+	sources[nbSources++] = Source{ 4, 0, kTetraVerts, kTetraTris };
+
+	unsigned mismatches = 0, cases = 0, rebuilt = 0, failed = 0, split = 0, withMaterials = 0, withRemap = 0, releases = 0;
+	NxDigest oracleDigest, candidateDigest, fixture;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&fixture);
+	if(!nx2iFoundationBegin())
+		return 1;
+	unsigned state = 0x1b873593u;
+	for(unsigned s = 0; s < nbSources; ++s)
+		for(unsigned variant = 0; variant < 4; ++variant)
+			for(unsigned mode = 0; mode < 2; ++mode)
+				{
+				const Source& source = sources[s];
+				const bool materials = (variant & 1) != 0, remap = (variant & 2) != 0;
+				unsigned short materialWords[600];
+				unsigned remapWords[600];
+				for(unsigned t = 0; t < source.nbTris; ++t)
+					{
+					materialWords[t] = (unsigned short) nxNext(&state);
+					remapWords[t] = nxNext(&state) % (source.nbTris ? source.nbTris : 1);
+					}
+				nxFoldInput(&fixture, materialWords, 2 * source.nbTris);
+				nxFoldInput(&fixture, remapWords, 4 * source.nbTris);
+				unsigned result[2], image[2][14], counts[2], log[2][512], logCount[2];
+				unsigned arraysHash[2];
+				for(int side = 0; side < 2; ++side)
+					{
+					gMTSide = side;
+					unsigned* img = image[side];
+					memset(img, 0, sizeof(image[side]));
+					img[0] = source.nbVerts;
+					img[1] = source.nbTris;
+					unsigned* verts = (unsigned*) nx2iFoundationAlloc(12 * source.nbVerts);
+					unsigned* tris = (unsigned*) nx2iFoundationAlloc(12 * source.nbTris);
+					memcpy(verts, source.verts, 12 * source.nbVerts);
+					memcpy(tris, source.tris, 12 * source.nbTris);
+					img[2] = (unsigned) (size_t) verts;
+					img[3] = (unsigned) (size_t) tris;
+					if(materials)
+						{
+						unsigned short* words = (unsigned short*) nx2iFoundationAlloc(2 * source.nbTris);
+						memcpy(words, materialWords, 2 * source.nbTris);
+						img[4] = (unsigned) (size_t) words;
+						}
+					if(remap)
+						{
+						unsigned* words = (unsigned*) nx2iFoundationAlloc(4 * source.nbTris);
+						memcpy(words, remapWords, 4 * source.nbTris);
+						img[5] = (unsigned) (size_t) words;
+						}
+					nxSetControl(mode ? kControlSimulate : kControlDefault);
+					nx2iTakeAllocLog(log[side], 0);
+					unsigned r = nx2gCall0(side == 0 ? (const void*) (base + 0x000523c0) : (const void*) &nxMTTestBuild, img) & 0xff;
+					result[side] = r;
+					logCount[side] = nx2iTakeAllocLog(log[side], 512);
+					nxSetControl(kControlDefault);
+					NxDigest d;
+					nxDigestInit(&d);
+					nxFoldInput(&d, img, 8);
+					if(img[2] && img[0] < 1000)
+						nxFoldInput(&d, (void*) (size_t) img[2], 12 * img[0]);
+					if(img[3] && img[1] < 1000)
+						nxFoldInput(&d, (void*) (size_t) img[3], 12 * img[1]);
+					if(img[4] && img[1] < 1000)
+						nxFoldInput(&d, (void*) (size_t) img[4], 2 * img[1]);
+					if(img[5] && img[1] < 1000)
+						nxFoldInput(&d, (void*) (size_t) img[5], 4 * img[1]);
+					arraysHash[side] = (unsigned) d.state;
+					counts[side] = (img[4] != 0) | ((img[5] != 0) << 1);
+					for(unsigned k = 2; k < 6; ++k)
+						if(img[k])
+							nx2iFoundationFree((void*) (size_t) img[k]);
+					}
+				++cases;
+				rebuilt += result[0];
+				failed += !result[0];
+				split += result[0] && image[0][0] > source.nbVerts;
+				withMaterials += materials;
+				withRemap += remap;
+				bool different = result[0] != result[1] || arraysHash[0] != arraysHash[1] || counts[0] != counts[1]
+					|| logCount[0] != logCount[1] || (logCount[0] <= 512 && memcmp(log[0], log[1], 4 * logCount[0]) != 0);
+				mismatches += different;
+				nxFoldInput(&oracleDigest, &result[0], 4);
+				nxFoldInput(&oracleDigest, &arraysHash[0], 4);
+				nxFoldInput(&oracleDigest, log[0], 4 * (logCount[0] < 512 ? logCount[0] : 512));
+				nxFoldInput(&candidateDigest, &result[1], 4);
+				nxFoldInput(&candidateDigest, &arraysHash[1], 4);
+				nxFoldInput(&candidateDigest, log[1], 4 * (logCount[1] < 512 ? logCount[1] : 512));
+				}
+	// The release row (every array set, a fake model) and the destructor body (the same, then the no-op).
+	static void* fakeTable[1] = { (void*) &nxMTFakeModelDelete };
+	static void* fakeObject[1] = { fakeTable };
+	for(unsigned form = 0; form < 2; ++form)
+		for(unsigned present = 0; present < 128; present += 3)
+			{
+			unsigned image[2][14], logs[2][64], logCount[2], modelCalls[2], modelFlags[2];
+			for(int side = 0; side < 2; ++side)
+				{
+				gMTSide = side;
+				gMTModelCalls[side] = gMTModelFlags[side] = 0;
+				memset(image[side], 0, sizeof(image[side]));
+				// Slots +0x08 .. +0x1c are the six arrays; +0x20 the model.
+				for(unsigned k = 0; k < 7; ++k)
+					if(present & (1u << k))
+						{
+						if(k == 6)
+							image[side][8] = (unsigned) (size_t) fakeObject;
+						else
+							image[side][2 + k] = (unsigned) (size_t) nx2iFoundationAlloc(16);
+						}
+				nx2iTakeAllocLog(logs[side], 0);
+				nx2gCall0(side == 0 ? (const void*) (base + (form ? 0x000523a0 : 0x00051ef0)) : (form ? (const void*) &nxMTTestDestruct : (const void*) &nxMTTestRelease), image[side]);
+				logCount[side] = nx2iTakeAllocLog(logs[side], 64);
+				modelCalls[side] = gMTModelCalls[side];
+				modelFlags[side] = gMTModelFlags[side];
+				}
+			++cases;
+			++releases;
+			bool different = logCount[0] != logCount[1] || memcmp(logs[0], logs[1], 4 * logCount[0]) != 0
+				|| modelCalls[0] != modelCalls[1] || modelFlags[0] != modelFlags[1]
+				;
+			// The cleared slots: which words are zero afterwards.
+			unsigned zeroMask[2] = { 0, 0 };
+			for(int side = 0; side < 2; ++side)
+				for(unsigned k = 0; k < 9; ++k)
+					zeroMask[side] |= (image[side][k] == 0) << k;
+			different |= zeroMask[0] != zeroMask[1];
+			mismatches += different;
+			nxFoldInput(&oracleDigest, logs[0], 4 * logCount[0]);
+			nxFoldInput(&oracleDigest, &modelCalls[0], 4);
+			nxFoldInput(&oracleDigest, &zeroMask[0], 4);
+			nxFoldInput(&candidateDigest, logs[1], 4 * logCount[1]);
+			nxFoldInput(&candidateDigest, &modelCalls[1], 4);
+			nxFoldInput(&candidateDigest, &zeroMask[1], 4);
+			}
+	printf("collision name=mesh_topology index=- rva=0x000523c0 owner=phys_fn_002087 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=mesh_topology sources=%u cases=%u rebuilt=%u failed=%u split=%u materials=%u remap=%u release_cases=%u control_words=2\n",
+		nbSources, cases, rebuilt, failed, split, withMaterials, withRemap, releases);
+	nxPrintInput("mesh_topology", &fixture);
 	nxSetControl(kControlDefault);
 	nx2iFoundationEnd();
 	return mismatches;

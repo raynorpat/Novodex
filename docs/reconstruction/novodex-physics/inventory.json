@@ -39665,10 +39665,17 @@
       "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/804",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6646",
-      "static_proof": "Candidate static proof verifies release and clearing of the six Foundation-owned pointer fields in listing order for the no-model branch; virtual BaseModel deletion is implemented from slot 0 and awaits a cooked-mesh lifecycle differential.",
-      "dynamic_proof": null,
-      "notes": "InternalTriangleMesh allocation/lifecycle packet; candidate static proof is exercised by NxPhysicsInternalTests.",
-      "implementation": "Physics/src/InternalTriangleMesh.cpp"
+      "static_proof": "IDA/capstone at RVA 0x00051ef0: the release of an InternalTriangleMesh's arrays: the model (virtual delete), triangle data, vertex normals, remap, materials, triangles, vertices, each freed through the Foundation allocator and cleared. Transcribed instruction for instruction into a naked row in Physics/src/InternalTriangleMesh.cpp; evidence/phase4-mesh-topology-listing-compare.py disassembles the built candidate and the oracle and finds the 559 instructions of the three rows equal, with the 20 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' mesh_topology family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription rebuild nineteen meshes (with and without materials and a remap, zero-area faces, doubled vertices, edges shared by up to twenty-two faces) under both x87 control words, and release and destroy images with every array set; the arrays, counts, return, model-delete call and the Foundation allocator's malloc and free sequence are equal, zero mismatches. A mutation aimed at this row is rejected: the model delete flag `push 1` at 0x00051eff made `push 0` (mismatches=42). See evidence/phase4-mesh-topology.md.",
+      "notes": "Listing transcription. The cdecl entries nxInternalMeshRelease and nxInternalMeshBuildTopology forward to the rows. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp",
+      "implementation_symbol": "?nxMTReleaseRow@@YIXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMTReleaseRow@@YIXPAX@Z",
+        "address": "0x10031ad0",
+        "object": "InternalTriangleMesh.obj"
+      }
     },
     {
       "id": "phys_fn_002068",
@@ -39993,13 +40000,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/812",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6687",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000523a0: the destructor body: the release (002067), then a tail jump to the no-op of the embedded MeshInterface at +0x24. Transcribed instruction for instruction into a naked row in Physics/src/InternalTriangleMesh.cpp; evidence/phase4-mesh-topology-listing-compare.py disassembles the built candidate and the oracle and finds the 559 instructions of the three rows equal, with the 20 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' mesh_topology family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription rebuild nineteen meshes (with and without materials and a remap, zero-area faces, doubled vertices, edges shared by up to twenty-two faces) under both x87 control words, and release and destroy images with every array set; the arrays, counts, return, model-delete call and the Foundation allocator's malloc and free sequence are equal, zero mismatches. A mutation aimed at this row is rejected: the release row it runs first, the model delete flag `push 1` at 0x00051eff made `push 0` (the row own `lea ecx, [esi + 0x24]` is unobservable: the no-op it jumps to ignores ecx) (mismatches=42). See evidence/phase4-mesh-topology.md.",
+      "notes": "Listing transcription. The cdecl entries nxInternalMeshRelease and nxInternalMeshBuildTopology forward to the rows. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp",
+      "implementation_symbol": "?nxInternalMeshDestruct@@YIXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxInternalMeshDestruct@@YIXPAX@Z",
+        "address": "0x100313d0",
+        "object": "InternalTriangleMesh.obj"
+      }
     },
     {
       "id": "phys_fn_002086",
@@ -40029,13 +40044,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/813",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6688",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000523c0: the first part of the topology rebuild of 0x000523c0 (the inventory splits the 2,460-byte function at its jump targets): the MeshBuilder2 descriptor and construction. Transcribed instruction for instruction into a naked row in Physics/src/InternalTriangleMesh.cpp; evidence/phase4-mesh-topology-listing-compare.py disassembles the built candidate and the oracle and finds the 559 instructions of the three rows equal, with the 20 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' mesh_topology family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription rebuild nineteen meshes (with and without materials and a remap, zero-area faces, doubled vertices, edges shared by up to twenty-two faces) under both x87 control words, and release and destroy images with every array set; the arrays, counts, return, model-delete call and the Foundation allocator's malloc and free sequence are equal, zero mismatches. A mutation aimed at this row is rejected: the kill-zero-area-faces flag `mov byte ptr [esp + 0x58], 1` at 0x00052422 made 0 (mismatches=16). See evidence/phase4-mesh-topology.md.",
+      "notes": "Listing transcription. The cdecl entries nxInternalMeshRelease and nxInternalMeshBuildTopology forward to the rows. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp",
+      "implementation_symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "address": "0x10031430",
+        "object": "InternalTriangleMesh.obj"
+      }
     },
     {
       "id": "phys_fn_002088",
@@ -40065,13 +40088,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/813",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6690",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000523c0"
+      "static_proof": "IDA/capstone at RVA 0x000524a0: the second part: the faces added to MeshBuilder2, the build, and the new face-remap and material arrays. Transcribed instruction for instruction into a naked row in Physics/src/InternalTriangleMesh.cpp; evidence/phase4-mesh-topology-listing-compare.py disassembles the built candidate and the oracle and finds the 559 instructions of the three rows equal, with the 20 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' mesh_topology family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription rebuild nineteen meshes (with and without materials and a remap, zero-area faces, doubled vertices, edges shared by up to twenty-two faces) under both x87 control words, and release and destroy images with every array set; the arrays, counts, return, model-delete call and the Foundation allocator's malloc and free sequence are equal, zero mismatches. A mutation aimed at this row is rejected: the remap allocation size `shl edx, 2` at 0x000525e8 made `shl edx, 3` (mismatches=8). See evidence/phase4-mesh-topology.md.",
+      "notes": "Listing transcription. The cdecl entries nxInternalMeshRelease and nxInternalMeshBuildTopology forward to the rows. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp",
+      "implementation_symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "address": "0x10031430",
+        "object": "InternalTriangleMesh.obj"
+      }
     },
     {
       "id": "phys_fn_002090",
@@ -40101,13 +40132,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/813",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6702",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000523c0"
+      "static_proof": "IDA/capstone at RVA 0x000526c0: the third part: the new vertex and triangle arrays copied from the builder's result, the EdgeList and the split points container. Transcribed instruction for instruction into a naked row in Physics/src/InternalTriangleMesh.cpp; evidence/phase4-mesh-topology-listing-compare.py disassembles the built candidate and the oracle and finds the 559 instructions of the three rows equal, with the 20 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' mesh_topology family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription rebuild nineteen meshes (with and without materials and a remap, zero-area faces, doubled vertices, edges shared by up to twenty-two faces) under both x87 control words, and release and destroy images with every array set; the arrays, counts, return, model-delete call and the Foundation allocator's malloc and free sequence are equal, zero mismatches. A mutation aimed at this row is rejected: the vertex array size `shl eax, 2` at 0x00052684 made `shl eax, 3` (mismatches=144). See evidence/phase4-mesh-topology.md.",
+      "notes": "Listing transcription. The cdecl entries nxInternalMeshRelease and nxInternalMeshBuildTopology forward to the rows. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp",
+      "implementation_symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "address": "0x10031430",
+        "object": "InternalTriangleMesh.obj"
+      }
     },
     {
       "id": "phys_fn_002092",
@@ -40137,13 +40176,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/InternalTriangleMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/813",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6712",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000523c0"
+      "static_proof": "IDA/capstone at RVA 0x00052890: the fourth part: the vertices of edges shared by more than two faces split by perturbed copies, the triangles re-pointed (IndexedTriangle::ReplaceVertex) and the vertex array grown. Transcribed instruction for instruction into a naked row in Physics/src/InternalTriangleMesh.cpp; evidence/phase4-mesh-topology-listing-compare.py disassembles the built candidate and the oracle and finds the 559 instructions of the three rows equal, with the 20 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' mesh_topology family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription rebuild nineteen meshes (with and without materials and a remap, zero-area faces, doubled vertices, edges shared by up to twenty-two faces) under both x87 control words, and release and destroy images with every array set; the arrays, counts, return, model-delete call and the Foundation allocator's malloc and free sequence are equal, zero mismatches. A mutation aimed at this row is rejected: the triangle pointer step `add ecx, 4` at 0x000529ac made `add ecx, 8` (mismatches=24). See evidence/phase4-mesh-topology.md.",
+      "notes": "Listing transcription. The cdecl entries nxInternalMeshRelease and nxInternalMeshBuildTopology forward to the rows. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/InternalTriangleMesh.cpp",
+      "implementation_symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMTBuildTopologyRow@@YI_NPAX@Z",
+        "address": "0x10031430",
+        "object": "InternalTriangleMesh.obj"
+      }
     },
     {
       "id": "phys_fn_002094",

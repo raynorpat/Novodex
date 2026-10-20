@@ -55,11 +55,11 @@
   },
   "counts": {
     "deferred_reconstructed_not_falsified": 744,
-    "deferred_not_reconstructed_in_phase": 150,
+    "deferred_not_reconstructed_in_phase": 144,
     "deferred_vendored_not_falsified": 86,
     "oracle_differential_falsified": 55,
     "differential_falsified": 16,
-    "deferred_blocked_on_later_phase": 2
+    "deferred_blocked_on_later_phase": 8
   },
   "closed": [
     {
@@ -1528,9 +1528,13 @@
       "id": "phys_fn_002067",
       "rva": "0x00051ef0",
       "size": 169,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the model delete flag `push 1` at 0x00051eff made `push 0`; mismatches=42). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_002069",
@@ -1601,41 +1605,61 @@
       "id": "phys_fn_002085",
       "rva": "0x000523a0",
       "size": 17,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the release row it runs first, the model delete flag `push 1` at 0x00051eff made `push 0` (the row own `lea ecx, [esi + 0x24]` is unobservable: the no-op it jumps to ignores ecx); mismatches=42). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_002087",
       "rva": "0x000523c0",
       "size": 216,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the kill-zero-area-faces flag `mov byte ptr [esp + 0x58], 1` at 0x00052422 made 0; mismatches=16). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_002089",
       "rva": "0x000524a0",
       "size": 541,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the remap allocation size `shl edx, 2` at 0x000525e8 made `shl edx, 3`; mismatches=8). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_002091",
       "rva": "0x000526c0",
       "size": 461,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the vertex array size `shl eax, 2` at 0x00052684 made `shl eax, 3`; mismatches=144). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_002093",
       "rva": "0x00052890",
       "size": 460,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "blocked_on_later_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [
+        7
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the triangle pointer step `add ecx, 4` at 0x000529ac made `add ecx, 8`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
       "id": "phys_fn_002095",

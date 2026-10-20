@@ -1,0 +1,11 @@
+// The cdecl entries the callers use: phys_fn_002067 and phys_fn_002087 (with the rows split from it).
+void nxInternalMeshRelease(InternalTriangleMesh* mesh)
+	{
+	nxMTReleaseRow(mesh);
+	}
+
+bool nxInternalMeshBuildTopology(InternalTriangleMesh* mesh)
+	{
+	return nxMTBuildTopologyRow(mesh);
+	}
+

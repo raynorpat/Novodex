@@ -2039,10 +2039,12 @@
     "phys_fn_002095"
    ],
    "rows": {
-    "discovered": 6
+    "discovered": 1,
+    "reconstructed": 5
    },
    "bytes": {
-    "discovered": 1718
+    "discovered": 23,
+    "reconstructed": 1695
    },
    "phases": {
     "4": 6
