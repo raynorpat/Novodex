@@ -115,12 +115,12 @@
       "format": "collision_oracle_digest",
       "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
       "fixture_source": "tests/PhysicsCollisionTests.cpp",
-        "fixture_source_sha256": "a354f2c09b9ae88d749a3b30b4a8ee3f0934892c7775e6878dbbe9b13c208e80",
+        "fixture_source_sha256": "3b850b341b735e96a9ec77f8b212a6faba6c0a1d0930c6e555d991331c3f1cf5",
       "seed_line": "collision seeds pair=c0ffee11 aimed=5eed10ad",
-      "input_line_count": 120,
-      "coverage_line_count": 148,
-      "oracle_output_line_count": 147,
-      "selected_lines_sha256": "b1330233c2bec661cef2cd598b6ab189a0ff05b95852ab5f5ac41e40f700eb0b"
+      "input_line_count": 121,
+      "coverage_line_count": 149,
+      "oracle_output_line_count": 148,
+      "selected_lines_sha256": "eeac001bfb14ab7f41066982b6e37bcf7093ef52618f59b52179e28712d65fb0"
     }
   }
 }

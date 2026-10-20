@@ -5,6 +5,7 @@ A compare script calls run(...) with:
   expected   {oracle rva of a call/jump/pushed target: substring of the candidate symbol it must reach}
   tables     {oracle absolute address of a jump table: entries}   (the candidate has a compare chain)
   data       [(oracle absolute address, candidate symbol substring, canonical name)]  named variables
+  static_ranges  [(oracle lo, oracle hi, candidate symbol substring)]  blocks of statics named by offset
   stamp      optional list of (oracle absolute address, canonical name) normalised without a candidate symbol
 
 Both images are disassembled; every instruction is normalised (direct targets to instruction indices, calls to
@@ -25,9 +26,10 @@ class Ins:
         self.address, self.mnemonic, self.op_str, self.size = address, mnemonic, op_str, size
 
 
-def run(rows, expected, tables=None, data=None, argv=None):
+def run(rows, expected, tables=None, data=None, argv=None, static_ranges=None):
     tables = tables or {}
     data = data or []
+    static_ranges = static_ranges or []
     args = [a for a in (argv or sys.argv)[1:] if not a.startswith('--')]
     img, mp = args[0], args[1]
     pe = pefile.PE(img)
@@ -60,7 +62,22 @@ def run(rows, expected, tables=None, data=None, argv=None):
         assert len(found) == 1, (cand_sub, found)
         named[(id(pe), syms[found[0]])] = canon
 
+    # (oracle lo, oracle hi, candidate symbol substring): a block of statics, an address inside it named by its offset.
+    ranges = {id(orc): [], id(pe): []}
+    for lo_, hi_, sub_ in static_ranges:
+        found_ = [k for k in syms if sub_ in k]
+        assert len(found_) == 1, (sub_, found_)
+        ranges[id(orc)].append((lo_, hi_, lo_))
+        ranges[id(pe)].append((syms[found_[0]], syms[found_[0]] + (hi_ - lo_), syms[found_[0]]))
+
+    def static_name(pe_, va):
+        for lo_, hi_, base_ in ranges[id(pe_)]:
+            if lo_ <= va < hi_:
+                return '<static+%d>' % (va - base_)
+        return None
+
     def absolute(pe_, op):
+        op = re.sub(r'0x([0-9a-f]{8})', lambda m: static_name(pe_, int(m.group(1), 16)) or m.group(0), op)
         for (pid, va), canon in named.items():
             if pid == id(pe_):
                 op = op.replace('[0x%x]' % va, '[<%s>]' % canon)
@@ -129,6 +146,8 @@ def run(rows, expected, tables=None, data=None, argv=None):
                 op = '@%d' % idx.get(int(op, 16), -1)
             elif i.mnemonic == 'call' and op.startswith('0x'):
                 op = '<call>'
+            elif i.mnemonic == 'push' and op.startswith('0x') and static_name(pe_, int(op, 16)):
+                op = static_name(pe_, int(op, 16))
             elif i.mnemonic == 'push' and op.startswith('0x') and section_of(pe_, int(op, 16)) is not None:
                 sec = section_of(pe_, int(op, 16))
                 if sec.Characteristics & 0x20000000:
@@ -136,6 +155,8 @@ def run(rows, expected, tables=None, data=None, argv=None):
                 else:
                     d = pe_.get_data(int(op, 16) - pe_.OPTIONAL_HEADER.ImageBase, 256)
                     op = '<string %r>' % d[:d.index(bytes(1))]
+            elif i.mnemonic == 'mov' and re.search(r', 0x[0-9a-f]{8}$', op) and static_name(pe_, int(op.rsplit(', ', 1)[1], 16)):
+                op = op.rsplit(', ', 1)[0] + ', ' + static_name(pe_, int(op.rsplit(', ', 1)[1], 16))
             elif i.mnemonic == 'mov' and re.search(r', 0x1[0-9a-f]{7}$', op) and section_of(pe_, int(op.rsplit(', ', 1)[1], 16)) is not None:
                 op = op.rsplit(', ', 1)[0] + ', <ptr>'
             elif i.mnemonic == 'jmp' and re.search(r'\*4 \+ 0x', op):
@@ -145,6 +166,9 @@ def run(rows, expected, tables=None, data=None, argv=None):
                 tg = [struct.unpack('<I', pe_.get_data(base + 4 * k - pe_.OPTIONAL_HEADER.ImageBase, 4))[0] for k in range(n)]
                 op = 'table%s' % (tuple(idx.get(t, -1) for t in tg),)
             op = absolute(pe_, op)
+            m16 = re.fullmatch(r'(ax|bx|cx|dx|si|di), (-\d+)', op)
+            if m16:
+                op = '%s, 0x%x' % (m16.group(1), 0x10000 + int(m16.group(2)))
             if i.mnemonic == 'test' and re.fullmatch(r'[a-z]{2,3}, [a-z]{2,3}', op):
                 op = ', '.join(sorted(op.split(', ')))
             out.append((i.mnemonic, op))

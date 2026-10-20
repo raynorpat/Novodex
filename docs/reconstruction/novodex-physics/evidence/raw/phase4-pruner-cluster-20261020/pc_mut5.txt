@@ -1,0 +1,15 @@
+0x00053810  sub esp, 0x18  ->  sub esp, 0x19  :  exit 3221225477 mismatches ?
+0x00053815  mov dword ptr [esp], 0x7f7fffff  ->  mov dword ptr [esp], 0x7f800000  :  exit 0 mismatches 0
+0x0005381f  mov dword ptr [eax], edx  ->  mov dword ptr [eax + 4], edx  :  exit 0 mismatches 0
+0x00053821  mov dword ptr [esp + 4], 0x7f7fffff  ->  mov dword ptr [esp + 4], 0x7f800000  :  exit 0 mismatches 0
+0x00053830  mov dword ptr [esp + 8], 0x7f7fffff  ->  mov dword ptr [esp + 8], 0x7f800000  :  exit 0 mismatches 0
+0x0005383f  mov dword ptr [esp + 0xc], 0xff7fffff  ->  mov dword ptr [esp + 0x10], 0xff7fffff  :  exit 1 mismatches 2
+0x00053847  mov eax, dword ptr [esp + 0xc]  ->  mov eax, dword ptr [esp + 0x10]  :  exit 1 mismatches 2
+0x0005384b  add ecx, 0xc  ->  add ecx, 0xd  :  exit 3221225477 mismatches ?
+0x0005384e  mov dword ptr [ecx], eax  ->  mov dword ptr [ecx + 4], eax  :  exit 1 mismatches 2
+0x00053850  mov dword ptr [esp + 0x10], 0xff7fffff  ->  mov dword ptr [esp + 0x14], 0xff7fffff  :  exit 1 mismatches 1
+0x00053858  mov edx, dword ptr [esp + 0x10]  ->  mov edx, dword ptr [esp + 0x14]  :  exit 1 mismatches 1
+0x0005385c  mov dword ptr [esp + 0x14], 0xff7fffff  ->  mov dword ptr [esp + 0x18], 0xff7fffff  :  exit 3221225477 mismatches ?
+0x00053864  mov eax, dword ptr [esp + 0x14]  ->  mov eax, dword ptr [esp + 0x18]  :  exit 1 mismatches 2
+0x0005386e  add esp, 0x18  ->  add esp, 0x19  :  exit 3221225477 mismatches ?
+DONE

@@ -41179,12 +41179,20 @@
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "bbox sentinel init (0x53810)",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/820",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6826",
-      "static_proof": "set +0/+4/+8=FLT_MAX (0x7f7fffff) and +0xc/+0x10/+0x14=FLT_MIN (0xff7fffff); ret",
-      "dynamic_proof": "confirmed via tmplfm drive (3z69): failures=0",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x00053810: the empty box: minimum +FLT_MAX, maximum -FLT_MAX. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x0005383f (mov dword ptr [esp + 0xc], 0xff7fffff) made `mov dword ptr [esp + 0x10], 0xff7fffff` (mismatches=2). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCBoxEmpty@@YIXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCBoxEmpty@@YIXPAX@Z",
+        "address": "0x100be1e0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_002149",
@@ -99755,13 +99763,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2529",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18079",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e52d0: the culling walk's callback: appends the primitives' objects to the container by the query's flags. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e52de (mov eax, dword ptr [esp + 0x18]) made `mov eax, dword ptr [esp + 0x1c]` (mismatches=3). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCCollectCallback@@YAXPAX000@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCCollectCallback@@YAXPAX000@Z",
+        "address": "0x100be3b0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005224",
@@ -99956,13 +99972,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1998",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18111",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5740: the static pruner's destructor body: sets its vtable, destroys and releases the tree at +0x3c and empties the container at +0x40, then runs the base destructor. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5744 (mov edi, dword ptr [esi + 0x3c]) made `mov edi, dword ptr [esi + 0x40]` (mismatches=1). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCStaticDtorBody@@YIXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCStaticDtorBody@@YIXPAX@Z",
+        "address": "0x100becf0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005235",
@@ -99992,13 +100016,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1999",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18113",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5780: the static pruner's slot 5, the plane query: builds the tree when absent, then walks it with the culling walk and the collecting callback into the caller's container. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5784 (mov ebx, dword ptr [esp + 0x30]) made `mov ebx, dword ptr [esp + 0x34]` (mismatches=4). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCStaticPlanes@@YI_NPAX0IIIII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCStaticPlanes@@YI_NPAX0IIIII@Z",
+        "address": "0x100bed30",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005237",
@@ -100028,13 +100060,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2000",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18116",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5810: the static pruner's scalar deleting destructor (slot 0): the destructor body, and the object released through the SDK allocator when bit 0 of the flag is set. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5814 (mov edi, dword ptr [esi + 0x3c]) made `mov edi, dword ptr [esi + 0x40]` (mismatches=3). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCStaticScalarDelete@@YIPAXPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCStaticScalarDelete@@YIPAXPAX0I@Z",
+        "address": "0x100bedc0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005239",
@@ -100064,13 +100104,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2001",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18119",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5870: the bounded dynamic pruner's constructor: the base constructor, the bounded vtable and a null tree. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e587e (mov dword ptr [esi + 0x3c], 0) made `mov dword ptr [esi + 0x40], 0` (mismatches=1). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCBoundedCtor@@YIPAXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCBoundedCtor@@YIPAXPAX@Z",
+        "address": "0x100be1c0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005241",
@@ -100136,13 +100184,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2002",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18121",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e58a0: the first part of the bounded pruner's tree build: releases the old octree, takes the pool's size and starts the new header and the union box (the inventory splits the 213-byte function at a jump target). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e58cf (je Le59eb) made `jne Le59eb` (mismatches=16). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCBuildTree@@YI_NPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCBuildTree@@YI_NPAX@Z",
+        "address": "0x100be250",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005245",
@@ -100172,13 +100228,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2002",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18126",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000e58a0"
+      "static_proof": "IDA/capstone at RVA 0x000e5920: the second part: unions the pool's boxes (asking the owners for invalid ones), takes the pruner's own bounds when valid, builds the depth-5 octree and inserts every object. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e58cf (je Le59eb) made `jne Le59eb` (mismatches=16). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCBuildTree@@YI_NPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCBuildTree@@YI_NPAX@Z",
+        "address": "0x100be250",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005247",
@@ -100208,13 +100272,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2003",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18134",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5a00: the bounded pruner's AddObject (slot 1): into the octree when there is one, then into the pool. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5a03 (mov ecx, dword ptr [esi + 0x3c]) made `mov ecx, dword ptr [esi + 0x40]` (mismatches=1). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCAddObject@@YI_NPAX00@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCAddObject@@YI_NPAX00@Z",
+        "address": "0x100be190",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005249",
@@ -100244,13 +100316,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2004",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18136",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5a30: RemoveObject (slot 2): out of the octree (released when it empties), the stamp bumped, out of the pool. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5a53 (mov ecx, dword ptr [eax + 0x18]) made `mov ecx, dword ptr [eax + 0x1c]` (mismatches=10). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCRemoveObject@@YI_NPAX00@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCRemoveObject@@YI_NPAX00@Z",
+        "address": "0x100bec90",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005251",
@@ -100280,13 +100360,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2543",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18140",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5a90: UpdateObject (slot 3): the stamp bumped and the object updated in the octree. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5a98 (je Le5aa7) made `jne Le5aa7` (mismatches=10). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCUpdateObject@@YI_NPAX00@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCUpdateObject@@YI_NPAX00@Z",
+        "address": "0x100bf020",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005253",
@@ -100316,13 +100404,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2005",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18142",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5ab0: the plane query (slot 5) into the function-local static containers, then the matching objects (with their flag bits) into the caller's container. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5ab3 (mov eax, dword ptr [esp + 0x50]) made `mov eax, dword ptr [esp + 0x54]` (mismatches=12). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCQueryPlanes@@YI_NPAX00PBXIII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCQueryPlanes@@YI_NPAX00PBXIII@Z",
+        "address": "0x100be510",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005255",
@@ -100352,13 +100448,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2006",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18168",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e5de0: the ray and segment query (slot 6): a maximum distance of FLT_MAX is a ray, anything else a segment of that length; the octree walk, then the objects whose mask and boxes pass. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e5e5e (test ah, 0x44) made `test ah, 0x45` (mismatches=2). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCQueryRays@@YI_NPAX00PBXMII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCQueryRays@@YI_NPAX00PBXMII@Z",
+        "address": "0x100be840",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005257",
@@ -100388,13 +100492,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2546",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18186",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e6060: the first part of the sphere query (slot 8): builds the tree when absent, resets the statics and runs the box/sphere walk (the inventory splits the 252-byte function at a jump target). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e613c (mov eax, dword ptr [esp + 0x24]) made `mov eax, dword ptr [esp + 0x28]` (mismatches=11). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCQuerySphere@@YI_NPAX00PBXII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCQuerySphere@@YI_NPAX00PBXII@Z",
+        "address": "0x100beac0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005259",
@@ -100424,13 +100536,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2547",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18192",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000e6060"
+      "static_proof": "IDA/capstone at RVA 0x000e6130: the second part: the objects of the walk's two containers tested against their boxes and copied to the caller's container. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e613c (mov eax, dword ptr [esp + 0x24]) made `mov eax, dword ptr [esp + 0x28]` (mismatches=11). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCQuerySphere@@YI_NPAX00PBXII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCQuerySphere@@YI_NPAX00PBXII@Z",
+        "address": "0x100beac0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005261",
@@ -101211,12 +101331,20 @@
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "zero [this+0x18..0x24] and 0x44..0x4c (0xe7360)",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2022",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18347",
-      "static_proof": "xor ecx,ecx; 7 zero-stores; ret",
-      "dynamic_proof": "confirmed via initbatch drive (3z56): failures=0",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e7360: the octree header's constructor: zeroes the centre, the root side, the depth, the node count and the node pointer. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e7364 (mov dword ptr [eax + 0x20], ecx) made `mov dword ptr [eax + 0x24], ecx` (mismatches=1). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCOctreeCtor@@YIPAXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCOctreeCtor@@YIPAXPAX@Z",
+        "address": "0x100be4c0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005302",
@@ -101618,12 +101746,20 @@
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "owned-block free (0xe7c10)",
+      "source": "Physics/src/opcode/PrunerOctree.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2030",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18413",
-      "static_proof": "static review of the recorded shape: owned-block free (0xe7c10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x000e7c10: the octree's release: the node array (its count word first) through the SDK allocator, and the count cleared. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerOctree.cpp; evidence/phase4-pruner-octree-listing-compare.py disassembles the built candidate and the oracle and finds the 2,797 instructions of the forty-four rows equal (the octree's jump table as a compare chain the script checks against it), with the 118 call mappings as expected.",
+      "dynamic_proof": "driven by NxPhysicsCollisionTests' pruner_cluster family (Phases 3 and 7, a registered coverage assertion in tools/gate_targets.ps1): the oracle's row and the candidate's naked transcription over twenty scenarios of the static and bounded dynamic pruners (add, update, remove, tree build and plane, ray, segment and sphere queries), under both x87 control words, with the pools, trees, objects, results, statics and the SDK allocator's malloc and free sequence equal, zero mismatches. A mutation aimed at this row is rejected: the instruction at 0x000e7c19 (je Le7c32) made `jne Le7c32` (mismatches=11). See evidence/phase4-pruner-cluster.md.",
+      "notes": "Listing transcription. No Phase 4 gate runs NxPhysicsCollisionTests, so the closure waits for a passing Phase 7.",
+      "implementation": "Physics/src/opcode/PrunerOctree.cpp",
+      "implementation_symbol": "?nxPCOctreeRelease@@YIXPAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPCOctreeRelease@@YIXPAX@Z",
+        "address": "0x100be4e0",
+        "object": "PrunerOctree.obj"
+      }
     },
     {
       "id": "phys_fn_005321",

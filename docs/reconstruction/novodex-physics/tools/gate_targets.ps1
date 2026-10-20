@@ -5508,6 +5508,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision name=pruner_octree index=- rva=0x000e76c0 owner=phys_fn_005315 checks=624 oracle=c95c73464d8a108d',
         'collision coverage name=pruner_octree cases=24 built=24 inserted=1078 rejected=74 hook_calls=1846 helper_cases=600 control_words=2',
         'collision input name=pruner_octree words=14184 input=6471f5be9ebf4509',
+        'collision name=pruner_cluster index=- rva=0x000e5ab0 owner=phys_fn_005254 checks=22 oracle=0940c7da88916571',
+        'collision coverage name=pruner_cluster scenarios=20 cases=22 queries=2240 nonzero_results=1699 control_words=2',
+        'collision input name=pruner_cluster words=18320 input=a6a21944510ce85c',
         'collision input name=overlap_sphere_mesh words=7460 input=d6044094834e3ecd',
         'collision input name=contact_sphere_mesh words=7460 input=d6044094834e3ecd',
         # Plane/mesh Task: exercise the runtime's PlanesCollider/PlanesCache
@@ -6465,7 +6468,7 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
-    '3' = 1022  # plus the six pruner octree and octree query lines (002xxx omitted; rows 005295 to 005318, 005545 to 005560); previous 1016: plus the three mesh topology lines (002067, 002085, 002087 to 002093); previous 1013: plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
+    '3' = 1025  # plus the three pruner cluster lines (rows 005223, 005234 to 005260, 005301, 005320, 002148); previous 1022: plus the six pruner octree and octree query lines (002xxx omitted; rows 005295 to 005318, 005545 to 005560); previous 1016: plus the three mesh topology lines (002067, 002085, 002087 to 002093); previous 1013: plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
                # previous 1007: the three mesh-raycast lines (001405)
                # previous 1004: the seven sphere/mesh lines (001925, 001927, 001929)
                # previous 997: the nine mesh/PMap contact and dense cell-sampler lines (001878, 001880, 002029)
@@ -6652,7 +6655,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3176  # plus the six pruner octree and octree query lines (002xxx omitted; rows 005295 to 005318, 005545 to 005560); previous 3170: plus the three mesh topology lines (002067, 002085, 002087 to 002093); previous 3167: plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
+	'7' = 3179  # plus the three pruner cluster lines (rows 005223, 005234 to 005260, 005301, 005320, 002148); previous 3176: plus the six pruner octree and octree query lines (002xxx omitted; rows 005295 to 005318, 005545 to 005560); previous 3170: plus the three mesh topology lines (002067, 002085, 002087 to 002093); previous 3167: plus the six mesh debug and mesh mass lines (001393 to 001397, 000835, 002156, 002241)
 	           # previous 3161: the three mesh-raycast lines (001405)
 	           # previous 3158: the two hull-shape families (rows 001411, 001415 to 001419)
 	           # previous 3156: the three P-Hull class families (rows 001443 to 001494)

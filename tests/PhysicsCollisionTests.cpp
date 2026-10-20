@@ -54,6 +54,7 @@
 #pragma push_macro("ARRAYSIZE")
 #undef ARRAYSIZE
 #include "ObjectModel.h"
+#include "IcePruner.h"
 #pragma pop_macro("ARRAYSIZE")
 #include "PhysicsInternal.h"
 #include "Scene.h"
@@ -2741,6 +2742,7 @@ static unsigned nxDriveMeshRaycast(unsigned char* base);
 static unsigned nxDriveMeshDebug(unsigned char* base);
 static unsigned nxDriveMeshMass(unsigned char* base);
 static unsigned nxDriveMeshTopology(unsigned char* base);
+static unsigned nxDrivePrunerCluster(unsigned char* base);
 static unsigned nxDrivePrunerOctreeQueries(unsigned char* base);
 static unsigned nxDrivePrunerOctree(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
@@ -4327,6 +4329,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool meshDebugOnly = argc == 4 && wcscmp(argv[3], L"--mesh-debug-only") == 0;
 	const bool meshMassOnly = argc == 4 && wcscmp(argv[3], L"--mesh-mass-only") == 0;
 	const bool meshTopologyOnly = argc == 4 && wcscmp(argv[3], L"--mesh-topology-only") == 0;
+	const bool pruner_clusterOnly = argc == 4 && wcscmp(argv[3], L"--pruner-cluster-only") == 0;
 	const bool pruner_octree_queryOnly = argc == 4 && wcscmp(argv[3], L"--pruner-octree-query-only") == 0;
 	const bool pruner_octreeOnly = argc == 4 && wcscmp(argv[3], L"--pruner-octree-only") == 0;
 	const bool planeMeshOnly = argc == 4 && wcscmp(argv[3], L"--plane-mesh-only") == 0;
@@ -4341,7 +4344,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
 	const bool prunerPoolReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-pool-reserve-only") == 0;
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4425,6 +4428,12 @@ int wmain(int argc, wchar_t** argv)
 		{
 		const unsigned mismatches = nxDrivePrunerOctreeQueries(base);
 		printf("collision pruner_octree_query mismatches=%u\n", mismatches);
+		return mismatches ? 1 : 0;
+		}
+	if(pruner_clusterOnly)
+		{
+		const unsigned mismatches = nxDrivePrunerCluster(base);
+		printf("collision pruner_cluster mismatches=%u\n", mismatches);
 		return mismatches ? 1 : 0;
 		}
 	if(meshTopologyOnly)
@@ -9910,6 +9919,9 @@ int wmain(int argc, wchar_t** argv)
 
 	// InternalTriangleMesh topology, release and destructor rows (002067, 002085, 002087 to 002093); see nxDriveMeshTopology.
 	totalMismatch += nxDriveMeshTopology(base);
+
+	// Static and bounded dynamic pruner rows (005234 to 005260); see nxDrivePrunerCluster.
+	totalMismatch += nxDrivePrunerCluster(base);
 
 	// Bounded dynamic pruner octree queries (005545 to 005560); see nxDrivePrunerOctreeQueries.
 	totalMismatch += nxDrivePrunerOctreeQueries(base);
@@ -17337,6 +17349,580 @@ static unsigned nxDrivePrunerOctreeQueries(unsigned char* base)
 	nxPrintInput("pruner_octree_query", &fixture);
 	*oracleNotify = savedOracleNotify;
 	nxPOTestNotify = savedCandidateNotify;
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedFoundationAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
+// The static and bounded dynamic pruners' own rows (phys_fn_005234, 005236, 005238, 005240, 005244 and 005246,
+// 005248, 005250, 005252, 005254, 005256, 005258 and 005260) and what they call that is the oracle's own (005527,
+// 005223, 005301, 005320, 002148, 005562, 005564 and the atexit thunks of the statics). The oracle's pruners (its
+// factory's product, 0x000b5090) and the candidate's (nxPruningEngineCreatePruner) hold the same objects (raw
+// Prunables with owners the hooks read) and are put through the same operations, the oracle by its row's address,
+// the candidate by the naked transcription: the bounded pruner's AddObject, UpdateObject, RemoveObject, tree build and
+// plane, ray/segment and sphere queries (into the caller's container, through the function-local static containers),
+// and the static pruner's plane query and both destructors. The pools, the trees, the objects' fields, the results
+// and the allocator's malloc and free sequence are compared.
+void* __fastcall nxPCBoundedCtor(void* pruner);
+void* __fastcall nxPCOctreeCtor(void* tree);
+bool __fastcall nxPCBuildTree(void* pruner);
+bool __fastcall nxPCAddObject(void* pruner, void* edxUnused, void* object);
+bool __fastcall nxPCRemoveObject(void* pruner, void* edxUnused, void* object);
+bool __fastcall nxPCUpdateObject(void* pruner, void* edxUnused, void* object);
+bool __fastcall nxPCQueryPlanes(void* pruner, void* edxUnused, void* result, const void* planes, unsigned nbPlanes, unsigned flags, unsigned mask);
+bool __fastcall nxPCQueryRays(void* pruner, void* edxUnused, void* result, const void* ray, float maxDist, unsigned firstContact, unsigned mask);
+bool __fastcall nxPCQuerySphere(void* pruner, void* edxUnused, void* result, const void* sphere, unsigned firstContact, unsigned mask);
+bool __fastcall nxPCStaticPlanes(void* pruner, void* edxUnused, unsigned result, unsigned planes, unsigned nbPlanes, unsigned flags, unsigned mask);
+void* __fastcall nxPCStaticScalarDelete(void* pruner, void* edxUnused, unsigned flags);
+void __fastcall nxPCStaticDtorBody(void* pruner);
+extern unsigned nxPCStatics[24];
+extern "C" void nxPCTestEmpty();
+#pragma comment(linker, "/alternatename:_nxPCTestEmpty=?empty@SdkContainer@@QAEXXZ")
+extern "C" void* nxPCTestOwnerHook;
+#pragma comment(linker, "/alternatename:_nxPCTestOwnerHook=?gPrunableOwnerWorldAABB@@3P6AXPAXPAVAABB@IceMaths@@@ZA")
+
+static const unsigned kPCNbObjects = 24;
+struct NxPCOwner { float bounds[6]; unsigned calls; };
+static NxPCOwner gPCOwners[2][kPCNbObjects + 8];
+static unsigned gPCSide;
+
+// gPrunableOwnerWorldAABB: the owner's box into the prunable's world box.
+static void __cdecl nxPCOwnerHook(void* owner, void* box)
+	{
+	NxPCOwner* o = (NxPCOwner*) owner;
+	memcpy(box, o->bounds, 24);
+	++o->calls;
+	}
+
+// gPrunableAdapterNotify: the prunable's owner box as a centre and the half extent in x.
+static void __cdecl nxPCNotifyHook(void* prunable, void* sphere)
+	{
+	NxPCOwner* o = *(NxPCOwner**) ((unsigned char*) prunable + 4);
+	++o->calls;
+	const float* b = o->bounds;
+	float out[4] = { 0.5f * (b[0] + b[3]), 0.5f * (b[1] + b[4]), 0.5f * (b[2] + b[5]), 0.5f * (b[3] - b[0]) };
+	memcpy(sphere, out, 16);
+	}
+
+static unsigned nxPCCallArr(const void* fn, void* self, const unsigned* args, unsigned n)
+	{
+	unsigned r;
+	__asm
+		{
+		mov		esi, args
+		mov		edi, n
+		l0:
+		test	edi, edi
+		je		l1
+		dec		edi
+		push	dword ptr [esi + edi*4]
+		jmp		l0
+		l1:
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+
+struct NxPCSide
+	{
+	bool oracle;
+	unsigned char* base;
+	unsigned char objects[kPCNbObjects + 8][0x2c];
+	};
+
+static int nxPCFindObject(NxPCSide& s, unsigned value, bool* isMember)
+	{
+	for(unsigned i = 0; i < kPCNbObjects + 8; ++i)
+		{
+		if(value == (unsigned) (size_t) s.objects[i]) { *isMember = false; return (int) i; }
+		if(value == (unsigned) (size_t) (s.objects[i] + 0xc)) { *isMember = true; return (int) i; }
+		}
+	return -1;
+	}
+
+static unsigned nxPCNormalise(NxPCSide& s, unsigned value)
+	{
+	if(!value)
+		return 0xffffffffu;
+	bool member = false;
+	const int i = nxPCFindObject(s, value & ~3u, &member);
+	if(i < 0)
+		return 0xfffffffeu;
+	return ((unsigned) i << 3) | (member ? 4u : 0u) | (value & 3u);
+	}
+
+// One side's pruner: the pool, the bounds, the registration words, the tree (the octree of a bounded pruner), every
+// object's fields.
+static void nxPCDigestPruner(NxDigest* d, NxPCSide& s, unsigned char* pruner, bool bounded)
+	{
+	// The pool: the section counts at +4, the total and capacity at +0x10, the boxes at +0x14 and the objects at +0x18
+	// (the pointers only tested for presence).
+	nxFoldInput(d, pruner + 4, 0x0c);
+	nxFoldInput(d, pruner + 0x10, 4);
+	const unsigned poolBoxes = *(unsigned*) (pruner + 0x14), poolObjects = *(unsigned*) (pruner + 0x18);
+	const unsigned present = (poolBoxes != 0) | ((poolObjects != 0) << 1);
+	nxFoldInput(d, &present, 4);
+	const unsigned total = *(unsigned short*) (pruner + 0x10);
+	for(unsigned k = 0; k < total && poolObjects && poolBoxes; ++k)
+		{
+		const unsigned n = nxPCNormalise(s, ((unsigned*) (size_t) poolObjects)[k]);
+		nxFoldInput(d, &n, 4);
+		nxFoldInput(d, (unsigned char*) (size_t) poolBoxes + 24 * k, 24);
+		}
+	nxFoldInput(d, pruner + 0x1c, 24);
+	nxFoldInput(d, pruner + 0x34, 8);
+	const unsigned tree = *(unsigned*) (pruner + 0x3c);
+	const unsigned hasTree = tree != 0;
+	nxFoldInput(d, &hasTree, 4);
+	if(bounded && tree)
+		{
+		const unsigned char* t = (const unsigned char*) (size_t) tree;
+		nxFoldInput(d, t, 0x4c);
+		const unsigned count = *(unsigned*) (t + 0x48);
+		const unsigned char* nodes = *(unsigned char**) (t + 0x4c);
+		for(unsigned n = 0; n < count && nodes; ++n)
+			{
+			unsigned record[8];
+			memcpy(record, nodes + 32 * n, 32);
+			record[7] = nxPCNormalise(s, record[7]);
+			nxFoldInput(d, record, 32);
+			}
+		}
+	int nodeOf[kPCNbObjects + 8];
+	for(unsigned i = 0; i < kPCNbObjects + 8; ++i) nodeOf[i] = -1;
+	if(bounded && tree)
+		{
+		const unsigned char* t = (const unsigned char*) (size_t) tree;
+		const unsigned char* nodes = *(unsigned char**) (t + 0x4c);
+		for(unsigned n = 0; n < *(unsigned*) (t + 0x48) && nodes; ++n)
+			{
+			unsigned head = *(unsigned*) (nodes + 32 * n + 0x1c);
+			for(unsigned guard = 0; head && guard < 64; ++guard)
+				{
+				bool member = false;
+				const int k = nxPCFindObject(s, head, &member);
+				if(k < 0 || !member) break;
+				nodeOf[k] = (int) n;
+				head = *(unsigned*) (s.objects[k] + 0x14);
+				}
+			}
+		}
+	for(unsigned i = 0; i < kPCNbObjects + 8; ++i)
+		{
+		unsigned char* o = s.objects[i];
+		unsigned f[10];
+		f[0] = *(unsigned*) (o + 8);
+		f[1] = *(unsigned short*) (o + 0x28);
+		f[2] = *(unsigned*) (o + 0x24);
+		f[3] = o[0x2a] | (o[0x2b] << 8);
+		f[4] = nxPCNormalise(s, *(unsigned*) (o + 0x14));
+		f[5] = nxPCNormalise(s, *(unsigned*) (o + 0x18));
+		// Only an object listed by a node of the current tree has a node to compare (after a rebuild the others keep links into the released array).
+		f[6] = nodeOf[i] < 0 ? 0xffffffffu : (unsigned) nodeOf[i];
+		f[7] = gPCOwners[gPCSide][i].calls;
+		nxFoldInput(d, f, 32);
+		}
+	}
+
+static unsigned nxPCDigestContainer(NxDigest* d, NxPCSide& s, const unsigned* c)
+	{
+	nxFoldInput(d, &c[1], 4);
+	const unsigned* entries = (const unsigned*) (size_t) c[2];
+	for(unsigned k = 0; k < c[1] && entries; ++k)
+		{
+		const unsigned n = nxPCNormalise(s, entries[k]);
+		nxFoldInput(d, &n, 4);
+		}
+	return c[1];
+	}
+
+static unsigned nxDrivePrunerCluster(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return 1;
+	NxPOAllocator allocator;
+	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
+	NxPOSdkAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return 1;
+	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
+	const OracleFactoryFn oracleFactory = reinterpret_cast<OracleFactoryFn>(base + 0x000b5090);
+	typedef void (__thiscall* OraclePrunableCtorFn)(void*);
+	const OraclePrunableCtorFn oraclePrunableCtor = reinterpret_cast<OraclePrunableCtorFn>(base + 0x000b54a0);
+	void** const oracleNotify = (void**) (base + 0x00128500);
+	void** const oracleOwnerHook = (void**) (base + 0x00128478);
+	void* const savedOracleNotify = *oracleNotify;
+	void* const savedOracleOwnerHook = *oracleOwnerHook;
+	void* const savedCandidateNotify = nxPOTestNotify;
+	void* const savedCandidateOwnerHook = nxPCTestOwnerHook;
+	DWORD oldProtection;
+	VirtualProtect(base + 0x00128478, 0x40, PAGE_READWRITE, &oldProtection);
+	*oracleNotify = (void*) &nxPCNotifyHook;
+	*oracleOwnerHook = (void*) &nxPCOwnerHook;
+	nxPOTestNotify = (void*) &nxPCNotifyHook;
+	nxPCTestOwnerHook = (void*) &nxPCOwnerHook;
+	VirtualProtect(base + 0x00128478, 0x40, oldProtection, &oldProtection);
+	VirtualProtect(base + 0x00128478, 0x40, PAGE_READWRITE, &oldProtection);
+
+	static NxPCSide sides[2];
+	static unsigned char rawCtor[2][0x40];
+	static unsigned char rawTree[2][0x50];
+	NxDigest oracleDigest, candidateDigest, fixture;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&fixture);
+	unsigned mismatches = 0, cases = 0, queries = 0, results = 0, scenarios = 0;
+	unsigned state = 0x510e527fu;
+	// The oracle statics' containers (A, B, C, D, E at 0x1012847c, 0x1012848c, 0x101284a0, 0x101284b4, 0x101284c4).
+	static const unsigned kStaticOffsets[5] = { 0, 16, 36, 56, 72 };
+	// The constructor row on raw memory.
+	{
+	for(int side = 0; side < 2; ++side)
+		{
+		memset(rawCtor[side], 0xcd, 0x40);
+		nxSetControl(kControlDefault);
+		}
+	unsigned char* o = rawCtor[0]; unsigned char* c = rawCtor[1];
+	// The base constructor of the pruner (0x000f1550) is the candidate's Pruner::Pruner; the row sets the vptr and the tree.
+	nx2gCall0(base + 0x000e5870, o);
+	nxPCBoundedCtor(c);
+	++cases;
+	const bool differs = memcmp(o + 4, c + 4, 0x3c) != 0;
+	mismatches += differs;
+	nxFoldInput(&oracleDigest, o + 4, 0x3c);
+	nxFoldInput(&candidateDigest, c + 4, 0x3c);
+	// The octree header's constructor (0x000e7360) on poisoned memory.
+	memset(rawTree[0], 0xcd, 0x50); memset(rawTree[1], 0xcd, 0x50);
+	nx2gCall0(base + 0x000e7360, rawTree[0]);
+	nxPCOctreeCtor(rawTree[1]);
+	++cases;
+	mismatches += memcmp(rawTree[0], rawTree[1], 0x50) != 0;
+	nxFoldInput(&oracleDigest, rawTree[0], 0x50);
+	nxFoldInput(&candidateDigest, rawTree[1], 0x50);
+	}
+
+	for(unsigned sc = 0; sc < 20; ++sc)
+		{
+		const bool bounded = (sc % 5) != 3;
+		const unsigned typeId = bounded ? 1u : 0u;
+		const unsigned mode = sc & 1;
+		// The objects' owners: boxes around the origin, sections, masks and flags.
+		float boxes[kPCNbObjects + 8][6];
+		unsigned section[kPCNbObjects + 8], mask24[kPCNbObjects + 8], flags[kPCNbObjects + 8];
+		for(unsigned i = 0; i < kPCNbObjects + 8; ++i)
+			{
+			const unsigned kind = nxNext(&state) % 6;
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float centre = 12.0f * nxUnit(&state).value - 6.0f;
+				const float half = kind == 0 ? 0.02f : kind == 1 ? 2.5f : 0.1f + 0.8f * nxUnit(&state).value;
+				boxes[i][a] = centre - half;
+				boxes[i][3 + a] = centre + half;
+				}
+			section[i] = nxNext(&state) % 3;
+			{ const unsigned pick = nxNext(&state); mask24[i] = (pick & 3) == 3 ? 0xffffffffu : (1u << ((pick >> 2) & 3)); }
+			{ static const unsigned kFlagSets[4] = { 0u, 2u, 1u, 3u }; flags[i] = kFlagSets[nxNext(&state) & 3]; if(sc % 6 == 5) flags[i] = 2u; }
+			}
+		const unsigned nbInitial = (sc == 3 || sc == 10 || sc == 18) ? 0 : 16;
+		nxFoldInput(&fixture, boxes, sizeof(boxes));
+		nxFoldInput(&fixture, section, sizeof(section));
+		nxFoldInput(&fixture, mask24, sizeof(mask24));
+		nxFoldInput(&fixture, flags, sizeof(flags));
+		// The queries.
+		float planes[12][3][4], rays[12][6], spheres[12][4], ranges[12];
+		unsigned nbPlanes[12], qflags[12], qmask[12];
+		for(unsigned q = 0; q < 12; ++q)
+			{
+			nbPlanes[q] = 1 + nxNext(&state) % 3;
+			for(unsigned k = 0; k < 3; ++k)
+				{
+				float n[3], len = 0.0f;
+				for(unsigned a = 0; a < 3; ++a) { n[a] = nxUnit(&state).value * 2.0f - 1.0f; len += n[a] * n[a]; }
+				len = sqrtf(len > 0.0f ? len : 1.0f);
+				for(unsigned a = 0; a < 3; ++a) planes[q][k][a] = n[a] / len;
+				planes[q][k][3] = (nxUnit(&state).value * 2.0f - 1.0f) * 6.0f;
+				}
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				rays[q][a] = 14.0f * nxUnit(&state).value - 7.0f;
+				const float target = 12.0f * nxUnit(&state).value - 6.0f;
+				rays[q][3 + a] = target - rays[q][a];
+				}
+			float len = sqrtf(rays[q][3] * rays[q][3] + rays[q][4] * rays[q][4] + rays[q][5] * rays[q][5]);
+			if(len == 0.0f) len = 1.0f;
+			for(unsigned a = 0; a < 3; ++a) rays[q][3 + a] /= len;
+			ranges[q] = (q & 1) ? 3.4028234663852886e+38f : 4.0f + 8.0f * nxUnit(&state).value;
+			spheres[q][0] = 12.0f * nxUnit(&state).value - 6.0f;
+			spheres[q][1] = 12.0f * nxUnit(&state).value - 6.0f;
+			spheres[q][2] = 12.0f * nxUnit(&state).value - 6.0f;
+			spheres[q][3] = 0.5f + ((q & 1) ? 14.0f : 5.0f) * nxUnit(&state).value;
+			qflags[q] = nxNext(&state) & 7;
+			qmask[q] = (q % 4 == 3) ? 0xffffffffu : (1u + (nxNext(&state) & 0xe));
+			}
+		nxFoldInput(&fixture, planes, sizeof(planes));
+		nxFoldInput(&fixture, rays, sizeof(rays));
+		float extraSpheres[40][4];
+		for(unsigned k = 0; k < 40; ++k)
+			{
+			for(unsigned a = 0; a < 3; ++a) extraSpheres[k][a] = 16.0f * nxUnit(&state).value - 8.0f;
+			extraSpheres[k][3] = 0.3f + 15.0f * nxUnit(&state).value;
+			}
+		nxFoldInput(&fixture, extraSpheres, sizeof(extraSpheres));
+		nxFoldInput(&fixture, spheres, sizeof(spheres));
+		nxFoldInput(&fixture, ranges, sizeof(ranges));
+		// The moved boxes for the update phase.
+		float moved[kPCNbObjects + 8][6];
+		for(unsigned i = 0; i < kPCNbObjects + 8; ++i)
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float centre = 12.0f * nxUnit(&state).value - 6.0f;
+				const float half = 0.1f + 0.6f * nxUnit(&state).value;
+				moved[i][a] = centre - half;
+				moved[i][3 + a] = centre + half;
+				}
+		nxFoldInput(&fixture, moved, sizeof(moved));
+
+		NxDigest digests[2];
+		nxDigestInit(&digests[0]);
+		nxDigestInit(&digests[1]);
+		unsigned logs[2][4096], logCounts[2] = { 0, 0 };
+		unsigned res[2][600], nres[2] = { 0, 0 };
+		for(int side = 0; side < 2; ++side)
+			{
+			gPCSide = side;
+			NxPCSide& s = sides[side];
+			s.oracle = side == 0;
+			s.base = base;
+			NxDigest& d = digests[side];
+			unsigned* R = res[side];
+			unsigned& nr = nres[side];
+			const bool o = side == 0;
+			allocator.nbLog = 0;
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			// The objects.
+			for(unsigned i = 0; i < kPCNbObjects + 8; ++i)
+				{
+				unsigned char* ob = s.objects[i];
+				memset(ob, 0, 0x2c);
+				if(o)
+					oraclePrunableCtor(ob);
+				*(unsigned*) (ob + 0x10) = (unsigned) (size_t) ob;		// the member's prunable
+				*(void**) (ob + 4) = &gPCOwners[side][i];
+				*(unsigned*) (ob + 8) = flags[i];
+				*(unsigned*) (ob + 0x24) = mask24[i];
+				*(unsigned short*) (ob + 0x28) = 0xffff;
+				ob[0x2a] = (unsigned char) typeId;
+				ob[0x2b] = (unsigned char) section[i];
+				memcpy(gPCOwners[side][i].bounds, boxes[i], 24);
+				gPCOwners[side][i].calls = 0;
+				}
+			// (the oracle Prunable constructor reinstalls the adapter hooks)
+			*oracleNotify = (void*) &nxPCNotifyHook;
+			*oracleOwnerHook = (void*) &nxPCOwnerHook;
+			void* pruner = o ? oracleFactory(typeId) : (void*) nxPruningEngineCreatePruner(typeId);
+			unsigned char* p = (unsigned char*) pruner;
+			const void* addFn = base + (bounded ? 0x000e5a00 : 0x000e5210);
+			// (a static pruner adds through its own table; the bounded one through the row.)
+			#define PC_ADD(i_) (bounded ? (o ? (nxPOCallN(base + 0x000e5a00, p, 1, (unsigned) (size_t) s.objects[i_], 0, 0, 0) & 0xff) : (unsigned) nxPCAddObject(p, 0, s.objects[i_])) \
+				: (o ? (nxPOCallN((*(void***) p)[1], p, 1, (unsigned) (size_t) s.objects[i_], 0, 0, 0) & 0xff) : (unsigned) ((Pruner*) p)->AddObject((Prunable*) s.objects[i_])))
+			#define PC_UPDATE(i_) (bounded ? (o ? (nxPOCallN(base + 0x000e5a90, p, 1, (unsigned) (size_t) s.objects[i_], 0, 0, 0) & 0xff) : (unsigned) nxPCUpdateObject(p, 0, s.objects[i_])) \
+				: (o ? (nxPOCallN((*(void***) p)[3], p, 1, (unsigned) (size_t) s.objects[i_], 0, 0, 0) & 0xff) : (unsigned) ((Pruner*) p)->UpdateObject((Prunable*) s.objects[i_])))
+			#define PC_REMOVE(i_) (bounded ? (o ? (nxPOCallN(base + 0x000e5a30, p, 1, (unsigned) (size_t) s.objects[i_], 0, 0, 0) & 0xff) : (unsigned) nxPCRemoveObject(p, 0, s.objects[i_])) \
+				: (o ? (nxPOCallN((*(void***) p)[2], p, 1, (unsigned) (size_t) s.objects[i_], 0, 0, 0) & 0xff) : (unsigned) ((Pruner*) p)->RemoveObject((Prunable*) s.objects[i_])))
+			(void) addFn;
+			if(sc % 4 != 0)
+				{
+				// The pruner's own bounds: valid, or inverted in y or in z (each axis is tested).
+				float worldBounds[6] = { -9.0f, 11.0f, 11.5f, 10.0f, 12.0f, 14.0f };
+				if(sc % 4 == 2) { worldBounds[1] = 5.0f; worldBounds[4] = -5.0f; }
+				if(sc % 4 == 3) { worldBounds[2] = 5.0f; worldBounds[5] = -5.0f; }
+				memcpy(p + 0x1c, worldBounds, 24);
+				}
+			bool member[kPCNbObjects + 8] = {};
+			for(unsigned i = 0; i < nbInitial; ++i)
+				{
+				R[nr++] = PC_ADD(i);
+				member[i] = R[nr - 1] != 0;
+				}
+			nxPCDigestPruner(&d, s, p, bounded);
+			// The tree: built by the row (bounded) or the static pruner's builder, in half the scenarios up front.
+			if(bounded && (sc % 3 != 2))
+				{
+				R[nr++] = o ? (nxPOCallN(base + 0x000e58a0, p, 0, 0, 0, 0, 0) & 0xff) : (unsigned) nxPCBuildTree(p);
+				nxPCDigestPruner(&d, s, p, bounded);
+				}
+			// (Half the scenarios give the statics' containers the growth factor 1.0, once their constructors have run.)
+			const float staticFactor = (sc % 3 == 1) ? 1.0f : 2.0f;
+			// A round of queries.
+			for(unsigned round = 0; round < 2; ++round)
+				{
+				if(round == 1)
+					for(unsigned i = 0; i < nbInitial + 6; i += 3)
+						*(unsigned*) (s.objects[i] + 8) &= ~2u;		// invalid boxes: the queries ask the owners again
+				for(unsigned q = 0; q < 12; ++q)
+					{
+					unsigned c[4] = { 0, 0, 0, 0 };
+					unsigned args[8];
+					c[3] = ((q + sc) & 1) ? 0x3f800000u : 0x40000000u;		// the growth factor 1.0 makes the resize's needed count matter
+					unsigned r;
+					if(bounded)
+						{
+						if(q % 3 == 0)
+							{
+							args[0] = (unsigned) (size_t) c; args[1] = (unsigned) (size_t) planes[q]; args[2] = nbPlanes[q]; args[3] = qflags[q]; args[4] = qmask[q];
+							r = o ? (nxPCCallArr(base + 0x000e5ab0, p, args, 5) & 0xff) : (unsigned) nxPCQueryPlanes(p, 0, c, planes[q], nbPlanes[q], qflags[q], qmask[q]);
+							}
+						else if(q % 3 == 1)
+							{
+							unsigned rb; memcpy(&rb, &ranges[q], 4);
+							args[0] = (unsigned) (size_t) c; args[1] = (unsigned) (size_t) rays[q]; args[2] = rb; args[3] = qflags[q] & 1; args[4] = qmask[q];
+							r = o ? (nxPCCallArr(base + 0x000e5de0, p, args, 5) & 0xff) : (unsigned) nxPCQueryRays(p, 0, c, rays[q], ranges[q], qflags[q] & 1, qmask[q]);
+							}
+						else
+							{
+							args[0] = (unsigned) (size_t) c; args[1] = (unsigned) (size_t) spheres[q]; args[2] = qflags[q] & 1; args[3] = qmask[q];
+							r = o ? (nxPCCallArr(base + 0x000e6060, p, args, 4) & 0xff) : (unsigned) nxPCQuerySphere(p, 0, c, spheres[q], qflags[q] & 1, qmask[q]);
+							}
+						}
+					else
+						{
+						// The static pruner: slot 5, the plane query (the others are not these rows).
+						args[0] = (unsigned) (size_t) c; args[1] = (unsigned) (size_t) planes[q]; args[2] = nbPlanes[q]; args[3] = qflags[q]; args[4] = qmask[q];
+						r = o ? (nxPCCallArr(base + 0x000e5780, p, args, 5) & 0xff) : (unsigned) nxPCStaticPlanes(p, 0, (unsigned) (size_t) c, (unsigned) (size_t) planes[q], nbPlanes[q], qflags[q], qmask[q]);
+						}
+					R[nr++] = r;
+					R[nr++] = c[1];
+					nxPCDigestContainer(&d, s, c);
+					if(bounded)
+						for(unsigned k2 = 0; k2 < 5; ++k2)
+							*(float*) ((o ? base + 0x0012847c : (unsigned char*) nxPCStatics) + kStaticOffsets[k2] + 12) = staticFactor;
+					if(c[2]) allocator.free((void*) (size_t) c[2]);
+					++queries;
+					}
+				nxPCDigestPruner(&d, s, p, bounded);
+				if(round == 0)
+					{
+					// The boxes move: some objects updated, some removed, new ones added.
+					for(unsigned i = 0; i < nbInitial; i += 2)
+						{
+						memcpy(gPCOwners[side][i].bounds, moved[i], 24);
+						*(unsigned*) (s.objects[i] + 8) &= ~2u;
+						R[nr++] = PC_UPDATE(i);
+						}
+					for(unsigned i = 1; i < nbInitial; i += 5)
+						if(member[i])
+							{
+							R[nr++] = PC_REMOVE(i);
+							member[i] = false;
+							}
+					for(unsigned i = nbInitial; i < nbInitial + 6; ++i)
+						{
+						R[nr++] = PC_ADD(i);
+						member[i] = R[nr - 1] != 0;
+						}
+					if(sc % 5 == 4)
+						for(unsigned i = 0; i < nbInitial + 6; ++i)
+							if(member[i])
+								{
+								R[nr++] = PC_REMOVE(i);
+								member[i] = false;
+								}		// all of them: the octree empties and is released
+					nxPCDigestPruner(&d, s, p, bounded);
+					if(bounded && sc % 4 == 0)
+						{
+						R[nr++] = o ? (nxPOCallN(base + 0x000e58a0, p, 0, 0, 0, 0, 0) & 0xff) : (unsigned) nxPCBuildTree(p);		// over the existing octree
+						nxPCDigestPruner(&d, s, p, bounded);
+						}
+					}
+				if(bounded && round == 1)
+					for(unsigned k = 0; k < 40; ++k)
+						{
+						unsigned c[4] = { 0, 0, 0, 0x40000000u };
+						unsigned args[4] = { (unsigned) (size_t) c, (unsigned) (size_t) extraSpheres[k], k & 1, 0xffffffffu };
+						R[nr++] = o ? (nxPCCallArr(base + 0x000e6060, p, args, 4) & 0xff) : (unsigned) nxPCQuerySphere(p, 0, c, extraSpheres[k], k & 1, 0xffffffffu);
+						nxPCDigestContainer(&d, s, c);
+						if(c[2]) allocator.free((void*) (size_t) c[2]);
+						++queries;
+						}
+				}
+			if(bounded)
+				{
+				// The statics' containers (their counts and entries).
+				for(unsigned k = 0; k < 5; ++k)
+					{
+					const unsigned* cont = o ? (const unsigned*) (base + 0x0012847c + kStaticOffsets[k]) : (const unsigned*) ((unsigned char*) nxPCStatics + kStaticOffsets[k]);
+					nxPCDigestContainer(&d, s, cont);
+					}
+				}
+			logCounts[side] = allocator.nbLog;
+			memcpy(logs[side], allocator.log, 4 * (allocator.nbLog < 4096 ? allocator.nbLog : 4096));
+			// The destructors: the bounded pruner through the product's own (the oracle's table, the candidate's C++), the
+			// static pruner's by the rows.
+			allocator.nbLog = 0;
+			if(bounded)
+				{
+				if(o) { typedef void* (__thiscall* DelFn)(void*, unsigned); ((DelFn) (*(void***) p)[0])(p, 1); }
+				else nxPruningEngineDestroyPruner((Pruner*) p);
+				}
+			else
+				{
+				const unsigned variant = sc / 5, flag = variant & 1;
+				if(variant != 2) { if(o) nxPOCallN(base + 0x000e5810, p, 1, flag, 0, 0, 0); else nxPCStaticScalarDelete(p, 0, flag); if(!flag) { nxFoldInput(&d, p + 0x38, 0x18); allocator.free(p); } }
+				else { if(o) nxPOCallN(base + 0x000e5740, p, 0, 0, 0, 0, 0); else nxPCStaticDtorBody(p); nxFoldInput(&d, p + 0x38, 0x18); allocator.free(p); }
+				}
+			// Release the statics' storage (their containers) so the thunks at exit find them empty.
+			if(bounded)
+				for(unsigned k = 0; k < 5; ++k)
+					{
+					void* cont = o ? (void*) (base + 0x0012847c + kStaticOffsets[k]) : (void*) ((unsigned char*) nxPCStatics + kStaticOffsets[k]);
+					if(o) nx2gCall0(base + 0x000b4f50, cont); else nx2gCall0((const void*) &nxPCTestEmpty, cont);
+					}
+			unsigned* extra = logs[side] + (logCounts[side] < 3000 ? logCounts[side] : 3000);
+			const unsigned used = allocator.nbLog < 1000 ? allocator.nbLog : 1000;
+			memcpy(extra, allocator.log, 4 * used);
+			logCounts[side] += used;
+			nxFoldInput(&d, &sc, 0);
+			nxSetControl(kControlDefault);
+			#undef PC_ADD
+			#undef PC_UPDATE
+			#undef PC_REMOVE
+			}
+		++scenarios;
+		++cases;
+		bool different = nres[0] != nres[1] || digests[0].state != digests[1].state || logCounts[0] != logCounts[1]
+			|| memcmp(res[0], res[1], 4 * nres[0]) != 0 || memcmp(logs[0], logs[1], 4 * (logCounts[0] < 4096 ? logCounts[0] : 4096)) != 0;
+		mismatches += different;
+		for(unsigned k = 0; k < nres[0]; ++k) results += res[0][k] != 0;
+		nxFoldInput(&oracleDigest, res[0], 4 * nres[0]);
+		nxFoldInput(&oracleDigest, &digests[0].state, 8);
+		nxFoldInput(&oracleDigest, logs[0], 4 * (logCounts[0] < 4096 ? logCounts[0] : 4096));
+		nxFoldInput(&candidateDigest, res[1], 4 * nres[1]);
+		nxFoldInput(&candidateDigest, &digests[1].state, 8);
+		nxFoldInput(&candidateDigest, logs[1], 4 * (logCounts[1] < 4096 ? logCounts[1] : 4096));
+		}
+	nxSetControl(kControlDefault);
+	printf("collision name=pruner_cluster index=- rva=0x000e5ab0 owner=phys_fn_005254 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pruner_cluster scenarios=%u cases=%u queries=%u nonzero_results=%u control_words=2\n",
+		scenarios, cases, queries, results);
+	nxPrintInput("pruner_cluster", &fixture);
+	*oracleNotify = savedOracleNotify;
+	*oracleOwnerHook = savedOracleOwnerHook;
+	nxPOTestNotify = savedCandidateNotify;
+	nxPCTestOwnerHook = savedCandidateOwnerHook;
 	oracleSetAllocator(savedOracleSdk);
 	nxSetSdkAllocatorBridge(savedCandidateSdk);
 	nxFoundationSDKAllocator = savedFoundationAllocator;

@@ -1,0 +1,46 @@
+0x000e52d3  mov ebp, dword ptr [esp + 0x1c]  ->  mov ebp, dword ptr [esp + 0x20]  :  exit 3221225477 mismatches ?
+0x000e52de  mov eax, dword ptr [esp + 0x18]  ->  mov eax, dword ptr [esp + 0x1c]  :  exit 1 mismatches 3
+0x000e52e5  mov esi, dword ptr [ebp]  ->  mov esi, dword ptr [ebp + 4]  :  exit 3221225477 mismatches ?
+0x000e52e9  je Le534f  ->  jne Le534f  :  exit 1 mismatches 4
+0x000e52eb  mov eax, dword ptr [esp + 0x18]  ->  mov eax, dword ptr [esp + 0x1c]  :  exit 3221225477 mismatches ?
+0x000e52f1  je Le53d8  ->  jne Le53d8  :  exit 1 mismatches 4
+0x000e52f7  mov ebx, dword ptr [esp + 0x1c]  ->  mov ebx, dword ptr [esp + 0x20]  :  exit 3221225477 mismatches ?
+0x000e52fb  mov dword ptr [esp + 0x20], eax  ->  mov dword ptr [esp + 0x24], eax  :  exit 0 mismatches 0
+0x000e5300  mov ecx, dword ptr [ebx]  ->  mov ecx, dword ptr [ebx + 4]  :  exit 3221225477 mismatches ?
+0x000e5305  mov edx, dword ptr [esp + 0x10]  ->  mov edx, dword ptr [esp + 0x14]  :  exit 3221225477 mismatches ?
+0x000e530c  add ebx, 4  ->  add ebx, 5  :  exit 0 mismatches 0
+0x000e5311  jne Le5319  ->  je Le5319  :  exit 1 mismatches 4
+0x000e5313  test byte ptr [edi + 8], 1  ->  test byte ptr [edi + 8], 2  :  exit 1 mismatches 3
+0x000e5317  jne Le5343  ->  je Le5343  :  exit 1 mismatches 4
+0x000e5319  mov al, byte ptr [ebp + 0x18]  ->  mov al, byte ptr [ebp + 0x1c]  :  exit 1 mismatches 4
+0x000e531f  mov byte ptr [esp + 0x24], al  ->  mov byte ptr [esp + 0x28], al  :  exit 1 mismatches 4
+0x000e5323  cmp ecx, dword ptr [esi]  ->  cmp ecx, dword ptr [esi + 4]  :  exit 1 mismatches 3
+0x000e5325  jne Le5330  ->  je Le5330  :  exit 3221225477 mismatches ?
+0x000e5327  push 1  ->  push 2  :  exit 1 mismatches 2
+0x000e5330  movzx edx, byte ptr [esp + 0x24]  ->  movzx edx, byte ptr [esp + 0x28]  :  exit 1 mismatches 4
+0x000e5343  dec dword ptr [esp + 0x20]  ->  dec dword ptr [esp + 0x24]  :  exit 3221225477 mismatches ?
+0x000e5347  jne Le5300  ->  je Le5300  :  exit 3221225477 mismatches ?
+0x000e5354  je Le5397  ->  jne Le5397  :  exit 1 mismatches 3
+0x000e5356  mov ebx, dword ptr [esp + 0x18]  ->  mov ebx, dword ptr [esp + 0x1c]  :  exit 3221225477 mismatches ?
+0x000e535c  je Le53d8  ->  jne Le53d8  :  exit 1 mismatches 3
+0x000e535e  mov edi, dword ptr [esp + 0x1c]  ->  mov edi, dword ptr [esp + 0x20]  :  exit 3221225477 mismatches ?
+0x000e5362  mov eax, dword ptr [esp + 0x10]  ->  mov eax, dword ptr [esp + 0x14]  :  exit 1 mismatches 3
+0x000e5366  mov edx, dword ptr [edi]  ->  mov edx, dword ptr [edi + 4]  :  exit 3221225477 mismatches ?
+0x000e536e  cmp ecx, dword ptr [esi]  ->  cmp ecx, dword ptr [esi + 4]  :  exit 1 mismatches 3
+0x000e5370  jne Le537b  ->  je Le537b  :  exit 3221225477 mismatches ?
+0x000e5372  push 1  ->  push 2  :  exit 1 mismatches 3
+0x000e5388  add edi, 4  ->  add edi, 5  :  exit 3221225477 mismatches ?
+0x000e538f  jne Le5362  ->  je Le5362  :  exit 3221225477 mismatches ?
+0x000e5397  mov eax, dword ptr [esp + 0x18]  ->  mov eax, dword ptr [esp + 0x1c]  :  exit 3221225477 mismatches ?
+0x000e539d  je Le53d8  ->  jne Le53d8  :  exit 1 mismatches 3
+0x000e539f  mov ebp, dword ptr [esp + 0x1c]  ->  mov ebp, dword ptr [esp + 0x20]  :  exit 3221225477 mismatches ?
+0x000e53a5  mov ecx, dword ptr [ebp]  ->  mov ecx, dword ptr [ebp + 4]  :  exit 3221225477 mismatches ?
+0x000e53a8  mov edx, dword ptr [esp + 0x10]  ->  mov edx, dword ptr [esp + 0x14]  :  exit 3221225477 mismatches ?
+0x000e53b2  add ebp, 4  ->  add ebp, 5  :  exit 3221225477 mismatches ?
+0x000e53b5  test al, 1  ->  test al, 2  :  exit 1 mismatches 3
+0x000e53b7  jne Le53d5  ->  je Le53d5  :  exit 1 mismatches 3
+0x000e53bc  cmp eax, dword ptr [esi]  ->  cmp eax, dword ptr [esi + 4]  :  exit 1 mismatches 2
+0x000e53be  jne Le53c9  ->  je Le53c9  :  exit 3221225477 mismatches ?
+0x000e53c0  push 1  ->  push 2  :  exit 1 mismatches 2
+0x000e53d6  jne Le53a5  ->  je Le53a5  :  exit 3221225477 mismatches ?
+DONE

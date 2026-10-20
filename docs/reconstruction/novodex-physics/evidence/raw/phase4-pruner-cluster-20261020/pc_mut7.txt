@@ -1,0 +1,7 @@
+0x000e7c14  mov edi, dword ptr [esi + 0x4c]  ->  mov edi, dword ptr [esi + 0x50]  :  exit 3221226356 mismatches ?
+0x000e7c19  je Le7c32  ->  jne Le7c32  :  exit 1 mismatches 11
+0x000e7c20  mov edx, dword ptr [eax]  ->  mov edx, dword ptr [eax + 4]  :  exit 3221225477 mismatches ?
+0x000e7c28  call dword ptr [edx + 0xc]  ->  call dword ptr [edx + 0x10]  :  exit 3221225477 mismatches ?
+0x000e7c2b  mov dword ptr [esi + 0x4c], 0  ->  mov dword ptr [esi + 0x50], 0  :  exit 3221226356 mismatches ?
+0x000e7c33  mov dword ptr [esi + 0x48], 0  ->  mov dword ptr [esi + 0x4c], 0  :  exit 0 mismatches 0
+DONE
