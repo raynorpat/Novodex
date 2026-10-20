@@ -2734,6 +2734,9 @@ static unsigned nxDriveTask2h(unsigned char* base);
 static unsigned nxDriveTask2i(unsigned char* base);
 static unsigned nxDriveTask2j(unsigned char* base);
 static unsigned nxDriveTask2k(unsigned char* base);
+void __cdecl NxContactSphereMesh(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+bool __cdecl NxOverlapSphereMesh(const NxCollisionShape*, const NxCollisionShape*, void*);
+static unsigned nxDriveSphereMesh(unsigned char* base);
 static unsigned nxDriveTask2lAccumulator(unsigned char* base);
 static unsigned nxDriveTask2lSphereCallback(unsigned char* base);
 static unsigned nxDriveTask2lSinkReset(unsigned char* base);
@@ -4314,6 +4317,7 @@ int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
 	const bool task2kOnly = argc == 4 && wcscmp(argv[3], L"--task2k-only") == 0;
+	const bool sphereMeshOnly = argc == 4 && wcscmp(argv[3], L"--sphere-mesh-only") == 0;
 	const bool planeMeshOnly = argc == 4 && wcscmp(argv[3], L"--plane-mesh-only") == 0;
 	const bool ownerPairOnly = argc == 4 && wcscmp(argv[3], L"--owner-pair-only") == 0;
 	const bool sceneOwnerPairRecordsOnly = argc == 4 && wcscmp(argv[3], L"--scene-owner-pair-records-only") == 0;
@@ -4326,7 +4330,7 @@ int wmain(int argc, wchar_t** argv)
 	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
 	const bool prunerPoolReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-pool-reserve-only") == 0;
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4398,6 +4402,12 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned mismatches = nxDriveTask2j(base);
 		printf("collision matrix_wrong=0 index_wrong=0 mismatches=%u\n", mismatches);
 		printf("collision=%s\n", mismatches ? "fail" : "pass");
+		return mismatches ? 1 : 0;
+		}
+	if(sphereMeshOnly)
+		{
+		const unsigned mismatches = nxDriveSphereMesh(base);
+		printf("collision sphere_mesh mismatches=%u\n", mismatches);
 		return mismatches ? 1 : 0;
 		}
 	if(task2kOnly)
@@ -9845,6 +9855,9 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2k's capsule/mesh entries; see nxDriveTask2k.
 	totalMismatch += nxDriveTask2k(base);
 
+	// Sphere/mesh entries (001925, 001927, 001929); see nxDriveSphereMesh.
+	totalMismatch += nxDriveSphereMesh(base);
+
 	// Plane/mesh contact and overlap use the scene's PlanesCollider/PlanesCache
 	// pair and must remain part of the pinned oracle differential.
 	totalMismatch += nxDrivePlaneMesh(base);
@@ -15258,6 +15271,206 @@ static unsigned nxDriveTask2k(unsigned char* base)
 	nxPrintInput("overlap_capsule_mesh", &fixture);
 	nxPrintInput("contact_capsule_mesh", &fixture);
 	total = overlapMismatch + contactMismatch + reportMismatch + buildFailures;
+	for(int side = 0; side < 2; ++side) nx2iReleaseSide(owners[side], sides[side]);
+	nx2iFoundationEnd();
+	return total;
+	}
+
+// Sphere/mesh differential (phys_fn_001925 overlap, 001927 per-triangle row, 001929 contact). Reuses the
+// Task 2i mesh trees and LSS-side context of the capsule/mesh driver. Each case draws a pose (inside the
+// box of the mesh, resting on its top, straddling an edge), a radius and a mesh mode: an ordinary mesh, an
+// ordinary mesh with smooth sphere collisions (the vertex normals), and height fields over each axis
+// (with and without the smooth flag). One variant gives the mesh shape no holder, which sends 001929
+// through NxContinuousCdPair.
+static unsigned nxDriveSphereMesh(unsigned char* base)
+	{
+	unsigned overlapMismatch = 0, contactMismatch = 0, reportMismatch = 0;
+	static const unsigned picks[6] = { 0, 1, 2, 3, 4, 6 };
+	static Nx2gSide owners[2];
+	static Nx2iSide sides[2];
+	static Nx2iMeshWords words[kNb2iMeshes];
+	static NxContactWorld worlds[2];
+	static unsigned char shapeStorage[2][2][kShapeBytes];
+	NxCollisionShape* shapes[2][2];
+	NxDigest oracleOverlapDigest, candidateOverlapDigest, oracleContactDigest, candidateContactDigest;
+	nxDigestInit(&oracleOverlapDigest); nxDigestInit(&candidateOverlapDigest);
+	nxDigestInit(&oracleContactDigest); nxDigestInit(&candidateContactDigest);
+	if(!nx2iFoundationBegin())
+		return 1;
+	unsigned buildFailures = 0, state = 0x5ea1b0c3u;
+	NxDigest fixture;
+	nxDigestInit(&fixture);
+	for(unsigned i = 0; i < 6; ++i)
+		nx2iDrawMeshWords(&state, &fixture, picks[i], words[picks[i]]);
+	for(int side = 0; side < 2; ++side)
+		{
+		owners[side].oracle = side == 0;
+		owners[side].base = base;
+		nx2iInitSide(owners[side], sides[side], words, &buildFailures);
+		// The pair context's SphereCollider and cache (context + 0xb0 and + 0xf4), constructed the way the scene does.
+		unsigned char* const context = sides[side].context;
+		if(side == 0)
+			nx2gCall0(base + 0x000de7e0, context + 0xb0);
+		else
+			new(context + 0xb0) Opcode::SphereCollider;
+		Opcode::SphereCache* const cache = new(context + 0xf4) Opcode::SphereCache;
+		cache->TouchedPrimitives = reinterpret_cast<decltype(cache->TouchedPrimitives)>(context + 0x4e0);
+		}
+	typedef void(__cdecl* ContactFn)(const NxCollisionShape*, const NxCollisionShape*, NxContactSink*, void*);
+	typedef bool(__cdecl* OverlapFn)(const NxCollisionShape*, const NxCollisionShape*, void*);
+	const ContactFn oracleContact = (ContactFn)(base + 0x0004b1f0);
+	const OverlapFn oracleOverlap = (OverlapFn)(base + 0x0004a820);
+	static const unsigned flagStart[6] = { 0x00, 0x02, 0x03, 0x12, 0x17, 0x10 };
+	static const unsigned axisOf[11] = { 0xff, 0xff, 2, 2, 1, 0, 0xff, 0xff, 2, 0xff, 2 };
+	static const unsigned smoothOf[11] = { 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0 };
+	unsigned cases = 0, oracleContacts = 0, overlapTrue = 0, contactCases = 0, contactHits = 0;
+	unsigned variantCases[11] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	unsigned scenarioCases[3] = { 0, 0, 0 };
+	for(unsigned pi = 0; pi < 6; ++pi)
+		{
+		const unsigned m = picks[pi];
+		const Nx2hMesh& mesh = nx2iMesh(m);
+		float lo[3] = { FLT_MAX, FLT_MAX, FLT_MAX }, hi[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+		for(unsigned v = 0; v < mesh.nbVerts; ++v)
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float x = ((const float*)mesh.verts)[3 * v + a];
+				if(x < lo[a]) lo[a] = x;
+				if(x > hi[a]) hi[a] = x;
+				}
+		for(unsigned scenario = 0; scenario < 3; ++scenario)
+			for(unsigned variant = 0; variant < 11; ++variant)
+				for(unsigned radiusIndex = 0; radiusIndex < 2; ++radiusIndex)
+					for(unsigned mode = 0; mode < 2; ++mode)
+						{
+						++cases;
+						const float radius = radiusIndex ? 0.8f : 0.35f;
+						nxFoldInput(&fixture, &scenario, sizeof(scenario));
+						nxFoldInput(&fixture, &variant, sizeof(variant));
+						nxFoldInput(&fixture, &radius, sizeof(radius));
+						nxFoldInput(&fixture, &mode, sizeof(mode));
+						// Variants 7 and 8 pose the mesh (a random rotation and translation); the others leave it at the origin.
+						static unsigned char poseStorage[kShapeBytes];
+						NxCollisionShape& pose = *(NxCollisionShape*)poseStorage;
+						nxIdentity(&pose);
+						float poseTranslation[3] = { 0.0f, 0.0f, 0.0f };
+						if(variant == 7 || variant == 8)
+							{
+							nxRandomRotation(&state, &pose);
+							for(unsigned a = 0; a < 3; ++a)
+								poseTranslation[a] = nxUnit(&state).value * 2.0f - 1.0f;
+							nxFoldInput(&fixture, pose.rotation, 9 * sizeof(float));
+							nxFoldInput(&fixture, poseTranslation, sizeof(poseTranslation));
+							}
+						for(int side = 0; side < 2; ++side)
+							{
+							shapes[side][0] = (NxCollisionShape*)shapeStorage[side][0];
+							shapes[side][1] = (NxCollisionShape*)shapeStorage[side][1];
+							NxCollisionShape& sphere = *shapes[side][0];
+							NxCollisionShape& meshShape = *shapes[side][1];
+							nxIdentity(&sphere); nxIdentity(&meshShape);
+							sphere.type = 1; meshShape.type = 4;
+							memcpy(meshShape.rotation, pose.rotation, 9 * sizeof(float));
+							memcpy(meshShape.translation, poseTranslation, sizeof(poseTranslation));
+							sphere.geometry[0] = radius;
+							*(unsigned short*)((unsigned char*)&sphere + 0xda) = (unsigned short)(1 + m + variant);
+							float local[3];
+							for(unsigned a = 0; a < 3; ++a)
+								{
+								const float mid = (lo[a] + hi[a]) * 0.5f;
+								local[a] = scenario == 1 && a == 1 ? hi[a] + radius * 0.8f :
+									(scenario == 2 && a == 0 ? hi[a] + radius * 0.5f : mid);
+								}
+							// The sphere's world position is the mesh frame's rotation applied to the local one, plus its translation.
+							for(unsigned a = 0; a < 3; ++a)
+								sphere.translation[a] = pose.rotation[3 * a] * local[0] + pose.rotation[3 * a + 1] * local[1]
+									+ pose.rotation[3 * a + 2] * local[2] + poseTranslation[a];
+							if(side == 0)
+								nxFoldInput(&fixture, sphere.translation, sizeof(sphere.translation));
+							Nx2iMeshSide& ms = sides[side].meshes[m];
+							*(unsigned char**)(&meshShape.geometry[0]) = (unsigned char*)ms.image;
+							*(unsigned*)(&meshShape.geometry[1]) = smoothOf[variant];
+							// Variants 9 and 10 have neither the material table nor the face remap.
+							ms.image[0x18 / 4] = variant >= 9 ? 0 : (unsigned)(size_t)ms.materials;
+							ms.image[0x1c / 4] = variant >= 9 ? 0 : (unsigned)(size_t)ms.remap;
+							ms.image[0x28 / 4] = (unsigned)(size_t)ms.model;
+							ms.image[0x7c / 4] = axisOf[variant];
+							*(unsigned*)(sides[side].context + 0x290) = 0;
+							*(unsigned*)(sides[side].context + 0x4e4) = 0;
+							// The pair context flags the rows set and clear start from a drawn value, so a mask that clears a bit is seen.
+							*(unsigned*)(sides[side].context + 0xb4) = flagStart[(m + scenario + variant + 3 * radiusIndex + mode) % 6];
+							sides[side].touched[1] = 0;
+							memset(sides[side].visited, 0, sizeof(sides[side].visited));
+							nxResetWorld(&worlds[side]);
+							nxStageWorld(&worlds[side], &sphere, &meshShape, true, true, 3 + m, 9 + m, false, variant == 6, false);
+							}
+						unsigned result[2] = {};
+						nxSetControl(mode ? kControlSimulate : kControlDefault);
+						for(int side = 0; side < 2; ++side)
+							{
+							memcpy(sides[side].meshes[m].remap, words[m].remap, 4 * nx2iMesh(m).nbTris);
+							*(unsigned*)(sides[side].context + 0x290) = 0;
+							*(unsigned*)(sides[side].context + 0x4e4) = 0;
+							if(mode == 0)
+								{
+								if(side == 0) result[side] = oracleOverlap(shapes[0][0], shapes[0][1], sides[0].context);
+								else result[side] = NxOverlapSphereMesh(shapes[1][0], shapes[1][1], sides[1].context);
+								}
+							else
+								{
+								if(side == 0) oracleContact(worlds[0].plane, worlds[0].sphere, &worlds[0].sink, sides[0].context);
+								else NxContactSphereMesh(worlds[1].plane, worlds[1].sphere, &worlds[1].sink, sides[1].context);
+								}
+							}
+						nxSetControl(kControlDefault);
+						// Both rows set and clear bits of the pair context flags (context + 0xb4); they are part of what is compared.
+						const unsigned flagsOracle = *(unsigned*)(sides[0].context + 0xb4);
+						const unsigned flagsCandidate = *(unsigned*)(sides[1].context + 0xb4);
+						if(mode == 0)
+							{
+							overlapMismatch += (result[0] != result[1]) + (flagsOracle != flagsCandidate);
+							nxDigestByte(&oracleOverlapDigest, (unsigned char)flagsOracle);
+							nxDigestByte(&candidateOverlapDigest, (unsigned char)flagsCandidate);
+							++scenarioCases[scenario];
+							++variantCases[variant];
+							overlapTrue += result[0] != 0;
+							nxDigestByte(&oracleOverlapDigest, (unsigned char)result[0]);
+							nxDigestByte(&candidateOverlapDigest, (unsigned char)result[1]);
+							}
+						else
+							{
+							contactMismatch += nxCompareStreams(&worlds[0], &worlds[1], 0) + (flagsOracle != flagsCandidate);
+							nxDigestByte(&oracleContactDigest, (unsigned char)flagsOracle);
+							nxDigestByte(&candidateContactDigest, (unsigned char)flagsCandidate);
+							reportMismatch += worlds[0].sink.contactCount != worlds[1].sink.contactCount;
+							oracleContacts += worlds[0].sink.contactCount;
+							++contactCases;
+							contactHits += worlds[0].sink.contactCount != 0;
+							nxFoldStream(&oracleContactDigest, &worlds[0]);
+							nxFoldStream(&candidateContactDigest, &worlds[1]);
+							}
+						}
+		}
+	printf("collision name=overlap_sphere_mesh index=- rva=0x0004a820 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		cases / 2, oracleOverlapDigest.state, candidateOverlapDigest.state, overlapMismatch);
+	printf("collision name=contact_sphere_mesh index=- rva=0x0004b1f0 checks=%u oracle=%016llx candidate=%016llx oracle_contacts=%u mismatches=%u\n",
+		cases / 2, oracleContactDigest.state, candidateContactDigest.state, oracleContacts, contactMismatch + reportMismatch);
+	printf("collision coverage name=overlap_sphere_mesh meshes=6 cases=%u true=%u false=%u\n",
+		cases / 2, overlapTrue, cases / 2 - overlapTrue);
+	printf("collision coverage name=contact_sphere_mesh meshes=6 cases=%u with_contacts=%u inside=%u resting=%u straddling=%u oracle_contacts=%u\n",
+		contactCases, contactHits, scenarioCases[0], scenarioCases[1], scenarioCases[2], oracleContacts);
+	printf("collision coverage name=contact_sphere_mesh_variants ordinary=%u smooth=%u heightfield_z=%u heightfield_z_smooth=%u heightfield_y=%u heightfield_x=%u no_holder=%u posed=%u posed_heightfield=%u no_tables=%u no_tables_heightfield=%u\n",
+		variantCases[0], variantCases[1], variantCases[2], variantCases[3], variantCases[4], variantCases[5], variantCases[6],
+		variantCases[7], variantCases[8], variantCases[9], variantCases[10]);
+	nxPrintInput("overlap_sphere_mesh", &fixture);
+	nxPrintInput("contact_sphere_mesh", &fixture);
+	const unsigned total = overlapMismatch + contactMismatch + reportMismatch + buildFailures;
+	for(int side = 0; side < 2; ++side)
+		{
+		if(side == 0) nx2gCall0(base + 0x000de800, sides[0].context + 0xb0);
+		else ((Opcode::SphereCollider*)(sides[1].context + 0xb0))->~SphereCollider();
+		memset(sides[side].context + 0xb0, 0, 0x60);
+		}
 	for(int side = 0; side < 2; ++side) nx2iReleaseSide(owners[side], sides[side]);
 	nx2iFoundationEnd();
 	return total;

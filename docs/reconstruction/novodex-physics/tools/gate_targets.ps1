@@ -5482,6 +5482,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision input name=contact_capsule_mesh words=440 input=2488b42d3079cbfb',
         'collision coverage name=overlap_capsule_mesh meshes=6 cases=18 true=8 false=10',
         'collision coverage name=contact_capsule_mesh meshes=6 cases=18 inside=6 resting=6 straddling=6 oracle_contacts=16',
+        # sphere/mesh overlap and contact (rows 001925, 001927, 001929) over ordinary, smooth, posed and height-field meshes.
+        'collision name=overlap_sphere_mesh index=- rva=0x0004a820 checks=396 oracle=178a3ab7555a1272',
+        'collision name=contact_sphere_mesh index=- rva=0x0004b1f0 checks=396 oracle=af4a8cc04d886644',
+        'collision coverage name=overlap_sphere_mesh meshes=6 cases=396 true=153 false=243',
+        'collision coverage name=contact_sphere_mesh meshes=6 cases=396 with_contacts=112 inside=132 resting=132 straddling=132 oracle_contacts=244',
+        'collision coverage name=contact_sphere_mesh_variants ordinary=36 smooth=36 heightfield_z=36 heightfield_z_smooth=36 heightfield_y=36 heightfield_x=36 no_holder=36 posed=36 posed_heightfield=36 no_tables=36 no_tables_heightfield=36',
+        'collision input name=overlap_sphere_mesh words=7460 input=d6044094834e3ecd',
+        'collision input name=contact_sphere_mesh words=7460 input=d6044094834e3ecd',
         # Plane/mesh Task: exercise the runtime's PlanesCollider/PlanesCache
         # context, compare full ordered contacts plus overlap state, and run
         # under both x87 control words.
@@ -6425,7 +6433,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 18  # adds three focused Scene-index assertions and the row 000287 accessor marker
-    '3' = 997  # plus the nine mesh/PMap contact and dense cell-sampler lines (001878, 001880, 002029)
+    '3' = 1004  # plus the seven sphere/mesh lines (001925, 001927, 001929)
+               # previous 997: the nine mesh/PMap contact and dense cell-sampler lines (001878, 001880, 002029)
                # previous 988: row-specific contact-convex-mesh thunk coverage (001853) and pruning entry
               # includes the direct row 002272 ray/AABB slab differential
                # plus the flag-one PhysicsSDK scalar-delete, shape-count/shape-list and rows 000022/000713 assertions
@@ -6606,7 +6615,8 @@ $NxPhaseCoverageFloor = [ordered] @{
                # previous 867 plus the public joint/contact simulation corpus (189 assertions)
                # previous 856 plus 11 mesh contact and post-solver state assertions
                # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
-	'7' = 3139  # plus the three PMap compute-arm families (rows 002019/002021/002025 and the nearest-face collider)
+	'7' = 3146  # plus the seven sphere/mesh lines (001925, 001927, 001929)
+	           # previous 3139: plus the three PMap compute-arm families (rows 002019/002021/002025 and the nearest-face collider)
 	           # previous 3136: the nine mesh/PMap contact and dense cell-sampler lines (001878, 001880, 002029)
 	           # previous 3127: the eight callback-walk families (rows 004967/004969/004971/004982) and two layout lines
 	           # previous 3117 plus rows 004814/004826 pruning markers and row 003503 FluidCreate marker

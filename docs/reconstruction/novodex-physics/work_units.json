@@ -1898,13 +1898,13 @@
     "phys_fn_002045"
    ],
    "rows": {
-    "discovered": 18,
-    "dynamically_gated": 41,
+    "discovered": 15,
+    "dynamically_gated": 44,
     "reconstructed": 17
    },
    "bytes": {
-    "discovered": 8138,
-    "dynamically_gated": 15916,
+    "discovered": 4099,
+    "dynamically_gated": 19955,
     "reconstructed": 7371
    },
    "phases": {

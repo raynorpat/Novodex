@@ -1,0 +1,96 @@
+"""Generate Physics/src/PMapCompute.cpp: naked transcriptions of the PMap compute-arm rows."""
+import capstone, struct, re, sys
+
+ORACLE = r'D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll'
+f = open(ORACLE, 'rb').read()
+pe = struct.unpack_from('<I', f, 0x3c)[0]
+nsec = struct.unpack_from('<H', f, pe + 6)[0]
+opt = struct.unpack_from('<H', f, pe + 20)[0]
+secs = pe + 24 + opt
+
+
+def off(r):
+    for i in range(nsec):
+        n, vs, va, rs, ro = struct.unpack_from('<8sIIII', f, secs + 40 * i)
+        if va <= r < va + max(vs, rs):
+            return ro + r - va
+
+
+# (symbol, entry rva, end rva, rows)
+ROWS = [
+ ('nxSphereMeshOverlapRow', 0x4a820, 0x4a932, 'phys_fn_001925'),
+ ('nxSphereMeshTriangle', 0x4a940, 0x4b1ef, 'phys_fn_001927'),
+ ('nxSphereMeshContactRow', 0x4b1f0, 0x4b7f6, 'phys_fn_001929'),
+]
+SYM = {0x10000000 + r[1]: r[0] for r in ROWS}
+EXTERN = {
+    0x100e1360: 'nxSMCallSphereCollide',
+    0x100257a0: 'nxSMCallShapeOwner',
+    0x10056650: 'nxSMCallContinuousCd',
+    0x1003c160: 'nxSMCallTrianglePlane',
+    0x1001d8e0: 'nxSMCallEmit',
+    0x100329e0: 'nxSMCallPointTriDist',
+    0x10052240: 'nxSMCallVertexNormals',
+}
+CONST = {0x101041ec: 'nxSMOne', 0x101041f0: 'nxSMZero'}
+NULLSUB = 0
+
+def gen(entry, end):
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    o = off(entry)
+    ins = list(md.disasm(f[o:o + (end - entry)], 0x10000000 + entry))
+    got = ins[-1].address + ins[-1].size - 0x10000000
+    assert got == end, (hex(entry), hex(got), hex(end))
+    lo, hi = 0x10000000 + entry, 0x10000000 + end
+    addrs = {i.address for i in ins}
+    targets = set()
+    for i in ins:
+        if (i.mnemonic.startswith('j') or i.mnemonic == 'loop') and i.op_str.startswith('0x'):
+            t = int(i.op_str, 16)
+            if lo <= t < hi:
+                assert t in addrs, hex(t)
+                targets.add(t)
+    out = []
+    for i in ins:
+        if i.address in targets:
+            out.append('L%x:' % (i.address - 0x10000000))
+        m, op = i.mnemonic, i.op_str
+        if (m.startswith('j') or m == 'loop' or m == 'call') and op.startswith('0x'):
+            t = int(op, 16)
+            if lo <= t < hi and m != 'call':
+                op = 'L%x' % (t - 0x10000000)
+            elif t in SYM:
+                op = SYM[t]
+            elif t in EXTERN:
+                op = EXTERN[t]
+            else:
+                raise Exception('unmapped target %x from %x' % (t, i.address))
+        else:
+            def sub(mm):
+                return '%s ptr [%s]' % (mm.group(1), CONST[int(mm.group(2), 16)])
+            op = re.sub(r'(byte|word|dword|qword) ptr \[(0x1[0-9a-f]{7})\]', sub, op)
+            if m in ('faddp', 'fsubp', 'fmulp', 'fdivp', 'fsubrp', 'fdivrp') and ',' not in op:
+                op += ', st(0)'
+            if m in ('fadd', 'fsub', 'fmul', 'fdiv', 'fsubr', 'fdivr') and re.fullmatch(r'st\(\d\)', op):
+                op = 'st(0), ' + op
+            if m.startswith('rep'):
+                op = ''
+        text = (m + (' ' + op if op else '')).rstrip()
+        out.append('\t\t%s\t\t// 0x%08x' % (text, i.address - 0x10000000))
+    return '\n'.join(out), len(ins)
+
+
+def main(path):
+    parts = []
+    total = 0
+    for sym, lo, hi, rows in ROWS:
+        body, n = gen(lo, hi)
+        total += n
+        parts.append('// %s (0x%08x, %d B), %d instructions\n'
+                     '__declspec(naked) void %s()\n\t{\n\t__asm\n\t\t{\n%s\n\t\t}\n\t}\n' % (rows, lo, hi - lo, n, sym, body))
+    open(path, 'w').write('\n'.join(parts))
+    print(total, 'instructions in', len(ROWS), 'rows')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1])

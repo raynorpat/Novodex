@@ -58,6 +58,7 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "contact_sphere_box", "box_quad_depth",
                            "overlap_box_mesh", "contact_box_mesh",
                            "overlap_capsule_mesh", "contact_capsule_mesh",
+                           "overlap_sphere_mesh", "contact_sphere_mesh",
                            "box_clip.random", "box_clip.aimed",
                            "box_axis.random", "box_axis.aimed",
                            "box_shim", "contact_box_box",
@@ -91,7 +92,8 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
 
 # Direct coverage-only fixtures have no generated input digest or collision
 # oracle-output digest. Their dedicated coverage assertion pins the matrix run.
-COLLISION_COVERAGE_ONLY_NAMES = ("trigger_pair_duplicates", "contact_convex_mesh_entry")
+COLLISION_COVERAGE_ONLY_NAMES = ("trigger_pair_duplicates", "contact_convex_mesh_entry",
+                                 "contact_sphere_mesh_variants")
 
 # Fixed-input splits of a direct block, divergent under an enforced ceiling:
 # registered up to their oracle digest, with no input or coverage line of their

@@ -36572,13 +36572,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactSphereMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/940",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5823",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0004a820: the sphere/mesh overlap (matrix B [SPHERE][MESH]): selects first-contact mode in the pair context's SphereCollider (context + 0xb0), clears the temporal-coherence and primitive-test bits, and reports OPCODE's contact bit. Transcribed instruction for instruction into a naked row in Physics/src/ContactSphereMesh.cpp; evidence/phase3-sphere-mesh-listing-compare.py disassembles the built candidate and the oracle and finds the 80 + 682 + 440 instructions of the three rows equal, with the 10 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript lines 'collision name=overlap_sphere_mesh' and 'collision name=contact_sphere_mesh' are registered coverage assertions in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's entries and the candidate's over 396 cases (six harness meshes, three sphere poses, eleven mesh modes: ordinary, smooth, height fields over each axis, a posed mesh, no holder, no tables; two radii) and compares the overlap result, the contact stream and the pair-context flags: zero mismatches over 244 oracle contacts. A mutation aimed at this row is rejected (inverted the `je` after the contact-status test at 0x0004a920, mismatches=396). Two further mutations were rejected: the `je` after the collide result at 0x0004a917 (mismatches=153), the 0xffffffef flag mask at 0x0004a84c (318), and, through the context-flag comparison, the first-contact bit (0x0004a82f, 264) and the bit-1 mask (0x0004a840, 264). Not rejected and equivalent: the stores of 0 and 1.0f into the matrix's fourth column (0x0004a8c9, 0x0004a8e1), which the collider never reads. See evidence/phase3-sphere-mesh-contact.md.",
+      "notes": "Replaces the earlier C++ reconstruction, which matched the ordinary-face and one edge case and left the rest open.",
+      "implementation": "Physics/src/ContactSphereMesh.cpp",
+      "implementation_symbol": "?NxOverlapSphereMesh@@YA_NPBUNxCollisionShape@@0PAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxOverlapSphereMesh@@YA_NPBUNxCollisionShape@@0PAX@Z",
+        "address": "0x1001cca0",
+        "object": "ContactSphereMesh.obj"
+      }
     },
     {
       "id": "phys_fn_001926",
@@ -36608,13 +36616,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactSphereMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/753",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5825",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0004a940: the per-triangle row both contact paths share: nearest point on the triangle (phys_fn_001672), the contact normal (the face normal, the smooth vertex normals built on demand by phys_fn_002081, or the vertical for a height field) and the emitted contact (phys_fn_000875). Transcribed instruction for instruction into a naked row in Physics/src/ContactSphereMesh.cpp; evidence/phase3-sphere-mesh-listing-compare.py disassembles the built candidate and the oracle and finds the 80 + 682 + 440 instructions of the three rows equal, with the 10 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript lines 'collision name=overlap_sphere_mesh' and 'collision name=contact_sphere_mesh' are registered coverage assertions in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's entries and the candidate's over 396 cases (six harness meshes, three sphere poses, eleven mesh modes: ordinary, smooth, height fields over each axis, a posed mesh, no holder, no tables; two radii) and compares the overlap result, the contact stream and the pair-context flags: zero mismatches over 244 oracle contacts. A mutation aimed at this row is rejected (`fmul` to `fdiv` in the point-to-triangle setup at 0x0004a973, mismatches=1815). Ten further mutations spread over the row were rejected (mismatches between 36 and 810), including the smooth-normal flag test (`je` at 0x0004aea6, 1,265) and two terms of the rotation applied to the mesh pose (0x0004afc9, 0x0004b0b6) which only a posed mesh exposes. See evidence/phase3-sphere-mesh-contact.md.",
+      "notes": "Replaces the earlier C++ reconstruction, which matched the ordinary-face and one edge case and left the rest open.",
+      "implementation": "Physics/src/ContactSphereMesh.cpp",
+      "implementation_symbol": "?nxSphereMeshTriangle@@YAXXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxSphereMeshTriangle@@YAXXZ",
+        "address": "0x1001cdc0",
+        "object": "ContactSphereMesh.obj"
+      }
     },
     {
       "id": "phys_fn_001928",
@@ -36644,13 +36660,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/ContactSphereMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/942",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5849",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "IDA/capstone at RVA 0x0004b1f0: the sphere/mesh contact (matrix A [SPHERE][MESH]): sends a holder-less pair to the continuous-CD entry, clears the transient context bits, selects the height-field mode, asks the collider for the triangles the sphere touches in the mesh's frame, and hands each (or, for a height field, the one the sphere projects onto) to phys_fn_001927. Transcribed instruction for instruction into a naked row in Physics/src/ContactSphereMesh.cpp; evidence/phase3-sphere-mesh-listing-compare.py disassembles the built candidate and the oracle and finds the 80 + 682 + 440 instructions of the three rows equal, with the 10 call mappings as expected.",
+      "dynamic_proof": "driven and gated: the transcript lines 'collision name=overlap_sphere_mesh' and 'collision name=contact_sphere_mesh' are registered coverage assertions in tools/gate_targets.ps1 (NxPhysicsCollisionTests, Phases 3 and 7). The harness runs the oracle's entries and the candidate's over 396 cases (six harness meshes, three sphere poses, eleven mesh modes: ordinary, smooth, height fields over each axis, a posed mesh, no holder, no tables; two radii) and compares the overlap result, the contact stream and the pair-context flags: zero mismatches over 244 oracle contacts. A mutation aimed at this row is rejected (`fmul` to `fdiv` in the posed-triangle setup at 0x0004b57a, mismatches=287). More than a dozen further mutations were rejected, among them the height-field context bit (0x0004b27f, 249), the collide-status test (0x0004b394, 336), the height-field dispatch (0x0004b3d0, 110), the three flag masks (0x0004b252, 0x0004b261, 0x0004b284: 229, 486, 90) and the posed translation (0x0004b510, 67); the remap load for a table-less height field (0x0004b731) crashes. Not rejected: the 1.0f store into the fourth column (0x0004b32e, equivalent) and the continuous-CD branch (0x0004b20d), whose callee returns at once while the SDK's NX_CONTINUOUS_CD is zero. See evidence/phase3-sphere-mesh-contact.md.",
+      "notes": "Replaces the earlier C++ reconstruction, which matched the ordinary-face and one edge case and left the rest open.",
+      "implementation": "Physics/src/ContactSphereMesh.cpp",
+      "implementation_symbol": "?NxContactSphereMesh@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?NxContactSphereMesh@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z",
+        "address": "0x1001c690",
+        "object": "ContactSphereMesh.obj"
+      }
     },
     {
       "id": "phys_fn_001930",
