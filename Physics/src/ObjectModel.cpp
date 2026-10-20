@@ -7309,66 +7309,127 @@ bool MeshShape::nxMeshAccumulateMassCached(MassFrame* destination,
 	return true;
 	}
 
-// The product rows slot 7 calls (convex-mesh gap Task 2f): 001556 in
-// IceSupportMaps.cpp and 001472 in ConvexHull.cpp.
-struct IceSupportMap;
-class ConvexHull;
-namespace IceMaths { class Point; }
-NxU32 __fastcall nxSupportMapLookup(const IceSupportMap* map, NxU32 edx, const IceMaths::Point* dir);
-bool __fastcall nxHullComputePolygons(ConvexHull* hull);
-
-// phys_fn_001407 (0x00029610), MESH-table slot 7. The prepared-tree arm
-// chooses a plane from the support map at mesh+0xac and computes a ray/plane
-// distance. Since convex-mesh gap Task 2f the map's sample comes from the
-// product lookup 001556 (IceSupportMaps.cpp) and the hull's polygons are built
-// when absent by the product 001472 (ConvexHull.cpp), as the listing calls
-// them (0x000296a7, 0x000296c8).
-bool MeshShape::nxMeshSweepPrepared(float* out, const float* point) const
+// Listing transcription of phys_fn_001407 at 0x00029610 (MESH's slot 7): with a classifier at mesh+0xac it carries the
+// point into the mesh's frame, picks the polygon plane the support map names (001556), builds the hull's polygons first
+// if absent (001472) and writes the ray/plane distance (NxRayPlaneIntersect) from the hull's origin. Compare script:
+// docs/reconstruction/novodex-physics/evidence/phase3-mesh-raycast-listing-compare.py.
+extern "C" void nxMSCallSupportLookup();
+extern "C" void nxMSCallHullPolygons();
+extern "C" void nxMSCallRayPlane();
+#pragma comment(linker, "/alternatename:_nxMSCallSupportLookup=?nxSupportMapLookup@@YIIPBUIceSupportMap@@IPBVPoint@IceMaths@@@Z")
+#pragma comment(linker, "/alternatename:_nxMSCallHullPolygons=?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z")
+#pragma comment(linker, "/alternatename:_nxMSCallRayPlane=_NxRayPlaneIntersect")
+__declspec(naked) bool MeshShape::nxMeshSweepPrepared(float* out, const float* point) const
 	{
-	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
-	const unsigned char* classifier =
-		*reinterpret_cast<const unsigned char* const*>(mesh + 0xac);
-	if(classifier == nullptr)
+	__asm
 		{
-		memcpy(out, mesh + 0x68, 4);
-		return false;
+		sub esp, 0x30		// 0x00029610
+		push esi		// 0x00029613
+		mov esi, ecx		// 0x00029614
+		mov eax, dword ptr [esi + 0xe0]		// 0x00029616
+		push edi		// 0x0002961c
+		mov edi, dword ptr [eax + 0xac]		// 0x0002961d
+		test edi, edi		// 0x00029623
+		je L29737		// 0x00029625
+		mov eax, dword ptr [esp + 0x40]		// 0x0002962b
+		fld dword ptr [eax]		// 0x0002962f
+		push ebx		// 0x00029631
+		fsub dword ptr [esi + 0x30]		// 0x00029632
+		lea ecx, [esp + 0xc]		// 0x00029635
+		fld dword ptr [eax + 4]		// 0x00029639
+		push ecx		// 0x0002963c
+		fsub dword ptr [esi + 0x34]		// 0x0002963d
+		mov ecx, edi		// 0x00029640
+		fstp dword ptr [esp + 0x14]		// 0x00029642
+		fld dword ptr [eax + 8]		// 0x00029646
+		fsub dword ptr [esi + 0x38]		// 0x00029649
+		fst dword ptr [esp + 0x18]		// 0x0002964c
+		fmul dword ptr [esi + 0x24]		// 0x00029650
+		fld dword ptr [esp + 0x14]		// 0x00029653
+		fmul dword ptr [esi + 0x18]		// 0x00029657
+		faddp st(1), st(0)		// 0x0002965a
+		fld st(1)		// 0x0002965c
+		fmul dword ptr [esi + 0xc]		// 0x0002965e
+		faddp st(1), st(0)		// 0x00029661
+		fld dword ptr [esp + 0x18]		// 0x00029663
+		fmul dword ptr [esi + 0x28]		// 0x00029667
+		fld st(2)		// 0x0002966a
+		fmul dword ptr [esi + 0x10]		// 0x0002966c
+		faddp st(1), st(0)		// 0x0002966f
+		fld dword ptr [esp + 0x14]		// 0x00029671
+		fmul dword ptr [esi + 0x1c]		// 0x00029675
+		faddp st(1), st(0)		// 0x00029678
+		fld dword ptr [esp + 0x18]		// 0x0002967a
+		fmul dword ptr [esi + 0x2c]		// 0x0002967e
+		fxch st(3)		// 0x00029681
+		fmul dword ptr [esi + 0x14]		// 0x00029683
+		faddp st(3), st(0)		// 0x00029686
+		fld dword ptr [esp + 0x14]		// 0x00029688
+		fmul dword ptr [esi + 0x20]		// 0x0002968c
+		faddp st(3), st(0)		// 0x0002968f
+		fxch st(2)		// 0x00029691
+		fstp dword ptr [esp + 0x24]		// 0x00029693
+		mov eax, dword ptr [esp + 0x24]		// 0x00029697
+		mov dword ptr [esp + 0x18], eax		// 0x0002969b
+		fstp dword ptr [esp + 0x10]		// 0x0002969f
+		fstp dword ptr [esp + 0x14]		// 0x000296a3
+		call nxMSCallSupportLookup		// 0x000296a7
+		mov edx, dword ptr [edi + 0xc]		// 0x000296ac
+		movzx ebx, byte ptr [eax + edx]		// 0x000296af
+		mov eax, dword ptr [esi + 0xe0]		// 0x000296b3
+		mov edi, dword ptr [eax + 0xa0]		// 0x000296b9
+		mov eax, dword ptr [edi + 0x28]		// 0x000296bf
+		test eax, eax		// 0x000296c2
+		jne L296cd		// 0x000296c4
+		mov ecx, edi		// 0x000296c6
+		call nxMSCallHullPolygons		// 0x000296c8
+L296cd:
+		mov edx, dword ptr [edi + 0x28]		// 0x000296cd
+		mov eax, dword ptr [esi + 0xe0]		// 0x000296d0
+		mov eax, dword ptr [eax + 0xa0]		// 0x000296d6
+		add eax, 0x18		// 0x000296dc
+		lea ecx, [ebx + ebx*8]		// 0x000296df
+		lea ecx, [edx + ecx*4]		// 0x000296e2
+		mov edx, dword ptr [eax]		// 0x000296e5
+		mov dword ptr [esp + 0x24], edx		// 0x000296e7
+		mov edx, dword ptr [eax + 4]		// 0x000296eb
+		mov dword ptr [esp + 0x28], edx		// 0x000296ee
+		mov eax, dword ptr [eax + 8]		// 0x000296f2
+		mov edx, dword ptr [esp + 0xc]		// 0x000296f5
+		mov dword ptr [esp + 0x2c], eax		// 0x000296f9
+		mov eax, dword ptr [esp + 0x10]		// 0x000296fd
+		mov dword ptr [esp + 0x30], edx		// 0x00029701
+		mov edx, dword ptr [esp + 0x14]		// 0x00029705
+		mov dword ptr [esp + 0x34], eax		// 0x00029709
+		lea eax, [esp + 0x18]		// 0x0002970d
+		push eax		// 0x00029711
+		mov dword ptr [esp + 0x3c], edx		// 0x00029712
+		mov edx, dword ptr [esp + 0x44]		// 0x00029716
+		push edx		// 0x0002971a
+		add ecx, 0xc		// 0x0002971b
+		push ecx		// 0x0002971e
+		lea eax, [esp + 0x30]		// 0x0002971f
+		push eax		// 0x00029723
+		call nxMSCallRayPlane		// 0x00029724
+		add esp, 0x10		// 0x00029729
+		pop ebx		// 0x0002972c
+		pop edi		// 0x0002972d
+		mov al, 1		// 0x0002972e
+		pop esi		// 0x00029730
+		add esp, 0x30		// 0x00029731
+		ret 8		// 0x00029734
+L29737:
+		mov ecx, dword ptr [eax + 0x68]		// 0x00029737
+		mov edx, dword ptr [esp + 0x3c]		// 0x0002973a
+		pop edi		// 0x0002973e
+		mov dword ptr [edx], ecx		// 0x0002973f
+		xor al, al		// 0x00029741
+		pop esi		// 0x00029743
+		add esp, 0x30		// 0x00029744
+		ret 8		// 0x00029747
 		}
-	const float* r = reinterpret_cast<const float*>(mBase.mPose0C.mRotation);
-	const float* t = mBase.mPose0C.mTranslation;
-	const double dx = static_cast<double>(point[0]) - t[0];
-	const float dy = static_cast<float>(static_cast<double>(point[1]) - t[1]);
-	const float dz = static_cast<float>(static_cast<double>(point[2]) - t[2]);
-	float direction[3];
-	direction[0] = static_cast<float>(
-		static_cast<double>(dz) * r[6] +
-		static_cast<double>(dy) * r[3] + dx * r[0]);
-	direction[1] = static_cast<float>(
-		static_cast<double>(dz) * r[7] + dx * r[1] +
-		static_cast<double>(dy) * r[4]);
-	direction[2] = static_cast<float>(
-		static_cast<double>(dz) * r[8] + dx * r[2] +
-		static_cast<double>(dy) * r[5]);
-	const NxU32 index = nxSupportMapLookup(
-		reinterpret_cast<const IceSupportMap*>(classifier), 0,
-		reinterpret_cast<const IceMaths::Point*>(direction));
-	const unsigned char* map =
-		*reinterpret_cast<const unsigned char* const*>(classifier + 0x0c);
-	const unsigned planeIndex = map[index];
-	ConvexHull* hull = *reinterpret_cast<ConvexHull* const*>(mesh + 0xa0);
-	if(*reinterpret_cast<void* const*>(reinterpret_cast<unsigned char*>(hull) + 0x28) == nullptr)
-		nxHullComputePolygons(hull);
-	const unsigned char* tree = reinterpret_cast<const unsigned char*>(hull);
-	const unsigned char* planes =
-		*reinterpret_cast<const unsigned char* const*>(tree + 0x28);
-	const NxPlane& plane = *reinterpret_cast<const NxPlane*>(
-		planes + planeIndex * 0x24 + 0x0c);
-	NxRay ray;
-	memcpy(&ray.orig, tree + 0x18, 12);
-	ray.dir.set(direction[0], direction[1], direction[2]);
-	NxVec3 impact;
-	NxRayPlaneIntersect(ray, plane, *out, impact);
-	return true;
 	}
+
 
 // ---------------------------------------------------------------------------
 // The BASE vtable's stub rows. See ObjectModel.h for the slot map.

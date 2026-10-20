@@ -232529,13 +232529,13 @@
     }
   ],
   "source": {
-    "inventory_sha256": "4de8812c5923a2c33d989dfd1dd616e5aaeb86a57f025f2c136ec71f86d4370b",
+    "inventory_sha256": "402b6d7f1f3b01ea5c5d34e097ab4ffb303d719097e8b8a62ee09528b8e8617c",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "e0b4d1bf4df8a25263fa53dc601f65ca9452f3685f6903805d9c3dacfbe6d20a",
-      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "a9197961201db60545da11a90e5ae281edadb1e7a23a982509438a159c318bbd",
+      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "b16f851f98f03fd006f6f97e7ca1379909b6c173f8fdd4e78c0466c761123012",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "d5d8cc4ed49626438d383e35fc57f17bd972a047aed9b9c78a2647bd89e51a54",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "761038da93887e034f5d6531b57dfb586e1dd8f2881bc28896b7b651aa7af0ef",

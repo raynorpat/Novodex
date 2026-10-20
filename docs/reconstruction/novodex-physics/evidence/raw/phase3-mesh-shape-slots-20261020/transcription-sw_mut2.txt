@@ -1,0 +1,2 @@
+0x296c4 je L296cd exit 3221226356 slot7_failures 0
+0x29625 jne L29737 exit 3221225477 slot7_failures 0

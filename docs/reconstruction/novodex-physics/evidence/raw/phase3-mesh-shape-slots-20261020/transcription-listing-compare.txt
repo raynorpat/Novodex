@@ -1,0 +1,13 @@
+?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z ?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z instructions=306 differing=0
+?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z ?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z instructions=102 differing=0
+ALL EQUAL
+  call ?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z -> oracle 0x100b4d70 ; candidate ??0SdkContainer@@QAE@XZ
+  call ?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z -> oracle 0x100b4f90 ; candidate ?setExternalBuffer@SdkContainer@@QAEXIPAI@Z
+  call ?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z -> oracle 0x100ba6f0 ; candidate ?Collide@RayCollider@Opcode@@QAE_NABVRay@IceMaths@@ABVModel@2@PBVMatrix4x4@4@PAI@Z
+  call ?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  call ?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z -> oracle 0x10052240 ; candidate ?nxMeshComputeVertexNormals@@YAXXZ
+  call ?NxShapeRaycastMesh@@YIPBUNxCollisionShape@@PBU1@PAXPBVNxRay@@MIIPAUNxRaycastHit@@@Z -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  call ?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z -> oracle 0x1002e220 ; candidate ?nxSupportMapLookup@@YIIPBUIceSupportMap@@IPBVPoint@IceMaths@@@Z
+  call ?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z -> oracle 0x1002b6f0 ; candidate ?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z
+  call ?nxMeshSweepPrepared@MeshShape@@QBE_NPAMPBM@Z -> oracle 0x10036bb0 ; candidate _NxRayPlaneIntersect
+MAPPINGS checked=9 unexpected=0

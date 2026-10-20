@@ -1,0 +1,8 @@
+0x2963d fsub dword ptr [esi + 0x30] exit 1 slot7_failures 20
+0x296af movzx ebx, byte ptr [eax + edx + 1] exit 1 slot7_failures 20
+0x296ac mov edx, dword ptr [edi + 0x10] exit 3221225477 slot7_failures 0
+0x29737 mov ecx, dword ptr [eax + 0x6c] exit 1 slot7_failures 4
+0x296c4 je 0x100296cd BUILD FAIL ['D:\\github\\Novodex\\Physics\\src\\ObjectModel.cpp(7383,3): error C2415: improper operand type [D:\\github\\Novodex\\build\\NxPhysicsShapeVtableTests.vcxproj]']
+0x2971b add ecx, 0x10 exit 1 slot7_failures 20
+0x29625 jne 0x10029737 BUILD FAIL ['D:\\github\\Novodex\\Physics\\src\\ObjectModel.cpp(7333,3): error C2415: improper operand type [D:\\github\\Novodex\\build\\NxPhysicsShapeVtableTests.vcxproj]']
+0x2966a fmul dword ptr [esi + 0x14] exit 1 slot7_failures 20

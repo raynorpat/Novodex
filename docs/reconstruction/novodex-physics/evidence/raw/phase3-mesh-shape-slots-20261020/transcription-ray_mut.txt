@@ -1,0 +1,11 @@
+0x2927b add ecx, 0x454 exit 1 mismatches 331
+0x29340 test dword ptr [esp + 0x34], edi exit 3221225477 mismatches ?
+0x293c1 fadd dword ptr [esp + 0x14] exit 1 mismatches 275
+0x2948e jne 0x1002949b BUILD FAIL ['D:\\github\\Novodex\\Physics\\src\\ShapeRaycast.cpp(386,3): error C2415: improper operand type [D:\\github\\Novodex\\build\\NxPhysicsCollisionTests.vcxproj]']
+0x294ba mov dword ptr [edi + 0x2c], 0x3a exit 1 mismatches 331
+0x294ac test byte ptr [esp + 0x9c], 8 exit 1 mismatches 165
+0x2945b fadd dword ptr [esi + 0x34] exit 1 mismatches 163
+0x29298 mov eax, dword ptr [edx + 0x74] exit 1 mismatches 331
+0x29365 je 0x1002937c BUILD FAIL ['D:\\github\\Novodex\\Physics\\src\\ShapeRaycast.cpp(284,3): error C2415: improper operand type [D:\\github\\Novodex\\build\\NxPhysicsCollisionTests.vcxproj]']
+0x29496 mov eax, dword ptr [eax + edx*4 + 4] exit 1 mismatches 158
+0x2933e jne 0x10029367 BUILD FAIL ['D:\\github\\Novodex\\Physics\\src\\ShapeRaycast.cpp(273,3): error C2415: improper operand type [D:\\github\\Novodex\\build\\NxPhysicsCollisionTests.vcxproj]']
