@@ -9,7 +9,8 @@ static const int gGetParameterEnumErrorLine = 306;
 static NxReal gParameterDefault[NX_PARAMS_NUM_VALUES];
 static NxReal gParameterMin[NX_PARAMS_NUM_VALUES];
 static NxReal gParameterMax[NX_PARAMS_NUM_VALUES];
-static NxReal gParameter[NX_PARAMS_NUM_VALUES];
+// .data 0x10123b18; external so the naked listing rows read its elements by name.
+NxReal gParameter[NX_PARAMS_NUM_VALUES];
 
 PhysicsSDK *PhysicsSDK::instance = 0;
 

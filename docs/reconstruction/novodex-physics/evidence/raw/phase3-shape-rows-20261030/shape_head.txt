@@ -1,0 +1,34 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// ShapeRows.cpp: the internal shape's own rows that the public shape handles and the scene reach (Shape.cpp in the
+// oracle's source tree): phys_fn_001303 to 001345 less those reconstructed in ObjectModel.cpp. Naked listing
+// transcriptions; the SDK parameter array (.data 0x10123b18, gParameter), the API reentry flag and its message pointer
+// (.data 0x10123c10, 0x10122050) are the candidate's own variables by name. Compare script:
+// docs/reconstruction/novodex-physics/evidence/phase3-shape-rows-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxShpCallNxBaseDtor();
+extern "C" void nxShpCallRow000738();
+extern "C" void nxShpCallUpdateWorldAABB();
+extern "C" void* nxShpImpImperrorFoundationSDKNxFoundationSANW4Nx;
+extern "C" void* nxShpImpImpinstanceFoundationSDKNxFoundation0PAV;
+extern "C" void* nxShpImpImpnxFoundationSDKAllocator3PAVNxUserAll;
+#pragma comment(linker, "/alternatename:_nxShpCallNxBaseDtor=?nxBaseDtor@ShapeBase@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxShpCallRow000738=?row000738@Row000738Fixture@@QAEPAXXZ")
+#pragma comment(linker, "/alternatename:_nxShpCallUpdateWorldAABB=?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z")
+#pragma comment(linker, "/alternatename:_nxShpImpImperrorFoundationSDKNxFoundationSANW4Nx=__imp_?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ")
+#pragma comment(linker, "/alternatename:_nxShpImpImpinstanceFoundationSDKNxFoundation0PAV=__imp_?instance@FoundationSDK@NxFoundation@@0PAV12@A")
+#pragma comment(linker, "/alternatename:_nxShpImpImpnxFoundationSDKAllocator3PAVNxUserAll=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
+extern NxReal gParameter[];
+extern "C" unsigned gNxApiReentry;
+extern "C" const char* gNxApiReentryMessage;
+
+@@PROTOS@@
+
+@@BODY@@

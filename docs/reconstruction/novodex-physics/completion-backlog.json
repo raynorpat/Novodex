@@ -7,8 +7,8 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 2168,
-    "source_correspondence_only_rows": 327,
+    "mapped_code_rows": 2186,
+    "source_correspondence_only_rows": 321,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
     "artifact_bytes": 116213,
@@ -73,8 +73,8 @@
         "deferred_rows": 224,
         "deferred_reasons": {
           "blocked_on_later_phase": 3,
-          "not_reconstructed_in_phase": 122,
-          "reconstructed_not_falsified": 99
+          "not_reconstructed_in_phase": 104,
+          "reconstructed_not_falsified": 117
         }
       },
       "4": {
@@ -130,12 +130,12 @@
         "rows": 392,
         "bytes": 142625,
         "open_rows": 392,
-        "rows_without_implementation_mapping": 147,
+        "rows_without_implementation_mapping": 129,
         "rows_with_unresolved_indirect_calls": 153,
         "by_state": {
-          "discovered": 49,
+          "discovered": 31,
           "dynamically_gated": 168,
-          "reconstructed": 175
+          "reconstructed": 193
         }
       },
       "4": {
@@ -40164,7 +40164,7 @@
           {
             "id": "phys_fn_001309",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -40574,7 +40574,7 @@
           {
             "id": "phys_fn_001305",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -41962,7 +41962,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -42343,7 +42343,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -42827,7 +42827,7 @@
           {
             "id": "phys_fn_001305",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -43767,7 +43767,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -44146,7 +44146,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -44327,7 +44327,7 @@
           {
             "id": "phys_fn_001331",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -44427,7 +44427,7 @@
           {
             "id": "phys_fn_001333",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -44527,7 +44527,7 @@
           {
             "id": "phys_fn_001335",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -44627,7 +44627,7 @@
           {
             "id": "phys_fn_001337",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -44727,7 +44727,7 @@
           {
             "id": "phys_fn_001307",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -44827,7 +44827,7 @@
           {
             "id": "phys_fn_001339",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -44927,7 +44927,7 @@
           {
             "id": "phys_fn_001341",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -45313,7 +45313,7 @@
           {
             "id": "phys_fn_001321",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002362",
@@ -46100,7 +46100,7 @@
           {
             "id": "phys_fn_001331",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -46288,7 +46288,7 @@
           {
             "id": "phys_fn_001333",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -46388,7 +46388,7 @@
           {
             "id": "phys_fn_001335",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -46488,7 +46488,7 @@
           {
             "id": "phys_fn_001337",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -46588,7 +46588,7 @@
           {
             "id": "phys_fn_001307",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -46688,7 +46688,7 @@
           {
             "id": "phys_fn_001339",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -46788,7 +46788,7 @@
           {
             "id": "phys_fn_001341",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -46880,7 +46880,7 @@
           {
             "id": "phys_fn_001311",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002362",
@@ -46968,7 +46968,7 @@
           {
             "id": "phys_fn_001313",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002362",
@@ -48325,7 +48325,7 @@
           {
             "id": "phys_fn_001331",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -48417,7 +48417,7 @@
           {
             "id": "phys_fn_001333",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -48509,7 +48509,7 @@
           {
             "id": "phys_fn_001335",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -48601,7 +48601,7 @@
           {
             "id": "phys_fn_001337",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -48693,7 +48693,7 @@
           {
             "id": "phys_fn_001307",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -48785,7 +48785,7 @@
           {
             "id": "phys_fn_001339",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -48877,7 +48877,7 @@
           {
             "id": "phys_fn_001341",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -49239,7 +49239,7 @@
           {
             "id": "phys_fn_001317",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002362",
@@ -49327,7 +49327,7 @@
           {
             "id": "phys_fn_001319",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002362",
@@ -49916,7 +49916,7 @@
           {
             "id": "phys_fn_001331",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -50014,7 +50014,7 @@
           {
             "id": "phys_fn_001333",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -50114,7 +50114,7 @@
           {
             "id": "phys_fn_001335",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -50214,7 +50214,7 @@
           {
             "id": "phys_fn_001337",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -50314,7 +50314,7 @@
           {
             "id": "phys_fn_001307",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -50414,7 +50414,7 @@
           {
             "id": "phys_fn_001339",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -50514,7 +50514,7 @@
           {
             "id": "phys_fn_001341",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -51901,7 +51901,7 @@
           {
             "id": "phys_fn_001331",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -51993,7 +51993,7 @@
           {
             "id": "phys_fn_001333",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -52085,7 +52085,7 @@
           {
             "id": "phys_fn_001335",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -52177,7 +52177,7 @@
           {
             "id": "phys_fn_001337",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -52533,7 +52533,7 @@
           {
             "id": "phys_fn_001307",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -52625,7 +52625,7 @@
           {
             "id": "phys_fn_001339",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -52717,7 +52717,7 @@
           {
             "id": "phys_fn_001341",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002364",
@@ -52807,7 +52807,7 @@
           {
             "id": "phys_fn_001309",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002362",
@@ -53695,7 +53695,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -53911,7 +53911,7 @@
           {
             "id": "phys_fn_001305",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -55411,17 +55411,23 @@
       "size": 98,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001303",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1303@@YIIPAX0@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1303@@YIIPAX0@Z",
+          "address": "0x1007c830",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -55466,13 +55472,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -55480,8 +55486,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001303",
         "rva": "0x000258f0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -55492,17 +55498,23 @@
       "size": 685,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001305",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1305@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1305@@YIIPAX0I@Z",
+          "address": "0x1007c8a0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -55546,13 +55558,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -55560,8 +55572,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001305",
         "rva": "0x00025960",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -55572,17 +55584,23 @@
       "size": 846,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001307",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "Physics/src/Shape.cpp",
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1307@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1307@@YIIPAX0I@Z",
+          "address": "0x1007cb50",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -55616,13 +55634,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -55630,8 +55648,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001307",
         "rva": "0x00025c10",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -55642,17 +55660,23 @@
       "size": 797,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001309",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1309@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1309@@YIIPAX0I@Z",
+          "address": "0x1007cea0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -55680,13 +55704,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -55694,8 +55718,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001309",
         "rva": "0x00025f60",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -55706,17 +55730,23 @@
       "size": 424,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001311",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1311@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1311@@YIIPAX0I@Z",
+          "address": "0x1007d1c0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -55744,13 +55774,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -55758,8 +55788,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001311",
         "rva": "0x00026280",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -55770,17 +55800,23 @@
       "size": 617,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001313",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1313@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1313@@YIIPAX0I@Z",
+          "address": "0x1007d370",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -55808,13 +55844,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -55822,8 +55858,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001313",
         "rva": "0x00026430",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -55914,17 +55950,23 @@
       "size": 157,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001317",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1317@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1317@@YIIPAX0I@Z",
+          "address": "0x1007d5e0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -55943,7 +55985,7 @@
           {
             "id": "phys_fn_001309",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -55962,13 +56004,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -55976,8 +56018,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001317",
         "rva": "0x00026ad0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -55988,17 +56030,23 @@
       "size": 41,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001319",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1319@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1319@@YIIPAX0I@Z",
+          "address": "0x1007d680",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56017,7 +56065,7 @@
           {
             "id": "phys_fn_001311",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56036,13 +56084,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56050,8 +56098,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001319",
         "rva": "0x00026b70",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56062,17 +56110,23 @@
       "size": 40,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001321",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1321@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1321@@YIIPAX0I@Z",
+          "address": "0x1007d6b0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56091,7 +56145,7 @@
           {
             "id": "phys_fn_001313",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56110,13 +56164,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56124,8 +56178,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001321",
         "rva": "0x00026ba0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56256,17 +56310,23 @@
       "size": 141,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001325",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1325@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1325@@YIIPAX0I@Z",
+          "address": "0x1007d6e0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56298,13 +56358,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56312,8 +56372,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001325",
         "rva": "0x00026c90",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56324,17 +56384,23 @@
       "size": 99,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001327",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1325@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1325@@YIIPAX0I@Z",
+          "address": "0x1007d6e0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56366,13 +56432,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56380,8 +56446,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001327",
         "rva": "0x00026d20",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56423,7 +56489,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56470,17 +56536,23 @@
       "size": 53,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001331",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1331@@YIIPAX0II@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1331@@YIIPAX0II@Z",
+          "address": "0x1007d7e0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56499,7 +56571,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56518,13 +56590,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56532,8 +56604,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001331",
         "rva": "0x00026df0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56544,17 +56616,23 @@
       "size": 139,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001333",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "Physics/src/Shape.cpp",
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1333@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1333@@YIIPAX0I@Z",
+          "address": "0x1007d820",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56576,7 +56654,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56598,13 +56676,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56612,8 +56690,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001333",
         "rva": "0x00026e30",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56624,17 +56702,23 @@
       "size": 129,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001335",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "Physics/src/Shape.cpp",
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1335@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1335@@YIIPAX0I@Z",
+          "address": "0x1007d8b0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56656,7 +56740,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56678,13 +56762,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56692,8 +56776,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001335",
         "rva": "0x00026ec0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56704,17 +56788,23 @@
       "size": 117,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001337",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "Physics/src/Shape.cpp",
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1337@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1337@@YIIPAX0I@Z",
+          "address": "0x1007d940",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56736,7 +56826,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56758,13 +56848,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56772,8 +56862,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001337",
         "rva": "0x00026f50",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56784,17 +56874,23 @@
       "size": 905,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001339",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "Physics/src/Shape.cpp",
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1339@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1339@@YIIPAX0I@Z",
+          "address": "0x1007d9c0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56816,7 +56912,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56838,13 +56934,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56852,8 +56948,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001339",
         "rva": "0x00026fd0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -56864,17 +56960,23 @@
       "size": 903,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001341",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": "Physics/src/Shape.cpp",
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1341@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
         "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1341@@YIIPAX0I@Z",
+          "address": "0x1007dd50",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -56896,7 +56998,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -56918,13 +57020,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -56932,8 +57034,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001341",
         "rva": "0x00027360",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -57010,17 +57112,23 @@
       "size": 34,
       "phase": 3,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_001345",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/ShapeRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxShp1345@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/ShapeRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxShp1345@@YIIPAX0I@Z",
+          "address": "0x1007e0e0",
+          "object": "ShapeRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -57062,13 +57170,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 3,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -57076,8 +57184,8 @@
         "owner_phase": 3,
         "row_id": "phys_fn_001345",
         "rva": "0x00027710",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -57499,7 +57607,7 @@
           {
             "id": "phys_fn_001325",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -57906,7 +58014,7 @@
           {
             "id": "phys_fn_001305",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -58763,7 +58871,7 @@
           {
             "id": "phys_fn_001305",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_001472",
@@ -82327,7 +82435,7 @@
           {
             "id": "phys_fn_001303",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -232984,13 +233092,13 @@
     }
   ],
   "source": {
-    "inventory_sha256": "77aabe8699d5e7013ab87e70020b7502e2a2d1ec3bbf3f20ce1247b2c2b7b1f9",
+    "inventory_sha256": "bb59cf16bd3ae0369433a62ce66403ea1484262139189c6477eba8ffe9f1fb8e",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "e0b4d1bf4df8a25263fa53dc601f65ca9452f3685f6903805d9c3dacfbe6d20a",
-      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "d66709655a59d83b524bce28a6a211e9cd2cca46db0f02c8d01f60e35e753e69",
+      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "ee9aafa5541aba1961bb01998476fc64f2a09470ac7c2b3e469b5fc455ab12b8",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "2dc3507870ac28c48e63f47fb1b4b6e3d1cc8eccb6a4a1240c59968764d616e1",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "761038da93887e034f5d6531b57dfb586e1dd8f2881bc28896b7b651aa7af0ef",

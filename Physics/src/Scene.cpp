@@ -818,7 +818,10 @@ NxSceneInternal::NxSceneInternal()
 	}
 
 static void* __fastcall nxFluidManagerDeletingDestructor(void* manager, void*, unsigned char deleteObject);
-static bool gNxApiReentry = false;
+// .data 0x10123c10 and 0x10122050: the API reentry flag (a dword; the listings store 1 and 0 to it) and the
+// pointer to its message. External so the naked listing rows reach them by name.
+extern "C" unsigned gNxApiReentry = 0;
+extern "C" const char* gNxApiReentryMessage = "Reentry check: You may not call this API method from a callback!";
 static void nxFluidInitializeParticles(void* fluid, const NxParticleData& data);
 
 typedef void* (__cdecl *NxFluidManagerCreateCallback)();
@@ -3683,49 +3686,12 @@ static void nxSceneAuxUnregisterShape(NxSceneInternal* scene, void* shapePointer
 	*reinterpret_cast<unsigned**>(aux + 0x14) = activeEnd - 1;
 	}
 
-// phys_fn_10026c90 follows shape+4 -> outer body+4 -> Scene+0x48. The
-// registration path normally leaves flags[id] at all ones; a cleared entry is
-// queued before its requested dirty bits are set.
+// phys_fn_001325 (0x00026c90): mark the internal shape for the Scene's deferred update. The naked listing
+// transcription is in ShapeRows.cpp (nxShp1325, __thiscall on the shape, the dirty bits as its argument).
+unsigned __fastcall nxShp1325(void* self, void* edxUnused, unsigned a0);
 void nxSceneMarkShapeDirty(void* shapePointer, unsigned flag)
 	{
-	unsigned char* shape = static_cast<unsigned char*>(shapePointer);
-	if(!shape) return;
-	unsigned char* body = *reinterpret_cast<unsigned char**>(shape + 4);
-	if(!body) return;
-	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
-	if(!scene) return;
-	unsigned char* aux = scene->at<unsigned char*>(0x48);
-	if(!aux) return;
-	unsigned* flags = *reinterpret_cast<unsigned**>(aux);
-	const unsigned id = *reinterpret_cast<unsigned*>(shape + 0xd4);
-	if(!flags || id >= static_cast<unsigned>(
-		*reinterpret_cast<unsigned**>(aux + 8) - flags)) return;
-	if(!flags[id])
-		{
-		unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x10);
-		unsigned* end = *reinterpret_cast<unsigned**>(aux + 0x14);
-		unsigned* capacity = *reinterpret_cast<unsigned**>(aux + 0x18);
-		if(!active || !end || !capacity) return;
-		if(end == capacity)
-			{
-			const unsigned count = static_cast<unsigned>(end - active);
-			const unsigned next = count * 2 + 2;
-			unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
-				next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
-			if(!grown) return;
-			memcpy(grown, active, count * sizeof(unsigned));
-			nxFoundationSDKAllocator->free(active);
-			active = grown;
-			end = grown + count;
-			*reinterpret_cast<unsigned**>(aux + 0x10) = active;
-			*reinterpret_cast<unsigned**>(aux + 0x18) = grown + next;
-			}
-		const unsigned index = static_cast<unsigned>(end - active);
-		active[index] = id;
-		*reinterpret_cast<unsigned**>(aux + 0x14) = end + 1;
-		(*reinterpret_cast<unsigned**>(aux + 0x20))[id] = index;
-		}
-	flags[id] |= flag;
+	nxShp1325(shapePointer, 0, flag);
 	}
 
 void nxSceneAuxUnregisterRecord(void* auxPointer, void* recordPointer)
@@ -4214,7 +4180,7 @@ void nxActorDestroy(unsigned char* body);
 // releaseShape (000036/000024) test, set and clear it.
 extern "C" bool nxApiReentryIsActive(void)
 	{
-	return gNxApiReentry;
+	return gNxApiReentry != 0;
 	}
 
 extern "C" void nxSetApiReentryActive(bool active)

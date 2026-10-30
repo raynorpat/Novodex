@@ -308,6 +308,21 @@ static void __fastcall nxNpActorDeletingDtorThunk(void* member, void*, unsigned 
 // instead of returning a plausible but false result.
 static void __fastcall nxUnsupportedBoxMethod(void*, void*) { abort(); }
 
+// The internal shape's rows, naked listing transcriptions in ShapeRows.cpp.
+unsigned __fastcall nxShp1307(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1309(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1311(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1313(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1317(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1319(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1321(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1331(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxShp1333(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1335(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1337(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1339(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1341(void* self, void* edxUnused, unsigned a0);
+
 static unsigned char* nxBoxHandleInternal(void* self)
 	{
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(
@@ -358,74 +373,67 @@ static void __fastcall nxShapeHandleGetLocalOrientation(void* self, void*,
 		sizeof(orientation));
 	}
 
+// phys_fn_001335 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleSetLocalPosition(void* self, void*,
 	const NxVec3& position)
 	{
-	unsigned char* shape = nxBoxHandleInternal(self);
-	memcpy(shape + 0x90, &position, sizeof(position));
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	nxShp1335(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&position));
 	}
 
+// phys_fn_001337 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleSetLocalOrientation(void* self, void*,
 	const NxMat33& orientation)
 	{
-	unsigned char* shape = nxBoxHandleInternal(self);
-	memcpy(shape + 0x6c, &orientation, sizeof(orientation));
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	nxShp1337(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&orientation));
 	}
 
+// phys_fn_001333 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleSetLocalPose(void* self, void*,
 	const NxMat34& pose)
 	{
-	unsigned char* shape = nxBoxHandleInternal(self);
-	memcpy(shape + 0x6c, &pose, sizeof(pose));
-	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	nxShp1333(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&pose));
 	}
 
+// phys_fn_001339 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleSetGlobalPosition(void* self, void*,
 	const NxVec3& position)
 	{
-	NxActor* actor = nxBoxHandleGetActor(self, 0);
-	NxVec3 local = actor->getGlobalPose() % position;
-	nxShapeHandleSetLocalPosition(self, 0, local);
+	nxShp1339(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&position));
 	}
 
+// phys_fn_001341 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleSetGlobalOrientation(void* self, void*,
 	const NxMat33& orientation)
 	{
-	NxActor* actor = nxBoxHandleGetActor(self, 0);
-	NxMat33 local;
-	local.multiplyTransposeLeft(actor->getGlobalOrientation(), orientation);
-	nxShapeHandleSetLocalOrientation(self, 0, local);
+	nxShp1341(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&orientation));
 	}
 
+// phys_fn_001307 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleSetGlobalPose(void* self, void*,
 	const NxMat34& pose)
 	{
-	NxActor* actor = nxBoxHandleGetActor(self, 0);
-	NxMat34 local;
-	local.multiplyInverseRTLeft(actor->getGlobalPose(), pose);
-	nxShapeHandleSetLocalPose(self, 0, local);
+	nxShp1307(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&pose));
 	}
 
+// phys_fn_001309 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleGetGlobalPose(void* self, void*,
 	NxMat34& pose)
 	{
-	static_cast<ShapeBase*>(static_cast<void*>(nxBoxHandleInternal(self)))->nxShapeGlobalPose(
-		reinterpret_cast<float*>(&pose));
+	nxShp1309(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&pose));
 	}
 
+// phys_fn_001311 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleGetGlobalPosition(void* self, void*,
 	NxVec3& position)
 	{
-	memcpy(&position, nxBoxHandleInternal(self) + 0x30, sizeof(position));
+	nxShp1311(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&position));
 	}
 
+// phys_fn_001313 on the internal shape (ShapeRows.cpp).
 static void __fastcall nxShapeHandleGetGlobalOrientation(void* self, void*,
 	NxMat33& orientation)
 	{
-	memcpy(&orientation, nxBoxHandleInternal(self) + 0x0c,
-		sizeof(orientation));
+	nxShp1313(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(&orientation));
 	}
 
 static NxMat34* __fastcall nxShapeHandleGetLocalPoseVal(void* self, void*,
@@ -449,25 +457,25 @@ static NxMat33* __fastcall nxShapeHandleGetLocalOrientationVal(void* self, void*
 	return orientation;
 	}
 
+// phys_fn_001317 on the internal shape (ShapeRows.cpp).
 static NxMat34* __fastcall nxShapeHandleGetGlobalPoseVal(void* self, void*,
 	NxMat34* pose)
 	{
-	nxShapeHandleGetGlobalPose(self, 0, *pose);
-	return pose;
+	return reinterpret_cast<NxMat34*>(nxShp1317(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(pose)));
 	}
 
+// phys_fn_001319 on the internal shape (ShapeRows.cpp).
 static NxVec3* __fastcall nxShapeHandleGetGlobalPositionVal(void* self, void*,
 	NxVec3* position)
 	{
-	nxShapeHandleGetGlobalPosition(self, 0, *position);
-	return position;
+	return reinterpret_cast<NxVec3*>(nxShp1319(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(position)));
 	}
 
+// phys_fn_001321 on the internal shape (ShapeRows.cpp).
 static NxMat33* __fastcall nxShapeHandleGetGlobalOrientationVal(void* self, void*,
 	NxMat33* orientation)
 	{
-	nxShapeHandleGetGlobalOrientation(self, 0, *orientation);
-	return orientation;
+	return reinterpret_cast<NxMat33*>(nxShp1321(nxBoxHandleInternal(self), 0, reinterpret_cast<unsigned>(orientation)));
 	}
 
 static NxCollisionGroup __fastcall nxBoxHandleGetGroup(void* self, void*)
@@ -605,14 +613,8 @@ static void __fastcall nxBoxHandleSetFlag(void* self, void*, NxShapeFlag flag,
 	void* writeLock = *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(self) + 0x10);
 	if(!nxBoxHandleWriteTry(writeLock)) return;
-	unsigned char* shape = nxBoxHandleInternal(self);
-	NxU16& flags = *reinterpret_cast<NxU16*>(shape + 0xde);
-	const NxU16 mask = static_cast<NxU16>(flag);
-	if(value)
-		flags |= mask;
-	else
-		flags &= static_cast<NxU16>(~mask);
-	nxSceneMarkShapeDirty(shape, 0x10);
+	// phys_fn_001331 on the internal shape (ShapeRows.cpp).
+	nxShp1331(nxBoxHandleInternal(self), 0, static_cast<unsigned>(flag), value ? 1u : 0u);
 	nxNpSceneGuardLeave(writeLock);
 	}
 
@@ -796,14 +798,8 @@ static void __fastcall nxCapsuleHandleSetFlag(void* self, void*,
 	void* writeLock = *reinterpret_cast<void**>(
 		static_cast<unsigned char*>(self) + 0x10);
 	if(!nxCapsuleHandleWriteTry(writeLock, 0x10)) return;
-	unsigned char* shape = nxBoxHandleInternal(self);
-	NxU16& flags = *reinterpret_cast<NxU16*>(shape + 0xde);
-	const NxU16 mask = static_cast<NxU16>(flag);
-	if(value)
-		flags |= mask;
-	else
-		flags &= static_cast<NxU16>(~mask);
-	nxSceneMarkShapeDirty(shape, 0x10);
+	// phys_fn_001331 on the internal shape (ShapeRows.cpp).
+	nxShp1331(nxBoxHandleInternal(self), 0, static_cast<unsigned>(flag), value ? 1u : 0u);
 	nxNpSceneGuardLeave(writeLock);
 	}
 

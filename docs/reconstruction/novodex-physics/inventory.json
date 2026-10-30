@@ -25135,13 +25135,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/529",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3429",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000258f0: a CCD-path refresh: calls 000738 on the owner and, when it returns a record, Prunable::UpdateWorldAABB on the shape's prunable. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1303@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1303@@YIIPAX0@Z",
+        "address": "0x1007c830",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001304",
@@ -25171,13 +25179,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/530",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3434",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00025960: the shared debug render: gated on SDK parameter elements 44 and 48 (gParameter +0xb0 and +0xc0) against a constant, scaled by element 13, drawing through the renderer's slots +0x20, +0x28 and +0x38. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1305@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1305@@YIIPAX0I@Z",
+        "address": "0x1007c8a0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001306",
@@ -25207,13 +25223,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Shape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/531",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3437",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00025c10: setGlobalPose: refused under the API reentry flag (Foundation error), else made local to the owner, stored, then the owner update (slot 6) and 001325. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1307@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1307@@YIIPAX0I@Z",
+        "address": "0x1007cb50",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001308",
@@ -25243,13 +25267,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/532",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3442",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00025f60: getGlobalPose into a 12-word out: the owner body's quaternion and position (or the owner's cached pose) composed with the local pose. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": "Scene-raycast Task 4 (shape): written from the listing (0x10025f60-0x1002627a) as ShapeBase::nxShapeGlobalPose (Physics/src/ObjectModel.cpp) for 000933, not claimed (no stable-ID line): its owners may claim it after their own walk. Callers in the image: 000933, 001231, 001317."
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1309@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1309@@YIIPAX0I@Z",
+        "address": "0x1007cea0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001310",
@@ -25279,13 +25311,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/533",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3445",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026280: getGlobalPosition into a 3-word out, from the owner's pose and the local pose. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1311@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1311@@YIIPAX0I@Z",
+        "address": "0x1007d1c0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001312",
@@ -25315,13 +25355,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/534",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3448",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026430: getGlobalOrientation into a 9-word out, from the owner's pose and the local pose. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1313@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1313@@YIIPAX0I@Z",
+        "address": "0x1007d370",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001314",
@@ -25387,13 +25435,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/536",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3460",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026ad0: getGlobalPose by value (hidden return pointer): 001309 into a local, copied out. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1317@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1317@@YIIPAX0I@Z",
+        "address": "0x1007d5e0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001318",
@@ -25423,13 +25479,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/537",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3461",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026b70: getGlobalPosition by value: 001311 into a local, copied out. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1319@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1319@@YIIPAX0I@Z",
+        "address": "0x1007d680",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001320",
@@ -25459,13 +25523,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/538",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3462",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026ba0: getGlobalOrientation by value: 001313 into a local, copied out. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1321@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1321@@YIIPAX0I@Z",
+        "address": "0x1007d6b0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001322",
@@ -25531,13 +25603,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/540",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3471",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026c90: marks the shape dirty in its scene's deferred-update block: a jump-target-split function with 001327, reaching the owner's scene and a container slot. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1325@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1325@@YIIPAX0I@Z",
+        "address": "0x1007d6e0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001326",
@@ -25567,13 +25647,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/540",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3474",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026d20: the second part of 001325 (the inventory splits it at a jump target). Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00026c90"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1325@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1325@@YIIPAX0I@Z",
+        "address": "0x1007d6e0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001328",
@@ -25640,13 +25728,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/542",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3484",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026df0: setFlag(flag, value): the flag halfword updated, with two 001325 calls. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1331@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1331@@YIIPAX0II@Z",
+        "address": "0x1007d7e0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001332",
@@ -25676,13 +25772,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Shape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/543",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3486",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026e30: setLocalPose: refused under the API reentry flag, else stored, the owner update (slot 6) and 001325. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1333@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1333@@YIIPAX0I@Z",
+        "address": "0x1007d820",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001334",
@@ -25712,13 +25816,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Shape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/544",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3489",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026ec0: setLocalPosition: refused under the API reentry flag, else stored, the owner update and 001325. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1335@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1335@@YIIPAX0I@Z",
+        "address": "0x1007d8b0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001336",
@@ -25748,13 +25860,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Shape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/545",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3492",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026f50: setLocalOrientation: refused under the API reentry flag, else stored, the owner update and 001325. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1337@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1337@@YIIPAX0I@Z",
+        "address": "0x1007d940",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001338",
@@ -25784,13 +25904,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Shape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/546",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3495",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00026fd0: setGlobalPosition: refused under the API reentry flag, else made local to the owner, stored, the owner update and 001325. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1339@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1339@@YIIPAX0I@Z",
+        "address": "0x1007d9c0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001340",
@@ -25820,13 +25948,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Shape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/547",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3500",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00027360: setGlobalOrientation: refused under the API reentry flag, else made local to the owner, stored, the owner update and 001325. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1341@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1341@@YIIPAX0I@Z",
+        "address": "0x1007dd50",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001342",
@@ -25894,13 +26030,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ShapeRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/549",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3506",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00027710: a scalar deleting destructor: the base shape destructor (001323), then the object freed through the Foundation allocator when bit 0 of the flag is set. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ShapeRows.cpp",
+      "implementation_symbol": "?nxShp1345@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxShp1345@@YIIPAX0I@Z",
+        "address": "0x1007e0e0",
+        "object": "ShapeRows.obj"
+      }
     },
     {
       "id": "phys_fn_001346",

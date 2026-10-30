@@ -1022,7 +1022,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/SceneAuxiliary.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
 		Physics/src/BodyStep.cpp Physics/src/Island.cpp Physics/src/ContactPairManager.cpp
-		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
+		Physics/src/ObjectModel.cpp Physics/src/ShapeRows.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/InternalTriangleMesh.cpp
 		Physics/src/TriangleMesh.cpp
@@ -1228,7 +1228,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NpActor.cpp Physics/src/NpFluidEmitter.cpp
 		Physics/src/SceneAuxiliary.cpp
 		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
-		Physics/src/ObjectModel.cpp Physics/src/BodyStep.cpp Physics/src/Island.cpp
+		Physics/src/ObjectModel.cpp Physics/src/ShapeRows.cpp Physics/src/BodyStep.cpp Physics/src/Island.cpp
 		Physics/src/ContactPairManager.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/PrunerOctree.cpp Physics/src/opcode/IcePruningEngine.cpp

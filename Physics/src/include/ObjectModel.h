@@ -353,6 +353,7 @@ class ShapeBase
 	//! scene dirty flag |= 2, then removers #1/#2/#3 against [scene+0x48],
 	//! [scene]+0x5d4 and [scene]+0x6e4 respectively. No-op when detached.
 	void				nxBaseDtorOwnerArms(void);
+	void				nxBaseDtor(void);
 
 	//! BASE-level registry helper phys_fn_000480 (0x000edc0): associate or
 	//! dissociate a shape with a debug name through the global list at

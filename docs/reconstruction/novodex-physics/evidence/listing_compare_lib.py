@@ -58,7 +58,7 @@ def run(rows, expected, tables=None, data=None, argv=None, static_ranges=None):
     named = {}      # absolute address in each image -> canonical name
     for oracle_va, cand_sub, canon in data:
         named[(id(orc), oracle_va)] = canon
-        found = [k for k in syms if cand_sub in k]
+        found = [k for k in syms if k == cand_sub] or [k for k in syms if cand_sub in k]
         assert len(found) == 1, (cand_sub, found)
         named[(id(pe), syms[found[0]])] = canon
 

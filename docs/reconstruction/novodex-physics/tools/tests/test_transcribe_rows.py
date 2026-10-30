@@ -60,6 +60,12 @@ class TranscribeTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             transcribe_rows.transcribe(c, img)
 
+    def test_int3_is_written_for_the_inline_assembler(self):
+        img = transcribe_rows.Image(bytes([0xcc, 0xc3]), 0x1000)
+        c = SimpleNamespace(ROWS=[('r', 0x1000, 0x1002, 't', 'void r()')])
+        _, body = transcribe_rows.transcribe(c, img)
+        self.assertIn('		int 3		// 0x00001000', body)
+
 
 class WriteTest(unittest.TestCase):
     def test_header_and_append_and_crlf(self):

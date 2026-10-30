@@ -1088,6 +1088,15 @@ void nxSceneInsertShape(void* container, void* shape, NxU32 slot)
 	cBegin[slot] = countB;						// count mirror
 	}
 
+// phys_fn_001323 (0x00026bd0) as one callable, for the naked rows that call it (001345): the owner arms, then
+// the prunable's destructor its tail jumps to (0xb5640). The BASE table store at 0x00026bd6 is not made: the
+// candidate's ShapeBase has no BASE table.
+void ShapeBase::nxBaseDtor(void)
+	{
+	nxBaseDtorOwnerArms();
+	mPrunable.~Prunable();
+	}
+
 // The base dtor's owner arms, image order (0x00026be1..0x00026c35).
 void ShapeBase::nxBaseDtorOwnerArms(void)
 	{

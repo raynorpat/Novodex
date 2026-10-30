@@ -1,0 +1,81 @@
+{
+ "source": "Physics/src/ShapeRows.cpp",
+ "compare": "evidence/phase3-shape-rows-listing-compare.py",
+ "doc": "evidence/phase3-shape-rows.md",
+ "instructions": 1861,
+ "mappings": 13,
+ "rows": {
+  "phys_fn_001303": {
+   "symbol": "nxShp1303",
+   "what": "a CCD-path refresh: calls 000738 on the owner and, when it returns a record, Prunable::UpdateWorldAABB on the shape's prunable"
+  },
+  "phys_fn_001305": {
+   "symbol": "nxShp1305",
+   "what": "the shared debug render: gated on SDK parameter elements 44 and 48 (gParameter +0xb0 and +0xc0) against a constant, scaled by element 13, drawing through the renderer's slots +0x20, +0x28 and +0x38"
+  },
+  "phys_fn_001307": {
+   "symbol": "nxShp1307",
+   "what": "setGlobalPose: refused under the API reentry flag (Foundation error), else made local to the owner, stored, then the owner update (slot 6) and 001325"
+  },
+  "phys_fn_001309": {
+   "symbol": "nxShp1309",
+   "what": "getGlobalPose into a 12-word out: the owner body's quaternion and position (or the owner's cached pose) composed with the local pose"
+  },
+  "phys_fn_001311": {
+   "symbol": "nxShp1311",
+   "what": "getGlobalPosition into a 3-word out, from the owner's pose and the local pose"
+  },
+  "phys_fn_001313": {
+   "symbol": "nxShp1313",
+   "what": "getGlobalOrientation into a 9-word out, from the owner's pose and the local pose"
+  },
+  "phys_fn_001317": {
+   "symbol": "nxShp1317",
+   "what": "getGlobalPose by value (hidden return pointer): 001309 into a local, copied out"
+  },
+  "phys_fn_001319": {
+   "symbol": "nxShp1319",
+   "what": "getGlobalPosition by value: 001311 into a local, copied out"
+  },
+  "phys_fn_001321": {
+   "symbol": "nxShp1321",
+   "what": "getGlobalOrientation by value: 001313 into a local, copied out"
+  },
+  "phys_fn_001325": {
+   "symbol": "nxShp1325",
+   "what": "marks the shape dirty in its scene's deferred-update block: a jump-target-split function with 001327, reaching the owner's scene and a container slot"
+  },
+  "phys_fn_001327": {
+   "symbol": "nxShp1325",
+   "what": "the second part of 001325 (the inventory splits it at a jump target)"
+  },
+  "phys_fn_001331": {
+   "symbol": "nxShp1331",
+   "what": "setFlag(flag, value): the flag halfword updated, with two 001325 calls"
+  },
+  "phys_fn_001333": {
+   "symbol": "nxShp1333",
+   "what": "setLocalPose: refused under the API reentry flag, else stored, the owner update (slot 6) and 001325"
+  },
+  "phys_fn_001335": {
+   "symbol": "nxShp1335",
+   "what": "setLocalPosition: refused under the API reentry flag, else stored, the owner update and 001325"
+  },
+  "phys_fn_001337": {
+   "symbol": "nxShp1337",
+   "what": "setLocalOrientation: refused under the API reentry flag, else stored, the owner update and 001325"
+  },
+  "phys_fn_001339": {
+   "symbol": "nxShp1339",
+   "what": "setGlobalPosition: refused under the API reentry flag, else made local to the owner, stored, the owner update and 001325"
+  },
+  "phys_fn_001341": {
+   "symbol": "nxShp1341",
+   "what": "setGlobalOrientation: refused under the API reentry flag, else made local to the owner, stored, the owner update and 001325"
+  },
+  "phys_fn_001345": {
+   "symbol": "nxShp1345",
+   "what": "a scalar deleting destructor: the base shape destructor (001323), then the object freed through the Foundation allocator when bit 0 of the flag is set"
+  }
+ }
+}

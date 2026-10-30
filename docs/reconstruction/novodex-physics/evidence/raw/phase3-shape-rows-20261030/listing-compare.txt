@@ -1,0 +1,32 @@
+nxShp1303 ?nxShp1303@@YIIPAX0@Z instructions=36 differing=0
+nxShp1305 ?nxShp1305@@YIIPAX0I@Z instructions=208 differing=0
+nxShp1307 ?nxShp1307@@YIIPAX0I@Z instructions=255 differing=0
+nxShp1309 ?nxShp1309@@YIIPAX0I@Z instructions=229 differing=0
+nxShp1311 ?nxShp1311@@YIIPAX0I@Z instructions=132 differing=0
+nxShp1313 ?nxShp1313@@YIIPAX0I@Z instructions=186 differing=0
+nxShp1317 ?nxShp1317@@YIIPAX0I@Z instructions=33 differing=0
+nxShp1319 ?nxShp1319@@YIIPAX0I@Z instructions=13 differing=0
+nxShp1321 ?nxShp1321@@YIIPAX0I@Z instructions=15 differing=0
+nxShp1325 ?nxShp1325@@YIIPAX0I@Z instructions=91 differing=0
+nxShp1331 ?nxShp1331@@YIIPAX0II@Z instructions=14 differing=0
+nxShp1333 ?nxShp1333@@YIIPAX0I@Z instructions=46 differing=0
+nxShp1335 ?nxShp1335@@YIIPAX0I@Z instructions=37 differing=0
+nxShp1337 ?nxShp1337@@YIIPAX0I@Z instructions=38 differing=0
+nxShp1339 ?nxShp1339@@YIIPAX0I@Z instructions=258 differing=0
+nxShp1341 ?nxShp1341@@YIIPAX0I@Z instructions=257 differing=0
+nxShp1345 ?nxShp1345@@YIIPAX0I@Z instructions=13 differing=0
+ALL EQUAL
+  call nxShp1303 -> oracle 0x10016c00 ; candidate ?row000738@Row000738Fixture@@QAEPAXXZ
+  call nxShp1303 -> oracle 0x100b55b0 ; candidate ?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z
+  call nxShp1317 -> oracle 0x10025f60 ; candidate ?nxShp1309@@YIIPAX0I@Z
+  call nxShp1319 -> oracle 0x10026280 ; candidate ?nxShp1311@@YIIPAX0I@Z
+  call nxShp1321 -> oracle 0x10026430 ; candidate ?nxShp1313@@YIIPAX0I@Z
+  call nxShp1331 -> oracle 0x10026c90 ; candidate ?nxShp1325@@YIIPAX0I@Z
+  call nxShp1331 -> oracle 0x10026c90 ; candidate ?nxShp1325@@YIIPAX0I@Z
+  call nxShp1333 -> oracle 0x10026c90 ; candidate ?nxShp1325@@YIIPAX0I@Z
+  call nxShp1335 -> oracle 0x10026c90 ; candidate ?nxShp1325@@YIIPAX0I@Z
+  call nxShp1337 -> oracle 0x10026c90 ; candidate ?nxShp1325@@YIIPAX0I@Z
+  call nxShp1339 -> oracle 0x10026c90 ; candidate ?nxShp1325@@YIIPAX0I@Z
+  call nxShp1341 -> oracle 0x10026c90 ; candidate ?nxShp1325@@YIIPAX0I@Z
+  call nxShp1345 -> oracle 0x10026bd0 ; candidate ?nxBaseDtor@ShapeBase@@QAEXXZ
+MAPPINGS checked=13 unexpected=0

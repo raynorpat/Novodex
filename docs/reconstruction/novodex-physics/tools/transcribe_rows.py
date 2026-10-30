@@ -149,6 +149,9 @@ def transcribe(cfg, img):
                     op = 'st(0), ' + op
                 if m.startswith('rep'):
                     op = ''
+                if m == 'int3':
+                    m = 'int'
+                    op = '3'
             text = (m + (' ' + op if op else '')).rstrip()
             out.append('\t\t%s\t\t// 0x%08x' % (text, i.address - IMAGE_BASE))
         return '\n'.join(out), len(ins)
