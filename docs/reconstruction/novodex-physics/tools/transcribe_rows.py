@@ -87,9 +87,9 @@ def transcribe(cfg, img):
         addrs = {i.address for i in ins}
         targets = set()
         for i in ins:
-            if (i.mnemonic.startswith('j') or i.mnemonic == 'loop') and i.op_str.startswith('0x'):
+            if (i.mnemonic.startswith('j') or i.mnemonic == 'loop' or i.mnemonic == 'call') and i.op_str.startswith('0x'):
                 t = int(i.op_str, 16)
-                if lo <= t < hi:
+                if lo <= t < hi and not (i.mnemonic == 'call' and t in calls):
                     if t not in addrs:
                         raise ValueError('jump into an instruction at %x' % t)
                     targets.add(t)
@@ -122,10 +122,10 @@ def transcribe(cfg, img):
                 continue
             if (m.startswith('j') or m == 'loop' or m == 'call') and op.startswith('0x'):
                 t = int(op, 16)
-                if lo <= t < hi and m != 'call':
-                    op = 'L%x' % (t - IMAGE_BASE)
-                elif t in calls:
+                if t in calls and (m == 'call' or not lo <= t < hi):
                     op = calls[t]
+                elif lo <= t < hi:
+                    op = 'L%x' % (t - IMAGE_BASE)
                 else:
                     raise ValueError('unmapped target %x from %x' % (t, i.address))
             elif m in ('call', 'jmp') and op.startswith('dword ptr [0x') and int(op[len('dword ptr [0x'):-1], 16) in slots:

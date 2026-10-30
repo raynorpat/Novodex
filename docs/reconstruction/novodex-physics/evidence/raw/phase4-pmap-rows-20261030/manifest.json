@@ -1,0 +1,61 @@
+{
+ "source": "Physics/src/PMapRows.cpp",
+ "compare": "evidence/phase4-pmap-rows-listing-compare.py",
+ "doc": "evidence/phase4-pmap-rows.md",
+ "instructions": 1639,
+ "mappings": 64,
+ "rows": {
+  "phys_fn_001988": {
+   "symbol": "nxPMapCoderReset",
+   "what": "resets the cell-run coder's statics: the three cursor words and the 32 code counts"
+  },
+  "phys_fn_001992": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_001994": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_001996": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_001998": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_002000": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_002002": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_002004": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_002006": {
+   "symbol": "nxPMapEncodeCellRun",
+   "what": "the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data"
+  },
+  "phys_fn_002010": {
+   "symbol": "nxPMapDecodeCellRun",
+   "what": "the cell decoder's part of the cell-run decoder 002008 (one function 0x0004dba0-0x0004e112 that 002008 falls through into; its jump table of 32 codes is a compare chain): the 5-bit codes read through MemoryStream::readByte into the cursor and the container, which grows through SdkContainer::resize"
+  },
+  "phys_fn_002012": {
+   "symbol": "nxPMapDecodeCellRun",
+   "what": "the cell decoder's part of the cell-run decoder 002008 (one function 0x0004dba0-0x0004e112 that 002008 falls through into; its jump table of 32 codes is a compare chain): the 5-bit codes read through MemoryStream::readByte into the cursor and the container, which grows through SdkContainer::resize"
+  },
+  "phys_fn_002014": {
+   "symbol": "nxPMapDecodeCellRun",
+   "what": "the cell decoder's part of the cell-run decoder 002008 (one function 0x0004dba0-0x0004e112 that 002008 falls through into; its jump table of 32 codes is a compare chain): the 5-bit codes read through MemoryStream::readByte into the cursor and the container, which grows through SdkContainer::resize"
+  },
+  "phys_fn_002031": {
+   "symbol": "nxPMapScalarDelete",
+   "what": "the penetration map's scalar deleting destructor: its vtable stored, the +0x70 and +4 arrays freed (CRT free), the object freed through the Foundation allocator when bit 0 of the flag is set"
+  }
+ }
+}

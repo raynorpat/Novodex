@@ -85,6 +85,15 @@ class TranscribeTest(unittest.TestCase):
             transcribe_rows.transcribe(c, img)
 
 
+    def test_call_to_a_label_inside_the_row(self):
+        # 0x1000: call 0x1006; ret; nop; nop; 0x1006: ret
+        img = transcribe_rows.Image(bytes([0xe8, 0x01, 0x00, 0x00, 0x00, 0xc3, 0xc3]), 0x1000)
+        c = SimpleNamespace(ROWS=[('r', 0x1000, 0x1007, 't', 'void r()')])
+        _, body = transcribe_rows.transcribe(c, img)
+        self.assertIn('call L1006', body)
+        self.assertIn('L1006:', body)
+
+
 class WriteTest(unittest.TestCase):
     def test_header_and_append_and_crlf(self):
         with tempfile.TemporaryDirectory() as d:

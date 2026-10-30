@@ -54,8 +54,8 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 765,
-    "deferred_not_reconstructed_in_phase": 88,
+    "deferred_reconstructed_not_falsified": 778,
+    "deferred_not_reconstructed_in_phase": 75,
     "deferred_vendored_not_falsified": 86,
     "oracle_differential_falsified": 55,
     "differential_falsified": 16,
@@ -1327,9 +1327,10 @@
       "id": "phys_fn_001988",
       "rva": "0x0004cba0",
       "size": 181,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001990",
@@ -1343,89 +1344,100 @@
       "id": "phys_fn_001992",
       "rva": "0x0004cee0",
       "size": 906,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001994",
       "rva": "0x0004d270",
       "size": 138,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001996",
       "rva": "0x0004d300",
       "size": 602,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001998",
       "rva": "0x0004d560",
       "size": 298,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002000",
       "rva": "0x0004d690",
       "size": 77,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002002",
       "rva": "0x0004d6e0",
       "size": 989,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002004",
       "rva": "0x0004dac0",
       "size": 58,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002006",
       "rva": "0x0004db00",
       "size": 158,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002010",
       "rva": "0x0004df30",
       "size": 253,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002012",
       "rva": "0x0004e030",
       "size": 61,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002014",
       "rva": "0x0004e070",
       "size": 162,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002017",
@@ -1439,9 +1451,10 @@
       "id": "phys_fn_002031",
       "rva": "0x0004ff20",
       "size": 81,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002037",

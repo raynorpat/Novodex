@@ -119,7 +119,8 @@ def run(rows, expected, tables=None, data=None, argv=None, static_ranges=None):
                     and ins[k + 1].mnemonic == 'je'):
                 reg = i.op_str.split(',')[0]
                 j, step, targets = k, 0, []
-                while (j + 1 < len(ins) and ins[j].mnemonic == 'cmp' and ins[j].op_str == '%s, %d' % (reg, step)
+                while (j + 1 < len(ins) and ins[j].mnemonic == 'cmp' and ins[j].op_str.split(', ')[0] == reg
+                       and re.fullmatch(r'(0x[0-9a-f]+|\d+)', ins[j].op_str.split(', ')[-1]) and int(ins[j].op_str.split(', ')[-1], 0) == step
                        and ins[j + 1].mnemonic == 'je'):
                     targets.append(int(ins[j + 1].op_str, 16))
                     j += 2

@@ -1,0 +1,71 @@
+nxPMapCoderReset ?nxPMapCoderReset@@YAIXZ instructions=38 differing=0
+nxPMapEncodeCellRun ?nxPMapEncodeCellRun@@YIIPAX0@Z instructions=1102 differing=0
+nxPMapDecodeCellRun ?nxPMapDecodeCellRun@@YIIPAX0II@Z instructions=445 differing=0
+nxPMapScalarDelete ?nxPMapScalarDelete@@YIIPAX0I@Z instructions=27 differing=0
+nxPMapRelease5159 ?nxPMapRelease5159@@YIXPAX@Z instructions=27 differing=0
+ALL EQUAL
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b3a60 ; candidate ?storeByte@MemoryStream@@QAEXE@Z
+  call nxPMapEncodeCellRun -> oracle 0x100e32e0 ; candidate ?nxPMapRelease5159@@YIXPAX@Z
+  call nxPMapEncodeCellRun -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  call nxPMapEncodeCellRun -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  call nxPMapEncodeCellRun -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  call nxPMapEncodeCellRun -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b3aa0 ; candidate ?readByte@MemoryStream@@QAEEXZ
+  call nxPMapDecodeCellRun -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxPMapScalarDelete -> oracle 0x100f48bb ; candidate _free
+  call nxPMapScalarDelete -> oracle 0x100f48bb ; candidate _free
+  call nxPMapRelease5159 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxPMapRelease5159 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+MAPPINGS checked=64 unexpected=0

@@ -1,0 +1,44 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// PMapRows.cpp: the penetration map's cell-run coder as the oracle has it, over .data statics (the cell cursor at
+// 0x101222e8 and 32 words at 0x101240a0) rather than the candidate PMap.cpp's cursor struct: phys_fn_001988 (the
+// statics reset), 001992 to 002006 (the encoder, one function the inventory splits eight ways), 002010 to 002014 (the
+// cell decoder, three ways) and 002031 (the scalar deleting destructor). With two helpers the rows call that the
+// candidate has only in other shapes: the tail of 002008 from its loop at 0x0004dc22 (002010 calls that label) and
+// 005159 as a thiscall. Naked listing transcriptions; PMap.cpp keeps its own coder, so nothing calls them yet.
+// Compare script: docs/reconstruction/novodex-physics/evidence/phase4-pmap-rows-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxPMCallEmpty();
+extern "C" void nxPMCallFree();
+extern "C" void nxPMCallReadByte();
+extern "C" void nxPMCallResize();
+extern "C" void nxPMCallStoreByte();
+extern "C" void* nxPMImpImpnxFoundationSDKAllocator3PAVNxUserAll;
+#pragma comment(linker, "/alternatename:_nxPMCallEmpty=?empty@SdkContainer@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxPMCallFree=_free")
+#pragma comment(linker, "/alternatename:_nxPMCallReadByte=?readByte@MemoryStream@@QAEEXZ")
+#pragma comment(linker, "/alternatename:_nxPMCallResize=?resize@SdkContainer@@QAE_NI@Z")
+#pragma comment(linker, "/alternatename:_nxPMCallStoreByte=?storeByte@MemoryStream@@QAEXE@Z")
+#pragma comment(linker, "/alternatename:_nxPMImpImpnxFoundationSDKAllocator3PAVNxUserAll=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
+extern "C" void* nxSdkInstanceSlot;
+#pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")
+extern "C" unsigned gNxApiReentry;
+extern "C" const char* gNxApiReentryMessage;
+// .data 0x101222e8 (three words, the cell cursor) and 0x101240a0 (32 words), the cell-run coder statics.
+static unsigned nxPMapCursor[3];
+static unsigned nxPMapCodeCounts[32];
+extern "C" void nxPMCallSdkAllocator();
+#pragma comment(linker, "/alternatename:_nxPMCallSdkAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
+extern "C" void* nxPMapVtable;
+#pragma comment(linker, "/alternatename:_nxPMapVtable=??_7PenetrationMap@@6B@")
+
+@@PROTOS@@
+
+@@BODY@@
