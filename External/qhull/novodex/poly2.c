@@ -15,6 +15,12 @@
  * Geometry Center licence clause 1: the copyright notice below is intact.
  * Clause 3: see ../NOTICE.txt. Clause 4: the original source may be
  * obtained from http://www.qhull.org.
+ * [vendored rows] void qh_furthestout ( (phys_fn_003101): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00076100
+ * [vendored rows] void qh_matchduplicates ( (phys_fn_003107/003109): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00076230
+ * [vendored rows] setT *qh_initialvertices( (phys_fn_003184): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00079720
  */
 /*<html><pre>  -<a                             href="qh-poly.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -1580,6 +1586,7 @@ void qh_furthestnext (void /* qh facet_list */) {
     determine best point of outsideset
     make it the last point of outsideset
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_furthestout (facetT *facet) {
   pointT *point, **pointp, *bestpoint= NULL;
   realT dist, bestdist= -REALmax;
@@ -1603,6 +1610,8 @@ void qh_furthestout (facetT *facet) {
   trace3((qh ferr, "qh_furthestout: p%d is furthest outside point of f%d\n",
 	  qh_pointid (point), facet->id));
 } /* furthestout */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003101) */
 
 
 /*-<a                             href="qh-qhull.htm#TOC"
@@ -1844,6 +1853,7 @@ void qh_initialhull(setT *vertices) {
     unless qh.ALLpoints, 
       uses maxpoints as long as determinate is non-zero
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 setT *qh_initialvertices(int dim, setT *maxpoints, pointT *points, int numpoints) {
   pointT *point, **pointp;
   setT *vertices, *simplex, *tested;
@@ -1916,6 +1926,8 @@ setT *qh_initialvertices(int dim, setT *maxpoints, pointT *points, int numpoints
   qh_settempfree (&simplex);
   return vertices;
 } /* initialvertices */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003184) */
 
 
 /*-<a                             href="qh-poly.htm#TOC"
@@ -2040,6 +2052,7 @@ vertexT *qh_makenewfacets (pointT *point /*visible_list*/) {
         make best match (it will not be merged)
 */
 #ifndef qh_NOmerge
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_matchduplicates (facetT *atfacet, int atskip, int hashsize, int *hashcount) {
   boolT same, ismatch;
   int hash, scan;
@@ -2126,6 +2139,8 @@ void qh_matchduplicates (facetT *atfacet, int atskip, int hashsize, int *hashcou
     }
   }
 } /* matchduplicates */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003107/003109) */
 
 /*-<a                             href="qh-poly.htm#TOC"
   >-------------------------------</a><a name="nearcoplanar">-</a>

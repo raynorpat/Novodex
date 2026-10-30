@@ -49,6 +49,17 @@ def exact_family(rid, lib, spec, coverage):
         raise ValueError('%s: group %s is family_best=%s, not exact' % (rid, spec['group'], line['family_best']))
     if not re.search(r'(?:^|[:+;])%s=exact(?:$|[+;])' % re.escape(spec['family']), line['differential']):
         raise ValueError('%s: family %s is not exact in group %s' % (rid, spec['family'], spec['group']))
+    return line
+
+
+def divergent_families(line):
+    """The families of a coverage line whose class is not exact, as `name (class)`, in order, once each."""
+    seen = []
+    for name, cls in re.findall(r'(\w+)=(lastbit|discrete|layout|uncompared)', line['differential']):
+        item = '%s (%s)' % (name, cls)
+        if item not in seen:
+            seen.append(item)
+    return seen
 
 
 def close(manifest, inventory, closures, mapsyms, coverage=None):
@@ -60,8 +71,7 @@ def close(manifest, inventory, closures, mapsyms, coverage=None):
         if bool(r.get('third_party')) != vendored:
             raise ValueError('%s is %s: %s' % (rid, 'vendored (%s)' % r['third_party'] if r.get('third_party') else 'first-party',
                                                'it needs --vendored' if r.get('third_party') else 'not a --vendored row'))
-        if vendored:
-            exact_family(rid, r['third_party'], spec, coverage)
+        line = exact_family(rid, r['third_party'], spec, coverage) if vendored else None
         if r['state'] != 'discovered':
             raise ValueError('%s is %s, not discovered' % (rid, r['state']))
         sym = find_symbol(spec['symbol'], mapsyms)
@@ -79,8 +89,12 @@ def close(manifest, inventory, closures, mapsyms, coverage=None):
         if vendored:
             lib = r['third_party']
             r['static_proof'] += ' Vendored %s function, upstream body guarded by NX_VENDORED_LISTING_ROWS.' % lib
+            others = divergent_families(line)
             r['dynamic_proof'] = ('cdb trace, evidence/vendored-trace-%s.txt: family %s exact (every word compared with the '
-                                  'oracle); vendored_coverage.csv group %s family_best=exact.' % (lib, spec['family'], spec['group']))
+                                  'oracle); vendored_coverage.csv group %s family_best=exact.' % (lib, spec['family'], spec['group'])
+                                  + (' Families it also ran in that are not exact, each attributed in '
+                                     'evidence/vendored-correspondence.md (vendored-rows pass): %s.' % ', '.join(others)
+                                     if others else ' Every family it ran in is exact.'))
             held = r.get('notes') or ''
             r['notes'] = 'Vendored row transcribed and executed (vendored-rows pass).' + (
                 ' Earlier: ' + held if held.startswith('Held back') else '')

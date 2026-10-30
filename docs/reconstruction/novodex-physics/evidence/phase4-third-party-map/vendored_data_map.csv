@@ -231,7 +231,7 @@ oracle_rva,candidate_symbol,method
 0x00124fbc,_qh_qh+0x944,cooccurrence
 0x00124fc0,_qh_qh+0x948,cooccurrence
 0x00124fc4,_qh_qh+0x94c,cooccurrence
-0x00124fd0,_qh_qh+0x958,delta
+0x00124fd0,_qh_qh+0x958,cooccurrence
 0x00124fd8,_qhmem,cooccurrence
 0x00124fdc,_qhmem+0x4,cooccurrence
 0x00124fe0,_qhmem+0x8,cooccurrence

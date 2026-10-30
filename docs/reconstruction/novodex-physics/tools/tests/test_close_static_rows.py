@@ -122,6 +122,15 @@ class VendoredModeTest(unittest.TestCase):
         self.assertEqual(closures[4]['counts'], {'deferred_vendored_not_falsified': 0, 'deferred_reconstructed_not_falsified': 7})
         self.assertEqual({e['reason'] for e in closures[4]['deferred']}, {'reconstructed_not_falsified'})
 
+    def test_vendored_proof_lists_the_divergent_families_the_group_also_ran_in(self):
+        cov = {('qhull', '0x00001010'): {'family_best': 'exact', 'differential':
+               'thirdparty:qhull_hull=exact+qhull_hull_x87=lastbit;thirdparty:qhull_paths=discrete'}}
+        inventory, _ = vrun(coverage=cov)
+        proof = inventory['functions'][0]['dynamic_proof']
+        self.assertIn('qhull_hull_x87 (lastbit)', proof)
+        self.assertIn('qhull_paths (discrete)', proof)
+        self.assertIn('vendored-correspondence.md', proof)
+
     def test_vendored_refuses_inexact_group(self):
         with self.assertRaises(ValueError):
             vrun(coverage={('qhull', '0x00001010'): {'family_best': 'discrete', 'differential': 'thirdparty:qhull_hull=exact'}})

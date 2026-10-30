@@ -209,8 +209,11 @@ ORACLE_KNOWN = {
     0x00001000: "`vector constructor iterator'",   # phase3-narrow-phase.md, phys_fn_000001
     0x00001030: "`vector destructor iterator'",    # phase3-narrow-phase.md, phys_fn_000002
     0x000f7a3c: "ftol",                             # phys_fn_005825: the fistp/fild _ftol2 body
-    0x000f4dc0: "ftol",                             # phys_fn_005719: _ftol2_sse (stmxcsr/fnstcw
-                                                    # check, then 0x000fc7f1); qh_nextfurthest
+    0x000f4dc0: "floor",                            # phys_fn_005719: the CRT's floor (SSE2 when available,
+                                                    # else the x87 0x000fc7f1); a double on the stack, the
+                                                    # result in st(0), which qh_nextfurthest and
+                                                    # qh_initialvertices fistp (vendored-rows pass; it was
+                                                    # read as _ftol2_sse until then)
     0x000f50a0: "strstr",                           # phys_fn_005732: qh_init_qhull_command's
                                                     # strstr(qhull_command, ".EXE"/".exe")
     # The static CRT's global operators. Ghidra's function ID names the two jmp thunks after
@@ -271,6 +274,14 @@ HOST_SEAMS = {
 # The qhull host-object global (.data:0x00125080). Every inline seam loads it, and the load
 # count does not track the call count (one load can feed two calls), so it is not compared.
 ORACLE_HOST_GLOBALS = frozenset({0x00125080})
+# The candidate's copy of that pointer (Physics/src/QhullHost.cpp), and the alias the vendored-rows transcriptions
+# (External/qhull/novodex/QhullRows.c) read it through: a virtual call through it is a host call, as in the oracle.
+CANDIDATE_HOST_SYMBOLS = frozenset({"?gQhullHost@@3PAVQhullHost@@A", "_nxQhHost"})
+
+
+def candidate_host_globals(symbols):
+    """The candidate rvas of CANDIDATE_HOST_SYMBOLS."""
+    return frozenset(s.rva for s in symbols if s.name in CANDIDATE_HOST_SYMBOLS)
 
 # Float constants whose presence depends on how a compiler materialises a comparison or a
 # store (fldz/fld1, an integer store of the bit pattern, a memory constant); shape only.
@@ -1745,8 +1756,9 @@ def candidate_features(image, symbol, index, seams=None):
             return None if is_jump else "self"
         return candidate_identity(index, target)
 
+    hosts = getattr(image, "host_globals", ())
     feats = extract(image, [symbol.rva], extent, resolve_code,
-                    lambda t: candidate_data_token(index, t))
+                    lambda t: None if t in hosts else candidate_data_token(index, t))
     if seams:
         calls = []
         for call in feats.calls:
@@ -2350,6 +2362,7 @@ def main(argv=None):
         return 2
     oracle.host_globals = ORACLE_HOST_GLOBALS
     symbols = parse_map(map_text, candidate.base, candidate)
+    candidate.host_globals = candidate_host_globals(symbols)
     if not symbols:
         print("error: no symbols in the candidate map", file=sys.stderr)
         return 2

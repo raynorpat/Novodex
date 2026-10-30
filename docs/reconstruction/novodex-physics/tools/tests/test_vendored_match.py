@@ -286,6 +286,8 @@ class ResolutionTest(unittest.TestCase):
         self.assertEqual(resolver.identity(0x1200), "strtod")     # inventory label
         self.assertEqual(resolver.identity(0x1204), "strtod+0x4")
         self.assertEqual(resolver.identity(0x000f7a3c), "ftol")        # ORACLE_KNOWN
+        # 0x000f4dc0 takes a double on the stack and returns one in st(0) (its caller fistps it): floor.
+        self.assertEqual(resolver.identity(0x000f4dc0), "floor")
         self.assertEqual(resolver.identity(0x7000), "code:0x00007000")
 
     def test_oracle_group_calls_itself_self(self):
@@ -745,6 +747,14 @@ class LookupExtrasTest(unittest.TestCase):
         self.assertEqual(keys[0x1200], "T::Collide(const A*,const A*,int)")
         self.assertEqual(keys[0x1500], "qh_f")
         self.assertEqual(keys[0x1400], "Point::operator*")
+
+
+class CandidateHostGlobalsTest(unittest.TestCase):
+    def test_the_host_pointer_and_its_transcription_alias_are_host_globals(self):
+        syms = [vm.Symbol("?gQhullHost@@3PAVQhullHost@@A", 0x2000, "QhullHost.obj", False),
+                vm.Symbol("_nxQhHost", 0x2000, "QhullRows.obj", False),
+                vm.Symbol("_qh_qh", 0x3000, "<common>", False)]
+        self.assertEqual(vm.candidate_host_globals(syms), frozenset({0x2000}))
 
 
 class SeamsAndDropsTest(unittest.TestCase):

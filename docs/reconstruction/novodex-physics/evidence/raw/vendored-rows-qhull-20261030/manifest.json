@@ -1,0 +1,81 @@
+{
+ "source": "External/qhull/novodex/QhullRows.c",
+ "compare": "evidence/vendored-rows-qhull-listing-compare.py",
+ "doc": "evidence/vendored-correspondence.md",
+ "instructions": 2066,
+ "mappings": 113,
+ "rows": {
+  "phys_fn_002425": {
+   "symbol": "qh_distplane",
+   "what": "qhull qh_distplane",
+   "group": "0x0005c5c0",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002438": {
+   "symbol": "qh_getangle",
+   "what": "qhull qh_getangle",
+   "group": "0x0005d410",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002444": {
+   "symbol": "qh_getdistance",
+   "what": "qhull qh_getdistance",
+   "group": "0x0005d560",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002487": {
+   "symbol": "qh_gram_schmidt",
+   "what": "qhull qh_gram_schmidt",
+   "group": "0x0005f360",
+   "family": "qhull_hull_rotated"
+  },
+  "phys_fn_002518": {
+   "symbol": "qh_randommatrix",
+   "what": "qhull qh_randommatrix",
+   "group": "0x0005fec0",
+   "family": "qhull_hull_rotated"
+  },
+  "phys_fn_002522": {
+   "symbol": "qh_scalelast",
+   "what": "qhull qh_scalelast",
+   "group": "0x0005fff0",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002550": {
+   "symbol": "qh_joggleinput",
+   "what": "qhull qh_joggleinput",
+   "group": "0x00061490",
+   "family": "qhull_random"
+  },
+  "phys_fn_002558": {
+   "symbol": "qh_rotateinput",
+   "what": "qhull qh_rotateinput",
+   "group": "0x00061cd0",
+   "family": "qhull_hull_rotated"
+  },
+  "phys_fn_002571": {
+   "symbol": "qh_initqhull_buffers",
+   "what": "qhull qh_initqhull_buffers",
+   "group": "0x000621c0",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002573": {
+   "symbol": "qh_initqhull_buffers",
+   "what": "qhull qh_initqhull_buffers",
+   "group": "0x000621c0",
+   "family": "qhull_hull"
+  },
+  "phys_fn_003184": {
+   "symbol": "qh_initialvertices",
+   "what": "qhull qh_initialvertices",
+   "group": "0x00079720",
+   "family": "qhull_hull"
+  },
+  "phys_fn_003204": {
+   "symbol": "qh_nextfurthest",
+   "what": "qhull qh_nextfurthest",
+   "group": "0x0007abb0",
+   "family": "qhull_hull"
+  }
+ }
+}

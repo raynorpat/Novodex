@@ -27,6 +27,18 @@
  * Geometry Center licence clause 1: the copyright notice below is intact.
  * Clause 3: see ../NOTICE.txt. Clause 4: the original source may be
  * obtained from http://www.qhull.org.
+ * [vendored rows] boolT qh_gram_schmidt( (phys_fn_002487): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0005f360
+ * [vendored rows] facetT *qh_findgooddist ( (phys_fn_002485): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0005f170
+ * [vendored rows] void qh_randommatrix ( (phys_fn_002518): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0005fec0
+ * [vendored rows] void qh_joggleinput ( (phys_fn_002550): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00061490
+ * [vendored rows] void qh_rotateinput ( (phys_fn_002558): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00061cd0
+ * [vendored rows] void qh_scalelast ( (phys_fn_002522): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0005fff0
  */
 #include "qhull_a.h"
    
@@ -640,6 +652,7 @@ pointT *qh_facetcenter (setT *vertices) {
         update best good neighbor
         if no good neighbors, update best facet
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 facetT *qh_findgooddist (pointT *point, facetT *facetA, realT *distp, 
                facetT **facetlist) {
   realT bestdist= -REALmax, dist;
@@ -688,6 +701,8 @@ facetT *qh_findgooddist (pointT *point, facetT *facetA, realT *distp,
       qh_pointid(point), facetA->id));
   return NULL;
 }  /* findgooddist */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002485) */
     
 /*-<a                             href="qh-geom.htm#TOC"
   >-------------------------------</a><a name="getarea">-</a>
@@ -766,6 +781,7 @@ void qh_getarea (facetT *facetlist) {
         compute inner product of row and rowA
         reduce rowA by row * inner product
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 boolT qh_gram_schmidt(int dim, realT **row) {
   realT *rowi, *rowj, norm;
   int i, j, k;
@@ -791,6 +807,8 @@ boolT qh_gram_schmidt(int dim, realT **row) {
   }
   return True;
 } /* gram_schmidt */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002487) */
 
 
 /*-<a                             href="qh-geom.htm#TOC"
@@ -878,6 +896,7 @@ boolT qh_inthresholds (coordT *normal, realT *angle) {
     if qh.DELAUNAY
       sets the Delaunay projection
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_joggleinput (void) {
   int size, i, seed;
   coordT *coordp, *inputp;
@@ -933,6 +952,8 @@ void qh_joggleinput (void) {
     qh_setdelaunay (qh hull_dim, qh num_points, qh first_point);
   }
 } /* joggleinput */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002550) */
 
 /*-<a                             href="qh-geom.htm#TOC"
   >-------------------------------</a><a name="maxabsval">-</a>
@@ -1638,6 +1659,7 @@ realT qh_randomfactor (void) {
     sets rows to rows of buffer
       sets row[dim] as scratch row
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_randommatrix (realT *buffer, int dim, realT **rows) {
   int i, k;
   realT **rowi, *coord, realr;
@@ -1653,6 +1675,8 @@ void qh_randommatrix (realT *buffer, int dim, realT **rows) {
   }
   *rowi= coord;
 } /* randommatrix */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002518) */
 
         
 /*-<a                             href="qh-geom.htm#TOC"
@@ -1671,6 +1695,7 @@ void qh_randommatrix (realT *buffer, int dim, realT **rows) {
   design:
     see qh_rotatepoints
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_rotateinput (realT **rows) {
 
   if (!qh POINTSmalloc) {
@@ -1679,6 +1704,8 @@ void qh_rotateinput (realT **rows) {
   }
   qh_rotatepoints (qh first_point, qh num_points, qh hull_dim, rows);
 }  /* rotateinput */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002558) */
 
 /*-<a                             href="qh-geom.htm#TOC"
   >-------------------------------</a><a name="rotatepoints">-</a>
@@ -1762,6 +1789,7 @@ void qh_scaleinput (void) {
     compute scale and shift factors
     apply to last coordinate of each point
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_scalelast (coordT *points, int numpoints, int dim, coordT low,
 		   coordT high, coordT newhigh) {
   realT scale, shift;
@@ -1789,6 +1817,8 @@ void qh_scalelast (coordT *points, int numpoints, int dim, coordT low,
   for (i= numpoints; i--; coord += dim)
     *coord= *coord * scale + shift;
 } /* scalelast */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002522) */
 
 /*-<a                             href="qh-geom.htm#TOC"
   >-------------------------------</a><a name="scalepoints">-</a>

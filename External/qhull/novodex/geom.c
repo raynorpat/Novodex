@@ -27,6 +27,12 @@
  * Geometry Center licence clause 1: the copyright notice below is intact.
  * Clause 3: see ../NOTICE.txt. Clause 4: the original source may be
  * obtained from http://www.qhull.org.
+ * [vendored rows] void qh_distplane ( (phys_fn_002425): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0005c5c0
+ * [vendored rows] realT qh_getdistance( (phys_fn_002444): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0005d560
+ * [vendored rows] realT qh_getangle( (phys_fn_002438): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0005d410
  */
 /*<html><pre>  -<a                             href="qh-geom.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -60,6 +66,7 @@
   see:
     qh_distnorm in geom2.c
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_distplane (pointT *point, facetT *facet, realT *dist) {
   coordT *normal= facet->normal, *coordp, randr;
   int k;
@@ -110,6 +117,8 @@ void qh_distplane (pointT *point, facetT *facet, realT *dist) {
   }
   return;
 } /* distplane */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002425) */
 
 
 /*-<a                             href="qh-geom.htm#TOC"
@@ -673,6 +682,7 @@ void qh_gausselim(realT **rows, int numrow, int numcol, boolT *sign, boolT *near
     the angle may be > 1.0 or < -1.0 because of roundoff errors
 
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 realT qh_getangle(pointT *vect1, pointT *vect2) {
   realT angle= 0, randr;
   int k;
@@ -687,6 +697,8 @@ realT qh_getangle(pointT *vect1, pointT *vect2) {
   trace4((qh ferr, "qh_getangle: %2.2g\n", angle));
   return(angle);
 } /* getangle */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002438) */
 
 
 /*-<a                             href="qh-geom.htm#TOC"
@@ -759,6 +771,7 @@ pointT *qh_getcentrum(facetT *facet) {
     for each vertex of facet that is not in neighbor
       test the distance from vertex to neighbor
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 realT qh_getdistance(facetT *facet, facetT *neighbor, realT *mindist, realT *maxdist) {
   vertexT *vertex, **vertexp;
   realT dist, maxd, mind;
@@ -787,6 +800,8 @@ realT qh_getdistance(facetT *facet, facetT *neighbor, realT *mindist, realT *max
   else
     return mind;
 } /* getdistance */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002444) */
 
 
 /*-<a                             href="qh-geom.htm#TOC"

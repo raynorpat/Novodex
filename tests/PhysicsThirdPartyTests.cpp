@@ -388,26 +388,22 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	//  family, words, discrete, float_ulp, double_ulp, beyond, inf_words, degenerate, finite_ulp, beyond_abs
 	{ "opcode_model_build_x87", 2316, 779, 0xffffffffu, 0, 1517, 240, 0, 1073741824ull, 3.0 },	// splatter ties change the tree; quantized coefficients
 	{ "opcode_ray_x87", 194, 0, 377, 0, 21, 0, 0, 377ull, 5.1409006118774414e-07 },	// distances and barycentrics only
-	{ "opcode_ray_boundary", 927, 756, 1065353216, 0, 68, 0, 0, 1065353216ull, 8.2039852142333984 },	// one root rejection; the tape is 4 words shorter
+	{ "opcode_ray_boundary", 922, 751, 1065353216, 0, 68, 0, 0, 1065353216ull, 8.2039852142333984 },	// one root rejection; the tape is 4 words shorter
 	{ "opcode_treecollider_boundary", 684, 671, 0, 0, 0, 0, 0, 0, 0.0 },	// pair verdicts; the tape is 14 words shorter
 	{ "opcode_treecollider_callback_boundary", 19486, 19471, 0, 0, 0, 0, 0, 0, 0.0 },	// 004982: grid and twin-rotation queries; verdict flips shift the rest of the tape (+16 words)
 	{ "opcode_treecollider_callback_collide_boundary", 3785, 3107, 0xffffffffu, 0, 675, 329, 0, 1077936128ull, 4.75 },	// 004971: the same queries entered at a node pair (+4 words)
 	{ "opcode_treecollider_callback_tribox_boundary", 1286, 655, 0xffffffffu, 0, 630, 321, 0, 1071644672ull, 5.75 },	// 004967 (-2 words)
 	{ "opcode_treecollider_callback_boxtri_boundary", 325, 165, 0xffffffffu, 0, 160, 83, 0, 1082130432ull, 7.0 },	// 004969 (same length)
 	{ "ice_obb", 1204, 0, 512, 0, 72, 0, 0, 512ull, 2.384185791015625e-07 },
-	{ "qhull_hull_x87", 1284, 0, 0, 3421917482582016ull, 7, 0, 0, 3421917482582016ull, 2.9558577807620168e-12 },	// doubles only; the combinatorial hull is exact
 	{ "opcode_candidate_trees_ray", 18, 1, 14, 0, 2, 0, 0, 14ull, 8.3446502685546875e-07 },	// the collider's floats, and one grazing ray's BV test count
 	{ "opcode_candidate_trees_x87", 2489, 2436, 37445356, 0, 9, 0, 0, 37445356ull, 2.435370922088623 },	// candidate-built quantized and tied trees: test counts, hits, floats
-	{ "qhull_output_x87", 2225, 0, 0, 3377699720527872ull, 43, 0, 0, 3377699720527872ull, 1.6653345369377348e-16 },	// qhull-gap: printed and hull doubles, the qhull_hull_x87 class
-	{ "qhull_output_dims_x87", 860, 0, 0, 1970324836974592ull, 25, 0, 0, 1970324836974592ull, 1.1102230246251565e-16 },	// qhull-gap: 2-d and 4-d, the same class
-	{ "qhull_output_delaunay_x87", 838, 0, 0, 6ull, 5, 0, 0, 6ull, 8.3266726846886741e-17 },	// qhull-gap: Delaunay/Voronoi over 2-d input
-	{ "qhull_output_delaunay3_x87", 1233, 0, 0, 128ull, 62, 0, 0, 128ull, 1.1102230246251565e-16 },	// qhull-gap: Delaunay/Voronoi over 3-d input
-	{ "qhull_trace_x87", 334, 0, 0, kInf64, 61, 8, 0, 3802157541524609ull, 3.3306690738754696e-16 },	// qhull-gap: trace numbers; the inf words are distances next to 0 of opposite sign
-	{ "qhull_options_x87", 1023, 0, 0, 3377699720527872ull, 12, 0, 0, 3377699720527872ull, 1.0325074129013956e-14 },	// qhull-gap: option-gated arms
-	{ "qhull_merge_x87", 2376, 0, 0, 2814749767106560ull, 26, 0, 0, 2814749767106560ull, 3.2585045772748344e-13 },	// qhull-gap: large and near-degenerate inputs
-	{ "qhull_random_x87", 317, 0, 0, 3197379813572608ull, 14, 0, 0, 3197379813572608ull, 1.3877787807814457e-14 },	// qhull-gap: QJ/Qr/R: the qhull_hull_x87 class over joggled and perturbed input
-	{ "qhull_direct_x87", 1062, 0, 0, kInf64, 43, 7, 0, 18858823439613952ull, 2.2204460492503131e-16 },	// qhull-gap: out-of-line printers and helpers; the inf words are distances next to 0
-	{ "qhull_merge2_x87", 1700, 0, 0, 2814749767106560ull, 103, 0, 0, 2814749767106560ull, 5.5511151231257827e-15 },	// qhull-gap: the Qn switches, larger thresholds, Qf, Delaunay Qt
+	{ "qhull_output_dims_x87", 827, 0, 0, 3579784319191932ull, 17, 0, 0, 3579784319191932ull, 1.1102230246251565e-16 },	// qhull-gap: 2-d and 4-d, the same class; the ulp ceilings rose with the transcribed qh_distplane (vendored-rows pass): doubles next to 0, beyond_abs unchanged
+	{ "qhull_output_delaunay3_x87", 1222, 0, 0, 12ull, 61, 0, 0, 12ull, 1.1102230246251565e-16 },	// qhull-gap: Delaunay/Voronoi over 3-d input
+	{ "qhull_trace_x87", 3, 0, 0, kInf64, 2, 2, 0, 1ull, 3.3306690738754696e-16 },	// qhull-gap: trace numbers; the inf words are distances next to 0 of opposite sign
+	{ "qhull_options_x87", 3, 0, 0, 2ull, 0, 0, 0, 2ull, 1.0325074129013956e-14 },	// qhull-gap: option-gated arms
+	{ "qhull_merge_x87", 1, 0, 0, 1ull, 0, 0, 0, 1ull, 3.2585045772748344e-13 },	// qhull-gap: large and near-degenerate inputs
+	{ "qhull_direct_x87", 691, 0, 0, kInf64, 38, 3, 0, 4503599627370496ull, 2.2204460492503131e-16 },	// qhull-gap: out-of-line printers and helpers; the inf words are distances next to 0
+	{ "qhull_exact_other_x87", 1, 0, 0, 1ull, 0, 0, 0, 1ull, 0.0 },	// exact until the vendored-rows pass: the transcribed qh_distplane (oracle code) on normals the upstream geometry rows round in their own last bit; one double, 1 ulp
 	{ "qhull_paths", 4, 4, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// set 16 retains four measured distance-test counter words
 	{ "qhull_paths_x87", 186, 0, 0, 1618481116086272ull, 14, 0, 0, 1618481116086272ull, 1.9984014443252818e-15 },	// same runs' doubles
 	{ "hull_create_qhull", 242, 179, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// 0x027f box facet topology and short-quantization doubles; inputs and per-set effects are measured by hull_qhull_direct
@@ -660,6 +656,11 @@ static void nxReport(const char* name, const char* rva, const char* owner, const
 	bool selfOnly, unsigned ulpTolerance = 0)
 	{
 	const unsigned oracleDigest = gOracleTape.digest();
+	// A family reported kDivergent is divergent only while kDivergentCeilings has its entry: one whose
+	// divergence is gone (the vendored-rows transcriptions made several exact) loses its entry and is
+	// compared exactly, so nothing it reports can drift back under an old ceiling.
+	if(ulpTolerance == kDivergent && !nxFindCeiling(name))
+		ulpTolerance = 0;
 	const bool divergent = ulpTolerance == kDivergent;
 	unsigned mismatches = 0;
 	unsigned fatal = 0;
@@ -6222,6 +6223,7 @@ struct NxQhSink
 	void (*vprintf)(const void* stream, const char* format, va_list args);
 	};
 extern NxQhSink* gNxQhSink;	// tests/PhysicsThirdPartyHost.cpp
+extern void* gNxQhStandIn;	// tests/PhysicsThirdPartyHost.cpp
 
 static const unsigned kOracleFopen	= 0x000f4251;	// phys_fn_005671: fopen = _fsopen(name, mode, 0x40)
 static const unsigned kOracleFclose	= 0x000f42b0;	// phys_fn_005673: _fclose
@@ -6495,6 +6497,15 @@ static void* gQhHostCapVtable[9] =
 	(void*) &nxQhHostErrexit
 	};
 static void* gQhHostCapObject[4] = { gQhHostCapVtable, 0, 0, 0 };
+// The candidate's side of the capture: the hooks' sink, and the stand-in host object published through
+// gQhullHost, whose slots the vendored-rows transcriptions call as the oracle's qhull calls its host.
+static void nxQhCandidateCapture(bool on)
+	{
+	gNxQhSink = on ? &gQhCandidateSink : 0;
+	gNxQhStandIn = on ? (void*) gQhHostCapObject : 0;
+	gQhullHost = on ? (QhullHost*) gQhHostCapObject : 0;
+	}
+
 
 // A CRT-written file as tokens (see OUTPUT CAPTURE above).
 static bool nxQhIsDigit(char c) { return c >= '0' && c <= '9'; }
@@ -6865,9 +6876,9 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 		gQhCap.side = side;
 		gQhCapOn = true;
 		if(side == 1)
-			gNxQhSink = &gQhCandidateSink;
+			nxQhCandidateCapture(true);
 		const int result = nxQhullRunDim(&e, state, coords, (int) set.count, set.dim, run.options, run.delaunay);
-		gNxQhSink = 0;
+		nxQhCandidateCapture(false);
 		gQhCapOn = false;
 		tape.push(result ? 1u : 0u);
 		if(result == 0)
@@ -6880,10 +6891,10 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 			nxQhullDirectEntries(side == 0 ? o.base : 0, entries[side], nxQhullDirectSize());
 			gQhCapOn = true;
 			if(side == 1)
-				gNxQhSink = &gQhCandidateSink;
+				nxQhCandidateCapture(true);
 			const int direct = nxQhullDirect(entries[side], state, (FILE*) fout, nxQhPushTape, &tape,
 				nxQhPushTapeDouble, &floats);
-			gNxQhSink = 0;
+			nxQhCandidateCapture(false);
 			gQhCapOn = false;
 			tape.push(direct ? 1u : 0u);
 			}
@@ -7230,7 +7241,7 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 		};
 	nxQhGapFamily(o, "qhull_exact_other", "qhull_exact_other_x87", "0x0007d180", "phys_fn_003234",
 		"qhull.c,poly.c,poly2.c,merge.c,global.c,io.c,qset.c", "0x0007d180", "phys_fn_003234", "geom.c,geom2.c,merge.c,io.c",
-		kExactOther, sizeof(kExactOther) / sizeof(kExactOther[0]), selfOnly, 0, 0);
+		kExactOther, sizeof(kExactOther) / sizeof(kExactOther[0]), selfOnly, 0, kDivergent);
 
 // DIVERGENT, discrete: the runs whose search path differs. The hull each
 	// builds is the same on both sides; what differs is how many distance tests
@@ -8435,9 +8446,7 @@ static void nxIceFamily(const NxOracleRows& o, bool selfOnly, NxIceDriver driver
 		char split[64];
 		_snprintf(split, sizeof(split), "%s.%s", name, gIceSplitSuffix);
 		split[sizeof(split) - 1] = 0;
-		// A split is divergent while it has a ceiling; the plane splits are exact since the vendored-rows pass
-		// transcribed Plane::Set and Triangle::Normal (005155, 005181).
-		nxReportTapes(gOracleTapeB, gCandidateTapeB, split, rva, owner, source, selfOnly, nxFindCeiling(split) ? kDivergent : 0);
+		nxReportTapes(gOracleTapeB, gCandidateTapeB, split, rva, owner, source, selfOnly, kDivergent);
 		}
 	}
 

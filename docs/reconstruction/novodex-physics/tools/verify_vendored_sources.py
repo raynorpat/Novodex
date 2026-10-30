@@ -49,7 +49,7 @@ LIBRARIES = {
 # seam headers and the scalar-only ray/triangle include. Anything else without
 # one is a mistake.
 DECLARED_ADDITIONS = {
-    "qhull": {"QhullNovodeXHost.h"},
+    "qhull": {"QhullNovodeXHost.h", "QhullRows.c"},
     "opcode": {"OpcodeNovodeXHost.h", "OPC_RayTriOverlapScalar.inl", "OpcodeVendoredRows.cpp"},
 }
 

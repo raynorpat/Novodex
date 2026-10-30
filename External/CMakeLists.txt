@@ -60,8 +60,12 @@ add_library(NxQhull STATIC
 	${QHULL_TREE}/qhull.c
 	${QHULL_TREE}/qset.c
 	${QHULL_TREE}/stat.c
-	${QHULL_TREE}/user.c)
+	${QHULL_TREE}/user.c
+	${QHULL_TREE}/QhullRows.c)
 target_include_directories(NxQhull PUBLIC ${QHULL_TREE})
+# The vendored-rows pass: functions whose upstream bodies novodex/ guards with this are
+# defined by their listing transcriptions in novodex/QhullRows.c instead.
+target_compile_definitions(NxQhull PRIVATE NX_VENDORED_LISTING_ROWS)
 
 #### OPCODE ####
 

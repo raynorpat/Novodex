@@ -2827,15 +2827,15 @@
     "phys_fn_003479"
    ],
    "rows": {
-    "discovered": 71,
+    "discovered": 59,
     "dynamically_gated": 64,
-    "reconstructed": 430,
+    "reconstructed": 442,
     "statically_reviewed": 3
    },
    "bytes": {
-    "discovered": 22664,
+    "discovered": 18200,
     "dynamically_gated": 6341,
-    "reconstructed": 140987,
+    "reconstructed": 145451,
     "statically_reviewed": 157
    },
    "phases": {

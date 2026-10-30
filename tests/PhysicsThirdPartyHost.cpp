@@ -82,11 +82,17 @@ struct NxQhSink
 
 NxQhSink* gNxQhSink = 0;
 
+// The harness's stand-in host object, when it publishes one through gQhullHost for the candidate
+// (the vendored-rows transcriptions call the host's slots directly, as the oracle's qhull does): the
+// hooks treat it as no product host and keep routing to gNxQhSink.
+void* gNxQhStandIn = 0;
+static bool nxQhProductHost() { return gQhullHost && (void*) gQhullHost != gNxQhStandIn; }
+
 extern "C" {
 
 void qhNovodeXOffBegin(int dim, int numpoints, int numfacets, int numridges)
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		nxProductQhNovodeXOffBegin(dim, numpoints, numfacets, numridges);
 	else if(gNxQhSink)
 		gNxQhSink->offBegin(dim, numpoints, numfacets, numridges);
@@ -94,7 +100,7 @@ void qhNovodeXOffBegin(int dim, int numpoints, int numfacets, int numridges)
 
 void qhNovodeXPoint3(float x, float y, float z)
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		nxProductQhNovodeXPoint3(x, y, z);
 	else if(gNxQhSink)
 		gNxQhSink->point3(x, y, z);
@@ -102,7 +108,7 @@ void qhNovodeXPoint3(float x, float y, float z)
 
 void qhNovodeXFacet3Vertex(int count, int* pointids)
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		nxProductQhNovodeXFacet3Vertex(count, pointids);
 	else if(gNxQhSink)
 		gNxQhSink->facet3Vertex(count, pointids);
@@ -110,7 +116,7 @@ void qhNovodeXFacet3Vertex(int count, int* pointids)
 
 void qhNovodeXSize(float totarea, float totvol)
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		nxProductQhNovodeXSize(totarea, totvol);
 	else if(gNxQhSink)
 		gNxQhSink->size(totarea, totvol);
@@ -120,7 +126,7 @@ int qhNovodeXFprintf(FILE* stream, const char* format, ...)
 	{
 	va_list args;
 	va_start(args, format);
-	if(gQhullHost)
+	if(nxQhProductHost())
 		{
 		// The product hook's body (QhullHost.cpp): `...` cannot be forwarded
 		// to it, so it is repeated here -- format, then the host's print slot
@@ -137,14 +143,14 @@ int qhNovodeXFprintf(FILE* stream, const char* format, ...)
 
 void* qhNovodeXMalloc(size_t size)
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		return nxProductQhNovodeXMalloc(size);
 	return nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT);
 	}
 
 void qhNovodeXFree(void* memory)
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		{
 		nxProductQhNovodeXFree(memory);
 		return;
@@ -154,13 +160,13 @@ void qhNovodeXFree(void* memory)
 
 void qhNovodeXNarrowHull()
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		nxProductQhNovodeXNarrowHull();
 	}
 
 void qhNovodeXErrexit(int exitcode)
 	{
-	if(gQhullHost)
+	if(nxQhProductHost())
 		nxProductQhNovodeXErrexit(exitcode);
 	abort();
 	}
