@@ -20,7 +20,8 @@ proof before any further testing work. Today 270 of the 2,786 code rows (72,572 
 Not in scope: oracle differentials, mutation sweeps, new gate coverage lines. They belong to the later testing pass,
 together with the 1,102 rows already waiting for row-specific falsification.
 
-**Success:** zero `discovered` rows (or a short, reasoned hard-rows list), gates 3 to 7 passing, the tooling tests
+**Success:** zero `discovered` rows except the hard rows and the vendored rows the promotion policy holds for
+execution evidence, each listed with its reason; gates 3 to 7 passing, the tooling tests
 passing (857 or more), `validate_inventory.py` reporting `unexplained=0`.
 
 ## The 270 rows
@@ -47,10 +48,15 @@ block goes last because it is the largest and riskiest.
    compiler flag): fix it in the overlay `External/<lib>/novodex/<file>` and re-run the matcher until it matches;
    (c) absent from the candidate (not compiled or dropped by the linker): transcribe it as a naked row in
    `Physics/src/vendored/<Lib>Rows.cpp`, with the first-party recipe below.
-2. The proof is matcher class SHAPE or better, recorded exactly as Task 5b's vendored-correspondence promotion recorded
+2. The promotion policy (`evidence/vendored-correspondence.md`, "Promotion policy for Task 5", and its 2026-09-28
+   DIFF-equivalent arm) applies unchanged. A group with x87 compares or arithmetic needs execution evidence, and a
+   REVIEW group, or a SHAPE/MATCH group with an inlining, imms or integer-branch note, needs a recorded hand review.
+   Groups held for execution evidence stay `discovered` and go to the hand-off for the testing pass; they are not
+   forced. The triage records how many rows land in each bucket.
+3. The proof is matcher class SHAPE or better, recorded exactly as Task 5b's vendored-correspondence promotion recorded
    it (`evidence/vendored-correspondence.md`).
-3. One commit for qhull and one for OPCODE (the qhull commit may split by source file).
-4. A row that resists both a source fix and a transcription after about an hour goes on the hard-rows list with its
+4. One commit for qhull and one for OPCODE (the qhull commit may split by source file).
+5. A row that resists both a source fix and a transcription after about an hour goes on the hard-rows list with its
    reason; it does not block the pass.
 
 ### 2. First-party transcription unit (184 rows)
@@ -110,7 +116,8 @@ one checkbox per cluster.
 
 ## End state and handoff
 
-* No `discovered` rows remain; the only exceptions are on the hard-rows list, each with its reason.
+* No `discovered` rows remain except the hard rows and the vendored rows held for execution evidence, each listed
+  with its reason.
 * Every new row is `reconstructed` with a static proof, and its closure entry reads `reconstructed_not_falsified` or
   `vendored_not_falsified`.
 * Gates 3 to 7, the tooling tests and the inventory validator pass.
