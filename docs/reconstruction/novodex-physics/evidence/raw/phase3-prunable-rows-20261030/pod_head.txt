@@ -1,0 +1,35 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// PrunableRows.cpp: phys_fn_001945 with 001947 (0x0004bbd0, one function the inventory splits at the loop target
+// 0x0004bc20): the scene's removal of an owner's primary and compound-child prunables through the pruners' dispatcher,
+// then the SweepAndPrune the manager owns destroyed and freed. A naked listing transcription; NxScenePrunerOwnerDestroy
+// (IcePrunable.cpp) keeps its C++ body, which the ObjectModel-only test targets link without the joint rows. Compare script:
+// docs/reconstruction/novodex-physics/evidence/phase3-prunable-owner-destroy-listing-compare.py.
+// phys_fn_001935 (0x0004b9c0): the callback the pruners' visualisation walk (001967) passes: a node with a box at
+// +0x18 is drawn through the SDK's debug renderable (slot +0x2c, colour 0xffff0000). The candidate's walk
+// (SceneVisualize.cpp) uses its own callback, so nothing calls this one yet.
+
+extern "C" void nxPodCall1SweepAndPrune();
+extern "C" void nxPodCallDispatch();
+extern "C" void nxPodCallGetDebugRenderable();
+extern "C" void nxPodCallGetNbShapes();
+extern "C" void nxPodCallGetShapes();
+extern "C" void nxPodCallNxGetSdkAllocator();
+#pragma comment(linker, "/alternatename:_nxPodCall1SweepAndPrune=??1SweepAndPrune@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxPodCallDispatch=?Dispatch@PrunableOwnerDispatcher@@QAEIPAX@Z")
+#pragma comment(linker, "/alternatename:_nxPodCallGetDebugRenderable=?getDebugRenderable@PhysicsSDK@@QAEPAVNxDebugRenderable@@XZ")
+#pragma comment(linker, "/alternatename:_nxPodCallGetNbShapes=?getNbShapes@JointActorBody@@QBEIXZ")
+#pragma comment(linker, "/alternatename:_nxPodCallGetShapes=?getShapes@JointActorBody@@QAEPAPAXXZ")
+#pragma comment(linker, "/alternatename:_nxPodCallNxGetSdkAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
+extern "C" void* nxPodSdkInstance;
+#pragma comment(linker, "/alternatename:_nxPodSdkInstance=?instance@PhysicsSDK@@2PAV1@A")
+
+@@PROTOS@@
+
+@@BODY@@

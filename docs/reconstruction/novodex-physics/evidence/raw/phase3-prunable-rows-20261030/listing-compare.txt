@@ -1,0 +1,11 @@
+nxPrunerVisualizeNodeCallback ?nxPrunerVisualizeNodeCallback@@YA_NPAX0@Z instructions=18 differing=0
+nxPrunerOwnerDestroyRow ?nxPrunerOwnerDestroyRow@@YIXPAX00@Z instructions=62 differing=0
+ALL EQUAL
+  call nxPrunerVisualizeNodeCallback -> oracle 0x1000deb0 ; candidate ?getDebugRenderable@PhysicsSDK@@QAEPAVNxDebugRenderable@@XZ
+  call nxPrunerOwnerDestroyRow -> oracle 0x100b5260 ; candidate ?Dispatch@PrunableOwnerDispatcher@@QAEIPAX@Z
+  call nxPrunerOwnerDestroyRow -> oracle 0x100014f0 ; candidate ?getNbShapes@JointActorBody@@QBEIXZ
+  call nxPrunerOwnerDestroyRow -> oracle 0x10001520 ; candidate ?getShapes@JointActorBody@@QAEPAPAXXZ
+  call nxPrunerOwnerDestroyRow -> oracle 0x100b5260 ; candidate ?Dispatch@PrunableOwnerDispatcher@@QAEIPAX@Z
+  call nxPrunerOwnerDestroyRow -> oracle 0x100e71b0 ; candidate ??1SweepAndPrune@Opcode@@QAE@XZ
+  call nxPrunerOwnerDestroyRow -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+MAPPINGS checked=7 unexpected=0

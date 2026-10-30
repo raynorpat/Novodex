@@ -1,0 +1,48 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// ContactMeshMeshRow.cpp: phys_fn_001876 (0x00046ab0, 1597 B), matrix A [MESH][MESH], a naked listing transcription.
+// Its statics are the candidate's ContactAccumulator block (001872) and 001874's matrix slots by name. Compare script:
+// docs/reconstruction/novodex-physics/evidence/phase3-mesh-mesh-contact-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxMMCallCollideNoLeafCallback();
+extern "C" void nxMMCallNxContactConvexConvex();
+extern "C" void nxMMCallNxContactConvexHeightfield();
+extern "C" void nxMMCallNxContactConvexMesh();
+extern "C" void nxMMCallNxEmitContactThiscall();
+extern "C" void nxMMCallNxMeshHeightfieldContact();
+extern "C" void nxMMCallNxMeshPMapContacts();
+extern "C" void* nxMMImpImpNxNormalToTangents;
+extern "C" void* nxMMImpImperrorFoundationSDKNxFoundationSANW4Nx;
+extern "C" void* nxMMImpImpinstanceFoundationSDKNxFoundation0PAV;
+#pragma comment(linker, "/alternatename:_nxMMCallCollideNoLeafCallback=?CollideNoLeafCallback@NxCallbackTreeCollider@Opcode@@QAE_NP6AXPBVAABBNoLeafNode@2@0@ZHPBVModel@2@2PBVMatrix4x4@IceMaths@@3@Z")
+#pragma comment(linker, "/alternatename:_nxMMCallNxContactConvexConvex=?NxContactConvexConvex@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z")
+#pragma comment(linker, "/alternatename:_nxMMCallNxContactConvexHeightfield=?NxContactConvexHeightfield@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z")
+#pragma comment(linker, "/alternatename:_nxMMCallNxContactConvexMesh=?NxContactConvexMesh@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z")
+#pragma comment(linker, "/alternatename:_nxMMCallNxEmitContactThiscall=?NxEmitContactThiscall@@YIXPAUNxContactSink@@IPAX1IPBVNxVec3@@2GG@Z")
+#pragma comment(linker, "/alternatename:_nxMMCallNxMeshHeightfieldContact=_nxMeshHeightfieldContact")
+#pragma comment(linker, "/alternatename:_nxMMCallNxMeshPMapContacts=_nxMeshPMapContacts")
+#pragma comment(linker, "/alternatename:_nxMMImpImpNxNormalToTangents=__imp__NxNormalToTangents")
+#pragma comment(linker, "/alternatename:_nxMMImpImperrorFoundationSDKNxFoundationSANW4Nx=__imp_?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ")
+#pragma comment(linker, "/alternatename:_nxMMImpImpinstanceFoundationSDKNxFoundation0PAV=__imp_?instance@FoundationSDK@NxFoundation@@0PAV12@A")
+extern NxReal gParameter[];
+extern "C" unsigned* nxTask2lSphereMatrixA;
+extern "C" unsigned* nxTask2lSphereMatrixB;
+extern "C" unsigned nxMeshContactCount;
+extern "C" float nxMeshContactSums[3];
+extern "C" float nxMeshContactNormalAndMaterial[50];
+extern "C" float nxMeshContactVertices[96];
+extern "C" float nxMeshContactNormals[96];
+extern "C" bool __cdecl nxMeshMeshSphereCallback(const float*, const float*);
+// .data 0x10123d80 and 0x10123d88: two words only this row writes.
+static unsigned nxMeshMeshStatic80, nxMeshMeshStatic88;
+
+@@PROTOS@@
+
+@@BODY@@

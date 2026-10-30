@@ -67,6 +67,24 @@ class TranscribeTest(unittest.TestCase):
         self.assertIn('		int 3		// 0x00001000', body)
 
 
+    def test_register_plus_absolute_operand_is_named(self):
+        # lea edx, [eax + 0x10123da0]; mov dword ptr [ecx*4 + 0x10123cf8], esi; ret
+        code = bytes([0x8d, 0x90, 0xa0, 0x3d, 0x12, 0x10, 0x89, 0x34, 0x8d, 0xf8, 0x3c, 0x12, 0x10, 0xc3])
+        img = transcribe_rows.Image(code, 0x1000)
+        c = SimpleNamespace(ROWS=[('r', 0x1000, 0x100e, 't', 'void r()')],
+                            DATA={0x10123da0: 'nxNormals', 0x10123cf8: 'nxMaterial'})
+        _, body = transcribe_rows.transcribe(c, img)
+        self.assertIn('lea edx, [eax + nxNormals]', body)
+        self.assertIn('mov dword ptr [ecx*4 + nxMaterial], esi', body)
+
+    def test_unnamed_register_plus_absolute_operand_raises(self):
+        code = bytes([0x8d, 0x90, 0xa0, 0x3d, 0x12, 0x10, 0xc3])
+        img = transcribe_rows.Image(code, 0x1000)
+        c = SimpleNamespace(ROWS=[('r', 0x1000, 0x1007, 't', 'void r()')])
+        with self.assertRaises(ValueError):
+            transcribe_rows.transcribe(c, img)
+
+
 class WriteTest(unittest.TestCase):
     def test_header_and_append_and_crlf(self):
         with tempfile.TemporaryDirectory() as d:

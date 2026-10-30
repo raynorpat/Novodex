@@ -57,6 +57,17 @@ class CloseStaticRowsTest(unittest.TestCase):
         self.assertEqual({e['reason'] for e in c['deferred']}, {'reconstructed_not_falsified'})
         self.assertTrue(all('awaits the testing pass' in e['note'] for e in c['deferred']))
 
+    def test_blocked_on_later_phase_entry_moves_with_its_count(self):
+        rows = [inv_row(1), inv_row(2)]
+        inventory = {'functions': rows}
+        c = closure('phys_fn_000001', 'phys_fn_000002')
+        c['deferred'][0]['reason'] = 'blocked_on_later_phase'
+        c['counts'] = {'deferred_not_reconstructed_in_phase': 1, 'deferred_blocked_on_later_phase': 1,
+                       'deferred_reconstructed_not_falsified': 0}
+        _, closures = close_static_rows.close(MANIFEST, inventory, {3: c}, MAP)
+        self.assertEqual(closures[3]['counts'], {'deferred_not_reconstructed_in_phase': 0, 'deferred_blocked_on_later_phase': 0,
+                                                 'deferred_reconstructed_not_falsified': 2})
+
     def test_split_rows_share_one_symbol(self):
         m = dict(MANIFEST, rows={'phys_fn_000001': {'symbol': 'nxXOne', 'what': 'first part'},
                                  'phys_fn_000002': {'symbol': 'nxXOne', 'what': 'second part'}})

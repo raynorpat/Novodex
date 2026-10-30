@@ -1,0 +1,17 @@
+{
+ "source": "Physics/src/opcode/PrunableRows.cpp",
+ "compare": "evidence/phase3-prunable-rows-listing-compare.py",
+ "doc": "evidence/phase3-prunable-rows.md",
+ "instructions": 80,
+ "mappings": 7,
+ "rows": {
+  "phys_fn_001935": {
+   "symbol": "nxPrunerVisualizeNodeCallback",
+   "what": "the pruners' visualisation-walk callback: a node with a box at +0x18 is drawn through the SDK's debug renderable (slot +0x2c, colour 0xffff0000); returns true"
+  },
+  "phys_fn_001947": {
+   "symbol": "nxPrunerOwnerDestroyRow",
+   "what": "the loop and tail of 001945 (one function split at the loop target 0x0004bc20): each compound child's prunable dispatched for removal, then the manager's SweepAndPrune destroyed and freed through the SDK allocator and the owner's prunable link cleared"
+  }
+ }
+}

@@ -1,0 +1,14 @@
+nxMeshMeshContactRow ?nxMeshMeshContactRow@@YAXPBX0PAX1@Z instructions=450 differing=0
+ALL EQUAL
+  call nxMeshMeshContactRow -> oracle 0x100411a0 ; candidate ?NxContactConvexConvex@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z
+  call nxMeshMeshContactRow -> oracle 0x10047e50 ; candidate _nxMMCallNxMeshPMapContacts
+  push nxMeshMeshContactRow -> oracle 0x10046780 ; candidate _nxMeshMeshSphereCallback
+  call nxMeshMeshContactRow -> oracle 0x100d12b0 ; candidate ?CollideNoLeafCallback@NxCallbackTreeCollider@Opcode@@QAE_NP6AXPBVAABBNoLeafNode@2@0@ZHPBVModel@2@2PBVMatrix4x4@IceMaths@@3@Z
+  call nxMeshMeshContactRow -> oracle 0x1001d610 ; candidate ?NxEmitContactThiscall@@YIXPAUNxContactSink@@IPAX1IPBVNxVec3@@2GG@Z
+  call nxMeshMeshContactRow -> oracle 0x10044500 ; candidate ?NxContactConvexMesh@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z
+  call nxMeshMeshContactRow -> oracle 0x10044500 ; candidate ?NxContactConvexMesh@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z
+  call nxMeshMeshContactRow -> oracle 0x100432d0 ; candidate ?NxContactConvexHeightfield@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z
+  call nxMeshMeshContactRow -> oracle 0x10046510 ; candidate _nxMMCallNxMeshHeightfieldContact
+  call nxMeshMeshContactRow -> oracle 0x100432d0 ; candidate ?NxContactConvexHeightfield@@YAXPBUNxCollisionShape@@0PAUNxContactSink@@PAX@Z
+  call nxMeshMeshContactRow -> oracle 0x10046510 ; candidate _nxMMCallNxMeshHeightfieldContact
+MAPPINGS checked=11 unexpected=0

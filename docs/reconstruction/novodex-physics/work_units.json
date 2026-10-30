@@ -1747,10 +1747,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 1
+    "reconstructed": 1
    },
    "bytes": {
-    "discovered": 1597
+    "reconstructed": 1597
    },
    "phases": {
     "3": 1
@@ -1884,14 +1884,14 @@
     "phys_fn_002045"
    ],
    "rows": {
-    "discovered": 15,
+    "discovered": 13,
     "dynamically_gated": 44,
-    "reconstructed": 17
+    "reconstructed": 19
    },
    "bytes": {
-    "discovered": 4099,
+    "discovered": 3964,
     "dynamically_gated": 19955,
-    "reconstructed": 7371
+    "reconstructed": 7506
    },
    "phases": {
     "2": 2,

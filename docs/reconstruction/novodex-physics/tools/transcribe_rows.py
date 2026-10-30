@@ -143,6 +143,13 @@ def transcribe(cfg, img):
                         return '%s ptr [%s]' % (mm.group(1), data[a])
                     return '%s ptr [%s]' % (mm.group(1), konst(a, mm.group(1)))
                 op = re.sub(r'(byte|word|dword|qword) ptr \[(0x1[0-9a-f]{7})\]', sub, op)
+
+                def indexed(mm):
+                    a = int(mm.group(2), 16)
+                    if a not in data:
+                        raise ValueError('unnamed absolute displacement %x at %x' % (a, i.address))
+                    return '[%s%s]' % (mm.group(1), data[a])
+                op = re.sub(r'\[([^\]]*?[a-z]{2,3}(?:\*\d)? \+ )(0x1[0-9a-f]{7})\]', indexed, op)
                 if m in ('faddp', 'fsubp', 'fmulp', 'fdivp', 'fsubrp', 'fdivrp') and ',' not in op:
                     op += ', st(0)'
                 if m in ('fadd', 'fsub', 'fmul', 'fdiv', 'fsubr', 'fdivr') and re.fullmatch(r'st\(\d\)', op):

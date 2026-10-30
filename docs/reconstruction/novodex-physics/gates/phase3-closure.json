@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 72,
     "oracle_differential_falsified": 96,
-    "deferred_not_reconstructed_in_phase": 76,
-    "deferred_reconstructed_not_falsified": 145,
-    "deferred_blocked_on_later_phase": 3
+    "deferred_not_reconstructed_in_phase": 74,
+    "deferred_reconstructed_not_falsified": 148,
+    "deferred_blocked_on_later_phase": 2
   },
   "closed": [
     {
@@ -4014,13 +4014,13 @@
       "id": "phys_fn_001876",
       "rva": "0x00046ab0",
       "size": 1597,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [
         4
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "matrix A [MESH][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "note": "Transcribed from its listing (evidence/phase3-mesh-mesh-contact.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001901",
@@ -4080,9 +4080,10 @@
       "id": "phys_fn_001935",
       "rva": "0x0004b9c0",
       "size": 46,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase3-prunable-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001945",
@@ -4097,9 +4098,10 @@
       "id": "phys_fn_001947",
       "rva": "0x0004bc20",
       "size": 89,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase3-prunable-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001955",

@@ -67,10 +67,10 @@ def close(manifest, inventory, closures, mapsyms):
         if len(entries) != 1:
             raise ValueError('%s: %d deferred entries in the phase %d closure' % (rid, len(entries), phase))
         e = entries[0]
-        if e['reason'] != 'not_reconstructed_in_phase':
+        if e['reason'] not in ('not_reconstructed_in_phase', 'blocked_on_later_phase'):
             raise ValueError('%s is deferred as %s' % (rid, e['reason']))
         counts = ledger['counts']
-        counts['deferred_not_reconstructed_in_phase'] -= 1
+        counts['deferred_' + e['reason']] -= 1
         counts['deferred_reconstructed_not_falsified'] = counts.get('deferred_reconstructed_not_falsified', 0) + 1
         e['reason'] = 'reconstructed_not_falsified'
         e['note'] = ('Transcribed from its listing (%s) with a static proof only; it %s, so no mutation has been aimed '

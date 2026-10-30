@@ -36341,13 +36341,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/ContactMeshMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/ContactMeshMeshRow.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/916",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5616",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00046ab0: matrix A [MESH][MESH]: convex pairs to 001820, height fields to 001847/001869, penetration maps to 001880, a convex side to 001853; otherwise the two trees walked by 004982 with 001874 as the callback into the ContactAccumulator block, the sums passed to NxNormalToTangents and the four extremal contacts emitted through 000873. Transcribed instruction for instruction into a naked row in Physics/src/ContactMeshMeshRow.cpp; evidence/phase3-mesh-mesh-contact-listing-compare.py disassembles the built candidate and the oracle and finds the 450 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase3-mesh-mesh-contact.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/ContactMeshMeshRow.cpp",
+      "implementation_symbol": "?nxMeshMeshContactRow@@YAXPBX0PAX1@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxMeshMeshContactRow@@YAXPBX0PAX1@Z",
+        "address": "0x10013ae0",
+        "object": "ContactMeshMeshRow.obj"
+      }
     },
     {
       "id": "phys_fn_001877",
@@ -37448,13 +37456,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunableRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/755",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5874",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0004b9c0: the pruners' visualisation-walk callback: a node with a box at +0x18 is drawn through the SDK's debug renderable (slot +0x2c, colour 0xffff0000); returns true. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunableRows.cpp; evidence/phase3-prunable-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 80 instructions of its rows equal, with the 7 call mappings as expected. See evidence/phase3-prunable-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/opcode/PrunableRows.cpp",
+      "implementation_symbol": "?nxPrunerVisualizeNodeCallback@@YA_NPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPrunerVisualizeNodeCallback@@YA_NPAX0@Z",
+        "address": "0x100bff40",
+        "object": "PrunableRows.obj"
+      }
     },
     {
       "id": "phys_fn_001936",
@@ -37690,13 +37706,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/opcode/PrunableRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/760",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5895",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0004bc20: the loop and tail of 001945 (one function split at the loop target 0x0004bc20): each compound child's prunable dispatched for removal, then the manager's SweepAndPrune destroyed and freed through the SDK allocator and the owner's prunable link cleared. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunableRows.cpp; evidence/phase3-prunable-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 80 instructions of its rows equal, with the 7 call mappings as expected. See evidence/phase3-prunable-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0004bbd0"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/opcode/PrunableRows.cpp",
+      "implementation_symbol": "?nxPrunerOwnerDestroyRow@@YIXPAX00@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxPrunerOwnerDestroyRow@@YIXPAX00@Z",
+        "address": "0x100bfe90",
+        "object": "PrunableRows.obj"
+      }
     },
     {
       "id": "phys_fn_001948",

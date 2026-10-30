@@ -1,0 +1,13 @@
+{
+ "source": "Physics/src/ContactMeshMeshRow.cpp",
+ "compare": "evidence/phase3-mesh-mesh-contact-listing-compare.py",
+ "doc": "evidence/phase3-mesh-mesh-contact.md",
+ "instructions": 450,
+ "mappings": 11,
+ "rows": {
+  "phys_fn_001876": {
+   "symbol": "nxMeshMeshContactRow",
+   "what": "matrix A [MESH][MESH]: convex pairs to 001820, height fields to 001847/001869, penetration maps to 001880, a convex side to 001853; otherwise the two trees walked by 004982 with 001874 as the callback into the ContactAccumulator block, the sums passed to NxNormalToTangents and the four extremal contacts emitted through 000873"
+  }
+ }
+}
