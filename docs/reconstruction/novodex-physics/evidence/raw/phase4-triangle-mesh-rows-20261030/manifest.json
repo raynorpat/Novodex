@@ -1,0 +1,73 @@
+{
+ "source": "Physics/src/TriangleMeshRows.cpp",
+ "compare": "evidence/phase4-triangle-mesh-rows-listing-compare.py",
+ "doc": "evidence/phase4-triangle-mesh-rows.md",
+ "instructions": 1730,
+ "mappings": 57,
+ "rows": {
+  "phys_fn_001524": {
+   "symbol": "nxTM1524",
+   "what": "the hull subclass the mesh builds for its convex form, constructed: 001409's hull construction, then its own table (the oracle's 0x10107724, nxTMHullTable here) and +0x80 to +0x94 zeroed"
+  },
+  "phys_fn_001528": {
+   "symbol": "nxTM1528",
+   "what": "that subclass's scalar deleting destructor: its table stored, the hull shape's destructor body (001415), the object freed through the SDK allocator when bit 0 of the flag is set"
+  },
+  "phys_fn_002077": {
+   "symbol": "nxTM2077",
+   "what": "called by 002190: two calls through the slots +0x8 and +0x14 of the object it is handed"
+  },
+  "phys_fn_002178": {
+   "symbol": "nxTM2178",
+   "what": "the mesh's bounds: NxComputeBounds and NxComputeSphere (Foundation imports) over the vertices, a _CIpow, a Foundation error report on its TriangleMesh.cpp line, results stored from +0x70"
+  },
+  "phys_fn_002184": {
+   "symbol": "nxTM2184",
+   "what": "a leaf computation called by 002243/002245 (no calls)"
+  },
+  "phys_fn_002190": {
+   "symbol": "nxTM2190",
+   "what": "called by 002247: 002077 and two slot calls (+0x8, +0x14), one function with 002192 and 002194 (the inventory splits it at jump targets)"
+  },
+  "phys_fn_002192": {
+   "symbol": "nxTM2190",
+   "what": "the second part of 002190 (one function)"
+  },
+  "phys_fn_002194": {
+   "symbol": "nxTM2190",
+   "what": "the third part of 002190 (one function)"
+  },
+  "phys_fn_002200": {
+   "symbol": "nxTM2200",
+   "what": "a five-way switch (jump table 0x0005469c, a compare chain here) around the hull's polygon build (001472)"
+  },
+  "phys_fn_002205": {
+   "symbol": "nxTM2205",
+   "what": "a five-way switch (jump table 0x00054794, a compare chain here) around the vertex normals (002081) and a +0x10 slot"
+  },
+  "phys_fn_002239": {
+   "symbol": "nxTM2239",
+   "what": "the mesh's release: the internal mesh released (002085), owned objects through their slots, the edge list (002060) and adjacencies (001544) released, blocks freed through the SDK allocator"
+  },
+  "phys_fn_002243": {
+   "symbol": "nxTM2243",
+   "what": "one function with 002245: the mesh-size check ('mesh is too big' reported through the Foundation error stream), the vector construction (000001), the edge-record sort and 002184"
+  },
+  "phys_fn_002245": {
+   "symbol": "nxTM2243",
+   "what": "the second part of 002243 (one function)"
+  },
+  "phys_fn_002247": {
+   "symbol": "nxTM2247",
+   "what": "the part maps: 001421, the edge list (createEdgeList), the hull clustering, 005157, a radix sort, 002190, then 002060 and 005159 releases and the hull buffers freed"
+  },
+  "phys_fn_002255": {
+   "symbol": "nxTM2255",
+   "what": "the convex form's support maps: 002243, then the hull, plane and vertex support maps constructed (001565, 001571, 001575) and initialised (001558), and 002178"
+  },
+  "phys_fn_002256": {
+   "symbol": "nxTM2256",
+   "what": "the internal mesh's rebuild from a descriptor: released (002085), vertices, triangles and materials allocated (002069, 002071, 002073), the topology built (002087) and 002247"
+  }
+ }
+}

@@ -1,0 +1,88 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// TriangleMeshRows.cpp: the internal triangle mesh's rows not yet reconstructed (the oracle's TriangleMesh.cpp):
+// phys_fn_001524 and 001528 (the hull subclass the mesh builds for its convex form: its constructor over 001409 and
+// its scalar deleting destructor, with its table nxTMHullTable, the oracle's 0x10107724), 002077, 002178, 002184,
+// 002190 to 002194, 002200, 002205, 002239, 002243 with 002245, 002247, 002255 and 002256. Naked listing
+// transcriptions. The small rows they call that the candidate has only as harness models or with another calling
+// convention are transcribed here as helpers (marked "helper" below; their own records are unchanged). The oracle's
+// vtables are the candidate's tables by name (aliases). Compare script:
+// docs/reconstruction/novodex-physics/evidence/phase4-triangle-mesh-rows-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxTMCallCIpow();
+extern "C" void nxTMCallCreateEdgeList();
+extern "C" void nxTMCallNxBuildSmoothNormals();
+extern "C" void nxTMCallNxGetSdkAllocator();
+extern "C" void nxTMCallNxHullCluster();
+extern "C" void nxTMCallNxHullComputePolygons();
+extern "C" void nxTMCallNxHullFreeBuffers();
+extern "C" void nxTMCallNxHullShapeDestruct();
+extern "C" void nxTMCallNxMTBuildTopologyRow();
+extern "C" void nxTMCallNxMTReleaseRow();
+extern "C" void nxTMCallNxSupportMapHullConstruct();
+extern "C" void nxTMCallNxSupportMapInit();
+extern "C" void nxTMCallNxSupportMapPlaneConstruct();
+extern "C" void nxTMCallNxSupportMapVertexConstruct();
+extern "C" void nxTMCallNxTriangleMeshSortEdgeRecords();
+extern "C" void nxTMCallSort();
+extern "C" void* nxTMImpImpNxComputeBounds;
+extern "C" void* nxTMImpImpNxComputeSphere;
+extern "C" void* nxTMImpImperrorFoundationSDKNxFoundationSANW4Nx;
+extern "C" void* nxTMImpImpnxFoundationSDKAllocator3PAVNxUserAll;
+#pragma comment(linker, "/alternatename:_nxTMCallCIpow=__CIpow")
+#pragma comment(linker, "/alternatename:_nxTMCallCreateEdgeList=?createEdgeList@TriangleMesh@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxTMCallNxBuildSmoothNormals=_NxBuildSmoothNormals")
+#pragma comment(linker, "/alternatename:_nxTMCallNxGetSdkAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
+#pragma comment(linker, "/alternatename:_nxTMCallNxHullCluster=?nxHullCluster@@YAXXZ")
+#pragma comment(linker, "/alternatename:_nxTMCallNxHullComputePolygons=?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z")
+#pragma comment(linker, "/alternatename:_nxTMCallNxHullFreeBuffers=?nxHullFreeBuffers@@YAXXZ")
+#pragma comment(linker, "/alternatename:_nxTMCallNxHullShapeDestruct=?nxHullShapeDestruct@@YAXXZ")
+#pragma comment(linker, "/alternatename:_nxTMCallNxMTBuildTopologyRow=?nxMTBuildTopologyRow@@YI_NPAX@Z")
+#pragma comment(linker, "/alternatename:_nxTMCallNxMTReleaseRow=?nxMTReleaseRow@@YIXPAX@Z")
+#pragma comment(linker, "/alternatename:_nxTMCallNxSupportMapHullConstruct=?nxSupportMapHullConstruct@@YIPAUIceSupportMap@@PAU1@IPAVConvexHull@@@Z")
+#pragma comment(linker, "/alternatename:_nxTMCallNxSupportMapInit=?nxSupportMapInit@@YI_NPAUIceSupportMap@@II@Z")
+#pragma comment(linker, "/alternatename:_nxTMCallNxSupportMapPlaneConstruct=?nxSupportMapPlaneConstruct@@YIPAUIceSupportMap@@PAU1@IPAVConvexHull@@@Z")
+#pragma comment(linker, "/alternatename:_nxTMCallNxSupportMapVertexConstruct=?nxSupportMapVertexConstruct@@YIPAUIceSupportMap@@PAU1@IPBVConvexHull@@@Z")
+#pragma comment(linker, "/alternatename:_nxTMCallNxTriangleMeshSortEdgeRecords=_nxTriangleMeshSortEdgeRecords")
+#pragma comment(linker, "/alternatename:_nxTMCallSort=?Sort@RadixSort@IceCore@@QAEAAV12@PBIIW4RadixHint@2@@Z")
+#pragma comment(linker, "/alternatename:_nxTMImpImpNxComputeBounds=__imp__NxComputeBounds")
+#pragma comment(linker, "/alternatename:_nxTMImpImpNxComputeSphere=__imp__NxComputeSphere")
+#pragma comment(linker, "/alternatename:_nxTMImpImperrorFoundationSDKNxFoundationSANW4Nx=__imp_?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ")
+#pragma comment(linker, "/alternatename:_nxTMImpImpnxFoundationSDKAllocator3PAVNxUserAll=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
+extern "C" void* nxSdkInstanceSlot;
+#pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")
+extern "C" unsigned gNxApiReentry;
+extern "C" const char* gNxApiReentryMessage;
+extern "C" void* nxTMIdentityCtor;
+#pragma comment(linker, "/alternatename:_nxTMIdentityCtor=_nxIceIdentityConstruct")
+extern "C" void* nxTMVtHullShape;
+#pragma comment(linker, "/alternatename:_nxTMVtHullShape=?nxHullShapeVtable@@3PAPAXA")
+extern "C" void* nxTMVtHull;
+#pragma comment(linker, "/alternatename:_nxTMVtHull=?nxHullVtable@@3PAPAXA")
+extern "C" void* nxTMVtSupportBase;
+#pragma comment(linker, "/alternatename:_nxTMVtSupportBase=?gIceSupportMapBaseTable@@3QBQBXB")
+extern "C" void* nxTMVtSupportHull;
+#pragma comment(linker, "/alternatename:_nxTMVtSupportHull=?gIceSupportMapHullTable@@3QBQBXB")
+extern "C" void* nxTMVtSupportPlane;
+#pragma comment(linker, "/alternatename:_nxTMVtSupportPlane=?gIceSupportMapPlaneTable@@3QBQBXB")
+extern "C" void* nxTMVtSupportVertex;
+#pragma comment(linker, "/alternatename:_nxTMVtSupportVertex=?gIceSupportMapVertexTable@@3QBQBXB")
+
+@@PROTOS@@
+// The hull subclass's table (the oracle's 0x10107724): the scalar deleting destructor, the builder and the
+// initialiser overrides (HullShape.cpp's 001417 and 001418) and the byte count (001526).
+extern "C" void nxTMHullBuild();
+extern "C" void nxTMHullInit();
+#pragma comment(linker, "/alternatename:_nxTMHullBuild=?nxHullShapeBuild@@YAXXZ")
+#pragma comment(linker, "/alternatename:_nxTMHullInit=?nxHullShapeInit@@YAXXZ")
+extern "C" void* nxTMHullTable[4] = { (void*) &nxTM1528, (void*) &nxTMHullBuild, (void*) &nxTMHullInit, (void*) &nxTM1526 };
+
+
+@@BODY@@

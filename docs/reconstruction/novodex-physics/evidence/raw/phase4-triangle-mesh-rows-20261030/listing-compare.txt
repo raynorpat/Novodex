@@ -1,0 +1,90 @@
+nxTM0001 ?nxTM0001@@YGIIIII@Z instructions=22 differing=0
+nxTM1409 ?nxTM1409@@YIIPAX0@Z instructions=15 differing=0
+nxTM1413 ?nxTM1413@@YIIPAX0@Z instructions=14 differing=0
+nxTM1421 ?nxTM1421@@YIIPAX0@Z instructions=7 differing=0
+nxTM1455 ?nxTM1455@@YIIPAX0@Z instructions=22 differing=0
+nxTM1457 ?nxTM1457@@YIIPAX0@Z instructions=14 differing=0
+nxTM1524 ?nxTM1524@@YIIPAX0@Z instructions=15 differing=0
+nxTM1526 ?nxTM1526@@YIIPAX0@Z instructions=3 differing=0
+nxTM1528 ?nxTM1528@@YIIPAX0I@Z instructions=14 differing=0
+nxTM1544 ?nxTM1544@@YIIPAX0@Z instructions=16 differing=0
+nxTM1668 ?nxTM1668@@YIIPAX0@Z instructions=17 differing=0
+nxTM2060 ?nxTM2060@@YIIPAX0@Z instructions=48 differing=0
+nxTM2069 ?nxTM2069@@YIIPAX0I@Z instructions=15 differing=0
+nxTM2071 ?nxTM2071@@YIIPAX0I@Z instructions=15 differing=0
+nxTM2073 ?nxTM2073@@YIIPAX0@Z instructions=17 differing=0
+nxTM2077 ?nxTM2077@@YIIPAX0I@Z instructions=133 differing=0
+nxTM2079 ?nxTM2079@@YIIPAX0@Z instructions=58 differing=0
+nxTM2081 ?nxTM2081@@YIIPAX0@Z instructions=27 differing=0
+nxTM2178 ?nxTM2178@@YIIPAX0@Z instructions=154 differing=0
+nxTM2184 ?nxTM2184@@YIIPAX0I@Z instructions=122 differing=0
+nxTM2190 ?nxTM2190@@YIIPAX0I@Z instructions=96 differing=0
+nxTM2200 ?nxTM2200@@YIIPAX0II@Z instructions=31 differing=0
+nxTM2205 ?nxTM2205@@YIIPAX0II@Z instructions=41 differing=0
+nxTM2239 ?nxTM2239@@YIIPAX0@Z instructions=97 differing=0
+nxTM2243 ?nxTM2243@@YIIPAX0@Z instructions=283 differing=0
+nxTM2247 ?nxTM2247@@YIIPAX0@Z instructions=99 differing=0
+nxTM2255 ?nxTM2255@@YIIPAX0@Z instructions=86 differing=0
+nxTM2256 ?nxTM2256@@YIIPAX0I@Z instructions=121 differing=0
+nxTM5155 ?nxTM5155@@YIIPAX0III@Z instructions=92 differing=0
+nxTM5157 ?nxTM5157@@YIIPAX0@Z instructions=9 differing=0
+nxTM5159 ?nxTM5159@@YIIPAX0@Z instructions=27 differing=0
+ALL EQUAL
+  call nxTM1409 -> oracle 0x1002ace0 ; candidate ?nxTM1455@@YIIPAX0@Z
+  call nxTM1413 -> oracle 0x1002ad30 ; candidate ?nxTM1457@@YIIPAX0@Z
+  call nxTM1413 -> oracle 0x10032810 ; candidate ?nxTM1668@@YIIPAX0@Z
+  call nxTM1524 -> oracle 0x10029750 ; candidate ?nxTM1409@@YIIPAX0@Z
+  call nxTM1526 -> oracle 0x10029920 ; candidate ?nxTM1413@@YIIPAX0@Z
+  call nxTM1528 -> oracle 0x10029940 ; candidate ?nxHullShapeDestruct@@YAXXZ
+  call nxTM1528 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM1544 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2060 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2060 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2060 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2060 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2079 -> oracle 0x100e31c0 ; candidate ?nxTM5155@@YIIPAX0III@Z
+  call nxTM2081 -> oracle 0x100533c0 ; candidate _NxBuildSmoothNormals
+  call nxTM2178 -> oracle 0x100f4b10 ; candidate __CIpow
+  call nxTM2190 -> oracle 0x10052060 ; candidate ?nxTM2077@@YIIPAX0I@Z
+  call nxTM2200 -> oracle 0x1002b6f0 ; candidate ?nxHullComputePolygons@@YI_NPAVConvexHull@@@Z
+  call nxTM2205 -> oracle 0x10052240 ; candidate ?nxTM2081@@YIIPAX0@Z
+  call nxTM2239 -> oracle 0x10051ef0 ; candidate ?nxMTReleaseRow@@YIXPAX@Z
+  call nxTM2239 -> oracle 0x100515d0 ; candidate ?nxTM2060@@YIIPAX0@Z
+  call nxTM2239 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2239 -> oracle 0x1002dec0 ; candidate ?nxTM1544@@YIIPAX0@Z
+  call nxTM2239 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  push nxTM2243 -> oracle 0x10027f00 ; candidate ?nxIceIdentityConstruct@@YIPAXPAX@Z
+  call nxTM2243 -> oracle 0x10001000 ; candidate ?nxTM0001@@YGIIIII@Z
+  call nxTM2243 -> oracle 0x10054140 ; candidate _nxTMCallNxTriangleMeshSortEdgeRecords
+  call nxTM2243 -> oracle 0x10054270 ; candidate ?nxTM2184@@YIIPAX0I@Z
+  call nxTM2247 -> oracle 0x10029a10 ; candidate ?nxTM1421@@YIIPAX0@Z
+  call nxTM2247 -> oracle 0x10054460 ; candidate ?createEdgeList@TriangleMesh@@QAEXXZ
+  call nxTM2247 -> oracle 0x1002a190 ; candidate ?nxHullCluster@@YAXXZ
+  call nxTM2247 -> oracle 0x100e32c0 ; candidate ?nxTM5157@@YIIPAX0@Z
+  call nxTM2247 -> oracle 0x100e33c0 ; candidate ?Sort@RadixSort@IceCore@@QAEAAV12@PBIIW4RadixHint@2@@Z
+  call nxTM2247 -> oracle 0x10054500 ; candidate ?nxTM2190@@YIIPAX0I@Z
+  call nxTM2247 -> oracle 0x100515d0 ; candidate ?nxTM2060@@YIIPAX0@Z
+  call nxTM2247 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2247 -> oracle 0x100e32e0 ; candidate ?nxTM5159@@YIIPAX0@Z
+  call nxTM2247 -> oracle 0x10029a30 ; candidate ?nxHullFreeBuffers@@YAXXZ
+  call nxTM2255 -> oracle 0x10054e70 ; candidate ?nxTM2243@@YIIPAX0@Z
+  call nxTM2255 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2255 -> oracle 0x1002e5a0 ; candidate ?nxSupportMapHullConstruct@@YIPAUIceSupportMap@@PAU1@IPAVConvexHull@@@Z
+  call nxTM2255 -> oracle 0x1002e2f0 ; candidate ?nxSupportMapInit@@YI_NPAUIceSupportMap@@II@Z
+  call nxTM2255 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2255 -> oracle 0x1002e7c0 ; candidate ?nxSupportMapVertexConstruct@@YIPAUIceSupportMap@@PAU1@IPBVConvexHull@@@Z
+  call nxTM2255 -> oracle 0x1002e2f0 ; candidate ?nxSupportMapInit@@YI_NPAUIceSupportMap@@II@Z
+  call nxTM2255 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM2255 -> oracle 0x1002e640 ; candidate ?nxSupportMapPlaneConstruct@@YIPAUIceSupportMap@@PAU1@IPAVConvexHull@@@Z
+  call nxTM2255 -> oracle 0x1002e2f0 ; candidate ?nxSupportMapInit@@YI_NPAUIceSupportMap@@II@Z
+  call nxTM2255 -> oracle 0x10053f40 ; candidate ?nxTM2178@@YIIPAX0@Z
+  jmp nxTM2255 -> oracle 0x100521b0 ; candidate ?nxTM2079@@YIIPAX0@Z
+  call nxTM2256 -> oracle 0x10051ef0 ; candidate ?nxMTReleaseRow@@YIXPAX@Z
+  call nxTM2256 -> oracle 0x10051fa0 ; candidate ?nxTM2069@@YIIPAX0I@Z
+  call nxTM2256 -> oracle 0x10051fd0 ; candidate ?nxTM2071@@YIIPAX0I@Z
+  call nxTM2256 -> oracle 0x10052000 ; candidate ?nxTM2073@@YIIPAX0@Z
+  call nxTM2256 -> oracle 0x100523c0 ; candidate ?nxMTBuildTopologyRow@@YI_NPAX@Z
+  call nxTM2256 -> oracle 0x10055180 ; candidate ?nxTM2247@@YIIPAX0@Z
+  call nxTM5159 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxTM5159 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+MAPPINGS checked=57 unexpected=0

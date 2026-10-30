@@ -29819,13 +29819,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/601",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4087",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0002d940: the hull subclass the mesh builds for its convex form, constructed: 001409's hull construction, then its own table (the oracle's 0x10107724, nxTMHullTable here) and +0x80 to +0x94 zeroed. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM1524@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM1524@@YIIPAX0@Z",
+        "address": "0x10084220",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_001525",
@@ -29891,13 +29899,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/602",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4089",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0002d980: that subclass's scalar deleting destructor: its table stored, the hull shape's destructor body (001415), the object freed through the SDK allocator when bit 0 of the flag is set. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM1528@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM1528@@YIIPAX0I@Z",
+        "address": "0x100840d0",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_001529",
@@ -40349,13 +40365,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/809",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6660",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052060: called by 002190: two calls through the slots +0x8 and +0x14 of the object it is handed. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2077@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2077@@YIIPAX0I@Z",
+        "address": "0x100843b0",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002078",
@@ -42439,14 +42463,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/TriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/828",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6871",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00053f40: the mesh's bounds: NxComputeBounds and NxComputeSphere (Foundation imports) over the vertices, a _CIpow, a Foundation error report on its TriangleMesh.cpp line, results stored from +0x70. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2178@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2178@@YIIPAX0@Z",
+        "address": "0x100845d0",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002179",
@@ -42552,13 +42583,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/830",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6900",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054270: a leaf computation called by 002243/002245 (no calls). Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2184@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2184@@YIIPAX0I@Z",
+        "address": "0x100847d0",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002185",
@@ -42662,13 +42701,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/833",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6918",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054500: called by 002247: 002077 and two slot calls (+0x8, +0x14), one function with 002192 and 002194 (the inventory splits it at jump targets). Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2190@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2190@@YIIPAX0I@Z",
+        "address": "0x10084930",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002191",
@@ -42698,13 +42745,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/833",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6919",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054550: the second part of 002190 (one function). Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00054500"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2190@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2190@@YIIPAX0I@Z",
+        "address": "0x10084930",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002193",
@@ -42734,13 +42789,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/833",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6923",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000545d0: the third part of 002190 (one function). Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00054500"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2190@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2190@@YIIPAX0I@Z",
+        "address": "0x10084930",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002195",
@@ -42842,13 +42905,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1073",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6929",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054640: a five-way switch (jump table 0x0005469c, a compare chain here) around the hull's polygon build (001472). Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2200@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2200@@YIIPAX0II@Z",
+        "address": "0x10084a40",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002201",
@@ -42932,13 +43003,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1075",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6943",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054720: a five-way switch (jump table 0x00054794, a compare chain here) around the vertex normals (002081) and a +0x10 slot. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2205@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2205@@YIIPAX0II@Z",
+        "address": "0x10084ab0",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002206",
@@ -43558,13 +43637,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/835",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6977",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054a80: the mesh's release: the internal mesh released (002085), owned objects through their slots, the edge list (002060) and adjacencies (001544) released, blocks freed through the SDK allocator. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2239@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2239@@YIIPAX0@Z",
+        "address": "0x10084b40",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002240",
@@ -43638,14 +43725,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/TriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/837",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6992",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054e70: one function with 002245: the mesh-size check ('mesh is too big' reported through the Foundation error stream), the vector construction (000001), the edge-record sort and 002184. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "",
-      "implementation": null
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2243@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2243@@YIIPAX0@Z",
+        "address": "0x10084c70",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002244",
@@ -43675,14 +43769,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/TriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/837",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6997",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00054f10: the second part of 002243 (one function). Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00054e70",
-      "implementation": null
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2243@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2243@@YIIPAX0@Z",
+        "address": "0x10084c70",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002246",
@@ -43712,13 +43813,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/838",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7016",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00055180: the part maps: 001421, the edge list (createEdgeList), the hull clustering, 005157, a radix sort, 002190, then 002060 and 005159 releases and the hull buffers freed. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2247@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2247@@YIIPAX0@Z",
+        "address": "0x10084f80",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002248",
@@ -43861,13 +43970,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/842",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7028",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000555b0: the convex form's support maps: 002243, then the hull, plane and vertex support maps constructed (001565, 001571, 001575) and initialised (001558), and 002178. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2255@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2255@@YIIPAX0@Z",
+        "address": "0x100850c0",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002256",
@@ -43879,13 +43996,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/TriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/843",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7039",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000556c0: the internal mesh's rebuild from a descriptor: released (002085), vertices, triangles and materials allocated (002069, 002071, 002073), the topology built (002087) and 002247. Transcribed instruction for instruction into a naked row in Physics/src/TriangleMeshRows.cpp; evidence/phase4-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1730 instructions of its rows equal, with the 57 call mappings as expected. See evidence/phase4-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/TriangleMeshRows.cpp",
+      "implementation_symbol": "?nxTM2256@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxTM2256@@YIIPAX0I@Z",
+        "address": "0x100851d0",
+        "object": "TriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002257",
