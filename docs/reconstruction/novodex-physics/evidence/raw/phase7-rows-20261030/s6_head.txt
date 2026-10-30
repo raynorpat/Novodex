@@ -1,0 +1,137 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// Phase7Rows.cpp: Phase 7's remaining rows: the continuous-collision sweep geometry at 0x00056690 to 0x0005a16a
+// (phys_fn_002268 to 002316: the box, capsule and triangle sweep tests, the sweep cache with its table, the per-shape
+// sweep dispatch), the character controllers' creation (002332, 002336), the step row 002350 and 002400. Naked listing
+// transcriptions. The oracle's .data is the candidate's by name where the candidate has it (the identity poses, the ICE
+// box tables through their accessors, the SDK and scene rows) and new statics here where it does not (the sweep cache,
+// the axis table). The controller classes' tables (the oracle's 0x10108740, 0x1010878c..0x101087ac and
+// 0x10108818..0x10108830) are built here entry for entry, from rows transcribed as helpers (their records unchanged)
+// and the CRT's _purecall. Compare script: docs/reconstruction/novodex-physics/evidence/phase7-rows-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxP7Call0AABBCollider();
+extern "C" void nxP7Call0SdkContainer();
+extern "C" void nxP7Call1AABBCollider();
+extern "C" void nxP7CallAdd();
+extern "C" void nxP7CallChkstk();
+extern "C" void nxP7CallCollide();
+extern "C" void nxP7CallComputePoints();
+extern "C" void nxP7CallComputePointsX();
+extern "C" void nxP7CallComputeWorldEdgeNormal();
+extern "C" void nxP7CallCreateEdgeList();
+extern "C" void nxP7CallEmpty();
+extern "C" void nxP7CallFpclass();
+extern "C" void nxP7CallFree();
+extern "C" void nxP7CallGetEdgeNormals();
+extern "C" void nxP7CallGetEdges();
+extern "C" void nxP7CallGetEdgesX();
+extern "C" void nxP7CallGetVertexNormals();
+extern "C" void nxP7CallInflate();
+extern "C" void nxP7CallInitialise();
+extern "C" void nxP7CallInvertPRMatrix();
+extern "C" void nxP7CallLock();
+extern "C" void nxP7CallMalloc();
+extern "C" void nxP7CallNormal();
+extern "C" void nxP7CallNxFillShapeDescriptor();
+extern "C" void nxP7CallNxIceIdentityPoses();
+extern "C" void nxP7CallNxP45404();
+extern "C" void nxP7CallNxPOSetCenterExtents();
+extern "C" void nxP7CallNxRayAABBSlab();
+extern "C" void nxP7CallOverlapAABBShapes();
+extern "C" void nxP7CallResize();
+extern "C" void nxP7CallSimulateFrame();
+extern "C" void nxP7CallUnlock();
+extern "C" void* nxP7ImpImpExitThread4;
+extern "C" void* nxP7ImpImpNxComputeBoxPoints;
+extern "C" void* nxP7ImpImpNxGetBoxTriangles;
+extern "C" void* nxP7ImpImpResetEvent4;
+extern "C" void* nxP7ImpImpSetEvent4;
+extern "C" void* nxP7ImpImpWaitForSingleObject8;
+extern "C" void* nxP7ImpImpnxFoundationSDKAllocator3PAVNxUserAll;
+#pragma comment(linker, "/alternatename:_nxP7Call0AABBCollider=??0AABBCollider@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP7Call0SdkContainer=??0SdkContainer@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP7Call1AABBCollider=??1AABBCollider@Opcode@@UAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP7CallAdd=?Add@AABB@IceMaths@@QAEAAV12@ABV12@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallChkstk=__chkstk")
+#pragma comment(linker, "/alternatename:_nxP7CallCollide=?Collide@AABBCollider@Opcode@@QAE_NAAUAABBCache@2@ABVCollisionAABB@2@ABVModel@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallComputePoints=?ComputePoints@OBB@IceMaths@@QBE_NPAVPoint@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallComputePointsX=?ComputePoints@AABB@IceMaths@@QBE_NPAVPoint@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallComputeWorldEdgeNormal=?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallCreateEdgeList=?createEdgeList@TriangleMesh@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxP7CallEmpty=?empty@SdkContainer@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxP7CallFpclass=__fpclass")
+#pragma comment(linker, "/alternatename:_nxP7CallFree=_free")
+#pragma comment(linker, "/alternatename:_nxP7CallGetEdgeNormals=?GetEdgeNormals@AABB@IceMaths@@QBEPBVPoint@2@XZ")
+#pragma comment(linker, "/alternatename:_nxP7CallGetEdges=?GetEdges@OBB@IceMaths@@QBEPBIXZ")
+#pragma comment(linker, "/alternatename:_nxP7CallGetEdgesX=?GetEdges@AABB@IceMaths@@QBEPBIXZ")
+#pragma comment(linker, "/alternatename:_nxP7CallGetVertexNormals=?GetVertexNormals@AABB@IceMaths@@QBEPBVPoint@2@XZ")
+#pragma comment(linker, "/alternatename:_nxP7CallInflate=?Inflate@Triangle@IceMaths@@QAEXM_N@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallInitialise=?initialise@NxSceneInternal@@QAE_NABVNxSceneDesc@@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallInvertPRMatrix=?InvertPRMatrix@IceMaths@@YAXAAVMatrix4x4@1@ABV21@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallLock=?lock@ReadWriteLock@@QAE_NXZ")
+#pragma comment(linker, "/alternatename:_nxP7CallMalloc=_malloc")
+#pragma comment(linker, "/alternatename:_nxP7CallNormal=?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallNxFillShapeDescriptor=?nxFillShapeDescriptor@BoxShape@@QBEXPAI@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallNxIceIdentityPoses=?nxIceIdentityPoses@@YAPBMXZ")
+#pragma comment(linker, "/alternatename:_nxP7CallNxP45404=?nxP45404@@YIIPAX0I@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallNxPOSetCenterExtents=?nxPOSetCenterExtents@@YIXPAX0PBX1@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallNxRayAABBSlab=?NxRayAABBSlab@@YAHPBM000PAM1@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallOverlapAABBShapes=?overlapAABBShapes@NxSceneInternal@@QAEIABVNxBounds3@@W4NxShapesType@@IPAPAVNxShape@@PAV?$NxUserEntityReport@PAVNxShape@@@@@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallResize=?resize@SdkContainer@@QAE_NI@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallSimulateFrame=?simulateFrame@NxSceneInternal@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxP7CallUnlock=?unlock@ReadWriteLock@@QAE_NXZ")
+#pragma comment(linker, "/alternatename:_nxP7ImpImpExitThread4=__imp__ExitThread@4")
+#pragma comment(linker, "/alternatename:_nxP7ImpImpNxComputeBoxPoints=__imp__NxComputeBoxPoints")
+#pragma comment(linker, "/alternatename:_nxP7ImpImpNxGetBoxTriangles=__imp__NxGetBoxTriangles")
+#pragma comment(linker, "/alternatename:_nxP7ImpImpResetEvent4=__imp__ResetEvent@4")
+#pragma comment(linker, "/alternatename:_nxP7ImpImpSetEvent4=__imp__SetEvent@4")
+#pragma comment(linker, "/alternatename:_nxP7ImpImpWaitForSingleObject8=__imp__WaitForSingleObject@8")
+#pragma comment(linker, "/alternatename:_nxP7ImpImpnxFoundationSDKAllocator3PAVNxUserAll=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
+extern "C" void* nxSdkInstanceSlot;
+#pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")
+extern "C" unsigned gNxApiReentry;
+extern "C" const char* gNxApiReentryMessage;
+extern "C" void* nxKnCompleteSorter;
+#pragma comment(linker, "/alternatename:_nxKnCompleteSorter=?gCompleteSorter@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnBipartiteSorter0;
+#pragma comment(linker, "/alternatename:_nxKnBipartiteSorter0=?gBipartiteSorter0@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnBipartiteSorter1;
+#pragma comment(linker, "/alternatename:_nxKnBipartiteSorter1=?gBipartiteSorter1@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnPrunerPool;
+#pragma comment(linker, "/alternatename:_nxKnPrunerPool=?gNxPrunerProcessPool@@3PAVNxPrunerProcessPool@@A")
+extern "C" void* nxKnOwnerQuery;
+#pragma comment(linker, "/alternatename:_nxKnOwnerQuery=?gPrunableOwnerQuery@@3P6AIPAX@ZA")
+extern "C" void* nxKnOwnerNotify;
+#pragma comment(linker, "/alternatename:_nxKnOwnerNotify=?gPrunableOwnerNotify@@3P6AXPAXPAVAABB@IceMaths@@@ZA")
+extern "C" void* nxKnOwnerWorldAABB;
+#pragma comment(linker, "/alternatename:_nxKnOwnerWorldAABB=?gPrunableOwnerWorldAABB@@3P6AXPAXPAVAABB@IceMaths@@@ZA")
+extern "C" void* nxKnAdapterNotify;
+#pragma comment(linker, "/alternatename:_nxKnAdapterNotify=?gPrunableAdapterNotify@@3P6AXPAVPrunable@@PAVAABB@IceMaths@@@ZA")
+// .data 0x1012466c and 0x10124670: a guard byte and the sweep cache 002300 to 002308 keep.
+static unsigned char nxP7SweepGuard; static unsigned nxP7SweepCache;
+// .data 0x101222f8: the six signed axes (written once by the image, read here as a table).
+static float nxP7Axes[18] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f };
+extern "C" void* nxP7Tab108740[2]; extern "C" void* nxP7TabR1[8]; extern "C" void* nxP7TabR2[6];
+extern "C" void* nxP7IdentityCtor;
+#pragma comment(linker, "/alternatename:_nxP7IdentityCtor=_nxIceIdentityConstruct")
+extern "C" void nxP7PureCall();
+#pragma comment(linker, "/alternatename:_nxP7PureCall=__purecall")
+extern "C" void* nxP7VtShapeDesc;
+#pragma comment(linker, "/alternatename:_nxP7VtShapeDesc=??_7NxShapeDesc@@6B@")
+
+@@PROTOS@@
+// The controller classes' tables, entry for entry as the oracle has them (0x10108740; 0x1010878c..0x101087ac, which
+// the oracle's 0x10108798, 0x1010879c and 0x101087a8 point into; 0x10108818..0x10108830, with 0x10108824 inside it).
+extern "C" void* nxP7Tab108740[2] = { (void*) &nxP72298, (void*) &nxP72280 };
+extern "C" void* nxP7TabR1[8] = { (void*) &nxP72312, (void*) &nxP7PureCall, (void*) &nxP7PureCall, (void*) &nxP72326, (void*) &nxP72312, (void*) &nxP7PureCall, (void*) &nxP7PureCall, (void*) &nxP72322 };
+extern "C" void* nxP7TabR2[6] = { (void*) &nxP74031, (void*) &nxP72314, (void*) &nxP72324, (void*) &nxP72328, (void*) &nxP72308, (void*) &nxP72334 };
+
+
+@@BODY@@

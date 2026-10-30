@@ -44242,13 +44242,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/848",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7100",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00056690: a listing of 374 instructions; calls nothing directly (part 1 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72268@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72268@@YIIPAX0@Z",
+        "address": "0x1005c010",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002269",
@@ -44278,13 +44286,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/848",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7101",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00056700: a listing of 374 instructions; calls nothing directly (part 2 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00056690"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72268@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72268@@YIIPAX0@Z",
+        "address": "0x1005c010",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002271",
@@ -44358,13 +44374,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/849",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7107",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00056b10: a listing of 100 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00056ad0"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72274@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72274@@YIIPAX0@Z",
+        "address": "0x1005c450",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002275",
@@ -44394,13 +44418,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/850",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7115",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00056c40: a listing of 277 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72276@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72276@@YIIPAX0@Z",
+        "address": "0x1005c580",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002277",
@@ -44430,13 +44462,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/851",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7126",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00056fa0: a listing of 232 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72278@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72278@@YIIPAX0@Z",
+        "address": "0x1005c8e0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002279",
@@ -44466,13 +44506,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/852",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7131",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000572a0: a listing of 45 instructions; calls nxPOSetCenterExtents, AABB::Add. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72280@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72280@@YIIPAX0II@Z",
+        "address": "0x1005bb00",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002281",
@@ -44502,13 +44550,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/853",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7132",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00057330: a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 1 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72282@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72282@@YAIXZ",
+        "address": "0x1005cbe0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002283",
@@ -44538,13 +44594,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/853",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7134",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000574c0: a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 2 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00057330"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72282@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72282@@YAIXZ",
+        "address": "0x1005cbe0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002285",
@@ -44574,13 +44638,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/853",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7141",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00057980: a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 3 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00057330"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72282@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72282@@YAIXZ",
+        "address": "0x1005cbe0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002287",
@@ -44610,13 +44682,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/854",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7148",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00057c70: a listing of 45 instructions; calls nothing directly; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72288@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72288@@YIIPAX0@Z",
+        "address": "0x1005d510",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002289",
@@ -44646,13 +44726,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/855",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7152",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00057d00: a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 1 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72290@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72290@@YAIXZ",
+        "address": "0x1005d5a0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002291",
@@ -44682,13 +44770,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/855",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7155",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00057e20: a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 2 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00057d00"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72290@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72290@@YAIXZ",
+        "address": "0x1005d5a0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002293",
@@ -44718,13 +44814,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/855",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7163",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00058190: a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 3 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00057d00"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72290@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72290@@YAIXZ",
+        "address": "0x1005d5a0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002295",
@@ -44754,13 +44858,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/856",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7173",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000583e0: a listing of 276 instructions; calls nxPOSetCenterExtents, AABB::ComputePoints, nxP72290, nxIceIdentityPoses, nxP72282. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72296@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72296@@YIIPAX0@Z",
+        "address": "0x1005dc80",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002297",
@@ -44790,13 +44902,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1120",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7187",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00058830: a listing of 23 instructions; calls nxP72296. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72298@@YIIPAX0IIIIIIIIII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72298@@YIIPAX0IIIIIIIIII@Z",
+        "address": "0x1005bb90",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002299",
@@ -44826,13 +44946,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/857",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7188",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00058870: a listing of 423 instructions; calls nxP72288; 1 indirect calls (part 1 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72300@@YIIPAX0IIIIIIIIIIIIIIII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72300@@YIIPAX0IIIIIIIIIIIIIIII@Z",
+        "address": "0x1005e0d0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002301",
@@ -44862,13 +44990,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/857",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7190",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00058900: a listing of 423 instructions; calls nxP72288; 1 indirect calls (part 2 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00058870"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72300@@YIIPAX0IIIIIIIIIIIIIIII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72300@@YIIPAX0IIIIIIIIIIIIIIII@Z",
+        "address": "0x1005e0d0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002303",
@@ -44898,13 +45034,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/858",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7205",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00058ea0: a listing of 424 instructions; calls nxPOSetCenterExtents, SdkContainer ctor, nxP72310, chkstk, nxP72300, SdkContainer::empty; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72304@@YIIPAX0IIIIIIIIIII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72304@@YIIPAX0IIIIIIIIIII@Z",
+        "address": "0x1005e700",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002305",
@@ -44934,13 +45078,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/859",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7219",
-      "static_proof": "IDA pseudocode at RVA 0x00058ea0 dispatches controller sweep candidate geometry only for internal shape types 2 (box) and 4 (triangle mesh); resolver phys_fn_002306 at 0x00059320 performs two side-offset sweeps and a downward sweep, then conditionally attempts step-up when the downward sweep hits and the controller has a nonzero step setting.",
+      "static_proof": "Capstone listing at RVA 0x00059320: a listing of 253 instructions; calls SdkContainer ctor, nxP72304, Triangle::Normal, SdkContainer::empty. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": "The full collision resolver is not implemented: the row performs three controller sweep queries and optional step-up logic through phys_fn_002304. The candidate implements axis-aligned sweeps plus a tested 45-degree OBB/AABB sweep case, active-group filtering, tangential projection, limited directional handling for initial overlap in the phys_fn_002308 vtable slot, and triangle-mesh SAT with corner-miss/face-hit/initial-overlap fixtures. A grounded +Y downward probe matches the oracle's blocked low-obstacle result; a shallow rising-mesh face also stops as a side hit for a horizontal Y-up move. Evidence: docs/reconstruction/novodex-physics/evidence/controller-grounded-step-probe.md and docs/reconstruction/novodex-physics/evidence/controller-mesh-slope-normal.md. The broader transformed/convex mesh sweep matrix, generalized multi-contact sliding, and successful step-up remain open. The resolver's type-2/type-4 dispatch was recovered from IDA and is tested by the sphere-corner pass-through case."
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72306@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72306@@YAIXZ",
+        "address": "0x1005eb80",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002307",
@@ -44970,13 +45122,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/860",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7230",
-      "static_proof": null,
-      "dynamic_proof": "NxPhysicsSimulationTests paired differential drives the three-slot controller vtable: free-space translation (0.25,0,0) preserves the generated actor's pre-step pose; an X sweep toward a static box stops at x=0.5 with flags=4; activeGroups=0 passes through to x=2.5 with flags=0; a diagonal move slides along the X wall to (0.5,0,1) with flags=4; a controller initially at x=0.75 inside the expanded box can escape to x=0.25 with flags=0, while moving inward remains at x=0.75 with flags=4; a +Y sweep toward an overhead box stops at y=0.5 with flags=1; an enabled trigger box stops the controller at x=7.5 with flags=4; a 45-degree thin OBB sweep at an offset through its empty world-AABB corner stops at x bits bf50704e with flags=4; a sphere inside the expanded box corner is ignored and the controller reaches x=2 with flags=0; a triangle-mesh corner miss reaches x=2 with flags=0; an actual triangle hit stops at x=1, y=z=0.2 with flags=4; when initially intersecting the mesh plane, -0.5 and +0.5 X moves finish at x=1 and x=2 with flags=0. Oracle and candidate transcripts match exactly. This remains partial: 16-bit-index coverage, broader transformed/convex mesh sweep matrix, full penetration recovery, full step-up/slide behavior, callback paths, and broader controller lifecycle behavior are open.",
-      "notes": "Candidate implements axis-aligned swept-AABB filtering, a 15-axis swept OBB/AABB box path, continuous SAT sweeps against tested float-vertex/32-bit-index mesh triangles, and initial-overlap skipping for the tested mesh plane; it has a bounded tangential projection loop and limited directional handling when initially overlapping a box. Keep state discovered until the broader transformed/convex mesh sweep matrix, full penetration recovery, full step-up/slide behavior, callback paths, 16-bit-index coverage, and broader controller lifecycle behavior are reconstructed and falsified."
+      "static_proof": "Capstone listing at RVA 0x00059710: a listing of 56 instructions; calls nxP72306; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
+      "dynamic_proof": null,
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72308@@YIIPAX0IIII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72308@@YIIPAX0IIII@Z",
+        "address": "0x1005bbd0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002309",
@@ -45006,13 +45166,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/861",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7232",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000597c0: a listing of 698 instructions; calls nxP71960, nxP71957, chkstk, NxSceneInternal::overlapAABBShapes, AABBCollider ctor, SdkContainer ctor, nxP71281, nxFillShapeDescriptor, nxP70001, SdkContainer::resize, IceMaths::InvertPRMatrix, AABBCollider::Collide, TriangleMesh::createEdgeList, SdkContainer::empty, ~AABBCollider; 2 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72310@@YAIXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72310@@YAIXZ",
+        "address": "0x1005ef70",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002311",
@@ -45114,13 +45282,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/862",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7279",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0005a0f0: a listing of 41 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72316@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72316@@YIIPAX0II@Z",
+        "address": "0x1005f830",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002317",
@@ -45404,13 +45580,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/868",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7303",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0005a520: a listing of 172 instructions; calls nxP72316, malloc, free, NxSceneInternal::initialise. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72332@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72332@@YIIPAX0II@Z",
+        "address": "0x1005f8b0",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002333",
@@ -45476,13 +45660,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/869",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7309",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0005a880: a listing of 34 instructions; calls nxP72332; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72336@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72336@@YIIPAX0I@Z",
+        "address": "0x1005fc00",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002337",
@@ -45730,13 +45922,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/875",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7351",
-      "static_proof": "IDA pseudocode at RVA 0x0005ae50 builds a temporary hash over previous shape pairs from the packed shape IDs at +0xd4, classifies current pairs as enter (1) or stay (4), marks matches, and rechecks unmatched old pairs through the type-indexed overlap dispatch. Still-overlapping pairs are appended to the current list and report stay; non-overlapping pairs report leave (2). The pair-list headers are swapped and the new current list is reset at return.",
-      "dynamic_proof": "NxPhysicsSimulationTests covers one pair, 32 simultaneous pairs, and two trigger shapes on one actor through enter/stay/leave. The 32-pair oracle/candidate differential matches exactly (oracle_exit=0, candidate_exit=0, stdout_delta=0, stderr_exact=True; build/trigger-pair-32-differential.log). The direct NxPhysicsCollisionTests oracle fixture covers duplicate pairs, mixed box/sphere ordering, true/false/null overlap results, retained-pair allocation growth, partially filled current-list growth/copy/free, and empty-list swap/reset. A 1,152-case oracle/candidate matrix covers all ordered shape-type pairs, both trigger sides, and event-mask bytes 0 through 15; it checks retained-pair order, event identity, and allocations. The oracle emits transitions for every pair already in its list, even when low event-mask bits are zero. Mutations disabling orientation and restoring the low-bit filter produced 36 and 144 mismatches. A 21-case matrix nulls each unordered overlap-dispatch slot in turn; every case matches on one leave event, no retained pair, and one allocation. Treating null as overlap produced 21 mismatches. An existing-event-buffer case verifies growth preserves the old record, appends a stay, and frees the replaced array once; omitting the copy loop is rejected. The restored full collision harness passes and Phase 3 passes at 973/973 assertions (build/phase3-trigger-event-growth-gate.log). Public enter/stay/leave simulation and compound-trigger lifecycle differentials also match exactly.",
-      "notes": "Partial only. Candidate mirrors the oracle hash lookup, event classification, overlap recheck, pair ordering, vector swaps, and measured growth behavior. Duplicate pairs, all event-mask bytes 0..15, all 21 null overlap slots, event-buffer preservation/growth, pair-buffer growth/free, empty-list reset, and compound per-shape lifecycle have oracle-backed coverage. Broader pair-list allocation failure and edge cases remain unverified; keep discovered until remaining behavior is reconstructed and mutation-falsified."
+      "static_proof": "Capstone listing at RVA 0x0005ae50: a listing of 647 instructions; calls chkstk; 11 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
+      "dynamic_proof": null,
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72350@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72350@@YIIPAX0I@Z",
+        "address": "0x1005fc60",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002351",
@@ -46650,13 +46850,21 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Phase7Rows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/900",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7437",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x0005b9e0: a listing of 26 instructions; calls nxP72375, nxP72371, nxP72387, nxP72389, ReadWriteLock::lock, NxSceneInternal::simulateFrame, ReadWriteLock::unlock, nxP72373. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/Phase7Rows.cpp",
+      "implementation_symbol": "?nxP72400@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxP72400@@YIIPAX0@Z",
+        "address": "0x10060490",
+        "object": "Phase7Rows.obj"
+      }
     },
     {
       "id": "phys_fn_002401",

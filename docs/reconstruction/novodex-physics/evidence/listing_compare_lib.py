@@ -167,7 +167,7 @@ def run(rows, expected, tables=None, data=None, argv=None, static_ranges=None):
                 tg = [struct.unpack('<I', pe_.get_data(base + 4 * k - pe_.OPTIONAL_HEADER.ImageBase, 4))[0] for k in range(n)]
                 op = 'table%s' % (tuple(idx.get(t, -1) for t in tg),)
             op = absolute(pe_, op)
-            m16 = re.fullmatch(r'(ax|bx|cx|dx|si|di), (-\d+)', op)
+            m16 = re.fullmatch(r'(ax|bx|cx|dx|si|di|word ptr \[[^\]]+\]), (-\d+)', op)
             if m16:
                 op = '%s, 0x%x' % (m16.group(1), 0x10000 + int(m16.group(2)))
             if i.mnemonic == 'test' and re.fullmatch(r'[a-z]{2,3}, [a-z]{2,3}', op):

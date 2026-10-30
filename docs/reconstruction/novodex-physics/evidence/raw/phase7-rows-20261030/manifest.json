@@ -1,0 +1,113 @@
+{
+ "source": "Physics/src/Phase7Rows.cpp",
+ "compare": "evidence/phase7-rows-listing-compare.py",
+ "doc": "evidence/phase7-rows.md",
+ "instructions": 5599,
+ "mappings": 111,
+ "rows": {
+  "phys_fn_002268": {
+   "symbol": "nxP72268",
+   "what": "a listing of 374 instructions; calls nothing directly (part 1 of 2 of one function)"
+  },
+  "phys_fn_002270": {
+   "symbol": "nxP72268",
+   "what": "a listing of 374 instructions; calls nothing directly (part 2 of 2 of one function)"
+  },
+  "phys_fn_002274": {
+   "symbol": "nxP72274",
+   "what": "a listing of 100 instructions; calls nothing directly"
+  },
+  "phys_fn_002276": {
+   "symbol": "nxP72276",
+   "what": "a listing of 277 instructions; calls nothing directly"
+  },
+  "phys_fn_002278": {
+   "symbol": "nxP72278",
+   "what": "a listing of 232 instructions; calls nothing directly"
+  },
+  "phys_fn_002280": {
+   "symbol": "nxP72280",
+   "what": "a listing of 45 instructions; calls nxPOSetCenterExtents, AABB::Add"
+  },
+  "phys_fn_002282": {
+   "symbol": "nxP72282",
+   "what": "a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 1 of 3 of one function)"
+  },
+  "phys_fn_002284": {
+   "symbol": "nxP72282",
+   "what": "a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 2 of 3 of one function)"
+  },
+  "phys_fn_002286": {
+   "symbol": "nxP72282",
+   "what": "a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 3 of 3 of one function)"
+  },
+  "phys_fn_002288": {
+   "symbol": "nxP72288",
+   "what": "a listing of 45 instructions; calls nothing directly; 1 indirect calls"
+  },
+  "phys_fn_002290": {
+   "symbol": "nxP72290",
+   "what": "a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 1 of 3 of one function)"
+  },
+  "phys_fn_002292": {
+   "symbol": "nxP72290",
+   "what": "a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 2 of 3 of one function)"
+  },
+  "phys_fn_002294": {
+   "symbol": "nxP72290",
+   "what": "a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 3 of 3 of one function)"
+  },
+  "phys_fn_002296": {
+   "symbol": "nxP72296",
+   "what": "a listing of 276 instructions; calls nxPOSetCenterExtents, AABB::ComputePoints, nxP72290, nxIceIdentityPoses, nxP72282"
+  },
+  "phys_fn_002298": {
+   "symbol": "nxP72298",
+   "what": "a listing of 23 instructions; calls nxP72296"
+  },
+  "phys_fn_002300": {
+   "symbol": "nxP72300",
+   "what": "a listing of 423 instructions; calls nxP72288; 1 indirect calls (part 1 of 2 of one function)"
+  },
+  "phys_fn_002302": {
+   "symbol": "nxP72300",
+   "what": "a listing of 423 instructions; calls nxP72288; 1 indirect calls (part 2 of 2 of one function)"
+  },
+  "phys_fn_002304": {
+   "symbol": "nxP72304",
+   "what": "a listing of 424 instructions; calls nxPOSetCenterExtents, SdkContainer ctor, nxP72310, chkstk, nxP72300, SdkContainer::empty; 1 indirect calls"
+  },
+  "phys_fn_002306": {
+   "symbol": "nxP72306",
+   "what": "a listing of 253 instructions; calls SdkContainer ctor, nxP72304, Triangle::Normal, SdkContainer::empty"
+  },
+  "phys_fn_002308": {
+   "symbol": "nxP72308",
+   "what": "a listing of 56 instructions; calls nxP72306; 1 indirect calls"
+  },
+  "phys_fn_002310": {
+   "symbol": "nxP72310",
+   "what": "a listing of 698 instructions; calls nxP71960, nxP71957, chkstk, NxSceneInternal::overlapAABBShapes, AABBCollider ctor, SdkContainer ctor, nxP71281, nxFillShapeDescriptor, nxP70001, SdkContainer::resize, IceMaths::InvertPRMatrix, AABBCollider::Collide, TriangleMesh::createEdgeList, SdkContainer::empty, ~AABBCollider; 2 indirect calls"
+  },
+  "phys_fn_002316": {
+   "symbol": "nxP72316",
+   "what": "a listing of 41 instructions; calls nothing directly"
+  },
+  "phys_fn_002332": {
+   "symbol": "nxP72332",
+   "what": "a listing of 172 instructions; calls nxP72316, malloc, free, NxSceneInternal::initialise"
+  },
+  "phys_fn_002336": {
+   "symbol": "nxP72336",
+   "what": "a listing of 34 instructions; calls nxP72332; 1 indirect calls"
+  },
+  "phys_fn_002350": {
+   "symbol": "nxP72350",
+   "what": "a listing of 647 instructions; calls chkstk; 11 indirect calls"
+  },
+  "phys_fn_002400": {
+   "symbol": "nxP72400",
+   "what": "a listing of 26 instructions; calls nxP72375, nxP72371, nxP72387, nxP72389, ReadWriteLock::lock, NxSceneInternal::simulateFrame, ReadWriteLock::unlock, nxP72373"
+  }
+ }
+}
