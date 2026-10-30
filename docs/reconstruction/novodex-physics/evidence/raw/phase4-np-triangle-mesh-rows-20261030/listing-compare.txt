@@ -1,0 +1,116 @@
+nxNpMesh2095 ?nxNpMesh2095@@YIIPAX0I@Z instructions=80 differing=0
+nxNpMesh2098 ?nxNpMesh2098@@YIIPAX0I@Z instructions=80 differing=0
+nxNpMesh2101 ?nxNpMesh2101@@YIIPAX0I@Z instructions=80 differing=0
+nxNpMesh2104 ?nxNpMesh2104@@YIIPAX0@Z instructions=51 differing=0
+nxNpMesh2108 ?nxNpMesh2108@@YIIPAX0@Z instructions=51 differing=0
+nxNpMesh2112 ?nxNpMesh2112@@YIIPAX0I@Z instructions=54 differing=0
+nxNpMesh2116 ?nxNpMesh2116@@YIIPAX0@Z instructions=51 differing=0
+nxNpMesh2120 ?nxNpMesh2120@@YIIPAX0@Z instructions=49 differing=0
+nxNpMesh2124 ?nxNpMesh2124@@YIIPAX0II@Z instructions=56 differing=0
+nxNpMesh2128 ?nxNpMesh2128@@YIIPAX0II@Z instructions=56 differing=0
+nxNpMesh2132 ?nxNpMesh2132@@YIIPAX0II@Z instructions=56 differing=0
+nxNpMesh2136 ?nxNpMesh2136@@YIIPAX0II@Z instructions=56 differing=0
+ALL EQUAL
+  call nxNpMesh2095 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2095 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2095 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2095 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2095 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2095 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2095 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2095 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2095 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2095 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2098 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2098 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2098 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2098 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2098 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2098 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2098 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2098 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2098 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2098 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2101 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2101 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2101 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2101 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2101 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2101 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2101 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2101 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2101 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2101 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2104 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2104 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2104 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2104 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2104 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2104 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2104 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2104 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2108 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2108 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2108 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2108 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2108 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2108 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2108 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2108 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2112 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2112 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2112 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2112 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2112 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2112 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2112 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2112 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2116 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2116 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2116 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2116 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2116 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2116 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2116 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2116 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2120 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2120 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2120 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2120 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2120 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2120 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2120 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2120 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2124 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2124 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2124 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2124 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2124 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2124 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2124 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2124 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2128 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2128 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2128 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2128 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2128 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2128 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2128 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2128 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2132 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2132 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2132 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2132 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2132 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2132 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2132 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2132 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2136 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2136 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2136 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2136 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2136 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+  call nxNpMesh2136 -> oracle 0x1000df00 ; candidate ?getScene@PhysicsSDK@@QAEPAVScene@@I@Z
+  call nxNpMesh2136 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxNpMesh2136 -> oracle 0x1000def0 ; candidate ?getNbScenes@PhysicsSDK@@QBEIXZ
+MAPPINGS checked=102 unexpected=0

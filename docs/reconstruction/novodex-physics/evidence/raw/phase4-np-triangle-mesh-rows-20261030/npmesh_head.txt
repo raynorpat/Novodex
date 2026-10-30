@@ -1,0 +1,37 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// NpTriangleMeshRows.cpp: the public triangle mesh's methods (the oracle's NpTriangleMesh.cpp, vtable at .rdata
+// 0x00108298): each one takes every scene's lock (the SDK's scene list), calls the internal mesh at +4 through its
+// table and releases the locks. Naked listing transcriptions of phys_fn_002095 to 002138, each a thunk-and-body pair
+// the inventory splits at the loop's jump target. The candidate has no public triangle-mesh facade object yet, so
+// nothing calls them. Compare script: docs/reconstruction/novodex-physics/evidence/phase4-np-triangle-mesh-rows-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxNpMeshCallGetNbScenes();
+extern "C" void nxNpMeshCallGetScene();
+extern "C" void nxNpMeshCallLock();
+extern "C" void nxNpMeshCallTryLock();
+extern "C" void nxNpMeshCallUnlock();
+extern "C" void* nxNpMeshImpImperrorFoundationSDKNxFoundationSANW4Nx;
+extern "C" void* nxNpMeshImpImpinstanceFoundationSDKNxFoundation0PAV;
+#pragma comment(linker, "/alternatename:_nxNpMeshCallGetNbScenes=?getNbScenes@PhysicsSDK@@QBEIXZ")
+#pragma comment(linker, "/alternatename:_nxNpMeshCallGetScene=?getScene@PhysicsSDK@@QAEPAVScene@@I@Z")
+#pragma comment(linker, "/alternatename:_nxNpMeshCallLock=?lock@ReadWriteLock@@QAE_NXZ")
+#pragma comment(linker, "/alternatename:_nxNpMeshCallTryLock=?tryLock@ReadWriteLock@@QAE_NXZ")
+#pragma comment(linker, "/alternatename:_nxNpMeshCallUnlock=?unlock@ReadWriteLock@@QAE_NXZ")
+#pragma comment(linker, "/alternatename:_nxNpMeshImpImperrorFoundationSDKNxFoundationSANW4Nx=__imp_?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ")
+#pragma comment(linker, "/alternatename:_nxNpMeshImpImpinstanceFoundationSDKNxFoundation0PAV=__imp_?instance@FoundationSDK@NxFoundation@@0PAV12@A")
+extern "C" void* nxSdkInstanceSlot;
+#pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")
+extern "C" unsigned gNxApiReentry;
+extern "C" const char* gNxApiReentryMessage;
+
+@@PROTOS@@
+
+@@BODY@@

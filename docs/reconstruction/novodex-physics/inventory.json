@@ -40612,13 +40612,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/814",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6726",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052a60: the public triangle mesh's slot 1 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 2 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2095@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2095@@YIIPAX0I@Z",
+        "address": "0x10047880",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002096",
@@ -40648,13 +40656,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/814",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6727",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052a80: the public triangle mesh's slot 1 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 2 called, the locks released (ret 4); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052a60"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2095@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2095@@YIIPAX0I@Z",
+        "address": "0x10047880",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002098",
@@ -40666,13 +40682,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/815",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6735",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052b50: the public triangle mesh's slot 2 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 3 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2098@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2098@@YIIPAX0I@Z",
+        "address": "0x10047970",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002099",
@@ -40702,13 +40726,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/815",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6736",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052b70: the public triangle mesh's slot 2 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 3 called, the locks released (ret 4); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052b50"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2098@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2098@@YIIPAX0I@Z",
+        "address": "0x10047970",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002101",
@@ -40720,13 +40752,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/816",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6744",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052c40: the public triangle mesh's slot 8 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 9 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2101@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2101@@YIIPAX0I@Z",
+        "address": "0x10047a60",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002102",
@@ -40756,13 +40796,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMesh.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/816",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6745",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052c60: the public triangle mesh's slot 8 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 9 called, the locks released (ret 4); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052c40"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2101@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2101@@YIIPAX0I@Z",
+        "address": "0x10047a60",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002104",
@@ -40774,13 +40822,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1025",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6753",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052d30: the public triangle mesh's slot 9 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 10 called, the locks released (ret 0); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2104@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2104@@YIIPAX0@Z",
+        "address": "0x10047b50",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002105",
@@ -40810,13 +40866,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1026",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6754",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052d50: the public triangle mesh's slot 9 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 10 called, the locks released (ret 0); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052d30"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2104@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2104@@YIIPAX0@Z",
+        "address": "0x10047b50",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002107",
@@ -40846,13 +40910,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1027",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6758",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052dc0: the public triangle mesh's slot 10 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 11 called, the locks released (ret 0); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2108@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2108@@YIIPAX0@Z",
+        "address": "0x10047be0",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002109",
@@ -40882,13 +40954,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1028",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6759",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052de0: the public triangle mesh's slot 10 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 11 called, the locks released (ret 0); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052dc0"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2108@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2108@@YIIPAX0@Z",
+        "address": "0x10047be0",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002111",
@@ -40918,13 +40998,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1029",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6763",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052e50: the public triangle mesh's slot 11 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 12 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2112@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2112@@YIIPAX0I@Z",
+        "address": "0x10047c70",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002113",
@@ -40954,13 +41042,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1030",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6764",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052e70: the public triangle mesh's slot 11 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 12 called, the locks released (ret 4); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052e50"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2112@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2112@@YIIPAX0I@Z",
+        "address": "0x10047c70",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002115",
@@ -40990,13 +41086,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1031",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6768",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052ef0: the public triangle mesh's slot 12 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 13 called, the locks released (ret 0); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2116@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2116@@YIIPAX0@Z",
+        "address": "0x10047d10",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002117",
@@ -41026,13 +41130,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1032",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6769",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052f10: the public triangle mesh's slot 12 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 13 called, the locks released (ret 0); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052ef0"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2116@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2116@@YIIPAX0@Z",
+        "address": "0x10047d10",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002119",
@@ -41062,13 +41174,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1033",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6773",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052f80: the public triangle mesh's slot 3 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's +0xc word read, the locks released (ret 0); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2120@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2120@@YIIPAX0@Z",
+        "address": "0x10047da0",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002121",
@@ -41098,13 +41218,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1034",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6774",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00052fa0: the public triangle mesh's slot 3 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's +0xc word read, the locks released (ret 0); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00052f80"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2120@@YIIPAX0@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2120@@YIIPAX0@Z",
+        "address": "0x10047da0",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002123",
@@ -41134,13 +41262,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1035",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6778",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00053010: the public triangle mesh's slot 4 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 5 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2124@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2124@@YIIPAX0II@Z",
+        "address": "0x10047e30",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002125",
@@ -41170,13 +41306,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1036",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6779",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00053030: the public triangle mesh's slot 4 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 5 called, the locks released (ret 8); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00053010"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2124@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2124@@YIIPAX0II@Z",
+        "address": "0x10047e30",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002127",
@@ -41206,13 +41350,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1037",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6783",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000530b0: the public triangle mesh's slot 5 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 6 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2128@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2128@@YIIPAX0II@Z",
+        "address": "0x10047ed0",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002129",
@@ -41242,13 +41394,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1038",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6784",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000530d0: the public triangle mesh's slot 5 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 6 called, the locks released (ret 8); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000530b0"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2128@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2128@@YIIPAX0II@Z",
+        "address": "0x10047ed0",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002131",
@@ -41278,13 +41438,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1039",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6788",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00053150: the public triangle mesh's slot 6 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 7 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2132@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2132@@YIIPAX0II@Z",
+        "address": "0x10047f70",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002133",
@@ -41314,13 +41482,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1040",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6789",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00053170: the public triangle mesh's slot 6 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 7 called, the locks released (ret 8); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00053150"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2132@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2132@@YIIPAX0II@Z",
+        "address": "0x10047f70",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002135",
@@ -41350,13 +41526,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1041",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6793",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000531f0: the public triangle mesh's slot 7 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 8 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2136@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2136@@YIIPAX0II@Z",
+        "address": "0x10048010",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002137",
@@ -41386,13 +41570,21 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpTriangleMeshRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1042",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6794",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00053210: the public triangle mesh's slot 7 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 8 called, the locks released (ret 8); the body of the pair. Transcribed instruction for instruction into a naked row in Physics/src/NpTriangleMeshRows.cpp; evidence/phase4-np-triangle-mesh-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 720 instructions of its rows equal, with the 102 call mappings as expected. See evidence/phase4-np-triangle-mesh-rows.md.",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000531f0"
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpTriangleMeshRows.cpp",
+      "implementation_symbol": "?nxNpMesh2136@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxNpMesh2136@@YIIPAX0II@Z",
+        "address": "0x10048010",
+        "object": "NpTriangleMeshRows.obj"
+      }
     },
     {
       "id": "phys_fn_002139",

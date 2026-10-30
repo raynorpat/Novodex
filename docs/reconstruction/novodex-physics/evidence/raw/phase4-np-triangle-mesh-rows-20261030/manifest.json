@@ -1,0 +1,105 @@
+{
+ "source": "Physics/src/NpTriangleMeshRows.cpp",
+ "compare": "evidence/phase4-np-triangle-mesh-rows-listing-compare.py",
+ "doc": "evidence/phase4-np-triangle-mesh-rows.md",
+ "instructions": 720,
+ "mappings": 102,
+ "rows": {
+  "phys_fn_002095": {
+   "symbol": "nxNpMesh2095",
+   "what": "the public triangle mesh's slot 1 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 2 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002097": {
+   "symbol": "nxNpMesh2095",
+   "what": "the public triangle mesh's slot 1 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 2 called, the locks released (ret 4); the body of the pair"
+  },
+  "phys_fn_002098": {
+   "symbol": "nxNpMesh2098",
+   "what": "the public triangle mesh's slot 2 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 3 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002100": {
+   "symbol": "nxNpMesh2098",
+   "what": "the public triangle mesh's slot 2 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 3 called, the locks released (ret 4); the body of the pair"
+  },
+  "phys_fn_002101": {
+   "symbol": "nxNpMesh2101",
+   "what": "the public triangle mesh's slot 8 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 9 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002103": {
+   "symbol": "nxNpMesh2101",
+   "what": "the public triangle mesh's slot 8 (vtable 0x00108298): every scene's write lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 9 called, the locks released (ret 4); the body of the pair"
+  },
+  "phys_fn_002104": {
+   "symbol": "nxNpMesh2104",
+   "what": "the public triangle mesh's slot 9 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 10 called, the locks released (ret 0); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002106": {
+   "symbol": "nxNpMesh2104",
+   "what": "the public triangle mesh's slot 9 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 10 called, the locks released (ret 0); the body of the pair"
+  },
+  "phys_fn_002108": {
+   "symbol": "nxNpMesh2108",
+   "what": "the public triangle mesh's slot 10 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 11 called, the locks released (ret 0); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002110": {
+   "symbol": "nxNpMesh2108",
+   "what": "the public triangle mesh's slot 10 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 11 called, the locks released (ret 0); the body of the pair"
+  },
+  "phys_fn_002112": {
+   "symbol": "nxNpMesh2112",
+   "what": "the public triangle mesh's slot 11 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 12 called, the locks released (ret 4); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002114": {
+   "symbol": "nxNpMesh2112",
+   "what": "the public triangle mesh's slot 11 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 12 called, the locks released (ret 4); the body of the pair"
+  },
+  "phys_fn_002116": {
+   "symbol": "nxNpMesh2116",
+   "what": "the public triangle mesh's slot 12 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 13 called, the locks released (ret 0); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002118": {
+   "symbol": "nxNpMesh2116",
+   "what": "the public triangle mesh's slot 12 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 13 called, the locks released (ret 0); the body of the pair"
+  },
+  "phys_fn_002120": {
+   "symbol": "nxNpMesh2120",
+   "what": "the public triangle mesh's slot 3 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's +0xc word read, the locks released (ret 0); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002122": {
+   "symbol": "nxNpMesh2120",
+   "what": "the public triangle mesh's slot 3 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's +0xc word read, the locks released (ret 0); the body of the pair"
+  },
+  "phys_fn_002124": {
+   "symbol": "nxNpMesh2124",
+   "what": "the public triangle mesh's slot 4 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 5 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002126": {
+   "symbol": "nxNpMesh2124",
+   "what": "the public triangle mesh's slot 4 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 5 called, the locks released (ret 8); the body of the pair"
+  },
+  "phys_fn_002128": {
+   "symbol": "nxNpMesh2128",
+   "what": "the public triangle mesh's slot 5 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 6 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002130": {
+   "symbol": "nxNpMesh2128",
+   "what": "the public triangle mesh's slot 5 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 6 called, the locks released (ret 8); the body of the pair"
+  },
+  "phys_fn_002132": {
+   "symbol": "nxNpMesh2132",
+   "what": "the public triangle mesh's slot 6 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 7 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002134": {
+   "symbol": "nxNpMesh2132",
+   "what": "the public triangle mesh's slot 6 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 7 called, the locks released (ret 8); the body of the pair"
+  },
+  "phys_fn_002136": {
+   "symbol": "nxNpMesh2136",
+   "what": "the public triangle mesh's slot 7 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 8 called, the locks released (ret 8); the thunk of the pair, split from its body at the loop target"
+  },
+  "phys_fn_002138": {
+   "symbol": "nxNpMesh2136",
+   "what": "the public triangle mesh's slot 7 (vtable 0x00108298): every scene's read lock taken (PhysicsSDK::getNbScenes/getScene, the scene's +0x6cc block), the internal mesh's slot 8 called, the locks released (ret 8); the body of the pair"
+  }
+ }
+}
