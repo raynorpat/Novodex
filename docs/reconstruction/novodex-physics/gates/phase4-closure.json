@@ -54,9 +54,9 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 836,
+    "deferred_reconstructed_not_falsified": 848,
     "deferred_not_reconstructed_in_phase": 17,
-    "deferred_vendored_not_falsified": 86,
+    "deferred_vendored_not_falsified": 74,
     "oracle_differential_falsified": 55,
     "differential_falsified": 16,
     "deferred_blocked_on_later_phase": 43
@@ -6465,10 +6465,10 @@
       "id": "phys_fn_004844",
       "rva": "0x000b4f00",
       "size": 73,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "driven as the `container_copy` family, 56 words, oracle=ea2f4a34, verdict exact, against Ice/IceContainer.cpp:67 with operator= inlined into it. No mutation is aimed at this row"
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in container_copy."
     },
     {
       "id": "phys_fn_004852",
@@ -7221,9 +7221,10 @@
       "id": "phys_fn_005069",
       "rva": "0x000de240",
       "size": 1435,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in opcode_sphere."
     },
     {
       "id": "phys_fn_005071",
@@ -7597,9 +7598,10 @@
       "id": "phys_fn_005155",
       "rva": "0x000e31c0",
       "size": 245,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_plane_triangle."
     },
     {
       "id": "phys_fn_005161",
@@ -7677,33 +7679,37 @@
       "id": "phys_fn_005179",
       "rva": "0x000e3ed0",
       "size": 126,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_plane_triangle."
     },
     {
       "id": "phys_fn_005181",
       "rva": "0x000e3f50",
       "size": 206,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_plane_triangle."
     },
     {
       "id": "phys_fn_005183",
       "rva": "0x000e4020",
       "size": 107,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_plane_triangle."
     },
     {
       "id": "phys_fn_005185",
       "rva": "0x000e4090",
       "size": 193,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_plane_triangle."
     },
     {
       "id": "phys_fn_005191",
@@ -7718,25 +7724,28 @@
       "id": "phys_fn_005193",
       "rva": "0x000e42a0",
       "size": 251,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_matrix4x4."
     },
     {
       "id": "phys_fn_005195",
       "rva": "0x000e43a0",
       "size": 83,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_matrix4x4."
     },
     {
       "id": "phys_fn_005197",
       "rva": "0x000e4400",
       "size": 379,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in ice_matrix4x4."
     },
     {
       "id": "phys_fn_005199",
@@ -8142,9 +8151,10 @@
       "id": "phys_fn_005281",
       "rva": "0x000e6c10",
       "size": 142,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in opcode_sap."
     },
     {
       "id": "phys_fn_005283",
@@ -8347,9 +8357,10 @@
       "id": "phys_fn_005368",
       "rva": "0x000e9100",
       "size": 375,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in opcode_model_build."
     },
     {
       "id": "phys_fn_005380",

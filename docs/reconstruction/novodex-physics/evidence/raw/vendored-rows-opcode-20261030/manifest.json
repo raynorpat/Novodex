@@ -1,0 +1,81 @@
+{
+ "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+ "compare": "evidence/vendored-rows-opcode-listing-compare.py",
+ "doc": "evidence/vendored-correspondence.md",
+ "instructions": 1300,
+ "mappings": 41,
+ "rows": {
+  "phys_fn_004844": {
+   "symbol": "??0Container@IceCore@@QAE@ABV01@@Z",
+   "what": "opcode Container::Container(const Container&) [operator=(const Container&) IceContainer.cpp:340 inlined]",
+   "group": "0x000b4f00",
+   "family": "container_copy"
+  },
+  "phys_fn_005069": {
+   "symbol": "?SphereTriOverlap@SphereCollider@Opcode@@IAEHABVPoint@IceMaths@@00@Z",
+   "what": "opcode SphereCollider::SphereTriOverlap(const Point&, const Point&, const Point&)",
+   "group": "0x000de240",
+   "family": "opcode_sphere"
+  },
+  "phys_fn_005155": {
+   "symbol": "?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z",
+   "what": "opcode Plane::Set(const Point&, const Point&, const Point&)",
+   "group": "0x000e31c0",
+   "family": "ice_plane_triangle"
+  },
+  "phys_fn_005179": {
+   "symbol": "?Area@Triangle@IceMaths@@QBEMXZ",
+   "what": "opcode Triangle::Area",
+   "group": "0x000e3ed0",
+   "family": "ice_plane_triangle"
+  },
+  "phys_fn_005181": {
+   "symbol": "?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z",
+   "what": "opcode Triangle::Normal(Point&) const",
+   "group": "0x000e3f50",
+   "family": "ice_plane_triangle"
+  },
+  "phys_fn_005183": {
+   "symbol": "?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z",
+   "what": "opcode Triangle::Center(Point&)",
+   "group": "0x000e4020",
+   "family": "ice_plane_triangle"
+  },
+  "phys_fn_005185": {
+   "symbol": "?Inflate@Triangle@IceMaths@@QAEXM_N@Z",
+   "what": "opcode Triangle::Inflate(float, bool)",
+   "group": "0x000e4090",
+   "family": "ice_plane_triangle"
+  },
+  "phys_fn_005193": {
+   "symbol": "?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z",
+   "what": "opcode Matrix4x4::CoFactor(udword, udword)",
+   "group": "0x000e42a0",
+   "family": "ice_matrix4x4"
+  },
+  "phys_fn_005195": {
+   "symbol": "?Determinant@Matrix4x4@IceMaths@@QBEMXZ",
+   "what": "opcode Matrix4x4::Determinant",
+   "group": "0x000e43a0",
+   "family": "ice_matrix4x4"
+  },
+  "phys_fn_005197": {
+   "symbol": "?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ",
+   "what": "opcode Matrix4x4::Invert",
+   "group": "0x000e4400",
+   "family": "ice_matrix4x4"
+  },
+  "phys_fn_005281": {
+   "symbol": "?Init@SAP_PairData@Opcode@@QAE_NI@Z",
+   "what": "opcode SAP_PairData::Init(udword)",
+   "group": "0x000e6c10",
+   "family": "opcode_sap"
+  },
+  "phys_fn_005368": {
+   "symbol": "?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z",
+   "what": "opcode Model::Build(const OPCODECREATE&)",
+   "group": "0x000e9100",
+   "family": "opcode_model_build"
+  }
+ }
+}

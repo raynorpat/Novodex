@@ -93633,14 +93633,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1841",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15740",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000b4f00: opcode Container::Container(const Container&) [operator=(const Container&) IceContainer.cpp:340 inlined]. Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family container_copy exact (every word compared with the oracle); vendored_coverage.csv group 0x000b4f00 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "??0Container@IceCore@@QAE@ABV01@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "??0Container@IceCore@@QAE@ABV01@@Z",
+        "address": "0x100f71c0",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_004845",
@@ -98023,14 +98031,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1931",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17529",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000de240: opcode SphereCollider::SphereTriOverlap(const Point&, const Point&, const Point&). Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family opcode_sphere exact (every word compared with the oracle); vendored_coverage.csv group 0x000de240 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?SphereTriOverlap@SphereCollider@Opcode@@IAEHABVPoint@IceMaths@@00@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?SphereTriOverlap@SphereCollider@Opcode@@IAEHABVPoint@IceMaths@@00@Z",
+        "address": "0x100f7b50",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005070",
@@ -99694,14 +99710,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1967",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17927",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Plane::Set(const Point&, const Point&, const Point&), compiled from External/opcode/upstream/Opcode/Ice/IcePlane.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle (x+y)+z x1, (x+z)+y x1; candidate (x+z)+y x1, (y+z)+x x1. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e31c0; candidate 0x000840c0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e31c0: opcode Plane::Set(const Point&, const Point&, const Point&). Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_plane_triangle exact (every word compared with the oracle); vendored_coverage.csv group 0x000e31c0 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Plane::Set(const Point&, const Point&, const Point&), compiled from External/opcode/upstream/Opcode/Ice/IcePlane.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle (x+y)+z x1, (x+z)+y x1; candidate (x+z)+y x1, (y+z)+x x1. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e31c0; candidate 0x000840c0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z",
+        "address": "0x100f7a50",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005156",
@@ -100155,14 +100179,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1974",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18021",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Area, compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Area@Triangle@IceMaths@@QBEMXZ. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle unlabelled x1; candidate unlabelled x1. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e3ed0; candidate 0x00081dc0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e3ed0: opcode Triangle::Area. Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_plane_triangle exact (every word compared with the oracle); vendored_coverage.csv group 0x000e3ed0 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Area, compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Area@Triangle@IceMaths@@QBEMXZ. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle unlabelled x1; candidate unlabelled x1. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e3ed0; candidate 0x00081dc0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Area@Triangle@IceMaths@@QBEMXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Area@Triangle@IceMaths@@QBEMXZ",
+        "address": "0x100f7260",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005180",
@@ -100192,14 +100224,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1975",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18022",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Normal(Point&) const, compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle (y+z)+x x1; candidate (x+y)+z x1. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e3f50; candidate 0x00082980). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e3f50: opcode Triangle::Normal(Point&) const. Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_plane_triangle exact (every word compared with the oracle); vendored_coverage.csv group 0x000e3f50 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Normal(Point&) const, compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle (y+z)+x x1; candidate (x+y)+z x1. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e3f50; candidate 0x00082980). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z",
+        "address": "0x100f7980",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005182",
@@ -100229,14 +100269,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1976",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18024",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Center(Point&), compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order). Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e4020; candidate 0x00081e80). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e4020: opcode Triangle::Center(Point&). Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_plane_triangle exact (every word compared with the oracle); vendored_coverage.csv group 0x000e4020 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Center(Point&), compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order). Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e4020; candidate 0x00081e80). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z",
+        "address": "0x100f7460",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005184",
@@ -100266,14 +100314,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1977",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18025",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Inflate(float, bool), compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Inflate@Triangle@IceMaths@@QAEXM_N@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class REVIEW over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle unlabelled x1; candidate unlabelled x3. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e4090; candidate 0x00082340). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e4090: opcode Triangle::Inflate(float, bool). Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_plane_triangle exact (every word compared with the oracle); vendored_coverage.csv group 0x000e4090 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_plane_triangle tape has no discrete words, so rule (ii)(a) is vacuous; outside the 29 excluded zero-area cases its floats differ by up to 2,820 ulp (39 words beyond 4 ulp, largest absolute difference 8.34e-07), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Triangle::Inflate(float, bool), compiled from External/opcode/upstream/Opcode/Ice/IceTriangle.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Inflate@Triangle@IceMaths@@QAEXM_N@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class REVIEW over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle unlabelled x1; candidate unlabelled x3. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e4090; candidate 0x00082340). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_plane_triangle (4000 words, oracle digest 20b460cd): discrete=0, length_delta=0, worst float distance 2820 ulp, beyond=39 words more than 4 ulp apart, largest absolute difference among those beyond_abs=8.34e-07, inf_words=0, degenerate=122. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 29 zero-area input triangles (a repeated vertex, case c % 7 == 2, or three collinear points, c % 13 == 5) whose 122 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: on them the oracle normalises its unrounded non-zero residue where the candidate returns a zero normal. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Inflate@Triangle@IceMaths@@QAEXM_N@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Inflate@Triangle@IceMaths@@QAEXM_N@Z",
+        "address": "0x100f76b0",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005186",
@@ -100416,14 +100472,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1981",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18044",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_matrix4x4 tape has no discrete words, so rule (ii)(a) is vacuous; outside the 17 excluded singular cases its floats differ by up to 106 ulp (109 words beyond 4 ulp, largest absolute difference 0.00128 on inverse entries up to 186 in magnitude: the cofactor sums are reassociated), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Matrix4x4::CoFactor(udword, udword), compiled from External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class REVIEW over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle unlabelled x2; candidate unlabelled x2. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e42a0; candidate 0x00085db0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_matrix4x4 (6800 words, oracle digest d0f85eff): discrete=0, length_delta=0, worst float distance 106 ulp, beyond=109 words more than 4 ulp apart, largest absolute difference among those beyond_abs=0.00128, inf_words=0, degenerate=19. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 17 singular input matrices (row 2 twice row 1, case c % 8 == 3) whose 19 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: the oracle's determinant is 0 where the candidate's is about -1e-16. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e42a0: opcode Matrix4x4::CoFactor(udword, udword). Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_matrix4x4 exact (every word compared with the oracle); vendored_coverage.csv group 0x000e42a0 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_matrix4x4 tape has no discrete words, so rule (ii)(a) is vacuous; outside the 17 excluded singular cases its floats differ by up to 106 ulp (109 words beyond 4 ulp, largest absolute difference 0.00128 on inverse entries up to 186 in magnitude: the cofactor sums are reassociated), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Matrix4x4::CoFactor(udword, udword), compiled from External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class REVIEW over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order); sum_grouping.csv sites: oracle unlabelled x2; candidate unlabelled x2. Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e42a0; candidate 0x00085db0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_matrix4x4 (6800 words, oracle digest d0f85eff): discrete=0, length_delta=0, worst float distance 106 ulp, beyond=109 words more than 4 ulp apart, largest absolute difference among those beyond_abs=0.00128, inf_words=0, degenerate=19. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 17 singular input matrices (row 2 twice row 1, case c % 8 == 3) whose 19 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: the oracle's determinant is 0 where the candidate's is about -1e-16. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z",
+        "address": "0x100f74d0",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005194",
@@ -100453,14 +100517,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1982",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18047",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_matrix4x4 tape has no discrete words, so rule (ii)(a) is vacuous; outside the 17 excluded singular cases its floats differ by up to 106 ulp (109 words beyond 4 ulp, largest absolute difference 0.00128 on inverse entries up to 186 in magnitude: the cofactor sums are reassociated), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Matrix4x4::Determinant, compiled from External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Determinant@Matrix4x4@IceMaths@@QBEMXZ. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order). Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e43a0; candidate 0x00085ec0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_matrix4x4 (6800 words, oracle digest d0f85eff): discrete=0, length_delta=0, worst float distance 106 ulp, beyond=109 words more than 4 ulp apart, largest absolute difference among those beyond_abs=0.00128, inf_words=0, degenerate=19. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 17 singular input matrices (row 2 twice row 1, case c % 8 == 3) whose 19 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: the oracle's determinant is 0 where the candidate's is about -1e-16. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e43a0: opcode Matrix4x4::Determinant. Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_matrix4x4 exact (every word compared with the oracle); vendored_coverage.csv group 0x000e43a0 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_matrix4x4 tape has no discrete words, so rule (ii)(a) is vacuous; outside the 17 excluded singular cases its floats differ by up to 106 ulp (109 words beyond 4 ulp, largest absolute difference 0.00128 on inverse entries up to 186 in magnitude: the cofactor sums are reassociated), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Matrix4x4::Determinant, compiled from External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Determinant@Matrix4x4@IceMaths@@QBEMXZ. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class SHAPE over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order). Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e43a0; candidate 0x00085ec0). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_matrix4x4 (6800 words, oracle digest d0f85eff): discrete=0, length_delta=0, worst float distance 106 ulp, beyond=109 words more than 4 ulp apart, largest absolute difference among those beyond_abs=0.00128, inf_words=0, degenerate=19. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 17 singular input matrices (row 2 twice row 1, case c % 8 == 3) whose 19 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: the oracle's determinant is 0 where the candidate's is about -1e-16. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Determinant@Matrix4x4@IceMaths@@QBEMXZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Determinant@Matrix4x4@IceMaths@@QBEMXZ",
+        "address": "0x100f7650",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005196",
@@ -100490,14 +100562,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1983",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18048",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_matrix4x4 tape has no discrete words, so rule (ii)(a) is vacuous; outside the 17 excluded singular cases its floats differ by up to 106 ulp (109 words beyond 4 ulp, largest absolute difference 0.00128 on inverse entries up to 186 in magnitude: the cofactor sums are reassociated), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Matrix4x4::Invert, compiled from External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class REVIEW over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order). Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e4400; candidate 0x00085f20). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_matrix4x4 (6800 words, oracle digest d0f85eff): discrete=0, length_delta=0, worst float distance 106 ulp, beyond=109 words more than 4 ulp apart, largest absolute difference among those beyond_abs=0.00128, inf_words=0, degenerate=19. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 17 singular input matrices (row 2 twice row 1, case c % 8 == 3) whose 19 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: the oracle's determinant is 0 where the candidate's is about -1e-16. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e4400: opcode Matrix4x4::Invert. Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family ice_matrix4x4 exact (every word compared with the oracle); vendored_coverage.csv group 0x000e4400 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass). Earlier: Held back in the final review of vendored-correspondence Task 5b, after Task 5b had promoted it: the ice_matrix4x4 tape has no discrete words, so rule (ii)(a) is vacuous; outside the 17 excluded singular cases its floats differ by up to 106 ulp (109 words beyond 4 ulp, largest absolute difference 0.00128 on inverse entries up to 186 in magnitude: the cofactor sums are reassociated), which is not last-bit. The proof Task 5b had written, kept for the record: Vendored-correspondence Task 5b promotion (evidence/vendored-correspondence.md, Results). The row is opcode Matrix4x4::Invert, compiled from External/opcode/upstream/Opcode/Ice/IceMatrix4x4.cpp into the candidate NxPhysics.dll (sha256 b0e275ae70e5...) as ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ. Matcher tools/vendored_match.py (phase4-third-party-map/opcode_match.csv): class REVIEW over the group's 1 row(s). Compared: calls resolved to identities, strings by content, float constants by value, global data through vendored_data_map.csv, structure-field byte coverage, logic/compare immediates and x87 operation classes. Not compared by the matcher: register-only ALU operations and x87 operand order; x87 compare predicates; conditional-jump kinds and signedness; store and argument immediates; indexed operands and negative displacements; call counts once inlining is absorbed; the argument order of inlined calls; which object a field belongs to beyond the this/pointer base class; arithmetic order and precision. Summation order and some register lifetimes of the oracle are not reproduced (vendored-correspondence.md, Summation order). Hand review: phase4-third-party-map/opcode_review.csv, verdict equivalent (Task 3; oracle 0x000e4400; candidate 0x00085f20). Execution class outcome-exact (Task 5b rule ii): no discrete word of its family differs (discrete=0) and the tapes are the same length; its float family: ice_matrix4x4 (6800 words, oracle digest d0f85eff): discrete=0, length_delta=0, worst float distance 106 ulp, beyond=109 words more than 4 ulp apart, largest absolute difference among those beyond_abs=0.00128, inf_words=0, degenerate=19. Every one of those figures is capped by kDivergentCeilings in tests/PhysicsThirdPartyTests.cpp, so the gate fails if any grows. 17 singular input matrices (row 2 twice row 1, case c % 8 == 3) whose 19 differing words are counted degenerate= and listed by case in evidence/vendored-trace-opcode.txt: the oracle's determinant is 0 where the candidate's is about -1e-16. These inputs are EXCLUDED from this proof. Evidence: phase4-third-party-map/vendored_coverage.csv, and evidence/vendored-trace-opcode.txt, which carries this run's divergent lines and the degenerate ICE cases.",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ",
+        "address": "0x100f7800",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005198",
@@ -102188,14 +102268,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2015",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18299",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e6c10: opcode SAP_PairData::Init(udword). Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family opcode_sap exact (every word compared with the oracle); vendored_coverage.csv group 0x000e6c10 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Init@SAP_PairData@Opcode@@QAE_NI@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Init@SAP_PairData@Opcode@@QAE_NI@Z",
+        "address": "0x100f7770",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005282",
@@ -104006,14 +104094,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/opcode/OPC_Model.cpp",
+      "state": "reconstructed",
+      "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2053",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18519",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "opcode"
+      "static_proof": "Capstone listing at RVA 0x000e9100: opcode Model::Build(const OPCODECREATE&). Transcribed instruction for instruction into a naked row in External/opcode/novodex/OpcodeVendoredRows.cpp; evidence/vendored-rows-opcode-listing-compare.py disassembles the built candidate and the oracle and finds the 1300 instructions of its rows equal, with the 41 call mappings as expected. See evidence/vendored-correspondence.md. Vendored opcode function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-opcode.txt: family opcode_model_build exact (every word compared with the oracle); vendored_coverage.csv group 0x000e9100 family_best=exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "opcode",
+      "implementation": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+      "implementation_symbol": "?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z",
+        "address": "0x100f72e0",
+        "object": "NxOpcode:OpcodeVendoredRows.obj"
+      }
     },
     {
       "id": "phys_fn_005369",

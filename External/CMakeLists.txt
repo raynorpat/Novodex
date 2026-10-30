@@ -104,7 +104,8 @@ add_library(NxOpcode STATIC
 	${OPCODE_TREE}/Ice/IceRevisitedRadix.cpp
 	${OPCODE_TREE}/Ice/IceSegment.cpp
 	${OPCODE_TREE}/Ice/IceTriangle.cpp
-	${OPCODE_TREE}/Ice/IceUtils.cpp)
+	${OPCODE_TREE}/Ice/IceUtils.cpp
+	${OPCODE_TREE}/OpcodeVendoredRows.cpp)
 target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE} "${CMAKE_CURRENT_SOURCE_DIR}/../Physics/src/include")
 # ICE_NO_DLL makes OPCODE_API and ICECORE_API empty -- this is a static library
 # inside NxPhysics.dll and exports nothing of its own, which is also what the
@@ -115,6 +116,9 @@ target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE} "${CMAKE_CURRENT_SOURC
 # NovodeX pruning helper reads those six floats directly. Propagate it to every
 # consumer compiling Opcode.h, including the direct-link oracle harness.
 target_compile_definitions(NxOpcode PUBLIC ICE_NO_DLL OPCODE_EXPORTS USE_MINMAX)
+# The vendored-rows pass: functions whose upstream bodies novodex/ guards with this are
+# defined by their listing transcriptions in novodex/OpcodeVendoredRows.cpp instead.
+target_compile_definitions(NxOpcode PRIVATE NX_VENDORED_LISTING_ROWS)
 
 # Every qhull square root is an inline `fsqrt` in the oracle -- e.g. qh_pointdist
 # at 0x0005fb70 ends `jle; fsqrt; ret` (0x0005fbac) -- and no qhull row calls a

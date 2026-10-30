@@ -228,6 +228,11 @@ ORACLE_KNOWN = {
     # Stock ICE Matrix3x3::operator Matrix4x4() (IceMatrix3x3.cpp:41). Its map row stays
     # `unmapped` because validate_inventory cannot take an operator as a source function name.
     0x000e9b20: "Matrix3x3::operator cast",
+    # The vendored-rows pass transcribes OPCODE rows that call these directly (OpcodeVendoredRows.cpp): the
+    # allocator getter, which the host seam opcNovodeXAlloc/opcNovodeXFree stands for, and the ICF-folded
+    # `xor eax,eax; ret` OBBCollider::ValidateSettings tail-jumps to, whose candidate is the base class's.
+    0x000b4000: "nxGetSdkAllocator",                # phys_fn_004803
+    0x000213e0: "VolumeCollider::ValidateSettings", # phys_fn_000965 (folded)
 }
 
 # Oracle data objects identified by hand, where a single referencing row gives the learned
@@ -239,9 +244,10 @@ SEEDED_DATA = {
                  "both it and AABBTreeOfTrianglesBuilder's table is that destructor"),
     0x0011bab4: ("??_7AABBTreeOfTrianglesBuilder@Opcode@@6B@", 4,
                  "opcode_vtables.md; the builder constructor 0x000e9060 stores it"),
-    0x00122520: ("?EdgeNormals@?1??GetLocalEdgeNormals@OBB@IceMaths@@QBEPBVPoint@3@XZ@4PAMA", 144,
+    0x00122520: ("?nxOpEdgeNormals@@3PAIA", 144,
                  "IceOBB.cpp:214's static 12-normal table, indexed by "
-                 "OBB::ComputeWorldEdgeNormal 0x000e4cb0 in 12-byte steps"),
+                 "OBB::ComputeWorldEdgeNormal 0x000e4cb0 in 12-byte steps; the vendored-rows pass "
+                 "transcribes that row with its own copy (OpcodeVendoredRows.cpp)"),
 }
 
 # The NovodeX host seams. The oracle reaches the host inline (a virtual call through a global

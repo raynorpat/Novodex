@@ -1484,8 +1484,8 @@ static const unsigned kRayTriIntersectRva = 0x00036f50;	// phys_fn_001712
 static const unsigned kSegmentTriangleReviewDraws = 250000;
 
 // Row phys_fn_001708 calls Triangle::Inflate (phys_fn_005185), a vendored row whose
-// candidate differs from the oracle's in the last bits (held at `discovered` for
-// that; evidence/vendored-correspondence.md), and NxRayTriIntersect
+// candidate differed from the oracle's in the last bits until its transcription
+// (evidence/vendored-correspondence.md, vendored-rows pass), and NxRayTriIntersect
 // (phys_fn_001712). Each side of ray_inflated_tris reaches its own, so the family
 // pre-flights every fan: when both callees agree on all of its triangles (001712's
 // outputs compared as the family folds words, a NaN as any NaN) the fan is
@@ -1493,11 +1493,12 @@ static const unsigned kSegmentTriangleReviewDraws = 250000;
 // apart under these ceilings and do not gate, because what differs there is a
 // callee, not 001708. 001712 differed on signalling NaNs until the harness
 // hardening (75 / 31 fans) and agrees on every fan since its listing
-// transcription; what is left is Inflate's. The ceilings are the counts measured
-// when the family was last registered (fans under 0x027f / 0x0f7f; words under
+// transcription. Inflate differed until the vendored-rows pass transcribed it too
+// (External/opcode/novodex/OpcodeVendoredRows.cpp); since then every fan agrees and
+// gates, so the ceilings are zero (fans under 0x027f / 0x0f7f; words under
 // 0x027f / 0x0f7f).
-static const unsigned kCalleeDivergentFanCeiling[2] = { 28725, 41198 };
-static const unsigned kCalleeDivergentWordCeiling[2] = { 963, 1515 };
+static const unsigned kCalleeDivergentFanCeiling[2] = { 0, 0 };
+static const unsigned kCalleeDivergentWordCeiling[2] = { 0, 0 };
 
 typedef void(__cdecl* NxLineLineFn)(NxReal*, NxReal*, const NxReal*, const NxReal*,
 	const NxReal*, const NxReal*);
@@ -11652,82 +11653,21 @@ static const unsigned kContact2hCases = 5000;
 // fails; one on a list that stops diverging stays split and is logged IMPROVED)
 // -- and the split's ceiling: the differing words and runs
 // measured when it was registered (a count may fall, never rise).
-static const unsigned kRay2hInflateDivergent[2] = { 0x00252000u, 0x002f7000u };
-static const unsigned kRay2hInvertDivergentRuns = 2963;
-static const unsigned __int64 kRay2hInvertDivergentDigest = 0x773d5c7f92630fd0ull;
+// Both lists are empty since the vendored-rows pass transcribed Triangle::Inflate and
+// Matrix4x4::Invert (External/opcode/novodex/OpcodeVendoredRows.cpp): no hull or run
+// diverges through either callee, so every case gates in the main family. They stay
+// as lists, so a callee that diverged again would fail the pre-flights.
+static const unsigned kRay2hInflateDivergent[2] = { 0, 0 };
+static const unsigned kRay2hInvertDivergentRuns = 0;
+static const unsigned __int64 kRay2hInvertDivergentDigest = 0xcbf29ce484222325ull;	// the digest of no runs
 // The runs (2 * case + control word, 0 for 0x027f) whose pose the oracle's
 // Matrix4x4::Invert (005197) and the candidate's vendored one invert to different
 // words: a frozen bitmap of the 16,000 runs (Task 2h re-review), which routes
 // convex_mesh_ray's split. Its run count and the digest of its run numbers in
 // order are kRay2hInvertDivergentRuns / Digest, checked before the family runs.
-static const unsigned kRay2hInvertDivergentMap[500] =
-	{
-	0x03000c33u, 0x080240c0u, 0x0000030cu, 0x04c00000u, 0x00031303u, 0x00ec3c34u, 0x0030c004u, 0x0c000330u,
-	0x3500c033u, 0x4f0403c0u, 0x3c000000u, 0x00c0300cu, 0x00c00000u, 0x00000003u, 0x00042b42u, 0xcc300c04u,
-	0x303c0030u, 0x4000000cu, 0x00000000u, 0x00030c00u, 0x30070030u, 0x00030c00u, 0xcf03cc00u, 0x00000cc0u,
-	0x0030c0f0u, 0x000c0503u, 0x30403000u, 0xc000c03cu, 0x0c010000u, 0x0000000cu, 0x00c3c300u, 0xc00c0000u,
-	0x00303001u, 0x04c04330u, 0x0300304cu, 0x000300c0u, 0x300301c3u, 0x0000040cu, 0x00000003u, 0x000000c0u,
-	0x00030030u, 0xc0000000u, 0x0c0f030cu, 0x00200c20u, 0x3fcc33c0u, 0x0c100031u, 0xc003430fu, 0x1000cf0cu,
-	0x12003030u, 0x03033000u, 0x0c000000u, 0x30007003u, 0x300cc00cu, 0xc000030cu, 0x0330000cu, 0x000c0030u,
-	0x00cc0000u, 0x00001003u, 0x010c3003u, 0x30001300u, 0x0c3c0330u, 0x0040cc03u, 0x300000c0u, 0x00cc0008u,
-	0x3030c103u, 0xf030c00cu, 0x00f300c3u, 0x03003000u, 0x0f3c2000u, 0x00003000u, 0x00000d03u, 0xd3040800u,
-	0x300000c0u, 0xd3ccc400u, 0xc0300000u, 0xc0c00030u, 0xc0003030u, 0xc3300000u, 0xc000c023u, 0x000070c0u,
-	0x0f040000u, 0x00c00000u, 0x30000003u, 0x0c000000u, 0x00403fc0u, 0x0ffc030cu, 0x300c00c4u, 0x7c040100u,
-	0x30000010u, 0x0000303fu, 0x33300300u, 0x03400400u, 0x0030c102u, 0x033c000cu, 0x00000f0cu, 0x03300d0cu,
-	0x4c33f000u, 0x03000c00u, 0x010000c3u, 0x3003f0c0u, 0x0303000fu, 0x04007330u, 0x00300000u, 0xcf030000u,
-	0x01000cc0u, 0x00f2c000u, 0x000c00c0u, 0x0400c300u, 0x000000c0u, 0x0080000cu, 0x00200300u, 0x01300d00u,
-	0x33001000u, 0x00030c00u, 0x0fd00080u, 0xc30000c1u, 0x00333f03u, 0x0cc32040u, 0x00f0c080u, 0xc0000100u,
-	0x0033c000u, 0x300f3d0fu, 0x003000c8u, 0x00f000c0u, 0x0000fc00u, 0x00003c04u, 0xc300000cu, 0x00030000u,
-	0xc0300008u, 0x04000000u, 0x00000003u, 0x3088c030u, 0x00c0c330u, 0xf030c0c0u, 0x00400000u, 0x0001c000u,
-	0xc00c13c3u, 0x00d01000u, 0x0000003cu, 0x003000f0u, 0x0c030000u, 0xfc000040u, 0x0003cc00u, 0x40000c02u,
-	0xc0303f00u, 0x0c0c0003u, 0x703c0c00u, 0x030000c0u, 0x03c3004cu, 0x30000000u, 0xc73303f3u, 0x00000000u,
-	0x000000c3u, 0x3030c300u, 0x00000c03u, 0x00003c00u, 0x0330320cu, 0x00000003u, 0x0033c310u, 0x00000300u,
-	0x0003000cu, 0x400033ccu, 0x01333004u, 0x23003704u, 0x10300c00u, 0x00030300u, 0x702c3c0cu, 0x000c0033u,
-	0x0000c000u, 0x0300c002u, 0x00c00c10u, 0x00000330u, 0x00001013u, 0x30030030u, 0x0c0000c3u, 0x0100000cu,
-	0x0c83c300u, 0x30000000u, 0x30f03300u, 0x30003fc0u, 0x003f0000u, 0x30008013u, 0x00003cc0u, 0xc0003003u,
-	0xc0c00102u, 0x00006000u, 0x00000c03u, 0xf3003003u, 0x00301030u, 0x0c307c40u, 0x00030000u, 0x00003030u,
-	0x30100003u, 0x0003000cu, 0xc0c00000u, 0x00300030u, 0x31000002u, 0x0040c00cu, 0x0ccc0030u, 0x0003b00cu,
-	0x0c0c0003u, 0x2313000du, 0x00c3030cu, 0x0f030000u, 0x0303000cu, 0x00003003u, 0x4d300301u, 0xf0070300u,
-	0xc40c3000u, 0x3c000000u, 0x0000030fu, 0x00200000u, 0xcc012000u, 0x3000cc00u, 0xf3030100u, 0x00000008u,
-	0x00103000u, 0x0c000c8cu, 0x00000300u, 0x0030301fu, 0x330cc300u, 0xc0303000u, 0x0000c0f0u, 0x0003031cu,
-	0xc304c000u, 0x03000f33u, 0x00f00cc0u, 0x00330004u, 0x00030300u, 0x00000400u, 0x040c0c33u, 0x00004c00u,
-	0x1000cc0du, 0x000000c0u, 0x00003c00u, 0x03004cccu, 0x40000c00u, 0x0000c00cu, 0xc0000cc0u, 0x000c08c0u,
-	0x00000000u, 0x40c00030u, 0x10004c00u, 0xc3000003u, 0x03c3c00cu, 0x000c0330u, 0x0d0c0000u, 0x00cc3000u,
-	0x3c0003c0u, 0x00030700u, 0x0000300fu, 0x30113030u, 0x01f40003u, 0x0403003cu, 0xfc00f300u, 0x00003000u,
-	0x3f4c0002u, 0xc30030c0u, 0x00000c10u, 0x00000300u, 0x00003cc3u, 0x33400010u, 0x0c03f33cu, 0x000c0000u,
-	0x100000c0u, 0x0c0300c0u, 0xc0400c30u, 0x00f00cc3u, 0x00033000u, 0x30c33408u, 0x00c40c00u, 0x0c00c103u,
-	0x001c0b8cu, 0xf0400032u, 0x83044fc0u, 0x03000ccfu, 0x00000303u, 0x30100000u, 0xcc000000u, 0x030300c0u,
-	0x00308000u, 0x00c00300u, 0x03c0814cu, 0x0cc00440u, 0x10300100u, 0xc0c00c00u, 0x30000033u, 0x0c000c0cu,
-	0x00000103u, 0x0400f000u, 0x31000e00u, 0x03003000u, 0x0003030cu, 0xc1003000u, 0x00301000u, 0x30c00000u,
-	0x03000300u, 0x10007300u, 0x0f300c00u, 0xc030c00cu, 0x00000030u, 0x0000cc3cu, 0x0c003000u, 0x03101c30u,
-	0xc0000003u, 0x0000c0c0u, 0x01130103u, 0x04330053u, 0x4cc0003cu, 0x0703c00cu, 0x000c0300u, 0xcf031000u,
-	0x02000000u, 0x00003000u, 0x00c00400u, 0x0c03000fu, 0x30c01000u, 0x00004300u, 0x00313400u, 0xc00c3000u,
-	0x000c0300u, 0x003030f0u, 0x00cc00cdu, 0xcc004000u, 0x0c0001d0u, 0x3000c004u, 0x00c0c000u, 0x00304510u,
-	0x0004000cu, 0x0000403cu, 0x04c02010u, 0x000c0000u, 0xc4340003u, 0xf0c00000u, 0x03f00c0cu, 0x30cc0000u,
-	0x00200030u, 0x0300c003u, 0x00031000u, 0x4000000fu, 0x3001c030u, 0x31003000u, 0x0e200100u, 0x00c130c0u,
-	0x0cf00100u, 0xcd000000u, 0x300300c2u, 0x00f30010u, 0xd0030000u, 0x000c0000u, 0x00c00c00u, 0x00003303u,
-	0x0003c300u, 0x00403004u, 0xc300c300u, 0xc0c43000u, 0x000f0000u, 0xc0000030u, 0x0000cc10u, 0x00300c00u,
-	0x8003c000u, 0x00030004u, 0x0c0000ccu, 0x30001000u, 0x30f40c0fu, 0x0f001000u, 0x030c0008u, 0x0c000300u,
-	0x00000000u, 0x00000030u, 0x30000700u, 0x10300100u, 0x0c003301u, 0x01300000u, 0x03c00000u, 0x0c0030c0u,
-	0x00000cc0u, 0x0cf000f0u, 0xf4c00300u, 0x00003ffcu, 0x00003000u, 0x0030c000u, 0x01000030u, 0x000c0cc1u,
-	0xc003c03cu, 0x70403c00u, 0x0003000cu, 0x30802303u, 0xc04c4300u, 0x0c000000u, 0x03303000u, 0x00f0c4c1u,
-	0x10030c01u, 0x00003400u, 0x00c02003u, 0x0031c040u, 0x08003c0cu, 0x0dcfc008u, 0x0000cc30u, 0x00c0c403u,
-	0x00c01400u, 0x00000030u, 0x0c100d00u, 0x00131000u, 0x080300fcu, 0x0d330303u, 0xf0cc003fu, 0xcc3c0004u,
-	0xc00fc300u, 0x00000000u, 0x010000c0u, 0x00303000u, 0x0003c080u, 0x0c000000u, 0x00c00300u, 0x0c0c31c0u,
-	0x030030c3u, 0x0d000000u, 0x0c333300u, 0x00000000u, 0x3023000cu, 0x0300d000u, 0x0cc00c1cu, 0x0000f000u,
-	0x3c0f0450u, 0x00000003u, 0x0000ccc0u, 0x00000500u, 0x0c300000u, 0x00001710u, 0xc0000c10u, 0x30c00000u,
-	0xc0f33000u, 0xc08c1000u, 0xc0300004u, 0x00f00000u, 0x0c030d00u, 0xc0033000u, 0x8c400000u, 0x0c000003u,
-	0x30040c00u, 0x50330000u, 0x31303030u, 0x000c0003u, 0xc0003305u, 0xc0300300u, 0x00c04cccu, 0x8002000cu,
-	0x00000000u, 0x0ccc3dc0u, 0x03000000u, 0xc0004300u, 0x00000c31u, 0x1f001000u, 0x3cc0000cu, 0x30100000u,
-	0x301d300cu, 0x02273000u, 0x00000000u, 0x0000000cu, 0x0cf03c03u, 0x3300f0f0u, 0x30000000u, 0x0300c000u,
-	0x33cc1c0fu, 0x00330c03u, 0x03000030u, 0x3ccc00c3u, 0x0c034000u, 0xc030c03cu, 0x0003001cu, 0x33c030c3u,
-	0x03303000u, 0x0b00cc0cu, 0x00033303u, 0xc000330cu, 0x30000030u, 0x00040c00u, 0x03030070u, 0x4c000000u,
-	0x03c00003u, 0x31f00c40u, 0x043c30c0u, 0x0000c004u, 0x04c0fc01u, 0x000c3300u, 0x00c30000u, 0x00f30000u,
-	0x03c00000u, 0x4300033cu, 0x000c0300u, 0x00000f01u, 0x30300833u, 0x80030003u, 0x03000000u, 0x00300c0cu,
-	0x0040000cu, 0x00000c0cu, 0x00040033u, 0xc0000383u,
-	};
-static const unsigned kRay2hCalleeDivergentWords = 184;
-static const unsigned kRay2hCalleeDivergentRuns = 109;
+static const unsigned kRay2hInvertDivergentMap[500] = { 0 };
+static const unsigned kRay2hCalleeDivergentWords = 0;
+static const unsigned kRay2hCalleeDivergentRuns = 0;
 
 // A register-argument call: eax, ecx, edx, ebx, esi and edi from `r`, `count`
 // stack words pushed last first, the caller cleaning, as 001844 and 001849 call

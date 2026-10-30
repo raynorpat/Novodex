@@ -755,9 +755,13 @@ class SeamsAndDropsTest(unittest.TestCase):
         functions.append({"id": "phys_fn_004803", "rva": 0x000b4000, "size": 20,
                           "kind": "code", "label": "phys_fn_004803",
                           "label_confidence": "stable-id"})
+        functions.append({"id": "phys_fn_002160", "rva": 0x000539b0, "size": 31,
+                          "kind": "code", "label": "phys_fn_002160",
+                          "label_confidence": "stable-id"})
         seams = vm.resolve_seams(vm.OracleResolver(rows, functions))
-        self.assertEqual(seams["opcNovodeXAlloc"], ["census:phys_fn_004803",
-                                                    "icall[getter]+0x0"])
+        # The getter is named in ORACLE_KNOWN (the vendored-rows transcriptions call it directly).
+        self.assertEqual(seams["opcNovodeXAlloc"], ["nxGetSdkAllocator", "icall[getter]+0x0"])
+        self.assertEqual(seams["opcNovodeXSetIceError"], ["census:phys_fn_002160"])
 
     def test_dropped_calls(self):
         f = body(lambda a: a.call(0x1100).call(0x1200).ret(), 0x1000)

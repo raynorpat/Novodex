@@ -5233,7 +5233,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # words; `parallel_axes` and `boundary_axes` are direction components inside
         # and exactly on +-FLT_EPSILON.
         'collision name=ray_inflated_tris index=- rva=0x00036d90 owner=phys_fn_001708 checks=600000 oracle=9604e3071aae4c41',
-        'collision coverage name=ray_inflated_tris hits=27976 misses=32024 count_two=3653 in_plane=2468 inflate_divergent=28725 inflate_divergent_simulate=41198 raytri_divergent=0 raytri_divergent_simulate=0 mixed=20017 canonical_nan=18130 default_mismatches=0 simulate_mismatches=0',
+        'collision coverage name=ray_inflated_tris hits=27976 misses=32024 count_two=3653 in_plane=2468 inflate_divergent=0 inflate_divergent_simulate=0 raytri_divergent=0 raytri_divergent_simulate=0 mixed=20017 canonical_nan=18129 default_mismatches=0 simulate_mismatches=0',
         'collision name=aabb_slab index=- rva=0x00038050 owner=phys_fn_001730 checks=1080000 oracle=25d802c82f8405bf',
         'collision coverage name=aabb_slab miss=51649 face0=1515 face1=1458 face2=1522 face3=1283 face4=1303 face5=1270 parallel_axes=15029 boundary_axes=7445 inverted=2441 mixed=19994 canonical_nan=0 default_mismatches=0 simulate_mismatches=0',
 
@@ -5315,8 +5315,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision input name=segment_triangle_edges words=900000 input=f90e10afd6e2b5ba',
 
         # ray_inflated_tris' gating fans per control word and draw kind: the fans on which
-        # both callees (Triangle::Inflate and NxRayTriIntersect) agree between the sides.
-        'collision gated name=ray_inflated_tris raw=10778 aimed=14293 mixed=6204 raw_simulate=3727 aimed_simulate=13581 mixed_simulate=1494',
+        # both callees (Triangle::Inflate and NxRayTriIntersect) agree between the sides: all of them
+        # since the vendored-rows pass transcribed Inflate.
+        'collision gated name=ray_inflated_tris raw=19914 aimed=20069 mixed=20017 raw_simulate=19914 aimed_simulate=20069 mixed_simulate=20017',
 
         # The `.snan` variants (harness hardening, controller decision): fifteen pre-Task-2b
         # blocks re-run on the same draws with their signalling NaNs kept. Their candidates
@@ -5419,11 +5420,13 @@ $NxRequiredCoverageLines = [ordered] @{
         # bound in (one bind bit each); registered up to its oracle digest. The Task 2h review
         # re-registered all 16 lines (dyadic exact-inverse poses, two more meshes, 001842's own world
         # pose, the cross family's inputs). Every line is copied from the oracle side (evidence/convex-mesh-gap.md,
-        # Task 2h); the coverage lines count oracle-side values and fixed inputs only.
-        'collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=1213440 oracle=c60b31b66fcb3424',
-        'collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=834560 oracle=f90e10499b9a9e86',
+        # Task 2h); the coverage lines count oracle-side values and fixed inputs only. Since the
+        # vendored-rows pass transcribed Inflate and Invert both lists are empty: the split holds no
+        # run, every case gates in convex_mesh_ray, and the split's ceilings are zero.
+        'collision name=convex_mesh_ray index=- rva=0x00041360 owner=phys_fn_001822 checks=2048000 oracle=6b847722bf4d6537',
+        'collision name=convex_mesh_ray.callee_divergent index=- rva=0x00041360 owner=phys_fn_001822 checks=0 oracle=cbf29ce484222325',
         'collision input name=convex_mesh_ray words=466510 input=0368f06f352174fd',
-        'collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2380 misses=5620 lazy=537 lazy_polygons=3222 posed=5009 posed_exact=1957 posed_dyadic=979 invert_split_runs=2963 split_runs=6520 input_snan=363',
+        'collision coverage name=convex_mesh_ray hulls=22 cases=8000 hits=2380 misses=5620 lazy=537 lazy_polygons=3222 posed=5009 posed_exact=1957 posed_dyadic=979 invert_split_runs=0 split_runs=0 input_snan=363',
         'collision name=convex_mesh_faces index=- rva=0x000419b0 owner=phys_fn_001832 checks=4992000 oracle=073689c31d0394d9',
         'collision input name=convex_mesh_faces words=296312 input=dc4fe87f0a4a2dcf',
         'collision coverage name=convex_mesh_faces meshes=8 cases=6000 overlapping=3325 separated=2675 best_set=2576 listed_all=1980 map_cases=2974 stamp_wraps=273 input_snan=136',
@@ -6170,7 +6173,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # output. Each is attributed in evidence/vendored-correspondence.md
         # (Task 4): the summation-order and register-lifetime work unit (the
         # three-product sums among them are in sum_grouping.csv) for *_x87,
-        # ice_plane_triangle, ice_matrix4x4 and ice_obb; inputs placed exactly on a boundary, where that same last bit
+        # ice_obb (ice_plane_triangle and ice_matrix4x4 are exact since the vendored-rows pass); inputs placed exactly on a boundary, where that same last bit
         # decides a hit, for *_boundary; qhull's own random rotation ("QR1") now
         # matches after the Gram-Schmidt reciprocal fix. `layout_checks=` in the
         # second coverage line is the
@@ -6218,14 +6221,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=opcode_refit rva=0x000e9410 owner=phys_fn_005378 source=OPC_BaseModel.cpp,OPC_OptimizedTree.cpp words=17709 oracle=aa7a9145 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=opcode_sap rva=0x000e6ca0 owner=phys_fn_005283 source=OPC_SweepAndPrune.cpp words=674 oracle=c5135e72 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=ice_aabb rva=0x000e2d20 owner=phys_fn_005141 source=Ice/IceAABB.cpp words=7800 oracle=5b4cf6ae mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=ice_plane_triangle rva=0x000e31c0 owner=phys_fn_005155 source=Ice/IcePlane.cpp,Ice/IceTriangle.cpp words=4000 oracle=20b460cd',
+        'thirdparty name=ice_plane_triangle rva=0x000e31c0 owner=phys_fn_005155 source=Ice/IcePlane.cpp,Ice/IceTriangle.cpp words=4000 oracle=20b460cd mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=ice_indexedtriangle rva=0x000e4160 owner=phys_fn_005187 source=Ice/IceIndexedTriangle.cpp words=1000 oracle=4660350a mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=ice_matrix4x4 rva=0x000e4400 owner=phys_fn_005197 source=Ice/IceMatrix4x4.cpp words=6800 oracle=d0f85eff',
+        'thirdparty name=ice_matrix4x4 rva=0x000e4400 owner=phys_fn_005197 source=Ice/IceMatrix4x4.cpp words=6800 oracle=d0f85eff mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=ice_obb rva=0x000e4580 owner=phys_fn_005199 source=Ice/IceOBB.cpp words=10800 oracle=4f2c5548',
         'thirdparty name=qhull_hull rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=58488 oracle=c824ff7f mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_hull_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=32036 oracle=20ffcbef',
         'thirdparty name=qhull_hull_rotated rva=0x0005ff40 owner=phys_fn_002520 source=geom2.c,qhull.c,poly.c,poly2.c,merge.c words=9431 oracle=0a2f0b05 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty coverage driven=71 divergent=12 words=904765 layout_checks=49',
+        'thirdparty coverage driven=71 divergent=10 words=904765 layout_checks=49',
         'thirdparty oracle digest=831c1b1b',
 
         # Vendored correspondence, Task 5a: candidate-built trees queried by the
@@ -6241,7 +6244,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=opcode_candidate_trees rva=0x000e9100 owner=phys_fn_005368 source=OPC_Model.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp,OPC_SphereCollider.cpp,OPC_OBBCollider.cpp,OPC_AABBCollider.cpp,OPC_LSSCollider.cpp,OPC_PlanesCollider.cpp,OPC_TreeCollider.cpp words=3674 oracle=1474f5d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=opcode_candidate_trees_ray rva=0x000ba6f0 owner=phys_fn_004932 source=OPC_RayCollider.cpp,OPC_RayAABBOverlap.h,OPC_RayTriOverlap.h words=292 oracle=f9c26128',
         'thirdparty name=opcode_candidate_trees_x87 rva=0x000f09b0 owner=phys_fn_005513 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp words=18694 oracle=b7ff4dc5',
-        'thirdparty coverage driven=74 divergent=14 words=927425 layout_checks=49',
+        'thirdparty coverage driven=74 divergent=12 words=927425 layout_checks=49',
         'thirdparty oracle digest=fd481e04',
         # qhull-gap Task 1: qhull's output, trace, option and merge paths, run through
         # the NovodeX driver sequence with qhull's printing captured on both sides
@@ -6281,7 +6284,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_paths_t4_x87 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,geom2.c,merge.c words=2723 oracle=248026db mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty coverage driven=104 divergent=25 words=2076496 layout_checks=49',
+        'thirdparty coverage driven=104 divergent=23 words=2076496 layout_checks=49',
         'thirdparty oracle digest=d937041f',
         # qhull-gap Task 4e: convex cooking. HullLibrary::CreateConvexHull/ReleaseResult
         # (0x0007ea10/0x0007e300) and phys_fn_002233 (0x00054920) called directly on both
@@ -6305,7 +6308,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_compute_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=bc33134f',
         'thirdparty name=hull_compute_pc64 rva=0x00054920 owner=phys_fn_002233 source=TriangleMesh.cpp,QhullHost.cpp,Quantizer.cpp words=12633 oracle=f5a778d6 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_compute_pc64_obj rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=122 oracle=4ebf7157',
-        'thirdparty coverage driven=135 divergent=30 words=3054084 layout_checks=49',
+        'thirdparty coverage driven=135 divergent=24 words=3054084 layout_checks=49',
         'thirdparty oracle digest=7a714f62',
         # qhull-gap Task 5 (the Task 4e review): the byte digest of every QHULL_*.obj of
         # the Task 4e families after dropping the sign of a printed -0.000 (the two CRTs'
@@ -6319,7 +6322,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=hull_compute_pc64_objbytes rva=0x0007e050 owner=phys_fn_003251 source=QhullHost.cpp words=2 oracle=16381ab0 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=hull_qhull_direct rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,geom.c,geom2.c,qset.c,mem.c,global.c words=812 oracle=12922cc6',
         'thirdparty name=hull_qhull_direct_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=410 oracle=27d5b5e1',
-        'thirdparty coverage driven=141 divergent=30 words=3055346 layout_checks=49',
+        'thirdparty coverage driven=141 divergent=24 words=3055346 layout_checks=49',
         'thirdparty oracle digest=8bb0cc32'
         # convex-mesh gap Task 2c: the ICE-shaped rows with no vendored source,
         # reconstructed in Physics/src (EdgeList.cpp, IceAdjacencies.cpp, IceMeshTools.cpp)
@@ -6338,17 +6341,17 @@ $NxRequiredCoverageLines = [ordered] @{
         # `pairs=1487 side=40 angle=9 meshes=13` coverage line, every digest unchanged).
         'thirdparty input name=edge_list words=11703 input=466037b8',
         'thirdparty name=edge_list rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=160261 oracle=76644d57 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=edge_list.plane_divergent rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=23225 oracle=18406f6d',
+        'thirdparty name=edge_list.plane_divergent rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=23225 oracle=18406f6d mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=edge_list meshes=65 runs=650 succeeded=650 failed=0 edges=27045 active_edge_links=6714 active_vertex_links=12384 reports=8 line72=2 line10a=1 line10b=1 line10e=1 line111=1 line114=1 line117=1',
         'thirdparty coverage name=edge_list.plane_divergent frozen_meshes=13',
         'thirdparty input name=ice_adjacencies words=11478 input=3ce4907d',
         'thirdparty name=ice_adjacencies rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=35084 oracle=39b6cbc7 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=ice_adjacencies.plane_divergent rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=3528 oracle=b67b88e0',
+        'thirdparty name=ice_adjacencies.plane_divergent rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=3528 oracle=b67b88e0 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=ice_adjacencies meshes=65 runs=335 succeeded=182 failed=153 links=12821 boundary=14323 active=15877 reports=153 line266=2 line267=5 line321=146 line72=1',
         'thirdparty input name=ice_valencies words=10533 input=0863cbf9',
         'thirdparty name=ice_valencies rva=0x00032610 owner=phys_fn_001667 source=IceMeshTools.cpp,EdgeList.cpp words=32709 oracle=2cbd6dee mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=ice_valencies meshes=65 runs=261 succeeded=260 failed=1 adjacent=12020 reports=1 line72=1',
-        'thirdparty coverage driven=109 divergent=27 words=2331303 layout_checks=49',
+        'thirdparty coverage driven=109 divergent=23 words=2331303 layout_checks=49',
         'thirdparty oracle digest=0bc9135f',
         # convex-mesh gap Task 2d: MeshBuilder2 (IceMeshBuilder2.cpp, 001591..001637) and the
         # vertex reduction (IceMeshTools.cpp, 001645/001647/001659), linked into the harness.
@@ -6368,7 +6371,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=vertex_reduction words=13893 input=db8a41b6',
         'thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0',
-        'thirdparty coverage driven=111 divergent=27 words=2533757 layout_checks=49',
+        'thirdparty coverage driven=111 divergent=23 words=2533757 layout_checks=49',
         'thirdparty oracle digest=b4c534b8',
         # convex-mesh gap Task 2e: the rest of sub-unit D (IceMeshTools.cpp: 001639, 001641/001643,
         # 001649, 001651, 001653, 001661) and P-Small (002144 in SmoothNormals.cpp, 001461 in
@@ -6402,9 +6405,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty coverage name=mesh_normals meshes=65 cases=381 true=380 false=1 weighted=190 x87_0f7f=190 vertex_snan=1089 hull_cases=139 hull_true=130 hull_false=9 reports=0',
         'thirdparty input name=adjacency_owner words=9948 input=4ddc1540',
         'thirdparty name=adjacency_owner rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=28728 oracle=b9df247a mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46',
+        'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29',
-        'thirdparty coverage driven=118 divergent=29 words=2801407 layout_checks=49',
+        'thirdparty coverage driven=118 divergent=24 words=2801407 layout_checks=49',
         'thirdparty oracle digest=f12cf599',
         # convex-mesh gap Task 2f: P-Hull (ConvexHull.cpp: 001441, 001445, 001449, 001459, 001463, 001465,
         # 001472, 001496, 001502, and the helpers 000001, 000925, 001391, 001439; 001657 in
@@ -6428,13 +6431,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty coverage name=hull_triangle_area_entry rva=0x0002a620 owner=phys_fn_001441 oracle_calls=900 candidate_calls=900',
         'thirdparty input name=convex_hull words=74098 input=d03735ea',
         'thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=32993 oracle=c722f53c mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578',
+        'thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=convex_hull meshes=102 split_meshes=68 polygons_true=63 polygons_false=36 edges_alone=3 polygons=583 edges_true=66 edges_false=0 edges=1735 rebuilt=25 support=1584 plane=700 plane_split=175 reports=24 line318=9 line321=15',
         'thirdparty coverage name=convex_hull_edges rva=0x0002cb50 owner=phys_fn_001502 source=ConvexHull.cpp calls=91 main_calls=66 direct_without_polygon=3 rebuild_calls=25',
         'thirdparty input name=support_maps words=26184 input=caa5f9eb',
         'thirdparty name=support_maps rva=0x0002e2f0 owner=phys_fn_001558 source=IceSupportMaps.cpp,ConvexHull.cpp words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4',
-        'thirdparty coverage driven=122 divergent=30 words=2939183 layout_checks=49',
+        'thirdparty coverage driven=122 divergent=24 words=2939183 layout_checks=49',
         'thirdparty oracle digest=3dd575da',
         # convex-mesh gap Task 2g: polygon_interface drives the TriangleMesh polygon interface
         # (TriangleMeshPolygons.cpp: the twelve slots of 0x101085d4 and 000505) through each
@@ -6445,7 +6448,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty input name=polygon_interface words=20733 input=4df6a369',
         'thirdparty name=polygon_interface rva=0x000552c0 owner=phys_fn_002249 source=TriangleMeshPolygons.cpp,ConvexHull.cpp,IceSupportMaps.cpp words=31253 oracle=28edec7b mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=polygon_interface hulls=34 built=25 polygons=234 edges=604 axes=333 axes_rebuilt=18 support=400 support_posed=200 faces=400 faces_edge=33 face_kind_null=50 projects=544 projects_map=272 projects_graph=272 climbs_failed=48 stamp_wraps=65 input_snan=823 reports=10',
-        'thirdparty coverage driven=123 divergent=30 words=2970436 layout_checks=49',
+        'thirdparty coverage driven=123 divergent=24 words=2970436 layout_checks=49',
         'thirdparty oracle digest=353fc9d8'
     )
 }

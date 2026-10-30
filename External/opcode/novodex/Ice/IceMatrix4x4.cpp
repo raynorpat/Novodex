@@ -3,6 +3,12 @@
  * expression path remains selected by the shipped backend; oracle rows are
  * 0x000e4200, 0x000e42a0, 0x000e43a0, and 0x000e4400. Scalar acceptance is
  * recorded under Portable.ConvexContact.IceMatrix4x4.
+ * [vendored rows] float Matrix4x4::CoFactor (phys_fn_005193): the body is guarded off; the oracle's own instructions are transcribed in
+ *     OpcodeVendoredRows.cpp. established at 0x000e42a0
+ * [vendored rows] float Matrix4x4::Determinant (phys_fn_005195): the body is guarded off; the oracle's own instructions are transcribed in
+ *     OpcodeVendoredRows.cpp. established at 0x000e43a0
+ * [vendored rows] Matrix4x4& Matrix4x4::Invert() (phys_fn_005197): the body is guarded off; the oracle's own instructions are transcribed in
+ *     OpcodeVendoredRows.cpp. established at 0x000e4400
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -101,6 +107,7 @@ ICEMATHS_API void IceMaths::InvertPRMatrix(Matrix4x4& dest, const Matrix4x4& src
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Compute the cofactor of the Matrix at a specified location
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef NX_VENDORED_LISTING_ROWS
 float Matrix4x4::CoFactor(udword row, udword col) const
 {
 	return	 (( m[(row+1)&3][(col+1)&3]*m[(row+2)&3][(col+2)&3]*m[(row+3)&3][(col+3)&3] +
@@ -110,10 +117,13 @@ float Matrix4x4::CoFactor(udword row, udword col) const
 				m[(row+3)&3][(col+2)&3]*m[(row+2)&3][(col+3)&3]*m[(row+1)&3][(col+1)&3] +
 				m[(row+3)&3][(col+3)&3]*m[(row+2)&3][(col+1)&3]*m[(row+1)&3][(col+2)&3])) * ((row + col) & 1 ? -1.0f : +1.0f);
 }
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in OpcodeVendoredRows.cpp (phys_fn_005193) */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Compute the determinant of the Matrix
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef NX_VENDORED_LISTING_ROWS
 float Matrix4x4::Determinant() const
 {
 	return	m[0][0] * CoFactor(0, 0) +
@@ -121,10 +131,13 @@ float Matrix4x4::Determinant() const
 			m[0][2] * CoFactor(0, 2) +
 			m[0][3] * CoFactor(0, 3);
 }
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in OpcodeVendoredRows.cpp (phys_fn_005195) */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Compute the inverse of the matrix
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef NX_VENDORED_LISTING_ROWS
 Matrix4x4& Matrix4x4::Invert()
 {
 	float Det = Determinant();
@@ -156,3 +169,5 @@ Matrix4x4& Matrix4x4::Invert()
 
 	return	*this;
 }
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in OpcodeVendoredRows.cpp (phys_fn_005197) */

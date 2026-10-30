@@ -394,8 +394,6 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "opcode_treecollider_callback_collide_boundary", 3785, 3107, 0xffffffffu, 0, 675, 329, 0, 1077936128ull, 4.75 },	// 004971: the same queries entered at a node pair (+4 words)
 	{ "opcode_treecollider_callback_tribox_boundary", 1286, 655, 0xffffffffu, 0, 630, 321, 0, 1071644672ull, 5.75 },	// 004967 (-2 words)
 	{ "opcode_treecollider_callback_boxtri_boundary", 325, 165, 0xffffffffu, 0, 160, 83, 0, 1082130432ull, 7.0 },	// 004969 (same length)
-	{ "ice_plane_triangle", 947, 0, 2820, 0, 39, 0, 122, 2820ull, 8.3446502685546875e-07 },	// 29 zero-area inputs are `degenerate`
-	{ "ice_matrix4x4", 1815, 0, 106, 0, 109, 0, 19, 106ull, 0.00128173828125 },	// 17 singular inputs are `degenerate`
 	{ "ice_obb", 1204, 0, 512, 0, 72, 0, 0, 512ull, 2.384185791015625e-07 },
 	{ "qhull_hull_x87", 1284, 0, 0, 3421917482582016ull, 7, 0, 0, 3421917482582016ull, 2.9558577807620168e-12 },	// doubles only; the combinatorial hull is exact
 	{ "opcode_candidate_trees_ray", 18, 1, 14, 0, 2, 0, 0, 14ull, 8.3446502685546875e-07 },	// the collider's floats, and one grazing ray's BV test count
@@ -416,11 +414,7 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "hull_compute_qhull", 248, 185, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// the same two cooking inputs, including the TriangleMesh wrapper words
 	{ "hull_qhull_direct", 105, 105, 0, 0, 0, 0, 0, 0, 0.0 },	// 8-point box's discrete facet topology, identical input, independently reproduced by vendored qhull
 	{ "hull_qhull_direct_x87", 61, 0, 0, kInf64, 37, 12, 0, 4607182418800017408ull, 2.0000000596046448 },	// x87 geometry residues on the two inputs; cluster hull topology is exact
-	{ "edge_list.plane_divergent", 465, 465, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2c: active-edge bits that follow the vendored Plane::Set / Triangle::Normal (005155, 005181); 0 with the oracle's bound in
-	{ "ice_adjacencies.plane_divergent", 124, 124, 0, 0, 0, 0, 0, 0ull, 0.0 },	// the same, through 001546's EdgeList
 	{ "pose_pair.inverse_divergent", 944, 0, 0xffffffffu, 0, 944, 944, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN: 276 are a signalling NaN the oracle's 005191 copies as integers and the vendored InvertPRMatrix quiets by copying through the FPU, and 668 are quiet NaNs on both sides that differ only in sign (252), payload (140) or both (276), where that quieted inverse meets other NaNs downstream in 001653's products; 0 with the oracle's 005191 bound in
-	{ "adjacency_owner.plane_divergent", 155, 155, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2e: 002188's EdgeList on Task 2c's 13 frozen meshes (005155, 005181); 0 with the oracle's bound in
-	{ "convex_hull.plane_divergent", 1595, 52, 0xffffffffu, 0, 512, 118, 0, 1074731964ull, HUGE_VAL },	// convex-mesh gap Task 2f: the concave, nudged and 0x0f7f polycube meshes and 001463's drawn points, whose planes 001463 takes through the vendored Plane::Set / Triangle::Area (005155, 005179); 0 with the oracle's pair bound into 001463
 	};
 
 // Keep the trace length changes attributed to the measured qhull search paths.
@@ -5154,16 +5148,14 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 		selfOnly, tolerance);
 	}
 
-// Three of the five are DIVERGENT, measured and attributed
-// (evidence/vendored-correspondence.md, Task 4): Plane::Set/Triangle's
-// cross products and normalisations, Matrix4x4's cofactor sums and OBB's
-// rotations are the reassociated sums and unrounded intermediates of the
-// summation-order work unit, and on the degenerate inputs (a collinear
-// triangle, a singular matrix) the oracle's unrounded residue is a tiny
-// non-zero where the candidate's is exactly zero.
+// One of the five is DIVERGENT, measured and attributed
+// (evidence/vendored-correspondence.md, Task 4): OBB's rotations are the
+// reassociated sums and unrounded intermediates of the summation-order work
+// unit. Plane::Set/Triangle and Matrix4x4 were divergent the same way until the
+// vendored-rows pass transcribed them; they are exact now.
 static void nxDriveIceMaths(const NxOracleRows& o, bool selfOnly)
 	{
-	static const bool kX87[5] = { false, true, false, true, true };
+	static const bool kX87[5] = { false, false, false, false, true };
 	for(int part = 0; part < 5; ++part)
 		nxDriveIcePart(o, part, selfOnly, kX87[part] ? kDivergent : 0);
 	}
@@ -8443,7 +8435,9 @@ static void nxIceFamily(const NxOracleRows& o, bool selfOnly, NxIceDriver driver
 		char split[64];
 		_snprintf(split, sizeof(split), "%s.%s", name, gIceSplitSuffix);
 		split[sizeof(split) - 1] = 0;
-		nxReportTapes(gOracleTapeB, gCandidateTapeB, split, rva, owner, source, selfOnly, kDivergent);
+		// A split is divergent while it has a ceiling; the plane splits are exact since the vendored-rows pass
+		// transcribed Plane::Set and Triangle::Normal (005155, 005181).
+		nxReportTapes(gOracleTapeB, gCandidateTapeB, split, rva, owner, source, selfOnly, nxFindCeiling(split) ? kDivergent : 0);
 		}
 	}
 

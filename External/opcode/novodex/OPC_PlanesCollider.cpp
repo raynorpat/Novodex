@@ -7,6 +7,8 @@
  *     collider's Collide resets and adopts that Container through the pointer; see
  *     OPC_VolumeCollider.h [1]. The image: 0x000e173d `mov eax,[eax]; mov
  *     [ebp+0x10],eax`.
+ * [vendored rows] const char* PlanesCollider::ValidateSettings() (phys_fn_005111): the body is guarded off; the oracle's own instructions are transcribed in
+ *     OpcodeVendoredRows.cpp. established at 0x000e1530
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -87,12 +89,15 @@ PlanesCollider::~PlanesCollider()
  *	\return		null if everything is ok, else a string describing the problem
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef NX_VENDORED_LISTING_ROWS
 const char* PlanesCollider::ValidateSettings()
 {
 	if(TemporalCoherenceEnabled() && !FirstContactEnabled())	return "Temporal coherence only works with ""First contact"" mode!";
 
 	return VolumeCollider::ValidateSettings();
 }
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in OpcodeVendoredRows.cpp (phys_fn_005111) */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**

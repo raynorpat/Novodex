@@ -1,0 +1,59 @@
+??0Container@IceCore@@QAE@ABV01@@Z ??0Container@IceCore@@QAE@ABV01@@Z instructions=30 differing=0
+?SphereTriOverlap@SphereCollider@Opcode@@IAEHABVPoint@IceMaths@@00@Z ?SphereTriOverlap@SphereCollider@Opcode@@IAEHABVPoint@IceMaths@@00@Z instructions=451 differing=0
+?ValidateSettings@OBBCollider@Opcode@@UAEPBDXZ ?ValidateSettings@OBBCollider@Opcode@@UAEPBDXZ instructions=8 differing=0
+?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z ?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z instructions=92 differing=0
+?Area@Triangle@IceMaths@@QBEMXZ ?Area@Triangle@IceMaths@@QBEMXZ instructions=45 differing=0
+?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z ?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z instructions=69 differing=0
+?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z ?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z instructions=31 differing=0
+?Inflate@Triangle@IceMaths@@QAEXM_N@Z ?Inflate@Triangle@IceMaths@@QAEXM_N@Z instructions=67 differing=0
+?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z instructions=92 differing=0
+?Determinant@Matrix4x4@IceMaths@@QBEMXZ ?Determinant@Matrix4x4@IceMaths@@QBEMXZ instructions=31 differing=0
+?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ instructions=127 differing=0
+?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z ?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z instructions=40 differing=0
+?Init@SAP_PairData@Opcode@@QAE_NI@Z ?Init@SAP_PairData@Opcode@@QAE_NI@Z instructions=63 differing=0
+nxOpModelDtor _nxOpModelDtor instructions=7 differing=0
+?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z instructions=139 differing=0
+?ValidateSettings@PlanesCollider@Opcode@@UAEPBDXZ ?ValidateSettings@PlanesCollider@Opcode@@UAEPBDXZ instructions=8 differing=0
+ALL EQUAL
+  call ??0Container@IceCore@@QAE@ABV01@@Z -> oracle 0x100b4e90 ; candidate ?SetSize@Container@IceCore@@QAE_NI@Z
+  jmp ?ValidateSettings@OBBCollider@Opcode@@UAEPBDXZ -> oracle 0x100213e0 ; candidate ?ValidateSettings@VolumeCollider@Opcode@@UAEPBDXZ
+  call ?Inflate@Triangle@IceMaths@@QAEXM_N@Z -> oracle 0x100e4020 ; candidate ?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z
+  call ?Determinant@Matrix4x4@IceMaths@@QBEMXZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Determinant@Matrix4x4@IceMaths@@QBEMXZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Determinant@Matrix4x4@IceMaths@@QBEMXZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Determinant@Matrix4x4@IceMaths@@QBEMXZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e43a0 ; candidate ?Determinant@Matrix4x4@IceMaths@@QBEMXZ
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ -> oracle 0x100e42a0 ; candidate ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
+  call ?Init@SAP_PairData@Opcode@@QAE_NI@Z -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call ?Init@SAP_PairData@Opcode@@QAE_NI@Z -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call ?Init@SAP_PairData@Opcode@@QAE_NI@Z -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxOpModelDtor -> oracle 0x100e9480 ; candidate ?Release@Model@Opcode@@AAEXXZ
+  jmp nxOpModelDtor -> oracle 0x100e9550 ; candidate ??1BaseModel@Opcode@@UAE@XZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100e8fb0 ; candidate ?IsValid@MeshInterface@Opcode@@QBE_NXZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100539b0 ; candidate ?opcNovodeXSetIceError@@YA_NPBD0H@Z
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100e8fd0 ; candidate ?CheckTopology@MeshInterface@Opcode@@QBEIXZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100e9480 ; candidate ?Release@Model@Opcode@@AAEXXZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100f1060 ; candidate ??0AABBTree@Opcode@@QAE@XZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100e9060 ; candidate ??0AABBTreeOfTrianglesBuilder@Opcode@@QAE@XZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100f10c0 ; candidate ?Build@AABBTree@Opcode@@QAE_NPAVAABBTreeBuilder@2@@Z
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100e9310 ; candidate ?CreateTree@BaseModel@Opcode@@IAE_N_N0@Z
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100f1500 ; candidate ??1AABBTree@Opcode@@QAE@XZ
+  call ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  jmp ?ValidateSettings@PlanesCollider@Opcode@@UAEPBDXZ -> oracle 0x100213e0 ; candidate ?ValidateSettings@VolumeCollider@Opcode@@UAEPBDXZ
+MAPPINGS checked=41 unexpected=0

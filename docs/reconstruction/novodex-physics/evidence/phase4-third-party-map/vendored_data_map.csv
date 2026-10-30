@@ -8,7 +8,7 @@ oracle_rva,candidate_symbol,method
 0x0011b784,??_7SphereCollider@Opcode@@6B@,cooccurrence
 0x0011b794,??_7PlanesCollider@Opcode@@6B@,cooccurrence
 0x0011bab4,??_7AABBTreeOfTrianglesBuilder@Opcode@@6B@,seed
-0x0011bac8,??_7Model@Opcode@@6B@,cooccurrence
+0x0011bac8,_nxOpVtModel,rank 2/2
 0x0011bb5c,??_7BaseModel@Opcode@@6B@,cooccurrence
 0x0011bb84,??_7AABBCollider@Opcode@@6B@,cooccurrence
 0x0011bbec,??_7Collider@Opcode@@6B@,cooccurrence
@@ -20,8 +20,8 @@ oracle_rva,candidate_symbol,method
 0x0011bcd0,??_7AABBQuantizedNoLeafTree@Opcode@@6B@,cooccurrence
 0x00122340,_qh_rand_seed,cooccurrence
 0x00122344,_qh_version,cooccurrence
-0x00122520,?EdgeNormals@?1??GetLocalEdgeNormals@OBB@IceMaths@@QBEPBVPoint@3@XZ@4PAMA,seed
-0x00122524,?EdgeNormals@?1??GetLocalEdgeNormals@OBB@IceMaths@@QBEPBVPoint@3@XZ@4PAMA+0x4,seed
+0x00122520,?nxOpEdgeNormals@@3PAIA,seed
+0x00122524,?nxOpEdgeNormals@@3PAIA+0x4,seed
 0x001225b4,?gFixQuantized@@3_NA,cooccurrence
 0x00124678,_qh_qh,cooccurrence
 0x0012467c,_qh_qh+0x4,cooccurrence

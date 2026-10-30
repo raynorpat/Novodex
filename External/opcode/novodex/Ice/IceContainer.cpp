@@ -32,6 +32,8 @@
  *     `call dword ptr [edx+0x0c]` with mEntries; 0x000b4ede/0x000b4eef allocate
  *     through `call dword ptr [edx]` with (mMaxNbEntries*4, 0). Stock emits
  *     operator new[]/delete[].
+ * [vendored rows] Container::Container(const Container& object) (phys_fn_004844): the body is guarded off; the oracle's own instructions are transcribed in
+ *     OpcodeVendoredRows.cpp. established at 0x000b4f00
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -100,6 +102,7 @@ Container::Container(udword size, float growth_factor) : mMaxNbEntries(0), mCurN
  *	Copy constructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef NX_VENDORED_LISTING_ROWS
 Container::Container(const Container& object) : mMaxNbEntries(0), mCurNbEntries(0), mEntries(null), mGrowthFactor(2.0f)
 {
 #ifdef CONTAINER_STATS
@@ -108,6 +111,8 @@ Container::Container(const Container& object) : mMaxNbEntries(0), mCurNbEntries(
 #endif
 	*this = object;
 }
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in OpcodeVendoredRows.cpp (phys_fn_004844) */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**

@@ -1,0 +1,53 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// see head.txt
+#include "Stdafx.h"
+
+extern "C" void nxOpCall0AABBTree();
+extern "C" void nxOpCall0AABBTreeOfTrianglesBuilder();
+extern "C" void nxOpCall1AABBTree();
+extern "C" void nxOpCall1BaseModel();
+extern "C" void nxOpCallBuild();
+extern "C" void nxOpCallCenter();
+extern "C" void nxOpCallCheckTopology();
+extern "C" void nxOpCallCoFactor();
+extern "C" void nxOpCallCreateTree();
+extern "C" void nxOpCallDeterminant();
+extern "C" void nxOpCallIsValid();
+extern "C" void nxOpCallNxGetSdkAllocator();
+extern "C" void nxOpCallOpcNovodeXSetIceError();
+extern "C" void nxOpCallRelease();
+extern "C" void nxOpCallSetSize();
+extern "C" void nxOpCallValidateSettings();
+#pragma comment(linker, "/alternatename:_nxOpCall0AABBTree=??0AABBTree@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxOpCall0AABBTreeOfTrianglesBuilder=??0AABBTreeOfTrianglesBuilder@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxOpCall1AABBTree=??1AABBTree@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxOpCall1BaseModel=??1BaseModel@Opcode@@UAE@XZ")
+#pragma comment(linker, "/alternatename:_nxOpCallBuild=?Build@AABBTree@Opcode@@QAE_NPAVAABBTreeBuilder@2@@Z")
+#pragma comment(linker, "/alternatename:_nxOpCallCenter=?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z")
+#pragma comment(linker, "/alternatename:_nxOpCallCheckTopology=?CheckTopology@MeshInterface@Opcode@@QBEIXZ")
+#pragma comment(linker, "/alternatename:_nxOpCallCoFactor=?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z")
+#pragma comment(linker, "/alternatename:_nxOpCallCreateTree=?CreateTree@BaseModel@Opcode@@IAE_N_N0@Z")
+#pragma comment(linker, "/alternatename:_nxOpCallDeterminant=?Determinant@Matrix4x4@IceMaths@@QBEMXZ")
+#pragma comment(linker, "/alternatename:_nxOpCallIsValid=?IsValid@MeshInterface@Opcode@@QBE_NXZ")
+#pragma comment(linker, "/alternatename:_nxOpCallNxGetSdkAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
+#pragma comment(linker, "/alternatename:_nxOpCallOpcNovodeXSetIceError=?opcNovodeXSetIceError@@YA_NPBD0H@Z")
+#pragma comment(linker, "/alternatename:_nxOpCallRelease=?Release@Model@Opcode@@AAEXXZ")
+#pragma comment(linker, "/alternatename:_nxOpCallSetSize=?SetSize@Container@IceCore@@QAE_NI@Z")
+#pragma comment(linker, "/alternatename:_nxOpCallValidateSettings=?ValidateSettings@VolumeCollider@Opcode@@UAEPBDXZ")
+static const char nxOpStrTemporalCoherence[] = "Temporal coherence only works with First contact mode!";
+extern "C" void* nxOpVtModel;
+#pragma comment(linker, "/alternatename:_nxOpVtModel=??_7Model@Opcode@@6B@")
+// OBB::GetLocalEdgeNormals' table (.data 0x00122520, 12 Points), word for word from the oracle.
+static unsigned nxOpEdgeNormals[36] = {0x00000000, 0xbf3504f3, 0xbf3504f3, 0x3f3504f3, 0x00000000, 0xbf3504f3, 0x00000000, 0x3f3504f3, 0xbf3504f3, 0xbf3504f3, 0x00000000, 0xbf3504f3, 0x00000000, 0x3f3504f3, 0x3f3504f3, 0x3f3504f3, 0x00000000, 0x3f3504f3, 0x00000000, 0xbf3504f3, 0x3f3504f3, 0xbf3504f3, 0x00000000, 0x3f3504f3, 0x3f3504f3, 0xbf3504f3, 0x00000000, 0x3f3504f3, 0x3f3504f3, 0x00000000, 0xbf3504f3, 0x3f3504f3, 0x00000000, 0xbf3504f3, 0xbf3504f3, 0x00000000};
+#pragma comment(linker, "/alternatename:??1Model@Opcode@@UAE@XZ=_nxOpModelDtor")
+
+@@PROTOS@@
+
+@@BODY@@

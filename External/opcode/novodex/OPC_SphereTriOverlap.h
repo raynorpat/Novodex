@@ -16,6 +16,8 @@
  *     value on the x87 stack to 0x000de7c1 `fabs; fcomp [ecx+0x40]` (mRadius2),
  *     so it is never rounded to float. Declared double here, the project's x87
  *     convention for a register lifetime, and compared through fabs, not fabsf.
+ * [vendored rows] BOOL SphereCollider::SphereTriOverlap( (phys_fn_005069): the body is guarded off; the oracle's own instructions are transcribed in
+ *     OpcodeVendoredRows.cpp. established at 0x000de240
  */
 
 // This is collision detection. If you do another distance test for collision *response*,
@@ -25,6 +27,7 @@
 // Overall this approach should run faster.
 
 // Original code by David Eberly in Magic.
+#ifndef NX_VENDORED_LISTING_ROWS
 BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, const Point& vert2)
 {
 	// Stats
@@ -204,3 +207,5 @@ BOOL SphereCollider::SphereTriOverlap(const Point& vert0, const Point& vert1, co
 
 	return fabs(SqrDist) < mRadius2;	// NOVODEX [2]
 }
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in OpcodeVendoredRows.cpp (phys_fn_005069) */

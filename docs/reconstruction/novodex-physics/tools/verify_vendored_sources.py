@@ -50,7 +50,7 @@ LIBRARIES = {
 # one is a mistake.
 DECLARED_ADDITIONS = {
     "qhull": {"QhullNovodeXHost.h"},
-    "opcode": {"OpcodeNovodeXHost.h", "OPC_RayTriOverlapScalar.inl"},
+    "opcode": {"OpcodeNovodeXHost.h", "OPC_RayTriOverlapScalar.inl", "OpcodeVendoredRows.cpp"},
 }
 
 MARKER = "NOVODEX LOCAL MODIFICATION"

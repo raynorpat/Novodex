@@ -2037,7 +2037,10 @@ UNRESOLVED_SOURCE_PATHS = (
     # (phys_fn_005358, MeshInterface::SetPointers), and is REMOVED:
     # vendored-correspondence Task 5b promoted that row and its source now names
     # the vendored file that defines it, External/opcode/upstream/Opcode/.
-    'Physics/src/opcode/OPC_Model.cpp',              # 1 rows
+    # 'Physics/src/opcode/OPC_Model.cpp' was here with 1 row against it
+    # (phys_fn_005368, Model::Build), and is REMOVED: the vendored-rows pass
+    # recorded that row and its source now names its transcription,
+    # External/opcode/novodex/OpcodeVendoredRows.cpp.
 )
 
 
