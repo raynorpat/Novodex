@@ -21277,13 +21277,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/442",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3213",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023940: the public getGlobalPosition handle method (slot 20 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPosition, then the lock released. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1099@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1099@@YIIPAX0I@Z",
+        "address": "0x10047380",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001100",
@@ -21313,13 +21321,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/443",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3214",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023970: the public getGlobalOrientation handle method (slot 21 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalOrientation, then the lock released. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1101@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1101@@YIIPAX0I@Z",
+        "address": "0x100473b0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001102",
@@ -21349,13 +21365,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpCapsuleShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/444",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3215",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000239a0: the public setMaterial handle method (slot 25 of NxCapsuleShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1103@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1103@@YIIPAX0I@Z",
+        "address": "0x100473e0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001104",
@@ -21385,13 +21409,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpCapsuleShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/445",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3218",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023a00: the public setName handle method (slot 29 of NxCapsuleShape): under the handle's write lock, the internal shape's setName, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1105@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1105@@YIIPAX0I@Z",
+        "address": "0x10047440",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001106",
@@ -21921,13 +21953,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/455",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3244",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023da0: the public setFlag handle method (slot 5 of NxPlaneShape): under the handle's write lock, the internal shape's setFlag, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1131@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1131@@YIIPAX0II@Z",
+        "address": "0x100474a0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001132",
@@ -21957,13 +21997,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/456",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3247",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023e00: the public setLocalPose handle method (slot 7 of NxPlaneShape): under the handle's write lock, the internal shape's setLocalPose, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1133@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1133@@YIIPAX0I@Z",
+        "address": "0x10047500",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001134",
@@ -21993,13 +22041,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/457",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3250",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023e60: the public setLocalPosition handle method (slot 8 of NxPlaneShape): under the handle's write lock, the internal shape's setLocalPosition, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1135@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1135@@YIIPAX0I@Z",
+        "address": "0x10047560",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001136",
@@ -22029,13 +22085,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/458",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3253",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023ec0: the public setLocalOrientation handle method (slot 9 of NxPlaneShape): under the handle's write lock, the internal shape's setLocalOrientation, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1137@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1137@@YIIPAX0I@Z",
+        "address": "0x100475c0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001138",
@@ -22065,13 +22129,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/459",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3256",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023f20: the public setGlobalPose handle method (slot 16 of NxPlaneShape): under the handle's write lock, the internal shape's setGlobalPose, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1139@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1139@@YIIPAX0I@Z",
+        "address": "0x10047620",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001140",
@@ -22101,13 +22173,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/460",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3259",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023f80: the public setGlobalPosition handle method (slot 17 of NxPlaneShape): under the handle's write lock, the internal shape's setGlobalPosition, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1141@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1141@@YIIPAX0I@Z",
+        "address": "0x10047680",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001142",
@@ -22137,13 +22217,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/461",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3262",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00023fe0: the public setGlobalOrientation handle method (slot 18 of NxPlaneShape): under the handle's write lock, the internal shape's setGlobalOrientation, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1143@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1143@@YIIPAX0I@Z",
+        "address": "0x100476e0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001144",
@@ -22173,13 +22261,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/462",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3265",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024040: the public setMaterial handle method (slot 25 of NxPlaneShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1145@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1145@@YIIPAX0I@Z",
+        "address": "0x10047740",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001146",
@@ -22209,13 +22305,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/463",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3268",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000240a0: the public setName handle method (slot 29 of NxPlaneShape): under the handle's write lock, the internal shape's setName, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1147@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1147@@YIIPAX0I@Z",
+        "address": "0x100477a0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001148",
@@ -22283,13 +22387,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/465",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3272",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024130: the public getGlobalPose by value handle method (slot 22 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPose by value, then the lock released. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1151@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1151@@YIIPAX0I@Z",
+        "address": "0x10047800",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001152",
@@ -22319,13 +22431,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3273",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024160: the public getGlobalPosition by value handle method (slot 23 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPosition by value, then the lock released. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1153@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1153@@YIIPAX0I@Z",
+        "address": "0x10047830",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001154",
@@ -22391,13 +22511,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpPlaneShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/468",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3277",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000241f0: the public setPlane handle method (slot 31 of NxPlaneShape): under the handle's write lock, the internal shape's setPlane, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1157@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1157@@YIIPAX0II@Z",
+        "address": "0x10047860",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001158",
@@ -22581,13 +22709,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpSphereShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/472",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3287",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024340: the public setFlag handle method (slot 5 of NxSphereShape): under the handle's write lock, the internal shape's setFlag, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1167@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1167@@YIIPAX0II@Z",
+        "address": "0x100478c0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001168",
@@ -22881,13 +23017,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpSphereShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/479",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3308",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000245e0: the public setMaterial handle method (slot 25 of NxSphereShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1181@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1181@@YIIPAX0I@Z",
+        "address": "0x10047920",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001182",
@@ -23449,13 +23593,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/492",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3335",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024990: the public setFlag handle method (slot 5 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setFlag, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1211@@YIIPAX0II@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1211@@YIIPAX0II@Z",
+        "address": "0x10047980",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001212",
@@ -23485,13 +23637,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/493",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3338",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x000249f0: the public setLocalPose handle method (slot 7 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setLocalPose, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1213@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1213@@YIIPAX0I@Z",
+        "address": "0x100479e0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001214",
@@ -23521,13 +23681,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/494",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3341",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024a50: the public setLocalPosition handle method (slot 8 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setLocalPosition, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1215@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1215@@YIIPAX0I@Z",
+        "address": "0x10047a40",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001216",
@@ -23557,13 +23725,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/495",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3344",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024ab0: the public setLocalOrientation handle method (slot 9 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setLocalOrientation, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1217@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1217@@YIIPAX0I@Z",
+        "address": "0x10047aa0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001218",
@@ -23707,13 +23883,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/499",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3350",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024ba0: the public setGlobalPose handle method (slot 16 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setGlobalPose, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1225@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1225@@YIIPAX0I@Z",
+        "address": "0x10047b00",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001226",
@@ -23743,13 +23927,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/500",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3353",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024c00: the public setGlobalPosition handle method (slot 17 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setGlobalPosition, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1227@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1227@@YIIPAX0I@Z",
+        "address": "0x10047b60",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001228",
@@ -23779,13 +23971,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/501",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3356",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024c60: the public setGlobalOrientation handle method (slot 18 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setGlobalOrientation, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1229@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1229@@YIIPAX0I@Z",
+        "address": "0x10047bc0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001230",
@@ -23815,13 +24015,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/502",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3359",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024cc0: the public getGlobalPose handle method (slot 19 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPose, then the lock released. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1231@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1231@@YIIPAX0I@Z",
+        "address": "0x10047c20",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001232",
@@ -23851,13 +24059,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/503",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3360",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024cf0: the public setMaterial handle method (slot 25 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1233@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1233@@YIIPAX0I@Z",
+        "address": "0x10047c50",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001234",
@@ -23887,13 +24103,21 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpTriangleMeshShape.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/NpShapeHandleRows.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/504",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3363",
-      "static_proof": null,
+      "static_proof": "Capstone listing at RVA 0x00024d50: the public setName handle method (slot 29 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setName, then the lock released; a refused write lock reports through the Foundation error stream. Transcribed instruction for instruction into a naked row in Physics/src/NpShapeHandleRows.cpp; evidence/phase3-shape-handle-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 779 instructions of its rows equal, with the 84 call mappings as expected. See evidence/phase3-shape-handle-rows.md.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).",
+      "implementation": "Physics/src/NpShapeHandleRows.cpp",
+      "implementation_symbol": "?nxFac1235@@YIIPAX0I@Z",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "?nxFac1235@@YIIPAX0I@Z",
+        "address": "0x10047cb0",
+        "object": "NpShapeHandleRows.obj"
+      }
     },
     {
       "id": "phys_fn_001236",

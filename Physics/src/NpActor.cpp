@@ -969,6 +969,36 @@ static bool __fastcall nxMeshHandleSaveToDesc(void* self, void*,
 	return shape->nxMeshSaveState(&descriptor);
 	}
 
+// The public shape handles' rows, naked listing transcriptions in NpShapeHandleRows.cpp.
+unsigned __fastcall nxFac1099(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1101(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1103(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1105(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1131(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxFac1133(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1135(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1137(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1139(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1141(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1143(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1145(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1147(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1151(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1153(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1157(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxFac1167(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxFac1181(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1211(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxFac1213(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1215(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1217(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1225(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1227(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1229(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1231(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1233(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxFac1235(void* self, void* edxUnused, unsigned a0);
+
 void* nxBoxShapePublicVtable()
 	{
 	struct Table
@@ -1012,6 +1042,12 @@ void* nxBoxShapePublicVtable()
 			slots[32] = reinterpret_cast<void*>(&nxBoxHandleGetDimensions);
 			slots[33] = reinterpret_cast<void*>(&nxBoxHandleGetWorldOBB);
 			slots[34] = reinterpret_cast<void*>(&nxBoxHandleSaveToDesc);
+			// The oracle table's own entries for these slots (NpShapeHandleRows.cpp).
+			slots[19] = reinterpret_cast<void*>(&nxFac1231);
+			slots[20] = reinterpret_cast<void*>(&nxFac1099);
+			slots[21] = reinterpret_cast<void*>(&nxFac1101);
+			slots[22] = reinterpret_cast<void*>(&nxFac1151);
+			slots[23] = reinterpret_cast<void*>(&nxFac1153);
 			}
 		};
 	static Table table;
@@ -1030,6 +1066,21 @@ static void** nxMeshShapePublicVtable()
 				slots[slot] = box[slot];
 			slots[31] = reinterpret_cast<void*>(&nxMeshHandleSaveToDesc);
 			slots[32] = reinterpret_cast<void*>(&nxMeshHandleGetTriangleMesh);
+			// The oracle table's own entries for these slots (NpShapeHandleRows.cpp).
+			slots[5] = reinterpret_cast<void*>(&nxFac1211);
+			slots[7] = reinterpret_cast<void*>(&nxFac1213);
+			slots[8] = reinterpret_cast<void*>(&nxFac1215);
+			slots[9] = reinterpret_cast<void*>(&nxFac1217);
+			slots[16] = reinterpret_cast<void*>(&nxFac1225);
+			slots[17] = reinterpret_cast<void*>(&nxFac1227);
+			slots[18] = reinterpret_cast<void*>(&nxFac1229);
+			slots[19] = reinterpret_cast<void*>(&nxFac1231);
+			slots[20] = reinterpret_cast<void*>(&nxFac1099);
+			slots[21] = reinterpret_cast<void*>(&nxFac1101);
+			slots[22] = reinterpret_cast<void*>(&nxFac1151);
+			slots[23] = reinterpret_cast<void*>(&nxFac1153);
+			slots[25] = reinterpret_cast<void*>(&nxFac1233);
+			slots[29] = reinterpret_cast<void*>(&nxFac1235);
 			}
 		};
 	static Table table;
@@ -1086,6 +1137,36 @@ void* nxShapePublicVtable(unsigned type)
 			// getTriangleMesh at slots 31 and 32.
 			slots[3][31] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[3][32] = reinterpret_cast<void*>(&nxMeshHandleGetTriangleMesh);
+			// The oracle tables' own entries for these slots (NpShapeHandleRows.cpp).
+			slots[0][5] = reinterpret_cast<void*>(&nxFac1131);
+			slots[0][7] = reinterpret_cast<void*>(&nxFac1133);
+			slots[0][8] = reinterpret_cast<void*>(&nxFac1135);
+			slots[0][9] = reinterpret_cast<void*>(&nxFac1137);
+			slots[0][16] = reinterpret_cast<void*>(&nxFac1139);
+			slots[0][17] = reinterpret_cast<void*>(&nxFac1141);
+			slots[0][18] = reinterpret_cast<void*>(&nxFac1143);
+			slots[0][19] = reinterpret_cast<void*>(&nxFac1231);
+			slots[0][20] = reinterpret_cast<void*>(&nxFac1099);
+			slots[0][21] = reinterpret_cast<void*>(&nxFac1101);
+			slots[0][22] = reinterpret_cast<void*>(&nxFac1151);
+			slots[0][23] = reinterpret_cast<void*>(&nxFac1153);
+			slots[0][25] = reinterpret_cast<void*>(&nxFac1145);
+			slots[0][29] = reinterpret_cast<void*>(&nxFac1147);
+			slots[0][31] = reinterpret_cast<void*>(&nxFac1157);
+			slots[1][5] = reinterpret_cast<void*>(&nxFac1167);
+			slots[1][19] = reinterpret_cast<void*>(&nxFac1231);
+			slots[1][20] = reinterpret_cast<void*>(&nxFac1099);
+			slots[1][21] = reinterpret_cast<void*>(&nxFac1101);
+			slots[1][22] = reinterpret_cast<void*>(&nxFac1151);
+			slots[1][23] = reinterpret_cast<void*>(&nxFac1153);
+			slots[1][25] = reinterpret_cast<void*>(&nxFac1181);
+			slots[2][19] = reinterpret_cast<void*>(&nxFac1231);
+			slots[2][20] = reinterpret_cast<void*>(&nxFac1099);
+			slots[2][21] = reinterpret_cast<void*>(&nxFac1101);
+			slots[2][22] = reinterpret_cast<void*>(&nxFac1151);
+			slots[2][23] = reinterpret_cast<void*>(&nxFac1153);
+			slots[2][25] = reinterpret_cast<void*>(&nxFac1103);
+			slots[2][29] = reinterpret_cast<void*>(&nxFac1105);
 			}
 		};
 	static Tables tables;

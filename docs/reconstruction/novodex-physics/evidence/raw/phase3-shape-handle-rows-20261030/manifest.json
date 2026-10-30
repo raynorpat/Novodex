@@ -1,0 +1,121 @@
+{
+ "source": "Physics/src/NpShapeHandleRows.cpp",
+ "compare": "evidence/phase3-shape-handle-rows-listing-compare.py",
+ "doc": "evidence/phase3-shape-handle-rows.md",
+ "instructions": 779,
+ "mappings": 84,
+ "rows": {
+  "phys_fn_001099": {
+   "symbol": "nxFac1099",
+   "what": "the public getGlobalPosition handle method (slot 20 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPosition, then the lock released"
+  },
+  "phys_fn_001101": {
+   "symbol": "nxFac1101",
+   "what": "the public getGlobalOrientation handle method (slot 21 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalOrientation, then the lock released"
+  },
+  "phys_fn_001103": {
+   "symbol": "nxFac1103",
+   "what": "the public setMaterial handle method (slot 25 of NxCapsuleShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001105": {
+   "symbol": "nxFac1105",
+   "what": "the public setName handle method (slot 29 of NxCapsuleShape): under the handle's write lock, the internal shape's setName, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001131": {
+   "symbol": "nxFac1131",
+   "what": "the public setFlag handle method (slot 5 of NxPlaneShape): under the handle's write lock, the internal shape's setFlag, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001133": {
+   "symbol": "nxFac1133",
+   "what": "the public setLocalPose handle method (slot 7 of NxPlaneShape): under the handle's write lock, the internal shape's setLocalPose, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001135": {
+   "symbol": "nxFac1135",
+   "what": "the public setLocalPosition handle method (slot 8 of NxPlaneShape): under the handle's write lock, the internal shape's setLocalPosition, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001137": {
+   "symbol": "nxFac1137",
+   "what": "the public setLocalOrientation handle method (slot 9 of NxPlaneShape): under the handle's write lock, the internal shape's setLocalOrientation, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001139": {
+   "symbol": "nxFac1139",
+   "what": "the public setGlobalPose handle method (slot 16 of NxPlaneShape): under the handle's write lock, the internal shape's setGlobalPose, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001141": {
+   "symbol": "nxFac1141",
+   "what": "the public setGlobalPosition handle method (slot 17 of NxPlaneShape): under the handle's write lock, the internal shape's setGlobalPosition, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001143": {
+   "symbol": "nxFac1143",
+   "what": "the public setGlobalOrientation handle method (slot 18 of NxPlaneShape): under the handle's write lock, the internal shape's setGlobalOrientation, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001145": {
+   "symbol": "nxFac1145",
+   "what": "the public setMaterial handle method (slot 25 of NxPlaneShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001147": {
+   "symbol": "nxFac1147",
+   "what": "the public setName handle method (slot 29 of NxPlaneShape): under the handle's write lock, the internal shape's setName, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001151": {
+   "symbol": "nxFac1151",
+   "what": "the public getGlobalPose by value handle method (slot 22 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPose by value, then the lock released"
+  },
+  "phys_fn_001153": {
+   "symbol": "nxFac1153",
+   "what": "the public getGlobalPosition by value handle method (slot 23 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPosition by value, then the lock released"
+  },
+  "phys_fn_001157": {
+   "symbol": "nxFac1157",
+   "what": "the public setPlane handle method (slot 31 of NxPlaneShape): under the handle's write lock, the internal shape's setPlane, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001167": {
+   "symbol": "nxFac1167",
+   "what": "the public setFlag handle method (slot 5 of NxSphereShape): under the handle's write lock, the internal shape's setFlag, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001181": {
+   "symbol": "nxFac1181",
+   "what": "the public setMaterial handle method (slot 25 of NxSphereShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001211": {
+   "symbol": "nxFac1211",
+   "what": "the public setFlag handle method (slot 5 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setFlag, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001213": {
+   "symbol": "nxFac1213",
+   "what": "the public setLocalPose handle method (slot 7 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setLocalPose, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001215": {
+   "symbol": "nxFac1215",
+   "what": "the public setLocalPosition handle method (slot 8 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setLocalPosition, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001217": {
+   "symbol": "nxFac1217",
+   "what": "the public setLocalOrientation handle method (slot 9 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setLocalOrientation, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001225": {
+   "symbol": "nxFac1225",
+   "what": "the public setGlobalPose handle method (slot 16 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setGlobalPose, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001227": {
+   "symbol": "nxFac1227",
+   "what": "the public setGlobalPosition handle method (slot 17 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setGlobalPosition, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001229": {
+   "symbol": "nxFac1229",
+   "what": "the public setGlobalOrientation handle method (slot 18 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setGlobalOrientation, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001231": {
+   "symbol": "nxFac1231",
+   "what": "the public getGlobalPose handle method (slot 19 of NxBoxShape, NxCapsuleShape, NxPlaneShape, NxSphereShape, NxTriangleMeshShape): under the handle's read lock, the internal shape's getGlobalPose, then the lock released"
+  },
+  "phys_fn_001233": {
+   "symbol": "nxFac1233",
+   "what": "the public setMaterial handle method (slot 25 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setMaterial, then the lock released; a refused write lock reports through the Foundation error stream"
+  },
+  "phys_fn_001235": {
+   "symbol": "nxFac1235",
+   "what": "the public setName handle method (slot 29 of NxTriangleMeshShape): under the handle's write lock, the internal shape's setName, then the lock released; a refused write lock reports through the Foundation error stream"
+  }
+ }
+}

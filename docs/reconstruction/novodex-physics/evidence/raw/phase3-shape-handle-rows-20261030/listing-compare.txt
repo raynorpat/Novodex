@@ -1,0 +1,114 @@
+nxFac1099 ?nxFac1099@@YIIPAX0I@Z instructions=15 differing=0
+nxFac1101 ?nxFac1101@@YIIPAX0I@Z instructions=15 differing=0
+nxFac1103 ?nxFac1103@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1105 ?nxFac1105@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1131 ?nxFac1131@@YIIPAX0II@Z instructions=32 differing=0
+nxFac1133 ?nxFac1133@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1135 ?nxFac1135@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1137 ?nxFac1137@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1139 ?nxFac1139@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1141 ?nxFac1141@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1143 ?nxFac1143@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1145 ?nxFac1145@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1147 ?nxFac1147@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1151 ?nxFac1151@@YIIPAX0I@Z instructions=18 differing=0
+nxFac1153 ?nxFac1153@@YIIPAX0I@Z instructions=18 differing=0
+nxFac1157 ?nxFac1157@@YIIPAX0II@Z instructions=32 differing=0
+nxFac1167 ?nxFac1167@@YIIPAX0II@Z instructions=32 differing=0
+nxFac1181 ?nxFac1181@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1211 ?nxFac1211@@YIIPAX0II@Z instructions=32 differing=0
+nxFac1213 ?nxFac1213@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1215 ?nxFac1215@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1217 ?nxFac1217@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1225 ?nxFac1225@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1227 ?nxFac1227@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1229 ?nxFac1229@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1231 ?nxFac1231@@YIIPAX0I@Z instructions=15 differing=0
+nxFac1233 ?nxFac1233@@YIIPAX0I@Z instructions=30 differing=0
+nxFac1235 ?nxFac1235@@YIIPAX0I@Z instructions=30 differing=0
+ALL EQUAL
+  call nxFac1099 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxFac1099 -> oracle 0x10026280 ; candidate ?nxShp1311@@YIIPAX0I@Z
+  call nxFac1099 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1101 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxFac1101 -> oracle 0x10026430 ; candidate ?nxShp1313@@YIIPAX0I@Z
+  call nxFac1101 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1103 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1103 -> oracle 0x100276f0 ; candidate ?nxSetMaterialIndex@ShapeBase@@QAEXG@Z
+  call nxFac1103 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1105 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1105 -> oracle 0x1008aea0 ; candidate ?setValue@SdkPointerBindingThunk@@QAE_NPAX@Z
+  call nxFac1105 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1131 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1131 -> oracle 0x10026df0 ; candidate ?nxShp1331@@YIIPAX0II@Z
+  call nxFac1131 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1133 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1133 -> oracle 0x10026e30 ; candidate ?nxShp1333@@YIIPAX0I@Z
+  call nxFac1133 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1135 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1135 -> oracle 0x10026ec0 ; candidate ?nxShp1335@@YIIPAX0I@Z
+  call nxFac1135 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1137 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1137 -> oracle 0x10026f50 ; candidate ?nxShp1337@@YIIPAX0I@Z
+  call nxFac1137 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1139 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1139 -> oracle 0x10025c10 ; candidate ?nxShp1307@@YIIPAX0I@Z
+  call nxFac1139 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1141 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1141 -> oracle 0x10026fd0 ; candidate ?nxShp1339@@YIIPAX0I@Z
+  call nxFac1141 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1143 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1143 -> oracle 0x10027360 ; candidate ?nxShp1341@@YIIPAX0I@Z
+  call nxFac1143 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1145 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1145 -> oracle 0x100276f0 ; candidate ?nxSetMaterialIndex@ShapeBase@@QAEXG@Z
+  call nxFac1145 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1147 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1147 -> oracle 0x1008aea0 ; candidate ?setValue@SdkPointerBindingThunk@@QAE_NPAX@Z
+  call nxFac1147 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1151 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxFac1151 -> oracle 0x10026ad0 ; candidate ?nxShp1317@@YIIPAX0I@Z
+  call nxFac1151 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1153 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxFac1153 -> oracle 0x10026b70 ; candidate ?nxShp1319@@YIIPAX0I@Z
+  call nxFac1153 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1157 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1157 -> oracle 0x10024fc0 ; candidate ?nxPlaneSetEquation@PlaneShape@@QAEXPBMM@Z
+  call nxFac1157 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1167 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1167 -> oracle 0x10026df0 ; candidate ?nxShp1331@@YIIPAX0II@Z
+  call nxFac1167 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1181 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1181 -> oracle 0x100276f0 ; candidate ?nxSetMaterialIndex@ShapeBase@@QAEXG@Z
+  call nxFac1181 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1211 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1211 -> oracle 0x10026df0 ; candidate ?nxShp1331@@YIIPAX0II@Z
+  call nxFac1211 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1213 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1213 -> oracle 0x10026e30 ; candidate ?nxShp1333@@YIIPAX0I@Z
+  call nxFac1213 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1215 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1215 -> oracle 0x10026ec0 ; candidate ?nxShp1335@@YIIPAX0I@Z
+  call nxFac1215 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1217 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1217 -> oracle 0x10026f50 ; candidate ?nxShp1337@@YIIPAX0I@Z
+  call nxFac1217 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1225 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1225 -> oracle 0x10025c10 ; candidate ?nxShp1307@@YIIPAX0I@Z
+  call nxFac1225 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1227 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1227 -> oracle 0x10026fd0 ; candidate ?nxShp1339@@YIIPAX0I@Z
+  call nxFac1227 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1229 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1229 -> oracle 0x10027360 ; candidate ?nxShp1341@@YIIPAX0I@Z
+  call nxFac1229 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1231 -> oracle 0x1005b700 ; candidate ?lock@ReadWriteLock@@QAE_NXZ
+  call nxFac1231 -> oracle 0x10025f60 ; candidate ?nxShp1309@@YIIPAX0I@Z
+  call nxFac1231 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1233 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1233 -> oracle 0x100276f0 ; candidate ?nxSetMaterialIndex@ShapeBase@@QAEXG@Z
+  call nxFac1233 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+  call nxFac1235 -> oracle 0x1005b730 ; candidate ?tryLock@ReadWriteLock@@QAE_NXZ
+  call nxFac1235 -> oracle 0x1008aea0 ; candidate ?setValue@SdkPointerBindingThunk@@QAE_NPAX@Z
+  call nxFac1235 -> oracle 0x1005b790 ; candidate ?unlock@ReadWriteLock@@QAE_NXZ
+MAPPINGS checked=84 unexpected=0
