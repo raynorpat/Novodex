@@ -37,7 +37,7 @@ class Image:
     """Bytes of an image addressed by rva."""
 
     def __init__(self, data, base_rva, spans=None):
-        self.spans = spans or [(base_rva, base_rva + len(data), data, 0)]
+        self.spans = spans or [(base_rva, base_rva + len(data), data, 0, False)]
 
     @classmethod
     def from_pe(cls, path):
@@ -48,15 +48,23 @@ class Image:
         spans = []
         for i in range(nsec):
             _, vs, va, rs, ro = struct.unpack_from('<8sIIII', f, pe + 24 + opt + 40 * i)
-            spans.append((va, va + max(vs, rs), f, ro))
+            flags = struct.unpack_from('<I', f, pe + 24 + opt + 40 * i + 36)[0]
+            spans.append((va, va + max(vs, rs), f, ro, bool(flags & 0x80000000)))
         return cls(None, None, spans)
 
     def read(self, rva, n):
-        for lo, hi, data, ro in self.spans:
+        for lo, hi, data, ro, _ in self.spans:
             if lo <= rva < hi:
                 o = ro + rva - lo
                 return data[o:o + n]
         raise ValueError('rva %x outside the image' % rva)
+
+    def section(self, rva):
+        """None outside the image, else whether the section holding rva is writable."""
+        for lo, hi, _, _, writable in self.spans:
+            if lo <= rva < hi:
+                return writable
+        return None
 
     def dword(self, va):
         return struct.unpack('<I', self.read(va - IMAGE_BASE, 4))[0]
@@ -72,6 +80,8 @@ def transcribe(cfg, img):
 
     def konst(addr, size):
         n = SIZES[size]
+        if img.section(addr - IMAGE_BASE):
+            raise ValueError('unnamed writable data %x: name it in DATA' % addr)
         name = '%s%x_%d' % (prefix, addr, n)
         if name not in kseen:
             kseen[name] = (addr, n, int.from_bytes(img.read(addr - IMAGE_BASE, n), 'little'))
@@ -159,6 +169,9 @@ def transcribe(cfg, img):
                 if m == 'int3':
                     m = 'int'
                     op = '3'
+            for left in re.findall(r'0x1[0-9a-f]{7}', op):
+                if img.section(int(left, 16) - IMAGE_BASE) is not None:
+                    raise ValueError('unnamed image address %s at %x: name it in PUSHES or DATA' % (left, i.address))
             text = (m + (' ' + op if op else '')).rstrip()
             out.append('\t\t%s\t\t// 0x%08x' % (text, i.address - IMAGE_BASE))
         return '\n'.join(out), len(ins)

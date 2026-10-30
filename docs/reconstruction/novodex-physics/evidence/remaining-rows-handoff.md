@@ -55,6 +55,21 @@ unreferenced. The wired ones are the internal shape rows (through the `NpActor.c
 * 001945/001947: `NxScenePrunerOwnerDestroy` stays C++ for the same reason;
 * 001935: the candidate's visualisation walk passes its own callback.
 
+## Guards the wired forwards no longer have
+
+Two forwards replaced C++ bodies whose defensive checks the oracle's rows do not make. The forwards behave as the
+oracle does, so the testing pass should drive these inputs deliberately:
+
+* `nxSceneMarkShapeDirty` (`Scene.cpp`, now 001325). The C++ returned early on:
+  * a null scene;
+  * a null aux block at `[scene+0x48]`;
+  * a shape id at or past the flag array's end.
+
+  001325 only tests the owner at `shape+4`. A shape that outlives its scene's aux block, or one whose id was never
+  registered, now writes where the old code returned.
+* `NxContactMeshMesh` (`ContactMeshMesh.cpp`, now 001876). The C++ returned early on a null shape, a null sink or a
+  null geometry image. The forward passes them through to 001876, which does not check them.
+
 ## Hard rows
 
 None. Every first-party row was transcribed.

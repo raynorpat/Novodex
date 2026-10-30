@@ -94,6 +94,23 @@ class TranscribeTest(unittest.TestCase):
         self.assertIn('L1006:', body)
 
 
+    def test_unnamed_writable_data_operand_raises(self):
+        # mov eax, dword ptr [0x10002000]; ret -- 0x2000 is a writable section the config does not name
+        code = bytes([0xa1, 0x00, 0x20, 0x00, 0x10, 0xc3])
+        img = transcribe_rows.Image(None, None, [(0x1000, 0x1006, code, 0, False), (0x2000, 0x2004, bytes(4), 0, True)])
+        c = SimpleNamespace(ROWS=[('r', 0x1000, 0x1006, 't', 'void r()')])
+        with self.assertRaises(ValueError):
+            transcribe_rows.transcribe(c, img)
+
+    def test_unnamed_image_address_immediate_raises(self):
+        # mov eax, 0x10002000; ret -- an in-image address the config neither pushes nor names
+        code = bytes([0xb8, 0x00, 0x20, 0x00, 0x10, 0xc3])
+        img = transcribe_rows.Image(None, None, [(0x1000, 0x1006, code, 0, False), (0x2000, 0x2004, bytes(4), 0, False)])
+        c = SimpleNamespace(ROWS=[('r', 0x1000, 0x1006, 't', 'void r()')])
+        with self.assertRaises(ValueError):
+            transcribe_rows.transcribe(c, img)
+
+
 class WriteTest(unittest.TestCase):
     def test_header_and_append_and_crlf(self):
         with tempfile.TemporaryDirectory() as d:

@@ -47,6 +47,12 @@ extern "C" void nxPCCallPoolAdd();
 extern "C" void nxPCCallPoolRemove();
 extern "C" void nxPCCallAtexit();
 extern "C" void* nxPOAdapterNotify;
+// The two pruner tables the constructor and destructors store: the candidate's, through aliases.
+extern "C" void* nxPCVtStatic;
+extern "C" void* nxPCVtBounded;
+#pragma comment(linker, "/alternatename:_nxPCVtStatic=??_7StaticPruner@@6B@")
+#pragma comment(linker, "/alternatename:_nxPCVtBounded=??_7BoundedDynamicPruner@@6B@")
+
 #pragma comment(linker, "/alternatename:_nxPOCallAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
 #pragma comment(linker, "/alternatename:_nxPOCallMakeCube=?MakeCube@AABB@IceMaths@@QBEMAAV12@@Z")
 #pragma comment(linker, "/alternatename:_nxPQCallContainerResize=?resize@SdkContainer@@QAE_NI@Z")
@@ -66,5 +72,5 @@ extern "C" void* nxPOAdapterNotify;
 #pragma comment(linker, "/alternatename:_nxPOAdapterNotify=?gPrunableAdapterNotify@@3P6AXPAVPrunable@@PAVAABB@IceMaths@@@ZA")
 
 @@PROTOS@@
-unsigned nxPCStatics[24];		// the oracle's block 0x1012847c..0x101284d8: five containers and the guard words of the three functions using them
+unsigned nxPCStatics[32];		// the oracle's block 0x1012847c..0x101284fc: seven containers and the guard words of the functions using them
 @@BODY@@

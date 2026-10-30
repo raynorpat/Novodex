@@ -47,6 +47,12 @@ extern "C" void nxPCCallPoolAdd();
 extern "C" void nxPCCallPoolRemove();
 extern "C" void nxPCCallAtexit();
 extern "C" void* nxPOAdapterNotify;
+// The two pruner tables the constructor and destructors store: the candidate's, through aliases.
+extern "C" void* nxPCVtStatic;
+extern "C" void* nxPCVtBounded;
+#pragma comment(linker, "/alternatename:_nxPCVtStatic=??_7StaticPruner@@6B@")
+#pragma comment(linker, "/alternatename:_nxPCVtBounded=??_7BoundedDynamicPruner@@6B@")
+
 #pragma comment(linker, "/alternatename:_nxPOCallAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
 #pragma comment(linker, "/alternatename:_nxPOCallMakeCube=?MakeCube@AABB@IceMaths@@QBEMAAV12@@Z")
 #pragma comment(linker, "/alternatename:_nxPQCallContainerResize=?resize@SdkContainer@@QAE_NI@Z")
@@ -2351,7 +2357,7 @@ __declspec(naked) void __fastcall nxPCStaticDtorBody(void* pruner)
 		push edi		// 0x000e5743
 		mov edi, dword ptr [esi + 0x3c]		// 0x000e5744
 		test edi, edi		// 0x000e5747
-		mov dword ptr [esi], 0x1011b9c8		// 0x000e5749
+		mov dword ptr [esi], offset nxPCVtStatic		// 0x000e5749
 		je Le576c		// 0x000e574f
 		mov ecx, edi		// 0x000e5751
 		call nxPCCallTreeDtor		// 0x000e5753
@@ -2446,7 +2452,7 @@ __declspec(naked) void* __fastcall nxPCStaticScalarDelete(void* pruner, void* ed
 		push edi		// 0x000e5813
 		mov edi, dword ptr [esi + 0x3c]		// 0x000e5814
 		test edi, edi		// 0x000e5817
-		mov dword ptr [esi], 0x1011b9c8		// 0x000e5819
+		mov dword ptr [esi], offset nxPCVtStatic		// 0x000e5819
 		je Le583c		// 0x000e581f
 		mov ecx, edi		// 0x000e5821
 		call nxPCCallTreeDtor		// 0x000e5823
@@ -2484,7 +2490,7 @@ __declspec(naked) void* __fastcall nxPCBoundedCtor(void* pruner)
 		push esi		// 0x000e5870
 		mov esi, ecx		// 0x000e5871
 		call nxPCCallPrunerCtor		// 0x000e5873
-		mov dword ptr [esi], 0x1011b9f0		// 0x000e5878
+		mov dword ptr [esi], offset nxPCVtBounded		// 0x000e5878
 		mov dword ptr [esi + 0x3c], 0		// 0x000e587e
 		mov eax, esi		// 0x000e5885
 		pop esi		// 0x000e5887
