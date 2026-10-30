@@ -23,7 +23,8 @@
     "differential_falsified": 333,
     "static_proof_falsified": 1,
     "oracle_differential_falsified": 196,
-    "deferred_not_reconstructed_in_phase": 30
+    "deferred_not_reconstructed_in_phase": 27,
+    "deferred_reconstructed_not_falsified": 3
   },
   "closed": [
     {
@@ -5935,25 +5936,28 @@
       "id": "phys_fn_004820",
       "rva": "0x000b4790",
       "size": 376,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004822",
       "rva": "0x000b4910",
       "size": 211,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004824",
       "rva": "0x000b49f0",
       "size": 299,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     }
   ]
 }

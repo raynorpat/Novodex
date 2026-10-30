@@ -17377,7 +17377,7 @@ bool __fastcall nxPCQuerySphere(void* pruner, void* edxUnused, void* result, con
 bool __fastcall nxPCStaticPlanes(void* pruner, void* edxUnused, unsigned result, unsigned planes, unsigned nbPlanes, unsigned flags, unsigned mask);
 void* __fastcall nxPCStaticScalarDelete(void* pruner, void* edxUnused, unsigned flags);
 void __fastcall nxPCStaticDtorBody(void* pruner);
-extern unsigned nxPCStatics[24];
+extern unsigned nxPCStatics[32];
 extern "C" void nxPCTestEmpty();
 #pragma comment(linker, "/alternatename:_nxPCTestEmpty=?empty@SdkContainer@@QAEXXZ")
 extern "C" void* nxPCTestOwnerHook;

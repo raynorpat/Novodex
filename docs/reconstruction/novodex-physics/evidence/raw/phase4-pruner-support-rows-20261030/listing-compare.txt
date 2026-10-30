@@ -1,0 +1,210 @@
+nxP44776 ?nxP44776@@YIIPAX0@Z instructions=9 differing=0
+nxP44778 ?nxP44778@@YIIPAX0I@Z instructions=14 differing=0
+nxP44790 ?nxP44790@@YIIPAX0I@Z instructions=58 differing=0
+nxP44793 ?nxP44793@@YIIPAX0I@Z instructions=48 differing=0
+nxP44799 ?nxP44799@@YIIPAX0II@Z instructions=42 differing=0
+nxP44801 ?nxP44801@@YIIPAX0II@Z instructions=35 differing=0
+nxP44820 ?nxP44820@@YAIXZ instructions=202 differing=0
+nxP44824 ?nxP44824@@YIIPAX0@Z instructions=106 differing=0
+nxP44828 ?nxP44828@@YAIXZ instructions=36 differing=0
+nxP44830 ?nxP44830@@YIIPAX0@Z instructions=30 differing=0
+nxP44832 ?nxP44832@@YIIPAX0@Z instructions=8 differing=0
+nxP44834 ?nxP44834@@YAIXZ instructions=14 differing=0
+nxP44852 ?nxP44852@@YIIPAX0I@Z instructions=50 differing=0
+nxP44870 ?nxP44870@@YAIXZ instructions=9 differing=0
+nxP44872 ?nxP44872@@YAIXZ instructions=8 differing=0
+nxP45229 ?nxP45229@@YIIPAX0IIII@Z instructions=47 differing=0
+nxP45231 ?nxP45231@@YIIPAX0IIII@Z instructions=90 differing=0
+nxP45262 ?nxP45262@@YIIPAX0IIII@Z instructions=169 differing=0
+nxP45263 ?nxP45263@@YIIPAX0I@Z instructions=28 differing=0
+nxP45279 ?nxP45279@@YIIPAX0II@Z instructions=63 differing=0
+nxP45380 ?nxP45380@@YIIPAX0@Z instructions=8 differing=0
+nxP45386 ?nxP45386@@YIIPAX0I@Z instructions=52 differing=0
+nxP45404 ?nxP45404@@YIIPAX0I@Z instructions=32 differing=0
+nxP45448 ?nxP45448@@YIIPAX0@Z instructions=9 differing=0
+nxP45452 ?nxP45452@@YIIPAX0@Z instructions=30 differing=0
+nxP45454 ?nxP45454@@YIIPAX0I@Z instructions=17 differing=0
+nxP45456 ?nxP45456@@YIIPAX0IIIII@Z instructions=17 differing=0
+nxP45458 ?nxP45458@@YIIPAX0IIIII@Z instructions=17 differing=0
+nxP45460 ?nxP45460@@YIIPAX0IIII@Z instructions=15 differing=0
+nxP45462 ?nxP45462@@YIIPAX0IIII@Z instructions=15 differing=0
+nxP45466 ?nxP45466@@YIIPAX0IIIII@Z instructions=180 differing=0
+nxP45470 ?nxP45470@@YIIPAX0IIII@Z instructions=77 differing=0
+nxP45471 ?nxP45471@@YIIPAX0IIII@Z instructions=100 differing=0
+nxP45473 ?nxP45473@@YIIPAX0I@Z instructions=14 differing=0
+nxP45477 ?nxP45477@@YIIPAX0@Z instructions=24 differing=0
+nxP45479 ?nxP45479@@YIIPAX0I@Z instructions=56 differing=0
+nxP45539 ?nxP45539@@YIIPAX0I@Z instructions=17 differing=0
+nxP45566 ?nxP45566@@YAIXZ instructions=80 differing=0
+nxP45568 ?nxP45568@@YIIPAX0III@Z instructions=17 differing=0
+nxP45586 ?nxP45586@@YIIPAX0I@Z instructions=16 differing=0
+nxP45588 ?nxP45588@@YIIPAX0I@Z instructions=86 differing=0
+nxP45606 ?nxP45606@@YIIPAX0I@Z instructions=16 differing=0
+nxP45608 ?nxP45608@@YIIPAX0I@Z instructions=91 differing=0
+nxP45624 ?nxP45624@@YIIPAX0I@Z instructions=46 differing=0
+nxP45642 ?nxP45642@@YIIPAX0I@Z instructions=46 differing=0
+nxP45644 ?nxP45644@@YIIPAX0I@Z instructions=109 differing=0
+nxP4ThunkF ?nxP4ThunkF@@YAIXZ instructions=2 differing=0
+nxP4ThunkG ?nxP4ThunkG@@YAIXZ instructions=2 differing=0
+ALL EQUAL
+  call nxP44790 -> oracle 0x100f4251 ; candidate _fopen
+  call nxP44790 -> oracle 0x100f7806 ; candidate _fseek
+  call nxP44790 -> oracle 0x100f7736 ; candidate _ftell
+  call nxP44790 -> oracle 0x100f42b0 ; candidate _fclose
+  call nxP44790 -> oracle 0x100f4251 ; candidate _fopen
+  call nxP44790 -> oracle 0x100b3b50 ; candidate ?initBlock@MemoryStream@@AAE_NIPBXII@Z
+  call nxP44790 -> oracle 0x100f42b0 ; candidate _fclose
+  call nxP44793 -> oracle 0x100b3c70 ; candidate ?flushBits@MemoryStream@@QAEXXZ
+  call nxP44793 -> oracle 0x100f453d ; candidate _fwrite
+  call nxP44793 -> oracle 0x100f453d ; candidate _fwrite
+  call nxP44799 -> oracle 0x100b3c70 ; candidate ?flushBits@MemoryStream@@QAEXXZ
+  call nxP44799 -> oracle 0x100b3c70 ; candidate ?flushBits@MemoryStream@@QAEXXZ
+  call nxP44799 -> oracle 0x100b39b0 ; candidate ?appendBlock@MemoryStream@@AAE_NPAUMemoryStreamBlock@@I@Z
+  call nxP44801 -> oracle 0x100f4251 ; candidate _fopen
+  call nxP44801 -> oracle 0x100b3dc0 ; candidate ?nxP44793@@YIIPAX0I@Z
+  call nxP44801 -> oracle 0x100f42b0 ; candidate _fclose
+  call nxP44820 -> oracle 0x100f48c0 ; candidate ??2@YAPAXI@Z
+  call nxP44820 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44820 -> oracle 0x100e32c0 ; candidate ??0RadixSort@IceCore@@QAE@XZ
+  call nxP44820 -> oracle 0x100e3920 ; candidate ?Sort@RadixSort@IceCore@@QAEAAV12@PBMI@Z
+  call nxP44820 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP44820 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP44820 -> oracle 0x100f48bb ; candidate _free
+  call nxP44824 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP44824 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP44828 -> oracle 0x100e32e0 ; candidate ??1RadixSort@IceCore@@QAE@XZ
+  call nxP44828 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44828 -> oracle 0x100e32e0 ; candidate ??1RadixSort@IceCore@@QAE@XZ
+  call nxP44828 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44828 -> oracle 0x100e32e0 ; candidate ??1RadixSort@IceCore@@QAE@XZ
+  call nxP44828 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44830 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44830 -> oracle 0x100ef270 ; candidate ??0NxPrunerProcessPool@@QAE@XZ
+  call nxP44830 -> oracle 0x100ef3d0 ; candidate ?add@NxPrunerProcessPool@@QAEIPAUNxPrunerRegistration@@@Z
+  call nxP44832 -> oracle 0x100ef5c0 ; candidate ?remove@NxPrunerProcessPool@@QAEXI@Z
+  call nxP44834 -> oracle 0x100ef660 ; candidate ?nxOpcodeReleasePool@@YAXXZ
+  call nxP44834 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44852 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44852 -> oracle 0x100ef850 ; candidate ??0DynamicPruner@@QAE@XZ
+  call nxP44852 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44852 -> oracle 0x100e5870 ; candidate ?nxPCBoundedCtor@@YIPAXPAX@Z
+  call nxP44852 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44852 -> oracle 0x100e56d0 ; candidate ??0StaticPruner@@QAE@XZ
+  call nxP44852 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP44852 -> oracle 0x100ef670 ; candidate ?nxP45448@@YIIPAX0@Z
+  call nxP45229 -> oracle 0x100e5110 ; candidate ?BuildTree@StaticPruner@@QAE_NXZ
+  call nxP45229 -> oracle 0x100de7e0 ; candidate ??0SphereCollider@Opcode@@QAE@XZ
+  call nxP45229 -> oracle 0x100e14d0 ; candidate ?Collide@SphereCollider@Opcode@@QAE_NAAUSphereCache@2@ABVSphere@IceMaths@@PBVAABBTree@2@@Z
+  call nxP45229 -> oracle 0x100e53e0 ; candidate ?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z
+  call nxP45229 -> oracle 0x100de800 ; candidate ??1SphereCollider@Opcode@@UAE@XZ
+  call nxP45231 -> oracle 0x100e5110 ; candidate ?BuildTree@StaticPruner@@QAE_NXZ
+  call nxP45231 -> oracle 0x100e9b80 ; candidate ??0AABBCollider@Opcode@@QAE@XZ
+  call nxP45231 -> oracle 0x100ef230 ; candidate ?Collide@AABBCollider@Opcode@@QAE_NAAUAABBCache@2@ABVCollisionAABB@2@PBVAABBTree@2@@Z
+  call nxP45231 -> oracle 0x100e53e0 ; candidate ?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z
+  call nxP45231 -> oracle 0x100e9ba0 ; candidate ??1AABBCollider@Opcode@@UAE@XZ
+  call nxP45262 -> oracle 0x100e58a0 ; candidate ?nxPCBuildTree@@YI_NPAX@Z
+  call nxP45262 -> oracle 0x100b4d70 ; candidate ??0SdkContainer@@QAE@XZ
+  push nxP45262 -> oracle 0x101030b0 ; candidate ?nxP4ThunkG@@YAIXZ
+  call nxP45262 -> oracle 0x100f4669 ; candidate _atexit
+  call nxP45262 -> oracle 0x100b4d70 ; candidate ??0SdkContainer@@QAE@XZ
+  push nxP45262 -> oracle 0x101030a0 ; candidate ?nxP4ThunkF@@YAIXZ
+  call nxP45262 -> oracle 0x100f4669 ; candidate _atexit
+  call nxP45262 -> oracle 0x100f2160 ; candidate ?nxP45568@@YIIPAX0III@Z
+  call nxP45262 -> oracle 0x100b55b0 ; candidate ?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z
+  call nxP45262 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP45262 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP45263 -> oracle 0x100e7c10 ; candidate ?nxPCOctreeRelease@@YIXPAX@Z
+  call nxP45263 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45263 -> oracle 0x100f15a0 ; candidate ??1Pruner@@UAE@XZ
+  call nxP45263 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45386 -> oracle 0x100f1500 ; candidate ??1AABBTree@Opcode@@QAE@XZ
+  call nxP45386 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45386 -> oracle 0x100b3ac0 ; candidate ?readDword@MemoryStream@@QAEIXZ
+  call nxP45386 -> oracle 0x100e9310 ; candidate ?CreateTree@BaseModel@Opcode@@IAE_N_N0@Z
+  call nxP45448 -> oracle 0x100e56d0 ; candidate ??0StaticPruner@@QAE@XZ
+  call nxP45448 -> oracle 0x100b4d70 ; candidate ??0SdkContainer@@QAE@XZ
+  call nxP45452 -> oracle 0x100e5110 ; candidate ?BuildTree@StaticPruner@@QAE_NXZ
+  call nxP45452 -> oracle 0x100f11b0 ; candidate ?Refit2@AABBTree@Opcode@@QAE_NPAVAABBTreeBuilder@2@@Z
+  call nxP45454 -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  call nxP45454 -> oracle 0x100e5740 ; candidate ?nxPCStaticDtorBody@@YIXPAX@Z
+  call nxP45454 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45456 -> oracle 0x100ef6d0 ; candidate ?nxP45452@@YIIPAX0@Z
+  call nxP45456 -> oracle 0x100e5780 ; candidate ?nxPCStaticPlanes@@YI_NPAX0IIIII@Z
+  call nxP45458 -> oracle 0x100ef6d0 ; candidate ?nxP45452@@YIIPAX0@Z
+  call nxP45458 -> oracle 0x100e5440 ; candidate ?Raycast@StaticPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z
+  call nxP45460 -> oracle 0x100ef6d0 ; candidate ?nxP45452@@YIIPAX0@Z
+  call nxP45460 -> oracle 0x100e5500 ; candidate ?nxP45229@@YIIPAX0IIII@Z
+  call nxP45462 -> oracle 0x100ef6d0 ; candidate ?nxP45452@@YIIPAX0@Z
+  call nxP45462 -> oracle 0x100e5590 ; candidate ?nxP45231@@YIIPAX0IIII@Z
+  call nxP45466 -> oracle 0x100b55b0 ; candidate ?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z
+  call nxP45466 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP45466 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP45470 -> oracle 0x100b55b0 ; candidate ?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z
+  call nxP45470 -> oracle 0x100f1970 ; candidate ?nxPQSphereAABB@@YA_NPBMM00@Z
+  call nxP45470 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP45471 -> oracle 0x100b55b0 ; candidate ?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z
+  call nxP45471 -> oracle 0x100b4de0 ; candidate ?resize@SdkContainer@@QAE_NI@Z
+  call nxP45473 -> oracle 0x100f15a0 ; candidate ??1Pruner@@UAE@XZ
+  call nxP45473 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45477 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45477 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45479 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45479 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45479 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45479 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45539 -> oracle 0x100b4d20 ; candidate ?nxP44832@@YIIPAX0@Z
+  call nxP45539 -> oracle 0x100efed0 ; candidate ?nxP45477@@YIIPAX0@Z
+  call nxP45539 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45566 -> oracle 0x100e2f70 ; candidate ?nxPOIsInside@@YI_NPBXPAX0@Z
+  call nxP45566 -> oracle 0x100f1a70 ; candidate ?nxPQAppendSubtree@@YAXIIPAX0@Z
+  call nxP45566 -> oracle 0x100f1a30 ; candidate ?nxPQAppendNode@@YIXPAX00@Z
+  call nxP45566 -> oracle 0x100f2090 ; candidate ?nxP45566@@YAIXZ
+  call nxP45568 -> oracle 0x100f2090 ; candidate ?nxP45566@@YAIXZ
+  call nxP45586 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45586 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45586 -> oracle 0x100b3f50 ; candidate ?nxP44799@@YIIPAX0II@Z
+  call nxP45588 -> oracle 0x100b3ac0 ; candidate ?readDword@MemoryStream@@QAEIXZ
+  call nxP45588 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45588 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45588 -> oracle 0x100b3ac0 ; candidate ?readDword@MemoryStream@@QAEIXZ
+  call nxP45588 -> oracle 0x100b3b00 ; candidate ?nxP44778@@YIIPAX0I@Z
+  call nxP45606 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45606 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45606 -> oracle 0x100b3f50 ; candidate ?nxP44799@@YIIPAX0II@Z
+  call nxP45608 -> oracle 0x100b3ac0 ; candidate ?readDword@MemoryStream@@QAEIXZ
+  call nxP45608 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45608 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45608 -> oracle 0x100b3ac0 ; candidate ?readDword@MemoryStream@@QAEIXZ
+  call nxP45608 -> oracle 0x100b3b00 ; candidate ?nxP44778@@YIIPAX0I@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45624 -> oracle 0x100b3f50 ; candidate ?nxP44799@@YIIPAX0II@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45624 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f50 ; candidate ?nxP44799@@YIIPAX0II@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45642 -> oracle 0x100b3f00 ; candidate ?storeDword@MemoryStream@@QAEXI@Z
+  call nxP45644 -> oracle 0x100b3ac0 ; candidate ?readDword@MemoryStream@@QAEIXZ
+  call nxP45644 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45644 -> oracle 0x100b4000 ; candidate ?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ
+  call nxP45644 -> oracle 0x100b3ac0 ; candidate ?readDword@MemoryStream@@QAEIXZ
+  call nxP45644 -> oracle 0x100b3b00 ; candidate ?nxP44778@@YIIPAX0I@Z
+  call nxP45644 -> oracle 0x100b3ae0 ; candidate ?nxP44776@@YIIPAX0@Z
+  call nxP45644 -> oracle 0x100b3ae0 ; candidate ?nxP44776@@YIIPAX0@Z
+  call nxP45644 -> oracle 0x100b3ae0 ; candidate ?nxP44776@@YIIPAX0@Z
+  call nxP45644 -> oracle 0x100b3ae0 ; candidate ?nxP44776@@YIIPAX0@Z
+  call nxP45644 -> oracle 0x100b3ae0 ; candidate ?nxP44776@@YIIPAX0@Z
+  call nxP45644 -> oracle 0x100b3ae0 ; candidate ?nxP44776@@YIIPAX0@Z
+  jmp nxP4ThunkF -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+  jmp nxP4ThunkG -> oracle 0x100b4f50 ; candidate ?empty@SdkContainer@@QAEXXZ
+MAPPINGS checked=160 unexpected=0

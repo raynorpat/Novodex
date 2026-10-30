@@ -5,12 +5,11 @@ namespace Opcode
 bool PairwiseBoxPruning(udword count, const AABB* boxes, Pairs& pairs);
 	}
 
-namespace
-	{
+// The three process-wide sorters, .data 0x10128464, 0x10128468 and 0x10128460; external so the naked listing
+// rows (PrunerSupportRows.cpp) reach them by name.
 RadixSort* gBipartiteSorter0 = 0;
 RadixSort* gBipartiteSorter1 = 0;
 RadixSort* gCompleteSorter = 0;
-	}
 
 // phys_fn_004828 tears down the three process-wide BoxPruning sorters from
 // PhysicsSDK's destructor while the NovodeX allocator bridge is still alive.

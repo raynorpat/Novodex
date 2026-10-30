@@ -110,7 +110,7 @@ bool __fastcall nxPCQueryRays(void* pruner, void* edxUnused, void* result, const
 bool __fastcall nxPCQuerySphere(void* pruner, void* edxUnused, void* result, const void* bounds, unsigned firstContact, unsigned mask);
 void __cdecl nxPOFtol();
 // @@PROTOS-END@@
-unsigned nxPCStatics[24];		// the oracle's block 0x1012847c..0x101284d8: five containers and the guard words of the three functions using them
+unsigned nxPCStatics[32];		// the oracle's block 0x1012847c..0x101284fc: seven containers and the guard words of the functions using them
 static const unsigned nxPOK101041f0_4 = 0x0;
 static const unsigned nxPOK101043cc_4 = 0x3f000000;
 static const unsigned nxPOK101066f8_4 = 0x4f800000;

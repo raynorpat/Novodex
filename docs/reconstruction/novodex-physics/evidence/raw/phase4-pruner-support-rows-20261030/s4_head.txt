@@ -1,0 +1,158 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// PrunerSupportRows.cpp: Phase 4's remaining rows at 0x000b3d20 to 0x000f3ee4 (and their Phase 6 and 7 neighbours in the
+// same clusters): the penetration map's file read and write and the memory stream's float and block readers
+// (004790 to 004801, with 004776/004778 as helpers), the box-pruning sorters' lifetimes and the complete and bipartite
+// pruning (004820 to 004828), the pruner process pool's registration (004830 to 004834), the pruners' creation (004852)
+// and owner adapters (004870, 004872), the static, bounded and type-3 pruners' remaining slots and destructors (005231,
+// 005262, 005263, 005279, 005448 to 005479, 005539), the pruning pool's file save and load (005586 to 005646), the
+// tree walks (005566, 005568) and the OBB rows (005380, 005386, 005404), with two more atexit thunks (006332,
+// 006334). Naked listing transcriptions; the oracle's statics are the candidate's by name (nxPCStatics, widened to the
+// oracle's 32 words, the sorters, the pool singleton, the owner adapters), the oracle's tables are the candidate's
+// (aliases), and vendored OPCODE code is reached at its vendored symbols. Compare script:
+// docs/reconstruction/novodex-physics/evidence/phase4-pruner-support-rows-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxP4Call0AABBCollider();
+extern "C" void nxP4Call0DynamicPruner();
+extern "C" void nxP4Call0NxPrunerProcessPool();
+extern "C" void nxP4Call0RadixSort();
+extern "C" void nxP4Call0SdkContainer();
+extern "C" void nxP4Call0SphereCollider();
+extern "C" void nxP4Call0StaticPruner();
+extern "C" void nxP4Call1AABBCollider();
+extern "C" void nxP4Call1AABBTree();
+extern "C" void nxP4Call1Pruner();
+extern "C" void nxP4Call1RadixSort();
+extern "C" void nxP4Call1SphereCollider();
+extern "C" void nxP4Call2();
+extern "C" void nxP4CallAdd();
+extern "C" void nxP4CallAppendBlock();
+extern "C" void nxP4CallAtexit();
+extern "C" void nxP4CallBuildTree();
+extern "C" void nxP4CallCollide();
+extern "C" void nxP4CallCollideX();
+extern "C" void nxP4CallCreateTree();
+extern "C" void nxP4CallEmpty();
+extern "C" void nxP4CallFclose();
+extern "C" void nxP4CallFlushBits();
+extern "C" void nxP4CallFopen();
+extern "C" void nxP4CallFree();
+extern "C" void nxP4CallFseek();
+extern "C" void nxP4CallFtell();
+extern "C" void nxP4CallFwrite();
+extern "C" void nxP4CallInitBlock();
+extern "C" void nxP4CallNxGetSdkAllocator();
+extern "C" void nxP4CallNxOpcodeReleasePool();
+extern "C" void nxP4CallNxPCBoundedCtor();
+extern "C" void nxP4CallNxPCBuildTree();
+extern "C" void nxP4CallNxPCOctreeRelease();
+extern "C" void nxP4CallNxPCStaticDtorBody();
+extern "C" void nxP4CallNxPCStaticPlanes();
+extern "C" void nxP4CallNxPOIsInside();
+extern "C" void nxP4CallNxPQAppendNode();
+extern "C" void nxP4CallNxPQAppendSubtree();
+extern "C" void nxP4CallNxPQSphereAABB();
+extern "C" void nxP4CallRaycast();
+extern "C" void nxP4CallReadDword();
+extern "C" void nxP4CallRefit2();
+extern "C" void nxP4CallRemove();
+extern "C" void nxP4CallReportTouched();
+extern "C" void nxP4CallResize();
+extern "C" void nxP4CallSort();
+extern "C" void nxP4CallStoreDword();
+extern "C" void nxP4CallUpdateWorldAABB();
+#pragma comment(linker, "/alternatename:_nxP4Call0AABBCollider=??0AABBCollider@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call0DynamicPruner=??0DynamicPruner@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call0NxPrunerProcessPool=??0NxPrunerProcessPool@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call0RadixSort=??0RadixSort@IceCore@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call0SdkContainer=??0SdkContainer@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call0SphereCollider=??0SphereCollider@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call0StaticPruner=??0StaticPruner@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call1AABBCollider=??1AABBCollider@Opcode@@UAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call1AABBTree=??1AABBTree@Opcode@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call1Pruner=??1Pruner@@UAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call1RadixSort=??1RadixSort@IceCore@@QAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call1SphereCollider=??1SphereCollider@Opcode@@UAE@XZ")
+#pragma comment(linker, "/alternatename:_nxP4Call2=??2@YAPAXI@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallAdd=?add@NxPrunerProcessPool@@QAEIPAUNxPrunerRegistration@@@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallAppendBlock=?appendBlock@MemoryStream@@AAE_NPAUMemoryStreamBlock@@I@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallAtexit=_atexit")
+#pragma comment(linker, "/alternatename:_nxP4CallBuildTree=?BuildTree@StaticPruner@@QAE_NXZ")
+#pragma comment(linker, "/alternatename:_nxP4CallCollide=?Collide@SphereCollider@Opcode@@QAE_NAAUSphereCache@2@ABVSphere@IceMaths@@PBVAABBTree@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallCollideX=?Collide@AABBCollider@Opcode@@QAE_NAAUAABBCache@2@ABVCollisionAABB@2@PBVAABBTree@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallCreateTree=?CreateTree@BaseModel@Opcode@@IAE_N_N0@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallEmpty=?empty@SdkContainer@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxP4CallFclose=_fclose")
+#pragma comment(linker, "/alternatename:_nxP4CallFlushBits=?flushBits@MemoryStream@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxP4CallFopen=_fopen")
+#pragma comment(linker, "/alternatename:_nxP4CallFree=_free")
+#pragma comment(linker, "/alternatename:_nxP4CallFseek=_fseek")
+#pragma comment(linker, "/alternatename:_nxP4CallFtell=_ftell")
+#pragma comment(linker, "/alternatename:_nxP4CallFwrite=_fwrite")
+#pragma comment(linker, "/alternatename:_nxP4CallInitBlock=?initBlock@MemoryStream@@AAE_NIPBXII@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxGetSdkAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
+#pragma comment(linker, "/alternatename:_nxP4CallNxOpcodeReleasePool=?nxOpcodeReleasePool@@YAXXZ")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPCBoundedCtor=?nxPCBoundedCtor@@YIPAXPAX@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPCBuildTree=?nxPCBuildTree@@YI_NPAX@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPCOctreeRelease=?nxPCOctreeRelease@@YIXPAX@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPCStaticDtorBody=?nxPCStaticDtorBody@@YIXPAX@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPCStaticPlanes=?nxPCStaticPlanes@@YI_NPAX0IIIII@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPOIsInside=?nxPOIsInside@@YI_NPBXPAX0@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPQAppendNode=?nxPQAppendNode@@YIXPAX00@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPQAppendSubtree=?nxPQAppendSubtree@@YAXIIPAX0@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallNxPQSphereAABB=?nxPQSphereAABB@@YA_NPBMM00@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallRaycast=?Raycast@StaticPruner@@UAE_NAAVContainer@IceCore@@ABVRay@IceMaths@@M_NI@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallReadDword=?readDword@MemoryStream@@QAEIXZ")
+#pragma comment(linker, "/alternatename:_nxP4CallRefit2=?Refit2@AABBTree@Opcode@@QAE_NPAVAABBTreeBuilder@2@@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallRemove=?remove@NxPrunerProcessPool@@QAEXI@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallReportTouched=?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallResize=?resize@SdkContainer@@QAE_NI@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallSort=?Sort@RadixSort@IceCore@@QAEAAV12@PBMI@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallStoreDword=?storeDword@MemoryStream@@QAEXI@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallUpdateWorldAABB=?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z")
+extern "C" void* nxSdkInstanceSlot;
+#pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")
+extern "C" unsigned gNxApiReentry;
+extern "C" const char* gNxApiReentryMessage;
+extern "C" void* nxKnCompleteSorter;
+#pragma comment(linker, "/alternatename:_nxKnCompleteSorter=?gCompleteSorter@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnBipartiteSorter0;
+#pragma comment(linker, "/alternatename:_nxKnBipartiteSorter0=?gBipartiteSorter0@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnBipartiteSorter1;
+#pragma comment(linker, "/alternatename:_nxKnBipartiteSorter1=?gBipartiteSorter1@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnPrunerPool;
+#pragma comment(linker, "/alternatename:_nxKnPrunerPool=?gNxPrunerProcessPool@@3PAVNxPrunerProcessPool@@A")
+extern "C" void* nxKnOwnerQuery;
+#pragma comment(linker, "/alternatename:_nxKnOwnerQuery=?gPrunableOwnerQuery@@3P6AIPAX@ZA")
+extern "C" void* nxKnOwnerNotify;
+#pragma comment(linker, "/alternatename:_nxKnOwnerNotify=?gPrunableOwnerNotify@@3P6AXPAXPAVAABB@IceMaths@@@ZA")
+extern "C" void* nxKnOwnerWorldAABB;
+#pragma comment(linker, "/alternatename:_nxKnOwnerWorldAABB=?gPrunableOwnerWorldAABB@@3P6AXPAXPAVAABB@IceMaths@@@ZA")
+extern "C" void* nxKnAdapterNotify;
+#pragma comment(linker, "/alternatename:_nxKnAdapterNotify=?gPrunableAdapterNotify@@3P6AXPAVPrunable@@PAVAABB@IceMaths@@@ZA")
+extern unsigned nxPCStatics[32];
+extern "C" void* nxKnVtStatic;
+#pragma comment(linker, "/alternatename:_nxKnVtStatic=??_7StaticPruner@@6B@")
+extern "C" void* nxKnVtBounded;
+#pragma comment(linker, "/alternatename:_nxKnVtBounded=??_7BoundedDynamicPruner@@6B@")
+extern "C" void* nxKnVtPruner;
+#pragma comment(linker, "/alternatename:_nxKnVtPruner=??_7Pruner@@6B@")
+extern "C" void* nxKnVtDynamic;
+#pragma comment(linker, "/alternatename:_nxKnVtDynamic=??_7DynamicPruner@@6B@")
+extern "C" void* nxKnVtType3;
+#pragma comment(linker, "/alternatename:_nxKnVtType3=??_7Type3StaticPruner@@6B@")
+extern "C" void* nxKnVtSphereCollider;
+#pragma comment(linker, "/alternatename:_nxKnVtSphereCollider=??_7SphereCollider@Opcode@@6B@")
+extern "C" void* nxKnVtAABBsBuilder;
+#pragma comment(linker, "/alternatename:_nxKnVtAABBsBuilder=??_7AABBTreeOfAABBsBuilder@Opcode@@6B@")
+
+@@PROTOS@@
+
+@@BODY@@

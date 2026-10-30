@@ -66,8 +66,8 @@
   "counts": {
     "differential_falsified": 161,
     "oracle_differential_falsified": 17,
-    "deferred_reconstructed_not_falsified": 242,
-    "deferred_not_reconstructed_in_phase": 13
+    "deferred_reconstructed_not_falsified": 243,
+    "deferred_not_reconstructed_in_phase": 12
   },
   "closed": [
     {
@@ -4144,9 +4144,10 @@
       "id": "phys_fn_004799",
       "rva": "0x000b3f50",
       "size": 93,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     }
   ]
 }

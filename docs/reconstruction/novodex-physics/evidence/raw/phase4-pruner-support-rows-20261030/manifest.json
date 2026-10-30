@@ -1,0 +1,193 @@
+{
+ "source": "Physics/src/opcode/PrunerSupportRows.cpp",
+ "compare": "evidence/phase4-pruner-support-rows-listing-compare.py",
+ "doc": "evidence/phase4-pruner-support-rows.md",
+ "instructions": 2257,
+ "mappings": 160,
+ "rows": {
+  "phys_fn_004790": {
+   "symbol": "nxP44790",
+   "what": "a listing of 58 instructions; calls fopen, fseek, ftell, fclose, MemoryStream::initBlock"
+  },
+  "phys_fn_004793": {
+   "symbol": "nxP44793",
+   "what": "a listing of 48 instructions; calls MemoryStream::flushBits, fwrite"
+  },
+  "phys_fn_004799": {
+   "symbol": "nxP44799",
+   "what": "a listing of 42 instructions; calls MemoryStream::flushBits, MemoryStream::appendBlock"
+  },
+  "phys_fn_004801": {
+   "symbol": "nxP44801",
+   "what": "a listing of 35 instructions; calls fopen, nxP44793, fclose"
+  },
+  "phys_fn_004820": {
+   "symbol": "nxP44820",
+   "what": "a listing of 202 instructions; calls ??2@YAPAXI@Z, nxGetSdkAllocator, RadixSort ctor, RadixSort::Sort, SdkContainer::resize, free; 1 indirect calls; .data: nxKnCompleteSorter (part 1 of 2 of one function)"
+  },
+  "phys_fn_004822": {
+   "symbol": "nxP44820",
+   "what": "a listing of 202 instructions; calls ??2@YAPAXI@Z, nxGetSdkAllocator, RadixSort ctor, RadixSort::Sort, SdkContainer::resize, free; 1 indirect calls; .data: nxKnCompleteSorter (part 2 of 2 of one function)"
+  },
+  "phys_fn_004824": {
+   "symbol": "nxP44824",
+   "what": "a listing of 106 instructions; calls SdkContainer::resize"
+  },
+  "phys_fn_004828": {
+   "symbol": "nxP44828",
+   "what": "a listing of 36 instructions; calls ~RadixSort, nxGetSdkAllocator; 3 indirect calls; .data: nxKnBipartiteSorter0, nxKnBipartiteSorter1, nxKnCompleteSorter"
+  },
+  "phys_fn_004830": {
+   "symbol": "nxP44830",
+   "what": "a listing of 30 instructions; calls nxGetSdkAllocator, NxPrunerProcessPool ctor, NxPrunerProcessPool::add; 1 indirect calls; .data: nxKnPrunerPool"
+  },
+  "phys_fn_004832": {
+   "symbol": "nxP44832",
+   "what": "a listing of 8 instructions; calls NxPrunerProcessPool::remove; .data: nxKnPrunerPool"
+  },
+  "phys_fn_004834": {
+   "symbol": "nxP44834",
+   "what": "a listing of 14 instructions; calls nxOpcodeReleasePool, nxGetSdkAllocator; 1 indirect calls; .data: nxKnPrunerPool"
+  },
+  "phys_fn_004852": {
+   "symbol": "nxP44852",
+   "what": "a listing of 50 instructions; calls nxGetSdkAllocator, DynamicPruner ctor, nxPCBoundedCtor, StaticPruner ctor, nxP45448; 4 indirect calls"
+  },
+  "phys_fn_004870": {
+   "symbol": "nxP44870",
+   "what": "a listing of 9 instructions; calls nothing directly; .data: nxKnOwnerQuery"
+  },
+  "phys_fn_004872": {
+   "symbol": "nxP44872",
+   "what": "a listing of 8 instructions; calls nothing directly; .data: nxKnOwnerNotify"
+  },
+  "phys_fn_005231": {
+   "symbol": "nxP45231",
+   "what": "a listing of 90 instructions; calls StaticPruner::BuildTree, AABBCollider ctor, AABBCollider::Collide, StaticPruner::ReportTouched, ~AABBCollider"
+  },
+  "phys_fn_005262": {
+   "symbol": "nxP45262",
+   "what": "a listing of 169 instructions; calls nxPCBuildTree, SdkContainer ctor, atexit, nxP45568, Prunable::UpdateWorldAABB, SdkContainer::resize; .data: nxPCStatics"
+  },
+  "phys_fn_005263": {
+   "symbol": "nxP45263",
+   "what": "a listing of 28 instructions; calls nxPCOctreeRelease, nxGetSdkAllocator, ~Pruner; 2 indirect calls"
+  },
+  "phys_fn_005279": {
+   "symbol": "nxP45279",
+   "what": "a listing of 63 instructions; calls nothing directly; 1 indirect calls"
+  },
+  "phys_fn_005380": {
+   "symbol": "nxP45380",
+   "what": "a listing of 8 instructions; calls nothing directly"
+  },
+  "phys_fn_005386": {
+   "symbol": "nxP45386",
+   "what": "a listing of 52 instructions; calls ~AABBTree, nxGetSdkAllocator, MemoryStream::readDword, BaseModel::CreateTree; 3 indirect calls"
+  },
+  "phys_fn_005404": {
+   "symbol": "nxP45404",
+   "what": "a listing of 32 instructions; calls nothing directly"
+  },
+  "phys_fn_005448": {
+   "symbol": "nxP45448",
+   "what": "a listing of 9 instructions; calls StaticPruner ctor, SdkContainer ctor"
+  },
+  "phys_fn_005452": {
+   "symbol": "nxP45452",
+   "what": "a listing of 30 instructions; calls StaticPruner::BuildTree, AABBTree::Refit2"
+  },
+  "phys_fn_005454": {
+   "symbol": "nxP45454",
+   "what": "a listing of 17 instructions; calls SdkContainer::empty, nxPCStaticDtorBody, nxGetSdkAllocator; 1 indirect calls"
+  },
+  "phys_fn_005456": {
+   "symbol": "nxP45456",
+   "what": "a listing of 17 instructions; calls nxP45452, nxPCStaticPlanes"
+  },
+  "phys_fn_005458": {
+   "symbol": "nxP45458",
+   "what": "a listing of 17 instructions; calls nxP45452, StaticPruner::Raycast"
+  },
+  "phys_fn_005460": {
+   "symbol": "nxP45460",
+   "what": "a listing of 15 instructions; calls nxP45452, nxP45229"
+  },
+  "phys_fn_005462": {
+   "symbol": "nxP45462",
+   "what": "a listing of 15 instructions; calls nxP45452, nxP45231"
+  },
+  "phys_fn_005466": {
+   "symbol": "nxP45466",
+   "what": "a listing of 180 instructions; calls Prunable::UpdateWorldAABB, SdkContainer::resize"
+  },
+  "phys_fn_005470": {
+   "symbol": "nxP45470",
+   "what": "a listing of 77 instructions; calls Prunable::UpdateWorldAABB, nxPQSphereAABB, SdkContainer::resize"
+  },
+  "phys_fn_005471": {
+   "symbol": "nxP45471",
+   "what": "a listing of 100 instructions; calls Prunable::UpdateWorldAABB, SdkContainer::resize"
+  },
+  "phys_fn_005473": {
+   "symbol": "nxP45473",
+   "what": "a listing of 14 instructions; calls ~Pruner, nxGetSdkAllocator; 1 indirect calls"
+  },
+  "phys_fn_005479": {
+   "symbol": "nxP45479",
+   "what": "a listing of 56 instructions; calls nxGetSdkAllocator; 4 indirect calls"
+  },
+  "phys_fn_005539": {
+   "symbol": "nxP45539",
+   "what": "a listing of 17 instructions; calls nxP44832, nxP45477, nxGetSdkAllocator; 1 indirect calls"
+  },
+  "phys_fn_005566": {
+   "symbol": "nxP45566",
+   "what": "a listing of 80 instructions; calls nxPOIsInside, nxPQAppendSubtree, nxPQAppendNode, nxP45566"
+  },
+  "phys_fn_005568": {
+   "symbol": "nxP45568",
+   "what": "a listing of 17 instructions; calls nxP45566"
+  },
+  "phys_fn_005586": {
+   "symbol": "nxP45586",
+   "what": "a listing of 16 instructions; calls MemoryStream::storeDword, nxP44799"
+  },
+  "phys_fn_005588": {
+   "symbol": "nxP45588",
+   "what": "a listing of 86 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 1 of 2 of one function)"
+  },
+  "phys_fn_005590": {
+   "symbol": "nxP45588",
+   "what": "a listing of 86 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 2 of 2 of one function)"
+  },
+  "phys_fn_005606": {
+   "symbol": "nxP45606",
+   "what": "a listing of 16 instructions; calls MemoryStream::storeDword, nxP44799"
+  },
+  "phys_fn_005608": {
+   "symbol": "nxP45608",
+   "what": "a listing of 91 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 1 of 2 of one function)"
+  },
+  "phys_fn_005610": {
+   "symbol": "nxP45608",
+   "what": "a listing of 91 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 2 of 2 of one function)"
+  },
+  "phys_fn_005624": {
+   "symbol": "nxP45624",
+   "what": "a listing of 46 instructions; calls MemoryStream::storeDword, nxP44799"
+  },
+  "phys_fn_005642": {
+   "symbol": "nxP45642",
+   "what": "a listing of 46 instructions; calls MemoryStream::storeDword, nxP44799"
+  },
+  "phys_fn_005644": {
+   "symbol": "nxP45644",
+   "what": "a listing of 109 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778, nxP44776; 2 indirect calls (part 1 of 2 of one function)"
+  },
+  "phys_fn_005646": {
+   "symbol": "nxP45644",
+   "what": "a listing of 109 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778, nxP44776; 2 indirect calls (part 2 of 2 of one function)"
+  }
+ }
+}
