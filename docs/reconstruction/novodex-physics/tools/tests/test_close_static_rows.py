@@ -96,5 +96,54 @@ class CloseStaticRowsTest(unittest.TestCase):
             run(mp={'?nxXOne@@YAXXZ': ('0x10001000', 'XRows.obj')})
 
 
+VMANIFEST = {'source': 'External/qhull/novodex/QhullRows.cpp', 'compare': 'evidence/vendored-rows-qhull-listing-compare.py',
+             'doc': 'evidence/vendored-correspondence.md', 'instructions': 40, 'mappings': 3,
+             'rows': {'phys_fn_000001': {'symbol': 'qh_one', 'what': 'part one', 'group': '0x00001010', 'family': 'qhull_hull'},
+                      'phys_fn_000002': {'symbol': 'qh_one', 'what': 'part two', 'group': '0x00001010', 'family': 'qhull_hull'}}}
+VMAP = {'_qh_one': ('0x10001010', 'QhullRows.obj')}
+EXACT = {('qhull', '0x00001010'): {'family_best': 'exact', 'differential': 'thirdparty:qhull_hull=exact+qhull_hull_x87=exact'}}
+
+
+def vrun(manifest=VMANIFEST, rows=None, coverage=EXACT):
+    rows = rows or [inv_row(1, third_party='qhull', phase='4'), inv_row(2, third_party='qhull', phase='4')]
+    c = {'phase': 4, 'counts': {'deferred_vendored_not_falsified': len(rows), 'deferred_reconstructed_not_falsified': 5},
+         'deferred': [{'id': r['id'], 'reason': 'vendored_not_falsified', 'driving_phases': []} for r in rows]}
+    return close_static_rows.close(manifest, {'functions': rows}, {4: c}, VMAP, coverage=coverage)
+
+
+class VendoredModeTest(unittest.TestCase):
+    def test_vendored_records_static_and_dynamic_proof(self):
+        inventory, closures = vrun()
+        r = inventory['functions'][0]
+        self.assertEqual(r['state'], 'reconstructed')
+        self.assertIn('NX_VENDORED_LISTING_ROWS', r['static_proof'])
+        self.assertIn('qhull_hull', r['dynamic_proof'])
+        self.assertIn('family_best=exact', r['dynamic_proof'])
+        self.assertEqual(closures[4]['counts'], {'deferred_vendored_not_falsified': 0, 'deferred_reconstructed_not_falsified': 7})
+        self.assertEqual({e['reason'] for e in closures[4]['deferred']}, {'reconstructed_not_falsified'})
+
+    def test_vendored_refuses_inexact_group(self):
+        with self.assertRaises(ValueError):
+            vrun(coverage={('qhull', '0x00001010'): {'family_best': 'discrete', 'differential': 'thirdparty:qhull_hull=exact'}})
+
+    def test_vendored_refuses_family_not_in_group_differential(self):
+        for diff in ('thirdparty:qhull_other=exact', 'thirdparty:qhull_hull=discrete+qhull_other=exact'):
+            with self.assertRaises(ValueError):
+                vrun(coverage={('qhull', '0x00001010'): {'family_best': 'exact', 'differential': diff}})
+
+    def test_vendored_split_rows_need_their_group(self):
+        inventory, _ = vrun()
+        self.assertEqual({r['state'] for r in inventory['functions']}, {'reconstructed'})
+        m = dict(VMANIFEST, rows=dict(VMANIFEST['rows'], phys_fn_000003={'symbol': 'qh_one', 'what': 'part three',
+                                                                         'group': '0x00009990', 'family': 'qhull_hull'}))
+        rows = [inv_row(n, third_party='qhull', phase='4') for n in (1, 2, 3)]
+        with self.assertRaises(ValueError):
+            vrun(m, rows)
+
+    def test_vendored_refuses_first_party_row(self):
+        with self.assertRaises(ValueError):
+            vrun(rows=[inv_row(1, phase='4'), inv_row(2, third_party='qhull', phase='4')])
+
+
 if __name__ == '__main__':
     unittest.main()

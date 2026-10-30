@@ -14,6 +14,7 @@ Each row must be `discovered` and first-party (vendored rows follow the vendored
 moves from `not_reconstructed_in_phase` to `reconstructed_not_falsified` with the ledger's counts updated.
 """
 import argparse
+import csv
 import json
 import re
 from pathlib import Path
@@ -39,12 +40,28 @@ def find_symbol(name, mapsyms):
     return found[0]
 
 
-def close(manifest, inventory, closures, mapsyms):
+def exact_family(rid, lib, spec, coverage):
+    """The coverage line proving a vendored row: its group must be exact in the manifest's family."""
+    line = coverage.get((lib, spec['group']))
+    if line is None:
+        raise ValueError('%s: no coverage line for %s group %s' % (rid, lib, spec['group']))
+    if line['family_best'] != 'exact':
+        raise ValueError('%s: group %s is family_best=%s, not exact' % (rid, spec['group'], line['family_best']))
+    if not re.search(r'(?:^|[:+;])%s=exact(?:$|[+;])' % re.escape(spec['family']), line['differential']):
+        raise ValueError('%s: family %s is not exact in group %s' % (rid, spec['family'], spec['group']))
+
+
+def close(manifest, inventory, closures, mapsyms, coverage=None):
+    """First-party rows with a static proof; with `coverage`, vendored rows with an exact execution too."""
     by = {r['id']: r for r in inventory['functions']}
+    vendored = coverage is not None
     for rid, spec in manifest['rows'].items():
         r = by[rid]
-        if r.get('third_party'):
-            raise ValueError('%s is vendored (%s): it follows the vendored promotion policy' % (rid, r['third_party']))
+        if bool(r.get('third_party')) != vendored:
+            raise ValueError('%s is %s: %s' % (rid, 'vendored (%s)' % r['third_party'] if r.get('third_party') else 'first-party',
+                                               'it needs --vendored' if r.get('third_party') else 'not a --vendored row'))
+        if vendored:
+            exact_family(rid, r['third_party'], spec, coverage)
         if r['state'] != 'discovered':
             raise ValueError('%s is %s, not discovered' % (rid, r['state']))
         sym = find_symbol(spec['symbol'], mapsyms)
@@ -59,15 +76,24 @@ def close(manifest, inventory, closures, mapsyms):
                              'with the %d call mappings as expected. See %s.'
                              % (r['rva'], spec['what'], manifest['source'], manifest['compare'], manifest['instructions'],
                                 manifest['mappings'], manifest['doc']))
-        r['dynamic_proof'] = None
-        r['notes'] = 'Listing transcription with a static proof only; it %s (no differential, no mutation yet).' % AWAITS
+        if vendored:
+            lib = r['third_party']
+            r['static_proof'] += ' Vendored %s function, upstream body guarded by NX_VENDORED_LISTING_ROWS.' % lib
+            r['dynamic_proof'] = ('cdb trace, evidence/vendored-trace-%s.txt: family %s exact (every word compared with the '
+                                  'oracle); vendored_coverage.csv group %s family_best=exact.' % (lib, spec['family'], spec['group']))
+            held = r.get('notes') or ''
+            r['notes'] = 'Vendored row transcribed and executed (vendored-rows pass).' + (
+                ' Earlier: ' + held if held.startswith('Held back') else '')
+        else:
+            r['dynamic_proof'] = None
+            r['notes'] = 'Listing transcription with a static proof only; it %s (no differential, no mutation yet).' % AWAITS
         phase = int(r['phase'])
         ledger = closures[phase]
         entries = [e for e in ledger['deferred'] if e['id'] == rid]
         if len(entries) != 1:
             raise ValueError('%s: %d deferred entries in the phase %d closure' % (rid, len(entries), phase))
         e = entries[0]
-        if e['reason'] not in ('not_reconstructed_in_phase', 'blocked_on_later_phase'):
+        if e['reason'] not in (('vendored_not_falsified',) if vendored else ('not_reconstructed_in_phase', 'blocked_on_later_phase')):
             raise ValueError('%s is deferred as %s' % (rid, e['reason']))
         counts = ledger['counts']
         if counts.get('deferred_' + e['reason'], 0) <= 0:
@@ -75,7 +101,9 @@ def close(manifest, inventory, closures, mapsyms):
         counts['deferred_' + e['reason']] -= 1
         counts['deferred_reconstructed_not_falsified'] = counts.get('deferred_reconstructed_not_falsified', 0) + 1
         e['reason'] = 'reconstructed_not_falsified'
-        e['note'] = ('Transcribed from its listing (%s) with a static proof only; it %s, so no mutation has been aimed '
+        e['note'] = ('Transcribed from its listing (%s) and executed exactly against the oracle in %s.'
+                     % (manifest['doc'], spec['family']) if vendored else
+                     'Transcribed from its listing (%s) with a static proof only; it %s, so no mutation has been aimed '
                      'at it yet.' % (manifest['doc'], AWAITS))
     return inventory, closures
 
@@ -96,14 +124,19 @@ def main(argv=None):
     ap.add_argument('--inventory', default=str(here / 'inventory.json'))
     ap.add_argument('--closure-dir', default=str(here / 'gates'))
     ap.add_argument('--map', default=str(here.parents[2] / MAP_PATH))
+    ap.add_argument('--vendored', action='store_true', help='vendored rows: each group must be exact in its family')
+    ap.add_argument('--coverage', default=str(here / 'evidence' / 'phase4-third-party-map' / 'vendored_coverage.csv'))
     a = ap.parse_args(argv)
+    coverage = None
+    if a.vendored:
+        coverage = {(c['library'], c['rva']): c for c in csv.DictReader(open(a.coverage, encoding='utf-8'))}
     manifest = json.load(open(a.manifest, encoding='utf-8'))
     inventory, inl = _read(a.inventory)
     phases = {int(r['phase']) for r in inventory['functions'] if r['id'] in manifest['rows']}
     closures, cnl = {}, {}
     for ph in phases:
         closures[ph], cnl[ph] = _read(Path(a.closure_dir) / ('phase%d-closure.json' % ph))
-    close(manifest, inventory, closures, read_map(a.map))
+    close(manifest, inventory, closures, read_map(a.map), coverage)
     _write(a.inventory, inventory, inl)
     for ph in phases:
         _write(Path(a.closure_dir) / ('phase%d-closure.json' % ph), closures[ph], cnl[ph])

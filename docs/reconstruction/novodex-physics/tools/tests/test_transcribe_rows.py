@@ -111,6 +111,14 @@ class TranscribeTest(unittest.TestCase):
             transcribe_rows.transcribe(c, img)
 
 
+    def test_member_rows_emit_no_prototype(self):
+        img = transcribe_rows.Image(bytes([0xc3, 0xc3]), 0x1000)
+        c = SimpleNamespace(ROWS=[('a', 0x1000, 0x1001, 't', '__declspec(naked) float Triangle::Area() const'),
+                                  ('b', 0x1001, 0x1002, 't', 'extern "C" __declspec(naked) void qh_x()')])
+        protos, _ = transcribe_rows.transcribe(c, img)
+        self.assertEqual(protos, 'extern "C" void qh_x();\n')
+
+
 class WriteTest(unittest.TestCase):
     def test_header_and_append_and_crlf(self):
         with tempfile.TemporaryDirectory() as d:

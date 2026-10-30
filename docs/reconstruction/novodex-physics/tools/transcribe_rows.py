@@ -180,7 +180,9 @@ def transcribe(cfg, img):
     for sym, lo, hi, tag, decl in cfg.ROWS:
         body, n = gen(lo, hi)
         parts.append('// %s (0x%08x, %d B), %d instructions\n%s\n\t{\n\t__asm\n\t\t{\n%s\n\t\t}\n\t}\n' % (tag, lo, hi - lo, n, decl, body))
-        protos += decl.replace('__declspec(naked) ', '') + ';\n'
+        proto = decl.replace('__declspec(naked) ', '')
+        if '::' not in proto.split('(', 1)[0]:  # a member is declared by its class, not here
+            protos += proto + ';\n'
     consts = ''
     for k, (_, n, v) in sorted(kseen.items()):
         consts += 'static const unsigned %s%s = 0x%x%s;\n' % ('long long ' if n == 8 else '', k, v, 'ull' if n == 8 else '')
