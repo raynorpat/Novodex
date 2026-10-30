@@ -1,0 +1,49 @@
+{
+ "source": "Physics/src/core/Phase6Rows.cpp",
+ "compare": "evidence/phase6-rows-listing-compare.py",
+ "doc": "evidence/phase6-rows.md",
+ "instructions": 1012,
+ "mappings": 11,
+ "rows": {
+  "phys_fn_004159": {
+   "symbol": "nxP64159",
+   "what": "a listing of 63 instructions; calls nxP64405, nxP64159"
+  },
+  "phys_fn_004161": {
+   "symbol": "nxP64161",
+   "what": "a listing of 88 instructions; calls nxP64161"
+  },
+  "phys_fn_004169": {
+   "symbol": "nxP64169",
+   "what": "a listing of 274 instructions; calls nxP64161, nxP64159; 6 indirect calls (part 1 of 2 of one function)"
+  },
+  "phys_fn_004171": {
+   "symbol": "nxP64169",
+   "what": "a listing of 274 instructions; calls nxP64161, nxP64159; 6 indirect calls (part 2 of 2 of one function)"
+  },
+  "phys_fn_004401": {
+   "symbol": "nxP64401",
+   "what": "a listing of 270 instructions; calls nothing directly; 2 indirect calls"
+  },
+  "phys_fn_004405": {
+   "symbol": "nxP64405",
+   "what": "a listing of 19 instructions; calls nxP64759; 1 indirect calls"
+  },
+  "phys_fn_004413": {
+   "symbol": "nxP64413",
+   "what": "a listing of 126 instructions; calls nothing directly; 4 indirect calls"
+  },
+  "phys_fn_004537": {
+   "symbol": "nxP64537",
+   "what": "the abstract NxJoint's scalar deleting destructor: the NxJoint table stored, the object freed (CRT free) when bit 0 of the flag is set; a listing of 11 instructions; calls free"
+  },
+  "phys_fn_004759": {
+   "symbol": "nxP64759",
+   "what": "a listing of 14 instructions; calls nxP64407"
+  },
+  "phys_fn_004761": {
+   "symbol": "nxP64761",
+   "what": "a listing of 25 instructions; calls Joint::row_slot6; 1 indirect calls"
+  }
+ }
+}

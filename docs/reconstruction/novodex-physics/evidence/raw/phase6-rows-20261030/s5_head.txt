@@ -1,0 +1,58 @@
+/*----------------------------------------------------------------------------*\
+|
+|								NovodeX Technology
+|
+|							     www.novodex.com
+|
+\*----------------------------------------------------------------------------*/
+
+// Phase6Rows.cpp: Phase 6's remaining rows: phys_fn_004159, 004161 and 004169 with 004171 (an articulation's
+// iterations), 004401 (a solver row beside 004403), 004405, 004413, 004537 (the abstract NxJoint's scalar deleting
+// destructor), 004759 and 004761 (an event list's constructor and slot 5). The two internal tables they store (the
+// oracle's 0x1011a648 and 0x1011b558) are built here, entry for entry, from rows transcribed as helpers (their records
+// unchanged): the no-op returns 004248 and 004411 (001583 is IceSupportMaps.cpp's nxSupportMapNoop), the destructor chains 004415 and 004764 over 004409, the
+// guarded dispatch 004763 and the list constructor 004407. Naked listing transcriptions. Compare script:
+// docs/reconstruction/novodex-physics/evidence/phase6-rows-listing-compare.py.
+#include "NxPhysics.h"
+
+extern "C" void nxP6CallFree();
+extern "C" void nxP6CallRowslot6();
+extern "C" void* nxP6ImpImpnxFoundationSDKAllocator3PAVNxUserAll;
+#pragma comment(linker, "/alternatename:_nxP6CallFree=_free")
+#pragma comment(linker, "/alternatename:_nxP6CallRowslot6=?row_slot6@Joint@@UAEXM@Z")
+#pragma comment(linker, "/alternatename:_nxP6ImpImpnxFoundationSDKAllocator3PAVNxUserAll=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
+extern "C" void* nxSdkInstanceSlot;
+#pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")
+extern "C" unsigned gNxApiReentry;
+extern "C" const char* gNxApiReentryMessage;
+extern "C" void* nxKnCompleteSorter;
+#pragma comment(linker, "/alternatename:_nxKnCompleteSorter=?gCompleteSorter@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnBipartiteSorter0;
+#pragma comment(linker, "/alternatename:_nxKnBipartiteSorter0=?gBipartiteSorter0@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnBipartiteSorter1;
+#pragma comment(linker, "/alternatename:_nxKnBipartiteSorter1=?gBipartiteSorter1@@3PAVRadixSort@IceCore@@A")
+extern "C" void* nxKnPrunerPool;
+#pragma comment(linker, "/alternatename:_nxKnPrunerPool=?gNxPrunerProcessPool@@3PAVNxPrunerProcessPool@@A")
+extern "C" void* nxKnOwnerQuery;
+#pragma comment(linker, "/alternatename:_nxKnOwnerQuery=?gPrunableOwnerQuery@@3P6AIPAX@ZA")
+extern "C" void* nxKnOwnerNotify;
+#pragma comment(linker, "/alternatename:_nxKnOwnerNotify=?gPrunableOwnerNotify@@3P6AXPAXPAVAABB@IceMaths@@@ZA")
+extern "C" void* nxKnOwnerWorldAABB;
+#pragma comment(linker, "/alternatename:_nxKnOwnerWorldAABB=?gPrunableOwnerWorldAABB@@3P6AXPAXPAVAABB@IceMaths@@@ZA")
+extern "C" void* nxKnAdapterNotify;
+#pragma comment(linker, "/alternatename:_nxKnAdapterNotify=?gPrunableAdapterNotify@@3P6AXPAVPrunable@@PAVAABB@IceMaths@@@ZA")
+extern NxReal gParameter[];
+extern "C" void* nxKnVtNxJoint;
+#pragma comment(linker, "/alternatename:_nxKnVtNxJoint=??_7NxJoint@@6B@")
+extern "C" void* nxP6TableA[8];
+extern "C" void* nxP6TableB[8];
+
+@@PROTOS@@
+extern "C" void nxP6Noop1583();
+#pragma comment(linker, "/alternatename:_nxP6Noop1583=?nxSupportMapNoop@@YIXPAUIceSupportMap@@@Z")
+// The two internal tables, entry for entry as the oracle has them (0x1011a648 and 0x1011b558).
+extern "C" void* nxP6TableA[8] = { (void*) &nxP64415, (void*) &nxP64411, (void*) &nxP64248, (void*) &nxP64248, (void*) &nxP6Noop1583, (void*) &nxP64248, (void*) &nxP64413, (void*) &nxP64248 };
+extern "C" void* nxP6TableB[8] = { (void*) &nxP64764, (void*) &nxP64411, (void*) &nxP64248, (void*) &nxP64248, (void*) &nxP64763, (void*) &nxP64761, (void*) &nxP64413, (void*) &nxP64248 };
+
+
+@@BODY@@

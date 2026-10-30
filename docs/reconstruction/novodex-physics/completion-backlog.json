@@ -7,7 +7,7 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 2316,
+    "mapped_code_rows": 2326,
     "source_correspondence_only_rows": 288,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
@@ -99,8 +99,8 @@
         "closed_rows": 178,
         "deferred_rows": 255,
         "deferred_reasons": {
-          "not_reconstructed_in_phase": 12,
-          "reconstructed_not_falsified": 243
+          "not_reconstructed_in_phase": 2,
+          "reconstructed_not_falsified": 253
         }
       },
       "7": {
@@ -164,12 +164,11 @@
         "rows": 433,
         "bytes": 147006,
         "open_rows": 433,
-        "rows_without_implementation_mapping": 26,
+        "rows_without_implementation_mapping": 16,
         "rows_with_unresolved_indirect_calls": 247,
         "by_state": {
-          "discovered": 10,
           "dynamically_gated": 178,
-          "reconstructed": 245
+          "reconstructed": 255
         }
       },
       "7": {
@@ -178427,17 +178426,23 @@
       "size": 167,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004159",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64159@@YAIXZ",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64159@@YAIXZ",
+          "address": "0x100a2b40",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -178456,7 +178461,7 @@
           {
             "id": "phys_fn_004405",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -178475,13 +178480,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -178489,8 +178494,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004159",
         "rva": "0x0009ab00",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -178501,17 +178506,23 @@
       "size": 226,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004161",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64161@@YAIXZ",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64161@@YAIXZ",
+          "address": "0x100a2bf0",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -178539,13 +178550,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -178553,8 +178564,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004161",
         "rva": "0x0009abb0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -178775,17 +178786,23 @@
       "size": 157,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004169",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64169@@YAIXZ",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64169@@YAIXZ",
+          "address": "0x100a2ce0",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -178813,13 +178830,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -178827,8 +178844,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004169",
         "rva": "0x0009adb0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -178839,17 +178856,23 @@
       "size": 640,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004171",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64169@@YAIXZ",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64169@@YAIXZ",
+          "address": "0x100a2ce0",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -178876,12 +178899,12 @@
           {
             "id": "phys_fn_004159",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_004161",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -178908,13 +178931,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -178922,8 +178945,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004171",
         "rva": "0x0009ae50",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -178965,7 +178988,7 @@
           {
             "id": "phys_fn_004169",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -188269,17 +188292,23 @@
       "size": 794,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004401",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64401@@YAIXZ",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64401@@YAIXZ",
+          "address": "0x100a3000",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -188313,13 +188342,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -188327,8 +188356,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004401",
         "rva": "0x000afcc0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -188407,17 +188436,23 @@
       "size": 46,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004405",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64405@@YAIXZ",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64405@@YAIXZ",
+          "address": "0x100a3320",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -188438,7 +188473,7 @@
           {
             "id": "phys_fn_004759",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           }
         ]
       },
@@ -188459,13 +188494,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -188473,8 +188508,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004405",
         "rva": "0x000b02e0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -188681,17 +188716,23 @@
       "size": 408,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004413",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64413@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64413@@YIIPAX0I@Z",
+          "address": "0x100a2890",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -188729,13 +188770,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -188743,8 +188784,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004413",
         "rva": "0x000b03b0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -193871,17 +193912,23 @@
       "size": 31,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004537",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64537@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64537@@YIIPAX0I@Z",
+          "address": "0x100a33e0",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -193917,13 +193964,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -193931,8 +193978,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004537",
         "rva": "0x000b15e0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -203366,17 +203413,23 @@
       "size": 37,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004759",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64759@@YIIPAX0III@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64759@@YIIPAX0III@Z",
+          "address": "0x100a3400",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -203414,13 +203467,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -203428,8 +203481,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004759",
         "rva": "0x000b38a0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -203440,17 +203493,23 @@
       "size": 71,
       "phase": 6,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_004761",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "Physics/src/core/Phase6Rows.cpp",
+        "role": "reconstruction",
+        "symbol": "?nxP64761@@YIIPAX0I@Z",
+        "file_exists": true,
+        "oracle_source": "Physics/src/core/Phase6Rows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?nxP64761@@YIIPAX0I@Z",
+          "address": "0x100a2a60",
+          "object": "Phase6Rows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -203492,13 +203551,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
         "dynamic_proof_recorded": false,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -203506,8 +203565,8 @@
         "owner_phase": 6,
         "row_id": "phys_fn_004761",
         "rva": "0x000b38d0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -233872,7 +233931,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "345e2f1c0b8a29946b0e2a7c76905a0facb108a99f6baf3a7a07e20c7ec926a9",
+    "inventory_sha256": "9232d35077eb98205fd37546e84b3b6affa5ede195c2cee2b3098ae88deb0721",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -233881,7 +233940,7 @@
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "a9040905ae4406cd19df4bfe5aa11ea6f85ff0ddc0775d18d4af0a047123264a",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "00e896b410c1b7122e779a9066ec96df18c47f8506f98d40926fc3bb82c6634e",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
-      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "9e18de800c1b30bfb53ce6bc2c804291aa7e0f7597afd7e0822a1b084545bbc1",
+      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "ee8110bf6967bc42eaa9a4e61826a1c30f735505c5d4e0ce63b7b19bf7f5a815",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "250525fcb0b34aee9d6ffe53e9340027ed52a5897e65210ddfb7f51fe44866ab"
     }
   }

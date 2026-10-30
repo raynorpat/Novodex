@@ -66,8 +66,8 @@
   "counts": {
     "differential_falsified": 161,
     "oracle_differential_falsified": 17,
-    "deferred_reconstructed_not_falsified": 243,
-    "deferred_not_reconstructed_in_phase": 12
+    "deferred_reconstructed_not_falsified": 253,
+    "deferred_not_reconstructed_in_phase": 2
   },
   "closed": [
     {
@@ -2166,17 +2166,19 @@
       "id": "phys_fn_004159",
       "rva": "0x0009ab00",
       "size": 167,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004161",
       "rva": "0x0009abb0",
       "size": 226,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004163",
@@ -2191,17 +2193,19 @@
       "id": "phys_fn_004169",
       "rva": "0x0009adb0",
       "size": 157,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004171",
       "rva": "0x0009ae50",
       "size": 640,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004178",
@@ -3007,17 +3011,19 @@
       "id": "phys_fn_004401",
       "rva": "0x000afcc0",
       "size": 794,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004405",
       "rva": "0x000b02e0",
       "size": 46,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004407",
@@ -3050,9 +3056,10 @@
       "id": "phys_fn_004413",
       "rva": "0x000b03b0",
       "size": 408,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004415",
@@ -3337,9 +3344,10 @@
       "id": "phys_fn_004537",
       "rva": "0x000b15e0",
       "size": 31,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004541",
@@ -4092,17 +4100,19 @@
       "id": "phys_fn_004759",
       "rva": "0x000b38a0",
       "size": 37,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004761",
       "rva": "0x000b38d0",
       "size": 71,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004763",

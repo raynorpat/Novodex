@@ -1,0 +1,29 @@
+nxP64159 ?nxP64159@@YAIXZ instructions=63 differing=0
+nxP64161 ?nxP64161@@YAIXZ instructions=88 differing=0
+nxP64169 ?nxP64169@@YAIXZ instructions=274 differing=0
+nxP64248 ?nxP64248@@YGII@Z instructions=1 differing=0
+nxP64401 ?nxP64401@@YAIXZ instructions=270 differing=0
+nxP64405 ?nxP64405@@YAIXZ instructions=19 differing=0
+nxP64407 ?nxP64407@@YIIPAX0III@Z instructions=27 differing=0
+nxP64409 ?nxP64409@@YIIPAX0@Z instructions=26 differing=0
+nxP64411 ?nxP64411@@YGIIII@Z instructions=1 differing=0
+nxP64413 ?nxP64413@@YIIPAX0I@Z instructions=126 differing=0
+nxP64415 ?nxP64415@@YIIPAX0I@Z instructions=13 differing=0
+nxP64537 ?nxP64537@@YIIPAX0I@Z instructions=11 differing=0
+nxP64759 ?nxP64759@@YIIPAX0III@Z instructions=14 differing=0
+nxP64761 ?nxP64761@@YIIPAX0I@Z instructions=25 differing=0
+nxP64763 ?nxP64763@@YIIPAX0@Z instructions=40 differing=0
+nxP64764 ?nxP64764@@YIIPAX0I@Z instructions=14 differing=0
+ALL EQUAL
+  call nxP64159 -> oracle 0x100b02e0 ; candidate ?nxP64405@@YAIXZ
+  call nxP64159 -> oracle 0x1009ab00 ; candidate ?nxP64159@@YAIXZ
+  call nxP64161 -> oracle 0x1009abb0 ; candidate ?nxP64161@@YAIXZ
+  call nxP64169 -> oracle 0x1009abb0 ; candidate ?nxP64161@@YAIXZ
+  call nxP64169 -> oracle 0x1009ab00 ; candidate ?nxP64159@@YAIXZ
+  call nxP64405 -> oracle 0x100b38a0 ; candidate ?nxP64759@@YIIPAX0III@Z
+  call nxP64415 -> oracle 0x100b0360 ; candidate ?nxP64409@@YIIPAX0@Z
+  call nxP64537 -> oracle 0x100f41f0 ; candidate _free
+  call nxP64759 -> oracle 0x100b0310 ; candidate ?nxP64407@@YIIPAX0III@Z
+  call nxP64761 -> oracle 0x10099ab0 ; candidate ?row_slot6@Joint@@UAEXM@Z
+  call nxP64764 -> oracle 0x100b0360 ; candidate ?nxP64409@@YIIPAX0@Z
+MAPPINGS checked=11 unexpected=0
