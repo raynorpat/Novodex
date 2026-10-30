@@ -70,6 +70,12 @@ oracle does, so the testing pass should drive these inputs deliberately:
 * `NxContactMeshMesh` (`ContactMeshMesh.cpp`, now 001876). The C++ returned early on a null shape, a null sink or a
   null geometry image. The forward passes them through to 001876, which does not check them.
 
+## Behaviour the re-pointed setters now share with the oracle
+
+The box and capsule handles' `setFlag` and the local and global pose setters run rows that test and set the API
+reentry flag (`gNxApiReentry`). A call made while something else holds that flag, such as `ImplicitMesh.cpp`'s
+locked sections (lines 41 and 220), is now refused with the reentry report, where the C++ setters ran it.
+
 ## Hard rows
 
 None. Every first-party row was transcribed.

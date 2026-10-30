@@ -199,6 +199,11 @@ def write(dest, protos, body, header=None, append=False):
         text = open(dest, encoding='utf-8', newline='').read().replace('\r\n', '\n')
         if PROTOS_END not in text or ROWS_END not in text:
             raise ValueError('%s has no %s / %s markers' % (dest, PROTOS_END, ROWS_END))
+        # A constant or string an earlier batch already defined is not defined twice.
+        defined = set(re.findall(r'^static const (?:unsigned (?:long long )?|char )(\w+)', text, re.M))
+        definition = re.compile(r'static const (?:unsigned (?:long long )?|char )(\w+)')
+        body = '\n'.join(line for line in body.split('\n')
+                         if not (definition.match(line) and definition.match(line).group(1) in defined))
         text = text.replace(PROTOS_END, protos + PROTOS_END, 1).replace(ROWS_END, body + ROWS_END, 1)
     else:
         raise ValueError('need a header or --append')

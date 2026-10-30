@@ -68,6 +68,13 @@ class CloseStaticRowsTest(unittest.TestCase):
         self.assertEqual(closures[3]['counts'], {'deferred_not_reconstructed_in_phase': 0, 'deferred_blocked_on_later_phase': 0,
                                                  'deferred_reconstructed_not_falsified': 2})
 
+    def test_count_that_would_go_negative_raises(self):
+        rows = [inv_row(1), inv_row(2)]
+        c = closure('phys_fn_000001', 'phys_fn_000002')
+        c['counts']['deferred_not_reconstructed_in_phase'] = 1
+        with self.assertRaises(ValueError):
+            close_static_rows.close(MANIFEST, {'functions': rows}, {3: c}, MAP)
+
     def test_split_rows_share_one_symbol(self):
         m = dict(MANIFEST, rows={'phys_fn_000001': {'symbol': 'nxXOne', 'what': 'first part'},
                                  'phys_fn_000002': {'symbol': 'nxXOne', 'what': 'second part'}})

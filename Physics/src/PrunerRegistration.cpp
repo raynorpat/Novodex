@@ -3,7 +3,7 @@
 #include <new>
 #include <string.h>
 // Actual .data1012846c singleton, owned through the genuine SDK allocator.
-NxPrunerProcessPool* gNxPrunerProcessPool=nullptr; // external so the naked listing rows (SdkSupportRows.cpp) reach it by name
+NxPrunerProcessPool* gNxPrunerProcessPool=nullptr; // external so the naked listing rows (opcode/PrunerSupportRows.cpp) reach it by name
 template<class T> static T* nxRegistryAllocate(NxU32 count) {
     T* memory=static_cast<T*>(nxGetSdkAllocator()->malloc(sizeof(T)*count,NX_MEMORY_PERSISTENT));
     // Begin trivial element lifetimes without zeroing unobserved object tails.

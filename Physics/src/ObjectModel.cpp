@@ -1090,7 +1090,8 @@ void nxSceneInsertShape(void* container, void* shape, NxU32 slot)
 
 // phys_fn_001323 (0x00026bd0) as one callable, for the naked rows that call it (001345): the owner arms, then
 // the prunable's destructor its tail jumps to (0xb5640). The BASE table store at 0x00026bd6 is not made: the
-// candidate's ShapeBase has no BASE table.
+// candidate's ShapeBase has no BASE table. It stands in for the whole base destructor: a caller must not also run
+// ~ShapeBase, which would destroy mPrunable a second time.
 void ShapeBase::nxBaseDtor(void)
 	{
 	nxBaseDtorOwnerArms();

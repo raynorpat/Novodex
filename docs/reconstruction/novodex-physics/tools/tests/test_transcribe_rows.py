@@ -128,6 +128,16 @@ class WriteTest(unittest.TestCase):
             self.assertLess(text.index('BODY-A'), text.index('BODY-B'))
             self.assertLess(text.index('void b();'), text.index('BODY-A'))
 
+    def test_append_skips_constants_already_defined(self):
+        with tempfile.TemporaryDirectory() as d:
+            dest = Path(d) / 'out.cpp'
+            dest.write_text('static const unsigned kA = 0x1;\n// @@PROTOS-END@@\n// @@ROWS-END@@\n')
+            body = 'static const unsigned kA = 0x1;\nstatic const char kS[] = "x";\nBODY\n'
+            transcribe_rows.write(dest, 'void b();\n', body, append=True)
+            text = dest.read_text()
+            self.assertEqual(text.count('static const unsigned kA'), 1)
+            self.assertEqual(text.count('static const char kS[]'), 1)
+
     def test_append_without_marker_raises(self):
         with tempfile.TemporaryDirectory() as d:
             dest = Path(d) / 'out.cpp'

@@ -65,7 +65,7 @@ def run(rows, expected, tables=None, data=None, argv=None, static_ranges=None):
     # (oracle lo, oracle hi, candidate symbol substring): a block of statics, an address inside it named by its offset.
     ranges = {id(orc): [], id(pe): []}
     for lo_, hi_, sub_ in static_ranges:
-        found_ = [k for k in syms if sub_ in k]
+        found_ = [k for k in syms if k == sub_] or [k for k in syms if sub_ in k]
         assert len(found_) == 1, (sub_, found_)
         ranges[id(orc)].append((lo_, hi_, lo_))
         ranges[id(pe)].append((syms[found_[0]], syms[found_[0]] + (hi_ - lo_), syms[found_[0]]))

@@ -70,6 +70,8 @@ def close(manifest, inventory, closures, mapsyms):
         if e['reason'] not in ('not_reconstructed_in_phase', 'blocked_on_later_phase'):
             raise ValueError('%s is deferred as %s' % (rid, e['reason']))
         counts = ledger['counts']
+        if counts.get('deferred_' + e['reason'], 0) <= 0:
+            raise ValueError('phase %d closure count deferred_%s is already %s' % (phase, e['reason'], counts.get('deferred_' + e['reason'])))
         counts['deferred_' + e['reason']] -= 1
         counts['deferred_reconstructed_not_falsified'] = counts.get('deferred_reconstructed_not_falsified', 0) + 1
         e['reason'] = 'reconstructed_not_falsified'
