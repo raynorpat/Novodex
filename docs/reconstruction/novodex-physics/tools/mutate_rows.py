@@ -103,6 +103,15 @@ def detect_staged(output):
     return int(m.group(2)) or None
 
 
+def staged_note(output):
+    """Why a staged run detected nothing: a crash of the candidate, or an output identical to the oracle's."""
+    m = re.search(r'candidate_exit=(-?\d+).*?stdout_delta=(\d+)', output)
+    if not m:
+        return 'no-summary'
+    code, delta = int(m.group(1)), int(m.group(2))
+    return '%s(exit=%d,delta=%d)' % ('crash' if code < 0 or code >= CRASH else 'same', code, delta)
+
+
 def _swap_line(text, addr, new):
     rx = re.compile(r'^(\t\t)[^\r\n]*?(\t\t// 0x%08x)(\r?)$' % addr, re.M)
     if len(rx.findall(text)) != 1:
@@ -172,8 +181,18 @@ def build_targets(target, staged):
     return ['NxPhysics', target] if staged else [target]
 
 
+def remove_stale_dll(root):
+    """Delete the built candidate DLL: MSBuild's tracker can call the link up to date after an object changed."""
+    try:
+        (Path(root) / 'build' / 'Release' / 'NxPhysics.dll').unlink()
+    except FileNotFoundError:
+        pass
+
+
 def _build(target, staged):
     """Build what a run needs; False when the build failed."""
+    if staged:
+        remove_stale_dll(REPO)
     for t in build_targets(target, staged):
         build = subprocess.run('cmake --build build --config Release --target %s' % t, shell=True,
                                capture_output=True, text=True, cwd=REPO)
@@ -191,7 +210,8 @@ def _real_run(target, family, staged):
                 r = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
                                     'docs/reconstruction/novodex-physics/tools/run_differential.ps1', '-Targets', target],
                                    capture_output=True, text=True, cwd=REPO, timeout=TIMEOUT)
-                return ('stdout_delta', detect_staged(r.stdout))
+                n = detect_staged(r.stdout)
+                return ('stdout_delta' if n else 'stdout_delta[%s]' % staged_note(r.stdout), n)
             r = subprocess.run([str(REPO / 'build' / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA],
                                capture_output=True, text=True, cwd=REPO, timeout=TIMEOUT)
             return ('mismatches', detect_family(r.stdout, family))

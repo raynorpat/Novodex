@@ -548,11 +548,17 @@ static void runHandleCalls(const char* family, NxShape* shape, NxActorErrorStrea
 	HANDLE_SETTER("material", shape->setMaterial(2))
 	HANDLE_SETTER("name", shape->setName("handle"))
 #undef HANDLE_SETTER
+	// Sentinel-filled, so a getter that fails to write its out parameter prints the sentinel and not stale stack.
 	NxMat34 outPose;
 	NxVec3 outPosition;
 	NxMat33 outOrientation;
+	memset(&outPose, 0xcd, sizeof(outPose));
+	memset(&outPosition, 0xcd, sizeof(outPosition));
+	memset(&outOrientation, 0xcd, sizeof(outOrientation));
 	shape->getGlobalPose(outPose);
+	memset(&outPosition, 0xcd, sizeof(outPosition));
 	shape->getGlobalPosition(outPosition);
+	memset(&outOrientation, 0xcd, sizeof(outOrientation));
 	shape->getGlobalOrientation(outOrientation);
 	const NxMat34 valPose = shape->getGlobalPoseVal();
 	const NxVec3 valPosition = shape->getGlobalPositionVal();

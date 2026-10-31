@@ -106,6 +106,28 @@ class BuildTargetsTest(unittest.TestCase):
         self.assertEqual(mutate_rows.build_targets('T', False), ['T'])
 
 
+class StaleLinkTest(unittest.TestCase):
+    def test_the_candidate_dll_is_removed_so_msbuild_must_relink(self):
+        # MSBuild's tracker once called the link up to date after NpShapeHandleRows.obj changed, so every mutation
+        # of that file ran against the old DLL and none was ever detected
+        with tempfile.TemporaryDirectory() as d:
+            dll = Path(d) / 'build' / 'Release' / 'NxPhysics.dll'
+            dll.parent.mkdir(parents=True)
+            dll.write_bytes(b'old')
+            mutate_rows.remove_stale_dll(Path(d))
+            self.assertFalse(dll.exists())
+            mutate_rows.remove_stale_dll(Path(d))
+
+
+class StagedNoteTest(unittest.TestCase):
+    def test_note_says_why_nothing_was_detected(self):
+        crash = 'differential target=T oracle_exit=0 candidate_exit=-1073741819 both_exit_zero=False stdout_delta=40 stderr_exact=False\n'
+        self.assertEqual(mutate_rows.staged_note(crash), 'crash(exit=-1073741819,delta=40)')
+        same = 'differential target=T oracle_exit=0 candidate_exit=0 both_exit_zero=True stdout_delta=0 stderr_exact=True\n'
+        self.assertEqual(mutate_rows.staged_note(same), 'same(exit=0,delta=0)')
+        self.assertEqual(mutate_rows.staged_note('no summary line'), 'no-summary')
+
+
 class SweepTest(unittest.TestCase):
     def source(self, d):
         p = Path(d) / 'rows.cpp'
