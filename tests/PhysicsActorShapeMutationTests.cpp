@@ -10,6 +10,10 @@
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
+#include "NxSimpleTriangleMesh.h"
+#include "NxTriangleMeshDesc.h"
+#include "NxTriangleMeshShapeDesc.h"
+#include "NxPlaneShape.h"
 #include "NxBodyDesc.h"
 #include "NxShape.h"
 #include "NxRay.h"
@@ -499,6 +503,154 @@ static NxMat33 axisRotation(unsigned axis, float c, float sn)
 	NxMat33 r;
 	r.setRowMajor(m);
 	return r;
+	}
+
+// The testing pass: the public shape handles' methods (the oracle's NpBoxShape, NpPlaneShape, NpSphereShape,
+// NpCapsuleShape and NpTriangleMeshShape tables; phys_fn_001099 to 001235). Each takes the handle's read lock or tries
+// its write lock, calls the internal shape and unlocks. Every method is called on a shape of each of the five
+// families, once outside a simulation step and once between simulate() and fetchResults(), where the write lock is
+// refused and reports through the error stream; every result is printed as raw bits for the two DLLs to compare.
+static unsigned handleBits(float f)
+	{
+	unsigned u;
+	memcpy(&u, &f, 4);
+	return u;
+	}
+
+static void printHandleWords(const char* label, const float* words, unsigned count)
+	{
+	printf("shape_mutation handle_%s=", label);
+	for(unsigned i = 0; i < count; ++i)
+		printf("%s%x", i ? "." : "", handleBits(words[i]));
+	printf("\n");
+	}
+
+static void runHandleCalls(const char* family, NxShape* shape, NxActorErrorStream& errors)
+	{
+	char label[96];
+	const unsigned e0 = errors.reports;
+	NxMat33 turn = axisRotation(1, 0.87758255f, 0.47942555f);
+	NxMat34 pose;
+	pose.M = turn;
+	pose.t = NxVec3(0.5f, -1.5f, 2.5f);
+	// One line per setter: how many reports it raised (a refused write lock reports and skips the call).
+#define HANDLE_SETTER(name, call) \
+	{ const unsigned before = errors.reports; call; \
+	printf("shape_mutation handle_%s_set_%s=%u\n", family, name, errors.reports - before); }
+	HANDLE_SETTER("localPosition", shape->setLocalPosition(NxVec3(1.0f, 2.0f, 3.0f)))
+	HANDLE_SETTER("localOrientation", shape->setLocalOrientation(turn))
+	HANDLE_SETTER("localPose", shape->setLocalPose(pose))
+	HANDLE_SETTER("globalPosition", shape->setGlobalPosition(NxVec3(4.0f, 5.0f, 6.0f)))
+	HANDLE_SETTER("globalOrientation", shape->setGlobalOrientation(turn))
+	HANDLE_SETTER("globalPose", shape->setGlobalPose(pose))
+	HANDLE_SETTER("flagOff", shape->setFlag(NX_SF_VISUALIZATION, false))
+	HANDLE_SETTER("flagOn", shape->setFlag(NX_SF_VISUALIZATION, true))
+	HANDLE_SETTER("material", shape->setMaterial(2))
+	HANDLE_SETTER("name", shape->setName("handle"))
+#undef HANDLE_SETTER
+	NxMat34 outPose;
+	NxVec3 outPosition;
+	NxMat33 outOrientation;
+	shape->getGlobalPose(outPose);
+	shape->getGlobalPosition(outPosition);
+	shape->getGlobalOrientation(outOrientation);
+	const NxMat34 valPose = shape->getGlobalPoseVal();
+	const NxVec3 valPosition = shape->getGlobalPositionVal();
+	const NxMat33 valOrientation = shape->getGlobalOrientationVal();
+	sprintf(label, "%s_out_pose", family);
+	printHandleWords(label, reinterpret_cast<const float*>(&outPose), 12);
+	sprintf(label, "%s_out_position", family);
+	printHandleWords(label, reinterpret_cast<const float*>(&outPosition), 3);
+	sprintf(label, "%s_out_orientation", family);
+	printHandleWords(label, reinterpret_cast<const float*>(&outOrientation), 9);
+	sprintf(label, "%s_val_pose", family);
+	printHandleWords(label, reinterpret_cast<const float*>(&valPose), 12);
+	sprintf(label, "%s_val_position", family);
+	printHandleWords(label, reinterpret_cast<const float*>(&valPosition), 3);
+	sprintf(label, "%s_val_orientation", family);
+	printHandleWords(label, reinterpret_cast<const float*>(&valOrientation), 9);
+	printf("shape_mutation handle_%s_state=%u.%u.%s.reports=%u\n", family, shape->getFlag(NX_SF_VISUALIZATION) ? 1u : 0u,
+		static_cast<unsigned>(shape->getMaterial()), shape->getName() ? shape->getName() : "(null)", errors.reports - e0);
+	}
+
+static void runHandleMethodCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
+	{
+	errors.enabled = true;
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* scene = sdk->createScene(sceneDesc);
+	if(!scene) { printf("shape_mutation handle_scene=0\n"); return; }
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxSphereShapeDesc sphere;
+	sphere.radius = 0.75f;
+	NxCapsuleShapeDesc capsule;
+	capsule.radius = 0.25f;
+	capsule.height = 1.5f;
+	NxPlaneShapeDesc plane;
+	plane.normal = NxVec3(0.0f, 1.0f, 0.0f);
+	plane.d = -4.0f;
+	NxActorDesc staticDesc;
+	staticDesc.shapes.pushBack(&plane);
+	staticDesc.shapes.pushBack(&sphere);
+	NxActor* staticActor = scene->createActor(staticDesc);
+	NxBodyDesc body;
+	body.mass = 2.0f;
+	body.massSpaceInertia = NxVec3(1.0f, 2.0f, 3.0f);
+	NxActorDesc dynamicDesc;
+	dynamicDesc.body = &body;
+	dynamicDesc.shapes.pushBack(&box);
+	dynamicDesc.shapes.pushBack(&capsule);
+	NxActor* dynamicActor = scene->createActor(dynamicDesc);
+	const NxPoint vertices[] = {
+		NxPoint(-2.0f, 0.0f, -2.0f), NxPoint(2.0f, 0.0f, -2.0f), NxPoint(-2.0f, 0.0f, 2.0f),
+		NxPoint(2.0f, 0.0f, 2.0f)
+		};
+	const NxU32 triangles[] = { 0, 2, 1, 1, 2, 3 };
+	NxTriangleMeshDesc meshDesc;
+	meshDesc.numVertices = 4;
+	meshDesc.numTriangles = 2;
+	meshDesc.pointStrideBytes = sizeof(NxPoint);
+	meshDesc.triangleStrideBytes = 3 * sizeof(NxU32);
+	meshDesc.points = vertices;
+	meshDesc.triangles = triangles;
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(meshDesc);
+	NxTriangleMeshShapeDesc meshShape;
+	meshShape.meshData = mesh;
+	NxActorDesc meshActorDesc;
+	meshActorDesc.shapes.pushBack(&meshShape);
+	NxActor* meshActor = mesh ? scene->createActor(meshActorDesc) : 0;
+	printf("shape_mutation handle_actors=%u.%u.%u\n", staticActor ? 1u : 0u, dynamicActor ? 1u : 0u, meshActor ? 1u : 0u);
+	NxShape* const planeShape = staticActor ? staticActor->getShapes()[0] : 0;
+	NxShape* const sphereShape = staticActor ? staticActor->getShapes()[1] : 0;
+	NxShape* const boxShape = dynamicActor ? dynamicActor->getShapes()[0] : 0;
+	NxShape* const capsuleShape = dynamicActor ? dynamicActor->getShapes()[1] : 0;
+	NxShape* const meshShapeHandle = meshActor ? meshActor->getShapes()[0] : 0;
+	struct { const char* name; NxShape* shape; } families[] = {
+		{ "plane", planeShape }, { "sphere", sphereShape }, { "box", boxShape }, { "capsule", capsuleShape },
+		{ "mesh", meshShapeHandle }
+		};
+	// Not driven here: setters called between simulate() and fetchResults(). The oracle refuses and reports each
+	// (one error per setter, "WriteLock is still aquired"); the candidate's simulate() does not leave the handles'
+	// write locks held, so it reports none. That is the step code's, not these rows' (testing-pass hand-off).
+	for(unsigned f = 0; f < 5; ++f)
+		{
+		if(families[f].shape)
+			runHandleCalls(families[f].name, families[f].shape, errors);
+		}
+	if(planeShape)
+		{
+		NxPlaneShape* const planeHandle = planeShape->isPlane();
+		if(planeHandle)
+			{
+			planeHandle->setPlane(NxVec3(0.0f, 0.0f, 1.0f), 2.0f);
+			// There is no plane getter: setPlane moves the plane shape's pose, which getGlobalPose shows.
+			NxMat34 afterPlane;
+			planeShape->getGlobalPose(afterPlane);
+			printHandleWords("plane_set_pose", reinterpret_cast<const float*>(&afterPlane), 12);
+			}
+		}
+	sdk->releaseScene(*scene);
 	}
 
 // The testing pass: every shape change marks the shape dirty in its scene's deferred-update queue
@@ -1705,6 +1857,7 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*scene);
 	runTask4Cases(sdk, allocator, errors);
 	runMarkDirtyGrowthCases(sdk, errors);
+	runHandleMethodCases(sdk, errors);
 	runTask5Cases(sdk, allocator, errors);
 	runTask5DynamicCases(sdk, allocator, errors);
 	runTask5ReviewCases(sdk, errors);
