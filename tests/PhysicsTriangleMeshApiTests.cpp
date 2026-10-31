@@ -1053,6 +1053,30 @@ int wmain(int argc, wchar_t** argv)
 		static_cast<unsigned>(gOutputStream.lastCode), gOutputStream.lastLine);
 	if(!releaseRefused)
 		return nxFail("triangle-mesh release did not refuse a live shape reference");
+	// Every public mesh method takes each scene's lock, so with a scene alive the lock loops run; a lock that is not
+	// released shows up as the scene write below refusing or reporting.
+	gOutputStream.reset();
+	NxTriangleMeshDesc savedDesc;
+	savedDesc.setToDefault();
+	NxPMap emptyPMap = { 0, 0 };
+	const bool savedOk = mesh->saveToDesc(savedDesc);
+	const bool emptyLoaded = mesh->loadPMap(emptyPMap);
+	printf("triangle_mesh scene_calls saved=%u vertices=%u triangles=%u submeshes=%u format=%u.%u count=%u.%u stride=%u.%u base=%u has=%u size=%u density=%u empty_loaded=%u errors=%u\n",
+		savedOk ? 1u : 0u, savedDesc.numVertices, savedDesc.numTriangles, mesh->getSubmeshCount(),
+		static_cast<unsigned>(mesh->getFormat(0, NX_ARRAY_VERTICES)),
+		static_cast<unsigned>(mesh->getFormat(0, NX_ARRAY_TRIANGLES)),
+		mesh->getCount(0, NX_ARRAY_VERTICES), mesh->getCount(0, NX_ARRAY_TRIANGLES),
+		mesh->getStride(0, NX_ARRAY_VERTICES), mesh->getStride(0, NX_ARRAY_TRIANGLES),
+		mesh->getBase(0, NX_ARRAY_VERTICES) ? 1u : 0u, mesh->hasPMap() ? 1u : 0u, mesh->getPMapSize(),
+		mesh->getPMapDensity(), emptyLoaded ? 1u : 0u, gOutputStream.errors);
+	NxPlaneShapeDesc extraPlane;
+	extraPlane.normal = NxVec3(1.0f, 0.0f, 0.0f);
+	extraPlane.d = -10.0f;
+	NxActorDesc extraDesc;
+	extraDesc.shapes.pushBack(&extraPlane);
+	gOutputStream.reset();
+	NxActor* extra = scene->createActor(extraDesc);
+	printf("triangle_mesh scene_calls_after extra=%u errors=%u\n", extra ? 1u : 0u, gOutputStream.errors);
 	gOutputStream.reset();
 	NxVec3 inertia = actor->getMassSpaceInertiaTensor();
 	printf("triangle_mesh mass=%08x inertia=%08x.%08x.%08x\n",
