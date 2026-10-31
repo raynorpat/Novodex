@@ -132,7 +132,7 @@ def write_atomic(path, data, writer=_write_tmp):
         raise
 
 
-def sweep(path, lo, hi, run, limit, restore_build=None):
+def sweep(path, lo, hi, run, limit, restore_build=None, trace=None):
     """Mutate the row's lines one at a time until `run` reports a detection.
 
     run(mutated_text) -> (gate kind, detection N or None). Returns (mutation text, gate kind, N) or None. The file is
@@ -154,6 +154,8 @@ def sweep(path, lo, hi, run, limit, restore_build=None):
                 kind, n = run(mutated)
             finally:
                 write_atomic(path, original)
+            if trace:
+                trace(addr, before, after, kind, n)
             if n:
                 return ('0x%08x  %s  ->  %s' % (addr, before, after), kind, n)
     finally:
@@ -208,20 +210,26 @@ def main(argv=None):
     g.add_argument('--staged', action='store_true')
     ap.add_argument('--limit', type=int, default=6)
     ap.add_argument('--log')
+    ap.add_argument('--verbose', action='store_true', help='print every attempt and what the gate reported')
     ap.add_argument('--inventory', default=str(Path(__file__).resolve().parents[1] / 'inventory.json'))
     a = ap.parse_args(argv)
     inv = json.loads(Path(a.inventory).read_text(encoding='utf-8'))
     row = next(r for r in inv['functions'] if r['id'] == a.row or r['id'].endswith(a.row))
     lo = int(row['rva'], 16)
     hi = lo + int(row['size'])
+    tried = []
     got = sweep(a.source, lo, hi, _real_run(a.target, a.family, a.staged), a.limit,
-                restore_build=lambda: _build(a.target, a.staged))
+                restore_build=lambda: _build(a.target, a.staged),
+                trace=lambda addr, before, after, kind, n: tried.append('TRY 0x%08x  %s  ->  %s  :  %s %s' % (addr, before, after, kind, n)))
     if got:
         text, kind, n = got
         line = 'CAUGHT %s %s %s=%d %s' % (row['id'], a.target, kind, n, text)
     else:
         line = 'NOT CAUGHT %s' % row['id']
     print(line)
+    if a.verbose:
+        for t in tried:
+            print(t)
     if a.log:
         with open(a.log, 'a') as f:
             f.write(line + '\n')

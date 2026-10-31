@@ -126,6 +126,15 @@ class SweepTest(unittest.TestCase):
             self.assertEqual(got[2], 1)
             self.assertEqual(p.read_bytes(), SOURCE.encode())
 
+    def test_trace_sees_every_attempt(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = self.source(d)
+            seen = []
+            mutate_rows.sweep(p, 0x1000, 0x100c, lambda t: ('family', None), 6,
+                              trace=lambda addr, before, after, kind, n: seen.append((addr, kind, n)))
+            self.assertEqual([a for a, _, _ in seen], [0x1000, 0x1004, 0x1008])
+            self.assertTrue(all(k == 'family' and n is None for _, k, n in seen))
+
     def test_sweep_gives_up_at_the_limit(self):
         with tempfile.TemporaryDirectory() as d:
             p = self.source(d)
