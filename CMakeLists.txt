@@ -170,7 +170,7 @@ target_include_directories(NxPhysics PRIVATE
 	Physics/src/opcode
 )
 
-target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
+target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1 NX_NP_TRIANGLE_MESH_ROWS=1)
 
 # The mass and geometry kernels are x87 in the oracle and their results depend
 # on it. Two differences are measured, not assumed: the oracle keeps

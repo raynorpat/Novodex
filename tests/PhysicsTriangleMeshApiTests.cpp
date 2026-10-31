@@ -221,6 +221,13 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 dens
 	// the same topology on both DLLs; qhull/cooking order has its own differential.
 	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_VERTICES)), vertices, sizeof(vertices));
 	memcpy(const_cast<void*>(mesh->getBase(0, NX_ARRAY_TRIANGLES)), triangles, sizeof(triangles));
+	// The methods the rest of the file does not reach: the submesh count, the formats, the density, and a submesh
+	// index past the first.
+	printf("triangle_mesh api submeshes=%u format_vertices=%u format_triangles=%u density=%u count_submesh1=%u base_submesh1=%u stride_submesh1=%u\n",
+		mesh->getSubmeshCount(), static_cast<unsigned>(mesh->getFormat(0, NX_ARRAY_VERTICES)),
+		static_cast<unsigned>(mesh->getFormat(0, NX_ARRAY_TRIANGLES)), mesh->getPMapDensity(),
+		mesh->getCount(1, NX_ARRAY_VERTICES), mesh->getBase(1, NX_ARRAY_VERTICES) ? 1u : 0u,
+		mesh->getStride(1, NX_ARRAY_VERTICES));
 	srand(1);
 	NxPMap pmap = { 0, 0 };
 	const bool computed = createPMap(pmap, *mesh, density, 0);

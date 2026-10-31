@@ -114,14 +114,72 @@ static void nxTriangleMeshDeleteOpaqueSlot(void*& object)
 static const NxU32 kTriangleMeshTag0 = 0x4e585354;	// cmp at 0x00055cc2, push at 0x000539de
 static const NxU32 kTriangleMeshTag1 = 0x4d455348;	// cmp at 0x00055cd0, push at 0x000539ea
 
+#if NX_NP_TRIANGLE_MESH_ROWS
+// The oracle's public methods (NpTriangleMeshRows.cpp, public slots 1 to 12): each takes the scenes' locks and calls
+// the internal mesh at +4 through the table above.
+unsigned __fastcall nxNpMesh2095(void*, void*, unsigned);
+unsigned __fastcall nxNpMesh2098(void*, void*, unsigned);
+unsigned __fastcall nxNpMesh2101(void*, void*, unsigned);
+unsigned __fastcall nxNpMesh2104(void*, void*);
+unsigned __fastcall nxNpMesh2108(void*, void*);
+unsigned __fastcall nxNpMesh2112(void*, void*, unsigned);
+unsigned __fastcall nxNpMesh2116(void*, void*);
+unsigned __fastcall nxNpMesh2120(void*, void*);
+unsigned __fastcall nxNpMesh2124(void*, void*, unsigned, unsigned);
+unsigned __fastcall nxNpMesh2128(void*, void*, unsigned, unsigned);
+unsigned __fastcall nxNpMesh2132(void*, void*, unsigned, unsigned);
+unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
+#endif
+
 namespace
 	{
     using NxTriangleMeshPrivate::TriangleMeshConvexData;
+#if NX_NP_TRIANGLE_MESH_ROWS
+	// The oracle's NpTriangleMesh rows (NpTriangleMeshRows.cpp) reach the internal mesh through slots 2 to 13 of its
+	// table at .rdata 0x00108608. Each entry below is that slot's method with the argument count the row pushes; the
+	// second argument of slots 3 and 9 is a register the row leaves unset, so it is taken and ignored.
+	static bool __fastcall nxTriMeshSlot2(TriangleMesh* m, void*, const NxTriangleMeshDesc* d)
+		{ return m->loadFromDesc(*d); }
+	static bool __fastcall nxTriMeshSlot3(TriangleMesh* m, void*, NxTriangleMeshDesc* d)
+		{ return m->saveToDesc(*d); }
+	static NxU32 __fastcall nxTriMeshSlot5(TriangleMesh* m, void*, NxSubmeshIndex s, NxInternalArray a)
+		{ return s == 0 ? m->getCount(a) : 0; }
+	static NxU32 __fastcall nxTriMeshSlot6(TriangleMesh* m, void*, NxSubmeshIndex s, NxInternalArray a)
+		{ return s == 0 ? m->getFormat(a) : NX_FORMAT_NODATA; }
+	static const void* __fastcall nxTriMeshSlot7(TriangleMesh* m, void*, NxSubmeshIndex s, NxInternalArray a)
+		{ return s == 0 ? m->getBase(a) : 0; }
+	static NxU32 __fastcall nxTriMeshSlot8(TriangleMesh* m, void*, NxSubmeshIndex s, NxInternalArray a)
+		{ return s == 0 ? m->getStride(a) : 0; }
+	static bool __fastcall nxTriMeshSlot9(TriangleMesh* m, void*, const NxPMap* pmap)
+		{ return m->loadPMap(*pmap); }
+	static bool __fastcall nxTriMeshSlot10(TriangleMesh* m, void*)
+		{ return m->hasPMap(); }
+	static NxU32 __fastcall nxTriMeshSlot11(TriangleMesh* m, void*)
+		{ return m->getPMapSize(); }
+	static bool __fastcall nxTriMeshSlot12(TriangleMesh* m, void*, NxPMap* pmap)
+		{ return m->getPMapData(*pmap); }
+	static NxU32 __fastcall nxTriMeshSlot13(TriangleMesh*, void*)
+		{ return 0; }
+
+	static void** nxTriangleMeshVtableToken()
+		{
+		static void* table[19] = {
+			0, 0,
+			reinterpret_cast<void*>(&nxTriMeshSlot2), reinterpret_cast<void*>(&nxTriMeshSlot3), 0,
+			reinterpret_cast<void*>(&nxTriMeshSlot5), reinterpret_cast<void*>(&nxTriMeshSlot6),
+			reinterpret_cast<void*>(&nxTriMeshSlot7), reinterpret_cast<void*>(&nxTriMeshSlot8),
+			reinterpret_cast<void*>(&nxTriMeshSlot9), reinterpret_cast<void*>(&nxTriMeshSlot10),
+			reinterpret_cast<void*>(&nxTriMeshSlot11), reinterpret_cast<void*>(&nxTriMeshSlot12),
+			reinterpret_cast<void*>(&nxTriMeshSlot13) };
+		return table;
+		}
+#else
 	static NxU32* nxTriangleMeshVtableToken()
 		{
 		static const NxU32 token = 0x00108608;
 		return const_cast<NxU32*>(&token);
 		}
+#endif
 
 
 	static void nxTriangleMeshDestroyConvexData(TriangleMeshConvexData* hull)
@@ -252,6 +310,38 @@ namespace
 	return true;
 		}
 
+#if NX_NP_TRIANGLE_MESH_ROWS
+	class NxTriangleMeshWrapper : public NxTriangleMesh
+		{
+		public:
+		explicit NxTriangleMeshWrapper(TriangleMesh* mesh) : mMesh(mesh) {}
+		virtual ~NxTriangleMeshWrapper() {}
+		void* self() const { return const_cast<NxTriangleMeshWrapper*>(this); }
+		bool loadFromDesc(const NxTriangleMeshDesc& desc) override
+			{ return (nxNpMesh2095(self(), 0, reinterpret_cast<unsigned>(&desc)) & 0xff) != 0; }
+		bool saveToDesc(NxTriangleMeshDesc& desc) const override
+			{ return (nxNpMesh2098(self(), 0, reinterpret_cast<unsigned>(&desc)) & 0xff) != 0; }
+		NxU32 getSubmeshCount() const override
+			{ return nxNpMesh2120(self(), 0); }
+		NxU32 getCount(NxSubmeshIndex submesh, NxInternalArray array) const override
+			{ return nxNpMesh2124(self(), 0, submesh, array); }
+		NxInternalFormat getFormat(NxSubmeshIndex submesh, NxInternalArray array) const override
+			{ return static_cast<NxInternalFormat>(nxNpMesh2128(self(), 0, submesh, array)); }
+		const void* getBase(NxSubmeshIndex submesh, NxInternalArray array) const override
+			{ return reinterpret_cast<const void*>(nxNpMesh2132(self(), 0, submesh, array)); }
+		NxU32 getStride(NxSubmeshIndex submesh, NxInternalArray array) const override
+			{ return nxNpMesh2136(self(), 0, submesh, array); }
+		bool loadPMap(const NxPMap& pmap) override
+			{ return (nxNpMesh2101(self(), 0, reinterpret_cast<unsigned>(&pmap)) & 0xff) != 0; }
+		bool hasPMap() const override { return (nxNpMesh2104(self(), 0) & 0xff) != 0; }
+		NxU32 getPMapSize() const override { return nxNpMesh2108(self(), 0); }
+		bool getPMapData(NxPMap& pmap) const override
+			{ return (nxNpMesh2112(self(), 0, reinterpret_cast<unsigned>(&pmap)) & 0xff) != 0; }
+		NxU32 getPMapDensity() const override { return nxNpMesh2116(self(), 0); }
+		private:
+		TriangleMesh* mMesh;
+		};
+#else
 	class NxTriangleMeshWrapper : public NxTriangleMesh
 		{
 		public:
@@ -282,6 +372,7 @@ namespace
 		private:
 		TriangleMesh* mMesh;
 		};
+#endif
 
 	static void nxTriangleMeshFree(void*& pointer)
 		{
