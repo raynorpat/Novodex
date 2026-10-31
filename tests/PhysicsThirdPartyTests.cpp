@@ -2929,6 +2929,16 @@ static void nxReportTapes(const NxTape& oracle, const NxTape& candidate, const c
 		gOracleTape.pushKind(oracle.words[i], oracle.kinds[i]);
 	for(unsigned i = 0; i < candidate.count; ++i)
 		gCandidateTape.pushKind(candidate.words[i], candidate.kinds[i]);
+	// The words past a full tape were never stored, so nothing compared them: carry the overflow over (nxReport
+	// compares it) and fail outright, rather than report a family exact on its first NxTape::kMax words.
+	gOracleTape.overflow += oracle.overflow;
+	gCandidateTape.overflow += candidate.overflow;
+	if(oracle.overflow || candidate.overflow)
+		{
+		fprintf(stderr, "FAIL %s overflowed its tape (oracle %u, candidate %u words past %u)\n", name, oracle.overflow,
+			candidate.overflow, (unsigned) NxTape::kMax);
+		++gMismatches;
+		}
 	nxReport(name, rva, owner, source, selfOnly, tolerance);
 	}
 

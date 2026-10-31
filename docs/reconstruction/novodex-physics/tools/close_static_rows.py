@@ -47,8 +47,17 @@ def exact_family(rid, lib, spec, coverage):
         raise ValueError('%s: no coverage line for %s group %s' % (rid, lib, spec['group']))
     if line['family_best'] != 'exact':
         raise ValueError('%s: group %s is family_best=%s, not exact' % (rid, spec['group'], line['family_best']))
-    if not re.search(r'(?:^|[:+;])%s=exact(?:$|[+;])' % re.escape(spec['family']), line['differential']):
-        raise ValueError('%s: family %s is not exact in group %s' % (rid, spec['family'], spec['group']))
+    # The cited family must belong to an execution (one `;` chunk: `harness:fam=cls+sibling=cls`) in which every
+    # family is exact, and that execution must be the row's own code, not a copy inlined into a caller.
+    for chunk in line['differential'].split(';'):
+        if 'via-inline' in chunk:
+            continue
+        pairs = re.findall(r'([\w.]+)=(\w+)', chunk.split(':', 1)[-1])
+        if any(name == spec['family'] for name, _ in pairs) and all(cls == 'exact' for _, cls in pairs):
+            break
+    else:
+        raise ValueError('%s: no execution of group %s in which %s and every sibling are exact'
+                         % (rid, spec['group'], spec['family']))
     return line
 
 

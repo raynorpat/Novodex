@@ -236,6 +236,8 @@ ORACLE_KNOWN = {
     # `xor eax,eax; ret` OBBCollider::ValidateSettings tail-jumps to, whose candidate is the base class's.
     0x000b4000: "nxGetSdkAllocator",                # phys_fn_004803
     0x000213e0: "VolumeCollider::ValidateSettings", # phys_fn_000965 (folded)
+    0x0002ea70: "QhullHost::narrowHull",            # phys_fn_001583: the folded `ret` that is the host's
+                                                    # narrow-hull slot (Physics/src/QhullHost.cpp)
 }
 
 # Oracle data objects identified by hand, where a single referencing row gives the learned
@@ -277,6 +279,9 @@ ORACLE_HOST_GLOBALS = frozenset({0x00125080})
 # The candidate's copy of that pointer (Physics/src/QhullHost.cpp), and the alias the vendored-rows transcriptions
 # (External/qhull/novodex/QhullRows.c) read it through: a virtual call through it is a host call, as in the oracle.
 TRANSCRIPTION_ALIAS = re.compile(r"_nx(Qh|Op)Call")
+# A transcription's copy of an oracle constant (transcribe_rows names it nxQhK<oracle va>_<bytes>, or nxOpK...): it stands
+# for the oracle address in its name.
+TRANSCRIPTION_CONSTANT = re.compile(r"^(?:_|\?)nx(?:Qh|Op)K([0-9a-f]{8})_\d+")
 CANDIDATE_HOST_SYMBOLS = frozenset({"?gQhullHost@@3PAVQhullHost@@A", "_nxQhHost"})
 
 
@@ -1710,6 +1715,9 @@ def candidate_data_token(index, target):
         return f"cand:0x{target:08x}"
     if s.name in DROPPED_CANDIDATE_DATA:
         return None
+    m = TRANSCRIPTION_CONSTANT.match(s.name)
+    if m:
+        return f"oracle:0x{int(m.group(1), 16) - 0x10000000 + target - s.rva:08x}"
     return f"{s.name}+0x{target - s.rva:x}" if target != s.rva else s.name
 
 

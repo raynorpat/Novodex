@@ -124,12 +124,23 @@ class VendoredModeTest(unittest.TestCase):
 
     def test_vendored_proof_lists_the_divergent_families_the_group_also_ran_in(self):
         cov = {('qhull', '0x00001010'): {'family_best': 'exact', 'differential':
-               'thirdparty:qhull_hull=exact+qhull_hull_x87=lastbit;thirdparty:qhull_paths=discrete'}}
+               'thirdparty:qhull_hull=exact+qhull_hull_x87=exact;thirdparty:qhull_output=exact+qhull_output_x87=lastbit;'
+               'thirdparty:qhull_paths=discrete'}}
         inventory, _ = vrun(coverage=cov)
         proof = inventory['functions'][0]['dynamic_proof']
-        self.assertIn('qhull_hull_x87 (lastbit)', proof)
+        self.assertIn('qhull_output_x87 (lastbit)', proof)
         self.assertIn('qhull_paths (discrete)', proof)
         self.assertIn('vendored-correspondence.md', proof)
+
+    def test_vendored_refuses_a_family_whose_execution_has_a_divergent_sibling(self):
+        with self.assertRaises(ValueError):
+            vrun(coverage={('qhull', '0x00001010'): {'family_best': 'exact', 'differential':
+                 'thirdparty:qhull_hull=exact+qhull_hull_x87=discrete;thirdparty:qhull_other=exact+qhull_other_x87=exact'}})
+
+    def test_vendored_refuses_a_family_credited_only_through_an_inlined_copy(self):
+        with self.assertRaises(ValueError):
+            vrun(coverage={('qhull', '0x00001010'): {'family_best': 'exact', 'differential':
+                 'thirdparty[via-inline:_qh_caller]:qhull_hull=exact+qhull_hull_x87=exact'}})
 
     def test_vendored_refuses_inexact_group(self):
         with self.assertRaises(ValueError):

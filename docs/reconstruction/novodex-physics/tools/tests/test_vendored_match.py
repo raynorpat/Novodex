@@ -764,6 +764,18 @@ class TranscriptionAliasTest(unittest.TestCase):
         self.assertEqual(vm.candidate_identity(index, 0x1100), "qsort")
 
 
+class TranscriptionConstantTest(unittest.TestCase):
+    def test_a_transcription_constant_stands_for_the_oracle_address_in_its_name(self):
+        index = vm.SymbolIndex(vm.parse_map(map_text([("_nxQhK1010a020_2", 0x2000, "", "QhullRows.obj"),
+                                                       ("?nxOpK101043cc_4@@3IB", 0x2010, "", "OpcodeVendoredRows.obj")]), BASE))
+        self.assertEqual(vm.candidate_data_token(index, 0x2000), "oracle:0x0010a020")
+        self.assertEqual(vm.candidate_data_token(index, 0x2010), "oracle:0x001043cc")
+
+    def test_the_folded_ret_qhull_calls_is_the_host_narrow_hull(self):
+        _, rows, functions = oracle_setup()
+        self.assertEqual(vm.OracleResolver(rows, functions).identity(0x0002ea70), "QhullHost::narrowHull")
+
+
 class SeamsAndDropsTest(unittest.TestCase):
     def test_resolve_seams_replaces_rva_tokens(self):
         _, rows, functions = oracle_setup()
