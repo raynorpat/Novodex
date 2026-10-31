@@ -131,6 +131,58 @@ def close(manifest, inventory, closures, mapsyms, coverage=None):
     return inventory, closures
 
 
+def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
+    """Testing pass: a wired, driven row whose mutation a gate caught becomes dynamically_gated and its ledger entry closes.
+
+    Row manifest: {"gate": target, "family": name, "mutation": text, "detected": "mismatches=N" | "stdout_delta=N"}.
+    The proof kind follows the detection: mismatches= closes as oracle_differential_falsified (the gate must be a
+    registered oracle-differential target), stdout_delta= as differential_falsified (a staged-pair target).
+    """
+    by = {r['id']: r for r in inventory['functions']}
+    for rid, spec in manifest['rows'].items():
+        r = by[rid]
+        m = re.fullmatch(r'(mismatches|stdout_delta)=([1-9][0-9]*)', spec['detected'])
+        if not m:
+            raise ValueError('%s: detection %r is not mismatches=N or stdout_delta=N with N > 0' % (rid, spec['detected']))
+        proof, registered = (('oracle_differential_falsified', oracle_targets) if m.group(1) == 'mismatches'
+                             else ('differential_falsified', staged_targets))
+        if spec['gate'] not in registered:
+            raise ValueError('%s: gate %s is not a registered %s target' % (rid, spec['gate'], proof))
+        if r['state'] != 'reconstructed' or AWAITS not in (r.get('notes') or ''):
+            raise ValueError('%s is %s and does not await the testing pass' % (rid, r['state']))
+        r['state'] = 'dynamically_gated'
+        r['dynamic_proof'] = ('%s (%s): a mutation inside the row itself (%s) is detected (%s). See %s.'
+                              % (spec['gate'], spec['family'], spec['mutation'], spec['detected'], manifest['doc']))
+        r['notes'] = 'Listing transcription, wired and driven; falsified by the mutation above (testing pass).'
+        phase = int(r['phase'])
+        ledger = closures[phase]
+        entries = [e for e in ledger['deferred'] if e['id'] == rid]
+        if len(entries) != 1 or entries[0]['reason'] != 'reconstructed_not_falsified':
+            raise ValueError('%s: not a reconstructed_not_falsified entry in the phase %d closure' % (rid, phase))
+        counts = ledger['counts']
+        if counts.get('deferred_reconstructed_not_falsified', 0) <= 0:
+            raise ValueError('phase %d closure count deferred_reconstructed_not_falsified is already 0' % phase)
+        e = entries[0]
+        ledger['deferred'].remove(e)
+        counts['deferred_reconstructed_not_falsified'] -= 1
+        counts[proof] = counts.get(proof, 0) + 1
+        ledger.setdefault('closed', []).append({'id': rid, 'rva': e['rva'], 'proof': proof, 'gate': spec['gate'],
+                                                'falsification': {'mutation': spec['mutation'], 'detected': spec['detected']},
+                                                'driving_phases': e.get('driving_phases', [])})
+    return inventory, closures
+
+
+def gate_targets(path):
+    """(oracle-differential targets, staged-pair targets) read from gate_targets.ps1."""
+    text = open(path, encoding='utf-8-sig').read()
+
+    def names(block):
+        return set(re.findall(r"'(Nx\w+)'", block))
+    oracle = re.search(r'\$NxRegisteredOracleDifferentialTargets\s*=\s*@\((.*?)\)', text, re.S).group(1)
+    staged = re.search(r'\$NxPhaseTestTargets\s*=\s*\[ordered\]\s*@\{(.*?)\r?\n\}', text, re.S).group(1)
+    return names(oracle), names(staged)
+
+
 def _read(p):
     raw = open(p, encoding='utf-8', newline='').read()
     return json.loads(raw), ('\r\n' if '\r\n' in raw else '\n')
@@ -148,6 +200,7 @@ def main(argv=None):
     ap.add_argument('--closure-dir', default=str(here / 'gates'))
     ap.add_argument('--map', default=str(here.parents[2] / MAP_PATH))
     ap.add_argument('--vendored', action='store_true', help='vendored rows: each group must be exact in its family')
+    ap.add_argument('--falsified', action='store_true', help='testing pass: record wired, driven rows with a caught mutation')
     ap.add_argument('--coverage', default=str(here / 'evidence' / 'phase4-third-party-map' / 'vendored_coverage.csv'))
     a = ap.parse_args(argv)
     coverage = None
@@ -159,7 +212,11 @@ def main(argv=None):
     closures, cnl = {}, {}
     for ph in phases:
         closures[ph], cnl[ph] = _read(Path(a.closure_dir) / ('phase%d-closure.json' % ph))
-    close(manifest, inventory, closures, read_map(a.map), coverage)
+    if a.falsified:
+        oracle, staged = gate_targets(str(here / 'tools' / 'gate_targets.ps1'))
+        falsify(manifest, inventory, closures, oracle, staged)
+    else:
+        close(manifest, inventory, closures, read_map(a.map), coverage)
     _write(a.inventory, inventory, inl)
     for ph in phases:
         _write(Path(a.closure_dir) / ('phase%d-closure.json' % ph), closures[ph], cnl[ph])

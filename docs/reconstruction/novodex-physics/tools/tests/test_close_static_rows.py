@@ -165,5 +165,75 @@ class VendoredModeTest(unittest.TestCase):
             vrun(rows=[inv_row(1, phase='4'), inv_row(2, third_party='qhull', phase='4')])
 
 
+
+def frow(n, state='reconstructed', **extra):
+    r = inv_row(n, state=state, phase='3', notes='Listing transcription with a static proof only; it awaits the testing pass (no differential, no mutation yet).')
+    r.update(extra)
+    return r
+
+
+FMAN = {'doc': 'evidence/phase3-x.md', 'rows': {
+    'phys_fn_000001': {'gate': 'NxPhysicsCollisionTests', 'family': 'fam', 'mutation': 'je -> jne at 0x1004', 'detected': 'mismatches=12'}}}
+ORACLE = {'NxPhysicsCollisionTests'}
+STAGED = {'NxPhysicsActorShapeMutationTests'}
+
+
+def fclosure(*ids):
+    return {'phase': 3, 'counts': {'deferred_reconstructed_not_falsified': len(ids), 'oracle_differential_falsified': 4,
+                                   'differential_falsified': 2},
+            'closed': [], 'deferred': [{'id': i, 'rva': '0x00001010', 'reason': 'reconstructed_not_falsified', 'driving_phases': []} for i in ids]}
+
+
+def frun(manifest=FMAN, rows=None):
+    rows = rows or [frow(1)]
+    clo = {3: fclosure(*[r['id'] for r in rows])}
+    return close_static_rows.falsify(manifest, {'functions': rows}, clo, ORACLE, STAGED)
+
+
+class FalsifiedModeTest(unittest.TestCase):
+    def test_falsified_closes_the_row(self):
+        inventory, closures = frun()
+        r = inventory['functions'][0]
+        self.assertEqual(r['state'], 'dynamically_gated')
+        for needle in ('NxPhysicsCollisionTests', 'fam', 'je -> jne at 0x1004', 'mismatches=12'):
+            self.assertIn(needle, r['dynamic_proof'])
+        self.assertNotIn('awaits the testing pass', r['notes'])
+        c = closures[3]
+        self.assertEqual(c['deferred'], [])
+        e = c['closed'][0]
+        self.assertEqual((e['proof'], e['gate']), ('oracle_differential_falsified', 'NxPhysicsCollisionTests'))
+        self.assertEqual(e['falsification'], {'mutation': 'je -> jne at 0x1004', 'detected': 'mismatches=12'})
+        self.assertEqual(c['counts'], {'deferred_reconstructed_not_falsified': 0, 'oracle_differential_falsified': 5,
+                                      'differential_falsified': 2})
+
+    def test_falsified_kind_follows_the_detection(self):
+        m = {'doc': 'd', 'rows': {'phys_fn_000001': {'gate': 'NxPhysicsActorShapeMutationTests', 'family': 'pair',
+                                                    'mutation': 'm', 'detected': 'stdout_delta=4'}}}
+        _, closures = frun(m)
+        self.assertEqual(closures[3]['closed'][0]['proof'], 'differential_falsified')
+        self.assertEqual(closures[3]['counts']['differential_falsified'], 3)
+
+    def test_falsified_refuses_an_unregistered_gate(self):
+        m = {'doc': 'd', 'rows': {'phys_fn_000001': dict(FMAN['rows']['phys_fn_000001'], gate='NxPhysicsNoSuchTests')}}
+        with self.assertRaises(ValueError):
+            frun(m)
+
+    def test_falsified_refuses_a_gate_of_the_wrong_kind_for_the_detection(self):
+        m = {'doc': 'd', 'rows': {'phys_fn_000001': dict(FMAN['rows']['phys_fn_000001'], detected='stdout_delta=3')}}
+        with self.assertRaises(ValueError):
+            frun(m)
+
+    def test_falsified_refuses_a_zero_detection(self):
+        m = {'doc': 'd', 'rows': {'phys_fn_000001': dict(FMAN['rows']['phys_fn_000001'], detected='mismatches=0')}}
+        with self.assertRaises(ValueError):
+            frun(m)
+
+    def test_falsified_refuses_a_row_not_awaiting_the_testing_pass(self):
+        with self.assertRaises(ValueError):
+            frun(rows=[frow(1, notes='something else')])
+        with self.assertRaises(ValueError):
+            frun(rows=[frow(1, state='dynamically_gated')])
+
+
 if __name__ == '__main__':
     unittest.main()
