@@ -6498,12 +6498,15 @@ static void* gQhHostCapVtable[9] =
 	};
 static void* gQhHostCapObject[4] = { gQhHostCapVtable, 0, 0, 0 };
 // The candidate's side of the capture: the hooks' sink, and the stand-in host object published through
-// gQhullHost, whose slots the vendored-rows transcriptions call as the oracle's qhull calls its host.
+// gQhullHost, whose slots the vendored-rows transcriptions call as the oracle's qhull calls its host. The
+// stand-in stays published between captures (its print slot records nothing while gQhCapOn is false), so a
+// transcribed row that prints in any drive reaches an object, as the product's always does; only a product
+// cooking run replaces it, and restores it after.
 static void nxQhCandidateCapture(bool on)
 	{
 	gNxQhSink = on ? &gQhCandidateSink : 0;
-	gNxQhStandIn = on ? (void*) gQhHostCapObject : 0;
-	gQhullHost = on ? (QhullHost*) gQhHostCapObject : 0;
+	gNxQhStandIn = (void*) gQhHostCapObject;
+	gQhullHost = (QhullHost*) gQhHostCapObject;
 	}
 
 
@@ -12468,7 +12471,7 @@ static void nxHullCreateRun(const NxOracleRows& o, const NxHullRun& run, unsigne
 		else
 			{
 			ret = library.CreateConvexHull(desc, result);
-			gQhullHost = 0;
+			nxQhCandidateCapture(false);
 			}
 		nxHullRestoreWord(old);
 		SetCurrentDirectoryW(gHullHome);
@@ -12548,7 +12551,7 @@ static void nxHullComputeRun(const NxOracleRows& o, int set, unsigned meshFlags,
 			{
 			TriangleMeshHullAllocator owner;
 			ret = owner.computeHull(*(const NxTriangleMeshDesc*) desc, *(NxTriangleMeshDesc*) out) ? 1u : 0u;
-			gQhullHost = 0;
+			nxQhCandidateCapture(false);
 			}
 		nxHullRestoreWord(old);
 		SetCurrentDirectoryW(gHullHome);
@@ -12772,7 +12775,7 @@ static void nxDriveConvexCooking(const NxOracleRows& o, bool selfOnly)
 		}
 
 	*hostSlot = shippedHost;
-	gQhullHost = 0;
+	nxQhCandidateCapture(false);
 	gHullBytesCur[0] = gHullBytesCur[1] = 0;
 	for(int side = 0; side < 2; ++side)
 		RemoveDirectoryW(gHullDir[side]);
@@ -14080,6 +14083,7 @@ int wmain(int argc, wchar_t** argv)
 	// Unbuffered, because a harness that crashes half way through must still
 	// have printed how far it got.
 	setvbuf(stdout, 0, _IONBF, 0);
+	nxQhCandidateCapture(false);	// the stand-in host for the candidate's qhull
 
 	// Keep the mode byte in memory: the oracle-side dispatch probe clobbers the
 	// nonvolatile register MSVC otherwise keeps this value in across the driver

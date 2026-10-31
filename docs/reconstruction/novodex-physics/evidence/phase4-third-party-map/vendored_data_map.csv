@@ -78,9 +78,9 @@ oracle_rva,candidate_symbol,method
 0x00124778,_qh_qh+0x100,cooccurrence
 0x0012477c,_qh_qh+0x104,delta
 0x00124780,_qh_qh+0x108,cooccurrence
-0x00124784,_qh_qh+0x10c,delta
+0x00124784,_qh_qh+0x10c,cooccurrence
 0x00124788,_qh_qh+0x110,delta
-0x001247f8,_qh_qh+0x180,delta
+0x001247f8,_qh_qh+0x180,cooccurrence
 0x001247fc,_qh_qh+0x184,delta
 0x00124800,_qh_qh+0x188,cooccurrence
 0x00124804,_qh_qh+0x18c,cooccurrence
@@ -133,7 +133,7 @@ oracle_rva,candidate_symbol,method
 0x001248e0,_qh_qh+0x268,cooccurrence
 0x001249e0,_qh_qh+0x368,cooccurrence
 0x00124ae0,_qh_qh+0x468,cooccurrence
-0x00124ce0,_qh_qh+0x668,delta
+0x00124ce0,_qh_qh+0x668,cooccurrence
 0x00124ce4,_qh_qh+0x66c,delta
 0x00124ce8,_qh_qh+0x670,cooccurrence
 0x00124cec,_qh_qh+0x674,cooccurrence
@@ -463,7 +463,7 @@ oracle_rva,candidate_symbol,method
 0x00125b60,_qh_qhstat+0x6d0,delta
 0x00125b68,_qh_qhstat+0x6d8,delta
 0x00125b70,_qh_qhstat+0x6e0,delta
-0x00125b78,_qh_qhstat+0x6e8,cooccurrence
+0x00125b78,_qh_qhstat+0x6e8,delta
 0x00125c60,_qh_qhstat+0x7d0,delta
 0x00125c64,_qh_qhstat+0x7d4,delta
 0x00125c68,_qh_qhstat+0x7d8,delta

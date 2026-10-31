@@ -10,22 +10,35 @@
 #include "qhull_a.h"
 
 extern "C" void nxQhCallClock();
+extern "C" void nxQhCallExit();
 extern "C" void nxQhCallFloor();
 extern "C" void nxQhCallFprintf();
 extern "C" void nxQhCallLocaltime32();
 extern "C" void nxQhCallMalloc();
+extern "C" void nxQhCallNarrowHull();
 extern "C" void nxQhCallQsort();
+extern "C" void nxQhCallSprintf();
+extern "C" void nxQhCallStrncat();
+extern "C" void nxQhCallStrrchr();
+extern "C" void nxQhCallStrstr();
 extern "C" void nxQhCallTime32();
 #pragma comment(linker, "/alternatename:_nxQhCallClock=_clock")
+#pragma comment(linker, "/alternatename:_nxQhCallExit=_exit")
 #pragma comment(linker, "/alternatename:_nxQhCallFloor=_floor")
 #pragma comment(linker, "/alternatename:_nxQhCallFprintf=_fprintf")
 #pragma comment(linker, "/alternatename:_nxQhCallLocaltime32=__localtime32")
 #pragma comment(linker, "/alternatename:_nxQhCallMalloc=_malloc")
+#pragma comment(linker, "/alternatename:_nxQhCallNarrowHull=?narrowHull@QhullHost@@UAEXXZ")
 #pragma comment(linker, "/alternatename:_nxQhCallQsort=_qsort")
+#pragma comment(linker, "/alternatename:_nxQhCallSprintf=_sprintf")
+#pragma comment(linker, "/alternatename:_nxQhCallStrncat=_strncat")
+#pragma comment(linker, "/alternatename:_nxQhCallStrrchr=_strrchr")
+#pragma comment(linker, "/alternatename:_nxQhCallStrstr=_strstr")
 #pragma comment(linker, "/alternatename:_nxQhCallTime32=__time32")
 extern int qh_rand_seed;   /* geom2.c, not in a header */
 extern void* nxQhHost;
 #pragma comment(linker, "/alternatename:_nxQhHost=?gQhullHost@@3PAVQhullHost@@A")
+static char nxQhOracleStderr[0x20];   /* stands for the oracle CRT's stderr (.data 0x00122640) */
 
 @@PROTOS@@
 

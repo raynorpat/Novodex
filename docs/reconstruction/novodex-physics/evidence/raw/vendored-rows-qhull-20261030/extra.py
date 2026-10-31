@@ -83,3 +83,46 @@ SYMBOLS[0x000f5cb0] = '_qsort'
 PUSHES[0x100662e0] = 'qh_compare_facetvisit'
 PUSHES[0x1006e650] = 'qh_comparemerge'
 STRINGS = {0x101086e4: 'nxQhStrNewline'}
+
+# Task 5: the remaining qhull rows (output, initialisation and option paths).
+R['phys_fn_002528'] = ('qh_setdelaunay', 'void qh_setdelaunay(int dim, int count, pointT *points)')
+R['phys_fn_002532'] = ('qh_voronoi_center', 'pointT *qh_voronoi_center(int dim, setT *points)')
+NAMES['phys_fn_002534'] = 'qh_voronoi_center'
+NAMES['phys_fn_002536'] = 'qh_voronoi_center'
+NAMES['phys_fn_002538'] = 'qh_voronoi_center'
+R['phys_fn_002566'] = ('qh_init_qhull_command', 'void qh_init_qhull_command(int argc, char *argv[])')
+NAMES['phys_fn_002568'] = 'qh_init_qhull_command'
+NAMES['phys_fn_002570'] = 'qh_init_qhull_command'
+R['phys_fn_002575'] = ('qh_initqhull_mem', 'void qh_initqhull_mem(void)')
+R['phys_fn_002577'] = ('qh_initqhull_start', 'void qh_initqhull_start(FILE *infile, FILE *outfile, FILE *errfile)')
+R['phys_fn_002670'] = ('qh_initqhull_globals', 'void qh_initqhull_globals(coordT *points, int numpoints, int dim, boolT ismalloc)')
+NAMES['phys_fn_002672'] = 'qh_initqhull_globals'
+R['phys_fn_002699'] = ('qh_detvridge3', 'setT *qh_detvridge3(vertexT *atvertex, vertexT *vertex)')
+NAMES['phys_fn_002701'] = 'qh_detvridge3'
+R['phys_fn_002703'] = ('qh_eachvoronoi', 'int qh_eachvoronoi(FILE *fp, printvridgeT printvridge, vertexT *atvertex, boolT visitall, qh_RIDGE innerouter, boolT inorder)')
+NAMES['phys_fn_002705'] = 'qh_eachvoronoi'
+R['phys_fn_002743'] = ('qh_printvdiagram2', 'int qh_printvdiagram2(FILE *fp, printvridgeT printvridge, setT *vertices, qh_RIDGE innerouter, boolT inorder)')
+R['phys_fn_002813'] = ('qh_printvoronoi', 'void qh_printvoronoi(FILE *fp, int format, facetT *facetlist, setT *facets, boolT printall)')
+NAMES['phys_fn_002815'] = 'qh_printvoronoi'
+R['phys_fn_003133'] = ('qh_printhashtable', 'void qh_printhashtable(FILE *fp)')
+NAMES['phys_fn_003135'] = 'qh_printhashtable'
+R['phys_fn_003304'] = ('qh_setprint', 'void qh_setprint(FILE *fp, char* string, setT *set)')
+R['phys_fn_003412'] = ('qh_printallstatistics', 'void qh_printallstatistics(FILE *fp, char *string)')
+R['phys_fn_003415'] = ('qh_errprint', 'void qh_errprint(char *string, facetT *atfacet, facetT *otherfacet, ridgeT *atridge, vertexT *atvertex)')
+NAMES.update({k: v[0] for k, v in R.items()})
+DECLS.update({k: '__declspec(naked) ' + v[1] for k, v in R.items()})
+# Task 5: more of the oracle's static CRT, two short strings, and the oracle CRT's stderr (&_iob[2], .data 0x00122640),
+# which qh_detvridge3 passes as the stream of the host print before qh_errexit. The UCRT's stderr is a function's result,
+# not a link-time address, so the transcription pushes an object of its own there (an error-exit print only).
+SYMBOLS.update({0x000f5130: '_strrchr', 0x000f50a0: '_strstr', 0x000f5068: '_exit', 0x000f5315: '_sprintf',
+                0x000f51e0: '_strncat'})
+STRINGS.update({0x1010c888: 'nxQhStrPercentD', 0x1010c88c: 'nxQhStrCloseBrace'})
+PUSHES[0x10122640] = 'nxQhOracleStderr'
+DATADECL += ['static char nxQhOracleStderr[0x20];   /* stands for the oracle CRT\'s stderr (.data 0x00122640) */']
+# Any other address inside qh_qh, qhmem or qh_qhstat by its offset: their oracle bases are constant over every
+# vendored_data_map.csv entry (0x00124678, 0x00124fd8, 0x00125490), so the layouts agree field by field.
+for _base, _end, _name in ((0x10124678, 0x10124fd8, 'qh_qh'), (0x10124fd8, 0x10125040, 'qhmem'),
+                           (0x10125490, 0x10126400, 'qh_qhstat')):
+    for _a in range(_base, _end):
+        DATA.setdefault(_a, _name + (' + 0x%x' % (_a - _base) if _a != _base else ''))
+        PUSHES.setdefault(_a, DATA[_a])

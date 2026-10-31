@@ -147,6 +147,8 @@ def run(rows, expected, tables=None, data=None, argv=None, static_ranges=None):
                 op = '@%d' % idx.get(int(op, 16), -1)
             elif i.mnemonic == 'call' and op.startswith('0x'):
                 op = '<call>'
+            elif i.mnemonic == 'push' and op.startswith('0x') and (id(pe_), int(op, 16)) in named:
+                op = named[(id(pe_), int(op, 16))]
             elif i.mnemonic == 'push' and op.startswith('0x') and static_name(pe_, int(op, 16)):
                 op = static_name(pe_, int(op, 16))
             elif i.mnemonic == 'push' and op.startswith('0x') and section_of(pe_, int(op, 16)) is not None:
@@ -156,7 +158,7 @@ def run(rows, expected, tables=None, data=None, argv=None, static_ranges=None):
                 else:
                     d = pe_.get_data(int(op, 16) - pe_.OPTIONAL_HEADER.ImageBase, 256)
                     op = '<string %r>' % d[:d.index(bytes(1))]
-            elif i.mnemonic == 'mov' and re.search(r', 0x[0-9a-f]{8}$', op) and static_name(pe_, int(op.rsplit(', ', 1)[1], 16)):
+            elif i.mnemonic in ('mov', 'cmp') and re.search(r', 0x[0-9a-f]{8}$', op) and static_name(pe_, int(op.rsplit(', ', 1)[1], 16)):
                 op = op.rsplit(', ', 1)[0] + ', ' + static_name(pe_, int(op.rsplit(', ', 1)[1], 16))
             elif i.mnemonic == 'mov' and re.search(r', 0x1[0-9a-f]{7}$', op) and section_of(pe_, int(op.rsplit(', ', 1)[1], 16)) is not None:
                 op = op.rsplit(', ', 1)[0] + ', <ptr>'

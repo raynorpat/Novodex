@@ -111,6 +111,14 @@ class TranscribeTest(unittest.TestCase):
             transcribe_rows.transcribe(c, img)
 
 
+    def test_cmp_with_an_image_address_is_named(self):
+        # cmp esi, 0x10002004; ret -- a pointer compared with the address of a named object's field
+        code = bytes([0x81, 0xfe, 0x04, 0x20, 0x00, 0x10, 0xc3])
+        img = transcribe_rows.Image(None, None, [(0x1000, 0x1007, code, 0, False), (0x2000, 0x2010, bytes(16), 0, True)])
+        c = SimpleNamespace(ROWS=[('r', 0x1000, 0x1007, 't', 'void r()')], PUSHES={0x10002004: 'qh_qh + 0x4'})
+        _, body = transcribe_rows.transcribe(c, img)
+        self.assertIn('cmp esi, offset qh_qh + 0x4', body)
+
     def test_member_rows_emit_no_prototype(self):
         img = transcribe_rows.Image(bytes([0xc3, 0xc3]), 0x1000)
         c = SimpleNamespace(ROWS=[('a', 0x1000, 0x1001, 't', '__declspec(naked) float Triangle::Area() const'),

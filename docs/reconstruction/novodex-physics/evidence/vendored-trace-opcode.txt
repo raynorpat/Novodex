@@ -45,6 +45,11 @@ Command:   cdb -cf <script> build\Release\NxPhysicsThirdPartyTests.exe
 Recorded:  2026-10-30, the vendored-rows pass (docs/superpowers/plans/2026-10-30-vendored-rows.md), over
            both harnesses relinked with the transcribed rows; both traces are of that build.
 
+VENDORED-ROWS PASS, QHULL OUTPUT AND INITIALISATION ROWS (2026-10-30). Every qhull row of the pass is now a
+transcription in QhullRows.c (49 functions). The harness keeps a stand-in host object published through gQhullHost for
+its whole run, so a transcribed row that prints reaches an object in every drive, as the product's does. This trace is
+of that build.
+
 VENDORED-ROWS PASS, QHULL MERGE AND VERTEX ROWS (2026-10-30). Twenty more qhull functions are transcriptions in
 QhullRows.c. merge.c keeps a static copy of qh_appendmergeset for its own callers to inline, as the oracle's do, the
 external symbol being the transcription; qh_newvertex, qh_tracemerge, qh_redundant_vertex and qh_triangulate_link
@@ -112,9 +117,13 @@ Candidate: build\Release\NxPhysics.dll sha256=04e06acdd284c1ad06cf8fbde3ff75ebf3
 Debugger:  Microsoft (R) Windows Debugger Version 10.0.10586.567 X86
 Oracle:    oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
 Candidate: build\Release\NxPhysics.dll sha256=fb1bd2cb1a66164bdc9acc38fdb1ec9307b2a69fc8dd33fd4415ad41b26cf030
-Traced:    thirdparty: build\Release\NxPhysicsThirdPartyTests.exe sha256=53ed6f0f35d1e112276504df90649542313aba94a3d2209e3238c9f949d0e27d
+
+Debugger:  Microsoft (R) Windows Debugger Version 10.0.10586.567 X86
+Oracle:    oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: build\Release\NxPhysics.dll sha256=ea3bbb77de38fee6fe4e556b0106d0ff06917e95c888c94870f17ad2a0e9fc0e
+Traced:    thirdparty: build\Release\NxPhysicsThirdPartyTests.exe sha256=ffc919f92555523c464859683ba6e5896281544030a7bd99df2cfc76a8a8bbdb
            families and classes: qh_crossproduct=exact, qh_pointdist=exact, qh_maxabsval=exact, qh_rand=exact, qh_set=exact, qhull_facet=exact, qhull_release_arrays=exact, container=exact, container_copy=exact, radixsort=exact, complete_pruning=exact, bipartite_pruning=exact, pairwise_pruning=exact, segment_sqrdist.grid=exact, segment_sqrdist.wide=exact, mesh_topology=exact, prunable_ctor=exact, prunable_flags=exact, prunable_pruner=exact, prunable_ranges=exact, radix_setrankbuffers=exact, opcode_model_build=exact, opcode_model_build_x87=discrete, opcode_ray=exact, opcode_ray_x87=discrete, opcode_ray_boundary=discrete, opcode_sphere=exact, opcode_obb=exact, opcode_aabb=exact, opcode_lss=exact, opcode_planes=exact, opcode_treecollider=exact, opcode_treecollider_boundary=discrete, opcode_treecollider_callback=exact, opcode_treecollider_callback_boundary=discrete, opcode_treecollider_callback_collide=exact, opcode_treecollider_callback_collide_boundary=discrete, opcode_treecollider_callback_tribox=exact, opcode_treecollider_callback_tribox_boundary=discrete, opcode_treecollider_callback_boxtri=exact, opcode_treecollider_callback_boxtri_boundary=discrete, pmap_nearest=exact, pmap_classify=exact, pmap_corners=exact, hull_queue_pop=exact, hull_free=exact, hull_coplanar=exact, hull_flood=exact, hull_flood_start=exact, hull_flood_entry=exact, hull_cluster=exact, hull_init=exact, hull_build=exact, hull_delete=exact, hull_shape_init=exact, hull_shape_build=exact, opcode_aabbtree=exact, opcode_ray_vanilla=exact, opcode_sphere_vanilla=exact, opcode_aabb_vanilla=exact, opcode_aabbtree_refit=exact, opcode_refit=exact, opcode_sap=exact, ice_aabb=exact, ice_plane_triangle=exact, ice_indexedtriangle=exact, ice_matrix4x4=exact, ice_obb=discrete, qhull_hull=exact, qhull_hull_x87=exact, qhull_hull_rotated=exact, opcode_candidate_trees=exact, opcode_candidate_trees_ray=discrete, opcode_candidate_trees_x87=discrete, qhull_output=exact, qhull_output_x87=exact, qhull_output_dims=exact, qhull_output_dims_x87=discrete, qhull_output_delaunay=exact, qhull_output_delaunay_x87=exact, qhull_output_delaunay3=exact, qhull_output_delaunay3_x87=discrete, qhull_trace=exact, qhull_trace_x87=discrete, qhull_options=exact, qhull_options_x87=lastbit, qhull_merge2=exact, qhull_merge2_x87=exact, qhull_merge=exact, qhull_merge_x87=lastbit, qhull_random=exact, qhull_random_x87=exact, qhull_direct=exact, qhull_direct_x87=discrete, qhull_exact_output=exact, qhull_exact_output_x87=exact, qhull_exact_other=exact, qhull_exact_other_x87=lastbit, qhull_paths=discrete, qhull_paths_x87=exact, qhull_paths_t4=exact, qhull_paths_t4_x87=exact, qhull_rotation=exact, qhull_rotation_x87=exact, edge_list=exact, edge_list.plane_divergent=exact, ice_adjacencies=exact, ice_adjacencies.plane_divergent=exact, ice_valencies=exact, ice_meshbuilder2=exact, vertex_reduction=exact, pose_pair=exact, pose_pair.inverse_divergent=discrete, unique_axis=exact, edge_dedupe=exact, mesh_normals=exact, adjacency_owner=exact, adjacency_owner.plane_divergent=exact, hull_leaf=exact, convex_hull=exact, convex_hull.plane_divergent=exact, support_maps=exact, polygon_interface=exact, prunable_dispatch=exact, hull_host_size=exact, hull_create=exact, hull_create_qhull=exact, hull_create_obj=exact, hull_create_pc64=exact, hull_create_pc64_obj=exact, hull_compute=exact, hull_compute_qhull=exact, hull_compute_obj=exact, hull_compute_pc64=exact, hull_compute_pc64_obj=exact, hull_create_objbytes=exact, hull_create_pc64_objbytes=exact, hull_compute_objbytes=exact, hull_compute_pc64_objbytes=exact, hull_qhull_direct=exact, hull_qhull_direct_x87=exact
-Traced:    asset: build\Release\NxPhysicsAssetTests.exe sha256=aa1930d15ad9f13543a68fbda292923405c8cce73b0aab6611704282d6ca7cd9
+Traced:    asset: build\Release\NxPhysicsAssetTests.exe sha256=f4604d6766b2f961c99631fc71357ebf326b28c19ee6e29c9597929bbdb772b4
            families and classes: asset=exact
 
 Per-group counts. One line per matched group of this library in match-CSV order:
@@ -124,467 +133,467 @@ is the ThirdParty harness's candidate-only layout assertions). A count of 5 is
 the cap: the breakpoint was disabled for the rest of that segment. `-` = not in the exe.
 
 0x00053880 SHAPE  ?GetSplittingValue@AABBTreeBuilder@Opcode@@UBEMPBIIABVAABB@IceMaths@@I@Z
-    thirdparty@0x00002700:0 | asset@0x0003e600:0
+    thirdparty@0x00002700:0 | asset@0x0003e630:0
 0x000538a0 SHAPE  ?ValidateSubdivision@AABBTreeBuilder@Opcode@@UAEHPBIIABVAABB@IceMaths@@@Z
-    thirdparty@0x00002780:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e7f0:0
+    thirdparty@0x00002780:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e820:0
 0x000538b0 REVIEW ??_GAABBTreeBuilder@Opcode@@UAEPAXI@Z
-    thirdparty@0x00002490:0 [DIFFERS +3: mov eax, dword ptr [ebp + 8] / push -1 (exe copy from PhysicsThirdPartyTests.obj)] | asset@0x0003e380:0
+    thirdparty@0x00002490:0 [DIFFERS +3: mov eax, dword ptr [ebp + 8] / push -1 (exe copy from PhysicsThirdPartyTests.obj)] | asset@0x0003e3b0:0
 0x000b4d70 SHAPE  ??0Container@IceCore@@QAE@XZ
-    thirdparty@0x00075720:container=5 complete_pruning=5 bipartite_pruning=5 pairwise_pruning=5 opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_sap=4 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 ice_meshbuilder2=5 unique_axis=5 edge_dedupe=5 hull_leaf=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003d970:END=5
+    thirdparty@0x000757b0:container=5 complete_pruning=5 bipartite_pruning=5 pairwise_pruning=5 opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_sap=4 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 ice_meshbuilder2=5 unique_axis=5 edge_dedupe=5 hull_leaf=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003d9a0:END=5
 0x000b4d90 REVIEW ?Empty@Container@IceCore@@QAEAAV12@XZ
-    thirdparty@0x00075780:container=5 ice_meshbuilder2=5 | asset@0x0003d9d0:0
+    thirdparty@0x00075810:container=5 ice_meshbuilder2=5 | asset@0x0003da00:0
 0x000b4de0 REVIEW ?Resize@Container@IceCore@@AAE_NI@Z
-    thirdparty@0x000757c0:container=5 complete_pruning=5 bipartite_pruning=5 pairwise_pruning=5 opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_sap=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 ice_meshbuilder2=5 unique_axis=5 edge_dedupe=5 hull_leaf=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003da10:END=5
+    thirdparty@0x00075850:container=5 complete_pruning=5 bipartite_pruning=5 pairwise_pruning=5 opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_sap=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 ice_meshbuilder2=5 unique_axis=5 edge_dedupe=5 hull_leaf=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003da40:END=5
 0x000b4e90 REVIEW ?SetSize@Container@IceCore@@QAE_NI@Z
-    thirdparty@0x00075880:container=5 container_copy=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 edge_dedupe=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003dad0:0
+    thirdparty@0x00075910:container=5 container_copy=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 edge_dedupe=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003db00:0
 0x000b4f00 MATCH  ??0Container@IceCore@@QAE@ABV01@@Z
-    thirdparty@0x000758f0:container_copy=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 edge_dedupe=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e330:0
+    thirdparty@0x00075980:container_copy=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 edge_dedupe=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e360:0
 0x000b4f50 REVIEW ??1Container@IceCore@@QAE@XZ
-    thirdparty@0x00075740:container=5 container_copy=5 complete_pruning=5 bipartite_pruning=5 pairwise_pruning=5 opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_sap=4 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 ice_meshbuilder2=5 unique_axis=5 edge_dedupe=5 hull_leaf=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003d990:END=5
+    thirdparty@0x000757d0:container=5 container_copy=5 complete_pruning=5 bipartite_pruning=5 pairwise_pruning=5 opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_sap=4 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 ice_meshbuilder2=5 unique_axis=5 edge_dedupe=5 hull_leaf=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003d9c0:END=5
 0x000b5710 MATCH  ?InitQuery@Collider@Opcode@@MAEXXZ
-    thirdparty@0x00002730:0 | asset@0x0003ea30:0
+    thirdparty@0x00002730:0 | asset@0x0003ea60:0
 0x000b5720 SHAPE  ??0RayCollider@Opcode@@QAE@XZ
-    thirdparty@0x0008d620:opcode_ray=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003e830:0
+    thirdparty@0x0008d6b0:opcode_ray=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003e860:0
 0x000b5760 MATCH  ??1RayCollider@Opcode@@UAE@XZ
-    thirdparty@0x0008d670:pmap_classify=5 | asset@0x0003e880:0
+    thirdparty@0x0008d700:pmap_classify=5 | asset@0x0003e8b0:0
 0x000b5770 REVIEW ?ValidateSettings@RayCollider@Opcode@@UAEPBDXZ
-    thirdparty@0x0008e660:opcode_ray=5 | asset@0x0003f820:0
+    thirdparty@0x0008e6f0:opcode_ray=5 | asset@0x0003f850:0
 0x000b57d0 REVIEW ?InitQuery@RayCollider@Opcode@@IAEHABVRay@IceMaths@@PBVMatrix4x4@4@PAI@Z
-    thirdparty@0x0008d880:opcode_ray=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003ea40:0
+    thirdparty@0x0008d910:opcode_ray=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003ea70:0
 0x000b6380 REVIEW ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x00091140:opcode_ray=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x00042040:0
+    thirdparty@0x000911d0:opcode_ray=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x00042070:0
 0x000b6900 REVIEW ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x000930c0:opcode_ray=5 opcode_candidate_trees_x87=5 | asset@0x00043fc0:0
+    thirdparty@0x00093150:opcode_ray=5 opcode_candidate_trees_x87=5 | asset@0x00043ff0:0
 0x000b6ef0 REVIEW ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x00091810:opcode_ray=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x00042710:0
+    thirdparty@0x000918a0:opcode_ray=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x00042740:0
 0x000b7880 REVIEW ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x00092410:opcode_ray=5 opcode_candidate_trees_x87=5 | asset@0x00043310:0
+    thirdparty@0x000924a0:opcode_ray=5 opcode_candidate_trees_x87=5 | asset@0x00043340:0
 0x000b82a0 REVIEW ?_SegmentStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
-    thirdparty@0x00093820:opcode_ray_vanilla=5 | asset:-
+    thirdparty@0x000938b0:opcode_ray_vanilla=5 | asset:-
 0x000b84c0 REVIEW ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x0008e6c0:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003f880:0
+    thirdparty@0x0008e750:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003f8b0:0
 0x000b8a50 REVIEW ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x00090700:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_x87=5 | asset@0x000418c0:0
+    thirdparty@0x00090790:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_x87=5 | asset@0x000418f0:0
 0x000b9070 REVIEW ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x0008edc0:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003ff80:0
+    thirdparty@0x0008ee50:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003ffb0:0
 0x000b9a30 REVIEW ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x0008fa20:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_x87=5 | asset@0x00040be0:0
+    thirdparty@0x0008fab0:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_x87=5 | asset@0x00040c10:0
 0x000ba470 REVIEW ?_RayStab@RayCollider@Opcode@@IAEXPBVAABBTreeNode@2@AAVContainer@IceCore@@@Z
-    thirdparty@0x00090e80:opcode_ray_vanilla=5 | asset:-
+    thirdparty@0x00090f10:opcode_ray_vanilla=5 | asset:-
 0x000ba6c0 SHAPE  ??_GRayCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x0008d680:opcode_ray=5 opcode_ray_vanilla=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003e890:0
+    thirdparty@0x0008d710:opcode_ray=5 opcode_ray_vanilla=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003e8c0:0
 0x000ba6f0 REVIEW ?Collide@RayCollider@Opcode@@QAE_NABVRay@IceMaths@@ABVModel@2@PBVMatrix4x4@4@PAI@Z
-    thirdparty@0x0008d6b0:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003e8c0:0
+    thirdparty@0x0008d740:opcode_ray=5 pmap_classify=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x0003e8f0:0
 0x000ba880 SHAPE  ?Collide@RayCollider@Opcode@@QAE_NABVRay@IceMaths@@PBVAABBTree@2@AAVContainer@IceCore@@@Z
-    thirdparty@0x0008d820:opcode_ray_vanilla=5 | asset:-
+    thirdparty@0x0008d8b0:opcode_ray_vanilla=5 | asset:-
 0x000ba8e0 REVIEW ?CoplanarTriTri@@YAHABVPoint@IceMaths@@000000@Z
-    thirdparty@0x0003ea60:opcode_treecollider=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0003ead0:opcode_treecollider=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000bb510 SHAPE  ??0AABBTreeCollider@Opcode@@QAE@XZ
-    thirdparty@0x0007b840:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007b8d0:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000bb550 MATCH  ??1AABBTreeCollider@Opcode@@UAE@XZ
-    thirdparty@0x0007b890:opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 | asset:-
+    thirdparty@0x0007b920:opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 | asset:-
 0x000bb570 REVIEW ?ValidateSettings@AABBTreeCollider@Opcode@@UAEPBDXZ
-    thirdparty@0x0007d290:0 | asset:-
+    thirdparty@0x0007d320:0 | asset:-
 0x000bb590 REVIEW ?InitQuery@AABBTreeCollider@Opcode@@IAEXPBVMatrix4x4@IceMaths@@0@Z
-    thirdparty@0x0007bd70:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007be00:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000bbd60 REVIEW ?PrimTest@AABBTreeCollider@Opcode@@IAEXII@Z
-    thirdparty@0x0007c770:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007c800:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000bc770 REVIEW ?_CollideTriBox@AABBTreeCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000897a0:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00089830:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000be230 REVIEW ?_CollideBoxTri@AABBTreeCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x00085920:opcode_treecollider=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000859b0:opcode_treecollider=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000bfd10 REVIEW ?_Collide@AABBTreeCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@0@Z
-    thirdparty@0x0007d990:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007da20:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000c3010 REVIEW ?_Collide@AABBTreeCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@0ABVPoint@IceMaths@@111@Z
-    thirdparty@0x00084f00:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00084f90:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees_x87=5 | asset:-
 0x000c3880 REVIEW ?_CollideTriBox@AABBTreeCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x0008b6e0:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0008b770:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees_x87=5 | asset:-
 0x000c5470 REVIEW ?_CollideBoxTri@AABBTreeCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x00087860:opcode_treecollider=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000878f0:opcode_treecollider=5 opcode_candidate_trees_x87=5 | asset:-
 0x000c7060 REVIEW ?_Collide@AABBTreeCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@0@Z
-    thirdparty@0x00081380:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00081410:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees_x87=5 | asset:-
 0x000ca5a0 DIFF   ?_CollideTriBox@AABBTreeCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z (separate instantiation: no candidate body of its own)
-    thirdparty@0x000897a0:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00089830:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000cbe50 DIFF   ?_CollideBoxTri@AABBTreeCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z (separate instantiation: no candidate body of its own)
-    thirdparty@0x00085920:opcode_treecollider=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000859b0:opcode_treecollider=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000cd700 DIFF   ?_Collide@AABBTreeCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@0@Z (separate instantiation: no candidate body of its own)
-    thirdparty@0x0007d990:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007da20:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d0930 SHAPE  ??_GAABBTreeCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x0007b8b0:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007b940:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d0960 REVIEW ?Collide@AABBTreeCollider@Opcode@@QAE_NPBVAABBNoLeafTree@2@0PBVMatrix4x4@IceMaths@@1PAUPair@IceCore@@@Z
     thirdparty:- | asset:-
 0x000d09e0 REVIEW ?Collide@AABBTreeCollider@Opcode@@QAE_NPBVAABBQuantizedTree@2@0PBVMatrix4x4@IceMaths@@1PAUPair@IceCore@@@Z
-    thirdparty@0x0007bb10:opcode_treecollider=5 opcode_treecollider_boundary=2 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007bba0:opcode_treecollider=5 opcode_treecollider_boundary=2 opcode_candidate_trees_x87=5 | asset:-
 0x000d0bf0 REVIEW ?Collide@AABBTreeCollider@Opcode@@QAE_NPBVAABBQuantizedNoLeafTree@2@0PBVMatrix4x4@IceMaths@@1PAUPair@IceCore@@@Z
     thirdparty:- | asset:-
 0x000d0cd0 REVIEW ?_Collide@AABBTreeCollider@Opcode@@IAEXPBVAABBCollisionNode@2@0@Z
-    thirdparty@0x0007d2b0:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007d340:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d12b0 DIFF   ?Collide@AABBTreeCollider@Opcode@@QAE_NPBVAABBNoLeafTree@2@0PBVMatrix4x4@IceMaths@@1PAUPair@IceCore@@@Z (separate instantiation: no candidate body of its own)
     thirdparty:- | asset:-
 0x000d1340 REVIEW ?Collide@AABBTreeCollider@Opcode@@QAE_NPBVAABBCollisionTree@2@0PBVMatrix4x4@IceMaths@@1PAUPair@IceCore@@@Z
     thirdparty:- | asset:-
 0x000d13c0 REVIEW ?Collide@AABBTreeCollider@Opcode@@QAE_NAAUBVTCache@2@PBVMatrix4x4@IceMaths@@1@Z
-    thirdparty@0x0007b8f0:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0007b980:opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d14a0 SHAPE  ?InitQuery@VolumeCollider@Opcode@@MAEXXZ
-    thirdparty@0x000940c0:0 | asset:-
+    thirdparty@0x00094150:0 | asset:-
 0x000d14b0 REVIEW ?OPC_PointTriangleSqrDist@@YAMABVPoint@IceMaths@@000@Z
-    thirdparty@0x000a8f50:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a8fe0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d1930 REVIEW ?OPC_SegmentSegmentSqrDist@@YAMABVSegment@IceMaths@@0@Z
-    thirdparty@0x000a95d0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a9660:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d1ed0 SHAPE  ?OPC_SegmentTriangleSqrDist@@YAMABVSegment@IceMaths@@ABVPoint@2@11@Z
-    thirdparty@0x000a9de0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a9e70:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d3490 MATCH  ??0LSSCollider@Opcode@@QAE@XZ
-    thirdparty@0x000a8780:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a8810:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d34b0 MATCH  ??1LSSCollider@Opcode@@UAE@XZ
     thirdparty:- | asset:-
 0x000d34c0 REVIEW ?InitQuery@LSSCollider@Opcode@@IAEHAAULSSCache@2@ABVLSS@IceMaths@@PBVMatrix4x4@5@2@Z
-    thirdparty@0x000a8910:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a89a0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d3ac0 REVIEW ?_Collide@LSSCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x000ab310:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ab3a0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d3ca0 SHAPE  ?_CollideNoPrimitiveTest@LSSCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x000abef0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000abf80:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d3e30 REVIEW ?_Collide@LSSCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x000abc10:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000abca0:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4070 SHAPE  ?_CollideNoPrimitiveTest@LSSCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x000ac600:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ac690:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4260 REVIEW ?_Collide@LSSCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000ab570:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ab600:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d44b0 REVIEW ?_CollideNoPrimitiveTest@LSSCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000ac0f0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ac180:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4670 REVIEW ?_Collide@LSSCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x000ab890:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ab920:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4930 REVIEW ?_CollideNoPrimitiveTest@LSSCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x000ac330:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ac3c0:opcode_lss=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4b60 SHAPE  ??_GLSSCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x000a87a0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a8830:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4b90 REVIEW ?Collide@LSSCollider@Opcode@@QAE_NAAULSSCache@2@ABVLSS@IceMaths@@ABVModel@2@PBVMatrix4x4@5@3@Z
-    thirdparty@0x000a87d0:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a8860:opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4d00 MATCH  ??0OBBCollider@Opcode@@QAE@XZ
-    thirdparty@0x00096670:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00096700:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d4d20 MATCH  ??1OBBCollider@Opcode@@UAE@XZ
     thirdparty:- | asset:-
 0x000d4d30 REVIEW ?InitQuery@OBBCollider@Opcode@@IAEHAAUOBBCache@2@ABVOBB@IceMaths@@PBVMatrix4x4@5@2@Z
-    thirdparty@0x00096800:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00096890:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d7040 REVIEW ?_Collide@OBBCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x00099740:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000997d0:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d8050 REVIEW ?_CollideNoPrimitiveTest@OBBCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x0009fd60:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0009fdf0:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d8620 REVIEW ?_Collide@OBBCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x0009e9c0:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0009ea50:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d96d0 REVIEW ?_CollideNoPrimitiveTest@OBBCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x000a12f0:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a1380:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000d9d40 REVIEW ?_Collide@OBBCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x0009aa50:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0009aae0:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000db830 REVIEW ?_CollideNoPrimitiveTest@OBBCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000a0440:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a04d0:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000dbe30 REVIEW ?_Collide@OBBCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x0009c9c0:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x0009ca50:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000dd9f0 REVIEW ?_CollideNoPrimitiveTest@OBBCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x000a0b50:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a0be0:opcode_obb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000de0a0 SHAPE  ??_GOBBCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x00096690:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00096720:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000de0d0 REVIEW ?Collide@OBBCollider@Opcode@@QAE_NAAUOBBCache@2@ABVOBB@IceMaths@@ABVModel@2@PBVMatrix4x4@5@3@Z
-    thirdparty@0x000966c0:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00096750:opcode_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000de240 MATCH  ?SphereTriOverlap@SphereCollider@Opcode@@IAEHABVPoint@IceMaths@@00@Z
-    thirdparty@0x00076230:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000762c0:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000de7e0 SHAPE  ??0SphereCollider@Opcode@@QAE@XZ
-    thirdparty@0x00093bb0:opcode_sphere=5 opcode_sphere_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00093c40:opcode_sphere=5 opcode_sphere_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000de800 MATCH  ??1SphereCollider@Opcode@@UAE@XZ
     thirdparty:- | asset:-
 0x000de810 REVIEW ?InitQuery@SphereCollider@Opcode@@IAEHAAUSphereCache@2@ABVSphere@IceMaths@@PBVMatrix4x4@5@2@Z
-    thirdparty@0x00093d80:opcode_sphere=5 opcode_sphere_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00093e10:opcode_sphere=5 opcode_sphere_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000deb20 REVIEW ?_Collide@SphereCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x000940e0:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00094170:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000def40 REVIEW ?_CollideNoPrimitiveTest@SphereCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x00095690:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00095720:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000df320 REVIEW ?_Collide@SphereCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x00094dd0:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00094e60:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
 0x000df7d0 REVIEW ?_CollideNoPrimitiveTest@SphereCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x00096230:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000962c0:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
 0x000dfc30 REVIEW ?_Collide@SphereCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000944a0:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00094530:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e00d0 REVIEW ?_CollideNoPrimitiveTest@SphereCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x00095a20:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00095ab0:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e04e0 REVIEW ?_Collide@SphereCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x000948e0:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00094970:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e0a00 REVIEW ?_CollideNoPrimitiveTest@SphereCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x00095dd0:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00095e60:opcode_sphere=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e0ea0 REVIEW ?_Collide@SphereCollider@Opcode@@IAEXPBVAABBTreeNode@2@@Z
-    thirdparty@0x00095240:opcode_sphere_vanilla=5 | asset:-
+    thirdparty@0x000952d0:opcode_sphere_vanilla=5 | asset:-
 0x000e1330 SHAPE  ??_GSphereCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x00093bd0:opcode_sphere=5 opcode_sphere_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00093c60:opcode_sphere=5 opcode_sphere_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e1360 REVIEW ?Collide@SphereCollider@Opcode@@QAE_NAAUSphereCache@2@ABVSphere@IceMaths@@ABVModel@2@PBVMatrix4x4@5@3@Z
-    thirdparty@0x00093c00:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00093c90:opcode_sphere=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e14d0 SHAPE  ?Collide@SphereCollider@Opcode@@QAE_NAAUSphereCache@2@ABVSphere@IceMaths@@PBVAABBTree@2@@Z
-    thirdparty@0x00093d40:opcode_sphere_vanilla=5 | asset:-
+    thirdparty@0x00093dd0:opcode_sphere_vanilla=5 | asset:-
 0x000e1510 SHAPE  ??0PlanesCollider@Opcode@@QAE@XZ
-    thirdparty@0x000ac880:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ac910:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e1530 MATCH  ?ValidateSettings@OBBCollider@Opcode@@UAEPBDXZ
-    thirdparty@0x000767d0:0 | asset:-
+    thirdparty@0x00076860:0 | asset:-
 0x000e1550 REVIEW ?InitQuery@PlanesCollider@Opcode@@IAEHAAUPlanesCache@2@PBVPlane@IceMaths@@IPBVMatrix4x4@5@@Z
-    thirdparty@0x000aca50:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000acae0:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e19f0 REVIEW ?_Collide@PlanesCollider@Opcode@@IAEXPBVAABBCollisionNode@2@I@Z
-    thirdparty@0x000acee0:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000acf70:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e1bf0 REVIEW ?_CollideNoPrimitiveTest@PlanesCollider@Opcode@@IAEXPBVAABBCollisionNode@2@I@Z
-    thirdparty@0x000adc50:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000adce0:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e1d10 REVIEW ?_Collide@PlanesCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@I@Z
-    thirdparty@0x000ad950:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ad9e0:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e1f90 REVIEW ?_CollideNoPrimitiveTest@PlanesCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@I@Z
-    thirdparty@0x000ae150:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ae1e0:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e2130 REVIEW ?_Collide@PlanesCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@I@Z
-    thirdparty@0x000ad140:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ad1d0:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e2460 REVIEW ?_CollideNoPrimitiveTest@PlanesCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@I@Z
-    thirdparty@0x000adda0:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ade30:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e25b0 REVIEW ?_Collide@PlanesCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@I@Z
-    thirdparty@0x000ad500:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ad590:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e2960 REVIEW ?_CollideNoPrimitiveTest@PlanesCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@I@Z
-    thirdparty@0x000adf20:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000adfb0:opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e2b30 REVIEW ??1PlanesCollider@Opcode@@UAE@XZ
     thirdparty:- | asset:-
 0x000e2b60 REVIEW ?Collide@PlanesCollider@Opcode@@QAE_NAAUPlanesCache@2@PBVPlane@IceMaths@@IABVModel@2@PBVMatrix4x4@5@@Z
-    thirdparty@0x000ac8f0:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ac980:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e2ce0 REVIEW ??_GPlanesCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x000ac8a0:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000ac930:opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e2d20 REVIEW ?Add@AABB@IceMaths@@QAEAAV12@ABV12@@Z
-    thirdparty@0x00077530:ice_aabb=5 | asset:-
+    thirdparty@0x000775c0:ice_aabb=5 | asset:-
 0x000e2e50 REVIEW ?MakeCube@AABB@IceMaths@@QBEMAAV12@@Z
-    thirdparty@0x00077820:ice_aabb=5 | asset:-
+    thirdparty@0x000778b0:ice_aabb=5 | asset:-
 0x000e2f70 SHAPE  ?IsInside@AABB@IceMaths@@QBE_NABV12@@Z
-    thirdparty@0x000777b0:ice_aabb=5 | asset:-
+    thirdparty@0x00077840:ice_aabb=5 | asset:-
 0x000e2fd0 REVIEW ?ComputePoints@AABB@IceMaths@@QBE_NPAVPoint@2@@Z
-    thirdparty@0x00077660:ice_aabb=5 | asset:-
+    thirdparty@0x000776f0:ice_aabb=5 | asset:-
 0x000e31c0 MATCH  ?Set@Plane@IceMaths@@QAEAAV12@ABVPoint@2@00@Z
-    thirdparty@0x00076130:hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_plane_triangle=5 edge_list=5 ice_adjacencies=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e6f0:0
+    thirdparty@0x000761c0:hull_coplanar=5 hull_flood=5 hull_flood_start=5 hull_flood_entry=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_plane_triangle=5 edge_list=5 ice_adjacencies=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e720:0
 0x000e32c0 SHAPE  ??0RadixSort@IceCore@@QAE@XZ
-    thirdparty@0x00076810:radixsort=5 complete_pruning=1 bipartite_pruning=2 radix_setrankbuffers=5 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_sap=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003db40:END=5
+    thirdparty@0x000768a0:radixsort=5 complete_pruning=1 bipartite_pruning=2 radix_setrankbuffers=5 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_sap=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003db70:END=5
 0x000e32e0 REVIEW ??1RadixSort@IceCore@@QAE@XZ
-    thirdparty@0x00076840:radixsort=5 radix_setrankbuffers=5 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_sap=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003db70:END=5
+    thirdparty@0x000768d0:radixsort=5 radix_setrankbuffers=5 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_sap=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003dba0:END=5
 0x000e3330 REVIEW ?Resize@RadixSort@IceCore@@AAE_NI@Z
-    thirdparty@0x00076880:radixsort=5 complete_pruning=5 bipartite_pruning=5 radix_setrankbuffers=4 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_sap=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003dbb0:END=5
+    thirdparty@0x00076910:radixsort=5 complete_pruning=5 bipartite_pruning=5 radix_setrankbuffers=4 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 opcode_sap=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003dbe0:END=5
 0x000e33c0 REVIEW ?Sort@RadixSort@IceCore@@QAEAAV12@PBIIW4RadixHint@2@@Z
-    thirdparty@0x00076920:radixsort=5 radix_setrankbuffers=4 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003dc20:END=5
+    thirdparty@0x000769b0:radixsort=5 radix_setrankbuffers=4 hull_queue_pop=5 hull_cluster=5 hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 edge_list=5 ice_adjacencies=5 ice_valencies=5 ice_meshbuilder2=5 vertex_reduction=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003dc50:END=5
 0x000e3920 REVIEW ?Sort@RadixSort@IceCore@@QAEAAV12@PBMI@Z
-    thirdparty@0x00076e70:radixsort=5 complete_pruning=5 bipartite_pruning=5 opcode_sap=5 | asset:-
+    thirdparty@0x00076f00:radixsort=5 complete_pruning=5 bipartite_pruning=5 opcode_sap=5 | asset:-
 0x000e3ed0 MATCH  ?Area@Triangle@IceMaths@@QBEMXZ
-    thirdparty@0x00075940:hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_plane_triangle=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e400:0
+    thirdparty@0x000759d0:hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_plane_triangle=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e430:0
 0x000e3f50 MATCH  ?Normal@Triangle@IceMaths@@QBEXAAVPoint@2@@Z
-    thirdparty@0x00076060:hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_plane_triangle=5 edge_list=5 ice_adjacencies=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e620:0
+    thirdparty@0x000760f0:hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_plane_triangle=5 edge_list=5 ice_adjacencies=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x0003e650:0
 0x000e4020 MATCH  ?Center@Triangle@IceMaths@@QBEXAAVPoint@2@@Z
-    thirdparty@0x00075b40:ice_plane_triangle=5 | asset:-
+    thirdparty@0x00075bd0:ice_plane_triangle=5 | asset:-
 0x000e4090 MATCH  ?Inflate@Triangle@IceMaths@@QAEXM_N@Z
-    thirdparty@0x00075d90:ice_plane_triangle=5 | asset:-
+    thirdparty@0x00075e20:ice_plane_triangle=5 | asset:-
 0x000e4160 SHAPE  ?ReplaceVertex@IndexedTriangle@IceMaths@@QAE_NII@Z
-    thirdparty@0x000774f0:ice_indexedtriangle=5 | asset@0x000447a0:0
+    thirdparty@0x00077580:ice_indexedtriangle=5 | asset@0x000447d0:0
 0x000e41a0 REVIEW ?FindEdge@IndexedTriangle@IceMaths@@QBEEII@Z
-    thirdparty@0x00077470:hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_indexedtriangle=5 ice_adjacencies=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x00044720:0
+    thirdparty@0x00077500:hull_init=5 hull_build=5 hull_delete=5 hull_shape_init=5 hull_shape_build=5 ice_indexedtriangle=5 ice_adjacencies=5 adjacency_owner=5 convex_hull=5 support_maps=5 polygon_interface=5 | asset@0x00044750:0
 0x000e4200 SHAPE  ?InvertPRMatrix@IceMaths@@YAXAAVMatrix4x4@1@ABV21@@Z
-    thirdparty@0x000773d0:opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 pmap_nearest=5 ice_matrix4x4=5 ice_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 pose_pair=5 | asset@0x000447e0:0
+    thirdparty@0x00077460:opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 pmap_nearest=5 ice_matrix4x4=5 ice_obb=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 pose_pair=5 | asset@0x00044810:0
 0x000e42a0 MATCH  ?CoFactor@Matrix4x4@IceMaths@@QBEMII@Z
-    thirdparty@0x00075bb0:ice_matrix4x4=5 | asset:-
+    thirdparty@0x00075c40:ice_matrix4x4=5 | asset:-
 0x000e43a0 MATCH  ?Determinant@Matrix4x4@IceMaths@@QBEMXZ
-    thirdparty@0x00075d30:ice_matrix4x4=5 | asset:-
+    thirdparty@0x00075dc0:ice_matrix4x4=5 | asset:-
 0x000e4400 MATCH  ?Invert@Matrix4x4@IceMaths@@QAEAAV12@XZ
-    thirdparty@0x00075ee0:ice_matrix4x4=5 | asset:-
+    thirdparty@0x00075f70:ice_matrix4x4=5 | asset:-
 0x000e4580 REVIEW ?ComputePlanes@OBB@IceMaths@@QBE_NPAVPlane@2@@Z
-    thirdparty@0x00077950:ice_obb=5 | asset:-
+    thirdparty@0x000779e0:ice_obb=5 | asset:-
 0x000e48e0 REVIEW ?ComputePoints@OBB@IceMaths@@QBE_NPAVPoint@2@@Z
-    thirdparty@0x00077ca0:ice_obb=5 | asset:-
+    thirdparty@0x00077d30:ice_obb=5 | asset:-
 0x000e4cb0 MATCH  ?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z
-    thirdparty@0x00075cb0:ice_obb=5 | asset:-
+    thirdparty@0x00075d40:ice_obb=5 | asset:-
 0x000e4d30 SHAPE  ?IsInside@OBB@IceMaths@@QBEHABV12@@Z
-    thirdparty@0x00078000:opcode_obb=5 ice_obb=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x00078090:opcode_obb=5 ice_obb=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset:-
 0x000e6480 REVIEW ?GetFreeElem@SAP_PairData@Opcode@@AAEPAVSAP_Element@2@IPAV32@PAI@Z
-    thirdparty@0x000ae4c0:opcode_sap=5 | asset:-
+    thirdparty@0x000ae550:opcode_sap=5 | asset:-
 0x000e65d0 SHAPE  ?AddPair@SAP_PairData@Opcode@@QAEXII@Z
-    thirdparty@0x000ae410:opcode_sap=5 | asset:-
+    thirdparty@0x000ae4a0:opcode_sap=5 | asset:-
 0x000e6670 REVIEW ?RemovePair@SAP_PairData@Opcode@@QAEXII@Z
-    thirdparty@0x000ae900:opcode_sap=5 | asset:-
+    thirdparty@0x000ae990:opcode_sap=5 | asset:-
 0x000e66f0 REVIEW ?DumpPairs@SAP_PairData@Opcode@@QBEXP6AHIIPAX@Z0@Z
     thirdparty:- | asset:-
 0x000e6750 REVIEW ?GetPairs@SweepAndPrune@Opcode@@QBEXP6AHIIPAX@Z0@Z
-    thirdparty@0x000ae610:opcode_sap=5 | asset:-
+    thirdparty@0x000ae6a0:opcode_sap=5 | asset:-
 0x000e6760 REVIEW ?UpdateObject@SweepAndPrune@Opcode@@QAE_NIABVAABB@IceMaths@@@Z
-    thirdparty@0x000ae960:opcode_sap=5 | asset:-
+    thirdparty@0x000ae9f0:opcode_sap=5 | asset:-
 0x000e6c10 MATCH  ?Init@SAP_PairData@Opcode@@QAE_NI@Z
-    thirdparty@0x00075e50:opcode_sap=4 | asset:-
+    thirdparty@0x00075ee0:opcode_sap=4 | asset:-
 0x000e6ca0 REVIEW ?Init@SweepAndPrune@Opcode@@QAE_NIPAPBVAABB@IceMaths@@PB_N@Z
-    thirdparty@0x000ae670:opcode_sap=4 | asset:-
+    thirdparty@0x000ae700:opcode_sap=4 | asset:-
 0x000e7180 SHAPE  ??0SweepAndPrune@Opcode@@QAE@XZ
-    thirdparty@0x000ae330:opcode_sap=4 | asset:-
+    thirdparty@0x000ae3c0:opcode_sap=4 | asset:-
 0x000e71b0 REVIEW ??1SweepAndPrune@Opcode@@QAE@XZ
-    thirdparty@0x000ae380:opcode_sap=4 | asset:-
+    thirdparty@0x000ae410:opcode_sap=4 | asset:-
 0x000e8fa0 SHAPE  ??0MeshInterface@Opcode@@QAE@XZ
-    thirdparty@0x00078640:layout=5 mesh_topology=5 opcode_aabbtree=5 | asset@0x0003e170:END=5
+    thirdparty@0x000786d0:layout=5 mesh_topology=5 opcode_aabbtree=5 | asset@0x0003e1a0:END=5
 0x000e8fb0 SHAPE  ?IsValid@MeshInterface@Opcode@@QBE_NXZ
-    thirdparty@0x000786d0:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e200:0
+    thirdparty@0x00078760:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e230:0
 0x000e8fd0 SHAPE  ?CheckTopology@MeshInterface@Opcode@@QBEIXZ
-    thirdparty@0x00078660:mesh_topology=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e190:0
+    thirdparty@0x000786f0:mesh_topology=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e1c0:0
 0x000e9020 SHAPE  ?SetPointers@MeshInterface@Opcode@@QAE_NPBVIndexedTriangle@IceMaths@@PBVPoint@4@@Z
-    thirdparty@0x000786f0:mesh_topology=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e220:0
+    thirdparty@0x00078780:mesh_topology=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e250:0
 0x000e9060 SHAPE  ??0AABBTreeOfTrianglesBuilder@Opcode@@QAE@XZ
-    thirdparty@0x00002230:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 [DIFFERS +0: fldz  / push ebp (exe copy from PhysicsThirdPartyTests.obj)] | asset@0x0003e2e0:0
+    thirdparty@0x00002230:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 [DIFFERS +0: fldz  / push ebp (exe copy from PhysicsThirdPartyTests.obj)] | asset@0x0003e310:0
 0x000e90a0 MATCH  ??0Model@Opcode@@QAE@XZ
-    thirdparty@0x0007b7c0:layout=1 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e260:0
+    thirdparty@0x0007b850:layout=1 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e290:0
 0x000e90c0 SHAPE  ?GetUsedBytes@Model@Opcode@@UBEIXZ
-    thirdparty@0x0007b820:layout=2 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e2c0:0
+    thirdparty@0x0007b8b0:layout=2 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e2f0:0
 0x000e90e0 MATCH  ??1Model@Opcode@@UAE@XZ
-    thirdparty@0x000767f0:layout=1 release=5 qhull_output=5 | asset@0x0003e810:0
+    thirdparty@0x00076880:layout=1 release=5 qhull_output=5 | asset@0x0003e840:0
 0x000e9100 MATCH  ?Build@Model@Opcode@@UAE_NABUOPCODECREATE@2@@Z
-    thirdparty@0x000759c0:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e480:0
+    thirdparty@0x00075a50:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003e4b0:0
 0x000e9280 REVIEW ??_GModel@Opcode@@UAEPAXI@Z
-    thirdparty@0x0007b7e0:release=5 qhull_output=5 | asset@0x0003e280:0
+    thirdparty@0x0007b870:release=5 qhull_output=5 | asset@0x0003e2b0:0
 0x000e92b0 SHAPE  ??0OPCODECREATE@Opcode@@QAE@XZ
-    thirdparty@0x0007b550:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003d700:0
+    thirdparty@0x0007b5e0:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003d730:0
 0x000e92f0 SHAPE  ??0BaseModel@Opcode@@QAE@XZ
-    thirdparty@0x0007b520:layout=1 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003d6d0:END=5
+    thirdparty@0x0007b5b0:layout=1 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x0003d700:END=5
 0x000e9310 REVIEW ?CreateTree@BaseModel@Opcode@@IAE_N_N0@Z
-    thirdparty@0x0007b640:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x0003d7f0:0
+    thirdparty@0x0007b6d0:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x0003d820:0
 0x000e9410 MATCH  ?Refit@BaseModel@Opcode@@UAE_NXZ
-    thirdparty@0x0007b750:opcode_refit=5 | asset@0x0003d900:0
+    thirdparty@0x0007b7e0:opcode_refit=5 | asset@0x0003d930:0
 0x000e9480 SHAPE  ?Release@Model@Opcode@@AAEXXZ
-    thirdparty@0x0007b830:layout=1 opcode_model_build=5 opcode_model_build_x87=5 release=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 qhull_output=5 | asset@0x0003e2d0:0
+    thirdparty@0x0007b8c0:layout=1 opcode_model_build=5 opcode_model_build_x87=5 release=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 qhull_output=5 | asset@0x0003e300:0
 0x000e9550 SHAPE  ??1BaseModel@Opcode@@UAE@XZ
-    thirdparty@0x0007b590:layout=1 release=5 qhull_output=5 | asset@0x0003d740:END=5
+    thirdparty@0x0007b620:layout=1 release=5 qhull_output=5 | asset@0x0003d770:END=5
 0x000e95a0 REVIEW ??_GBaseModel@Opcode@@UAEPAXI@Z
-    thirdparty@0x0007b5d0:0 | asset@0x0003d780:0
+    thirdparty@0x0007b660:0 | asset@0x0003d7b0:0
 0x000e9600 SHAPE  ?ComputeGlobalBox@AABBTreeOfAABBsBuilder@Opcode@@UBE_NPBIIAAVAABB@IceMaths@@@Z
     thirdparty:- | asset:-
 0x000e9680 SHAPE  ?GetSplittingValue@AABBTreeOfAABBsBuilder@Opcode@@UBEMII@Z
     thirdparty:- | asset:-
 0x000e96b0 REVIEW ?ComputeGlobalBox@AABBTreeOfTrianglesBuilder@Opcode@@UBE_NPBIIAAVAABB@IceMaths@@@Z
-    thirdparty@0x00078730:opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_aabbtree_refit=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00046d70:0
+    thirdparty@0x000787c0:opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_aabbtree_refit=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00046da0:0
 0x000e98f0 REVIEW ?GetSplittingValue@AABBTreeOfTrianglesBuilder@Opcode@@UBEMII@Z
-    thirdparty@0x00078c30:opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x000470d0:0
+    thirdparty@0x00078cc0:opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00047100:0
 0x000e9940 REVIEW ?GetSplittingValue@AABBTreeOfTrianglesBuilder@Opcode@@UBEMPBIIABVAABB@IceMaths@@I@Z
-    thirdparty@0x00078c90:opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00047130:0
+    thirdparty@0x00078d20:opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00047160:0
 0x000e9b80 MATCH  ??0AABBCollider@Opcode@@QAE@XZ
-    thirdparty@0x000a1ac0:opcode_aabb=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a1b50:opcode_aabb=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000e9ba0 MATCH  ??1AABBCollider@Opcode@@UAE@XZ
     thirdparty:- | asset:-
 0x000e9bb0 REVIEW ?InitQuery@AABBCollider@Opcode@@IAEHAAUAABBCache@2@ABVCollisionAABB@2@@Z
-    thirdparty@0x000a1c90:opcode_aabb=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a1d20:opcode_aabb=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000eaea0 REVIEW ?_Collide@AABBCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x000a3510:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a35a0:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000eb830 REVIEW ?_CollideNoPrimitiveTest@AABBCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x000a7f60:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a7ff0:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000eb990 REVIEW ?_Collide@AABBCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x000a7030:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a70c0:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000ec3a0 REVIEW ?_CollideNoPrimitiveTest@AABBCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
-    thirdparty@0x000a8540:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a85d0:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000ec580 REVIEW ?_Collide@AABBCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000a4140:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a41d0:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000ed7d0 REVIEW ?_CollideNoPrimitiveTest@AABBCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000a8110:opcode_aabb=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a81a0:opcode_aabb=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset:-
 0x000ed960 REVIEW ?_Collide@AABBCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x000a5870:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a5900:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000eec70 REVIEW ?_CollideNoPrimitiveTest@AABBCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x000a82e0:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a8370:opcode_aabb=5 opcode_candidate_trees_x87=5 | asset:-
 0x000eee80 REVIEW ?_Collide@AABBCollider@Opcode@@IAEXPBVAABBTreeNode@2@@Z
-    thirdparty@0x000a7d40:opcode_aabb_vanilla=5 | asset:-
+    thirdparty@0x000a7dd0:opcode_aabb_vanilla=5 | asset:-
 0x000ef0a0 SHAPE  ??_GAABBCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x000a1ae0:opcode_aabb=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a1b70:opcode_aabb=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000ef0d0 REVIEW ?Collide@AABBCollider@Opcode@@QAE_NAAUAABBCache@2@ABVCollisionAABB@2@ABVModel@2@@Z
-    thirdparty@0x000a1b10:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000a1ba0:opcode_aabb=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000ef230 SHAPE  ?Collide@AABBCollider@Opcode@@QAE_NAAUAABBCache@2@ABVCollisionAABB@2@PBVAABBTree@2@@Z
-    thirdparty@0x000a1c50:opcode_aabb_vanilla=5 | asset:-
+    thirdparty@0x000a1ce0:opcode_aabb_vanilla=5 | asset:-
 0x000f0510 SHAPE  ??0Collider@Opcode@@QAE@XZ
-    thirdparty@0x000aedf0:opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x000471f0:0
+    thirdparty@0x000aee80:opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x00047220:0
 0x000f0530 MATCH  ??1Collider@Opcode@@UAE@XZ
-    thirdparty@0x000aee10:opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x00047210:0
+    thirdparty@0x000aeea0:opcode_ray=5 opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_treecollider=5 opcode_treecollider_boundary=5 opcode_treecollider_callback=5 opcode_treecollider_callback_collide=5 opcode_treecollider_callback_tribox=5 opcode_treecollider_callback_boxtri=5 pmap_classify=5 opcode_ray_vanilla=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_ray=5 opcode_candidate_trees_x87=5 | asset@0x00047240:0
 0x000f0540 SHAPE  ??_GCollider@Opcode@@UAEPAXI@Z
-    thirdparty@0x000aee20:0 | asset@0x00047220:0
+    thirdparty@0x000aeeb0:0 | asset@0x00047250:0
 0x000f0560 SHAPE  ?SquareDistance@Segment@IceMaths@@QBEMABVPoint@2@PAM@Z
-    thirdparty@0x00078540:segment_sqrdist.grid=5 segment_sqrdist.wide=5 opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000785d0:segment_sqrdist.grid=5 segment_sqrdist.wide=5 opcode_lss=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000f0660 SHAPE  ??0VolumeCollider@Opcode@@QAE@XZ
-    thirdparty@0x000aee50:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000aeee0:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000f0680 MATCH  ??1VolumeCollider@Opcode@@UAE@XZ
-    thirdparty@0x000aee80:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000aef10:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_lss=5 opcode_planes=5 opcode_sphere_vanilla=5 opcode_aabb_vanilla=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000f06a0 REVIEW ?_Dump@VolumeCollider@Opcode@@IAEXPBVAABBNoLeafNode@2@@Z
-    thirdparty@0x000aef00:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+    thirdparty@0x000aef90:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
 0x000f0730 REVIEW ?_Dump@VolumeCollider@Opcode@@IAEXPBVAABBQuantizedNoLeafNode@2@@Z
-    thirdparty@0x000aef90:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
-0x000f07c0 SHAPE  ?_Dump@VolumeCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
-    thirdparty@0x000aeea0:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
-0x000f0820 SHAPE  ?_Dump@VolumeCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
     thirdparty@0x000af020:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
+0x000f07c0 SHAPE  ?_Dump@VolumeCollider@Opcode@@IAEXPBVAABBCollisionNode@2@@Z
+    thirdparty@0x000aef30:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_planes=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset:-
+0x000f0820 SHAPE  ?_Dump@VolumeCollider@Opcode@@IAEXPBVAABBQuantizedNode@2@@Z
+    thirdparty@0x000af0b0:opcode_sphere=5 opcode_obb=5 opcode_aabb=5 opcode_planes=5 opcode_candidate_trees_x87=5 | asset:-
 0x000f0880 SHAPE  ??0AABBTreeNode@Opcode@@QAE@XZ
-    thirdparty@0x00078e90:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x000448b0:0
+    thirdparty@0x00078f20:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x000448e0:0
 0x000f0890 DIFF   ??_EAABBTreeNode@Opcode@@QAEPAXI@Z
     thirdparty:- | asset:-
 0x000f0930 SHAPE  ?Split@AABBTreeNode@Opcode@@IAEIIPAVAABBTreeBuilder@2@@Z
-    thirdparty@0x00079220:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00044aa0:0
+    thirdparty@0x000792b0:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00044ad0:0
 0x000f09b0 REVIEW ?Subdivide@AABBTreeNode@Opcode@@IAE_NPAVAABBTreeBuilder@2@@Z
-    thirdparty@0x000792a0:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00044b20:0
+    thirdparty@0x00079330:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00044b50:0
 0x000f0ea0 REVIEW ?_BuildHierarchy@AABBTreeNode@Opcode@@IAEXPAVAABBTreeBuilder@2@@Z
-    thirdparty@0x000797f0:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00045070:0
+    thirdparty@0x00079880:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x000450a0:0
 0x000f1060 SHAPE  ??0AABBTree@Opcode@@QAE@XZ
-    thirdparty@0x00078e60:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x00044880:0
+    thirdparty@0x00078ef0:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x000448b0:0
 0x000f1080 DIFF   ?Release@AABBTree@Opcode@@QAEXXZ
-    thirdparty@0x000791b0:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_refit=5 release=3 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00044a30:0
+    thirdparty@0x00079240:layout=5 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_refit=5 release=3 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00044a60:0
 0x000f10c0 REVIEW ?Build@AABBTree@Opcode@@QAE_NPAVAABBTreeBuilder@2@@Z
-    thirdparty@0x00078f20:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x00044940:0
+    thirdparty@0x00078fb0:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_aabbtree=5 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x00044970:0
 0x000f11b0 REVIEW ?Refit2@AABBTree@Opcode@@QAE_NPAVAABBTreeBuilder@2@@Z
-    thirdparty@0x00079010:opcode_aabbtree_refit=2 | asset:-
+    thirdparty@0x000790a0:opcode_aabbtree_refit=2 | asset:-
 0x000f1500 DIFF   ??1AABBTree@Opcode@@QAE@XZ
-    thirdparty@0x00078eb0:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_refit=5 release=3 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x000448d0:0
+    thirdparty@0x00078f40:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_refit=5 release=3 opcode_candidate_trees=4 opcode_candidate_trees_x87=5 | asset@0x00044900:0
 0x000f21a0 REVIEW ??_GAABBOptimizedTree@Opcode@@UAEPAXI@Z
-    thirdparty@0x00079b20:0 | asset@0x00045370:0
+    thirdparty@0x00079bb0:0 | asset@0x000453a0:0
 0x000f21d0 REVIEW ?_BuildCollisionTree@@YAXPAVAABBCollisionNode@Opcode@@IAAIPBVAABBTreeNode@2@@Z
-    thirdparty@0x0007b100:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00046950:0
+    thirdparty@0x0007b190:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00046980:0
 0x000f22f0 REVIEW ?_BuildNoLeafTree@@YAXPAVAABBNoLeafNode@Opcode@@IAAIPBVAABBTreeNode@2@@Z
-    thirdparty@0x0007b2c0:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00046b10:0
+    thirdparty@0x0007b350:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=5 opcode_candidate_trees_x87=5 | asset@0x00046b40:0
 0x000f2450 SHAPE  ??0AABBCollisionTree@Opcode@@QAE@XZ
-    thirdparty@0x000799b0:layout=1 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00045230:0
+    thirdparty@0x00079a40:layout=1 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00045260:0
 0x000f2470 REVIEW ?GetUsedBytes@AABBCollisionTree@Opcode@@UBEIXZ
-    thirdparty@0x00002720:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x000462c0:0
+    thirdparty@0x00002720:layout=3 opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x000462f0:0
 0x000f2480 REVIEW ?Build@AABBCollisionTree@Opcode@@UAE_NPAVAABBTree@2@@Z
-    thirdparty@0x00079c20:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00045470:0
+    thirdparty@0x00079cb0:opcode_model_build=5 opcode_model_build_x87=5 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x000454a0:0
 0x000f2530 SHAPE  ?_Walk@Local@?1??Walk@AABBCollisionTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z@SAXPBVAABBCollisionNode@4@21@Z
-    thirdparty@0x0007b400:0 | asset@0x00046c50:0
+    thirdparty@0x0007b490:0 | asset@0x00046c80:0
 0x000f2690 SHAPE  ??0AABBNoLeafTree@Opcode@@QAE@XZ
-    thirdparty@0x000799d0:opcode_model_build=5 opcode_model_build_x87=3 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00045250:0
+    thirdparty@0x00079a60:opcode_model_build=5 opcode_model_build_x87=3 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00045280:0
 0x000f26b0 MATCH  ?GetUsedBytes@AABBNoLeafTree@Opcode@@UBEIXZ
-    thirdparty@0x0007aa70:opcode_model_build=5 opcode_model_build_x87=3 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x000462d0:0
+    thirdparty@0x0007ab00:opcode_model_build=5 opcode_model_build_x87=3 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00046300:0
 0x000f26c0 REVIEW ?Build@AABBNoLeafTree@Opcode@@UAE_NPAVAABBTree@2@@Z
-    thirdparty@0x00079ce0:opcode_model_build=5 opcode_model_build_x87=3 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00045530:0
+    thirdparty@0x00079d70:opcode_model_build=5 opcode_model_build_x87=3 opcode_candidate_trees=2 opcode_candidate_trees_x87=3 | asset@0x00045560:0
 0x000f2770 REVIEW ?Refit@AABBNoLeafTree@Opcode@@UAE_NPBVMeshInterface@2@@Z
-    thirdparty@0x0007aab0:opcode_refit=5 | asset@0x00046300:0
+    thirdparty@0x0007ab40:opcode_refit=5 | asset@0x00046330:0
 0x000f2e60 SHAPE  ?_Walk@Local@?1??Walk@AABBNoLeafTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z@SAXPBVAABBNoLeafNode@4@21@Z
-    thirdparty@0x0007b440:0 | asset@0x00046c90:0
+    thirdparty@0x0007b4d0:0 | asset@0x00046cc0:0
 0x000f2fe0 SHAPE  ??0AABBQuantizedTree@Opcode@@QAE@XZ
-    thirdparty@0x00079a10:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x00045290:0
+    thirdparty@0x00079aa0:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x000452c0:0
 0x000f3000 MATCH  ?GetUsedBytes@AABBQuantizedTree@Opcode@@UBEIXZ
-    thirdparty@0x0007aa90:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x000462f0:0
+    thirdparty@0x0007ab20:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x00046320:0
 0x000f3010 REVIEW ?Build@AABBQuantizedTree@Opcode@@UAE_NPAVAABBTree@2@@Z
-    thirdparty@0x0007a410:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x00045c60:0
+    thirdparty@0x0007a4a0:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x00045c90:0
 0x000f35e0 SHAPE  ?_Walk@Local@?1??Walk@AABBQuantizedTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z@SAXPBVAABBQuantizedNode@4@21@Z
-    thirdparty@0x0007b4e0:0 | asset@0x00046d30:0
+    thirdparty@0x0007b570:0 | asset@0x00046d60:0
 0x000f36b0 SHAPE  ??0AABBQuantizedNoLeafTree@Opcode@@QAE@XZ
-    thirdparty@0x000799f0:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x00045270:0
+    thirdparty@0x00079a80:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x000452a0:0
 0x000f36d0 MATCH  ?GetUsedBytes@AABBQuantizedNoLeafTree@Opcode@@UBEIXZ
-    thirdparty@0x0007aa80:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x000462e0:0
+    thirdparty@0x0007ab10:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x00046310:0
 0x000f36e0 REVIEW ?Build@AABBQuantizedNoLeafTree@Opcode@@UAE_NPAVAABBTree@2@@Z
-    thirdparty@0x00079da0:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x000455f0:0
+    thirdparty@0x00079e30:opcode_model_build_x87=5 opcode_candidate_trees_x87=5 | asset@0x00045620:0
 0x000f3cd0 MATCH  ?Refit@AABBCollisionTree@Opcode@@UAE_NPBVMeshInterface@2@@Z
-    thirdparty@0x0007aaa0:opcode_refit=5 | asset@0x00001630:0
+    thirdparty@0x0007ab30:opcode_refit=5 | asset@0x00001630:0
 0x000f3ce0 SHAPE  ?_Walk@Local@?1??Walk@AABBQuantizedNoLeafTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z@SAXPBVAABBQuantizedNoLeafNode@4@21@Z
-    thirdparty@0x0007b490:0 | asset@0x00046ce0:0
+    thirdparty@0x0007b520:0 | asset@0x00046d10:0
 0x000f3ef0 REVIEW ?Walk@AABBCollisionTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z
-    thirdparty@0x0007afe0:0 | asset@0x00046830:0
+    thirdparty@0x0007b070:0 | asset@0x00046860:0
 0x000f3f20 SHAPE  ?Walk@AABBNoLeafTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z
-    thirdparty@0x0007b040:0 | asset@0x00046890:0
+    thirdparty@0x0007b0d0:0 | asset@0x000468c0:0
 0x000f3f50 REVIEW ?Walk@AABBQuantizedTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z
-    thirdparty@0x0007b0a0:0 | asset@0x000468f0:0
+    thirdparty@0x0007b130:0 | asset@0x00046920:0
 0x000f3f80 SHAPE  ?Walk@AABBQuantizedNoLeafTree@Opcode@@UBE_NP6A_NPBXPAX@Z1@Z
-    thirdparty@0x0007b070:0 | asset@0x000468c0:0
+    thirdparty@0x0007b100:0 | asset@0x000468f0:0
 0x000f3fb0 REVIEW ??_GAABBCollisionTree@Opcode@@UAEPAXI@Z
-    thirdparty@0x00079a60:release=5 qhull_output=5 | asset@0x000452b0:0
+    thirdparty@0x00079af0:release=5 qhull_output=5 | asset@0x000452e0:0
 0x000f4000 REVIEW ??_GAABBNoLeafTree@Opcode@@UAEPAXI@Z
-    thirdparty@0x00079ac0:release=5 qhull_output=5 | asset@0x00045310:0
+    thirdparty@0x00079b50:release=5 qhull_output=5 | asset@0x00045340:0
 0x000f4050 REVIEW ??_GAABBQuantizedTree@Opcode@@UAEPAXI@Z
-    thirdparty@0x00079bc0:release=5 qhull_output=5 | asset@0x00045410:0
+    thirdparty@0x00079c50:release=5 qhull_output=5 | asset@0x00045440:0
 0x000f40a0 REVIEW ??_GAABBQuantizedNoLeafTree@Opcode@@UAEPAXI@Z
-    thirdparty@0x00079b60:release=5 qhull_output=5 | asset@0x000453b0:0
+    thirdparty@0x00079bf0:release=5 qhull_output=5 | asset@0x000453e0:0
 
 groups=231 executed=201
 
@@ -592,19 +601,19 @@ Raw log head (the ThirdParty run): the script's first commands and the first thr
 boundary dumps. Edited only by omission: counting-breakpoint commands after the first
 dozen, and counter lines that are all zero, are left out; lines are cut at 160 columns.
 
-0:000> r $t19 = @$exentry - 0xafd20
+0:000> r $t19 = @$exentry - 0xafdb0
 0:000> .dvalloc /b 0x60000000 0x1000
 Allocated 1000 bytes starting at 60000000
-0:000> bp1 @$t19+0x19eb0 ".printf \"SEG layout\\n\"; dd 0x60000000 L0n538; f 0x60000000 L0n2152 0; be *; gc"
-0:000> bp2 @$t19+0x1ce40 ".printf \"SEG release\\n\"; dd 0x60000000 L0n538; f 0x60000000 L0n2152 0; be *; gc"
-0:000> bp3 @$t19+0x31310 ".printf \"SEG %ma\\n\", poi(@esp+4); dd 0x60000000 L0n538; f 0x60000000 L0n2152 0; be *; gc"
-0:000> bp4 @$t19+0x5a4a0 "ed 0x60000000 (dwo(0x60000000)+1); .if (dwo(0x60000000) >= 0n5) {bd 4}; gc"
-0:000> bp5 @$t19+0x53d80 "ed 0x60000004 (dwo(0x60000004)+1); .if (dwo(0x60000004) >= 0n5) {bd 5}; gc"
-0:000> bp6 @$t19+0x540d0 "ed 0x60000008 (dwo(0x60000008)+1); .if (dwo(0x60000008) >= 0n5) {bd 6}; gc"
-0:000> bp7 @$t19+0x537d0 "ed 0x6000000c (dwo(0x6000000c)+1); .if (dwo(0x6000000c) >= 0n5) {bd 7}; gc"
-0:000> bp8 @$t19+0x543e0 "ed 0x60000010 (dwo(0x60000010)+1); .if (dwo(0x60000010) >= 0n5) {bd 8}; gc"
-0:000> bp9 @$t19+0x5ad20 "ed 0x60000014 (dwo(0x60000014)+1); .if (dwo(0x60000014) >= 0n5) {bd 9}; gc"
-0:000> bp10 @$t19+0x545e0 "ed 0x60000018 (dwo(0x60000018)+1); .if (dwo(0x60000018) >= 0n5) {bd 10}; gc"
+0:000> bp1 @$t19+0x19ef0 ".printf \"SEG layout\\n\"; dd 0x60000000 L0n542; f 0x60000000 L0n2168 0; be *; gc"
+0:000> bp2 @$t19+0x1ce70 ".printf \"SEG release\\n\"; dd 0x60000000 L0n542; f 0x60000000 L0n2168 0; be *; gc"
+0:000> bp3 @$t19+0x31360 ".printf \"SEG %ma\\n\", poi(@esp+4); dd 0x60000000 L0n542; f 0x60000000 L0n2168 0; be *; gc"
+0:000> bp4 @$t19+0x59fd0 "ed 0x60000000 (dwo(0x60000000)+1); .if (dwo(0x60000000) >= 0n5) {bd 4}; gc"
+0:000> bp5 @$t19+0x53850 "ed 0x60000004 (dwo(0x60000004)+1); .if (dwo(0x60000004) >= 0n5) {bd 5}; gc"
+0:000> bp6 @$t19+0x53ba0 "ed 0x60000008 (dwo(0x60000008)+1); .if (dwo(0x60000008) >= 0n5) {bd 6}; gc"
+0:000> bp7 @$t19+0x532a0 "ed 0x6000000c (dwo(0x6000000c)+1); .if (dwo(0x6000000c) >= 0n5) {bd 7}; gc"
+0:000> bp8 @$t19+0x53eb0 "ed 0x60000010 (dwo(0x60000010)+1); .if (dwo(0x60000010) >= 0n5) {bd 8}; gc"
+0:000> bp9 @$t19+0x5ac70 "ed 0x60000014 (dwo(0x60000014)+1); .if (dwo(0x60000014) >= 0n5) {bd 9}; gc"
+0:000> bp10 @$t19+0x540b0 "ed 0x60000018 (dwo(0x60000018)+1); .if (dwo(0x60000018) >= 0n5) {bd 10}; gc"
 0:000> g
 *** WARNING: Unable to verify checksum for NxPhysicsThirdPartyTests.exe
 *** ERROR: Symbol file could not be found.  Defaulted to export symbols for NxPhysicsThirdPartyTests.exe -
@@ -668,21 +677,21 @@ layout Prunable.mPruningSection=43 expected=43 rva=0x000b561d ok
 layout sizeof_Prunable0C=20 expected=20 rva=0x000e7330,0x000b54a9 ok
 layout Pruner.mWorldBoxes=20 expected=20 rva=0x000b55a0 ok
 SEG layout
-60000510  00000005 00000000 00000000 00000000
-60000720  00000005 00000000 00000000 00000000
-60000730  00000000 00000001 00000002 00000001
-60000740  00000000 00000000 00000000 00000001
-60000750  00000000 00000000 00000001 00000001
-600007d0  00000005 00000005 00000005 00000005
-600007e0  00000003 00000005 00000003 00000000
-600007f0  00000003 00000000 00000000 00000000
-60000800  00000001 00000003 00000000 00000000
-Filled 0x868 bytes
+60000520  00000005 00000000 00000000 00000000
+60000730  00000005 00000000 00000000 00000000
+60000740  00000000 00000001 00000002 00000001
+60000750  00000000 00000000 00000000 00000001
+60000760  00000000 00000000 00000001 00000001
+600007e0  00000005 00000005 00000005 00000005
+600007f0  00000003 00000005 00000003 00000000
+60000800  00000003 00000000 00000000 00000000
+60000810  00000001 00000003 00000000 00000000
+Filled 0x878 bytes
 SEG qh_crossproduct
 60000040  00000000 00000005 00000000 00000000
-Filled 0x868 bytes
+Filled 0x878 bytes
 thirdparty name=qh_crossproduct rva=0x0005eac0 owner=phys_fn_002465 source=geom2.c:50 words=24000 oracle=6a99847d mismatches=0 worst_ulp=0 verdict=exact
 SEG qh_pointdist
 60000080  00000005 00000000 00000000 00000000
-Filled 0x868 bytes
+Filled 0x878 bytes
 thirdparty name=qh_pointdist rva=0x0005fb70 owner=phys_fn_002505 source=geom2.c:1307 words=8000 oracle=74544940 mismatches=0 worst_ulp=0 verdict=exact

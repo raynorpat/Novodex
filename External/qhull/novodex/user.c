@@ -16,6 +16,8 @@
  * Geometry Center licence clause 1: the copyright notice below is intact.
  * Clause 3: see ../NOTICE.txt. Clause 4: the original source may be
  * obtained from http://www.qhull.org.
+ * [vendored rows] void qh_errprint( (phys_fn_003415): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00084820
  */
 /*<html><pre>  -<a                             href="qh-user.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -276,6 +278,7 @@ static void qh_errexit_stock(int exitcode, facetT *facet, ridgeT *ridge) {
   notes:
     except for string, any parameter may be NULL
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_errprint(char *string, facetT *atfacet, facetT *otherfacet, ridgeT *atridge, vertexT *atvertex) {
   int i;
 
@@ -311,6 +314,8 @@ void qh_errprint(char *string, facetT *atfacet, facetT *otherfacet, ridgeT *atri
 			    !qh_ALL);
   }
 } /* errprint */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003415) */
 
 
 /*-<a                             href="qh-user.htm#TOC"

@@ -31,6 +31,8 @@
  *     established at 0x00079b80
  * [build parity] qh_triangulate_link is __declspec(noinline): the oracle keeps it out of line; with this file's transcribed bodies guarded off a 2026 compiler inlined it.
  *     established at 0x000774a0
+ * [vendored rows] void qh_printhashtable( (phys_fn_003133/003135): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00076e10
  */
 /*<html><pre>  -<a                             href="qh-poly.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -2586,6 +2588,7 @@ void qh_prependfacet(facetT *facet, facetT **facetlist) {
         if unmatched or will merge (NULL, qh_MERGEridge, qh_DUPLICATEridge)
           print entry and neighbors
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_printhashtable(FILE *fp) {
   facetT *facet, *neighbor;
   int id, facet_i, facet_n, neighbor_i= 0, neighbor_n= 0;
@@ -2616,6 +2619,8 @@ void qh_printhashtable(FILE *fp) {
     }
   }
 } /* printhashtable */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003133/003135) */
      
 
 /*-<a                             href="qh-poly.htm#TOC"

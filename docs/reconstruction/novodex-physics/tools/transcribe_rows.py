@@ -144,7 +144,7 @@ def transcribe(cfg, img):
                 op = 'offset ' + strings[int(op, 16)]
             elif m == 'push' and op.startswith('0x') and int(op, 16) in pushes:
                 op = 'offset ' + pushes[int(op, 16)]
-            elif m == 'mov' and re.search(r', 0x1[0-9a-f]{7}$', op) and int(op.rsplit(', ', 1)[1], 16) in pushes:
+            elif m in ('mov', 'cmp') and re.search(r', 0x1[0-9a-f]{7}$', op) and int(op.rsplit(', ', 1)[1], 16) in pushes:
                 op = op.rsplit(', ', 1)[0] + ', offset ' + pushes[int(op.rsplit(', ', 1)[1], 16)]
             else:
                 def sub(mm):

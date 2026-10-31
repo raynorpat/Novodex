@@ -49375,14 +49375,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/954",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8039",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00060420: qhull qh_setdelaunay. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_merge2 exact (every word compared with the oracle); vendored_coverage.csv group 0x00060420 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_direct_x87 (discrete), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_setdelaunay",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_setdelaunay",
+        "address": "0x100d1130",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002529",
@@ -49451,14 +49459,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/956",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8060",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x000605f0: qhull qh_voronoi_center. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x000605f0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_voronoi_center",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_voronoi_center",
+        "address": "0x100d15c0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002533",
@@ -49488,14 +49504,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/956",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8064",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000605f0",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00060690: qhull qh_voronoi_center. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x000605f0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_voronoi_center",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_voronoi_center",
+        "address": "0x100d15c0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002535",
@@ -49525,14 +49549,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/956",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8069",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000605f0",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x000606f0: qhull qh_voronoi_center. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x000605f0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_voronoi_center",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_voronoi_center",
+        "address": "0x100d15c0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002537",
@@ -49562,14 +49594,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/956",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8078",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000605f0",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00060850: qhull qh_voronoi_center. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x000605f0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_voronoi_center",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_voronoi_center",
+        "address": "0x100d15c0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002539",
@@ -50118,14 +50158,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/968",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8261",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00062070: qhull qh_init_qhull_command. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_hull exact (every word compared with the oracle); vendored_coverage.csv group 0x00062070 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_dims_x87 (discrete), qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_merge_x87 (lastbit), qhull_direct_x87 (discrete), qhull_exact_other_x87 (lastbit), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_init_qhull_command",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_init_qhull_command",
+        "address": "0x100cd840",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002567",
@@ -50155,14 +50203,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/968",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8268",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00062070",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00062100: qhull qh_init_qhull_command. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_hull exact (every word compared with the oracle); vendored_coverage.csv group 0x00062070 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_dims_x87 (discrete), qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_merge_x87 (lastbit), qhull_direct_x87 (discrete), qhull_exact_other_x87 (lastbit), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_init_qhull_command",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_init_qhull_command",
+        "address": "0x100cd840",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002569",
@@ -50192,14 +50248,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/968",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8271",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00062070",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00062140: qhull qh_init_qhull_command. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_hull exact (every word compared with the oracle); vendored_coverage.csv group 0x00062070 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_dims_x87 (discrete), qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_merge_x87 (lastbit), qhull_direct_x87 (discrete), qhull_exact_other_x87 (lastbit), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_init_qhull_command",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_init_qhull_command",
+        "address": "0x100cd840",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002571",
@@ -50301,14 +50365,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/970",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8281",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00062320: qhull qh_initqhull_mem. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_hull exact (every word compared with the oracle); vendored_coverage.csv group 0x00062320 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_dims_x87 (discrete), qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_merge_x87 (lastbit), qhull_direct_x87 (discrete), qhull_exact_other_x87 (lastbit), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_initqhull_mem",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_initqhull_mem",
+        "address": "0x100cea60",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002576",
@@ -50338,14 +50410,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/971",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8283",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x000623a0: qhull qh_initqhull_start. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_hull exact (every word compared with the oracle); vendored_coverage.csv group 0x000623a0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_dims_x87 (discrete), qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_merge_x87 (lastbit), qhull_direct_x87 (discrete), qhull_exact_other_x87 (lastbit), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_initqhull_start",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_initqhull_start",
+        "address": "0x100ceae0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002578",
@@ -52103,14 +52183,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/977",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8583",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00065110: qhull qh_initqhull_globals. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_hull exact (every word compared with the oracle); vendored_coverage.csv group 0x00065110 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_dims_x87 (discrete), qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_merge_x87 (lastbit), qhull_direct_x87 (discrete), qhull_exact_other_x87 (lastbit), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_initqhull_globals",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_initqhull_globals",
+        "address": "0x100cdf30",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002671",
@@ -52140,14 +52228,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/977",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8629",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00065110",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00065730: qhull qh_initqhull_globals. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_hull exact (every word compared with the oracle); vendored_coverage.csv group 0x00065110 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_dims_x87 (discrete), qhull_output_delaunay3_x87 (discrete), qhull_trace_x87 (discrete), qhull_options_x87 (lastbit), qhull_merge_x87 (lastbit), qhull_direct_x87 (discrete), qhull_exact_other_x87 (lastbit), qhull_paths (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_initqhull_globals",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_initqhull_globals",
+        "address": "0x100cdf30",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002673",
@@ -52666,14 +52762,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/985",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8783",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00066bf0: qhull qh_detvridge3. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x00066bf0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_detvridge3",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_detvridge3",
+        "address": "0x100cc710",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002700",
@@ -52703,14 +52807,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/985",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8793",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00066bf0",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00066d00: qhull qh_detvridge3. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x00066bf0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_detvridge3",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_detvridge3",
+        "address": "0x100cc710",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002702",
@@ -52740,14 +52852,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/986",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8802",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00066de0: qhull qh_eachvoronoi. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x00066de0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_eachvoronoi",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_eachvoronoi",
+        "address": "0x100ccb20",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002704",
@@ -52777,14 +52897,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/986",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8823",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00066de0",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00067050: qhull qh_eachvoronoi. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x00066de0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_eachvoronoi",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_eachvoronoi",
+        "address": "0x100ccb20",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002706",
@@ -53513,14 +53641,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1000",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/8941",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00067f90: qhull qh_printvdiagram2. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_direct exact (every word compared with the oracle); vendored_coverage.csv group 0x00067f90 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete), qhull_direct_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_printvdiagram2",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_printvdiagram2",
+        "address": "0x100d09c0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002744",
@@ -54876,14 +55012,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1026",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/9212",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x0006a0e0: qhull qh_printvoronoi. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_output_delaunay exact (every word compared with the oracle); vendored_coverage.csv group 0x0006a0e0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_printvoronoi",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_printvoronoi",
+        "address": "0x100d0aa0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002814",
@@ -54913,14 +55057,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1026",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/9222",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0006a0e0",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x0006a240: qhull qh_printvoronoi. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_output_delaunay exact (every word compared with the oracle); vendored_coverage.csv group 0x0006a0e0 family_best=exact. Families it also ran in that are not exact, each attributed in evidence/vendored-correspondence.md (vendored-rows pass): qhull_output_delaunay3_x87 (discrete).",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_printvoronoi",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_printvoronoi",
+        "address": "0x100d0aa0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_002816",
@@ -66617,14 +66769,22 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "External/qhull/novodex/QhullRows.c",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1265",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12204",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "",
-      "third_party": "qhull"
+      "static_proof": "Capstone listing at RVA 0x00084820: qhull qh_errprint. Transcribed instruction for instruction into a naked row in External/qhull/novodex/QhullRows.c; evidence/vendored-rows-qhull-listing-compare.py disassembles the built candidate and the oracle and finds the 7542 instructions of its rows equal, with the 402 call mappings as expected. See evidence/vendored-correspondence.md. Vendored qhull function, upstream body guarded by NX_VENDORED_LISTING_ROWS.",
+      "dynamic_proof": "cdb trace, evidence/vendored-trace-qhull.txt: family qhull_paths_t4 exact (every word compared with the oracle); vendored_coverage.csv group 0x00084820 family_best=exact. Every family it ran in is exact.",
+      "notes": "Vendored row transcribed and executed (vendored-rows pass).",
+      "third_party": "qhull",
+      "implementation": "External/qhull/novodex/QhullRows.c",
+      "implementation_symbol": "_qh_errprint",
+      "candidate_map_reference": {
+        "path": "build/Release/NxPhysics.map",
+        "symbol": "_qh_errprint",
+        "address": "0x100ccdb0",
+        "object": "NxQhull:QhullRows.obj"
+      }
     },
     {
       "id": "phys_fn_003416",

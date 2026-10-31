@@ -39,6 +39,10 @@
  *     QhullRows.c. established at 0x00061cd0
  * [vendored rows] void qh_scalelast ( (phys_fn_002522): the body is guarded off; the oracle's own instructions are transcribed in
  *     QhullRows.c. established at 0x0005fff0
+ * [vendored rows] void qh_setdelaunay ( (phys_fn_002528): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00060420
+ * [vendored rows] pointT *qh_voronoi_center ( (phys_fn_002532/002534/002536/002538): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x000605f0
  */
 #include "qhull_a.h"
    
@@ -1923,6 +1927,7 @@ void qh_scalepoints (pointT *points, int numpoints, int dim,
     the coordinates after the original projection.
 
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_setdelaunay (int dim, int count, pointT *points) {
   int i, k;
   coordT *coordp, coord;
@@ -1942,6 +1947,8 @@ void qh_setdelaunay (int dim, int count, pointT *points) {
   if (qh last_low < REALmax/2) 
     qh_scalelast (points, count, dim, qh last_low, qh last_high, qh last_newhigh);
 } /* setdelaunay */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002528) */
 
   
 /*-<a                             href="qh-geom.htm#TOC"
@@ -2124,6 +2131,7 @@ boolT qh_sharpnewfacets () {
     compute determinate
     compute Voronoi center (see Bowyer & Woodwark)
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 pointT *qh_voronoi_center (int dim, setT *points) {
   pointT *point, **pointp, *point0;
   pointT *center= (pointT*)qh_memalloc (qh center_size);
@@ -2204,4 +2212,6 @@ pointT *qh_voronoi_center (int dim, setT *points) {
     qh_settempfree (&simplex);
   return center;
 } /* voronoi_center */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002532/002534/002536/002538) */
 

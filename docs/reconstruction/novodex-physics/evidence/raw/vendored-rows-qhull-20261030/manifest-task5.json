@@ -1,0 +1,129 @@
+{
+ "source": "External/qhull/novodex/QhullRows.c",
+ "compare": "evidence/vendored-rows-qhull-listing-compare.py",
+ "doc": "evidence/vendored-correspondence.md",
+ "instructions": 7542,
+ "mappings": 402,
+ "rows": {
+  "phys_fn_002528": {
+   "symbol": "qh_setdelaunay",
+   "what": "qhull qh_setdelaunay",
+   "group": "0x00060420",
+   "family": "qhull_merge2"
+  },
+  "phys_fn_002532": {
+   "symbol": "qh_voronoi_center",
+   "what": "qhull qh_voronoi_center",
+   "group": "0x000605f0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002534": {
+   "symbol": "qh_voronoi_center",
+   "what": "qhull qh_voronoi_center",
+   "group": "0x000605f0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002536": {
+   "symbol": "qh_voronoi_center",
+   "what": "qhull qh_voronoi_center",
+   "group": "0x000605f0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002538": {
+   "symbol": "qh_voronoi_center",
+   "what": "qhull qh_voronoi_center",
+   "group": "0x000605f0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002566": {
+   "symbol": "qh_init_qhull_command",
+   "what": "qhull qh_init_qhull_command",
+   "group": "0x00062070",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002568": {
+   "symbol": "qh_init_qhull_command",
+   "what": "qhull qh_init_qhull_command",
+   "group": "0x00062070",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002570": {
+   "symbol": "qh_init_qhull_command",
+   "what": "qhull qh_init_qhull_command",
+   "group": "0x00062070",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002575": {
+   "symbol": "qh_initqhull_mem",
+   "what": "qhull qh_initqhull_mem",
+   "group": "0x00062320",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002577": {
+   "symbol": "qh_initqhull_start",
+   "what": "qhull qh_initqhull_start",
+   "group": "0x000623a0",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002670": {
+   "symbol": "qh_initqhull_globals",
+   "what": "qhull qh_initqhull_globals",
+   "group": "0x00065110",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002672": {
+   "symbol": "qh_initqhull_globals",
+   "what": "qhull qh_initqhull_globals",
+   "group": "0x00065110",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002699": {
+   "symbol": "qh_detvridge3",
+   "what": "qhull qh_detvridge3",
+   "group": "0x00066bf0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002701": {
+   "symbol": "qh_detvridge3",
+   "what": "qhull qh_detvridge3",
+   "group": "0x00066bf0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002703": {
+   "symbol": "qh_eachvoronoi",
+   "what": "qhull qh_eachvoronoi",
+   "group": "0x00066de0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002705": {
+   "symbol": "qh_eachvoronoi",
+   "what": "qhull qh_eachvoronoi",
+   "group": "0x00066de0",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002743": {
+   "symbol": "qh_printvdiagram2",
+   "what": "qhull qh_printvdiagram2",
+   "group": "0x00067f90",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002813": {
+   "symbol": "qh_printvoronoi",
+   "what": "qhull qh_printvoronoi",
+   "group": "0x0006a0e0",
+   "family": "qhull_output_delaunay"
+  },
+  "phys_fn_002815": {
+   "symbol": "qh_printvoronoi",
+   "what": "qhull qh_printvoronoi",
+   "group": "0x0006a0e0",
+   "family": "qhull_output_delaunay"
+  },
+  "phys_fn_003415": {
+   "symbol": "qh_errprint",
+   "what": "qhull qh_errprint",
+   "group": "0x00084820",
+   "family": "qhull_paths_t4"
+  }
+ }
+}

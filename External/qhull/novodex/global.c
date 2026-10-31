@@ -4,6 +4,14 @@
  *
  * [vendored rows] void qh_initqhull_buffers ( (phys_fn_002571/002573): the body is guarded off; the oracle's own instructions are transcribed in
  *     QhullRows.c. established at 0x000621c0
+ * [vendored rows] void qh_init_qhull_command( (phys_fn_002566/002568/002570): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00062070
+ * [vendored rows] void qh_initqhull_mem ( (phys_fn_002575): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00062320
+ * [vendored rows] void qh_initqhull_start ( (phys_fn_002577): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x000623a0
+ * [vendored rows] void qh_initqhull_globals ( (phys_fn_002670/002672): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00065110
  */
 /*<html><pre>  -<a                             href="qh-globa.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -488,6 +496,7 @@ void qh_init_B (coordT *points, int numpoints, int dim, boolT ismalloc) {
 
     argc/argv may be 0/NULL
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_init_qhull_command(int argc, char *argv[]) {
   int i;
   char *s;
@@ -512,6 +521,8 @@ void qh_init_qhull_command(int argc, char *argv[]) {
     }
   }
 } /* init_qhull_command */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002566/002568/002570) */
 
 /*-<a                             href="qh-globa.htm#TOC"
   >-------------------------------</a><a name="initflags">-</a>
@@ -1433,6 +1444,7 @@ void qh_initqhull_buffers (void) {
     initialize and test random numbers
     check for conflicting print output options
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_initqhull_globals (coordT *points, int numpoints, int dim, boolT ismalloc) {
   int seed, pointsneeded, extra= 0, i, randi, k;
   boolT printgeom= False, printmath= False, printcoplanar= False;
@@ -1689,6 +1701,8 @@ available for 4-d output (ignored).  Could use 'GDn' instead.\n");
     qh PRINTdim= qh hull_dim-1;
   }
 } /* initqhull_globals */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002670/002672) */
  
 /*-<a                             href="qh-globa.htm#TOC"
   >-------------------------------</a><a name="initqhull_mem">-</a>
@@ -1708,6 +1722,7 @@ available for 4-d output (ignored).  Could use 'GDn' instead.\n");
     qh_produceoutput() prints memsizes
 
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_initqhull_mem (void) {
   int numsizes;
   int i;
@@ -1729,6 +1744,8 @@ void qh_initqhull_mem (void) {
   qh_user_memsizes();
   qh_memsetup();
 } /* initqhull_mem */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002575) */
 
 /*-<a                             href="qh-globa.htm#TOC"
   >-------------------------------</a><a name="initqhull_start">-</a>
@@ -1740,6 +1757,7 @@ void qh_initqhull_mem (void) {
   see:
     qh_maxmin() determines the precision constants
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_initqhull_start (FILE *infile, FILE *outfile, FILE *errfile) {
 
   qh_CPUclock; /* start the clock */
@@ -1792,6 +1810,8 @@ void qh_initqhull_start (FILE *infile, FILE *outfile, FILE *errfile) {
   qh tracevertex_id= UINT_MAX; /* recompile to trace a vertex */
   qh_RANDOMseed_(1);
 } /* initqhull_start */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002577) */
 
 /*-<a                             href="qh-globa.htm#TOC"
   >-------------------------------</a><a name="initthresholds">-</a>

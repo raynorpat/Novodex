@@ -38,6 +38,14 @@
  * obtained from http://www.qhull.org.
  * [vendored rows] setT *qh_detvridge ( (phys_fn_002697): the body is guarded off; the oracle's own instructions are transcribed in
  *     QhullRows.c. established at 0x00066b20
+ * [vendored rows] setT *qh_detvridge3 ( (phys_fn_002699/002701): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00066bf0
+ * [vendored rows] int qh_eachvoronoi ( (phys_fn_002703/002705): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00066de0
+ * [vendored rows] int qh_printvdiagram2 ( (phys_fn_002743): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00067f90
+ * [vendored rows] void qh_printvoronoi ( (phys_fn_002813/002815): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006a0e0
  */
 /*<html><pre>  -<a                             href="qh-io.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -523,6 +531,7 @@ setT *qh_detvridge (vertexT *vertex) {
       if neighbor selected
         add neighbor to set of Voronoi vertices
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 setT *qh_detvridge3 (vertexT *atvertex, vertexT *vertex) {
   setT *centers= qh_settemp (qh TEMPsize);
   setT *tricenters= qh_settemp (qh TEMPsize);
@@ -572,6 +581,8 @@ setT *qh_detvridge3 (vertexT *atvertex, vertexT *vertex) {
   qh_settempfree (&tricenters);
   return centers;
 } /* detvridge3 */      
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002699/002701) */
 
 /*-<a                             href="qh-io.htm#TOC"
   >-------------------------------</a><a name="eachvoronoi">-</a>
@@ -622,6 +633,7 @@ setT *qh_detvridge3 (vertexT *atvertex, vertexT *vertex) {
             build the set of shared neighbors (i.e., Voronoi vertices)
             call printvridge
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 int qh_eachvoronoi (FILE *fp, printvridgeT printvridge, vertexT *atvertex, boolT visitall, qh_RIDGE innerouter, boolT inorder) {
   boolT unbounded;
   int count;
@@ -694,6 +706,8 @@ int qh_eachvoronoi (FILE *fp, printvridgeT printvridge, vertexT *atvertex, boolT
   qh_settempfree (&tricenters);
   return totridges;
 } /* eachvoronoi */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002703/002705) */
   
 
 /*-<a                             href="qh-poly.htm#TOC"
@@ -3328,6 +3342,7 @@ void qh_printvdiagram (FILE *fp, int format, facetT *facetlist, setT *facets, bo
   see:
     qh_eachvoronoi_all()
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 int qh_printvdiagram2 (FILE *fp, printvridgeT printvridge, setT *vertices, qh_RIDGE innerouter, boolT inorder) {
   int totcount= 0;
   int vertex_i, vertex_n;
@@ -3344,6 +3359,8 @@ int qh_printvdiagram2 (FILE *fp, printvridgeT printvridge, setT *vertices, qh_RI
   }
   return totcount;
 } /* printvdiagram2 */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002743) */
   
 /*-<a                             href="qh-io.htm#TOC"
   >-------------------------------</a><a name="printvertex">-</a>
@@ -3513,6 +3530,7 @@ void qh_printvneighbors (FILE *fp, facetT* facetlist, setT *facets, boolT printa
     if all facets are upperdelaunay, 
       reverses lower and upper hull
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_printvoronoi (FILE *fp, int format, facetT *facetlist, setT *facets, boolT printall) {
   int k, numcenters, numvertices= 0, numneighbors, numinf, vid=1, vertex_i, vertex_n;
   facetT *facet, **facetp, *neighbor, **neighborp;
@@ -3617,6 +3635,8 @@ void qh_printvoronoi (FILE *fp, int format, facetT *facetlist, setT *facets, boo
     fprintf (fp, "}\n");
   qh_settempfree (&vertices);
 } /* printvoronoi */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002813/002815) */
   
 /*-<a                             href="qh-io.htm#TOC"
   >-------------------------------</a><a name="printvnorm">-</a>
