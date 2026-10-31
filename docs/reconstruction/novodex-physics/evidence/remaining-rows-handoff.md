@@ -4,8 +4,7 @@ The remaining-rows pass (`docs/superpowers/plans/2026-10-30-remaining-rows.md`, 
 `docs/superpowers/specs/2026-10-30-remaining-rows-design.md`) took the 270 rows that were `discovered` on 2026-10-30.
 Every first-party row (184) is now `reconstructed` with a static proof: a naked listing transcription whose
 listing-compare script finds every instruction equal and every call mapped. None of them has a differential or a
-mutation aimed at it, and the testing pass starts here. The 86 vendored rows stay `discovered` under the Task 5b
-promotion rule.
+mutation aimed at it, and the testing pass starts here. The 86 vendored rows were taken by the vendored-rows pass (below).
 
 ## The units
 
@@ -80,14 +79,25 @@ locked sections (lines 41 and 220), is now refused with the reentry report, wher
 
 None. Every first-party row was transcribed.
 
-## Vendored rows held for execution evidence
+## Vendored rows
 
-Per `evidence/vendored-correspondence.md`, "Remaining-rows pass (2026-10-30)". Each needs an execution arm (arm (i)
-exact, or arm (ii) outcome-exact) before promotion:
+The vendored-rows pass (`evidence/vendored-correspondence.md`, "Vendored-rows pass (2026-10-30)") transcribed all 86
+and recorded 67 with an exact execution. These 19 stay `discovered`, each transcribed and listing-equal, and are
+for the testing pass:
 
-* qhull, x87 code (16): 002425, 002438, 002444, 002485, 002487, 002518, 002550, 002558, 002571, 002573, 002970, 003101, 003107, 003109, 003184, 003204.
-* qhull, DIFF (27): 002522, 002528, 002532, 002534, 002536, 002538, 002566, 002568, 002570, 002575, 002577, 002670, 002672, 002699, 002701, 002703, 002705, 002743, 002813, 002815, 002987, 002989, 002991, 002993, 002995, 003412, 003415.
-* qhull, review verdict equivalent; no x87 (28): 002697, 002884, 002900, 002902, 002921, 002923, 002925, 002927, 002929, 002931, 002933, 002937, 002939, 002943, 002945, 002947, 002949, 002951, 002953, 002972, 003051, 003093, 003133, 003135, 003146, 003164, 003166, 003304.
-* opcode, DIFF (6): 004844, 005069, 005111, 005204, 005366, 005368.
-* opcode, x87 code (8): 005155, 005179, 005181, 005183, 005185, 005193, 005195, 005197.
-* opcode, review verdict equivalent; no x87 (1): 005281.
+* `qh_detvridge3` (002699, 002701): 3-d Delaunay/Voronoi only; those doubles diverge.
+* `qh_degen_redundant_facet` (002900, 002902): no driven input reaches it.
+* `qh_maydropneighbor` (002921, 002923, 002925): no driven input reaches it.
+* `qh_mergecycle_neighbors` (002927): no driven input reaches it.
+* `qh_mergecycle_ridges` (002929, 002931): no driven input reaches it.
+* `qh_mergecycle_vneighbors` (002933): no driven input reaches it.
+* `qh_mergecycle` (002995): no driven input reaches it.
+* `qh_checkvertex` (003093): no driven input reaches it.
+* `qh_furthestout` (003101): no driven input reaches it.
+* `qh_matchduplicates` (003107, 003109): no driven input reaches it.
+* `qh_printhashtable` (003133, 003135): error path only.
+* `qh_setprint` (003304): error path only.
+
+Found in passing, outside the pass: `evidence/convex-mesh-gap-2f-listing-compare.py`, `-2g-` and `-2l-` fail before
+comparing (a symbol lookup that matches two candidates, and an unpacking error), with the committed
+`listing_compare_lib.py` as well; they predate the pass and need their symbol names refreshed.

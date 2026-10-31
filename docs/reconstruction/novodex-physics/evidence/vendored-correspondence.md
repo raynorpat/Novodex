@@ -1716,3 +1716,138 @@ The rows, by standing:
 * qhull, DIFF: 002522 (`qh_scalelast`), 002528 (`qh_setdelaunay`), 002532 (`qh_voronoi_center`), 002534 (`qh_voronoi_center`), 002536 (`qh_voronoi_center`), 002538 (`qh_voronoi_center`), 002566 (`qh_init_qhull_command`), 002568 (`qh_init_qhull_command`), 002570 (`qh_init_qhull_command`), 002575 (`qh_initqhull_mem`), 002577 (`qh_initqhull_start`), 002670 (`qh_initqhull_globals`), 002672 (`qh_initqhull_globals`), 002699 (`qh_detvridge3`), 002701 (`qh_detvridge3`), 002703 (`qh_eachvoronoi`), 002705 (`qh_eachvoronoi`), 002743 (`qh_printvdiagram2`), 002813 (`qh_printvoronoi`), 002815 (`qh_printvoronoi`), 002987 (`qh_vertexridges`), 002989 (`qh_vertexridges`), 002991 (`qh_find_newvertex`), 002993 (`qh_find_newvertex`), 002995 (`qh_mergecycle`), 003412 (`qh_printallstatistics`), 003415 (`qh_errprint`).
 * qhull, review verdict equivalent; no x87: 002697 (`qh_detvridge`), 002884 (`qh_appendmergeset`), 002900 (`qh_degen_redundant_facet`), 002902 (`qh_degen_redundant_facet`), 002921 (`qh_maydropneighbor`), 002923 (`qh_maydropneighbor`), 002925 (`qh_maydropneighbor`), 002927 (`qh_mergecycle_neighbors`), 002929 (`qh_mergecycle_ridges`), 002931 (`qh_mergecycle_ridges`), 002933 (`qh_mergecycle_vneighbors`), 002937 (`qh_mergeneighbors`), 002939 (`qh_mergeridges`), 002943 (`qh_mergevertex_neighbors`), 002945 (`qh_mergevertex_neighbors`), 002947 (`qh_mergevertices`), 002949 (`qh_mergevertices`), 002951 (`qh_neighbor_intersections`), 002953 (`qh_neighbor_intersections`), 002972 (`qh_updatetested`), 003051 (`qh_matchvertices`), 003093 (`qh_checkvertex`), 003133 (`qh_printhashtable`), 003135 (`qh_printhashtable`), 003146 (`qh_triangulate_mirror`), 003164 (`qh_createsimplex`), 003166 (`qh_createsimplex`), 003304 (`qh_setprint`).
 * qhull, x87 code: 002425 (`qh_distplane`), 002438 (`qh_getangle`), 002444 (`qh_getdistance`), 002485 (`qh_findgooddist`), 002487 (`qh_gram_schmidt`), 002518 (`qh_randommatrix`), 002550 (`qh_joggleinput`), 002558 (`qh_rotateinput`), 002571 (`qh_initqhull_buffers`), 002573 (`qh_initqhull_buffers`), 002970 (`qh_tracemerging`), 003101 (`qh_furthestout`), 003107 (`qh_matchduplicates`), 003109 (`qh_matchduplicates`), 003184 (`qh_initialvertices`), 003204 (`qh_nextfurthest`).
+
+## Vendored-rows pass (2026-10-30)
+
+The vendored-rows plan (`docs/superpowers/plans/2026-10-30-vendored-rows.md`, spec
+`docs/superpowers/specs/2026-10-30-vendored-rows-design.md`) took the 86 vendored rows the remaining-rows pass held.
+Each function is now a naked listing transcription defined under its own symbol, its upstream body guarded off with
+`NX_VENDORED_LISTING_ROWS` in the `novodex/` copy: 15 OPCODE functions in `External/opcode/novodex/OpcodeVendoredRows.cpp`
+and 49 qhull functions in `External/qhull/novodex/QhullRows.c`. `evidence/vendored-rows-{opcode,qhull}-listing-compare.py`
+find every instruction equal to the oracle's and every call mapped as expected, and `tools/vendored_match.py` classes
+every transcribed group MATCH but `qh_distplane`, REVIEW for the compare chain that stands for its jump table.
+
+A row is recorded under Task 5b arm (i), unchanged: its group has an execution in which every family it reports
+(the family and its `_x87` sibling) matched the oracle in every word. `tools/close_static_rows.py --vendored` checks
+that against `vendored_coverage.csv` and writes both proofs; the dynamic proof names the family and lists every
+non-exact family the group also ran in, each attributed below. 67 rows are recorded and 19 held.
+
+The trace is of `NxPhysicsThirdPartyTests.exe` and `NxPhysicsAssetTests.exe` as built at the pass's end:
+
+* thirdparty: `build\Release\NxPhysicsThirdPartyTests.exe` sha256 `fefa0b07a4ddb9611b3cb0441bc90b0e50c9aca7c921e977123ea20c5f1c232a`
+* asset: `build\Release\NxPhysicsAssetTests.exe` sha256 `140a3bf02505e2ff3bc6b57a961867cc2b8ed215e206a0a851ac34f4ff964cec`
+
+### Recorded rows
+
+| Library | Function | Rows | Exact family cited |
+|---|---|---|---|
+| opcode | `Container::Container(const Container&) [operator=(const Container&) IceContainer.cpp:340 inlined]` | 004844 | `container_copy` |
+| opcode | `SphereCollider::SphereTriOverlap(const Point&, const Point&, const Point&)` | 005069 | `opcode_sphere` |
+| opcode | `OBBCollider::ValidateSettings  [ICF-folded with PlanesCollider::ValidateSettings, OPC_PlanesCollider.cpp:80]` | 005111 | `vendored_rows_opcode_validate` |
+| opcode | `Plane::Set(const Point&, const Point&, const Point&)` | 005155 | `ice_plane_triangle` |
+| opcode | `Triangle::Area` | 005179 | `ice_plane_triangle` |
+| opcode | `Triangle::Normal(Point&) const` | 005181 | `ice_plane_triangle` |
+| opcode | `Triangle::Center(Point&)` | 005183 | `ice_plane_triangle` |
+| opcode | `Triangle::Inflate(float, bool)` | 005185 | `ice_plane_triangle` |
+| opcode | `Matrix4x4::CoFactor(udword, udword)` | 005193 | `ice_matrix4x4` |
+| opcode | `Matrix4x4::Determinant` | 005195 | `ice_matrix4x4` |
+| opcode | `Matrix4x4::Invert` | 005197 | `ice_matrix4x4` |
+| opcode | `OBB::ComputeWorldEdgeNormal(udword, Point&) const` | 005204 | `vendored_rows_opcode_edge_normal` |
+| opcode | `SAP_PairData::Init(udword)` | 005281 | `opcode_sap` |
+| opcode | `Model::~Model` | 005366 | `vendored_rows_opcode_model_release` |
+| opcode | `Model::Build(const OPCODECREATE&)` | 005368 | `opcode_model_build` |
+| qhull | `qh_distplane` | 002425 | `qhull_hull` |
+| qhull | `qh_getangle` | 002438 | `qhull_hull` |
+| qhull | `qh_getdistance` | 002444 | `vendored_rows_qhull_good` |
+| qhull | `qh_findgooddist` | 002485 | `vendored_rows_qhull_good` |
+| qhull | `qh_gram_schmidt` | 002487 | `qhull_hull_rotated` |
+| qhull | `qh_randommatrix` | 002518 | `qhull_hull_rotated` |
+| qhull | `qh_scalelast` | 002522 | `qhull_hull` |
+| qhull | `qh_setdelaunay` | 002528 | `qhull_merge2` |
+| qhull | `qh_voronoi_center` | 002532, 002534, 002536, 002538 | `qhull_output_delaunay` |
+| qhull | `qh_joggleinput` | 002550 | `qhull_random` |
+| qhull | `qh_rotateinput` | 002558 | `qhull_hull_rotated` |
+| qhull | `qh_init_qhull_command` | 002566, 002568, 002570 | `qhull_hull` |
+| qhull | `qh_initqhull_buffers` | 002571, 002573 | `qhull_hull` |
+| qhull | `qh_initqhull_mem` | 002575 | `qhull_hull` |
+| qhull | `qh_initqhull_start` | 002577 | `qhull_hull` |
+| qhull | `qh_initqhull_globals` | 002670, 002672 | `qhull_hull` |
+| qhull | `qh_detvridge` | 002697 | `qhull_output_delaunay` |
+| qhull | `qh_eachvoronoi` | 002703, 002705 | `qhull_output_delaunay` |
+| qhull | `qh_printvdiagram2` | 002743 | `qhull_output_delaunay` |
+| qhull | `qh_printvoronoi` | 002813, 002815 | `qhull_output_delaunay` |
+| qhull | `qh_appendmergeset` | 002884 | `vendored_rows_qhull_good` |
+| qhull | `qh_mergeneighbors` | 002937 | `vendored_rows_qhull_good` |
+| qhull | `qh_mergeridges` | 002939 | `vendored_rows_qhull_good` |
+| qhull | `qh_mergevertex_neighbors` | 002943, 002945 | `vendored_rows_qhull_good` |
+| qhull | `qh_mergevertices` | 002947, 002949 | `vendored_rows_qhull_good` |
+| qhull | `qh_neighbor_intersections` | 002951, 002953 | `vendored_rows_qhull_mirror` |
+| qhull | `qh_tracemerging` | 002970 | `vendored_rows_qhull_good` |
+| qhull | `qh_updatetested` | 002972 | `qhull_hull` |
+| qhull | `qh_vertexridges` | 002987, 002989 | `vendored_rows_qhull_good` |
+| qhull | `qh_find_newvertex` | 002991, 002993 | `vendored_rows_qhull_good` |
+| qhull | `qh_matchvertices` | 003051 | `qhull_hull` |
+| qhull | `qh_triangulate_mirror` | 003146 | `vendored_rows_qhull_mirror` |
+| qhull | `qh_createsimplex` | 003164, 003166 | `qhull_hull` |
+| qhull | `qh_initialvertices` | 003184 | `qhull_hull` |
+| qhull | `qh_nextfurthest` | 003204 | `qhull_hull` |
+| qhull | `qh_printallstatistics` | 003412 | `vendored_rows_qhull_good` |
+| qhull | `qh_errprint` | 003415 | `qhull_paths_t4` |
+
+### Held rows
+
+Each stays `discovered` / `vendored_not_falsified`; its notes say why, and it goes to the testing pass:
+
+* `qh_detvridge3` (002699, 002701): 3-d Delaunay/Voronoi only; those doubles diverge.
+* `qh_degen_redundant_facet` (002900, 002902): no driven input reaches it.
+* `qh_maydropneighbor` (002921, 002923, 002925): no driven input reaches it.
+* `qh_mergecycle_neighbors` (002927): no driven input reaches it.
+* `qh_mergecycle_ridges` (002929, 002931): no driven input reaches it.
+* `qh_mergecycle_vneighbors` (002933): no driven input reaches it.
+* `qh_mergecycle` (002995): no driven input reaches it.
+* `qh_checkvertex` (003093): no driven input reaches it.
+* `qh_furthestout` (003101): no driven input reaches it.
+* `qh_matchduplicates` (003107, 003109): no driven input reaches it.
+* `qh_printhashtable` (003133, 003135): error path only.
+* `qh_setprint` (003304): error path only.
+
+### What changed in the gates
+
+* **Families now exact, re-registered `verdict=exact`, ceilings removed:** `ice_plane_triangle`, `ice_matrix4x4`, the
+  four first-party `*.plane_divergent` splits, `qhull_hull_x87`, `qhull_output_x87`, `qhull_output_delaunay_x87`,
+  `qhull_merge2_x87` and `qhull_random_x87`. The collision `ray_inflated_tris` and `convex_mesh_ray` callee splits
+  are empty (Inflate and Invert agree on every case) and their ceilings are zero. A `kDivergent` family with no
+  `kDivergentCeilings` entry is now compared exactly.
+* **Ceilings lowered** to the measured integer figures: `qhull_output_delaunay3_x87`, `qhull_trace_x87`,
+  `qhull_options_x87`, `qhull_merge_x87`, `qhull_direct_x87`, `opcode_ray_boundary`.
+* **Moved the other way, attributed:** `qhull_exact_other_x87` (exact before) differs by one double, 1 ulp, and
+  `qhull_output_dims_x87`'s ulp ceilings rose for doubles next to zero (`beyond_abs` unchanged). Both follow the
+  transcribed `qh_distplane`, the oracle's code, reading normals that the upstream geometry rows, already promoted and
+  outside the pass, round in their own last bit. `vendored_rows_qhull_cycles2_x87` differs by two doubles, 1 ulp.
+* **Fifteen new families**, `vendored_rows_*`, drive rows nothing else ran exactly; phases 4 and 7 floors rose by 15.
+
+### Attribution of the non-exact families a recorded row also ran in
+
+* `*_x87` qhull families (`qhull_output_dims_x87`, `qhull_output_delaunay3_x87`, `qhull_direct_x87`,
+  `qhull_options_x87`, `qhull_trace_x87`, `qhull_merge_x87`, `qhull_exact_other_x87`,
+  `vendored_rows_qhull_cycles2_x87`): doubles from the upstream geometry rows (summation order and register lifetimes),
+  as above; their discrete words are exact.
+* `qhull_paths`, `qhull_hull_rotated` and the boundary/QR1 families: the search-path counters and rotated inputs
+  attributed in the qhull-gap and Task 5b sections.
+* OPCODE `opcode_model_build_x87`, `opcode_candidate_trees_x87` and `ice_obb`: the splatter-tie, quantized-tree and
+  OBB-rotation divergences attributed in Tasks 4 and 5b.
+
+### Where the build was held to the oracle
+
+* Guarding a body can change its callers' inlining. Each time a promoted group's class or coverage got worse the pass
+  restored the oracle's shape: `qh_scalelast` transcribed early (it had been inlined into `qh_projectinput`);
+  `merge.c` keeps a static copy of `qh_appendmergeset` for the three callers the oracle inlines it into;
+  `qh_newvertex`, `qh_tracemerge`, `qh_redundant_vertex` and `qh_triangulate_link` are `__declspec(noinline)`.
+* `Model::~Model` is a plain naked function the destructor's symbol is aliased to (MSVC writes the vptr ahead of a
+  naked destructor's body); OBB's edge-normal table is built in-file from the oracle's bytes; the
+  `AABBTreeOfTrianglesBuilder` constructor (row 005360) is kept out of line by an uncalled helper.
+* Oracle `0x000f4dc0` is the CRT's `floor`, not `_ftol2_sse` (`ORACLE_KNOWN` corrected); the oracle CRT's `stderr`
+  (`0x00122640`), pushed before one error exit, is a placeholder object.
+* The harness keeps a stand-in host object published through `gQhullHost` for the whole run, since the transcriptions
+  call the host's slots directly as the oracle does; the exe takes `AABBTreeOfTrianglesBuilder`'s constructor COMDAT
+  from the harness's own object (identity `DIFFERS`, not a transcribed row).
