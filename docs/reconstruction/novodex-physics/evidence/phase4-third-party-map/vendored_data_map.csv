@@ -348,7 +348,7 @@ oracle_rva,candidate_symbol,method
 0x001257c8,_qh_qhstat+0x338,delta
 0x001257d0,_qh_qhstat+0x340,delta
 0x001257d8,_qh_qhstat+0x348,delta
-0x001257e0,_qh_qhstat+0x350,delta
+0x001257e0,_qh_qhstat+0x350,cooccurrence
 0x001257e8,_qh_qhstat+0x358,delta
 0x001257f0,_qh_qhstat+0x360,delta
 0x001257f8,_qh_qhstat+0x368,delta

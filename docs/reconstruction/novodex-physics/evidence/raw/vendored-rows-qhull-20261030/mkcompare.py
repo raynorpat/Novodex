@@ -11,7 +11,7 @@ alt = dict(re.findall(r'/alternatename:_(\w+)=(\S+?)"\)', open(headp).read()))
 alt = {k: v for k, v in alt.items() if 'Call' in k}  # data aliases are named by static_ranges / data, not calls
 rows = []
 for sym, lo, hi, tag, decl in cfg.ROWS:
-    rows.append("('%s', 0x%x, 0x%x)" % (sym, lo, hi))
+    rows.append("('%s', 0x%x, 0x%x)" % (sym if sym.startswith(('?', '_')) else '_' + sym, lo, hi))  # a C row: its exact map name
 exp = {}
 for t, nm in cfg.CALLS.items():
     exp[t - 0x10000000] = alt.get(nm, nm)

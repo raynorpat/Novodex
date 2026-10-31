@@ -1,130 +1,328 @@
-qh_distplane _qh_distplane instructions=162 differing=0
-qh_getangle _qh_getangle instructions=41 differing=0
-qh_getdistance _qh_getdistance instructions=101 differing=0
-qh_findgooddist _qh_findgooddist instructions=157 differing=0
-qh_gram_schmidt _qh_gram_schmidt instructions=98 differing=0
-qh_randommatrix _qh_randommatrix instructions=41 differing=0
-qh_scalelast _qh_scalelast instructions=97 differing=0
-qh_joggleinput _qh_joggleinput instructions=205 differing=0
-qh_rotateinput _qh_rotateinput instructions=24 differing=0
-qh_initqhull_buffers _qh_initqhull_buffers instructions=81 differing=0
-qh_tracemerging _qh_tracemerging instructions=60 differing=0
-qh_furthestout _qh_furthestout instructions=74 differing=0
-qh_matchduplicates _qh_matchduplicates instructions=319 differing=0
-qh_initialvertices _qh_initialvertices instructions=388 differing=0
-qh_nextfurthest _qh_nextfurthest instructions=218 differing=0
+_qh_distplane _qh_distplane instructions=162 differing=0
+_qh_getangle _qh_getangle instructions=41 differing=0
+_qh_getdistance _qh_getdistance instructions=101 differing=0
+_qh_findgooddist _qh_findgooddist instructions=157 differing=0
+_qh_gram_schmidt _qh_gram_schmidt instructions=98 differing=0
+_qh_randommatrix _qh_randommatrix instructions=41 differing=0
+_qh_scalelast _qh_scalelast instructions=97 differing=0
+_qh_joggleinput _qh_joggleinput instructions=205 differing=0
+_qh_rotateinput _qh_rotateinput instructions=24 differing=0
+_qh_initqhull_buffers _qh_initqhull_buffers instructions=81 differing=0
+_qh_detvridge _qh_detvridge instructions=75 differing=0
+_qh_appendmergeset _qh_appendmergeset instructions=143 differing=0
+_qh_degen_redundant_facet _qh_degen_redundant_facet instructions=165 differing=0
+_qh_maydropneighbor _qh_maydropneighbor instructions=209 differing=0
+_qh_mergecycle_neighbors _qh_mergecycle_neighbors instructions=195 differing=0
+_qh_mergecycle_ridges _qh_mergecycle_ridges instructions=243 differing=0
+_qh_mergecycle_vneighbors _qh_mergecycle_vneighbors instructions=123 differing=0
+_qh_mergeneighbors _qh_mergeneighbors instructions=100 differing=0
+_qh_mergeridges _qh_mergeridges instructions=80 differing=0
+_qh_mergevertex_neighbors _qh_mergevertex_neighbors instructions=97 differing=0
+_qh_mergevertices _qh_mergevertices instructions=128 differing=0
+_qh_neighbor_intersections _qh_neighbor_intersections instructions=118 differing=0
+_qh_tracemerging _qh_tracemerging instructions=60 differing=0
+_qh_updatetested _qh_updatetested instructions=76 differing=0
+_qh_vertexridges _qh_vertexridges instructions=84 differing=0
+_qh_find_newvertex _qh_find_newvertex instructions=326 differing=0
+_qh_mergecycle _qh_mergecycle instructions=188 differing=0
+_qh_matchvertices _qh_matchvertices instructions=74 differing=0
+_qh_checkvertex _qh_checkvertex instructions=104 differing=0
+_qh_furthestout _qh_furthestout instructions=74 differing=0
+_qh_matchduplicates _qh_matchduplicates instructions=319 differing=0
+_qh_triangulate_mirror _qh_triangulate_mirror instructions=57 differing=0
+_qh_createsimplex _qh_createsimplex instructions=127 differing=0
+_qh_initialvertices _qh_initialvertices instructions=388 differing=0
+_qh_nextfurthest _qh_nextfurthest instructions=218 differing=0
 ALL EQUAL
-  call qh_distplane -> oracle 0x1005fe20 ; candidate _qh_rand
-  call qh_distplane -> oracle 0x10074710 ; candidate _qh_pointid
-  call qh_getangle -> oracle 0x1005fe20 ; candidate _qh_rand
-  call qh_getangle -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_getdistance -> oracle 0x1005c5c0 ; candidate _qh_distplane
-  call qh_findgooddist -> oracle 0x1005c5c0 ; candidate _qh_distplane
-  call qh_findgooddist -> oracle 0x10074780 ; candidate _qh_removefacet
-  call qh_findgooddist -> oracle 0x10073d20 ; candidate _qh_appendfacet
-  call qh_findgooddist -> oracle 0x1005c5c0 ; candidate _qh_distplane
-  call qh_findgooddist -> oracle 0x10074780 ; candidate _qh_removefacet
-  call qh_findgooddist -> oracle 0x10073d20 ; candidate _qh_appendfacet
-  call qh_findgooddist -> oracle 0x10074710 ; candidate _qh_pointid
-  call qh_findgooddist -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_findgooddist -> oracle 0x10074710 ; candidate _qh_pointid
-  call qh_findgooddist -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_scalelast -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_scalelast -> oracle 0x1005ee20 ; candidate _qh_divzero
-  call qh_scalelast -> oracle 0x10084800 ; candidate _qh_errexit
-  call qh_joggleinput -> oracle 0x100f4722 ; candidate _malloc
-  call qh_joggleinput -> oracle 0x10084800 ; candidate _qh_errexit
-  call qh_joggleinput -> oracle 0x10060a40 ; candidate _qh_detjoggle
-  call qh_joggleinput -> oracle 0x10062560 ; candidate _qh_option
-  call qh_joggleinput -> oracle 0x10062560 ; candidate _qh_option
-  call qh_joggleinput -> oracle 0x10084800 ; candidate _qh_errexit
-  call qh_joggleinput -> oracle 0x10062560 ; candidate _qh_option
-  call qh_joggleinput -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_joggleinput -> oracle 0x10060420 ; candidate _qh_setdelaunay
-  call qh_rotateinput -> oracle 0x1005ea60 ; candidate _qh_copypoints
-  call qh_rotateinput -> oracle 0x1005ff40 ; candidate _qh_rotatepoints
-  call qh_initqhull_buffers -> oracle 0x1007f0d0 ; candidate _qh_setnew
-  call qh_initqhull_buffers -> oracle 0x1007f0d0 ; candidate _qh_setnew
-  call qh_initqhull_buffers -> oracle 0x1007f0d0 ; candidate _qh_setnew
-  call qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
-  call qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
-  call qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
-  call qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
-  call qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
-  call qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
-  call qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
-  call qh_tracemerging -> oracle 0x100f5bff ; candidate __time32
-  call qh_tracemerging -> oracle 0x100f5fa4 ; candidate __localtime32
-  call qh_tracemerging -> oracle 0x100f515d ; candidate _clock
-  call qh_tracemerging -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_furthestout -> oracle 0x1005c5c0 ; candidate _qh_distplane
-  call qh_furthestout -> oracle 0x1007ed50 ; candidate _qh_setdel
-  call qh_furthestout -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_furthestout -> oracle 0x10074710 ; candidate _qh_pointid
-  call qh_furthestout -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_matchduplicates -> oracle 0x100742f0 ; candidate _qh_gethash
-  call qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_matchduplicates -> oracle 0x100744a0 ; candidate _qh_matchvertices
-  call qh_matchduplicates -> oracle 0x1007ab80 ; candidate _qh_errexit2
-  call qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_matchduplicates -> oracle 0x1005d560 ; candidate _qh_getdistance
-  call qh_matchduplicates -> oracle 0x1005d560 ; candidate _qh_getdistance
-  call qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_matchduplicates -> oracle 0x10084800 ; candidate _qh_errexit
-  call qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
-  call qh_matchduplicates -> oracle 0x1007ae20 ; candidate _qh_precision
-  call qh_matchduplicates -> oracle 0x10084820 ; candidate _qh_errprint
-  call qh_initialvertices -> oracle 0x1007fba0 ; candidate _qh_settemp
-  call qh_initialvertices -> oracle 0x1007fba0 ; candidate _qh_settemp
-  call qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_initialvertices -> oracle 0x1005fe20 ; candidate _qh_rand
-  call qh_initialvertices -> oracle 0x100f4dc0 ; candidate __ftol2_sse
-  call qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
-  call qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_initialvertices -> oracle 0x1007fba0 ; candidate _qh_settemp
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1005f600 ; candidate _qh_maxsimplex
-  call qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
-  call qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
-  call qh_initialvertices -> oracle 0x1005ec50 ; candidate _qh_detsimplex
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1007edb0 ; candidate _qh_setdellast
-  call qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
-  call qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
-  call qh_initialvertices -> oracle 0x1005ec50 ; candidate _qh_detsimplex
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
-  call qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
-  call qh_initialvertices -> oracle 0x1005ec50 ; candidate _qh_detsimplex
-  call qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
-  call qh_initialvertices -> oracle 0x1007fd20 ; candidate _qh_settempfree
-  call qh_initialvertices -> oracle 0x1005f600 ; candidate _qh_maxsimplex
-  call qh_initialvertices -> oracle 0x1005f600 ; candidate _qh_maxsimplex
-  call qh_initialvertices -> oracle 0x10076930 ; candidate _qh_newvertex
-  call qh_initialvertices -> oracle 0x1007f9b0 ; candidate _qh_setaddnth
-  call qh_initialvertices -> oracle 0x1007fd20 ; candidate _qh_settempfree
-  call qh_nextfurthest -> oracle 0x1007ef90 ; candidate _qh_setfree
-  call qh_nextfurthest -> oracle 0x10076100 ; candidate _qh_furthestout
-  call qh_nextfurthest -> oracle 0x1007f0a0 ; candidate _qh_setlast
-  call qh_nextfurthest -> oracle 0x1007edb0 ; candidate _qh_setdellast
-  call qh_nextfurthest -> oracle 0x1007ef90 ; candidate _qh_setfree
-  call qh_nextfurthest -> oracle 0x10074780 ; candidate _qh_removefacet
-  call qh_nextfurthest -> oracle 0x10076d80 ; candidate _qh_prependfacet
-  call qh_nextfurthest -> oracle 0x1007f2a0 ; candidate _qh_setsize
-  call qh_nextfurthest -> oracle 0x1005fe20 ; candidate _qh_rand
-  call qh_nextfurthest -> oracle 0x100f4dc0 ; candidate __ftol2_sse
-  call qh_nextfurthest -> oracle 0x1007ef90 ; candidate _qh_setfree
-  call qh_nextfurthest -> oracle 0x10084800 ; candidate _qh_errexit
-  call qh_nextfurthest -> oracle 0x10079350 ; candidate _qh_furthestnext
-  call qh_nextfurthest -> oracle 0x1007edb0 ; candidate _qh_setdellast
-  call qh_nextfurthest -> oracle 0x1007f670 ; candidate _qh_setdelnth
-MAPPINGS checked=113 unexpected=0
+  call _qh_distplane -> oracle 0x1005fe20 ; candidate _qh_rand
+  call _qh_distplane -> oracle 0x10074710 ; candidate _qh_pointid
+  call _qh_getangle -> oracle 0x1005fe20 ; candidate _qh_rand
+  call _qh_getangle -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_getdistance -> oracle 0x1005c5c0 ; candidate _qh_distplane
+  call _qh_findgooddist -> oracle 0x1005c5c0 ; candidate _qh_distplane
+  call _qh_findgooddist -> oracle 0x10074780 ; candidate _qh_removefacet
+  call _qh_findgooddist -> oracle 0x10073d20 ; candidate _qh_appendfacet
+  call _qh_findgooddist -> oracle 0x1005c5c0 ; candidate _qh_distplane
+  call _qh_findgooddist -> oracle 0x10074780 ; candidate _qh_removefacet
+  call _qh_findgooddist -> oracle 0x10073d20 ; candidate _qh_appendfacet
+  call _qh_findgooddist -> oracle 0x10074710 ; candidate _qh_pointid
+  call _qh_findgooddist -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_findgooddist -> oracle 0x10074710 ; candidate _qh_pointid
+  call _qh_findgooddist -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_scalelast -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_scalelast -> oracle 0x1005ee20 ; candidate _qh_divzero
+  call _qh_scalelast -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_joggleinput -> oracle 0x100f4722 ; candidate _malloc
+  call _qh_joggleinput -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_joggleinput -> oracle 0x10060a40 ; candidate _qh_detjoggle
+  call _qh_joggleinput -> oracle 0x10062560 ; candidate _qh_option
+  call _qh_joggleinput -> oracle 0x10062560 ; candidate _qh_option
+  call _qh_joggleinput -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_joggleinput -> oracle 0x10062560 ; candidate _qh_option
+  call _qh_joggleinput -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_joggleinput -> oracle 0x10060420 ; candidate _qh_setdelaunay
+  call _qh_rotateinput -> oracle 0x1005ea60 ; candidate _qh_copypoints
+  call _qh_rotateinput -> oracle 0x1005ff40 ; candidate _qh_rotatepoints
+  call _qh_initqhull_buffers -> oracle 0x1007f0d0 ; candidate _qh_setnew
+  call _qh_initqhull_buffers -> oracle 0x1007f0d0 ; candidate _qh_setnew
+  call _qh_initqhull_buffers -> oracle 0x1007f0d0 ; candidate _qh_setnew
+  call _qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_initqhull_buffers -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_detvridge -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_detvridge -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_detvridge -> oracle 0x1007fce0 ; candidate _qh_setunique
+  call _qh_detvridge -> oracle 0x1007fa60 ; candidate _qh_setappend
+  push _qh_detvridge -> oracle 0x100662e0 ; candidate _qh_compare_facetvisit
+  call _qh_detvridge -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_detvridge -> oracle 0x100f5cb0 ; candidate _nxQhCallQsort
+  call _qh_detvridge -> oracle 0x1007fd20 ; candidate _qh_settempfree
+  call _qh_appendmergeset -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_appendmergeset -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_appendmergeset -> oracle 0x1007f0a0 ; candidate _qh_setlast
+  call _qh_appendmergeset -> oracle 0x1007f9b0 ; candidate _qh_setaddnth
+  call _qh_appendmergeset -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_appendmergeset -> oracle 0x1007ab80 ; candidate _qh_errexit2
+  call _qh_appendmergeset -> oracle 0x1007ee50 ; candidate _qh_setequal
+  call _qh_appendmergeset -> oracle 0x1007ab80 ; candidate _qh_errexit2
+  call _qh_appendmergeset -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_degen_redundant_facet -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_degen_redundant_facet -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_degen_redundant_facet -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_degen_redundant_facet -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_degen_redundant_facet -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_degen_redundant_facet -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_degen_redundant_facet -> oracle 0x1007f0a0 ; candidate _qh_setlast
+  call _qh_degen_redundant_facet -> oracle 0x1007f9b0 ; candidate _qh_setaddnth
+  call _qh_degen_redundant_facet -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_degen_redundant_facet -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_maydropneighbor -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_maydropneighbor -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_maydropneighbor -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_maydropneighbor -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_maydropneighbor -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_maydropneighbor -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_maydropneighbor -> oracle 0x1007f0a0 ; candidate _qh_setlast
+  call _qh_maydropneighbor -> oracle 0x1007f9b0 ; candidate _qh_setaddnth
+  call _qh_maydropneighbor -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_maydropneighbor -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_maydropneighbor -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_maydropneighbor -> oracle 0x1006da50 ; candidate _qh_memalloc
+  call _qh_maydropneighbor -> oracle 0x1007f0a0 ; candidate _qh_setlast
+  call _qh_maydropneighbor -> oracle 0x1007f9b0 ; candidate _qh_setaddnth
+  call _qh_maydropneighbor -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_maydropneighbor -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_neighbors -> oracle 0x100761d0 ; candidate _qh_infiniteloop
+  call _qh_mergecycle_neighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_neighbors -> oracle 0x1007f5c0 ; candidate _qh_setcompact
+  call _qh_mergecycle_neighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_neighbors -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_neighbors -> oracle 0x1007f220 ; candidate _qh_setreplace
+  call _qh_mergecycle_neighbors -> oracle 0x1006efb0 ; candidate _qh_makeridges
+  call _qh_mergecycle_neighbors -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergecycle_neighbors -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergecycle_neighbors -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_neighbors -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_neighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_ridges -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_ridges -> oracle 0x1007f5c0 ; candidate _qh_setcompact
+  call _qh_mergecycle_ridges -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_ridges -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_mergecycle_ridges -> oracle 0x1007ef90 ; candidate _qh_setfree
+  call _qh_mergecycle_ridges -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergecycle_ridges -> oracle 0x1007ef90 ; candidate _qh_setfree
+  call _qh_mergecycle_ridges -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_ridges -> oracle 0x1007f440 ; candidate _qh_settruncate
+  call _qh_mergecycle_ridges -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_mergecycle_ridges -> oracle 0x10074640 ; candidate _qh_newridge
+  call _qh_mergecycle_ridges -> oracle 0x1007f840 ; candidate _qh_setnew_delnthsorted
+  call _qh_mergecycle_ridges -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_ridges -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_ridges -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_vneighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_vneighbors -> oracle 0x1006e240 ; candidate _qh_basevertices
+  call _qh_mergecycle_vneighbors -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_vneighbors -> oracle 0x1007f5c0 ; candidate _qh_setcompact
+  call _qh_mergecycle_vneighbors -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_vneighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle_vneighbors -> oracle 0x1007edf0 ; candidate _qh_setdelsorted
+  call _qh_mergecycle_vneighbors -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergecycle_vneighbors -> oracle 0x1007fd20 ; candidate _qh_settempfree
+  call _qh_mergecycle_vneighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergeneighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergeneighbors -> oracle 0x1006efb0 ; candidate _qh_makeridges
+  call _qh_mergeneighbors -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergeneighbors -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergeneighbors -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergeneighbors -> oracle 0x1007f220 ; candidate _qh_setreplace
+  call _qh_mergeneighbors -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergeneighbors -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergeridges -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergeridges -> oracle 0x10076070 ; candidate _qh_delridge
+  call _qh_mergeridges -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergevertex_neighbors -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergevertex_neighbors -> oracle 0x10084820 ; candidate _qh_errprint
+  call _qh_mergevertex_neighbors -> oracle 0x1007f220 ; candidate _qh_setreplace
+  call _qh_mergevertex_neighbors -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_mergevertex_neighbors -> oracle 0x1006ff70 ; candidate _qh_mergevertex_del
+  call _qh_mergevertex_neighbors -> oracle 0x10084820 ; candidate _qh_errprint
+  call _qh_mergevertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_mergevertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_mergevertices -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_mergevertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergevertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergevertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergevertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_mergevertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_mergevertices -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_mergevertices -> oracle 0x1007ef90 ; candidate _qh_setfree
+  call _qh_mergevertices -> oracle 0x1007f380 ; candidate _qh_settemppop
+  call _qh_neighbor_intersections -> oracle 0x1007f610 ; candidate _qh_setcopy
+  call _qh_neighbor_intersections -> oracle 0x10077610 ; candidate _qh_vertexintersect_new
+  call _qh_neighbor_intersections -> oracle 0x1007fc40 ; candidate _qh_settemppush
+  call _qh_neighbor_intersections -> oracle 0x1007edf0 ; candidate _qh_setdelsorted
+  call _qh_neighbor_intersections -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_neighbor_intersections -> oracle 0x1007a270 ; candidate _qh_vertexintersect
+  call _qh_neighbor_intersections -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_neighbor_intersections -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_neighbor_intersections -> oracle 0x1007fd20 ; candidate _qh_settempfree
+  call _qh_tracemerging -> oracle 0x100f5bff ; candidate __time32
+  call _qh_tracemerging -> oracle 0x100f5fa4 ; candidate __localtime32
+  call _qh_tracemerging -> oracle 0x100f515d ; candidate _clock
+  call _qh_tracemerging -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_updatetested -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_updatetested -> oracle 0x1006dc10 ; candidate _qh_memfree
+  call _qh_vertexridges -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_vertexridges -> oracle 0x10071030 ; candidate _qh_vertexridges_facet
+  call _qh_vertexridges -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_vertexridges -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_find_newvertex -> oracle 0x1007f670 ; candidate _qh_setdelnth
+  call _qh_find_newvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_find_newvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_find_newvertex -> oracle 0x100f4d5a ; candidate _fprintf
+  push _qh_find_newvertex -> oracle 0x1006e650 ; candidate _qh_comparemerge
+  call _qh_find_newvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_find_newvertex -> oracle 0x100f5cb0 ; candidate _nxQhCallQsort
+  call _qh_find_newvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_find_newvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_find_newvertex -> oracle 0x100768e0 ; candidate _qh_newhashtable
+  call _qh_find_newvertex -> oracle 0x1006eea0 ; candidate _qh_hashridge
+  call _qh_find_newvertex -> oracle 0x10071960 ; candidate _qh_vertexridges
+  call _qh_find_newvertex -> oracle 0x1006eef0 ; candidate _qh_hashridge_find
+  call _qh_find_newvertex -> oracle 0x1007fd20 ; candidate _qh_settempfree
+  call _qh_find_newvertex -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_find_newvertex -> oracle 0x1007ef90 ; candidate _qh_setfree
+  call _qh_find_newvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_find_newvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_find_newvertex -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_mergecycle -> oracle 0x10077690 ; candidate _qh_vertexneighbors
+  call _qh_mergecycle -> oracle 0x10070e90 ; candidate _qh_tracemerging
+  call _qh_mergecycle -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_mergecycle -> oracle 0x10084820 ; candidate _qh_errprint
+  call _qh_mergecycle -> oracle 0x1006efb0 ; candidate _qh_makeridges
+  call _qh_mergecycle -> oracle 0x1006f580 ; candidate _qh_mergecycle_neighbors
+  call _qh_mergecycle -> oracle 0x1006f7d0 ; candidate _qh_mergecycle_ridges
+  call _qh_mergecycle -> oracle 0x1006fac0 ; candidate _qh_mergecycle_vneighbors
+  call _qh_mergecycle -> oracle 0x1007f9b0 ; candidate _qh_setaddnth
+  call _qh_mergecycle -> oracle 0x100703b0 ; candidate _qh_newvertices
+  call _qh_mergecycle -> oracle 0x10071440 ; candidate _qh_mergecycle_facets
+  call _qh_mergecycle -> oracle 0x10070d30 ; candidate _qh_tracemerge
+  call _qh_matchvertices -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_checkvertex -> oracle 0x10074710 ; candidate _qh_pointid
+  call _qh_checkvertex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_checkvertex -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_checkvertex -> oracle 0x10084820 ; candidate _qh_errprint
+  call _qh_checkvertex -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_furthestout -> oracle 0x1005c5c0 ; candidate _qh_distplane
+  call _qh_furthestout -> oracle 0x1007ed50 ; candidate _qh_setdel
+  call _qh_furthestout -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_furthestout -> oracle 0x10074710 ; candidate _qh_pointid
+  call _qh_furthestout -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_matchduplicates -> oracle 0x100742f0 ; candidate _qh_gethash
+  call _qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_matchduplicates -> oracle 0x100744a0 ; candidate _qh_matchvertices
+  call _qh_matchduplicates -> oracle 0x1007ab80 ; candidate _qh_errexit2
+  call _qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_matchduplicates -> oracle 0x1005d560 ; candidate _qh_getdistance
+  call _qh_matchduplicates -> oracle 0x1005d560 ; candidate _qh_getdistance
+  call _qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_matchduplicates -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_matchduplicates -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_matchduplicates -> oracle 0x1007ae20 ; candidate _qh_precision
+  call _qh_matchduplicates -> oracle 0x10084820 ; candidate _qh_errprint
+  call _qh_triangulate_mirror -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_triangulate_mirror -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_triangulate_mirror -> oracle 0x100774a0 ; candidate _qh_triangulate_link
+  call _qh_triangulate_mirror -> oracle 0x100710c0 ; candidate _qh_willdelete
+  call _qh_triangulate_mirror -> oracle 0x100710c0 ; candidate _qh_willdelete
+  call _qh_createsimplex -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_createsimplex -> oracle 0x10074560 ; candidate _qh_newfacet
+  call _qh_createsimplex -> oracle 0x10076930 ; candidate _qh_newvertex
+  call _qh_createsimplex -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_createsimplex -> oracle 0x10074560 ; candidate _qh_newfacet
+  call _qh_createsimplex -> oracle 0x1007f840 ; candidate _qh_setnew_delnthsorted
+  call _qh_createsimplex -> oracle 0x10073d20 ; candidate _qh_appendfacet
+  call _qh_createsimplex -> oracle 0x10073da0 ; candidate _qh_appendvertex
+  call _qh_createsimplex -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_createsimplex -> oracle 0x1007f440 ; candidate _qh_settruncate
+  call _qh_createsimplex -> oracle 0x1007fd20 ; candidate _qh_settempfree
+  call _qh_createsimplex -> oracle 0x100f4d5a ; candidate _fprintf
+  call _qh_initialvertices -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_initialvertices -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_initialvertices -> oracle 0x1005fe20 ; candidate _qh_rand
+  call _qh_initialvertices -> oracle 0x100f4dc0 ; candidate _floor
+  call _qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_initialvertices -> oracle 0x1007fba0 ; candidate _qh_settemp
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1005f600 ; candidate _qh_maxsimplex
+  call _qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_initialvertices -> oracle 0x1005ec50 ; candidate _qh_detsimplex
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1007edb0 ; candidate _qh_setdellast
+  call _qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_initialvertices -> oracle 0x1005ec50 ; candidate _qh_detsimplex
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_initialvertices -> oracle 0x1007f020 ; candidate _qh_setin
+  call _qh_initialvertices -> oracle 0x1005ec50 ; candidate _qh_detsimplex
+  call _qh_initialvertices -> oracle 0x1007fa60 ; candidate _qh_setappend
+  call _qh_initialvertices -> oracle 0x1007fd20 ; candidate _qh_settempfree
+  call _qh_initialvertices -> oracle 0x1005f600 ; candidate _qh_maxsimplex
+  call _qh_initialvertices -> oracle 0x1005f600 ; candidate _qh_maxsimplex
+  call _qh_initialvertices -> oracle 0x10076930 ; candidate _qh_newvertex
+  call _qh_initialvertices -> oracle 0x1007f9b0 ; candidate _qh_setaddnth
+  call _qh_initialvertices -> oracle 0x1007fd20 ; candidate _qh_settempfree
+  call _qh_nextfurthest -> oracle 0x1007ef90 ; candidate _qh_setfree
+  call _qh_nextfurthest -> oracle 0x10076100 ; candidate _qh_furthestout
+  call _qh_nextfurthest -> oracle 0x1007f0a0 ; candidate _qh_setlast
+  call _qh_nextfurthest -> oracle 0x1007edb0 ; candidate _qh_setdellast
+  call _qh_nextfurthest -> oracle 0x1007ef90 ; candidate _qh_setfree
+  call _qh_nextfurthest -> oracle 0x10074780 ; candidate _qh_removefacet
+  call _qh_nextfurthest -> oracle 0x10076d80 ; candidate _qh_prependfacet
+  call _qh_nextfurthest -> oracle 0x1007f2a0 ; candidate _qh_setsize
+  call _qh_nextfurthest -> oracle 0x1005fe20 ; candidate _qh_rand
+  call _qh_nextfurthest -> oracle 0x100f4dc0 ; candidate _floor
+  call _qh_nextfurthest -> oracle 0x1007ef90 ; candidate _qh_setfree
+  call _qh_nextfurthest -> oracle 0x10084800 ; candidate _qh_errexit
+  call _qh_nextfurthest -> oracle 0x10079350 ; candidate _qh_furthestnext
+  call _qh_nextfurthest -> oracle 0x1007edb0 ; candidate _qh_setdellast
+  call _qh_nextfurthest -> oracle 0x1007f670 ; candidate _qh_setdelnth
+MAPPINGS checked=291 unexpected=0

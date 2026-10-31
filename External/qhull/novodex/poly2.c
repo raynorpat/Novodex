@@ -21,6 +21,16 @@
  *     QhullRows.c. established at 0x00076230
  * [vendored rows] setT *qh_initialvertices( (phys_fn_003184): the body is guarded off; the oracle's own instructions are transcribed in
  *     QhullRows.c. established at 0x00079720
+ * [vendored rows] void qh_checkvertex ( (phys_fn_003093): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00075eb0
+ * [vendored rows] void qh_triangulate_mirror ( (phys_fn_003146): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00077580
+ * [vendored rows] void qh_createsimplex( (phys_fn_003164/003166): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00078970
+ * [build parity] qh_newvertex is __declspec(noinline): the oracle calls it from qh_makenewfacets.
+ *     established at 0x00079b80
+ * [build parity] qh_triangulate_link is __declspec(noinline): the oracle keeps it out of line; with this file's transcribed bodies guarded off a 2026 compiler inlined it.
+ *     established at 0x000774a0
  */
 /*<html><pre>  -<a                             href="qh-poly.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -974,6 +984,7 @@ void qh_checkpolygon(facetT *facetlist) {
   notes:
     neighbors checked efficiently in checkpolygon
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_checkvertex (vertexT *vertex) {
   boolT waserror= False;
   facetT *neighbor, **neighborp, *errfacet=NULL;
@@ -1002,6 +1013,8 @@ void qh_checkvertex (vertexT *vertex) {
     qh_errexit (qh_ERRqhull, errfacet, NULL);
   }
 } /* checkvertex */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003093) */
   
 /*-<a                             href="qh-poly.htm#TOC"
   >-------------------------------</a><a name="clearcenters">-</a>
@@ -1053,6 +1066,7 @@ void qh_clearcenters (qh_CENTER type) {
     for each new facet
       create its neighbor set
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_createsimplex(setT *vertices) {
   facetT *facet= NULL, *newfacet;
   boolT toporient= True;
@@ -1085,6 +1099,8 @@ void qh_createsimplex(setT *vertices) {
   qh_settempfree (&newfacets);
   trace1((qh ferr, "qh_createsimplex: created simplex\n"));
 } /* createsimplex */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003164/003166) */
 
 /*-<a                             href="qh-poly.htm#TOC"
   >-------------------------------</a><a name="delridge">-</a>
@@ -2288,7 +2304,9 @@ int qh_newhashtable(int newsize) {
   qh_newvertex( point )
     returns a new vertex for point
 */
-vertexT *qh_newvertex(pointT *point) {
+/* NOVODEX build parity (vendored-rows pass): not inlined, as the oracle's qh_makenewfacets calls it
+   (established at 0x00079b80); with this file's transcribed bodies guarded off a 2026 compiler would inline it. */
+__declspec(noinline) vertexT *qh_newvertex(pointT *point) {
   vertexT *vertex;
 
   zinc_(Ztotvertices);
@@ -2969,7 +2987,7 @@ void qh_triangulate_facet (facetT *facetA, vertexT **first_vertex) {
   design:
     if they are already neighbors, the opposing neighbors become MRGmirror facets
 */
-void qh_triangulate_link (facetT *oldfacetA, facetT *facetA, facetT *oldfacetB, facetT *facetB) {
+__declspec(noinline) void qh_triangulate_link (facetT *oldfacetA, facetT *facetA, facetT *oldfacetB, facetT *facetB) {
   int errmirror= False;
 
   trace3((qh ferr, "qh_triangulate_link: relink old facets f%d and f%d between neighbors f%d and f%d\n", 
@@ -3000,6 +3018,7 @@ void qh_triangulate_link (facetT *oldfacetA, facetT *facetA, facetT *oldfacetB, 
     since a null facet duplicates the first two vertices, the opposing neighbors absorb the null facet
     if they are already neighbors, the opposing neighbors become MRGmirror facets
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_triangulate_mirror (facetT *facetA, facetT *facetB) {
   facetT *neighbor, *neighborB;
   int neighbor_i, neighbor_n;
@@ -3015,6 +3034,8 @@ void qh_triangulate_mirror (facetT *facetA, facetT *facetB) {
   qh_willdelete (facetA, NULL);
   qh_willdelete (facetB, NULL);
 } /* triangulate_mirror */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_003146) */
 
 /*-<a                             href="qh-poly.htm#TOC"
   >-------------------------------</a><a name="triangulate_null">-</a>

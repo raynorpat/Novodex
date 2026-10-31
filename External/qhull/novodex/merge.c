@@ -4,6 +4,40 @@
  *
  * [vendored rows] void qh_tracemerging ( (phys_fn_002970): the body is guarded off; the oracle's own instructions are transcribed in
  *     QhullRows.c. established at 0x00070e90
+ * [vendored rows] void qh_appendmergeset( (phys_fn_002884): the body is kept as a static copy for this file's callers to inline (as the oracle's are); the external symbol is transcribed in
+ *     QhullRows.c. established at 0x0006e0b0
+ * [vendored rows] void qh_degen_redundant_facet ( (phys_fn_002900/002902): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006e6f0
+ * [vendored rows] void qh_maydropneighbor ( (phys_fn_002921/002923/002925): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006f2c0
+ * [vendored rows] void qh_mergecycle_neighbors( (phys_fn_002927): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006f580
+ * [vendored rows] void qh_mergecycle_ridges( (phys_fn_002929/002931): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006f7d0
+ * [vendored rows] void qh_mergecycle_vneighbors ( (phys_fn_002933): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006fac0
+ * [vendored rows] void qh_mergeneighbors( (phys_fn_002937): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006fd90
+ * [vendored rows] void qh_mergeridges( (phys_fn_002939): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006fea0
+ * [vendored rows] void qh_mergevertex_neighbors( (phys_fn_002943/002945): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x0006fff0
+ * [vendored rows] void qh_mergevertices( (phys_fn_002947/002949): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00070100
+ * [vendored rows] setT *qh_neighbor_intersections ( (phys_fn_002951/002953): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00070270
+ * [vendored rows] void qh_updatetested ( (phys_fn_002972): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00070f50
+ * [vendored rows] setT *qh_vertexridges ( (phys_fn_002987/002989): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00071960
+ * [vendored rows] vertexT *qh_find_newvertex ( (phys_fn_002991/002993): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00071a60
+ * [vendored rows] void qh_mergecycle ( (phys_fn_002995): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00071e10
+ * [build parity] qh_tracemerge is __declspec(noinline): the oracle keeps it out of line; with this file's transcribed bodies guarded off a 2026 compiler inlined it.
+ *     established at 0x00070d30
+ * [build parity] qh_redundant_vertex is __declspec(noinline): the oracle keeps it out of line; with this file's transcribed bodies guarded off a 2026 compiler inlined it.
+ *     established at 0x00072590
  */
 /*<html><pre>  -<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="TOP">-</a>
@@ -322,6 +356,13 @@ void qh_all_merges (boolT othermerge, boolT vneighbors) {
     else if redundant merge
       append to qh.degen_mergeset 
 */
+#ifdef NX_VENDORED_LISTING_ROWS
+/* The oracle inlines qh_appendmergeset into this file's callers and keeps the out-of-line row (phys_fn_002884),
+   which QhullRows.c transcribes: so the callers below keep a static copy to inline, and the external symbol is the
+   transcription. established at 0x0006e900, 0x0006f110 and 0x00073710 (inlined) against 0x0006e0b0 (the row). */
+#define qh_appendmergeset qh_appendmergeset_inlined
+static
+#endif
 void qh_appendmergeset(facetT *facet, facetT *neighbor, mergeType mergetype, realT *angle) {
   mergeT *merge, *lastmerge;
   void **freelistp; /* used !qh_NOmem */
@@ -364,6 +405,7 @@ void qh_appendmergeset(facetT *facet, facetT *neighbor, mergeType mergetype, rea
     qh_setappend (&(qh degen_mergeset), merge);
   }
 } /* appendmergeset */
+/* NX_VENDORED_LISTING_ROWS: the external qh_appendmergeset is transcribed in QhullRows.c (phys_fn_002884) */
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -649,6 +691,7 @@ void qh_copynonconvex (ridgeT *atridge) {
     test for redundant neighbor
     test for degenerate facet
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_degen_redundant_facet (facetT *facet) {
   vertexT *vertex, **vertexp;
   facetT *neighbor, **neighborp;
@@ -674,6 +717,8 @@ void qh_degen_redundant_facet (facetT *facet) {
     trace2((qh ferr, "qh_degen_redundant_neighbors: f%d is degenerate.\n", facet->id));
   }
 } /* degen_redundant_facet */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002900/002902) */
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -775,6 +820,7 @@ void qh_degen_redundant_neighbors (facetT *facet, facetT *delfacet) {
     for each vertex in vertices
       look for a vertex that would not cause a duplicate ridge after a rename
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 vertexT *qh_find_newvertex (vertexT *oldvertex, setT *vertices, setT *ridges) {
   vertexT *vertex, **vertexp;
   setT *newridges;
@@ -847,6 +893,8 @@ vertexT *qh_find_newvertex (vertexT *oldvertex, setT *vertices, setT *ridges) {
   qh_setfree (&qh hash_table);
   return vertex;
 } /* find_newvertex */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002991/002993) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="findbest_test">-</a>
@@ -1519,6 +1567,7 @@ void qh_mark_dupridges(facetT *facetlist) {
     if facet is degenerate
       append facet to qh.degen_mergeset
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_maydropneighbor (facetT *facet) {
   ridgeT *ridge, **ridgep;
   realT angledegen= qh_ANGLEdegen;
@@ -1552,6 +1601,8 @@ void qh_maydropneighbor (facetT *facet) {
     trace2((qh ferr, "qh_maydropneighbors: f%d is degenerate.\n", facet->id));
   }
 } /* maydropneighbor */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002921/002923/002925) */
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -1746,6 +1797,7 @@ void qh_merge_nonconvex (facetT *facet1, facetT *facet2, mergeType mergetype) {
       add its vertices to qh.newvertex_list
     delete samecycle facets a make newfacet a newfacet
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergecycle (facetT *samecycle, facetT *newfacet) {
   int traceonce= False, tracerestore= 0;
   vertexT *apex;
@@ -1806,6 +1858,8 @@ void qh_mergecycle (facetT *samecycle, facetT *newfacet) {
     qh IStracing= tracerestore;
   }
 } /* mergecycle */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002995) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="mergecycle_all">-</a>
@@ -1982,6 +2036,7 @@ void qh_mergecycle_facets (facetT *samecycle, facetT *newfacet) {
       else
         update neighbor sets
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergecycle_neighbors(facetT *samecycle, facetT *newfacet) {
   facetT *same, *neighbor, **neighborp;
   int delneighbors= 0, newneighbors= 0;
@@ -2044,6 +2099,8 @@ void qh_mergecycle_neighbors(facetT *samecycle, facetT *newfacet) {
   trace2((qh ferr, "qh_mergecycle_neighbors: deleted %d neighbors and added %d\n", 
              delneighbors, newneighbors));
 } /* mergecycle_neighbors */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002927) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="mergecycle_ridges">-</a>
@@ -2079,6 +2136,7 @@ void qh_mergecycle_neighbors(facetT *samecycle, facetT *newfacet) {
           and not samecycle facet or newfacet
             make ridge between neighbor and newfacet
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergecycle_ridges(facetT *samecycle, facetT *newfacet) {
   facetT *same, *neighbor= NULL;
   int numold=0, numnew=0;
@@ -2155,6 +2213,8 @@ void qh_mergecycle_ridges(facetT *samecycle, facetT *newfacet) {
   trace2((qh ferr, "qh_mergecycle_ridges: found %d old ridges and %d new ones\n", 
              numold, numnew));
 } /* mergecycle_ridges */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002929/002931) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="mergecycle_vneighbors">-</a>
@@ -2181,6 +2241,7 @@ void qh_mergecycle_ridges(facetT *samecycle, facetT *newfacet) {
         delete it from newfacet
         add it to qh.del_vertices for later deletion
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergecycle_vneighbors (facetT *samecycle, facetT *newfacet) {
   facetT *neighbor, **neighborp;
   unsigned int mergeid;
@@ -2214,6 +2275,8 @@ void qh_mergecycle_vneighbors (facetT *samecycle, facetT *newfacet) {
   trace3((qh ferr, "qh_mergecycle_vneighbors: merged vertices from cycle f%d into f%d\n", 
              samecycle->id, newfacet->id));
 } /* mergecycle_vneighbors */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002933) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="mergefacet">-</a>
@@ -2492,6 +2555,7 @@ void qh_mergefacet2d (facetT *facet1, facetT *facet2) {
         move the neighbor relation to facet2
     remove the neighbor relation for facet1 and facet2
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergeneighbors(facetT *facet1, facetT *facet2) {
   facetT *neighbor, **neighborp;
 
@@ -2519,6 +2583,8 @@ void qh_mergeneighbors(facetT *facet1, facetT *facet2) {
   qh_setdel(facet1->neighbors, facet2);  /* here for makeridges */
   qh_setdel(facet2->neighbors, facet1);
 } /* mergeneighbors */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002937) */
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -2540,6 +2606,7 @@ void qh_mergeneighbors(facetT *facet1, facetT *facet2) {
     for each remaining ridge
       rename facet1 to facet2  
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergeridges(facetT *facet1, facetT *facet2) {
   ridgeT *ridge, **ridgep;
   vertexT *vertex, **vertexp;
@@ -2562,6 +2629,8 @@ void qh_mergeridges(facetT *facet1, facetT *facet2) {
     qh_setappend(&(facet2->ridges), ridge);
   }
 } /* mergeridges */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002939) */
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -2745,6 +2814,7 @@ void qh_mergevertex_del (vertexT *vertex, facetT *facet1, facetT *facet2) {
   notes:
     assumes vertex neighbor sets are good
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergevertex_neighbors(facetT *facet1, facetT *facet2) {
   vertexT *vertex, **vertexp;
 
@@ -2767,6 +2837,8 @@ void qh_mergevertex_neighbors(facetT *facet1, facetT *facet2) {
   if (qh tracevertex) 
     qh_errprint ("TRACE", NULL, NULL, NULL, qh tracevertex);
 } /* mergevertex_neighbors */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002943/002945) */
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -2783,6 +2855,7 @@ void qh_mergevertex_neighbors(facetT *facet1, facetT *facet2) {
   design:
     create a merged set of both vertices (in inverse id order)
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_mergevertices(setT *vertices1, setT **vertices2) {
   int newsize= qh_setsize(vertices1)+qh_setsize(*vertices2) - qh hull_dim + 1;
   setT *mergedvertices;
@@ -2811,6 +2884,8 @@ void qh_mergevertices(setT *vertices1, setT **vertices2) {
   *vertices2= mergedvertices;
   qh_settemppop ();
 } /* mergevertices */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002947/002949) */
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -2836,6 +2911,7 @@ void qh_mergevertices(setT *vertices1, setT **vertices2) {
       return NULL if empty
     return the intersection set  
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 setT *qh_neighbor_intersections (vertexT *vertex) {
   facetT *neighbor, **neighborp, *neighborA, *neighborB;
   setT *intersect;
@@ -2871,6 +2947,8 @@ setT *qh_neighbor_intersections (vertexT *vertex) {
           qh_setsize (intersect), vertex->id));
   return intersect;
 } /* neighbor_intersections */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002951/002953) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="newvertices">-</a>
@@ -2992,7 +3070,7 @@ boolT qh_reducevertices (void) {
     if find a new vertex for vertex amoung these ridges and vertices
       rename vertex to the new vertex
 */
-vertexT *qh_redundant_vertex (vertexT *vertex) {
+__declspec(noinline) vertexT *qh_redundant_vertex (vertexT *vertex) {
   vertexT *newvertex= NULL;
   setT *vertices, *ridges;
 
@@ -3407,7 +3485,7 @@ boolT qh_test_vneighbors (void /* qh newfacet_list */) {
   qh_tracemerge( facet1, facet2 )
     print trace message after merge
 */
-void qh_tracemerge (facetT *facet1, facetT *facet2) {
+__declspec(noinline) void qh_tracemerge (facetT *facet1, facetT *facet2) {
   boolT waserror= False;
 
 #ifndef qh_NOtrace
@@ -3501,6 +3579,7 @@ At %d:%d:%d & %2.5g CPU secs, qhull has merged %d facets.  The hull\n\
         clear facet2->center to recompute centrum later
         clear ridge->tested for facet2's ridges
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 void qh_updatetested (facetT *facet1, facetT *facet2) {
   ridgeT *ridge, **ridgep;
   int size;
@@ -3528,6 +3607,8 @@ void qh_updatetested (facetT *facet1, facetT *facet2) {
       ridge->tested= False;
   }
 } /* updatetested */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002972) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="vertexridges">-</a>
@@ -3544,6 +3625,7 @@ void qh_updatetested (facetT *facet1, facetT *facet2) {
     for each neighbor of vertex
       add ridges that include the vertex to ridges  
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 setT *qh_vertexridges (vertexT *vertex) {
   facetT *neighbor, **neighborp;
   setT *ridges= qh_settemp (qh TEMPsize);
@@ -3566,6 +3648,8 @@ setT *qh_vertexridges (vertexT *vertex) {
   }
   return ridges;
 } /* vertexridges */
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002987/002989) */
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="vertexridges_facet">-</a>

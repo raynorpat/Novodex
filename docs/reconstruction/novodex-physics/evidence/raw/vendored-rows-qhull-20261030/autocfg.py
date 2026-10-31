@@ -180,7 +180,7 @@ for g in groups:
             if a <= t - B < e: continue
             if t - B in names: CALLS[t] = alias_for(names[t - B]) if names[t - B].startswith("?") else names[t - B]; continue
             s = cand_symbol(t - B)
-            if s and re.fullmatch(r'_qh\w*', s): CALLS[t] = s[1:]; continue  # a qhull C function: called by name
+            if s and (re.fullmatch(r'_qh\w*', s)): CALLS[t] = s[1:]; continue  # a qhull C function: called by name (a CRT call by name would go through the import)
             if s: CALLS[t] = alias_for(s); continue
             o = owner(t - B)
             unresolved.append('call %x from %x -> %s %s' % (t - B, i.address - B, o and o['id'], o and o['state']))

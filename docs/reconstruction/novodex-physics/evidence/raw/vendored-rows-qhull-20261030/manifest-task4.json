@@ -1,0 +1,111 @@
+{
+ "source": "External/qhull/novodex/QhullRows.c",
+ "compare": "evidence/vendored-rows-qhull-listing-compare.py",
+ "doc": "evidence/vendored-correspondence.md",
+ "instructions": 4778,
+ "mappings": 291,
+ "rows": {
+  "phys_fn_002697": {
+   "symbol": "qh_detvridge",
+   "what": "qhull qh_detvridge",
+   "group": "0x00066b20",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002937": {
+   "symbol": "qh_mergeneighbors",
+   "what": "qhull qh_mergeneighbors",
+   "group": "0x0006fd90",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002939": {
+   "symbol": "qh_mergeridges",
+   "what": "qhull qh_mergeridges",
+   "group": "0x0006fea0",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002943": {
+   "symbol": "qh_mergevertex_neighbors",
+   "what": "qhull qh_mergevertex_neighbors",
+   "group": "0x0006fff0",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002945": {
+   "symbol": "qh_mergevertex_neighbors",
+   "what": "qhull qh_mergevertex_neighbors",
+   "group": "0x0006fff0",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002947": {
+   "symbol": "qh_mergevertices",
+   "what": "qhull qh_mergevertices",
+   "group": "0x00070100",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002949": {
+   "symbol": "qh_mergevertices",
+   "what": "qhull qh_mergevertices",
+   "group": "0x00070100",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002951": {
+   "symbol": "qh_neighbor_intersections",
+   "what": "qhull qh_neighbor_intersections",
+   "group": "0x00070270",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002953": {
+   "symbol": "qh_neighbor_intersections",
+   "what": "qhull qh_neighbor_intersections",
+   "group": "0x00070270",
+   "family": "qhull_direct"
+  },
+  "phys_fn_002972": {
+   "symbol": "qh_updatetested",
+   "what": "qhull qh_updatetested",
+   "group": "0x00070f50",
+   "family": "qhull_hull"
+  },
+  "phys_fn_002987": {
+   "symbol": "qh_vertexridges",
+   "what": "qhull qh_vertexridges",
+   "group": "0x00071960",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002989": {
+   "symbol": "qh_vertexridges",
+   "what": "qhull qh_vertexridges",
+   "group": "0x00071960",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002991": {
+   "symbol": "qh_find_newvertex",
+   "what": "qhull qh_find_newvertex",
+   "group": "0x00071a60",
+   "family": "qhull_merge"
+  },
+  "phys_fn_002993": {
+   "symbol": "qh_find_newvertex",
+   "what": "qhull qh_find_newvertex",
+   "group": "0x00071a60",
+   "family": "qhull_merge"
+  },
+  "phys_fn_003051": {
+   "symbol": "qh_matchvertices",
+   "what": "qhull qh_matchvertices",
+   "group": "0x000744a0",
+   "family": "qhull_hull"
+  },
+  "phys_fn_003164": {
+   "symbol": "qh_createsimplex",
+   "what": "qhull qh_createsimplex",
+   "group": "0x00078970",
+   "family": "qhull_hull"
+  },
+  "phys_fn_003166": {
+   "symbol": "qh_createsimplex",
+   "what": "qhull qh_createsimplex",
+   "group": "0x00078970",
+   "family": "qhull_hull"
+  }
+ }
+}

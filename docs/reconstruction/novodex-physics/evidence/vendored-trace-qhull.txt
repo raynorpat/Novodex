@@ -75,6 +75,11 @@ first qhull-gap family; the six OPCODE groups that ran there read `release` wher
   thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851 mismatches=268 discrete=268 float_ulp=0 double_ulp=0 beyond=0 inf_words=0 degenerate=0 finite_ulp=0 beyond_abs=0 first_diff=35 length_delta=0 ceiling=268/268 verdict=divergent
   thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca mismatches=2001 discrete=0 float_ulp=0 double_ulp=inf beyond=547 inf_words=20 degenerate=0 finite_ulp=4611686018427387904 beyond_abs=2 first_diff=3 length_delta=0 ceiling=2001/0 verdict=divergent
 
+VENDORED-ROWS PASS, QHULL MERGE AND VERTEX ROWS (2026-10-30). Twenty more qhull functions are transcriptions in
+QhullRows.c. merge.c keeps a static copy of qh_appendmergeset for its own callers to inline, as the oracle's do, the
+external symbol being the transcription; qh_newvertex, qh_tracemerge, qh_redundant_vertex and qh_triangulate_link
+are __declspec(noinline), as the oracle keeps them out of line. This trace is of that build.
+
 VENDORED-ROWS PASS, QHULL (2026-10-30). Fifteen qhull functions are listing transcriptions in
 External/qhull/novodex/QhullRows.c (their upstream bodies guarded off in the novodex/ copies), and this trace is of
 that build. qhull_hull_x87, qhull_output_x87, qhull_output_delaunay_x87, qhull_merge2_x87 and qhull_random_x87 are
@@ -131,9 +136,13 @@ Candidate: build\Release\NxPhysics.dll sha256=05457441eea85bd4d02db0093f788b765e
 Debugger:  Microsoft (R) Windows Debugger Version 10.0.10586.567 X86
 Oracle:    oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
 Candidate: build\Release\NxPhysics.dll sha256=04e06acdd284c1ad06cf8fbde3ff75ebf35b9c05fee4f747512a7f380494bd3c
-Traced:    thirdparty: build\Release\NxPhysicsThirdPartyTests.exe sha256=d0ce666328db07561c075514b19c8c869d3ea3768e30a4fd2d9220b742684d98
+
+Debugger:  Microsoft (R) Windows Debugger Version 10.0.10586.567 X86
+Oracle:    oracle module path=D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: build\Release\NxPhysics.dll sha256=fb1bd2cb1a66164bdc9acc38fdb1ec9307b2a69fc8dd33fd4415ad41b26cf030
+Traced:    thirdparty: build\Release\NxPhysicsThirdPartyTests.exe sha256=53ed6f0f35d1e112276504df90649542313aba94a3d2209e3238c9f949d0e27d
            families and classes: qh_crossproduct=exact, qh_pointdist=exact, qh_maxabsval=exact, qh_rand=exact, qh_set=exact, qhull_facet=exact, qhull_release_arrays=exact, container=exact, container_copy=exact, radixsort=exact, complete_pruning=exact, bipartite_pruning=exact, pairwise_pruning=exact, segment_sqrdist.grid=exact, segment_sqrdist.wide=exact, mesh_topology=exact, prunable_ctor=exact, prunable_flags=exact, prunable_pruner=exact, prunable_ranges=exact, radix_setrankbuffers=exact, opcode_model_build=exact, opcode_model_build_x87=discrete, opcode_ray=exact, opcode_ray_x87=discrete, opcode_ray_boundary=discrete, opcode_sphere=exact, opcode_obb=exact, opcode_aabb=exact, opcode_lss=exact, opcode_planes=exact, opcode_treecollider=exact, opcode_treecollider_boundary=discrete, opcode_treecollider_callback=exact, opcode_treecollider_callback_boundary=discrete, opcode_treecollider_callback_collide=exact, opcode_treecollider_callback_collide_boundary=discrete, opcode_treecollider_callback_tribox=exact, opcode_treecollider_callback_tribox_boundary=discrete, opcode_treecollider_callback_boxtri=exact, opcode_treecollider_callback_boxtri_boundary=discrete, pmap_nearest=exact, pmap_classify=exact, pmap_corners=exact, hull_queue_pop=exact, hull_free=exact, hull_coplanar=exact, hull_flood=exact, hull_flood_start=exact, hull_flood_entry=exact, hull_cluster=exact, hull_init=exact, hull_build=exact, hull_delete=exact, hull_shape_init=exact, hull_shape_build=exact, opcode_aabbtree=exact, opcode_ray_vanilla=exact, opcode_sphere_vanilla=exact, opcode_aabb_vanilla=exact, opcode_aabbtree_refit=exact, opcode_refit=exact, opcode_sap=exact, ice_aabb=exact, ice_plane_triangle=exact, ice_indexedtriangle=exact, ice_matrix4x4=exact, ice_obb=discrete, qhull_hull=exact, qhull_hull_x87=exact, qhull_hull_rotated=exact, opcode_candidate_trees=exact, opcode_candidate_trees_ray=discrete, opcode_candidate_trees_x87=discrete, qhull_output=exact, qhull_output_x87=exact, qhull_output_dims=exact, qhull_output_dims_x87=discrete, qhull_output_delaunay=exact, qhull_output_delaunay_x87=exact, qhull_output_delaunay3=exact, qhull_output_delaunay3_x87=discrete, qhull_trace=exact, qhull_trace_x87=discrete, qhull_options=exact, qhull_options_x87=lastbit, qhull_merge2=exact, qhull_merge2_x87=exact, qhull_merge=exact, qhull_merge_x87=lastbit, qhull_random=exact, qhull_random_x87=exact, qhull_direct=exact, qhull_direct_x87=discrete, qhull_exact_output=exact, qhull_exact_output_x87=exact, qhull_exact_other=exact, qhull_exact_other_x87=lastbit, qhull_paths=discrete, qhull_paths_x87=exact, qhull_paths_t4=exact, qhull_paths_t4_x87=exact, qhull_rotation=exact, qhull_rotation_x87=exact, edge_list=exact, edge_list.plane_divergent=exact, ice_adjacencies=exact, ice_adjacencies.plane_divergent=exact, ice_valencies=exact, ice_meshbuilder2=exact, vertex_reduction=exact, pose_pair=exact, pose_pair.inverse_divergent=discrete, unique_axis=exact, edge_dedupe=exact, mesh_normals=exact, adjacency_owner=exact, adjacency_owner.plane_divergent=exact, hull_leaf=exact, convex_hull=exact, convex_hull.plane_divergent=exact, support_maps=exact, polygon_interface=exact, prunable_dispatch=exact, hull_host_size=exact, hull_create=exact, hull_create_qhull=exact, hull_create_obj=exact, hull_create_pc64=exact, hull_create_pc64_obj=exact, hull_compute=exact, hull_compute_qhull=exact, hull_compute_obj=exact, hull_compute_pc64=exact, hull_compute_pc64_obj=exact, hull_create_objbytes=exact, hull_create_pc64_objbytes=exact, hull_compute_objbytes=exact, hull_compute_pc64_objbytes=exact, hull_qhull_direct=exact, hull_qhull_direct_x87=exact
-Traced:    asset: build\Release\NxPhysicsAssetTests.exe sha256=09a03cc0e77e054555c49c31b7bf07c6e63d16c2bba673ae2768ce7f38444351
+Traced:    asset: build\Release\NxPhysicsAssetTests.exe sha256=aa1930d15ad9f13543a68fbda292923405c8cce73b0aab6611704282d6ca7cd9
            families and classes: asset=exact
 
 Per-group counts. One line per matched group of this library in match-CSV order:
@@ -143,686 +152,686 @@ is the ThirdParty harness's candidate-only layout assertions). A count of 5 is
 the cap: the breakpoint was disabled for the rest of that segment. `-` = not in the exe.
 
 0x0005c5c0 REVIEW _qh_distplane
-    thirdparty@0x0005a190:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032c20:0
+    thirdparty@0x0005a4a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032ce0:0
 0x0005c7d0 SHAPE  _qh_findbesthorizon
-    thirdparty@0x00053d80:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002b210:0
+    thirdparty@0x00053d80:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002ad50:0
 0x0005cb40 DIFF   _qh_findbestnew
-    thirdparty@0x000540d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002b560:0
+    thirdparty@0x000540d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002b0a0:0
 0x0005ceb0 REVIEW _qh_backnormal
-    thirdparty@0x000537d0:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_random=2 qhull_exact_output=5 qhull_exact_other=5 qhull_rotation=5 hull_create=5 hull_create_qhull=1 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=1 hull_compute_pc64=5 hull_qhull_direct=1 | asset@0x0002ac60:0
+    thirdparty@0x000537d0:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_random=2 qhull_exact_output=5 qhull_exact_other=5 qhull_rotation=5 hull_create=5 hull_create_qhull=1 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=1 hull_compute_pc64=5 hull_qhull_direct=1 | asset@0x0002a7a0:0
 0x0005d0e0 REVIEW _qh_gausselim
-    thirdparty@0x000543e0:qhull_hull=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_random=2 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=4 qhull_rotation=5 hull_create=5 hull_create_qhull=1 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=1 hull_compute_pc64=5 hull_qhull_direct=1 | asset@0x0002b870:0
+    thirdparty@0x000543e0:qhull_hull=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_random=2 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=4 qhull_rotation=5 hull_create=5 hull_create_qhull=1 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=1 hull_compute_pc64=5 hull_qhull_direct=1 | asset@0x0002b3b0:0
 0x0005d410 MATCH  _qh_getangle
-    thirdparty@0x0005a670:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00033100:0
+    thirdparty@0x0005ad20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00033560:0
 0x0005d4a0 SHAPE  _qh_getcenter
-    thirdparty@0x000545e0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002ba70:0
+    thirdparty@0x000545e0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002b5b0:0
 0x0005d560 MATCH  _qh_getdistance
-    thirdparty@0x0005a700:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 | asset@0x00033190:0
+    thirdparty@0x0005adb0:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 | asset@0x000335f0:0
 0x0005d670 REVIEW _qh_normalize2
-    thirdparty@0x00054850:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002bce0:0
+    thirdparty@0x00054850:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002b820:0
 0x0005d980 SHAPE  _qh_projectpoint
-    thirdparty@0x00054ad0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002bf60:0
+    thirdparty@0x00054ad0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002baa0:0
 0x0005d9f0 SHAPE  _qh_sethyperplane_det
-    thirdparty@0x000551c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002c650:0
+    thirdparty@0x000551c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002c190:0
 0x0005de50 REVIEW _qh_sethyperplane_gauss
-    thirdparty@0x00055600:qhull_output_delaunay=5 qhull_output_delaunay3=5 | asset@0x0002ca90:0
+    thirdparty@0x00055600:qhull_output_delaunay=5 qhull_output_delaunay3=5 | asset@0x0002c5d0:0
 0x0005dfb0 SHAPE  _qh_findbest
-    thirdparty@0x000539a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002ae30:0
+    thirdparty@0x000539a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002a970:0
 0x0005e3e0 SHAPE  _qh_getcentrum
-    thirdparty@0x000546a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002bb30:0
+    thirdparty@0x000546a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002b670:0
 0x0005e470 SHAPE  _qh_normalize
-    thirdparty@0x00054830:0 | asset@0x0002bcc0:0
+    thirdparty@0x00054830:0 | asset@0x0002b800:0
 0x0005e490 DIFF   _qh_setfacetplane
-    thirdparty@0x00054b50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002bfe0:0
+    thirdparty@0x00054b50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002bb20:0
 0x0005ea60 REVIEW _qh_copypoints
-    thirdparty@0x0004f5a0:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x0002cbd0:0
+    thirdparty@0x0004f5a0:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x0002c710:0
 0x0005eac0 SHAPE  _qh_crossproduct
-    thirdparty@0x0004f600:qh_crossproduct=5 qhull_output=5 qhull_exact_output=5 | asset@0x0002cc30:0
+    thirdparty@0x0004f600:qh_crossproduct=5 qhull_output=5 qhull_exact_output=5 | asset@0x0002c770:0
 0x0005eb10 REVIEW _qh_determinant
-    thirdparty@0x0004f650:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_options=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002cc80:0
+    thirdparty@0x0004f650:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_options=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002c7c0:0
 0x0005ec50 REVIEW _qh_detsimplex
-    thirdparty@0x0004fe50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002d4a0:0
+    thirdparty@0x0004fe50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002cfc0:0
 0x0005ed60 SHAPE  _qh_distnorm
-    thirdparty@0x00050030:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 qhull_exact_other=5 | asset@0x0002d680:0
+    thirdparty@0x00050030:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 qhull_exact_other=5 | asset@0x0002d1a0:0
 0x0005ed90 SHAPE  _qh_distround
-    thirdparty@0x00050060:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002d6b0:0
+    thirdparty@0x00050060:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002d1d0:0
 0x0005ee20 REVIEW _qh_divzero
-    thirdparty@0x000500f0:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=1 qhull_random=1 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=1 hull_create=3 hull_compute=3 | asset@0x0002d740:0
+    thirdparty@0x000500f0:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=1 qhull_random=1 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=1 hull_create=3 hull_compute=3 | asset@0x0002d260:0
 0x0005eed0 REVIEW _qh_facetarea_simplex
-    thirdparty@0x000502a0:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_options=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002d7d0:0
+    thirdparty@0x000502a0:qhull_hull=5 qhull_output=5 qhull_output_delaunay=5 qhull_options=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002d2f0:0
 0x0005f170 MATCH  _qh_findgooddist
-    thirdparty@0x0005a3b0:0 | asset@0x00032e40:0
+    thirdparty@0x0005aa60:0 | asset@0x000332a0:0
 0x0005f360 MATCH  _qh_gram_schmidt
-    thirdparty@0x0005a810:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x000332a0:0
+    thirdparty@0x0005aec0:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x00033700:0
 0x0005f460 REVIEW _qh_inthresholds
-    thirdparty@0x000507b0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002dce0:0
+    thirdparty@0x000507b0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002d800:0
 0x0005f530 SHAPE  _qh_maxabsval
-    thirdparty@0x000508c0:qh_maxabsval=5 | asset@0x0002ddf0:0
+    thirdparty@0x000508c0:qh_maxabsval=5 | asset@0x0002d910:0
 0x0005f590 SHAPE  _qh_maxouter
     thirdparty@0x00050b50:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x0005f600 REVIEW _qh_maxsimplex
-    thirdparty@0x00050bb0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002e080:0
+    thirdparty@0x00050bb0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002dba0:0
 0x0005f9f0 REVIEW _qh_orientoutside
-    thirdparty@0x00050f50:qhull_hull=5 qhull_output=5 qhull_trace=5 qhull_exact_output=5 qhull_exact_other=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x0002e420:0
+    thirdparty@0x00050f50:qhull_hull=5 qhull_output=5 qhull_trace=5 qhull_exact_output=5 qhull_exact_other=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x0002df40:0
 0x0005fa60 SHAPE  _qh_outerinner
-    thirdparty@0x00050fb0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=4 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 | asset@0x0002e480:0
+    thirdparty@0x00050fb0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=4 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 | asset@0x0002dfa0:0
 0x0005fb70 SHAPE  _qh_pointdist
-    thirdparty@0x00051130:qh_pointdist=5 qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002e600:0
+    thirdparty@0x00051130:qh_pointdist=5 qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0002e120:0
 0x0005fbb0 SHAPE  _qh_printmatrix
-    thirdparty@0x00051170:qhull_direct=5 qhull_exact_other=5 | asset@0x0002e640:0
+    thirdparty@0x00051170:qhull_direct=5 qhull_exact_other=5 | asset@0x0002e160:0
 0x0005fc50 REVIEW _qh_printpoints
-    thirdparty@0x000511e0:0 | asset@0x0002e6b0:0
+    thirdparty@0x000511e0:0 | asset@0x0002e1d0:0
 0x0005fd10 REVIEW _qh_projectpoints
-    thirdparty@0x00051630:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=3 qhull_options=5 qhull_merge2=5 qhull_random=3 qhull_direct=5 qhull_exact_other=3 qhull_paths=5 qhull_rotation=3 | asset@0x0002eb00:0
+    thirdparty@0x00051630:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=3 qhull_options=5 qhull_merge2=5 qhull_random=3 qhull_direct=5 qhull_exact_other=3 qhull_paths=5 qhull_rotation=3 | asset@0x0002e620:0
 0x0005fe20 REVIEW _qh_rand
-    thirdparty@0x00051750:qh_rand=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002ec20:0
+    thirdparty@0x00051750:qh_rand=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002e740:0
 0x0005fe50 SHAPE  _qh_srand
-    thirdparty@0x00051df0:qh_rand=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002f2c0:0
+    thirdparty@0x00051df0:qh_rand=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002ede0:0
 0x0005fe80 REVIEW _qh_randomfactor
-    thirdparty@0x00051790:qhull_random=5 | asset@0x0002ec60:0
+    thirdparty@0x00051790:qhull_random=5 | asset@0x0002e780:0
 0x0005fec0 MATCH  _qh_randommatrix
-    thirdparty@0x0005b7f0:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x00034280:0
+    thirdparty@0x0005d0b0:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x000358f0:0
 0x0005ff40 SHAPE  _qh_rotatepoints
-    thirdparty@0x00051800:qhull_hull_rotated=5 qhull_direct=5 qhull_exact_other=5 qhull_rotation=5 | asset@0x0002ecd0:0
+    thirdparty@0x00051800:qhull_hull_rotated=5 qhull_direct=5 qhull_exact_other=5 qhull_rotation=5 | asset@0x0002e7f0:0
 0x0005fff0 MATCH  _qh_scalelast
-    thirdparty@0x0005b8d0:qhull_hull=5 qhull_output_delaunay=1 qhull_random=1 qhull_paths=1 | asset@0x00034360:0
+    thirdparty@0x0005d190:qhull_hull=5 qhull_output_delaunay=1 qhull_random=1 qhull_paths=1 | asset@0x000359d0:0
 0x00060130 REVIEW _qh_scalepoints
-    thirdparty@0x00051960:qhull_hull=5 qhull_options=1 qhull_exact_other=1 | asset@0x0002ee30:0
+    thirdparty@0x00051960:qhull_hull=5 qhull_options=1 qhull_exact_other=1 | asset@0x0002e950:0
 0x00060420 SHAPE  _qh_setdelaunay
-    thirdparty@0x00051c50:qhull_random=1 | asset@0x0002f120:0
+    thirdparty@0x00051c50:qhull_random=1 | asset@0x0002ec40:0
 0x000604d0 REVIEW _qh_sharpnewfacets
-    thirdparty@0x00051cf0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=3 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=3 hull_compute_pc64=5 hull_qhull_direct=3 | asset@0x0002f1c0:0
+    thirdparty@0x00051cf0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=3 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=3 hull_compute_pc64=5 hull_qhull_direct=3 | asset@0x0002ece0:0
 0x000605f0 DIFF   _qh_voronoi_center
-    thirdparty@0x00051e30:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0002f2f0:0
+    thirdparty@0x00051e30:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0002ee10:0
 0x00060a40 SHAPE  _qh_detjoggle
-    thirdparty@0x0004f760:qhull_random=4 qhull_direct=5 qhull_exact_other=5 | asset@0x0002cd90:0
+    thirdparty@0x0004f760:qhull_random=4 qhull_direct=5 qhull_exact_other=5 | asset@0x0002c8d0:0
 0x00060be0 DIFF   _qh_detroundoff
-    thirdparty@0x0004f8c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002cf10:0
+    thirdparty@0x0004f8c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002ca30:0
 0x00061170 SHAPE  _qh_facetarea
     thirdparty@0x00050180:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x000612a0 SHAPE  _qh_facetcenter
-    thirdparty@0x000504e0:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0002da10:0
+    thirdparty@0x000504e0:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0002d530:0
 0x00061310 SHAPE  _qh_getarea
-    thirdparty@0x00050550:qhull_hull=5 qhull_output=4 qhull_output_delaunay=1 qhull_options=2 qhull_exact_output=2 qhull_exact_other=2 | asset@0x0002da80:0
+    thirdparty@0x00050550:qhull_hull=5 qhull_output=4 qhull_output_delaunay=1 qhull_options=2 qhull_exact_output=2 qhull_exact_other=2 | asset@0x0002d5a0:0
 0x00061490 MATCH  _qh_joggleinput
-    thirdparty@0x0005aeb0:qhull_random=5 | asset@0x00033940:0
+    thirdparty@0x0005b560:qhull_random=5 | asset@0x00033da0:0
 0x00061780 DIFF   _qh_maxmin
-    thirdparty@0x00050910:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002de40:0
+    thirdparty@0x00050910:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002d960:0
 0x00061990 REVIEW _qh_projectinput
-    thirdparty@0x00051290:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=1 qhull_options=3 qhull_merge2=3 qhull_random=1 qhull_direct=4 qhull_exact_other=1 qhull_paths=2 qhull_rotation=1 | asset@0x0002e760:0
+    thirdparty@0x00051290:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=1 qhull_options=3 qhull_merge2=3 qhull_random=1 qhull_direct=4 qhull_exact_other=1 qhull_paths=2 qhull_rotation=1 | asset@0x0002e280:0
 0x00061cd0 MATCH  _qh_rotateinput
-    thirdparty@0x0005b870:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x00034300:0
+    thirdparty@0x0005d130:qhull_hull_rotated=5 qhull_rotation=5 | asset@0x00035970:0
 0x00061d30 REVIEW _qh_scaleinput
-    thirdparty@0x000518b0:qhull_hull=5 qhull_options=1 qhull_exact_other=1 | asset@0x0002ed80:0
+    thirdparty@0x000518b0:qhull_hull=5 qhull_options=1 qhull_exact_other=1 | asset@0x0002e8a0:0
 0x00061d90 REVIEW _qh_freebuild
-    thirdparty@0x0005bad0:qhull_random=5 | asset@0x0001a8e0:0
+    thirdparty@0x0005d600:qhull_random=5 | asset@0x0001a8e0:0
 0x00062070 DIFF   _qh_init_qhull_command
     thirdparty:- | asset:-
 0x000621c0 MATCH  _qh_initqhull_buffers
-    thirdparty@0x0005ad60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x000337f0:0
+    thirdparty@0x0005b410:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00033c50:0
 0x00062320 DIFF   _qh_initqhull_mem
     thirdparty:- | asset:-
 0x000623a0 DIFF   _qh_initqhull_start
     thirdparty:- | asset:-
 0x00062560 SHAPE  _qh_option
-    thirdparty@0x00060070:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0001ee70:0
+    thirdparty@0x00061b90:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0001ee70:0
 0x00062660 SHAPE  _qh_strtod
     thirdparty:- | asset:-
 0x00062690 SHAPE  _qh_strtol
     thirdparty:- | asset:-
 0x000626c0 DIFF   _qh_init_A
-    thirdparty@0x0005bde0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001abe0:0
+    thirdparty@0x0005d900:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001abe0:0
 0x000626f0 DIFF   _qh_initflags
-    thirdparty@0x0005c270:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001b070:0
+    thirdparty@0x0005dd90:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001b070:0
 0x00065110 DIFF   _qh_initqhull_globals
-    thirdparty@0x0005f1a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001dfa0:0
+    thirdparty@0x00060cc0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001dfa0:0
 0x00065c40 SHAPE  _qh_initthresholds
-    thirdparty@0x0005fc70:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001ea70:0
+    thirdparty@0x00061790:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001ea70:0
 0x000660a0 DIFF   _qh_init_B
-    thirdparty@0x0005c080:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001ae80:0
+    thirdparty@0x0005dba0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001ae80:0
 0x00066270 REVIEW _qh_compare_facetarea
-    thirdparty@0x00062790:qhull_options=5 qhull_exact_other=5 | asset@0x0001ef90:0
+    thirdparty@0x000642c0:qhull_options=5 qhull_exact_other=5 | asset@0x0001ef90:0
 0x000662c0 SHAPE  _qh_compare_facetmerge
-    thirdparty@0x000627e0:qhull_options=5 qhull_exact_other=5 | asset@0x0001efe0:0
+    thirdparty@0x00064310:qhull_options=5 qhull_exact_other=5 | asset@0x0001efe0:0
 0x000662e0 SHAPE  _qh_compare_facetvisit
-    thirdparty@0x00062810:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0001f010:0
+    thirdparty@0x00064340:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0001f010:0
 0x00066310 REVIEW _qh_detvnorm
-    thirdparty@0x00062a10:qhull_output_delaunay=5 qhull_output_delaunay3=5 | asset@0x0001f210:0
-0x00066b20 REVIEW _qh_detvridge
-    thirdparty:- | asset:-
+    thirdparty@0x00064540:qhull_output_delaunay=5 qhull_output_delaunay3=5 | asset@0x0001f210:0
+0x00066b20 MATCH  _qh_detvridge
+    thirdparty@0x0005a3d0:qhull_output_delaunay=5 qhull_direct=5 | asset@0x00032c10:0
 0x00066bf0 DIFF   _qh_detvridge3
-    thirdparty@0x00063050:qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0001f850:0
-0x00066de0 DIFF   _qh_eachvoronoi
+    thirdparty@0x00064b80:qhull_output_delaunay3=5 qhull_direct=5 | asset@0x0001f850:0
+0x00066de0 REVIEW _qh_eachvoronoi
     thirdparty:- | asset:-
 0x00067080 SHAPE  _qh_facet2point
-    thirdparty@0x00063230:qhull_output_dims=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0001fa30:0
+    thirdparty@0x00064d60:qhull_output_dims=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0001fa30:0
 0x00067130 SHAPE  _qh_geomplanes
-    thirdparty@0x00063430:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=4 | asset@0x0001fc30:0
+    thirdparty@0x00064f60:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=4 | asset@0x0001fc30:0
 0x000671f0 REVIEW _qh_markkeep
-    thirdparty@0x000634f0:qhull_options=3 qhull_exact_other=3 | asset@0x0001fcf0:0
+    thirdparty@0x00065020:qhull_options=3 qhull_exact_other=3 | asset@0x0001fcf0:0
 0x000673d0 SHAPE  _qh_order_vertexneighbors
-    thirdparty@0x000638b0:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x000200b0:0
+    thirdparty@0x000653e0:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x000200b0:0
 0x00067500 REVIEW _qh_printcenter
-    thirdparty@0x00065600:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00021e20:0
+    thirdparty@0x00067130:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00021e20:0
 0x00067680 SHAPE  _qh_printfacet2geom_points
-    thirdparty@0x000662a0:qhull_output_dims=5 qhull_direct=5 qhull_exact_output=4 qhull_exact_other=4 | asset@0x00022650:0
+    thirdparty@0x00067dd0:qhull_output_dims=5 qhull_direct=5 qhull_exact_output=4 qhull_exact_other=4 | asset@0x00022650:0
 0x000677a0 SHAPE  _qh_printfacet2math
-    thirdparty@0x000663a0:qhull_direct=5 qhull_exact_other=4 | asset:-
+    thirdparty@0x00067ed0:qhull_direct=5 qhull_exact_other=4 | asset:-
 0x00067850 DIFF   _qh_printfacet3geom_points
-    thirdparty@0x00066690:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x000229a0:0
+    thirdparty@0x000681c0:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x000229a0:0
 0x00067a30 DIFF   _qh_printfacet3math
-    thirdparty@0x00066a60:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x00022d70:0
+    thirdparty@0x00068590:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x00022d70:0
 0x00067c10 REVIEW _qh_printfacet3vertex
-    thirdparty@0x00066be0:qhull_direct=5 qhull_exact_other=5 | asset:-
+    thirdparty@0x00068710:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x00067ca0 SHAPE  _qh_printfacetNvertex_nonsimplicial
-    thirdparty@0x00067010:qhull_direct=5 qhull_exact_other=5 | asset:-
+    thirdparty@0x00068b40:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x00067e00 REVIEW _qh_printfacetNvertex_simplicial
-    thirdparty@0x00067140:qhull_direct=5 qhull_exact_other=5 | asset:-
+    thirdparty@0x00068c70:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x00067f20 SHAPE  _qh_printpointid
-    thirdparty@0x000689c0:qhull_direct=5 qhull_exact_other=5 | asset:-
-0x00067f90 DIFF   _qh_printvdiagram2
-    thirdparty@0x00069190:qhull_output_delaunay=5 qhull_output_delaunay3=4 qhull_direct=4 | asset@0x00024f10:0
+    thirdparty@0x0006a4d0:qhull_direct=5 qhull_exact_other=5 | asset:-
+0x00067f90 REVIEW _qh_printvdiagram2
+    thirdparty@0x0006ac90:qhull_output_delaunay=5 qhull_output_delaunay3=4 qhull_direct=4 | asset@0x00024f10:0
 0x00068070 REVIEW _qh_printvertex
-    thirdparty@0x00069560:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x000252e0:0
+    thirdparty@0x0006afb0:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00025230:0
 0x00068200 REVIEW _qh_printvertices
-    thirdparty@0x00069700:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00025480:0
+    thirdparty@0x0006b150:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x000253d0:0
 0x00068290 REVIEW _qh_printvnorm
-    thirdparty@0x00069a10:qhull_output_delaunay=5 qhull_output_delaunay3=5 | asset@0x00025790:0
+    thirdparty@0x0006b460:qhull_output_delaunay=5 qhull_output_delaunay3=5 | asset@0x000256e0:0
 0x00068370 REVIEW _qh_printvridge
-    thirdparty@0x00069ef0:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x00025c70:0
+    thirdparty@0x0006b940:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 | asset@0x00025bc0:0
 0x00068410 REVIEW _qh_projectdim3
-    thirdparty@0x0006a1b0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00025f10:0
+    thirdparty@0x0006bbe0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00025e60:0
 0x00068480 REVIEW _qh_skipfacet
-    thirdparty@0x0006a210:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00025f70:0
+    thirdparty@0x0006bc40:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00025ec0:0
 0x00068510 REVIEW _qh_countfacets
-    thirdparty@0x00062840:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_trace=2 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001f040:0
+    thirdparty@0x00064370:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_trace=2 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001f040:0
 0x00068700 SHAPE  _qh_facetvertices
-    thirdparty@0x000632d0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=1 qhull_trace=2 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x0001fad0:0
+    thirdparty@0x00064e00:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=1 qhull_trace=2 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x0001fad0:0
 0x00068870 REVIEW _qh_markvoronoi
-    thirdparty@0x000636e0:qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_direct=2 | asset@0x0001fee0:0
+    thirdparty@0x00065210:qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_direct=2 | asset@0x0001fee0:0
 0x00068a50 DIFF   _qh_printend4geom
-    thirdparty@0x00065b70:qhull_output_dims=5 qhull_output_delaunay3=5 qhull_exact_output=5 | asset@0x00022390:0
+    thirdparty@0x000676a0:qhull_output_dims=5 qhull_output_delaunay3=5 qhull_exact_output=5 | asset@0x00022390:0
 0x00068ce0 SHAPE  _qh_printextremes
-    thirdparty@0x00065e00:qhull_direct=5 qhull_exact_other=4 | asset:-
+    thirdparty@0x00067930:qhull_direct=5 qhull_exact_other=4 | asset:-
 0x00068de0 SHAPE  _qh_printextremes_2d
-    thirdparty@0x00065ef0:qhull_direct=2 qhull_exact_other=1 | asset:-
+    thirdparty@0x00067a20:qhull_direct=2 qhull_exact_other=1 | asset:-
 0x00068fa0 SHAPE  _qh_printextremes_d
-    thirdparty@0x00066060:qhull_direct=4 | asset:-
+    thirdparty@0x00067b90:qhull_direct=4 | asset:-
 0x000690b0 DIFF   _qh_printfacet2geom
-    thirdparty@0x00066190:qhull_direct=5 qhull_exact_other=4 | asset:-
+    thirdparty@0x00067cc0:qhull_direct=5 qhull_exact_other=4 | asset:-
 0x000691c0 SHAPE  _qh_printhyperplaneintersection
-    thirdparty@0x000683b0:qhull_output=5 qhull_exact_output=5 | asset@0x000243d0:0
+    thirdparty@0x00069ec0:qhull_output=5 qhull_exact_output=5 | asset@0x000243d0:0
 0x00069520 SHAPE  _qh_printline3geom
-    thirdparty@0x00068670:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00024690:0
+    thirdparty@0x0006a180:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00024690:0
 0x00069690 SHAPE  _qh_printpoint
-    thirdparty@0x000688b0:qhull_direct=5 qhull_exact_other=5 | asset@0x000248d0:0
+    thirdparty@0x0006a3c0:qhull_direct=5 qhull_exact_other=5 | asset@0x000248d0:0
 0x000696c0 REVIEW _qh_printpoint3
-    thirdparty@0x00068940:qhull_direct=5 qhull_exact_other=5 | asset@0x00024960:0
+    thirdparty@0x0006a450:qhull_direct=5 qhull_exact_other=5 | asset@0x00024960:0
 0x00069730 DIFF   _qh_printpoints_out
-    thirdparty@0x00068a40:qhull_output=1 qhull_output_dims=1 qhull_exact_output=2 | asset@0x000249e0:0
+    thirdparty@0x0006a550:qhull_output=1 qhull_output_dims=1 qhull_exact_output=2 | asset@0x000249e0:0
 0x000699d0 SHAPE  _qh_printpointvect
-    thirdparty@0x00068cf0:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00024c90:0
+    thirdparty@0x0006a800:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00024c90:0
 0x00069ab0 SHAPE  _qh_printpointvect2
-    thirdparty@0x00068ed0:qhull_direct=5 qhull_exact_other=5 | asset:-
+    thirdparty@0x0006a9e0:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x00069b50 SHAPE  _qh_printridge
-    thirdparty@0x00068f40:qhull_output=5 qhull_output_dims=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00024e70:0
+    thirdparty@0x0006aa50:qhull_output=5 qhull_output_dims=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00024e70:0
 0x00069c10 DIFF   _qh_printspheres
-    thirdparty@0x00068ff0:qhull_direct=5 qhull_exact_other=3 | asset:-
+    thirdparty@0x0006aaf0:qhull_direct=5 qhull_exact_other=3 | asset:-
 0x00069cd0 REVIEW _qh_printvdiagram
-    thirdparty@0x000690e0:qhull_direct=2 | asset:-
+    thirdparty@0x0006abe0:qhull_direct=2 | asset:-
 0x00069da0 REVIEW _qh_printvertexlist
-    thirdparty@0x000696a0:qhull_output=5 qhull_output_dims=2 qhull_trace=2 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00025420:0
+    thirdparty@0x0006b0f0:qhull_output=5 qhull_output_dims=2 qhull_trace=2 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00025370:0
 0x00069e10 SHAPE  _qh_printvneighbors
-    thirdparty@0x00069770:qhull_output=2 qhull_output_dims=1 qhull_output_delaunay=1 qhull_exact_output=3 | asset@0x000254f0:0
+    thirdparty@0x0006b1c0:qhull_output=2 qhull_output_dims=1 qhull_output_delaunay=1 qhull_exact_output=3 | asset@0x00025440:0
 0x0006a0e0 DIFF   _qh_printvoronoi
-    thirdparty@0x00069ac0:qhull_output_delaunay=4 qhull_output_delaunay3=1 | asset@0x00025840:0
+    thirdparty@0x0006b510:qhull_output_delaunay=4 qhull_output_delaunay3=1 | asset@0x00025790:0
 0x0006a550 REVIEW _qh_printcentrum
-    thirdparty@0x00065760:qhull_output=5 qhull_exact_output=5 | asset@0x00021f80:0
+    thirdparty@0x00067290:qhull_output=5 qhull_exact_output=5 | asset@0x00021f80:0
 0x0006a810 REVIEW _qh_printend
-    thirdparty@0x000659f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_trace=2 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00022210:0
+    thirdparty@0x00067520:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_trace=2 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00022210:0
 0x0006a9b0 DIFF   _qh_printfacet3geom_nonsimplicial
-    thirdparty@0x00066440:qhull_output=5 qhull_exact_output=5 | asset@0x00022750:0
+    thirdparty@0x00067f70:qhull_output=5 qhull_exact_output=5 | asset@0x00022750:0
 0x0006ac30 DIFF   _qh_printfacet3geom_simplicial
-    thirdparty@0x00066830:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x00022b40:0
+    thirdparty@0x00068360:qhull_output=5 qhull_output_delaunay=5 qhull_exact_output=5 | asset@0x00022b40:0
 0x0006ae90 SHAPE  _qh_printfacet4geom_nonsimplicial
-    thirdparty@0x00066c80:qhull_output_dims=5 qhull_exact_output=5 | asset@0x00022ef0:0
+    thirdparty@0x000687b0:qhull_output_dims=5 qhull_exact_output=5 | asset@0x00022ef0:0
 0x0006b0b0 SHAPE  _qh_printfacet4geom_simplicial
-    thirdparty@0x00066e60:qhull_output_dims=5 qhull_output_delaunay3=5 | asset@0x000230d0:0
+    thirdparty@0x00068990:qhull_output_dims=5 qhull_output_delaunay3=5 | asset@0x000230d0:0
 0x0006b2b0 DIFF   _qh_printfacetheader
-    thirdparty@0x00067250:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00023280:0
+    thirdparty@0x00068d80:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00023280:0
 0x0006b9f0 REVIEW _qh_printfacetridges
-    thirdparty@0x00067950:qhull_output=5 qhull_output_dims=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00023980:0
+    thirdparty@0x00069480:qhull_output=5 qhull_output_dims=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00023980:0
 0x0006bc30 DIFF   _qh_printbegin
-    thirdparty@0x00064640:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_trace=2 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00020e60:0
+    thirdparty@0x00066170:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_trace=2 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00020e60:0
 0x0006c920 SHAPE  _qh_printfacet
-    thirdparty@0x00066160:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00022620:0
+    thirdparty@0x00067c90:qhull_output=5 qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00022620:0
 0x0006c950 DIFF   _qh_printafacet
-    thirdparty@0x000639c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000201c0:0
+    thirdparty@0x000654f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000201c0:0
 0x0006d200 DIFF   _qh_printfacets
-    thirdparty@0x00067b90:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00023bb0:0
+    thirdparty@0x000696a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00023bb0:0
 0x0006d6f0 SHAPE  _qh_printneighborhood
-    thirdparty@0x000687b0:qhull_direct=5 qhull_exact_other=5 | asset@0x000247d0:0
+    thirdparty@0x0006a2c0:qhull_direct=5 qhull_exact_other=5 | asset@0x000247d0:0
 0x0006d800 DIFF   _qh_produce_output
-    thirdparty@0x00069f90:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00025cf0:0
+    thirdparty@0x0006b9c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00025c40:0
 0x0006da40 SHAPE  _qh_intcompare
-    thirdparty@0x0006f870:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039de0:0
+    thirdparty@0x00071140:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039e90:0
 0x0006da50 SHAPE  _qh_memalloc
-    thirdparty@0x0006f880:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039df0:0
+    thirdparty@0x00071150:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039ec0:0
 0x0006dc10 SHAPE  _qh_memfree
-    thirdparty@0x0006f9f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039f60:0
+    thirdparty@0x000712c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0003a030:0
 0x0006dca0 SHAPE  _qh_meminit
-    thirdparty@0x0006fa60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00039fd0:0
+    thirdparty@0x00071330:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a0a0:0
 0x0006dcc0 DIFF   _qh_meminitbuffers
-    thirdparty@0x0006fa80:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00039ff0:0
+    thirdparty@0x00071350:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a0c0:0
 0x0006dda0 SHAPE  _qh_memsetup
-    thirdparty@0x0006fb20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a090:0
+    thirdparty@0x000713f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a160:0
 0x0006deb0 REVIEW _qh_memsize
-    thirdparty@0x0006fc20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0003a190:0
+    thirdparty@0x000714f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0003a260:0
 0x0006df50 DIFF   _qh_memstatistics
-    thirdparty@0x0006fcb0:qhull_output=5 qhull_output_dims=2 qhull_exact_output=4 | asset@0x0003a220:0
-0x0006e0b0 REVIEW _qh_appendmergeset
-    thirdparty@0x000700a0:0 | asset@0x00034810:0
+    thirdparty@0x00071580:qhull_output=5 qhull_output_dims=2 qhull_exact_output=4 | asset@0x0003a2f0:0
+0x0006e0b0 MATCH  _qh_appendmergeset
+    thirdparty@0x00059d80:0 | asset@0x000325c0:0
 0x0006e240 SHAPE  _qh_basevertices
-    thirdparty:- | asset:-
+    thirdparty@0x00071970:0 | asset@0x000360f0:0
 0x0006e320 REVIEW _qh_checkzero
-    thirdparty@0x00070220:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00034990:0
+    thirdparty@0x00071a30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000361b0:0
 0x0006e620 SHAPE  _qh_compareangle
-    thirdparty@0x00070500:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_paths=5 | asset@0x00034c70:0
+    thirdparty@0x00071d10:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_paths=5 | asset@0x00036490:0
 0x0006e650 SHAPE  _qh_comparemerge
-    thirdparty@0x00070530:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00034ca0:0
+    thirdparty@0x00071d40:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x000364c0:0
 0x0006e670 SHAPE  _qh_copynonconvex
     thirdparty:- | asset:-
-0x0006e6f0 REVIEW _qh_degen_redundant_facet
-    thirdparty@0x00070550:0 | asset@0x00034cc0:0
+0x0006e6f0 MATCH  _qh_degen_redundant_facet
+    thirdparty@0x0005a1d0:0 | asset@0x00032a10:0
 0x0006e900 REVIEW _qh_degen_redundant_neighbors
-    thirdparty@0x00070740:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00034eb0:0
+    thirdparty@0x00071d60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000364e0:0
 0x0006ec30 SHAPE  _qh_findbest_test
-    thirdparty@0x00070e70:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 | asset@0x000355e0:0
+    thirdparty@0x00072090:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 | asset@0x00036810:0
 0x0006ecf0 SHAPE  _qh_findbestneighbor
-    thirdparty@0x00070f20:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=4 qhull_paths=5 | asset@0x00035690:0
+    thirdparty@0x00072140:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=4 qhull_paths=5 | asset@0x000368c0:0
 0x0006eea0 SHAPE  _qh_hashridge
-    thirdparty:- | asset:-
+    thirdparty@0x00072b30:qhull_hull_rotated=4 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x000372b0:0
 0x0006eef0 SHAPE  _qh_hashridge_find
-    thirdparty:- | asset:-
+    thirdparty@0x00072b90:qhull_hull_rotated=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00037310:0
 0x0006efb0 REVIEW _qh_makeridges
-    thirdparty@0x00071910:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000360a0:0
+    thirdparty@0x00072c30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000373b0:0
 0x0006f110 REVIEW _qh_mark_dupridges
-    thirdparty@0x00071a70:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00036200:0
-0x0006f2c0 REVIEW _qh_maydropneighbor
-    thirdparty@0x00071c30:0 | asset@0x000363c0:0
-0x0006f580 REVIEW _qh_mergecycle_neighbors
-    thirdparty@0x00072940:0 | asset@0x000370d0:0
-0x0006f7d0 REVIEW _qh_mergecycle_ridges
-    thirdparty@0x00072b70:0 | asset@0x00037300:0
-0x0006fac0 REVIEW _qh_mergecycle_vneighbors
-    thirdparty@0x00072e20:0 | asset@0x000375b0:0
+    thirdparty@0x00072d90:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00037510:0
+0x0006f2c0 MATCH  _qh_maydropneighbor
+    thirdparty@0x0005bcf0:0 | asset@0x00034530:0
+0x0006f580 MATCH  _qh_mergecycle_neighbors
+    thirdparty@0x0005c200:0 | asset@0x00034a40:0
+0x0006f7d0 MATCH  _qh_mergecycle_ridges
+    thirdparty@0x0005c450:0 | asset@0x00034c90:0
+0x0006fac0 MATCH  _qh_mergecycle_vneighbors
+    thirdparty@0x0005c730:0 | asset@0x00034f70:0
 0x0006fc40 REVIEW _qh_mergefacet2d
     thirdparty:- | asset:-
-0x0006fd90 SHAPE  _qh_mergeneighbors
-    thirdparty:- | asset:-
-0x0006fea0 REVIEW _qh_mergeridges
-    thirdparty:- | asset:-
+0x0006fd90 MATCH  _qh_mergeneighbors
+    thirdparty@0x0005c8b0:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_paths=5 | asset@0x000350f0:0
+0x0006fea0 MATCH  _qh_mergeridges
+    thirdparty@0x0005c9b0:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_paths=5 | asset@0x000351f0:0
 0x0006ff70 SHAPE  _qh_mergevertex_del
-    thirdparty:- | asset:-
-0x0006fff0 SHAPE  _qh_mergevertex_neighbors
-    thirdparty:- | asset:-
-0x00070100 REVIEW _qh_mergevertices
-    thirdparty:- | asset:-
-0x00070270 REVIEW _qh_neighbor_intersections
-    thirdparty:- | asset:-
+    thirdparty@0x00074240:qhull_options=2 qhull_paths=5 | asset@0x000389c0:0
+0x0006fff0 MATCH  _qh_mergevertex_neighbors
+    thirdparty@0x0005ca80:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_paths=5 | asset@0x000352c0:0
+0x00070100 MATCH  _qh_mergevertices
+    thirdparty@0x0005cb90:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_paths=5 | asset@0x000353d0:0
+0x00070270 MATCH  _qh_neighbor_intersections
+    thirdparty@0x0005cd00:qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 | asset@0x00035540:0
 0x000703b0 REVIEW _qh_newvertices
-    thirdparty@0x00073fe0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00038770:0
+    thirdparty@0x000742b0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00038a30:0
 0x000703f0 REVIEW _qh_remove_extravertices
-    thirdparty@0x00074710:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00038ea0:0
+    thirdparty@0x000748c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039040:0
 0x00070590 REVIEW _qh_renameridgevertex
-    thirdparty@0x00074a70:qhull_hull_rotated=4 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00039200:0
+    thirdparty@0x00074c70:qhull_hull_rotated=4 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x000393f0:0
 0x000706b0 SHAPE  _qh_renamevertex
-    thirdparty@0x00074bf0:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00039380:0
+    thirdparty@0x00074df0:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00039570:0
 0x000708e0 DIFF   _qh_test_appendmerge
-    thirdparty@0x00074df0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039580:0
+    thirdparty@0x00075000:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039770:0
 0x00070be0 REVIEW _qh_test_vneighbors
-    thirdparty@0x000751a0:qhull_options=5 qhull_exact_other=2 qhull_paths=1 | asset@0x00039930:0
+    thirdparty@0x000753b0:qhull_options=5 qhull_exact_other=2 qhull_paths=1 | asset@0x00039b20:0
 0x00070d30 REVIEW _qh_tracemerge
-    thirdparty@0x00075300:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039a90:0
+    thirdparty@0x00075510:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039c80:0
 0x00070e90 MATCH  _qh_tracemerging
-    thirdparty@0x0005ba10:0 | asset@0x000344a0:0
-0x00070f50 REVIEW _qh_updatetested
-    thirdparty:- | asset:-
+    thirdparty@0x0005d2d0:0 | asset@0x00035b10:0
+0x00070f50 MATCH  _qh_updatetested
+    thirdparty@0x0005d420:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00035c60:0
 0x00071030 SHAPE  _qh_vertexridges_facet
-    thirdparty@0x00075590:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00039d20:0
+    thirdparty@0x00075660:qhull_hull_rotated=4 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00039dd0:0
 0x000710c0 SHAPE  _qh_willdelete
-    thirdparty@0x00075610:qhull_hull=5 qhull_output=5 qhull_merge=5 qhull_exact_output=5 qhull_paths=5 | asset@0x00039da0:0
+    thirdparty@0x000756e0:qhull_hull=5 qhull_output=5 qhull_merge=5 qhull_exact_output=5 qhull_paths=5 | asset@0x00039e50:0
 0x00071100 REVIEW _qh_getmergeset
-    thirdparty@0x000715e0:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=2 qhull_paths=5 | asset@0x00035d50:0
+    thirdparty@0x00072800:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=2 qhull_paths=5 | asset@0x00036f80:0
 0x000712d0 REVIEW _qh_getmergeset_initial
-    thirdparty@0x000717a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00035f30:0
+    thirdparty@0x000729c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00037140:0
 0x00071440 REVIEW _qh_mergecycle_facets
-    thirdparty:- | asset:-
+    thirdparty@0x00073670:0 | asset@0x00037df0:0
 0x00071540 REVIEW _qh_mergesimplex
-    thirdparty@0x00073b50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000382e0:0
-0x00071960 DIFF   _qh_vertexridges
-    thirdparty@0x00075450:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00039be0:0
-0x00071a60 DIFF   _qh_find_newvertex
-    thirdparty@0x00070a70:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x000351e0:0
-0x00071e10 DIFF   _qh_mergecycle
-    thirdparty@0x00072400:0 | asset@0x00036b90:0
+    thirdparty@0x00073db0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00038530:0
+0x00071960 MATCH  _qh_vertexridges
+    thirdparty@0x0005d500:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00035d40:0
+0x00071a60 MATCH  _qh_find_newvertex
+    thirdparty@0x0005a6c0:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00032f00:0
+0x00071e10 MATCH  _qh_mergecycle
+    thirdparty@0x0005bfb0:0 | asset@0x000347f0:0
 0x00072060 REVIEW _qh_mergefacet
-    thirdparty@0x00073040:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000377d0:0
-0x00072590 REVIEW _qh_redundant_vertex
-    thirdparty@0x00074550:qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 | asset@0x00038ce0:0
-0x00072630 REVIEW _qh_rename_sharedvertex
-    thirdparty@0x00074880:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00039010:0
+    thirdparty@0x00073760:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00037ee0:0
+0x00072590 SHAPE  _qh_redundant_vertex
+    thirdparty@0x00074820:qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 | asset@0x00038fa0:0
+0x00072630 SHAPE  _qh_rename_sharedvertex
+    thirdparty@0x00074a30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000391b0:0
 0x00072830 REVIEW _qh_forcedmerges
-    thirdparty@0x00071310:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00035a80:0
+    thirdparty@0x00072530:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00036cb0:0
 0x00072b10 REVIEW _qh_merge_degenredundant
-    thirdparty@0x00071ee0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00036670:0
+    thirdparty@0x00072f50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000376d0:0
 0x00072e20 SHAPE  _qh_merge_nonconvex
-    thirdparty@0x000721a0:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=2 qhull_paths=5 | asset@0x00036930:0
+    thirdparty@0x00073210:qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=2 qhull_paths=5 | asset@0x00037990:0
 0x000730b0 SHAPE  _qh_mergecycle_all
-    thirdparty@0x00072740:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00036ed0:0
+    thirdparty@0x00073470:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00037bf0:0
 0x000732c0 REVIEW _qh_reducevertices
-    thirdparty@0x000743c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00038b50:0
+    thirdparty@0x00074690:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00038e10:0
 0x00073460 REVIEW _qh_all_merges
-    thirdparty@0x0006fdf0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00034560:0
+    thirdparty@0x000716c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00035e40:0
 0x00073710 REVIEW _qh_flippedmerges
-    thirdparty@0x000710b0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00035820:0
+    thirdparty@0x000722d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00036a50:0
 0x00073980 REVIEW _qh_premerge
-    thirdparty@0x00074210:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000389a0:0
+    thirdparty@0x000744e0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00038c60:0
 0x00073b30 REVIEW _qh_postmerge
-    thirdparty@0x00074030:qhull_hull=3 qhull_options=5 qhull_merge=4 qhull_exact_other=4 qhull_paths=4 | asset@0x000387c0:0
+    thirdparty@0x00074300:qhull_hull=3 qhull_options=5 qhull_merge=4 qhull_exact_other=4 qhull_paths=4 | asset@0x00038a80:0
 0x00073d20 SHAPE  _qh_appendfacet
-    thirdparty@0x0006d8f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002f710:0
+    thirdparty@0x0006f330:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002f230:0
 0x00073da0 SHAPE  _qh_appendvertex
-    thirdparty@0x0006d960:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002f780:0
+    thirdparty@0x0006f3a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002f2a0:0
 0x00073e10 REVIEW _qh_attachnewfacets
-    thirdparty@0x0006d9d0:qhull_options=5 qhull_exact_other=2 | asset@0x0002f7f0:0
+    thirdparty@0x0006f410:qhull_options=5 qhull_exact_other=2 | asset@0x0002f310:0
 0x00074090 SHAPE  _qh_checkflipped
-    thirdparty@0x0006dc70:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002fa90:0
+    thirdparty@0x0006f6b0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002f5b0:0
 0x00074170 REVIEW _qh_facetintersect
-    thirdparty@0x0006e190:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002ffb0:0
+    thirdparty@0x0006fbd0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002fad0:0
 0x000742f0 SHAPE  _qh_gethash
-    thirdparty@0x0006e2d0:qhull_hull_rotated=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x000300f0:0
+    thirdparty@0x0006fd10:qhull_hull_rotated=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x0002fc10:0
 0x00074430 REVIEW _qh_makenewplanes
-    thirdparty@0x0006e990:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000307b0:0
-0x000744a0 REVIEW _qh_matchvertices
-    thirdparty@0x0006f1c0:0 | asset@0x00030fe0:0
+    thirdparty@0x000703d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000302d0:0
+0x000744a0 MATCH  _qh_matchvertices
+    thirdparty@0x0005bc30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00034470:0
 0x00074560 SHAPE  _qh_newfacet
-    thirdparty@0x0006f280:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000310a0:0
+    thirdparty@0x00070b50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030a50:0
 0x00074640 REVIEW _qh_newridge
-    thirdparty@0x0006f340:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031160:0
+    thirdparty@0x00070c10:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030b10:0
 0x00074710 SHAPE  _qh_pointid
-    thirdparty@0x0006f3f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031210:0
+    thirdparty@0x00070cc0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030bc0:0
 0x00074780 SHAPE  _qh_removefacet
-    thirdparty@0x0006f460:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031280:0
+    thirdparty@0x00070d30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030c30:0
 0x00074800 SHAPE  _qh_removevertex
-    thirdparty@0x0006f4d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000312f0:0
+    thirdparty@0x00070da0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030ca0:0
 0x00074870 SHAPE  _qh_updatevertices
-    thirdparty@0x0006f530:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031350:0
+    thirdparty@0x00070e00:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030d00:0
 0x00074b20 REVIEW _qh_delfacet
-    thirdparty@0x0006dff0:qhull_hull=5 qhull_output=5 qhull_options=5 qhull_merge=5 qhull_exact_output=5 qhull_exact_other=3 qhull_paths=5 | asset@0x0002fe10:0
+    thirdparty@0x0006fa30:qhull_hull=5 qhull_output=5 qhull_options=5 qhull_merge=5 qhull_exact_output=5 qhull_exact_other=3 qhull_paths=5 | asset@0x0002f930:0
 0x00074c80 REVIEW _qh_deletevisible
-    thirdparty@0x0006dd50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002fb70:0
+    thirdparty@0x0006f790:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002f690:0
 0x00074da0 REVIEW _qh_makenewfacet
-    thirdparty@0x0006e740:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030560:0
+    thirdparty@0x00070180:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030080:0
 0x00074e20 REVIEW _qh_makenew_nonsimplicial
-    thirdparty@0x0006e3e0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00030200:0
+    thirdparty@0x0006fe20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002fd20:0
 0x00075070 REVIEW _qh_makenew_simplicial
-    thirdparty@0x0006e610:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030430:0
+    thirdparty@0x00070050:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x0002ff50:0
 0x000751c0 DIFF   _qh_matchneighbor
-    thirdparty@0x0006ea00:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030820:0
+    thirdparty@0x00070440:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030340:0
 0x00075540 REVIEW _qh_matchnewfacets
-    thirdparty@0x0006eea0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030cc0:0
+    thirdparty@0x00070830:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00030730:0
 0x00075860 SHAPE  _qh_addhash
-    thirdparty@0x00055740:0 | asset@0x00026010:0
+    thirdparty@0x00055740:0 | asset@0x00025f60:0
 0x000758b0 REVIEW _qh_checkconvex
-    thirdparty@0x00055d60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=2 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00026630:0
+    thirdparty@0x00055d60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=2 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00026580:0
 0x00075dd0 REVIEW _qh_checkflipped_all
-    thirdparty@0x00056a70:qhull_hull=5 qhull_trace=5 qhull_options=1 qhull_merge2=2 qhull_exact_other=5 qhull_paths_t4=1 | asset@0x00027340:0
-0x00075eb0 SHAPE  _qh_checkvertex
-    thirdparty@0x000570e0:0 | asset@0x000279b0:0
+    thirdparty@0x00056a70:qhull_hull=5 qhull_trace=5 qhull_options=1 qhull_merge2=2 qhull_exact_other=5 qhull_paths_t4=1 | asset@0x00027290:0
+0x00075eb0 MATCH  _qh_checkvertex
+    thirdparty@0x00059f10:0 | asset@0x00032750:0
 0x00075fe0 SHAPE  _qh_clearcenters
-    thirdparty@0x00057200:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_random=5 qhull_direct=4 | asset@0x00027ad0:0
+    thirdparty@0x000570e0:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_random=5 qhull_direct=4 | asset@0x00027900:0
 0x00076070 SHAPE  _qh_delridge
-    thirdparty@0x00057290:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00027b60:0
+    thirdparty@0x00057170:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x00027990:0
 0x000760c0 SHAPE  _qh_delvertex
-    thirdparty@0x000572e0:qhull_hull=5 qhull_hull_rotated=3 qhull_output_dims=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=2 qhull_exact_other=1 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=1 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=1 hull_compute_pc64=5 hull_qhull_direct=1 | asset@0x00027bb0:0
+    thirdparty@0x000571c0:qhull_hull=5 qhull_hull_rotated=3 qhull_output_dims=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=2 qhull_exact_other=1 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=1 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=1 hull_compute_pc64=5 hull_qhull_direct=1 | asset@0x000279e0:0
 0x00076100 MATCH  _qh_furthestout
-    thirdparty@0x0005a5a0:0 | asset@0x00033030:0
+    thirdparty@0x0005ac50:0 | asset@0x00033490:0
 0x000761d0 REVIEW _qh_infiniteloop
-    thirdparty@0x00057c20:0 | asset@0x00028500:0
+    thirdparty@0x00057b00:0 | asset@0x00028320:0
 0x00076200 REVIEW _qh_isvertex
-    thirdparty@0x000586d0:qhull_direct=5 qhull_exact_other=5 | asset:-
+    thirdparty@0x00058460:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x00076230 MATCH  _qh_matchduplicates
-    thirdparty@0x0005b1a0:0 | asset@0x00033c30:0
+    thirdparty@0x0005b850:0 | asset@0x00034090:0
 0x00076610 REVIEW _qh_nearcoplanar
-    thirdparty@0x00058860:qhull_hull=5 qhull_hull_rotated=1 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=4 qhull_random=1 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_rotation=2 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00029110:0
+    thirdparty@0x000585f0:qhull_hull=5 qhull_hull_rotated=1 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=4 qhull_random=1 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_rotation=2 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00028de0:0
 0x00076730 REVIEW _qh_nearvertex
-    thirdparty@0x000589b0:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00029260:0
+    thirdparty@0x00058740:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x00028f30:0
 0x000768e0 REVIEW _qh_newhashtable
-    thirdparty@0x00058b60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00029410:0
+    thirdparty@0x000588f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000290e0:0
 0x00076930 REVIEW _qh_newvertex
-    thirdparty@0x00058bd0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00029480:0
+    thirdparty@0x00058960:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00029150:0
 0x00076a10 SHAPE  _qh_nextridge3d
-    thirdparty@0x00058c90:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00029540:0
+    thirdparty@0x00058a20:qhull_output=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00029210:0
 0x00076a80 SHAPE  _qh_outcoplanar
-    thirdparty@0x00058d10:qhull_hull_rotated=1 qhull_merge2=1 hull_create=3 hull_create_pc64=3 hull_compute=1 hull_compute_pc64=1 | asset@0x000295c0:0
+    thirdparty@0x00058aa0:qhull_hull_rotated=1 qhull_merge2=1 hull_create=3 hull_create_pc64=3 hull_compute=1 hull_compute_pc64=1 | asset@0x00029290:0
 0x00076b40 SHAPE  _qh_point
-    thirdparty@0x00058dd0:qhull_options=5 qhull_merge2=5 qhull_exact_other=5 | asset@0x00029680:0
+    thirdparty@0x00058b60:qhull_options=5 qhull_merge2=5 qhull_exact_other=5 | asset@0x00029350:0
 0x00076b90 SHAPE  _qh_point_add
-    thirdparty@0x00058e20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000296d0:0
+    thirdparty@0x00058bb0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000293a0:0
 0x00076c30 DIFF   _qh_pointfacet
-    thirdparty@0x00058eb0:qhull_hull=5 qhull_hull_rotated=4 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=3 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=4 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00029760:0
+    thirdparty@0x00058c40:qhull_hull=5 qhull_hull_rotated=4 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=3 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=4 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00029430:0
 0x00076d20 SHAPE  _qh_pointvertex
-    thirdparty@0x00059010:qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_direct=5 qhull_exact_other=5 | asset@0x000298c0:0
+    thirdparty@0x00058da0:qhull_output_delaunay=5 qhull_output_delaunay3=3 qhull_direct=5 qhull_exact_other=5 | asset@0x00029590:0
 0x00076d80 SHAPE  _qh_prependfacet
-    thirdparty@0x000590d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00029980:0
+    thirdparty@0x00058e60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00029650:0
 0x00076e10 SHAPE  _qh_printhashtable
-    thirdparty@0x00059160:0 | asset@0x00029a10:0
+    thirdparty@0x00058ef0:0 | asset@0x000296e0:0
 0x00076fb0 REVIEW _qh_printlists
-    thirdparty@0x00059300:qhull_direct=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00029bb0:0
+    thirdparty@0x00059090:qhull_direct=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00029880:0
 0x00077120 REVIEW _qh_resetlists
-    thirdparty@0x00059450:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00029d00:0
+    thirdparty@0x000591e0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000299d0:0
 0x00077220 REVIEW _qh_triangulate_facet
-    thirdparty@0x00059b00:qhull_hull=5 qhull_output=5 qhull_merge=2 qhull_exact_output=5 qhull_paths=5 | asset@0x0002a3b0:0
+    thirdparty@0x00059890:qhull_hull=5 qhull_output=5 qhull_merge=2 qhull_exact_output=5 qhull_paths=5 | asset@0x0002a090:0
 0x000774a0 SHAPE  _qh_triangulate_link
-    thirdparty@0x00059d70:qhull_hull=5 qhull_output=5 qhull_merge=4 qhull_exact_output=5 qhull_paths=5 | asset@0x0002a620:0
-0x00077580 REVIEW _qh_triangulate_mirror
-    thirdparty@0x00059e70:0 | asset@0x0002a720:0
+    thirdparty@0x00059b00:qhull_hull=5 qhull_output=5 qhull_merge=4 qhull_exact_output=5 qhull_paths=5 | asset@0x0002a300:0
+0x00077580 MATCH  _qh_triangulate_mirror
+    thirdparty@0x0005d390:0 | asset@0x00035bd0:0
 0x00077610 SHAPE  _qh_vertexintersect_new
-    thirdparty@0x0005a040:qhull_hull=5 qhull_hull_rotated=2 qhull_output_dims=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x0002a8f0:0
+    thirdparty@0x00059c30:qhull_hull=5 qhull_hull_rotated=2 qhull_output_dims=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 hull_create=5 hull_create_pc64=3 hull_compute=5 hull_compute_pc64=3 | asset@0x0002a430:0
 0x00077690 REVIEW _qh_vertexneighbors
-    thirdparty@0x0005a0c0:qhull_hull=5 qhull_hull_rotated=3 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=3 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=3 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002a970:0
+    thirdparty@0x00059cb0:qhull_hull=5 qhull_hull_rotated=3 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=3 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=3 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0002a4b0:0
 0x00077740 REVIEW _qh_check_maxout
-    thirdparty@0x00055780:qhull_hull=5 qhull_hull_rotated=4 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=3 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=4 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00026050:0
+    thirdparty@0x00055780:qhull_hull=5 qhull_hull_rotated=4 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=3 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=4 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00025fa0:0
 0x00077bb0 REVIEW _qh_checkfacet
-    thirdparty@0x00056240:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00026b10:0
+    thirdparty@0x00056240:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00026a60:0
 0x000784f0 REVIEW _qh_checkpolygon
-    thirdparty@0x00056b40:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00027410:0
-0x00078970 REVIEW _qh_createsimplex
-    thirdparty:- | asset:-
+    thirdparty@0x00056b40:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00027360:0
+0x00078970 MATCH  _qh_createsimplex
+    thirdparty@0x0005a040:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00032880:0
 0x00078b00 SHAPE  _qh_facet3vertex
-    thirdparty@0x00057320:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_delaunay=5 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00027bf0:0
+    thirdparty@0x00057200:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_delaunay=5 qhull_merge=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00027a20:0
 0x00078c50 SHAPE  _qh_findbestlower
-    thirdparty@0x000574a0:qhull_output_delaunay=5 qhull_paths=5 | asset@0x00027d70:0
+    thirdparty@0x00057380:qhull_output_delaunay=5 qhull_paths=5 | asset@0x00027ba0:0
 0x00078df0 REVIEW _qh_findgood
-    thirdparty@0x00057610:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=1 qhull_options=5 qhull_merge2=4 qhull_random=1 qhull_direct=5 qhull_exact_other=5 qhull_paths=2 qhull_rotation=1 | asset@0x00027ef0:0
+    thirdparty@0x000574f0:qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=1 qhull_options=5 qhull_merge2=4 qhull_random=1 qhull_direct=5 qhull_exact_other=5 qhull_paths=2 qhull_rotation=1 | asset@0x00027d10:0
 0x000790c0 REVIEW _qh_findgood_all
-    thirdparty@0x000578c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x000281a0:0
+    thirdparty@0x000577a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00027fc0:0
 0x00079350 SHAPE  _qh_furthestnext
-    thirdparty@0x00057b10:qhull_options=4 qhull_exact_other=4 | asset@0x000283f0:0
+    thirdparty@0x000579f0:qhull_options=4 qhull_exact_other=4 | asset@0x00028210:0
 0x000793f0 REVIEW _qh_initialhull
-    thirdparty@0x000582b0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00028b90:0
+    thirdparty@0x00058190:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x000289b0:0
 0x00079720 MATCH  _qh_initialvertices
-    thirdparty@0x0005a900:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00033390:0
+    thirdparty@0x0005afb0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x000337f0:0
 0x00079b80 SHAPE  _qh_makenewfacets
-    thirdparty@0x00058700:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00028fb0:0
+    thirdparty@0x00058490:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00028c80:0
 0x00079cf0 REVIEW _qh_triangulate
-    thirdparty@0x00059560:qhull_hull=5 qhull_output=3 qhull_output_delaunay=1 qhull_merge2=1 qhull_merge=1 qhull_direct=1 qhull_exact_output=3 qhull_exact_other=1 qhull_paths=1 | asset@0x00029e10:0
+    thirdparty@0x000592f0:qhull_hull=5 qhull_output=3 qhull_output_delaunay=1 qhull_merge2=1 qhull_merge=1 qhull_direct=1 qhull_exact_output=3 qhull_exact_other=1 qhull_paths=1 | asset@0x00029af0:0
 0x0007a270 SHAPE  _qh_vertexintersect
-    thirdparty@0x0005a010:qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 | asset@0x0002a8c0:0
+    thirdparty@0x00059c00:qhull_output_dims=5 qhull_trace=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 | asset@0x0002a400:0
 0x0007a2a0 SHAPE  _qh_check_output
-    thirdparty@0x00055cd0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x000265a0:0
+    thirdparty@0x00055cd0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x000264f0:0
 0x0007a330 DIFF   _qh_initbuild
-    thirdparty@0x00057c50:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00028530:0
+    thirdparty@0x00057b30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00028350:0
 0x0007a830 DIFF   _qh_buildtracing
-    thirdparty@0x000609c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00018b10:0
+    thirdparty@0x000624e0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00018b10:0
 0x0007ab80 SHAPE  _qh_errexit2
-    thirdparty@0x00060ce0:0 | asset@0x00018e30:0
+    thirdparty@0x00062800:0 | asset@0x00018e30:0
 0x0007abb0 MATCH  _qh_nextfurthest
-    thirdparty@0x0005b580:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00034010:0
+    thirdparty@0x0005ce40:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00035680:0
 0x0007ae20 SHAPE  _qh_precision
-    thirdparty@0x00061c10:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00019d60:0
+    thirdparty@0x00063730:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00019d60:0
 0x0007ae80 DIFF   _qh_printsummary
-    thirdparty@0x00061c70:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 | asset@0x00019dc0:0
+    thirdparty@0x000637a0:qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=2 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 | asset@0x00019dc0:0
 0x0007b8b0 REVIEW _qh_findhorizon
-    thirdparty@0x00060d10:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00018e60:0
+    thirdparty@0x00062830:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00018e60:0
 0x0007bcf0 SHAPE  _qh_partitionpoint
-    thirdparty@0x00061780:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000198d0:0
+    thirdparty@0x000632a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=3 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000198d0:0
 0x0007bff0 SHAPE  _qh_partitionall
-    thirdparty@0x000610f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00019240:0
+    thirdparty@0x00062c10:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00019240:0
 0x0007c3b0 SHAPE  _qh_partitioncoplanar
-    thirdparty@0x00061470:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000195c0:0
+    thirdparty@0x00062f90:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000195c0:0
 0x0007c700 REVIEW _qh_partitionvisible
-    thirdparty@0x00061a20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00019b70:0
+    thirdparty@0x00063540:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00019b70:0
 0x0007c900 REVIEW _qh_addpoint
-    thirdparty@0x00060190:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000182e0:0
+    thirdparty@0x00061cb0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=4 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000182e0:0
 0x0007cd80 SHAPE  _qh_buildhull
-    thirdparty@0x000607d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00018920:0
+    thirdparty@0x000622f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x00018920:0
 0x0007cf80 SHAPE  _qh_build_withrestart
-    thirdparty@0x000605e0:qhull_random=5 | asset@0x00018730:0
+    thirdparty@0x00062100:qhull_random=5 | asset@0x00018730:0
 0x0007d180 REVIEW _qh_qhull
-    thirdparty@0x00062520:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001a670:0
+    thirdparty@0x00064050:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0001a670:0
 0x0007ed50 SHAPE  _qh_setdel
-    thirdparty@0x00052650:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031a90:0
+    thirdparty@0x00052650:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031440:0
 0x0007edb0 SHAPE  _qh_setdellast
-    thirdparty@0x000526c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031b00:0
+    thirdparty@0x000526c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000314b0:0
 0x0007edf0 SHAPE  _qh_setdelsorted
-    thirdparty@0x00052820:qhull_hull_rotated=4 qhull_output_dims=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00031c60:0
+    thirdparty@0x00052820:qhull_hull_rotated=4 qhull_output_dims=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00031610:0
 0x0007ee50 DIFF   _qh_setequal
-    thirdparty@0x00052890:qh_set=5 qhull_trace=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00031cd0:0
+    thirdparty@0x00052890:qh_set=5 qhull_trace=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x00031680:0
 0x0007eeb0 SHAPE  _qh_setequal_except
-    thirdparty@0x00052920:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=1 hull_create_pc64=3 hull_compute=1 hull_compute_pc64=3 | asset@0x00031d60:0
+    thirdparty@0x00052920:qhull_hull_rotated=2 qhull_options=5 qhull_merge2=5 qhull_merge=4 qhull_random=5 qhull_paths=5 hull_create=1 hull_create_pc64=3 hull_compute=1 hull_compute_pc64=3 | asset@0x00031710:0
 0x0007ef30 SHAPE  _qh_setequal_skip
-    thirdparty@0x00052990:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031dd0:0
+    thirdparty@0x00052990:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031780:0
 0x0007ef90 SHAPE  _qh_setfree
-    thirdparty@0x000529f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031e30:0
+    thirdparty@0x000529f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000317e0:0
 0x0007eff0 SHAPE  _qh_setfreelong
-    thirdparty@0x00052a50:0 | asset@0x00031e90:0
+    thirdparty@0x00052a50:0 | asset@0x00031840:0
 0x0007f020 REVIEW _qh_setin
-    thirdparty@0x00052a90:qh_set=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031ed0:0
+    thirdparty@0x00052a90:qh_set=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031880:0
 0x0007f050 SHAPE  _qh_setindex
-    thirdparty@0x00052ac0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031f00:0
+    thirdparty@0x00052ac0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000318b0:0
 0x0007f0a0 SHAPE  _qh_setlast
-    thirdparty@0x00052c00:qh_set=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032050:0
+    thirdparty@0x00052c00:qh_set=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000319f0:0
 0x0007f0d0 SHAPE  _qh_setnew
-    thirdparty@0x00052c30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032080:0
+    thirdparty@0x00052c30:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031a20:0
 0x0007f170 SHAPE  _qh_setprint
-    thirdparty@0x00052e90:0 | asset@0x000322e0:0
+    thirdparty@0x00052e90:0 | asset@0x00031c80:0
 0x0007f220 SHAPE  _qh_setreplace
-    thirdparty@0x00052f20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032370:0
+    thirdparty@0x00052f20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031d10:0
 0x0007f2a0 SHAPE  _qh_setsize
-    thirdparty@0x00052fa0:qh_set=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000323f0:0
+    thirdparty@0x00052fa0:qh_set=5 qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031d90:0
 0x0007f310 REVIEW _qh_settempfree_all
-    thirdparty@0x00053340:qhull_random=5 | asset@0x00032790:0
+    thirdparty@0x00053340:qhull_random=5 | asset@0x00032130:0
 0x0007f380 SHAPE  _qh_settemppop
-    thirdparty@0x00053410:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032860:0
+    thirdparty@0x00053410:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032200:0
 0x0007f440 SHAPE  _qh_settruncate
-    thirdparty@0x00053670:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032ac0:0
+    thirdparty@0x00053670:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032460:0
 0x0007f4a0 REVIEW _qh_setzero
-    thirdparty@0x00053750:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032ba0:0
+    thirdparty@0x00053750:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032540:0
 0x0007f520 SHAPE  _qh_setcheck
-    thirdparty@0x000524a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000318e0:0
+    thirdparty@0x000524a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031290:0
 0x0007f5c0 SHAPE  _qh_setcompact
-    thirdparty@0x00052550:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031990:0
+    thirdparty@0x00052550:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031340:0
 0x0007f610 REVIEW _qh_setcopy
-    thirdparty@0x000525f0:0 | asset@0x00031a30:0
+    thirdparty@0x000525f0:0 | asset@0x000313e0:0
 0x0007f670 REVIEW _qh_setdelnth
-    thirdparty@0x00052710:qhull_output_delaunay3=5 qhull_options=2 qhull_random=5 qhull_exact_other=1 qhull_paths=5 | asset@0x00031b50:0
+    thirdparty@0x00052710:qhull_output_delaunay3=5 qhull_options=2 qhull_random=5 qhull_exact_other=1 qhull_paths=5 | asset@0x00031500:0
 0x0007f6f0 SHAPE  _qh_setdelnthsorted
-    thirdparty@0x00052790:qhull_hull_rotated=4 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00031bd0:0
+    thirdparty@0x00052790:qhull_hull_rotated=4 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_paths=5 hull_create=5 hull_create_pc64=5 hull_compute=5 hull_compute_pc64=5 | asset@0x00031580:0
 0x0007f780 REVIEW _qh_setlarger
-    thirdparty@0x00052b10:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031f60:0
+    thirdparty@0x00052b10:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031900:0
 0x0007f840 REVIEW _qh_setnew_delnthsorted
-    thirdparty@0x00052cd0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032120:0
+    thirdparty@0x00052cd0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031ac0:0
 0x0007f9b0 REVIEW _qh_setaddnth
-    thirdparty@0x00052250:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031690:0
+    thirdparty@0x00052250:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031040:0
 0x0007fa60 REVIEW _qh_setappend
-    thirdparty@0x000522f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031730:0
+    thirdparty@0x000522f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000310e0:0
 0x0007fab0 REVIEW _qh_setappend_set
-    thirdparty@0x00052390:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000317d0:0
+    thirdparty@0x00052390:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031180:0
 0x0007fb50 SHAPE  _qh_setappend2ndlast
-    thirdparty@0x00052340:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031780:0
+    thirdparty@0x00052340:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031130:0
 0x0007fba0 REVIEW _qh_settemp
-    thirdparty@0x00053000:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032450:0
+    thirdparty@0x00053000:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031df0:0
 0x0007fc40 REVIEW _qh_settemppush
-    thirdparty@0x00053550:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x000329a0:0
+    thirdparty@0x00053550:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032340:0
 0x0007fce0 SHAPE  _qh_setunique
-    thirdparty@0x000536d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=2 qhull_rotation=5 hull_create=5 hull_create_qhull=4 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=4 hull_compute_pc64=5 hull_qhull_direct=4 | asset@0x00032b20:0
+    thirdparty@0x000536d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=2 qhull_rotation=5 hull_create=5 hull_create_qhull=4 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=4 hull_compute_pc64=5 hull_qhull_direct=4 | asset@0x000324c0:0
 0x0007fd20 REVIEW _qh_settempfree
-    thirdparty@0x000530d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00032520:0
+    thirdparty@0x000530d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=5 qhull_rotation=5 hull_create=5 hull_create_qhull=5 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=5 hull_compute_pc64=5 hull_qhull_direct=5 | asset@0x00031ec0:0
 0x000814f0 SHAPE  _qh_allstatA
-    thirdparty@0x0006a4d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a360:0
+    thirdparty@0x0006bf20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a430:0
 0x00081800 SHAPE  _qh_allstatB
-    thirdparty@0x0006a7e0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a670:0
+    thirdparty@0x0006c230:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003a740:0
 0x00081cb0 SHAPE  _qh_allstatC
-    thirdparty@0x0006ac90:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003ab10:0
+    thirdparty@0x0006c6d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003abe0:0
 0x000821d0 SHAPE  _qh_allstatD
-    thirdparty@0x0006b190:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b010:0
+    thirdparty@0x0006cbd0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b0e0:0
 0x00082510 SHAPE  _qh_allstatE
-    thirdparty@0x0006b4d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b350:0
+    thirdparty@0x0006cf20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b420:0
 0x00082810 SHAPE  _qh_allstatE2
-    thirdparty@0x0006b7d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b650:0
+    thirdparty@0x0006d220:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b720:0
 0x00082ac0 SHAPE  _qh_allstatF
-    thirdparty@0x0006ba80:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b900:0
+    thirdparty@0x0006d4d0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003b9d0:0
 0x00082f50 SHAPE  _qh_allstatG
-    thirdparty@0x0006bf20:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003bd90:0
+    thirdparty@0x0006d950:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003be50:0
 0x000832c0 SHAPE  _qh_allstatH
-    thirdparty@0x0006c2c0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003c130:0
+    thirdparty@0x0006dd00:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003c1f0:0
 0x000836f0 SHAPE  _qh_allstatI
-    thirdparty@0x0006c6f0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003c560:0
+    thirdparty@0x0006e130:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003c620:0
 0x00083a60 SHAPE  _qh_allstatistics
-    thirdparty@0x0006ca60:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003c8d0:0
+    thirdparty@0x0006e4a0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003c990:0
 0x00083a80 REVIEW _qh_collectstatistics
-    thirdparty@0x0006ca80:qhull_output=5 qhull_output_dims=2 qhull_exact_output=4 | asset@0x0003c8f0:0
+    thirdparty@0x0006e4c0:qhull_output=5 qhull_output_dims=2 qhull_exact_output=4 | asset@0x0003c9b0:0
 0x00083f30 DIFF   _qh_initstatistics
-    thirdparty@0x0006cef0:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003cd60:0
+    thirdparty@0x0006e930:qhull_hull=5 qhull_hull_rotated=5 qhull_output=5 qhull_output_dims=5 qhull_output_delaunay=5 qhull_output_delaunay3=5 qhull_trace=5 qhull_options=5 qhull_merge2=5 qhull_merge=5 qhull_random=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 qhull_paths=5 qhull_paths_t4=1 qhull_rotation=5 hull_create=5 hull_create_qhull=2 hull_create_pc64=5 hull_compute=5 hull_compute_qhull=2 hull_compute_pc64=5 hull_qhull_direct=2 | asset@0x0003ce20:0
 0x000841f0 REVIEW _qh_nostatistic
-    thirdparty@0x0006d090:qhull_output=5 qhull_output_dims=5 qhull_options=5 qhull_merge2=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0003cf00:0
+    thirdparty@0x0006ead0:qhull_output=5 qhull_output_dims=5 qhull_options=5 qhull_merge2=5 qhull_direct=5 qhull_exact_output=5 qhull_exact_other=5 | asset@0x0003cfc0:0
 0x00084240 REVIEW _qh_printstatlevel
-    thirdparty@0x0006d5a0:qhull_direct=5 qhull_exact_other=5 | asset:-
+    thirdparty@0x0006efe0:qhull_direct=5 qhull_exact_other=5 | asset:-
 0x000843e0 REVIEW _qh_newstats
-    thirdparty@0x0006cfe0:qhull_options=1 qhull_merge2=3 qhull_random=5 qhull_exact_other=2 | asset@0x0003ce50:0
+    thirdparty@0x0006ea20:qhull_options=1 qhull_merge2=3 qhull_random=5 qhull_exact_other=2 | asset@0x0003cf10:0
 0x000844a0 REVIEW _qh_printstats
-    thirdparty@0x0006d6f0:qhull_output=5 qhull_output_dims=5 qhull_options=1 qhull_merge2=3 qhull_exact_output=5 qhull_exact_other=2 | asset@0x0003d410:0
+    thirdparty@0x0006f130:qhull_output=5 qhull_output_dims=5 qhull_options=1 qhull_merge2=3 qhull_exact_output=5 qhull_exact_other=2 | asset@0x0003d4d0:0
 0x00084510 DIFF   _qh_printstatistics
-    thirdparty@0x0006d350:qhull_output=5 qhull_output_dims=2 qhull_exact_output=4 | asset@0x0003d1c0:0
+    thirdparty@0x0006ed90:qhull_output=5 qhull_output_dims=2 qhull_exact_output=4 | asset@0x0003d280:0
 0x000847d0 DIFF   _qh_printallstatistics
-    thirdparty@0x0006d0e0:0 | asset@0x0003cf50:0
+    thirdparty@0x0006eb20:0 | asset@0x0003d010:0
 0x00084800 REVIEW _qh_errexit
-    thirdparty@0x0006a2b0:qhull_hull=3 qhull_output=5 qhull_output_delaunay3=2 qhull_trace=2 qhull_options=1 qhull_exact_output=5 qhull_exact_other=3 | asset@0x0002aa40:0
+    thirdparty@0x0006bce0:qhull_hull=3 qhull_output=5 qhull_output_delaunay3=2 qhull_trace=2 qhull_options=1 qhull_exact_output=5 qhull_exact_other=3 | asset@0x0002a580:0
 0x00084820 DIFF   _qh_errprint
-    thirdparty@0x0006a2c0:qhull_paths_t4=5 | asset@0x0002aa50:0
+    thirdparty@0x0006bcf0:qhull_paths_t4=5 | asset@0x0002a590:0
 0x000849b0 SHAPE  _qh_printfacetlist
-    thirdparty@0x0006a430:qhull_trace=2 qhull_direct=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x0002abc0:0
+    thirdparty@0x0006be60:qhull_trace=2 qhull_direct=5 qhull_exact_other=5 qhull_paths_t4=5 | asset@0x0002a700:0
 
-groups=331 executed=286
+groups=331 executed=298
 
 Raw log head (the ThirdParty run): the script's first commands and the first three
 boundary dumps. Edited only by omission: counting-breakpoint commands after the first
 dozen, and counter lines that are all zero, are left out; lines are cut at 160 columns.
 
-0:000> r $t19 = @$exentry - 0xafc50
+0:000> r $t19 = @$exentry - 0xafd20
 0:000> .dvalloc /b 0x60000000 0x1000
 Allocated 1000 bytes starting at 60000000
-0:000> bp1 @$t19+0x19eb0 ".printf \"SEG layout\\n\"; dd 0x60000000 L0n525; f 0x60000000 L0n2100 0; be *; gc"
-0:000> bp2 @$t19+0x1ce40 ".printf \"SEG release\\n\"; dd 0x60000000 L0n525; f 0x60000000 L0n2100 0; be *; gc"
-0:000> bp3 @$t19+0x31310 ".printf \"SEG %ma\\n\", poi(@esp+4); dd 0x60000000 L0n525; f 0x60000000 L0n2100 0; be *; gc"
-0:000> bp4 @$t19+0x5a190 "ed 0x60000000 (dwo(0x60000000)+1); .if (dwo(0x60000000) >= 0n5) {bd 4}; gc"
+0:000> bp1 @$t19+0x19eb0 ".printf \"SEG layout\\n\"; dd 0x60000000 L0n538; f 0x60000000 L0n2152 0; be *; gc"
+0:000> bp2 @$t19+0x1ce40 ".printf \"SEG release\\n\"; dd 0x60000000 L0n538; f 0x60000000 L0n2152 0; be *; gc"
+0:000> bp3 @$t19+0x31310 ".printf \"SEG %ma\\n\", poi(@esp+4); dd 0x60000000 L0n538; f 0x60000000 L0n2152 0; be *; gc"
+0:000> bp4 @$t19+0x5a4a0 "ed 0x60000000 (dwo(0x60000000)+1); .if (dwo(0x60000000) >= 0n5) {bd 4}; gc"
 0:000> bp5 @$t19+0x53d80 "ed 0x60000004 (dwo(0x60000004)+1); .if (dwo(0x60000004) >= 0n5) {bd 5}; gc"
 0:000> bp6 @$t19+0x540d0 "ed 0x60000008 (dwo(0x60000008)+1); .if (dwo(0x60000008) >= 0n5) {bd 6}; gc"
 0:000> bp7 @$t19+0x537d0 "ed 0x6000000c (dwo(0x6000000c)+1); .if (dwo(0x6000000c) >= 0n5) {bd 7}; gc"
 0:000> bp8 @$t19+0x543e0 "ed 0x60000010 (dwo(0x60000010)+1); .if (dwo(0x60000010) >= 0n5) {bd 8}; gc"
-0:000> bp9 @$t19+0x5a670 "ed 0x60000014 (dwo(0x60000014)+1); .if (dwo(0x60000014) >= 0n5) {bd 9}; gc"
+0:000> bp9 @$t19+0x5ad20 "ed 0x60000014 (dwo(0x60000014)+1); .if (dwo(0x60000014) >= 0n5) {bd 9}; gc"
 0:000> bp10 @$t19+0x545e0 "ed 0x60000018 (dwo(0x60000018)+1); .if (dwo(0x60000018) >= 0n5) {bd 10}; gc"
 0:000> g
 *** WARNING: Unable to verify checksum for NxPhysicsThirdPartyTests.exe
@@ -887,22 +896,21 @@ layout Prunable.mPruningSection=43 expected=43 rva=0x000b561d ok
 layout sizeof_Prunable0C=20 expected=20 rva=0x000e7330,0x000b54a9 ok
 layout Pruner.mWorldBoxes=20 expected=20 rva=0x000b55a0 ok
 SEG layout
-600004d0  00000000 00000000 00000000 00000005
-600006e0  00000000 00000000 00000000 00000005
-60000700  00000001 00000002 00000001 00000000
-60000710  00000000 00000000 00000001 00000000
-60000720  00000000 00000001 00000001 00000000
-60000790  00000000 00000000 00000000 00000005
-600007a0  00000005 00000005 00000005 00000003
-600007b0  00000005 00000003 00000000 00000003
-600007c0  00000000 00000000 00000000 00000001
-600007d0  00000003 00000000 00000000 00000000
-Filled 0x834 bytes
+60000510  00000005 00000000 00000000 00000000
+60000720  00000005 00000000 00000000 00000000
+60000730  00000000 00000001 00000002 00000001
+60000740  00000000 00000000 00000000 00000001
+60000750  00000000 00000000 00000001 00000001
+600007d0  00000005 00000005 00000005 00000005
+600007e0  00000003 00000005 00000003 00000000
+600007f0  00000003 00000000 00000000 00000000
+60000800  00000001 00000003 00000000 00000000
+Filled 0x868 bytes
 SEG qh_crossproduct
 60000040  00000000 00000005 00000000 00000000
-Filled 0x834 bytes
+Filled 0x868 bytes
 thirdparty name=qh_crossproduct rva=0x0005eac0 owner=phys_fn_002465 source=geom2.c:50 words=24000 oracle=6a99847d mismatches=0 worst_ulp=0 verdict=exact
 SEG qh_pointdist
 60000080  00000005 00000000 00000000 00000000
-Filled 0x834 bytes
+Filled 0x868 bytes
 thirdparty name=qh_pointdist rva=0x0005fb70 owner=phys_fn_002505 source=geom2.c:1307 words=8000 oracle=74544940 mismatches=0 worst_ulp=0 verdict=exact

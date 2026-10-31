@@ -20,12 +20,14 @@ extern void nxQhCallFloor();
 extern void nxQhCallFprintf();
 extern void nxQhCallLocaltime32();
 extern void nxQhCallMalloc();
+extern void nxQhCallQsort();
 extern void nxQhCallTime32();
 #pragma comment(linker, "/alternatename:_nxQhCallClock=_clock")
 #pragma comment(linker, "/alternatename:_nxQhCallFloor=_floor")
 #pragma comment(linker, "/alternatename:_nxQhCallFprintf=_fprintf")
 #pragma comment(linker, "/alternatename:_nxQhCallLocaltime32=__localtime32")
 #pragma comment(linker, "/alternatename:_nxQhCallMalloc=_malloc")
+#pragma comment(linker, "/alternatename:_nxQhCallQsort=_qsort")
 #pragma comment(linker, "/alternatename:_nxQhCallTime32=__time32")
 extern int qh_rand_seed;   /* geom2.c, not in a header */
 extern void* nxQhHost;
@@ -41,9 +43,29 @@ void qh_scalelast(coordT *points, int numpoints, int dim, coordT low, coordT hig
 void qh_joggleinput(void);
 void qh_rotateinput(realT **rows);
 void qh_initqhull_buffers(void);
+setT *qh_detvridge(vertexT *vertex);
+void qh_appendmergeset(facetT *facet, facetT *neighbor, mergeType mergetype, realT *angle);
+void qh_degen_redundant_facet(facetT *facet);
+void qh_maydropneighbor(facetT *facet);
+void qh_mergecycle_neighbors(facetT *samecycle, facetT *newfacet);
+void qh_mergecycle_ridges(facetT *samecycle, facetT *newfacet);
+void qh_mergecycle_vneighbors(facetT *samecycle, facetT *newfacet);
+void qh_mergeneighbors(facetT *facet1, facetT *facet2);
+void qh_mergeridges(facetT *facet1, facetT *facet2);
+void qh_mergevertex_neighbors(facetT *facet1, facetT *facet2);
+void qh_mergevertices(setT *vertices1, setT **vertices2);
+setT *qh_neighbor_intersections(vertexT *vertex);
 void qh_tracemerging(void);
+void qh_updatetested(facetT *facet1, facetT *facet2);
+setT *qh_vertexridges(vertexT *vertex);
+vertexT *qh_find_newvertex(vertexT *oldvertex, setT *vertices, setT *ridges);
+void qh_mergecycle(facetT *samecycle, facetT *newfacet);
+boolT qh_matchvertices(int firstindex, setT *verticesA, int skipA, setT *verticesB, int *skipB, boolT *same);
+void qh_checkvertex(vertexT *vertex);
 void qh_furthestout(facetT *facet);
 void qh_matchduplicates(facetT *atfacet, int atskip, int hashsize, int *hashcount);
+void qh_triangulate_mirror(facetT *facetA, facetT *facetB);
+void qh_createsimplex(setT *vertices);
 setT *qh_initialvertices(int dim, setT *maxpoints, pointT *points, int numpoints);
 pointT *qh_nextfurthest(facetT **visible);
 // @@PROTOS-END@@
@@ -55,12 +77,14 @@ static const unsigned long long nxQhK10108908_8 = 0x3e10000000400000ull;
 static const unsigned long long nxQhK10108f50_8 = 0x7fefffffffffffffull;
 static const unsigned long long nxQhK10109290_8 = 0xffefffffffffffffull;
 static const unsigned long long nxQhK101095c0_8 = 0x3e10000000200000ull;
+static const unsigned long long nxQhK10109b60_8 = 0x4014000000000000ull;
 static const unsigned long long nxQhK10109d88_8 = 0x3fb999999999999aull;
 static const unsigned long long nxQhK10109d90_8 = 0x3fd0000000000000ull;
 static const unsigned long long nxQhK10109d98_8 = 0x4024000000000000ull;
 static const unsigned long long nxQhK10109da0_8 = 0x3f847ae147ae147bull;
 static const unsigned long long nxQhK1010b958_8 = 0x3f50624dd2f1a9fcull;
 static const unsigned long long nxQhK10111b50_8 = 0x3e00000000200000ull;
+static const char nxQhStrNewline[] = "\n";
 static const char nxQhStr1088f8[] = "qh_distplane: ";
 static const char nxQhStr1088f0[] = "%6.16g ";
 static const char nxQhStr1088dc[] = "from p%d to f%d\n";
@@ -75,7 +99,51 @@ static const char nxQhStr109da8[] = "QJoggle";
 static const char nxQhStr109cf0[] = "qhull error: the current joggle for 'QJn', %.2g, is too large for the width\nof the input.  If possible, recompile Qhull with higher-precision reals.\n";
 static const char nxQhStr109cdc[] = "_joggle-seed";
 static const char nxQhStr109ca8[] = "qh_joggleinput: joggle input by %2.2g with seed %d\n";
+static const char nxQhStr10d960[] = "qhull error (qh_appendmergeset): facet f%d or f%d is already a mirrored facet\n";
+static const char nxQhStr10d900[] = "qhull error (qh_appendmergeset): mirrored facets f%d and f%d do not have the same vertices\n";
+static const char nxQhStr10db98[] = "qh_degen_redundant_facet: test facet f%d for degen/redundant\n";
+static const char nxQhStr10db5c[] = "qh_degen_redundant_facet: f%d is contained in f%d.  merge\n";
+static const char nxQhStr10db28[] = "qh_degen_redundant_neighbors: f%d is degenerate.\n";
+static const char nxQhStr10deb4[] = "qh_maydropneighbor: test f%d for no ridges to a neighbor\n";
+static const char nxQhStr10de68[] = "qh_maydropneighbor: facets f%d and f%d are no longer neighbors during p%d\n";
+static const char nxQhStr10de38[] = "qh_maydropneighbors: f%d is degenerate.\n";
+static const char nxQhStr10df58[] = "qh_mergecycle_neighbors: delete shared neighbors from newfacet\n";
+static const char nxQhStr10df2c[] = "qh_mergecycle_neighbors: update neighbors\n";
+static const char nxQhStr10def0[] = "qh_mergecycle_neighbors: deleted %d neighbors and added %d\n";
+static const char nxQhStr10e040[] = "qh_mergecycle_ridges: delete shared ridges from newfacet\n";
+static const char nxQhStr10e010[] = "qh_mergecycle_ridges: add ridges to newfacet\n";
+static const char nxQhStr10dfd4[] = "qhull internal error (qh_mergecycle_ridges): bad ridge r%d\n";
+static const char nxQhStr10df98[] = "qh_mergecycle_ridges: found %d old ridges and %d new ones\n";
+static const char nxQhStr10e110[] = "qh_mergecycle_vneighbors: update vertex neighbors for newfacet\n";
+static const char nxQhStr10e0c8[] = "qh_mergecycle_vneighbors: deleted v%d when merging cycle f%d into f%d\n";
+static const char nxQhStr10e080[] = "qh_mergecycle_vneighbors: merged vertices from cycle f%d into f%d\n";
+static const char nxQhStr10e190[] = "qh_mergeneighbors: merge neighbors of f%d and f%d\n";
+static const char nxQhStr10e1c4[] = "qh_mergeridges: merge ridges of f%d and f%d\n";
+static const char nxQhStr10e280[] = "qh_mergevertex_neighbors: merge vertex neighbors of f%d and f%d\n";
+static const char nxQhStr10e238[] = "qh_mergevertex_neighbors: of f%d and f%d at furthest p%d f0= %p\n";
+static const char nxQhStr10e230[] = "TRACE";
+static const char nxQhStr10e2c8[] = "qhull internal error (qh_mergevertices): facets did not share a ridge\n";
+static const char nxQhStr10e310[] = "qh_neighbor_intersections: %d vertices in neighbor intersection of v%d\n";
 static const char nxQhStr10e778[] = "\nAt %d:%d:%d & %2.5g CPU secs, qhull has merged %d facets.  The hull\n  contains %d facets and %d vertices.\n";
+static const char nxQhStr10e9bc[] = "qh_vertexridges: found %d ridges for v%d\n";
+static const char nxQhStr10ead0[] = "qh_find_newvertex: find new vertex for v%d from ";
+static const char nxQhStr10eac8[] = "v%d ";
+static const char nxQhStr10eac0[] = "r%d ";
+static const char nxQhStr10ea8c[] = "qh_find_newvertex: vertices not in ridges for v%d\n";
+static const char nxQhStr10ea38[] = "qh_find_newvertex: no vertex for renaming v%d (all duplicated ridges) during p%d\n";
+static const char nxQhStr10e9e8[] = "qh_find_newvertex: found v%d for old v%d from %d vertices and %d ridges.\n";
+static const char nxQhStr10ebf8[] = "qh_mergecycle: does not work for tricoplanar facets.  Use option 'Q11'\n";
+static const char nxQhStr10eba8[] = "qh_mergecycle: merge #%d for facets from cycle f%d into coplanar horizon f%d\n";
+static const char nxQhStr10eb48[] = "qh_mergecycle: ========= trace merge %d of samecycle %d into trace f%d, furthest is p%d\n";
+static const char nxQhStr10eb38[] = "  same cycle:";
+static const char nxQhStr10c274[] = " f%d";
+static const char nxQhStr10eb28[] = "MERGING CYCLE";
+static const char nxQhStr10eb04[] = "qh_mergecycle: end of trace facet\n";
+static const char nxQhStr10f808[] = "qh_matchvertices: matched by skip %d (v%d) and skip %d (v%d) same? %d\n";
+static const char nxQhStr110354[] = "qhull internal error (qh_checkvertex): unknown point id %p\n";
+static const char nxQhStr110314[] = "qhull internal error (qh_checkvertex): unknown vertex id %d\n";
+static const char nxQhStr1102c8[] = "qhull internal error (qh_checkvertex): neighbor f%d does not contain v%d\n";
+static const char nxQhStr10ef58[] = "ERRONEOUS";
 static const char nxQhStr1103c0[] = "qh_furthestout: p%d is furthest outside point of f%d\n";
 static const char nxQhStr110648[] = "qh_matchduplicates: find duplicate matches for f%d skip %d hash %d hashcount %d\n";
 static const char nxQhStr1105e0[] = "qhull internal error (qh_matchduplicates): missing dupridge at f%d skip %d for new f%d skip %d hash %d\n";
@@ -85,6 +153,8 @@ static const char nxQhStr1104c8[] = "qhull internal error (qh_matchduplicates): 
 static const char nxQhStr110478[] = "qh_matchduplicates: duplicate f%d skip %d matched with new f%d skip %d keep\n";
 static const char nxQhStr110458[] = "ridge with multiple neighbors";
 static const char nxQhStr110444[] = "DUPLICATED/MATCH";
+static const char nxQhStr110a64[] = "qh_triangulate_mirror: delete mirrored facets f%d and f%d\n";
+static const char nxQhStr111694[] = "qh_createsimplex: created simplex\n";
 static const char nxQhStr112308[] = "qhull internal error (qh_nextfurthest): num_outside %d is too low\nby at least %d, or a random real %g >= 1.0\n";
 
 // phys_fn_002425 (0x0005c5c0, 490 B), 162 instructions
@@ -1266,6 +1336,1944 @@ L622e0:
 		}
 	}
 
+// phys_fn_002697 (0x00066b20, 202 B), 75 instructions
+__declspec(naked) setT *qh_detvridge(vertexT *vertex)
+	{
+	__asm
+		{
+		sub esp, 8		// 0x00066b20
+		mov eax, dword ptr [qh_qh + 0x80c]		// 0x00066b23
+		push ebx		// 0x00066b28
+		push eax		// 0x00066b29
+		call qh_settemp		// 0x00066b2a
+		mov ecx, dword ptr [qh_qh + 0x80c]		// 0x00066b2f
+		push ecx		// 0x00066b35
+		mov dword ptr [esp + 0xc], eax		// 0x00066b36
+		call qh_settemp		// 0x00066b3a
+		mov edx, dword ptr [esp + 0x18]		// 0x00066b3f
+		mov dword ptr [esp + 0x10], eax		// 0x00066b43
+		mov eax, dword ptr [edx + 0xc]		// 0x00066b47
+		add esp, 8		// 0x00066b4a
+		test eax, eax		// 0x00066b4d
+		mov ebx, 1		// 0x00066b4f
+		je L66bb2		// 0x00066b54
+		push esi		// 0x00066b56
+		mov esi, dword ptr [eax + 4]		// 0x00066b57
+		test esi, esi		// 0x00066b5a
+		push edi		// 0x00066b5c
+		lea edi, [eax + 4]		// 0x00066b5d
+		je L66bb0		// 0x00066b60
+L66b62:
+		mov eax, dword ptr [esi + 0x50]		// 0x00066b62
+		add edi, 4		// 0x00066b65
+		test ah, 0x40		// 0x00066b68
+		je L66baa		// 0x00066b6b
+		mov ecx, dword ptr [esi + 0x48]		// 0x00066b6d
+		test ecx, ecx		// 0x00066b70
+		je L66b96		// 0x00066b72
+		test ah, 2		// 0x00066b74
+		je L66b8e		// 0x00066b77
+		mov eax, dword ptr [esi + 0x28]		// 0x00066b79
+		push eax		// 0x00066b7c
+		lea ecx, [esp + 0x14]		// 0x00066b7d
+		push ecx		// 0x00066b81
+		call qh_setunique		// 0x00066b82
+		add esp, 8		// 0x00066b87
+		test eax, eax		// 0x00066b8a
+		je L66baa		// 0x00066b8c
+L66b8e:
+		push esi		// 0x00066b8e
+		lea edx, [esp + 0x10]		// 0x00066b8f
+		push edx		// 0x00066b93
+		jmp L66ba2		// 0x00066b94
+L66b96:
+		test ebx, ebx		// 0x00066b96
+		je L66baa		// 0x00066b98
+		push esi		// 0x00066b9a
+		lea eax, [esp + 0x10]		// 0x00066b9b
+		xor ebx, ebx		// 0x00066b9f
+		push eax		// 0x00066ba1
+L66ba2:
+		call qh_setappend		// 0x00066ba2
+		add esp, 8		// 0x00066ba7
+L66baa:
+		mov esi, dword ptr [edi]		// 0x00066baa
+		test esi, esi		// 0x00066bac
+		jne L66b62		// 0x00066bae
+L66bb0:
+		pop edi		// 0x00066bb0
+		pop esi		// 0x00066bb1
+L66bb2:
+		mov ecx, dword ptr [esp + 4]		// 0x00066bb2
+		push offset qh_compare_facetvisit		// 0x00066bb6
+		push 4		// 0x00066bbb
+		push ecx		// 0x00066bbd
+		call qh_setsize		// 0x00066bbe
+		mov edx, dword ptr [esp + 0x10]		// 0x00066bc3
+		add esp, 4		// 0x00066bc7
+		push eax		// 0x00066bca
+		add edx, 4		// 0x00066bcb
+		push edx		// 0x00066bce
+		call nxQhCallQsort		// 0x00066bcf
+		lea eax, [esp + 0x18]		// 0x00066bd4
+		push eax		// 0x00066bd8
+		call qh_settempfree		// 0x00066bd9
+		mov eax, dword ptr [esp + 0x18]		// 0x00066bde
+		add esp, 0x14		// 0x00066be2
+		pop ebx		// 0x00066be5
+		add esp, 8		// 0x00066be6
+		ret		// 0x00066be9
+		}
+	}
+
+// phys_fn_002884 (0x0006e0b0, 393 B), 143 instructions
+__declspec(naked) void qh_appendmergeset(facetT *facet, facetT *neighbor, mergeType mergetype, realT *angle)
+	{
+	__asm
+		{
+		push esi		// 0x0006e0b0
+		mov esi, dword ptr [esp + 8]		// 0x0006e0b1
+		mov eax, dword ptr [esi + 0x50]		// 0x0006e0b5
+		test eax, eax		// 0x0006e0b8
+		js L6e237		// 0x0006e0ba
+		test eax, 0x40000000		// 0x0006e0c0
+		push ebp		// 0x0006e0c5
+		mov ebp, dword ptr [esp + 0x14]		// 0x0006e0c6
+		je L6e0d5		// 0x0006e0ca
+		cmp ebp, 6		// 0x0006e0cc
+		je L6e236		// 0x0006e0cf
+L6e0d5:
+		mov eax, dword ptr [qhmem + 0x20]		// 0x0006e0d5
+		mov ecx, dword ptr [eax + 0x60]		// 0x0006e0da
+		mov edx, dword ptr [qhmem + 0x18]		// 0x0006e0dd
+		lea eax, [edx + ecx*4]		// 0x0006e0e3
+		push ebx		// 0x0006e0e6
+		mov ebx, dword ptr [eax]		// 0x0006e0e7
+		test ebx, ebx		// 0x0006e0e9
+		je L6e0fb		// 0x0006e0eb
+		inc dword ptr [qhmem + 0x3c]		// 0x0006e0ed
+		mov ecx, dword ptr [eax]		// 0x0006e0f3
+		mov edx, dword ptr [ecx]		// 0x0006e0f5
+		mov dword ptr [eax], edx		// 0x0006e0f7
+		jmp L6e107		// 0x0006e0f9
+L6e0fb:
+		push 0x18		// 0x0006e0fb
+		call qh_memalloc		// 0x0006e0fd
+		add esp, 4		// 0x0006e102
+		mov ebx, eax		// 0x0006e105
+L6e107:
+		mov eax, dword ptr [esp + 0x1c]		// 0x0006e107
+		test eax, eax		// 0x0006e10b
+		push edi		// 0x0006e10d
+		mov edi, dword ptr [esp + 0x18]		// 0x0006e10e
+		mov dword ptr [ebx + 8], esi		// 0x0006e112
+		mov dword ptr [ebx + 0xc], edi		// 0x0006e115
+		mov dword ptr [ebx + 0x10], ebp		// 0x0006e118
+		je L6e12b		// 0x0006e11b
+		mov ecx, dword ptr [qh_qh + 0x4]		// 0x0006e11d
+		test ecx, ecx		// 0x0006e123
+		je L6e12b		// 0x0006e125
+		fld qword ptr [eax]		// 0x0006e127
+		fstp qword ptr [ebx]		// 0x0006e129
+L6e12b:
+		cmp ebp, 6		// 0x0006e12b
+		jge L6e143		// 0x0006e12e
+		push ebx		// 0x0006e130
+		push offset qh_qh + 0x8f0		// 0x0006e131
+		call qh_setappend		// 0x0006e136
+		add esp, 8		// 0x0006e13b
+		pop edi		// 0x0006e13e
+		pop ebx		// 0x0006e13f
+		pop ebp		// 0x0006e140
+		pop esi		// 0x0006e141
+		ret		// 0x0006e142
+L6e143:
+		jne L6e181		// 0x0006e143
+		or dword ptr [esi + 0x50], 0x40000000		// 0x0006e145
+		mov eax, dword ptr [qh_qh + 0x8f4]		// 0x0006e14c
+		push eax		// 0x0006e151
+		call qh_setlast		// 0x0006e152
+		add esp, 4		// 0x0006e157
+		test eax, eax		// 0x0006e15a
+		je L6e226		// 0x0006e15c
+		cmp dword ptr [eax + 0x10], 6		// 0x0006e162
+		je L6e226		// 0x0006e166
+		push ebx		// 0x0006e16c
+		push 0		// 0x0006e16d
+		push offset qh_qh + 0x8f4		// 0x0006e16f
+		call qh_setaddnth		// 0x0006e174
+		add esp, 0xc		// 0x0006e179
+		pop edi		// 0x0006e17c
+		pop ebx		// 0x0006e17d
+		pop ebp		// 0x0006e17e
+		pop esi		// 0x0006e17f
+		ret		// 0x0006e180
+L6e181:
+		cmp ebp, 7		// 0x0006e181
+		jne L6e1a5		// 0x0006e184
+		mov edi, dword ptr [esi + 0x50]		// 0x0006e186
+		push ebx		// 0x0006e189
+		or edi, 0x80000000		// 0x0006e18a
+		push offset qh_qh + 0x8f4		// 0x0006e190
+		mov dword ptr [esi + 0x50], edi		// 0x0006e195
+		call qh_setappend		// 0x0006e198
+		add esp, 8		// 0x0006e19d
+		pop edi		// 0x0006e1a0
+		pop ebx		// 0x0006e1a1
+		pop ebp		// 0x0006e1a2
+		pop esi		// 0x0006e1a3
+		ret		// 0x0006e1a4
+L6e1a5:
+		mov eax, dword ptr [esi + 0x50]		// 0x0006e1a5
+		mov ebp, 0x80000000		// 0x0006e1a8
+		test ebp, eax		// 0x0006e1ad
+		jne L6e1b6		// 0x0006e1af
+		test dword ptr [edi + 0x50], ebp		// 0x0006e1b1
+		je L6e1e1		// 0x0006e1b4
+L6e1b6:
+		mov edx, dword ptr [edi + 0x4c]		// 0x0006e1b6
+		mov eax, dword ptr [nxQhHost]		// 0x0006e1b9
+		mov ecx, dword ptr [eax]		// 0x0006e1be
+		push edx		// 0x0006e1c0
+		mov edx, dword ptr [esi + 0x4c]		// 0x0006e1c1
+		push edx		// 0x0006e1c4
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006e1c5
+		push offset nxQhStr10d960		// 0x0006e1cb
+		push edx		// 0x0006e1d0
+		push eax		// 0x0006e1d1
+		call dword ptr [ecx + 0x10]		// 0x0006e1d2
+		push edi		// 0x0006e1d5
+		push esi		// 0x0006e1d6
+		push 5		// 0x0006e1d7
+		call qh_errexit2		// 0x0006e1d9
+		add esp, 0x20		// 0x0006e1de
+L6e1e1:
+		mov eax, dword ptr [edi + 0x34]		// 0x0006e1e1
+		mov ecx, dword ptr [esi + 0x34]		// 0x0006e1e4
+		push eax		// 0x0006e1e7
+		push ecx		// 0x0006e1e8
+		call qh_setequal		// 0x0006e1e9
+		add esp, 8		// 0x0006e1ee
+		test eax, eax		// 0x0006e1f1
+		jne L6e220		// 0x0006e1f3
+		mov ecx, dword ptr [edi + 0x4c]		// 0x0006e1f5
+		mov eax, dword ptr [nxQhHost]		// 0x0006e1f8
+		mov edx, dword ptr [eax]		// 0x0006e1fd
+		push ecx		// 0x0006e1ff
+		mov ecx, dword ptr [esi + 0x4c]		// 0x0006e200
+		push ecx		// 0x0006e203
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x0006e204
+		push offset nxQhStr10d900		// 0x0006e20a
+		push ecx		// 0x0006e20f
+		push eax		// 0x0006e210
+		call dword ptr [edx + 0x10]		// 0x0006e211
+		push edi		// 0x0006e214
+		push esi		// 0x0006e215
+		push 5		// 0x0006e216
+		call qh_errexit2		// 0x0006e218
+		add esp, 0x20		// 0x0006e21d
+L6e220:
+		or dword ptr [esi + 0x50], ebp		// 0x0006e220
+		or dword ptr [edi + 0x50], ebp		// 0x0006e223
+L6e226:
+		push ebx		// 0x0006e226
+		push offset qh_qh + 0x8f4		// 0x0006e227
+		call qh_setappend		// 0x0006e22c
+		add esp, 8		// 0x0006e231
+		pop edi		// 0x0006e234
+		pop ebx		// 0x0006e235
+L6e236:
+		pop ebp		// 0x0006e236
+L6e237:
+		pop esi		// 0x0006e237
+		ret		// 0x0006e238
+		}
+	}
+
+// phys_fn_002900 and phys_fn_002902 (one function) (0x0006e6f0, 520 B), 165 instructions
+__declspec(naked) void qh_degen_redundant_facet(facetT *facet)
+	{
+	__asm
+		{
+		cmp dword ptr [qh_qh + 0x68], 4		// 0x0006e6f0
+		push ebx		// 0x0006e6f7
+		mov ebx, dword ptr [esp + 8]		// 0x0006e6f8
+		push ebp		// 0x0006e6fc
+		push esi		// 0x0006e6fd
+		push edi		// 0x0006e6fe
+		jl L6e719		// 0x0006e6ff
+		mov eax, dword ptr [ebx + 0x4c]		// 0x0006e701
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x0006e704
+		push eax		// 0x0006e70a
+		push offset nxQhStr10db98		// 0x0006e70b
+		push ecx		// 0x0006e710
+		call nxQhCallFprintf		// 0x0006e711
+		add esp, 0xc		// 0x0006e716
+L6e719:
+		mov eax, dword ptr [ebx + 0x3c]		// 0x0006e719
+		test eax, eax		// 0x0006e71c
+		je L6e7d2		// 0x0006e71e
+		mov edi, dword ptr [eax + 4]		// 0x0006e724
+		test edi, edi		// 0x0006e727
+		lea esi, [eax + 4]		// 0x0006e729
+		je L6e7d2		// 0x0006e72c
+		mov edx, dword ptr [qh_qh + 0x8e4]		// 0x0006e732
+		jmp L6e740		// 0x0006e738
+		lea ebx, [ebx]		// 0x0006e73a
+L6e740:
+		add esi, 4		// 0x0006e740
+		inc edx		// 0x0006e743
+		mov dword ptr [qh_qh + 0x8e4], edx		// 0x0006e744
+		mov eax, dword ptr [edi + 0x34]		// 0x0006e74a
+		test eax, eax		// 0x0006e74d
+		je L6e772		// 0x0006e74f
+		lea ecx, [eax + 4]		// 0x0006e751
+		mov eax, dword ptr [ecx]		// 0x0006e754
+		test eax, eax		// 0x0006e756
+		je L6e772		// 0x0006e758
+		lea ebx, [ebx]		// 0x0006e75a
+L6e760:
+		add ecx, 4		// 0x0006e760
+		mov dword ptr [eax + 0x10], edx		// 0x0006e763
+		mov eax, dword ptr [ecx]		// 0x0006e766
+		test eax, eax		// 0x0006e768
+		mov edx, dword ptr [qh_qh + 0x8e4]		// 0x0006e76a
+		jne L6e760		// 0x0006e770
+L6e772:
+		mov eax, dword ptr [ebx + 0x34]		// 0x0006e772
+		test eax, eax		// 0x0006e775
+		je L6e792		// 0x0006e777
+		lea ecx, [eax + 4]		// 0x0006e779
+		mov eax, dword ptr [ecx]		// 0x0006e77c
+		test eax, eax		// 0x0006e77e
+		je L6e792		// 0x0006e780
+L6e782:
+		mov ebp, dword ptr [eax + 0x10]		// 0x0006e782
+		add ecx, 4		// 0x0006e785
+		cmp ebp, edx		// 0x0006e788
+		jne L6e7c8		// 0x0006e78a
+		mov eax, dword ptr [ecx]		// 0x0006e78c
+		test eax, eax		// 0x0006e78e
+		jne L6e782		// 0x0006e790
+L6e792:
+		mov eax, dword ptr [ebx + 0x50]		// 0x0006e792
+		mov esi, 0x80000000		// 0x0006e795
+		test esi, eax		// 0x0006e79a
+		jne L6e84c		// 0x0006e79c
+		mov edx, dword ptr [qhmem + 0x20]		// 0x0006e7a2
+		mov eax, dword ptr [edx + 0x60]		// 0x0006e7a8
+		mov ecx, dword ptr [qhmem + 0x18]		// 0x0006e7ab
+		lea ecx, [ecx + eax*4]		// 0x0006e7b1
+		mov eax, dword ptr [ecx]		// 0x0006e7b4
+		test eax, eax		// 0x0006e7b6
+		je L6e81f		// 0x0006e7b8
+		inc dword ptr [qhmem + 0x3c]		// 0x0006e7ba
+		mov edx, dword ptr [ecx]		// 0x0006e7c0
+		mov edx, dword ptr [edx]		// 0x0006e7c2
+		mov dword ptr [ecx], edx		// 0x0006e7c4
+		jmp L6e829		// 0x0006e7c6
+L6e7c8:
+		mov edi, dword ptr [esi]		// 0x0006e7c8
+		test edi, edi		// 0x0006e7ca
+		jne L6e740		// 0x0006e7cc
+L6e7d2:
+		mov eax, dword ptr [ebx + 0x3c]		// 0x0006e7d2
+		push eax		// 0x0006e7d5
+		call qh_setsize		// 0x0006e7d6
+		mov ecx, dword ptr [qh_qh + 0x24c]		// 0x0006e7db
+		add esp, 4		// 0x0006e7e1
+		cmp eax, ecx		// 0x0006e7e4
+		jge L6e8f3		// 0x0006e7e6
+		test dword ptr [ebx + 0x50], 0xc0000000		// 0x0006e7ec
+		jne L6e8d2		// 0x0006e7f3
+		mov ecx, dword ptr [qhmem + 0x20]		// 0x0006e7f9
+		mov edx, dword ptr [ecx + 0x60]		// 0x0006e7ff
+		mov eax, dword ptr [qhmem + 0x18]		// 0x0006e802
+		mov esi, dword ptr [eax + edx*4]		// 0x0006e807
+		test esi, esi		// 0x0006e80a
+		lea eax, [eax + edx*4]		// 0x0006e80c
+		je L6e87a		// 0x0006e80f
+		inc dword ptr [qhmem + 0x3c]		// 0x0006e811
+		mov ecx, dword ptr [eax]		// 0x0006e817
+		mov edx, dword ptr [ecx]		// 0x0006e819
+		mov dword ptr [eax], edx		// 0x0006e81b
+		jmp L6e886		// 0x0006e81d
+L6e81f:
+		push 0x18		// 0x0006e81f
+		call qh_memalloc		// 0x0006e821
+		add esp, 4		// 0x0006e826
+L6e829:
+		mov dword ptr [eax + 8], ebx		// 0x0006e829
+		mov dword ptr [eax + 0xc], edi		// 0x0006e82c
+		mov dword ptr [eax + 0x10], 7		// 0x0006e82f
+		mov ebp, dword ptr [ebx + 0x50]		// 0x0006e836
+		push eax		// 0x0006e839
+		or ebp, esi		// 0x0006e83a
+		push offset qh_qh + 0x8f4		// 0x0006e83c
+		mov dword ptr [ebx + 0x50], ebp		// 0x0006e841
+		call qh_setappend		// 0x0006e844
+		add esp, 8		// 0x0006e849
+L6e84c:
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x0006e84c
+		jl L6e8f3		// 0x0006e853
+		mov eax, dword ptr [edi + 0x4c]		// 0x0006e859
+		mov ecx, dword ptr [ebx + 0x4c]		// 0x0006e85c
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006e85f
+		push eax		// 0x0006e865
+		push ecx		// 0x0006e866
+		push offset nxQhStr10db5c		// 0x0006e867
+		push edx		// 0x0006e86c
+		call nxQhCallFprintf		// 0x0006e86d
+		add esp, 0x10		// 0x0006e872
+		pop edi		// 0x0006e875
+		pop esi		// 0x0006e876
+		pop ebp		// 0x0006e877
+		pop ebx		// 0x0006e878
+		ret		// 0x0006e879
+L6e87a:
+		push 0x18		// 0x0006e87a
+		call qh_memalloc		// 0x0006e87c
+		add esp, 4		// 0x0006e881
+		mov esi, eax		// 0x0006e884
+L6e886:
+		mov dword ptr [esi + 8], ebx		// 0x0006e886
+		mov dword ptr [esi + 0xc], ebx		// 0x0006e889
+		mov edi, 6		// 0x0006e88c
+		mov dword ptr [esi + 0x10], edi		// 0x0006e891
+		or dword ptr [ebx + 0x50], 0x40000000		// 0x0006e894
+		mov eax, dword ptr [qh_qh + 0x8f4]		// 0x0006e89b
+		push eax		// 0x0006e8a0
+		call qh_setlast		// 0x0006e8a1
+		add esp, 4		// 0x0006e8a6
+		test eax, eax		// 0x0006e8a9
+		je L6e8c4		// 0x0006e8ab
+		cmp dword ptr [eax + 0x10], edi		// 0x0006e8ad
+		je L6e8c4		// 0x0006e8b0
+		push esi		// 0x0006e8b2
+		push 0		// 0x0006e8b3
+		push offset qh_qh + 0x8f4		// 0x0006e8b5
+		call qh_setaddnth		// 0x0006e8ba
+		add esp, 0xc		// 0x0006e8bf
+		jmp L6e8d2		// 0x0006e8c2
+L6e8c4:
+		push esi		// 0x0006e8c4
+		push offset qh_qh + 0x8f4		// 0x0006e8c5
+		call qh_setappend		// 0x0006e8ca
+		add esp, 8		// 0x0006e8cf
+L6e8d2:
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x0006e8d2
+		jl L6e8f3		// 0x0006e8d9
+		mov ecx, dword ptr [ebx + 0x4c]		// 0x0006e8db
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006e8de
+		push ecx		// 0x0006e8e4
+		push offset nxQhStr10db28		// 0x0006e8e5
+		push edx		// 0x0006e8ea
+		call nxQhCallFprintf		// 0x0006e8eb
+		add esp, 0xc		// 0x0006e8f0
+L6e8f3:
+		pop edi		// 0x0006e8f3
+		pop esi		// 0x0006e8f4
+		pop ebp		// 0x0006e8f5
+		pop ebx		// 0x0006e8f6
+		ret		// 0x0006e8f7
+		}
+	}
+
+// phys_fn_002921 and phys_fn_002923 and phys_fn_002925 (one function) (0x0006f2c0, 696 B), 209 instructions
+__declspec(naked) void qh_maydropneighbor(facetT *facet)
+	{
+	__asm
+		{
+		mov ecx, dword ptr [qh_qh + 0x8e0]		// 0x0006f2c0
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006f2c6
+		push ebx		// 0x0006f2cb
+		mov ebx, dword ptr [esp + 8]		// 0x0006f2cc
+		inc ecx		// 0x0006f2d0
+		cmp eax, 4		// 0x0006f2d1
+		push esi		// 0x0006f2d4
+		push edi		// 0x0006f2d5
+		mov dword ptr [qh_qh + 0x8e0], ecx		// 0x0006f2d6
+		jl L6f2f6		// 0x0006f2dc
+		mov eax, dword ptr [ebx + 0x4c]		// 0x0006f2de
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x0006f2e1
+		push eax		// 0x0006f2e7
+		push offset nxQhStr10deb4		// 0x0006f2e8
+		push ecx		// 0x0006f2ed
+		call nxQhCallFprintf		// 0x0006f2ee
+		add esp, 0xc		// 0x0006f2f3
+L6f2f6:
+		mov eax, dword ptr [ebx + 0x38]		// 0x0006f2f6
+		test eax, eax		// 0x0006f2f9
+		je L6f331		// 0x0006f2fb
+		lea ecx, [eax + 4]		// 0x0006f2fd
+		mov eax, dword ptr [ecx]		// 0x0006f300
+		test eax, eax		// 0x0006f302
+		je L6f331		// 0x0006f304
+		jmp L6f310		// 0x0006f306
+		lea esp, [esp]		// 0x0006f308
+		nop		// 0x0006f30f
+L6f310:
+		mov edx, dword ptr [eax + 4]		// 0x0006f310
+		mov esi, dword ptr [qh_qh + 0x8e0]		// 0x0006f313
+		mov dword ptr [edx + 0x48], esi		// 0x0006f319
+		mov eax, dword ptr [eax + 8]		// 0x0006f31c
+		mov edx, dword ptr [qh_qh + 0x8e0]		// 0x0006f31f
+		add ecx, 4		// 0x0006f325
+		mov dword ptr [eax + 0x48], edx		// 0x0006f328
+		mov eax, dword ptr [ecx]		// 0x0006f32b
+		test eax, eax		// 0x0006f32d
+		jne L6f310		// 0x0006f32f
+L6f331:
+		mov eax, dword ptr [ebx + 0x3c]		// 0x0006f331
+		test eax, eax		// 0x0006f334
+		je L6f497		// 0x0006f336
+		mov esi, dword ptr [eax + 4]		// 0x0006f33c
+		test esi, esi		// 0x0006f33f
+		push ebp		// 0x0006f341
+		lea ebp, [eax + 4]		// 0x0006f342
+		je L6f496		// 0x0006f345
+		jmp L6f350		// 0x0006f34b
+		lea ecx, [ecx]		// 0x0006f34d
+L6f350:
+		mov eax, dword ptr [qh_qh + 0x8e0]		// 0x0006f350
+		mov ecx, dword ptr [esi + 0x48]		// 0x0006f355
+		add ebp, 4		// 0x0006f358
+		cmp ecx, eax		// 0x0006f35b
+		je L6f48b		// 0x0006f35d
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006f363
+		test eax, eax		// 0x0006f368
+		je L6f38f		// 0x0006f36a
+		mov ecx, dword ptr [qh_qh + 0x870]		// 0x0006f36c
+		mov edx, dword ptr [esi + 0x4c]		// 0x0006f372
+		mov eax, dword ptr [ebx + 0x4c]		// 0x0006f375
+		push ecx		// 0x0006f378
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x0006f379
+		push edx		// 0x0006f37f
+		push eax		// 0x0006f380
+		push offset nxQhStr10de68		// 0x0006f381
+		push ecx		// 0x0006f386
+		call nxQhCallFprintf		// 0x0006f387
+		add esp, 0x14		// 0x0006f38c
+L6f38f:
+		inc dword ptr [qh_qhstat + 0x238]		// 0x0006f38f
+		mov edx, dword ptr [ebx + 0x3c]		// 0x0006f395
+		push esi		// 0x0006f398
+		push edx		// 0x0006f399
+		call qh_setdel		// 0x0006f39a
+		mov eax, dword ptr [esi + 0x3c]		// 0x0006f39f
+		push ebx		// 0x0006f3a2
+		push eax		// 0x0006f3a3
+		sub ebp, 4		// 0x0006f3a4
+		call qh_setdel		// 0x0006f3a7
+		mov ecx, dword ptr [esi + 0x3c]		// 0x0006f3ac
+		push ecx		// 0x0006f3af
+		call qh_setsize		// 0x0006f3b0
+		mov ecx, dword ptr [qh_qh + 0x24c]		// 0x0006f3b5
+		add esp, 0x14		// 0x0006f3bb
+		cmp eax, ecx		// 0x0006f3be
+		jge L6f48b		// 0x0006f3c0
+		inc dword ptr [qh_qhstat + 0x230]		// 0x0006f3c6
+		test dword ptr [esi + 0x50], 0xc0000000		// 0x0006f3cc
+		jne L6f46a		// 0x0006f3d3
+		mov edx, dword ptr [qhmem + 0x20]		// 0x0006f3d9
+		mov eax, dword ptr [edx + 0x60]		// 0x0006f3df
+		mov ecx, dword ptr [qhmem + 0x18]		// 0x0006f3e2
+		mov edi, dword ptr [ecx + eax*4]		// 0x0006f3e8
+		test edi, edi		// 0x0006f3eb
+		lea eax, [ecx + eax*4]		// 0x0006f3ed
+		je L6f400		// 0x0006f3f0
+		inc dword ptr [qhmem + 0x3c]		// 0x0006f3f2
+		mov edx, dword ptr [eax]		// 0x0006f3f8
+		mov ecx, dword ptr [edx]		// 0x0006f3fa
+		mov dword ptr [eax], ecx		// 0x0006f3fc
+		jmp L6f40c		// 0x0006f3fe
+L6f400:
+		push 0x18		// 0x0006f400
+		call qh_memalloc		// 0x0006f402
+		add esp, 4		// 0x0006f407
+		mov edi, eax		// 0x0006f40a
+L6f40c:
+		mov dword ptr [edi + 8], esi		// 0x0006f40c
+		mov dword ptr [edi + 0xc], esi		// 0x0006f40f
+		mov dword ptr [edi + 0x10], 6		// 0x0006f412
+		mov eax, dword ptr [qh_qh + 0x4]		// 0x0006f419
+		test eax, eax		// 0x0006f41e
+		je L6f42a		// 0x0006f420
+		fld qword ptr [nxQhK10109b60_8]		// 0x0006f422
+		fstp qword ptr [edi]		// 0x0006f428
+L6f42a:
+		or dword ptr [esi + 0x50], 0x40000000		// 0x0006f42a
+		mov edx, dword ptr [qh_qh + 0x8f4]		// 0x0006f431
+		push edx		// 0x0006f437
+		call qh_setlast		// 0x0006f438
+		add esp, 4		// 0x0006f43d
+		test eax, eax		// 0x0006f440
+		je L6f45c		// 0x0006f442
+		cmp dword ptr [eax + 0x10], 6		// 0x0006f444
+		je L6f45c		// 0x0006f448
+		push edi		// 0x0006f44a
+		push 0		// 0x0006f44b
+		push offset qh_qh + 0x8f4		// 0x0006f44d
+		call qh_setaddnth		// 0x0006f452
+		add esp, 0xc		// 0x0006f457
+		jmp L6f46a		// 0x0006f45a
+L6f45c:
+		push edi		// 0x0006f45c
+		push offset qh_qh + 0x8f4		// 0x0006f45d
+		call qh_setappend		// 0x0006f462
+		add esp, 8		// 0x0006f467
+L6f46a:
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x0006f46a
+		jl L6f48b		// 0x0006f471
+		mov eax, dword ptr [esi + 0x4c]		// 0x0006f473
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x0006f476
+		push eax		// 0x0006f47c
+		push offset nxQhStr10de38		// 0x0006f47d
+		push ecx		// 0x0006f482
+		call nxQhCallFprintf		// 0x0006f483
+		add esp, 0xc		// 0x0006f488
+L6f48b:
+		mov esi, dword ptr [ebp]		// 0x0006f48b
+		test esi, esi		// 0x0006f48e
+		jne L6f350		// 0x0006f490
+L6f496:
+		pop ebp		// 0x0006f496
+L6f497:
+		mov edx, dword ptr [ebx + 0x3c]		// 0x0006f497
+		push edx		// 0x0006f49a
+		call qh_setsize		// 0x0006f49b
+		mov ecx, dword ptr [qh_qh + 0x24c]		// 0x0006f4a0
+		add esp, 4		// 0x0006f4a6
+		cmp eax, ecx		// 0x0006f4a9
+		jge L6f574		// 0x0006f4ab
+		inc dword ptr [qh_qhstat + 0x230]		// 0x0006f4b1
+		test dword ptr [ebx + 0x50], 0xc0000000		// 0x0006f4b7
+		jne L6f553		// 0x0006f4be
+		mov eax, dword ptr [qhmem + 0x20]		// 0x0006f4c4
+		mov ecx, dword ptr [eax + 0x60]		// 0x0006f4c9
+		mov edx, dword ptr [qhmem + 0x18]		// 0x0006f4cc
+		mov esi, dword ptr [edx + ecx*4]		// 0x0006f4d2
+		test esi, esi		// 0x0006f4d5
+		lea eax, [edx + ecx*4]		// 0x0006f4d7
+		je L6f4ea		// 0x0006f4da
+		inc dword ptr [qhmem + 0x3c]		// 0x0006f4dc
+		mov ecx, dword ptr [eax]		// 0x0006f4e2
+		mov edx, dword ptr [ecx]		// 0x0006f4e4
+		mov dword ptr [eax], edx		// 0x0006f4e6
+		jmp L6f4f6		// 0x0006f4e8
+L6f4ea:
+		push 0x18		// 0x0006f4ea
+		call qh_memalloc		// 0x0006f4ec
+		add esp, 4		// 0x0006f4f1
+		mov esi, eax		// 0x0006f4f4
+L6f4f6:
+		mov edi, 6		// 0x0006f4f6
+		mov dword ptr [esi + 8], ebx		// 0x0006f4fb
+		mov dword ptr [esi + 0xc], ebx		// 0x0006f4fe
+		mov dword ptr [esi + 0x10], edi		// 0x0006f501
+		mov eax, dword ptr [qh_qh + 0x4]		// 0x0006f504
+		test eax, eax		// 0x0006f509
+		je L6f515		// 0x0006f50b
+		fld qword ptr [nxQhK10109b60_8]		// 0x0006f50d
+		fstp qword ptr [esi]		// 0x0006f513
+L6f515:
+		or dword ptr [ebx + 0x50], 0x40000000		// 0x0006f515
+		mov eax, dword ptr [qh_qh + 0x8f4]		// 0x0006f51c
+		push eax		// 0x0006f521
+		call qh_setlast		// 0x0006f522
+		add esp, 4		// 0x0006f527
+		test eax, eax		// 0x0006f52a
+		je L6f545		// 0x0006f52c
+		cmp dword ptr [eax + 0x10], edi		// 0x0006f52e
+		je L6f545		// 0x0006f531
+		push esi		// 0x0006f533
+		push 0		// 0x0006f534
+		push offset qh_qh + 0x8f4		// 0x0006f536
+		call qh_setaddnth		// 0x0006f53b
+		add esp, 0xc		// 0x0006f540
+		jmp L6f553		// 0x0006f543
+L6f545:
+		push esi		// 0x0006f545
+		push offset qh_qh + 0x8f4		// 0x0006f546
+		call qh_setappend		// 0x0006f54b
+		add esp, 8		// 0x0006f550
+L6f553:
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x0006f553
+		jl L6f574		// 0x0006f55a
+		mov ecx, dword ptr [ebx + 0x4c]		// 0x0006f55c
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006f55f
+		push ecx		// 0x0006f565
+		push offset nxQhStr10de38		// 0x0006f566
+		push edx		// 0x0006f56b
+		call nxQhCallFprintf		// 0x0006f56c
+		add esp, 0xc		// 0x0006f571
+L6f574:
+		pop edi		// 0x0006f574
+		pop esi		// 0x0006f575
+		pop ebx		// 0x0006f576
+		ret		// 0x0006f577
+		}
+	}
+
+// phys_fn_002927 (0x0006f580, 583 B), 195 instructions
+__declspec(naked) void qh_mergecycle_neighbors(facetT *samecycle, facetT *newfacet)
+	{
+	__asm
+		{
+		sub esp, 0xc		// 0x0006f580
+		mov eax, dword ptr [esp + 0x10]		// 0x0006f583
+		push ebx		// 0x0006f587
+		mov ebx, dword ptr [qh_qh + 0x8e0]		// 0x0006f588
+		xor ecx, ecx		// 0x0006f58e
+		inc ebx		// 0x0006f590
+		push ebp		// 0x0006f591
+		push esi		// 0x0006f592
+		mov dword ptr [qh_qh + 0x8e0], ebx		// 0x0006f593
+		mov esi, dword ptr [eax + 0x20]		// 0x0006f599
+		cmp esi, ecx		// 0x0006f59c
+		push edi		// 0x0006f59e
+		mov dword ptr [esp + 0x14], ecx		// 0x0006f59f
+		mov dword ptr [esp + 0x10], ecx		// 0x0006f5a3
+		mov dword ptr [esp + 0x18], ebx		// 0x0006f5a7
+		je L6f5d7		// 0x0006f5ab
+		mov edi, 0x800		// 0x0006f5ad
+L6f5b2:
+		cmp dword ptr [esi + 0x48], ebx		// 0x0006f5b2
+		je L6f5bc		// 0x0006f5b5
+		test dword ptr [esi + 0x50], edi		// 0x0006f5b7
+		je L6f5c9		// 0x0006f5ba
+L6f5bc:
+		push eax		// 0x0006f5bc
+		call qh_infiniteloop		// 0x0006f5bd
+		mov eax, dword ptr [esp + 0x24]		// 0x0006f5c2
+		add esp, 4		// 0x0006f5c6
+L6f5c9:
+		cmp esi, eax		// 0x0006f5c9
+		mov dword ptr [esi + 0x48], ebx		// 0x0006f5cb
+		je L6f5d7		// 0x0006f5ce
+		mov esi, dword ptr [esi + 0x20]		// 0x0006f5d0
+		test esi, esi		// 0x0006f5d3
+		jne L6f5b2		// 0x0006f5d5
+L6f5d7:
+		mov eax, dword ptr [qh_qh + 0x8e0]		// 0x0006f5d7
+		mov ebp, dword ptr [esp + 0x24]		// 0x0006f5dc
+		inc eax		// 0x0006f5e0
+		mov dword ptr [qh_qh + 0x8e0], eax		// 0x0006f5e1
+		mov dword ptr [ebp + 0x48], eax		// 0x0006f5e6
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006f5e9
+		mov esi, 4		// 0x0006f5ee
+		cmp eax, esi		// 0x0006f5f3
+		jl L6f60a		// 0x0006f5f5
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x0006f5f7
+		push offset nxQhStr10df58		// 0x0006f5fc
+		push eax		// 0x0006f601
+		call nxQhCallFprintf		// 0x0006f602
+		add esp, 8		// 0x0006f607
+L6f60a:
+		mov eax, dword ptr [ebp + 0x3c]		// 0x0006f60a
+		test eax, eax		// 0x0006f60d
+		je L6f646		// 0x0006f60f
+		lea ecx, [eax + 4]		// 0x0006f611
+		mov eax, dword ptr [ecx]		// 0x0006f614
+		test eax, eax		// 0x0006f616
+		je L6f646		// 0x0006f618
+		mov edx, dword ptr [esp + 0x14]		// 0x0006f61a
+		mov edi, edi		// 0x0006f61e
+L6f620:
+		mov edi, dword ptr [eax + 0x48]		// 0x0006f620
+		add ecx, esi		// 0x0006f623
+		cmp edi, ebx		// 0x0006f625
+		jne L6f633		// 0x0006f627
+		mov dword ptr [ecx - 4], 0		// 0x0006f629
+		inc edx		// 0x0006f630
+		jmp L6f63c		// 0x0006f631
+L6f633:
+		mov edi, dword ptr [qh_qh + 0x8e0]		// 0x0006f633
+		mov dword ptr [eax + 0x48], edi		// 0x0006f639
+L6f63c:
+		mov eax, dword ptr [ecx]		// 0x0006f63c
+		test eax, eax		// 0x0006f63e
+		jne L6f620		// 0x0006f640
+		mov dword ptr [esp + 0x14], edx		// 0x0006f642
+L6f646:
+		mov ecx, dword ptr [ebp + 0x3c]		// 0x0006f646
+		push ecx		// 0x0006f649
+		call qh_setcompact		// 0x0006f64a
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006f64f
+		add esp, 4		// 0x0006f654
+		cmp eax, esi		// 0x0006f657
+		jl L6f66f		// 0x0006f659
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006f65b
+		push offset nxQhStr10df2c		// 0x0006f661
+		push edx		// 0x0006f666
+		call nxQhCallFprintf		// 0x0006f667
+		add esp, 8		// 0x0006f66c
+L6f66f:
+		mov eax, dword ptr [esp + 0x20]		// 0x0006f66f
+		mov ebx, dword ptr [eax + 0x20]		// 0x0006f673
+		test ebx, ebx		// 0x0006f676
+		je L6f79a		// 0x0006f678
+		mov edi, edi		// 0x0006f67e
+L6f680:
+		mov eax, dword ptr [ebx + 0x3c]		// 0x0006f680
+		test eax, eax		// 0x0006f683
+		je L6f789		// 0x0006f685
+		mov esi, dword ptr [eax + 4]		// 0x0006f68b
+		add eax, 4		// 0x0006f68e
+		test esi, esi		// 0x0006f691
+		je L6f789		// 0x0006f693
+		lea esp, [esp]		// 0x0006f699
+L6f6a0:
+		mov ecx, dword ptr [esp + 0x18]		// 0x0006f6a0
+		add eax, 4		// 0x0006f6a4
+		mov dword ptr [esp + 0x24], eax		// 0x0006f6a7
+		mov eax, dword ptr [esi + 0x48]		// 0x0006f6ab
+		cmp eax, ecx		// 0x0006f6ae
+		je L6f77b		// 0x0006f6b0
+		mov ecx, dword ptr [esi + 0x50]		// 0x0006f6b6
+		test ch, 0x20		// 0x0006f6b9
+		je L6f73a		// 0x0006f6bc
+		cmp eax, dword ptr [qh_qh + 0x8e0]		// 0x0006f6be
+		push esi		// 0x0006f6c4
+		je L6f726		// 0x0006f6c5
+		lea eax, [ebp + 0x3c]		// 0x0006f6c7
+		push eax		// 0x0006f6ca
+		call qh_setappend		// 0x0006f6cb
+		mov ecx, dword ptr [esi + 0x3c]		// 0x0006f6d0
+		push ebp		// 0x0006f6d3
+		push ebx		// 0x0006f6d4
+		push ecx		// 0x0006f6d5
+		call qh_setreplace		// 0x0006f6d6
+		mov edx, dword ptr [qh_qh + 0x8e0]		// 0x0006f6db
+		mov ecx, dword ptr [esp + 0x24]		// 0x0006f6e1
+		add esp, 0x14		// 0x0006f6e5
+		mov dword ptr [esi + 0x48], edx		// 0x0006f6e8
+		mov esi, dword ptr [esi + 0x38]		// 0x0006f6eb
+		inc ecx		// 0x0006f6ee
+		test esi, esi		// 0x0006f6ef
+		mov dword ptr [esp + 0x10], ecx		// 0x0006f6f1
+		je L6f77b		// 0x0006f6f5
+		mov eax, dword ptr [esi + 4]		// 0x0006f6fb
+		test eax, eax		// 0x0006f6fe
+		lea ecx, [esi + 4]		// 0x0006f700
+		je L6f77b		// 0x0006f703
+L6f705:
+		mov edx, dword ptr [eax + 4]		// 0x0006f705
+		add ecx, 4		// 0x0006f708
+		cmp edx, ebx		// 0x0006f70b
+		je L6f71c		// 0x0006f70d
+		cmp dword ptr [eax + 8], ebx		// 0x0006f70f
+		je L6f721		// 0x0006f712
+		mov eax, dword ptr [ecx]		// 0x0006f714
+		test eax, eax		// 0x0006f716
+		jne L6f705		// 0x0006f718
+		jmp L6f77b		// 0x0006f71a
+L6f71c:
+		mov dword ptr [eax + 4], ebp		// 0x0006f71c
+		jmp L6f77b		// 0x0006f71f
+L6f721:
+		mov dword ptr [eax + 8], ebp		// 0x0006f721
+		jmp L6f77b		// 0x0006f724
+L6f726:
+		call qh_makeridges		// 0x0006f726
+		mov eax, dword ptr [esi + 0x3c]		// 0x0006f72b
+		push ebx		// 0x0006f72e
+		push eax		// 0x0006f72f
+		call qh_setdel		// 0x0006f730
+		add esp, 0xc		// 0x0006f735
+		jmp L6f77b		// 0x0006f738
+L6f73a:
+		mov ecx, dword ptr [esi + 0x3c]		// 0x0006f73a
+		lea edi, [esi + 0x3c]		// 0x0006f73d
+		push ebx		// 0x0006f740
+		push ecx		// 0x0006f741
+		call qh_setdel		// 0x0006f742
+		mov edx, dword ptr [esi + 0x48]		// 0x0006f747
+		mov eax, dword ptr [qh_qh + 0x8e0]		// 0x0006f74a
+		add esp, 8		// 0x0006f74f
+		cmp edx, eax		// 0x0006f752
+		je L6f77b		// 0x0006f754
+		push ebp		// 0x0006f756
+		push edi		// 0x0006f757
+		call qh_setappend		// 0x0006f758
+		lea eax, [ebp + 0x3c]		// 0x0006f75d
+		push esi		// 0x0006f760
+		push eax		// 0x0006f761
+		call qh_setappend		// 0x0006f762
+		mov eax, dword ptr [qh_qh + 0x8e0]		// 0x0006f767
+		mov dword ptr [esi + 0x48], eax		// 0x0006f76c
+		mov eax, dword ptr [esp + 0x20]		// 0x0006f76f
+		add esp, 0x10		// 0x0006f773
+		inc eax		// 0x0006f776
+		mov dword ptr [esp + 0x10], eax		// 0x0006f777
+L6f77b:
+		mov eax, dword ptr [esp + 0x24]		// 0x0006f77b
+		mov esi, dword ptr [eax]		// 0x0006f77f
+		test esi, esi		// 0x0006f781
+		jne L6f6a0		// 0x0006f783
+L6f789:
+		cmp ebx, dword ptr [esp + 0x20]		// 0x0006f789
+		je L6f79a		// 0x0006f78d
+		mov ebx, dword ptr [ebx + 0x20]		// 0x0006f78f
+		test ebx, ebx		// 0x0006f792
+		jne L6f680		// 0x0006f794
+L6f79a:
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x0006f79a
+		pop edi		// 0x0006f7a1
+		pop esi		// 0x0006f7a2
+		pop ebp		// 0x0006f7a3
+		pop ebx		// 0x0006f7a4
+		jl L6f7c3		// 0x0006f7a5
+		mov ecx, dword ptr [esp]		// 0x0006f7a7
+		mov edx, dword ptr [esp + 4]		// 0x0006f7aa
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x0006f7ae
+		push ecx		// 0x0006f7b3
+		push edx		// 0x0006f7b4
+		push offset nxQhStr10def0		// 0x0006f7b5
+		push eax		// 0x0006f7ba
+		call nxQhCallFprintf		// 0x0006f7bb
+		add esp, 0x10		// 0x0006f7c0
+L6f7c3:
+		add esp, 0xc		// 0x0006f7c3
+		ret		// 0x0006f7c6
+		}
+	}
+
+// phys_fn_002929 and phys_fn_002931 (one function) (0x0006f7d0, 738 B), 243 instructions
+__declspec(naked) void qh_mergecycle_ridges(facetT *samecycle, facetT *newfacet)
+	{
+	__asm
+		{
+		sub esp, 0x10		// 0x0006f7d0
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006f7d3
+		push ebx		// 0x0006f7d8
+		push ebp		// 0x0006f7d9
+		push esi		// 0x0006f7da
+		xor ebp, ebp		// 0x0006f7db
+		mov esi, 4		// 0x0006f7dd
+		xor ebx, ebx		// 0x0006f7e2
+		cmp eax, esi		// 0x0006f7e4
+		push edi		// 0x0006f7e6
+		mov dword ptr [esp + 0x10], ebp		// 0x0006f7e7
+		mov dword ptr [esp + 0x18], ebp		// 0x0006f7eb
+		jl L6f804		// 0x0006f7ef
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x0006f7f1
+		push offset nxQhStr10e040		// 0x0006f7f6
+		push eax		// 0x0006f7fb
+		call nxQhCallFprintf		// 0x0006f7fc
+		add esp, 8		// 0x0006f801
+L6f804:
+		mov edi, dword ptr [esp + 0x28]		// 0x0006f804
+		mov edx, dword ptr [qh_qh + 0x8e0]		// 0x0006f808
+		mov ecx, dword ptr [edi + 0x38]		// 0x0006f80e
+		dec edx		// 0x0006f811
+		cmp ecx, ebp		// 0x0006f812
+		mov dword ptr [esp + 0x1c], edx		// 0x0006f814
+		je L6f83e		// 0x0006f818
+		mov eax, dword ptr [ecx + 4]		// 0x0006f81a
+		add ecx, 4		// 0x0006f81d
+		cmp eax, ebp		// 0x0006f820
+		je L6f83e		// 0x0006f822
+L6f824:
+		mov ebx, dword ptr [eax + 4]		// 0x0006f824
+		add ecx, esi		// 0x0006f827
+		cmp ebx, edi		// 0x0006f829
+		jne L6f830		// 0x0006f82b
+		mov ebx, dword ptr [eax + 8]		// 0x0006f82d
+L6f830:
+		cmp dword ptr [ebx + 0x48], edx		// 0x0006f830
+		jne L6f838		// 0x0006f833
+		mov dword ptr [ecx - 4], ebp		// 0x0006f835
+L6f838:
+		mov eax, dword ptr [ecx]		// 0x0006f838
+		cmp eax, ebp		// 0x0006f83a
+		jne L6f824		// 0x0006f83c
+L6f83e:
+		mov ecx, dword ptr [edi + 0x38]		// 0x0006f83e
+		push ecx		// 0x0006f841
+		call qh_setcompact		// 0x0006f842
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006f847
+		add esp, 4		// 0x0006f84c
+		cmp eax, esi		// 0x0006f84f
+		jl L6f867		// 0x0006f851
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006f853
+		push offset nxQhStr10e010		// 0x0006f859
+		push edx		// 0x0006f85e
+		call nxQhCallFprintf		// 0x0006f85f
+		add esp, 8		// 0x0006f864
+L6f867:
+		mov eax, dword ptr [esp + 0x24]		// 0x0006f867
+		mov ebp, dword ptr [eax + 0x20]		// 0x0006f86b
+		test ebp, ebp		// 0x0006f86e
+		je L6fa84		// 0x0006f870
+		jmp L6f880		// 0x0006f876
+		lea esp, [esp]		// 0x0006f878
+		nop		// 0x0006f87f
+L6f880:
+		mov eax, dword ptr [ebp + 0x38]		// 0x0006f880
+		test eax, eax		// 0x0006f883
+		je L6f99f		// 0x0006f885
+		mov esi, dword ptr [eax + 4]		// 0x0006f88b
+		add eax, 4		// 0x0006f88e
+		test esi, esi		// 0x0006f891
+		mov dword ptr [esp + 0x14], eax		// 0x0006f893
+		je L6f99f		// 0x0006f897
+		lea ecx, [ecx]		// 0x0006f89d
+L6f8a0:
+		mov edx, dword ptr [esp + 0x14]		// 0x0006f8a0
+		mov eax, dword ptr [esi + 4]		// 0x0006f8a4
+		add edx, 4		// 0x0006f8a7
+		cmp eax, ebp		// 0x0006f8aa
+		mov dword ptr [esp + 0x14], edx		// 0x0006f8ac
+		jne L6f8ba		// 0x0006f8b0
+		mov ebx, dword ptr [esi + 8]		// 0x0006f8b2
+		mov dword ptr [esi + 4], edi		// 0x0006f8b5
+		jmp L6f906		// 0x0006f8b8
+L6f8ba:
+		mov ecx, dword ptr [esi + 8]		// 0x0006f8ba
+		cmp ecx, ebp		// 0x0006f8bd
+		jne L6f8c8		// 0x0006f8bf
+		mov dword ptr [esi + 8], edi		// 0x0006f8c1
+		mov ebx, eax		// 0x0006f8c4
+		jmp L6f906		// 0x0006f8c6
+L6f8c8:
+		cmp eax, edi		// 0x0006f8c8
+		je L6f97b		// 0x0006f8ca
+		cmp ecx, edi		// 0x0006f8d0
+		je L6f97b		// 0x0006f8d2
+		mov edx, dword ptr [esi + 0xc]		// 0x0006f8d8
+		mov eax, dword ptr [nxQhHost]		// 0x0006f8db
+		mov ecx, dword ptr [eax]		// 0x0006f8e0
+		and edx, 0xffffff		// 0x0006f8e2
+		push edx		// 0x0006f8e8
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006f8e9
+		push offset nxQhStr10dfd4		// 0x0006f8ef
+		push edx		// 0x0006f8f4
+		push eax		// 0x0006f8f5
+		call dword ptr [ecx + 0x10]		// 0x0006f8f6
+		push esi		// 0x0006f8f9
+		push 0		// 0x0006f8fa
+		push 5		// 0x0006f8fc
+		call qh_errexit		// 0x0006f8fe
+		add esp, 0x1c		// 0x0006f903
+L6f906:
+		cmp ebx, edi		// 0x0006f906
+		push esi		// 0x0006f908
+		jne L6f939		// 0x0006f909
+		call qh_setfree		// 0x0006f90b
+		mov ecx, dword ptr [qhmem + 0x4c]		// 0x0006f910
+		mov eax, dword ptr [qhmem + 0x20]		// 0x0006f916
+		mov edx, dword ptr [qhmem + 0x18]		// 0x0006f91b
+		add esp, 4		// 0x0006f921
+		inc ecx		// 0x0006f924
+		mov dword ptr [qhmem + 0x4c], ecx		// 0x0006f925
+		mov ecx, dword ptr [eax + 0x40]		// 0x0006f92b
+		lea eax, [edx + ecx*4]		// 0x0006f92e
+		mov ecx, dword ptr [eax]		// 0x0006f931
+		mov dword ptr [esi], ecx		// 0x0006f933
+		mov dword ptr [eax], esi		// 0x0006f935
+		jmp L6f988		// 0x0006f937
+L6f939:
+		mov edx, dword ptr [esp + 0x20]		// 0x0006f939
+		cmp dword ptr [ebx + 0x48], edx		// 0x0006f93d
+		jne L6f97c		// 0x0006f940
+		mov eax, dword ptr [ebx + 0x38]		// 0x0006f942
+		push eax		// 0x0006f945
+		call qh_setdel		// 0x0006f946
+		push esi		// 0x0006f94b
+		call qh_setfree		// 0x0006f94c
+		mov ecx, dword ptr [qhmem + 0x4c]		// 0x0006f951
+		mov eax, dword ptr [qhmem + 0x18]		// 0x0006f957
+		add esp, 0xc		// 0x0006f95c
+		inc ecx		// 0x0006f95f
+		mov dword ptr [qhmem + 0x4c], ecx		// 0x0006f960
+		mov ecx, dword ptr [qhmem + 0x20]		// 0x0006f966
+		mov edx, dword ptr [ecx + 0x40]		// 0x0006f96c
+		mov ecx, dword ptr [eax + edx*4]		// 0x0006f96f
+		lea eax, [eax + edx*4]		// 0x0006f972
+		mov dword ptr [esi], ecx		// 0x0006f975
+		mov dword ptr [eax], esi		// 0x0006f977
+		jmp L6f988		// 0x0006f979
+L6f97b:
+		push esi		// 0x0006f97b
+L6f97c:
+		lea eax, [edi + 0x38]		// 0x0006f97c
+		push eax		// 0x0006f97f
+		call qh_setappend		// 0x0006f980
+		add esp, 8		// 0x0006f985
+L6f988:
+		mov eax, dword ptr [esp + 0x10]		// 0x0006f988
+		mov edx, dword ptr [esp + 0x14]		// 0x0006f98c
+		mov esi, dword ptr [edx]		// 0x0006f990
+		inc eax		// 0x0006f992
+		test esi, esi		// 0x0006f993
+		mov dword ptr [esp + 0x10], eax		// 0x0006f995
+		jne L6f8a0		// 0x0006f999
+L6f99f:
+		mov eax, dword ptr [ebp + 0x38]		// 0x0006f99f
+		test eax, eax		// 0x0006f9a2
+		je L6f9b1		// 0x0006f9a4
+		push 0		// 0x0006f9a6
+		push eax		// 0x0006f9a8
+		call qh_settruncate		// 0x0006f9a9
+		add esp, 8		// 0x0006f9ae
+L6f9b1:
+		mov eax, dword ptr [ebp + 0x50]		// 0x0006f9b1
+		test ah, 0x20		// 0x0006f9b4
+		je L6fa73		// 0x0006f9b7
+		mov eax, dword ptr [ebp + 0x3c]		// 0x0006f9bd
+		xor ebx, ebx		// 0x0006f9c0
+		test eax, eax		// 0x0006f9c2
+		je L6fa73		// 0x0006f9c4
+		mov ebx, dword ptr [eax + 4]		// 0x0006f9ca
+		push eax		// 0x0006f9cd
+		xor edi, edi		// 0x0006f9ce
+		call qh_setsize		// 0x0006f9d0
+		add esp, 4		// 0x0006f9d5
+		test eax, eax		// 0x0006f9d8
+		mov dword ptr [esp + 0x14], eax		// 0x0006f9da
+		jle L6fa6f		// 0x0006f9de
+L6f9e4:
+		mov ecx, dword ptr [esp + 0x1c]		// 0x0006f9e4
+		cmp dword ptr [ebx + 0x48], ecx		// 0x0006f9e8
+		je L6fa5f		// 0x0006f9eb
+		mov ecx, dword ptr [ebx + 0x50]		// 0x0006f9ed
+		test ch, 0x20		// 0x0006f9f0
+		je L6fa5f		// 0x0006f9f3
+		call qh_newridge		// 0x0006f9f5
+		mov edx, dword ptr [qh_qh + 0x24c]		// 0x0006f9fa
+		push 0		// 0x0006fa00
+		push edi		// 0x0006fa02
+		mov esi, eax		// 0x0006fa03
+		mov eax, dword ptr [ebp + 0x34]		// 0x0006fa05
+		push edx		// 0x0006fa08
+		push eax		// 0x0006fa09
+		call qh_setnew_delnthsorted		// 0x0006fa0a
+		mov dword ptr [esi], eax		// 0x0006fa0f
+		mov ecx, dword ptr [ebp + 0x50]		// 0x0006fa11
+		shr ecx, 0xc		// 0x0006fa14
+		xor ecx, edi		// 0x0006fa17
+		add esp, 0x10		// 0x0006fa19
+		test cl, 1		// 0x0006fa1c
+		je L6fa2d		// 0x0006fa1f
+		mov edx, dword ptr [esp + 0x28]		// 0x0006fa21
+		mov dword ptr [esi + 4], edx		// 0x0006fa25
+		mov dword ptr [esi + 8], ebx		// 0x0006fa28
+		jmp L6fa37		// 0x0006fa2b
+L6fa2d:
+		mov eax, dword ptr [esp + 0x28]		// 0x0006fa2d
+		mov dword ptr [esi + 4], ebx		// 0x0006fa31
+		mov dword ptr [esi + 8], eax		// 0x0006fa34
+L6fa37:
+		mov eax, dword ptr [esp + 0x28]		// 0x0006fa37
+		add eax, 0x38		// 0x0006fa3b
+		push esi		// 0x0006fa3e
+		push eax		// 0x0006fa3f
+		call qh_setappend		// 0x0006fa40
+		push esi		// 0x0006fa45
+		add ebx, 0x38		// 0x0006fa46
+		push ebx		// 0x0006fa49
+		call qh_setappend		// 0x0006fa4a
+		mov eax, dword ptr [esp + 0x28]		// 0x0006fa4f
+		add esp, 0x10		// 0x0006fa53
+		inc eax		// 0x0006fa56
+		mov dword ptr [esp + 0x18], eax		// 0x0006fa57
+		mov eax, dword ptr [esp + 0x14]		// 0x0006fa5b
+L6fa5f:
+		mov ecx, dword ptr [ebp + 0x3c]		// 0x0006fa5f
+		mov ebx, dword ptr [ecx + edi*4 + 8]		// 0x0006fa62
+		inc edi		// 0x0006fa66
+		cmp edi, eax		// 0x0006fa67
+		jl L6f9e4		// 0x0006fa69
+L6fa6f:
+		mov edi, dword ptr [esp + 0x28]		// 0x0006fa6f
+L6fa73:
+		cmp ebp, dword ptr [esp + 0x24]		// 0x0006fa73
+		je L6fa84		// 0x0006fa77
+		mov ebp, dword ptr [ebp + 0x20]		// 0x0006fa79
+		test ebp, ebp		// 0x0006fa7c
+		jne L6f880		// 0x0006fa7e
+L6fa84:
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x0006fa84
+		pop edi		// 0x0006fa8b
+		pop esi		// 0x0006fa8c
+		pop ebp		// 0x0006fa8d
+		pop ebx		// 0x0006fa8e
+		jl L6faae		// 0x0006fa8f
+		mov edx, dword ptr [esp + 8]		// 0x0006fa91
+		mov eax, dword ptr [esp]		// 0x0006fa95
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x0006fa98
+		push edx		// 0x0006fa9e
+		push eax		// 0x0006fa9f
+		push offset nxQhStr10df98		// 0x0006faa0
+		push ecx		// 0x0006faa5
+		call nxQhCallFprintf		// 0x0006faa6
+		add esp, 0x10		// 0x0006faab
+L6faae:
+		add esp, 0x10		// 0x0006faae
+		ret		// 0x0006fab1
+		}
+	}
+
+// phys_fn_002933 (0x0006fac0, 373 B), 123 instructions
+__declspec(naked) void qh_mergecycle_vneighbors(facetT *samecycle, facetT *newfacet)
+	{
+	__asm
+		{
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006fac0
+		sub esp, 8		// 0x0006fac5
+		cmp eax, 4		// 0x0006fac8
+		jl L6fae0		// 0x0006facb
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x0006facd
+		push offset nxQhStr10e110		// 0x0006fad2
+		push eax		// 0x0006fad7
+		call nxQhCallFprintf		// 0x0006fad8
+		add esp, 8		// 0x0006fadd
+L6fae0:
+		mov eax, dword ptr [qh_qh + 0x8e0]		// 0x0006fae0
+		push ebx		// 0x0006fae5
+		mov ebx, dword ptr [esp + 0x14]		// 0x0006fae6
+		push edi		// 0x0006faea
+		mov edi, dword ptr [esp + 0x14]		// 0x0006faeb
+		dec eax		// 0x0006faef
+		push edi		// 0x0006faf0
+		mov dword ptr [esp + 0x10], eax		// 0x0006faf1
+		mov dword ptr [ebx + 0x48], eax		// 0x0006faf5
+		call qh_basevertices		// 0x0006faf8
+		mov ecx, dword ptr [edi + 0x34]		// 0x0006fafd
+		mov dword ptr [esp + 0xc], eax		// 0x0006fb00
+		mov edx, dword ptr [ecx + 4]		// 0x0006fb04
+		push edx		// 0x0006fb07
+		lea eax, [esp + 0x10]		// 0x0006fb08
+		push eax		// 0x0006fb0c
+		call qh_setappend		// 0x0006fb0d
+		mov eax, dword ptr [esp + 0x14]		// 0x0006fb12
+		add esp, 0xc		// 0x0006fb16
+		test eax, eax		// 0x0006fb19
+		je L6fbfc		// 0x0006fb1b
+		push ebp		// 0x0006fb21
+		lea ebp, [eax + 4]		// 0x0006fb22
+		push esi		// 0x0006fb25
+		mov esi, dword ptr [ebp]		// 0x0006fb26
+		test esi, esi		// 0x0006fb29
+		je L6fbfa		// 0x0006fb2b
+L6fb31:
+		mov edx, dword ptr [esi + 0x14]		// 0x0006fb31
+		mov eax, dword ptr [esi + 0xc]		// 0x0006fb34
+		lea edi, [esi + 0xc]		// 0x0006fb37
+		or edx, 0x4000000		// 0x0006fb3a
+		add ebp, 4		// 0x0006fb40
+		test eax, eax		// 0x0006fb43
+		mov dword ptr [esi + 0x14], edx		// 0x0006fb45
+		je L6fb6c		// 0x0006fb48
+		lea ecx, [eax + 4]		// 0x0006fb4a
+		mov eax, dword ptr [ecx]		// 0x0006fb4d
+		test eax, eax		// 0x0006fb4f
+		je L6fb6c		// 0x0006fb51
+L6fb53:
+		mov edx, dword ptr [esp + 0x14]		// 0x0006fb53
+		add ecx, 4		// 0x0006fb57
+		cmp dword ptr [eax + 0x48], edx		// 0x0006fb5a
+		jne L6fb66		// 0x0006fb5d
+		mov dword ptr [ecx - 4], 0		// 0x0006fb5f
+L6fb66:
+		mov eax, dword ptr [ecx]		// 0x0006fb66
+		test eax, eax		// 0x0006fb68
+		jne L6fb53		// 0x0006fb6a
+L6fb6c:
+		mov eax, dword ptr [edi]		// 0x0006fb6c
+		push eax		// 0x0006fb6e
+		call qh_setcompact		// 0x0006fb6f
+		push ebx		// 0x0006fb74
+		push edi		// 0x0006fb75
+		call qh_setappend		// 0x0006fb76
+		mov ecx, dword ptr [edi]		// 0x0006fb7b
+		mov eax, dword ptr [ecx + 8]		// 0x0006fb7d
+		add esp, 0xc		// 0x0006fb80
+		test eax, eax		// 0x0006fb83
+		jne L6fbeb		// 0x0006fb85
+		mov ecx, dword ptr [qh_qhstat + 0x140]		// 0x0006fb87
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006fb8d
+		inc ecx		// 0x0006fb92
+		cmp eax, 2		// 0x0006fb93
+		mov dword ptr [qh_qhstat + 0x140], ecx		// 0x0006fb96
+		jl L6fbc7		// 0x0006fb9c
+		mov edx, dword ptr [ebx + 0x4c]		// 0x0006fb9e
+		mov eax, dword ptr [esp + 0x1c]		// 0x0006fba1
+		mov ecx, dword ptr [eax + 0x4c]		// 0x0006fba5
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x0006fba8
+		push edx		// 0x0006fbad
+		mov edx, dword ptr [esi + 0x14]		// 0x0006fbae
+		push ecx		// 0x0006fbb1
+		and edx, 0xffffff		// 0x0006fbb2
+		push edx		// 0x0006fbb8
+		push offset nxQhStr10e0c8		// 0x0006fbb9
+		push eax		// 0x0006fbbe
+		call nxQhCallFprintf		// 0x0006fbbf
+		add esp, 0x14		// 0x0006fbc4
+L6fbc7:
+		mov ecx, dword ptr [ebx + 0x34]		// 0x0006fbc7
+		push esi		// 0x0006fbca
+		push ecx		// 0x0006fbcb
+		call qh_setdelsorted		// 0x0006fbcc
+		mov edi, dword ptr [esi + 0x14]		// 0x0006fbd1
+		push esi		// 0x0006fbd4
+		or edi, 0x8000000		// 0x0006fbd5
+		push offset qh_qh + 0x900		// 0x0006fbdb
+		mov dword ptr [esi + 0x14], edi		// 0x0006fbe0
+		call qh_setappend		// 0x0006fbe3
+		add esp, 0x10		// 0x0006fbe8
+L6fbeb:
+		mov esi, dword ptr [ebp]		// 0x0006fbeb
+		test esi, esi		// 0x0006fbee
+		jne L6fb31		// 0x0006fbf0
+		mov edi, dword ptr [esp + 0x1c]		// 0x0006fbf6
+L6fbfa:
+		pop esi		// 0x0006fbfa
+		pop ebp		// 0x0006fbfb
+L6fbfc:
+		lea edx, [esp + 8]		// 0x0006fbfc
+		push edx		// 0x0006fc00
+		call qh_settempfree		// 0x0006fc01
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x0006fc06
+		add esp, 4		// 0x0006fc0b
+		cmp eax, 3		// 0x0006fc0e
+		jl L6fc2f		// 0x0006fc11
+		mov eax, dword ptr [ebx + 0x4c]		// 0x0006fc13
+		mov ecx, dword ptr [edi + 0x4c]		// 0x0006fc16
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006fc19
+		push eax		// 0x0006fc1f
+		push ecx		// 0x0006fc20
+		push offset nxQhStr10e080		// 0x0006fc21
+		push edx		// 0x0006fc26
+		call nxQhCallFprintf		// 0x0006fc27
+		add esp, 0x10		// 0x0006fc2c
+L6fc2f:
+		pop edi		// 0x0006fc2f
+		pop ebx		// 0x0006fc30
+		add esp, 8		// 0x0006fc31
+		ret		// 0x0006fc34
+		}
+	}
+
+// phys_fn_002937 (0x0006fd90, 258 B), 100 instructions
+__declspec(naked) void qh_mergeneighbors(facetT *facet1, facetT *facet2)
+	{
+	__asm
+		{
+		cmp dword ptr [qh_qh + 0x68], 4		// 0x0006fd90
+		push ebx		// 0x0006fd97
+		mov ebx, dword ptr [esp + 0xc]		// 0x0006fd98
+		push esi		// 0x0006fd9c
+		push edi		// 0x0006fd9d
+		mov edi, dword ptr [esp + 0x10]		// 0x0006fd9e
+		jl L6fdc0		// 0x0006fda2
+		mov eax, dword ptr [ebx + 0x4c]		// 0x0006fda4
+		mov ecx, dword ptr [edi + 0x4c]		// 0x0006fda7
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006fdaa
+		push eax		// 0x0006fdb0
+		push ecx		// 0x0006fdb1
+		push offset nxQhStr10e190		// 0x0006fdb2
+		push edx		// 0x0006fdb7
+		call nxQhCallFprintf		// 0x0006fdb8
+		add esp, 0x10		// 0x0006fdbd
+L6fdc0:
+		inc dword ptr [qh_qh + 0x8e0]		// 0x0006fdc0
+		mov eax, dword ptr [ebx + 0x3c]		// 0x0006fdc6
+		test eax, eax		// 0x0006fdc9
+		lea edx, [ebx + 0x3c]		// 0x0006fdcb
+		mov dword ptr [esp + 0x14], edx		// 0x0006fdce
+		je L6fdf2		// 0x0006fdd2
+		lea ecx, [eax + 4]		// 0x0006fdd4
+		mov eax, dword ptr [ecx]		// 0x0006fdd7
+		test eax, eax		// 0x0006fdd9
+		je L6fdf2		// 0x0006fddb
+		lea ecx, [ecx]		// 0x0006fddd
+L6fde0:
+		mov esi, dword ptr [qh_qh + 0x8e0]		// 0x0006fde0
+		add ecx, 4		// 0x0006fde6
+		mov dword ptr [eax + 0x48], esi		// 0x0006fde9
+		mov eax, dword ptr [ecx]		// 0x0006fdec
+		test eax, eax		// 0x0006fdee
+		jne L6fde0		// 0x0006fdf0
+L6fdf2:
+		mov eax, dword ptr [edi + 0x3c]		// 0x0006fdf2
+		test eax, eax		// 0x0006fdf5
+		je L6fe74		// 0x0006fdf7
+		mov esi, dword ptr [eax + 4]		// 0x0006fdf9
+		test esi, esi		// 0x0006fdfc
+		push ebp		// 0x0006fdfe
+		lea ebp, [eax + 4]		// 0x0006fdff
+		je L6fe73		// 0x0006fe02
+		jmp L6fe10		// 0x0006fe04
+L6fe06:
+		mov edx, dword ptr [esp + 0x18]		// 0x0006fe06
+		lea ebx, [ebx]		// 0x0006fe0a
+L6fe10:
+		mov eax, dword ptr [qh_qh + 0x8e0]		// 0x0006fe10
+		mov ecx, dword ptr [esi + 0x48]		// 0x0006fe15
+		add ebp, 4		// 0x0006fe18
+		cmp ecx, eax		// 0x0006fe1b
+		jne L6fe53		// 0x0006fe1d
+		mov eax, dword ptr [esi + 0x50]		// 0x0006fe1f
+		test ah, 0x20		// 0x0006fe22
+		je L6fe30		// 0x0006fe25
+		push esi		// 0x0006fe27
+		call qh_makeridges		// 0x0006fe28
+		add esp, 4		// 0x0006fe2d
+L6fe30:
+		mov eax, dword ptr [esi + 0x3c]		// 0x0006fe30
+		cmp dword ptr [eax + 4], edi		// 0x0006fe33
+		je L6fe44		// 0x0006fe36
+		push edi		// 0x0006fe38
+		push eax		// 0x0006fe39
+		call qh_setdel		// 0x0006fe3a
+		add esp, 8		// 0x0006fe3f
+		jmp L6fe6c		// 0x0006fe42
+L6fe44:
+		push ebx		// 0x0006fe44
+		push eax		// 0x0006fe45
+		call qh_setdel		// 0x0006fe46
+		mov ecx, dword ptr [esi + 0x3c]		// 0x0006fe4b
+		push ebx		// 0x0006fe4e
+		push edi		// 0x0006fe4f
+		push ecx		// 0x0006fe50
+		jmp L6fe64		// 0x0006fe51
+L6fe53:
+		cmp esi, ebx		// 0x0006fe53
+		je L6fe6c		// 0x0006fe55
+		push esi		// 0x0006fe57
+		push edx		// 0x0006fe58
+		call qh_setappend		// 0x0006fe59
+		mov edx, dword ptr [esi + 0x3c]		// 0x0006fe5e
+		push ebx		// 0x0006fe61
+		push edi		// 0x0006fe62
+		push edx		// 0x0006fe63
+L6fe64:
+		call qh_setreplace		// 0x0006fe64
+		add esp, 0x14		// 0x0006fe69
+L6fe6c:
+		mov esi, dword ptr [ebp]		// 0x0006fe6c
+		test esi, esi		// 0x0006fe6f
+		jne L6fe06		// 0x0006fe71
+L6fe73:
+		pop ebp		// 0x0006fe73
+L6fe74:
+		mov eax, dword ptr [edi + 0x3c]		// 0x0006fe74
+		push ebx		// 0x0006fe77
+		push eax		// 0x0006fe78
+		call qh_setdel		// 0x0006fe79
+		mov ecx, dword ptr [esp + 0x1c]		// 0x0006fe7e
+		mov edx, dword ptr [ecx]		// 0x0006fe82
+		push edi		// 0x0006fe84
+		push edx		// 0x0006fe85
+		call qh_setdel		// 0x0006fe86
+		add esp, 0x10		// 0x0006fe8b
+		pop edi		// 0x0006fe8e
+		pop esi		// 0x0006fe8f
+		pop ebx		// 0x0006fe90
+		ret		// 0x0006fe91
+		}
+	}
+
+// phys_fn_002939 (0x0006fea0, 202 B), 80 instructions
+__declspec(naked) void qh_mergeridges(facetT *facet1, facetT *facet2)
+	{
+	__asm
+		{
+		cmp dword ptr [qh_qh + 0x68], 4		// 0x0006fea0
+		push ebx		// 0x0006fea7
+		mov ebx, dword ptr [esp + 8]		// 0x0006fea8
+		push ebp		// 0x0006feac
+		push esi		// 0x0006fead
+		push edi		// 0x0006feae
+		mov edi, dword ptr [esp + 0x18]		// 0x0006feaf
+		jl L6fed1		// 0x0006feb3
+		mov eax, dword ptr [edi + 0x4c]		// 0x0006feb5
+		mov ecx, dword ptr [ebx + 0x4c]		// 0x0006feb8
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0006febb
+		push eax		// 0x0006fec1
+		push ecx		// 0x0006fec2
+		push offset nxQhStr10e1c4		// 0x0006fec3
+		push edx		// 0x0006fec8
+		call nxQhCallFprintf		// 0x0006fec9
+		add esp, 0x10		// 0x0006fece
+L6fed1:
+		mov eax, dword ptr [edi + 0x38]		// 0x0006fed1
+		test eax, eax		// 0x0006fed4
+		lea ebp, [edi + 0x38]		// 0x0006fed6
+		je L6ff33		// 0x0006fed9
+		mov edx, dword ptr [eax + 4]		// 0x0006fedb
+		test edx, edx		// 0x0006fede
+		lea esi, [eax + 4]		// 0x0006fee0
+		je L6ff33		// 0x0006fee3
+		mov edi, 0x4000000		// 0x0006fee5
+		lea ebx, [ebx]		// 0x0006feea
+L6fef0:
+		mov eax, dword ptr [edx + 4]		// 0x0006fef0
+		add esi, 4		// 0x0006fef3
+		cmp eax, ebx		// 0x0006fef6
+		je L6feff		// 0x0006fef8
+		cmp dword ptr [edx + 8], ebx		// 0x0006fefa
+		jne L6ff29		// 0x0006fefd
+L6feff:
+		mov eax, dword ptr [edx]		// 0x0006feff
+		test eax, eax		// 0x0006ff01
+		je L6ff1d		// 0x0006ff03
+		lea ecx, [eax + 4]		// 0x0006ff05
+		mov eax, dword ptr [ecx]		// 0x0006ff08
+		test eax, eax		// 0x0006ff0a
+		je L6ff1d		// 0x0006ff0c
+		mov edi, edi		// 0x0006ff0e
+L6ff10:
+		or dword ptr [eax + 0x14], edi		// 0x0006ff10
+		mov eax, dword ptr [ecx + 4]		// 0x0006ff13
+		add ecx, 4		// 0x0006ff16
+		test eax, eax		// 0x0006ff19
+		jne L6ff10		// 0x0006ff1b
+L6ff1d:
+		push edx		// 0x0006ff1d
+		call qh_delridge		// 0x0006ff1e
+		add esp, 4		// 0x0006ff23
+		sub esi, 4		// 0x0006ff26
+L6ff29:
+		mov edx, dword ptr [esi]		// 0x0006ff29
+		test edx, edx		// 0x0006ff2b
+		jne L6fef0		// 0x0006ff2d
+		mov edi, dword ptr [esp + 0x18]		// 0x0006ff2f
+L6ff33:
+		mov eax, dword ptr [ebx + 0x38]		// 0x0006ff33
+		test eax, eax		// 0x0006ff36
+		je L6ff65		// 0x0006ff38
+		lea esi, [eax + 4]		// 0x0006ff3a
+		mov eax, dword ptr [esi]		// 0x0006ff3d
+		test eax, eax		// 0x0006ff3f
+		je L6ff65		// 0x0006ff41
+L6ff43:
+		mov ecx, dword ptr [eax + 4]		// 0x0006ff43
+		add esi, 4		// 0x0006ff46
+		cmp ecx, ebx		// 0x0006ff49
+		jne L6ff52		// 0x0006ff4b
+		mov dword ptr [eax + 4], edi		// 0x0006ff4d
+		jmp L6ff55		// 0x0006ff50
+L6ff52:
+		mov dword ptr [eax + 8], edi		// 0x0006ff52
+L6ff55:
+		push eax		// 0x0006ff55
+		push ebp		// 0x0006ff56
+		call qh_setappend		// 0x0006ff57
+		mov eax, dword ptr [esi]		// 0x0006ff5c
+		add esp, 8		// 0x0006ff5e
+		test eax, eax		// 0x0006ff61
+		jne L6ff43		// 0x0006ff63
+L6ff65:
+		pop edi		// 0x0006ff65
+		pop esi		// 0x0006ff66
+		pop ebp		// 0x0006ff67
+		pop ebx		// 0x0006ff68
+		ret		// 0x0006ff69
+		}
+	}
+
+// phys_fn_002943 and phys_fn_002945 (one function) (0x0006fff0, 264 B), 97 instructions
+__declspec(naked) void qh_mergevertex_neighbors(facetT *facet1, facetT *facet2)
+	{
+	__asm
+		{
+		cmp dword ptr [qh_qh + 0x68], 4		// 0x0006fff0
+		push ebp		// 0x0006fff7
+		mov ebp, dword ptr [esp + 0xc]		// 0x0006fff8
+		push edi		// 0x0006fffc
+		mov edi, dword ptr [esp + 0xc]		// 0x0006fffd
+		jl L7001f		// 0x00070001
+		mov eax, dword ptr [ebp + 0x4c]		// 0x00070003
+		mov ecx, dword ptr [edi + 0x4c]		// 0x00070006
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00070009
+		push eax		// 0x0007000f
+		push ecx		// 0x00070010
+		push offset nxQhStr10e280		// 0x00070011
+		push edx		// 0x00070016
+		call nxQhCallFprintf		// 0x00070017
+		add esp, 0x10		// 0x0007001c
+L7001f:
+		mov ecx, dword ptr [qh_qh + 0x834]		// 0x0007001f
+		test ecx, ecx		// 0x00070025
+		je L70076		// 0x00070027
+		mov ecx, dword ptr [ecx + 0xc]		// 0x00070029
+		mov ecx, dword ptr [ecx + 4]		// 0x0007002c
+		mov eax, dword ptr [nxQhHost]		// 0x0007002f
+		mov edx, dword ptr [eax]		// 0x00070034
+		push ecx		// 0x00070036
+		mov ecx, dword ptr [qh_qh + 0x870]		// 0x00070037
+		push ecx		// 0x0007003d
+		mov ecx, dword ptr [ebp + 0x4c]		// 0x0007003e
+		push ecx		// 0x00070041
+		mov ecx, dword ptr [edi + 0x4c]		// 0x00070042
+		push ecx		// 0x00070045
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x00070046
+		push offset nxQhStr10e238		// 0x0007004c
+		push ecx		// 0x00070051
+		push eax		// 0x00070052
+		call dword ptr [edx + 0x10]		// 0x00070053
+		mov edx, dword ptr [qh_qh + 0x834]		// 0x00070056
+		push edx		// 0x0007005c
+		push 0		// 0x0007005d
+		push 0		// 0x0007005f
+		push 0		// 0x00070061
+		push offset nxQhStr10e230		// 0x00070063
+		call qh_errprint		// 0x00070068
+		mov ecx, dword ptr [qh_qh + 0x834]		// 0x0007006d
+		add esp, 0x30		// 0x00070073
+L70076:
+		mov eax, dword ptr [edi + 0x34]		// 0x00070076
+		test eax, eax		// 0x00070079
+		je L700dd		// 0x0007007b
+		push ebx		// 0x0007007d
+		lea ebx, [eax + 4]		// 0x0007007e
+		push esi		// 0x00070081
+		mov esi, dword ptr [ebx]		// 0x00070082
+		test esi, esi		// 0x00070084
+		je L700db		// 0x00070086
+		jmp L70090		// 0x00070088
+		lea ebx, [ebx]		// 0x0007008a
+L70090:
+		mov eax, dword ptr [esi + 0x10]		// 0x00070090
+		mov ecx, dword ptr [qh_qh + 0x8e4]		// 0x00070093
+		add ebx, 4		// 0x00070099
+		cmp eax, ecx		// 0x0007009c
+		je L700ad		// 0x0007009e
+		mov ecx, dword ptr [esi + 0xc]		// 0x000700a0
+		push ebp		// 0x000700a3
+		push edi		// 0x000700a4
+		push ecx		// 0x000700a5
+		call qh_setreplace		// 0x000700a6
+		jmp L700cc		// 0x000700ab
+L700ad:
+		mov edx, dword ptr [esi + 0xc]		// 0x000700ad
+		push edi		// 0x000700b0
+		push edx		// 0x000700b1
+		call qh_setdel		// 0x000700b2
+		mov eax, dword ptr [esi + 0xc]		// 0x000700b7
+		mov ecx, dword ptr [eax + 8]		// 0x000700ba
+		add esp, 8		// 0x000700bd
+		test ecx, ecx		// 0x000700c0
+		jne L700cf		// 0x000700c2
+		push ebp		// 0x000700c4
+		push edi		// 0x000700c5
+		push esi		// 0x000700c6
+		call qh_mergevertex_del		// 0x000700c7
+L700cc:
+		add esp, 0xc		// 0x000700cc
+L700cf:
+		mov esi, dword ptr [ebx]		// 0x000700cf
+		test esi, esi		// 0x000700d1
+		jne L70090		// 0x000700d3
+		mov ecx, dword ptr [qh_qh + 0x834]		// 0x000700d5
+L700db:
+		pop esi		// 0x000700db
+		pop ebx		// 0x000700dc
+L700dd:
+		test ecx, ecx		// 0x000700dd
+		pop edi		// 0x000700df
+		pop ebp		// 0x000700e0
+		je L700f7		// 0x000700e1
+		push ecx		// 0x000700e3
+		push 0		// 0x000700e4
+		push 0		// 0x000700e6
+		push 0		// 0x000700e8
+		push offset nxQhStr10e230		// 0x000700ea
+		call qh_errprint		// 0x000700ef
+		add esp, 0x14		// 0x000700f4
+L700f7:
+		ret		// 0x000700f7
+		}
+	}
+
+// phys_fn_002947 and phys_fn_002949 (one function) (0x00070100, 360 B), 128 instructions
+__declspec(naked) void qh_mergevertices(setT *vertices1, setT **vertices2)
+	{
+	__asm
+		{
+		push ecx		// 0x00070100
+		push ebx		// 0x00070101
+		mov ebx, dword ptr [esp + 0x10]		// 0x00070102
+		mov eax, dword ptr [ebx]		// 0x00070106
+		push ebp		// 0x00070108
+		push esi		// 0x00070109
+		push edi		// 0x0007010a
+		push eax		// 0x0007010b
+		call qh_setsize		// 0x0007010c
+		mov edi, dword ptr [esp + 0x1c]		// 0x00070111
+		push edi		// 0x00070115
+		mov ebp, eax		// 0x00070116
+		call qh_setsize		// 0x00070118
+		mov esi, dword ptr [qh_qh + 0x24c]		// 0x0007011d
+		mov ecx, 1		// 0x00070123
+		sub ecx, esi		// 0x00070128
+		mov esi, dword ptr [ebx]		// 0x0007012a
+		add ebp, eax		// 0x0007012c
+		add ebp, ecx		// 0x0007012e
+		push ebp		// 0x00070130
+		add esi, 4		// 0x00070131
+		call qh_settemp		// 0x00070134
+		add esp, 0xc		// 0x00070139
+		test edi, edi		// 0x0007013c
+		mov dword ptr [esp + 0x10], eax		// 0x0007013e
+		je L701f5		// 0x00070142
+		lea ebx, [edi + 4]		// 0x00070148
+		mov edi, dword ptr [ebx]		// 0x0007014b
+		test edi, edi		// 0x0007014d
+		je L701f1		// 0x0007014f
+L70155:
+		mov eax, dword ptr [esi]		// 0x00070155
+		add ebx, 4		// 0x00070157
+		test eax, eax		// 0x0007015a
+		je L701d9		// 0x0007015c
+		mov edx, dword ptr [eax + 0x14]		// 0x0007015e
+		mov ecx, dword ptr [edi + 0x14]		// 0x00070161
+		and edx, 0xffffff		// 0x00070164
+		and ecx, 0xffffff		// 0x0007016a
+		cmp ecx, edx		// 0x00070170
+		ja L701d9		// 0x00070172
+L70174:
+		mov edx, dword ptr [eax + 0x14]		// 0x00070174
+		mov ecx, dword ptr [edi + 0x14]		// 0x00070177
+		and edx, 0xffffff		// 0x0007017a
+		and ecx, 0xffffff		// 0x00070180
+		cmp edx, ecx		// 0x00070186
+		jbe L701aa		// 0x00070188
+		push eax		// 0x0007018a
+		lea edx, [esp + 0x14]		// 0x0007018b
+		push edx		// 0x0007018f
+		call qh_setappend		// 0x00070190
+		mov eax, dword ptr [esi + 4]		// 0x00070195
+		add esi, 4		// 0x00070198
+		add esp, 8		// 0x0007019b
+		test eax, eax		// 0x0007019e
+		jne L70174		// 0x000701a0
+L701a2:
+		push edi		// 0x000701a2
+		lea ecx, [esp + 0x14]		// 0x000701a3
+		push ecx		// 0x000701a7
+		jmp L701df		// 0x000701a8
+L701aa:
+		mov eax, dword ptr [esi]		// 0x000701aa
+		test eax, eax		// 0x000701ac
+		je L701a2		// 0x000701ae
+		mov ecx, dword ptr [eax + 0x14]		// 0x000701b0
+		mov edx, dword ptr [edi + 0x14]		// 0x000701b3
+		and ecx, 0xffffff		// 0x000701b6
+		and edx, 0xffffff		// 0x000701bc
+		cmp ecx, edx		// 0x000701c2
+		jb L701a2		// 0x000701c4
+		push eax		// 0x000701c6
+		lea eax, [esp + 0x14]		// 0x000701c7
+		push eax		// 0x000701cb
+		call qh_setappend		// 0x000701cc
+		add esp, 8		// 0x000701d1
+		add esi, 4		// 0x000701d4
+		jmp L701e7		// 0x000701d7
+L701d9:
+		push edi		// 0x000701d9
+		lea edx, [esp + 0x14]		// 0x000701da
+		push edx		// 0x000701de
+L701df:
+		call qh_setappend		// 0x000701df
+		add esp, 8		// 0x000701e4
+L701e7:
+		mov edi, dword ptr [ebx]		// 0x000701e7
+		test edi, edi		// 0x000701e9
+		jne L70155		// 0x000701eb
+L701f1:
+		mov ebx, dword ptr [esp + 0x1c]		// 0x000701f1
+L701f5:
+		mov eax, dword ptr [esi]		// 0x000701f5
+		test eax, eax		// 0x000701f7
+		je L70218		// 0x000701f9
+		jmp L70200		// 0x000701fb
+		lea ecx, [ecx]		// 0x000701fd
+L70200:
+		push eax		// 0x00070200
+		lea eax, [esp + 0x14]		// 0x00070201
+		push eax		// 0x00070205
+		call qh_setappend		// 0x00070206
+		mov eax, dword ptr [esi + 4]		// 0x0007020b
+		add esi, 4		// 0x0007020e
+		add esp, 8		// 0x00070211
+		test eax, eax		// 0x00070214
+		jne L70200		// 0x00070216
+L70218:
+		mov ecx, dword ptr [esp + 0x10]		// 0x00070218
+		push ecx		// 0x0007021c
+		call qh_setsize		// 0x0007021d
+		add esp, 4		// 0x00070222
+		cmp ebp, eax		// 0x00070225
+		jge L7024e		// 0x00070227
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x00070229
+		mov eax, dword ptr [nxQhHost]		// 0x0007022f
+		mov edx, dword ptr [eax]		// 0x00070234
+		push offset nxQhStr10e2c8		// 0x00070236
+		push ecx		// 0x0007023b
+		push eax		// 0x0007023c
+		call dword ptr [edx + 0x10]		// 0x0007023d
+		push 0		// 0x00070240
+		push 0		// 0x00070242
+		push 5		// 0x00070244
+		call qh_errexit		// 0x00070246
+		add esp, 0x18		// 0x0007024b
+L7024e:
+		push ebx		// 0x0007024e
+		call qh_setfree		// 0x0007024f
+		mov edx, dword ptr [esp + 0x14]		// 0x00070254
+		add esp, 4		// 0x00070258
+		mov dword ptr [ebx], edx		// 0x0007025b
+		call qh_settemppop		// 0x0007025d
+		pop edi		// 0x00070262
+		pop esi		// 0x00070263
+		pop ebp		// 0x00070264
+		pop ebx		// 0x00070265
+		pop ecx		// 0x00070266
+		ret		// 0x00070267
+		}
+	}
+
+// phys_fn_002951 and phys_fn_002953 (one function) (0x00070270, 309 B), 118 instructions
+__declspec(naked) setT *qh_neighbor_intersections(vertexT *vertex)
+	{
+	__asm
+		{
+		push ebp		// 0x00070270
+		mov ebp, dword ptr [esp + 8]		// 0x00070271
+		mov eax, dword ptr [ebp + 0xc]		// 0x00070275
+		test eax, eax		// 0x00070278
+		push esi		// 0x0007027a
+		je L702a0		// 0x0007027b
+		lea ecx, [eax + 4]		// 0x0007027d
+		mov eax, dword ptr [ecx]		// 0x00070280
+		test eax, eax		// 0x00070282
+		je L702a0		// 0x00070284
+		mov edx, 0x2000		// 0x00070286
+		jmp L70290		// 0x0007028b
+		lea ecx, [ecx]		// 0x0007028d
+L70290:
+		mov esi, dword ptr [eax + 0x50]		// 0x00070290
+		add ecx, 4		// 0x00070293
+		test edx, esi		// 0x00070296
+		jne L702ba		// 0x00070298
+		mov eax, dword ptr [ecx]		// 0x0007029a
+		test eax, eax		// 0x0007029c
+		jne L70290		// 0x0007029e
+L702a0:
+		mov eax, dword ptr [ebp + 0xc]		// 0x000702a0
+		mov ecx, dword ptr [eax + 4]		// 0x000702a3
+		mov esi, dword ptr [qh_qhstat + 0x350]		// 0x000702a6
+		mov eax, dword ptr [eax + 8]		// 0x000702ac
+		inc esi		// 0x000702af
+		test ecx, ecx		// 0x000702b0
+		mov dword ptr [qh_qhstat + 0x350], esi		// 0x000702b2
+		jne L702bf		// 0x000702b8
+L702ba:
+		pop esi		// 0x000702ba
+		xor eax, eax		// 0x000702bb
+		pop ebp		// 0x000702bd
+		ret		// 0x000702be
+L702bf:
+		test eax, eax		// 0x000702bf
+		jne L702cf		// 0x000702c1
+		push eax		// 0x000702c3
+		mov eax, dword ptr [ecx + 0x34]		// 0x000702c4
+		push eax		// 0x000702c7
+		call qh_setcopy		// 0x000702c8
+		jmp L702dc		// 0x000702cd
+L702cf:
+		mov edx, dword ptr [eax + 0x34]		// 0x000702cf
+		mov eax, dword ptr [ecx + 0x34]		// 0x000702d2
+		push edx		// 0x000702d5
+		push eax		// 0x000702d6
+		call qh_vertexintersect_new		// 0x000702d7
+L702dc:
+		add esp, 8		// 0x000702dc
+		push ebx		// 0x000702df
+		push edi		// 0x000702e0
+		push eax		// 0x000702e1
+		mov dword ptr [esp + 0x18], eax		// 0x000702e2
+		call qh_settemppush		// 0x000702e6
+		mov ecx, dword ptr [esp + 0x18]		// 0x000702eb
+		push ebp		// 0x000702ef
+		push ecx		// 0x000702f0
+		call qh_setdelsorted		// 0x000702f1
+		mov eax, dword ptr [ebp + 0xc]		// 0x000702f6
+		add esp, 0xc		// 0x000702f9
+		test eax, eax		// 0x000702fc
+		je L70347		// 0x000702fe
+		mov edi, dword ptr [eax + 4]		// 0x00070300
+		push eax		// 0x00070303
+		xor esi, esi		// 0x00070304
+		call qh_setsize		// 0x00070306
+		mov ebx, eax		// 0x0007030b
+		add esp, 4		// 0x0007030d
+		test ebx, ebx		// 0x00070310
+		jle L70347		// 0x00070312
+L70314:
+		cmp esi, 2		// 0x00070314
+		jl L7033b		// 0x00070317
+		inc dword ptr [qh_qhstat + 0x350]		// 0x00070319
+		mov edx, dword ptr [edi + 0x34]		// 0x0007031f
+		push edx		// 0x00070322
+		lea eax, [esp + 0x18]		// 0x00070323
+		push eax		// 0x00070327
+		call qh_vertexintersect		// 0x00070328
+		mov ecx, dword ptr [esp + 0x1c]		// 0x0007032d
+		mov eax, dword ptr [ecx + 4]		// 0x00070331
+		add esp, 8		// 0x00070334
+		test eax, eax		// 0x00070337
+		je L70384		// 0x00070339
+L7033b:
+		mov edx, dword ptr [ebp + 0xc]		// 0x0007033b
+		mov edi, dword ptr [edx + esi*4 + 8]		// 0x0007033e
+		inc esi		// 0x00070342
+		cmp esi, ebx		// 0x00070343
+		jl L70314		// 0x00070345
+L70347:
+		cmp dword ptr [qh_qh + 0x68], 3		// 0x00070347
+		jl L7037b		// 0x0007034e
+		mov ecx, dword ptr [ebp + 0x14]		// 0x00070350
+		mov edx, dword ptr [esp + 0x14]		// 0x00070353
+		and ecx, 0xffffff		// 0x00070357
+		push ecx		// 0x0007035d
+		push edx		// 0x0007035e
+		call qh_setsize		// 0x0007035f
+		add esp, 4		// 0x00070364
+		push eax		// 0x00070367
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00070368
+		push offset nxQhStr10e310		// 0x0007036d
+		push eax		// 0x00070372
+		call nxQhCallFprintf		// 0x00070373
+		add esp, 0x10		// 0x00070378
+L7037b:
+		mov eax, dword ptr [esp + 0x14]		// 0x0007037b
+		pop edi		// 0x0007037f
+		pop ebx		// 0x00070380
+		pop esi		// 0x00070381
+		pop ebp		// 0x00070382
+		ret		// 0x00070383
+L70384:
+		mov edx, dword ptr [qh_qhstat + 0x340]		// 0x00070384
+		lea eax, [esp + 0x14]		// 0x0007038a
+		inc edx		// 0x0007038e
+		push eax		// 0x0007038f
+		mov dword ptr [qh_qhstat + 0x340], edx		// 0x00070390
+		call qh_settempfree		// 0x00070396
+		add esp, 4		// 0x0007039b
+		pop edi		// 0x0007039e
+		pop ebx		// 0x0007039f
+		pop esi		// 0x000703a0
+		xor eax, eax		// 0x000703a1
+		pop ebp		// 0x000703a3
+		ret		// 0x000703a4
+		}
+	}
+
 // phys_fn_002970 (0x00070e90, 190 B), 60 instructions
 __declspec(naked) void qh_tracemerging(void)
 	{
@@ -1332,6 +3340,974 @@ L70ecd:
 		pop ebx		// 0x00070f49
 		add esp, 0xc		// 0x00070f4a
 		ret		// 0x00070f4d
+		}
+	}
+
+// phys_fn_002972 (0x00070f50, 221 B), 76 instructions
+__declspec(naked) void qh_updatetested(facetT *facet1, facetT *facet2)
+	{
+	__asm
+		{
+		mov eax, dword ptr [esp + 4]		// 0x00070f50
+		push ebx		// 0x00070f54
+		push esi		// 0x00070f55
+		mov esi, dword ptr [esp + 0x10]		// 0x00070f56
+		and dword ptr [esi + 0x50], 0xf7ffffff		// 0x00070f5a
+		mov eax, dword ptr [eax + 0x38]		// 0x00070f61
+		test eax, eax		// 0x00070f64
+		push edi		// 0x00070f66
+		mov edi, 0xfdffffff		// 0x00070f67
+		je L70f88		// 0x00070f6c
+		lea ecx, [eax + 4]		// 0x00070f6e
+		mov eax, dword ptr [ecx]		// 0x00070f71
+		test eax, eax		// 0x00070f73
+		je L70f88		// 0x00070f75
+L70f77:
+		mov ebx, dword ptr [eax + 0xc]		// 0x00070f77
+		and ebx, edi		// 0x00070f7a
+		add ecx, 4		// 0x00070f7c
+		mov dword ptr [eax + 0xc], ebx		// 0x00070f7f
+		mov eax, dword ptr [ecx]		// 0x00070f82
+		test eax, eax		// 0x00070f84
+		jne L70f77		// 0x00070f86
+L70f88:
+		mov eax, dword ptr [esi + 0x28]		// 0x00070f88
+		test eax, eax		// 0x00070f8b
+		je L71029		// 0x00070f8d
+		mov ecx, dword ptr [esi + 0x34]		// 0x00070f93
+		push ecx		// 0x00070f96
+		call qh_setsize		// 0x00070f97
+		mov ecx, dword ptr [esi + 0x50]		// 0x00070f9c
+		mov edx, dword ptr [qh_qh + 0x24c]		// 0x00070f9f
+		add esp, 4		// 0x00070fa5
+		test ecx, 0x10000000		// 0x00070fa8
+		jne L70fc8		// 0x00070fae
+		add edx, 5		// 0x00070fb0
+		cmp eax, edx		// 0x00070fb3
+		jle L70fe5		// 0x00070fb5
+		or ecx, 0x10000000		// 0x00070fb7
+		mov dword ptr [esi + 0x50], ecx		// 0x00070fbd
+		inc dword ptr [qh_qhstat + 0x6e0]		// 0x00070fc0
+		jmp L70fe5		// 0x00070fc6
+L70fc8:
+		lea ebx, [edx + 5]		// 0x00070fc8
+		cmp eax, ebx		// 0x00070fcb
+		jg L70fe5		// 0x00070fcd
+		cmp eax, edx		// 0x00070fcf
+		je L70fdc		// 0x00070fd1
+		mov eax, dword ptr [qh_qh + 0x8c0]		// 0x00070fd3
+		test eax, eax		// 0x00070fd8
+		je L70fe5		// 0x00070fda
+L70fdc:
+		and ecx, 0xefffffff		// 0x00070fdc
+		mov dword ptr [esi + 0x50], ecx		// 0x00070fe2
+L70fe5:
+		test dword ptr [esi + 0x50], 0x10000000		// 0x00070fe5
+		jne L71029		// 0x00070fec
+		mov eax, dword ptr [qh_qh + 0x804]		// 0x00070fee
+		mov ecx, dword ptr [esi + 0x28]		// 0x00070ff3
+		push eax		// 0x00070ff6
+		push ecx		// 0x00070ff7
+		call qh_memfree		// 0x00070ff8
+		mov dword ptr [esi + 0x28], 0		// 0x00070ffd
+		mov esi, dword ptr [esi + 0x38]		// 0x00071004
+		add esp, 8		// 0x00071007
+		test esi, esi		// 0x0007100a
+		je L71029		// 0x0007100c
+		mov eax, dword ptr [esi + 4]		// 0x0007100e
+		test eax, eax		// 0x00071011
+		lea ecx, [esi + 4]		// 0x00071013
+		je L71029		// 0x00071016
+L71018:
+		mov esi, dword ptr [eax + 0xc]		// 0x00071018
+		and esi, edi		// 0x0007101b
+		add ecx, 4		// 0x0007101d
+		mov dword ptr [eax + 0xc], esi		// 0x00071020
+		mov eax, dword ptr [ecx]		// 0x00071023
+		test eax, eax		// 0x00071025
+		jne L71018		// 0x00071027
+L71029:
+		pop edi		// 0x00071029
+		pop esi		// 0x0007102a
+		pop ebx		// 0x0007102b
+		ret		// 0x0007102c
+		}
+	}
+
+// phys_fn_002987 and phys_fn_002989 (one function) (0x00071960, 250 B), 84 instructions
+__declspec(naked) setT *qh_vertexridges(vertexT *vertex)
+	{
+	__asm
+		{
+		push ecx		// 0x00071960
+		mov eax, dword ptr [qh_qh + 0x80c]		// 0x00071961
+		push esi		// 0x00071966
+		push edi		// 0x00071967
+		push eax		// 0x00071968
+		call qh_settemp		// 0x00071969
+		mov edx, dword ptr [qh_qh + 0x8e0]		// 0x0007196e
+		mov edi, dword ptr [esp + 0x14]		// 0x00071974
+		add esp, 4		// 0x00071978
+		inc edx		// 0x0007197b
+		mov dword ptr [esp + 8], eax		// 0x0007197c
+		mov dword ptr [qh_qh + 0x8e0], edx		// 0x00071980
+		mov eax, dword ptr [edi + 0xc]		// 0x00071986
+		test eax, eax		// 0x00071989
+		je L719b2		// 0x0007198b
+		lea ecx, [eax + 4]		// 0x0007198d
+		mov eax, dword ptr [ecx]		// 0x00071990
+		test eax, eax		// 0x00071992
+		je L719b2		// 0x00071994
+		jmp L719a0		// 0x00071996
+		lea esp, [esp]		// 0x00071998
+		nop		// 0x0007199f
+L719a0:
+		mov edx, dword ptr [qh_qh + 0x8e0]		// 0x000719a0
+		add ecx, 4		// 0x000719a6
+		mov dword ptr [eax + 0x48], edx		// 0x000719a9
+		mov eax, dword ptr [ecx]		// 0x000719ac
+		test eax, eax		// 0x000719ae
+		jne L719a0		// 0x000719b0
+L719b2:
+		mov eax, dword ptr [edi + 0xc]		// 0x000719b2
+		test eax, eax		// 0x000719b5
+		je L719e1		// 0x000719b7
+		lea esi, [eax + 4]		// 0x000719b9
+		mov eax, dword ptr [esi]		// 0x000719bc
+		test eax, eax		// 0x000719be
+		je L719e1		// 0x000719c0
+L719c2:
+		mov ecx, dword ptr [esi + 4]		// 0x000719c2
+		add esi, 4		// 0x000719c5
+		test ecx, ecx		// 0x000719c8
+		je L719db		// 0x000719ca
+		lea ecx, [esp + 8]		// 0x000719cc
+		push ecx		// 0x000719d0
+		push eax		// 0x000719d1
+		push edi		// 0x000719d2
+		call qh_vertexridges_facet		// 0x000719d3
+		add esp, 0xc		// 0x000719d8
+L719db:
+		mov eax, dword ptr [esi]		// 0x000719db
+		test eax, eax		// 0x000719dd
+		jne L719c2		// 0x000719df
+L719e1:
+		mov eax, dword ptr [qh_qh + 0x188]		// 0x000719e1
+		test eax, eax		// 0x000719e6
+		jne L719f3		// 0x000719e8
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x000719ea
+		test eax, eax		// 0x000719ef
+		je L71a52		// 0x000719f1
+L719f3:
+		mov edx, dword ptr [esp + 8]		// 0x000719f3
+		push edx		// 0x000719f7
+		call qh_setsize		// 0x000719f8
+		mov esi, dword ptr [qh_qhstat + 0x698]		// 0x000719fd
+		mov edx, dword ptr [qh_qhstat + 0x6a0]		// 0x00071a03
+		mov ecx, dword ptr [qh_qhstat + 0x6a8]		// 0x00071a09
+		add esp, 4		// 0x00071a0f
+		inc esi		// 0x00071a12
+		add edx, eax		// 0x00071a13
+		cmp ecx, eax		// 0x00071a15
+		mov dword ptr [qh_qhstat + 0x698], esi		// 0x00071a17
+		mov dword ptr [qh_qhstat + 0x6a0], edx		// 0x00071a1d
+		jge L71a2a		// 0x00071a23
+		mov dword ptr [qh_qhstat + 0x6a8], eax		// 0x00071a25
+L71a2a:
+		cmp dword ptr [qh_qh + 0x68], 3		// 0x00071a2a
+		jl L71a52		// 0x00071a31
+		mov ecx, dword ptr [edi + 0x14]		// 0x00071a33
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00071a36
+		and ecx, 0xffffff		// 0x00071a3c
+		push ecx		// 0x00071a42
+		push eax		// 0x00071a43
+		push offset nxQhStr10e9bc		// 0x00071a44
+		push edx		// 0x00071a49
+		call nxQhCallFprintf		// 0x00071a4a
+		add esp, 0x10		// 0x00071a4f
+L71a52:
+		mov eax, dword ptr [esp + 8]		// 0x00071a52
+		pop edi		// 0x00071a56
+		pop esi		// 0x00071a57
+		pop ecx		// 0x00071a58
+		ret		// 0x00071a59
+		}
+	}
+
+// phys_fn_002991 and phys_fn_002993 (one function) (0x00071a60, 935 B), 326 instructions
+__declspec(naked) vertexT *qh_find_newvertex(vertexT *oldvertex, setT *vertices, setT *ridges)
+	{
+	__asm
+		{
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x00071a60
+		sub esp, 0xc		// 0x00071a65
+		cmp eax, 4		// 0x00071a68
+		push ebx		// 0x00071a6b
+		push ebp		// 0x00071a6c
+		push esi		// 0x00071a6d
+		push edi		// 0x00071a6e
+		jl L71b38		// 0x00071a6f
+		mov edx, dword ptr [esp + 0x20]		// 0x00071a75
+		mov edx, dword ptr [edx + 0x14]		// 0x00071a79
+		mov eax, dword ptr [nxQhHost]		// 0x00071a7c
+		mov ecx, dword ptr [eax]		// 0x00071a81
+		and edx, 0xffffff		// 0x00071a83
+		push edx		// 0x00071a89
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00071a8a
+		push offset nxQhStr10ead0		// 0x00071a90
+		push edx		// 0x00071a95
+		push eax		// 0x00071a96
+		call dword ptr [ecx + 0x10]		// 0x00071a97
+		mov ebp, dword ptr [esp + 0x34]		// 0x00071a9a
+		add esp, 0x10		// 0x00071a9e
+		test ebp, ebp		// 0x00071aa1
+		je L71adc		// 0x00071aa3
+		mov eax, dword ptr [ebp + 4]		// 0x00071aa5
+		test eax, eax		// 0x00071aa8
+		lea esi, [ebp + 4]		// 0x00071aaa
+		je L71adc		// 0x00071aad
+		nop		// 0x00071aaf
+L71ab0:
+		mov eax, dword ptr [eax + 0x14]		// 0x00071ab0
+		mov ecx, dword ptr [nxQhHost]		// 0x00071ab3
+		mov edx, dword ptr [ecx]		// 0x00071ab9
+		and eax, 0xffffff		// 0x00071abb
+		push eax		// 0x00071ac0
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00071ac1
+		push offset nxQhStr10eac8		// 0x00071ac6
+		push eax		// 0x00071acb
+		push ecx		// 0x00071acc
+		add esi, 4		// 0x00071acd
+		call dword ptr [edx + 0x10]		// 0x00071ad0
+		mov eax, dword ptr [esi]		// 0x00071ad3
+		add esp, 0x10		// 0x00071ad5
+		test eax, eax		// 0x00071ad8
+		jne L71ab0		// 0x00071ada
+L71adc:
+		mov edi, dword ptr [esp + 0x28]		// 0x00071adc
+		test edi, edi		// 0x00071ae0
+		je L71b1c		// 0x00071ae2
+		mov eax, dword ptr [edi + 4]		// 0x00071ae4
+		test eax, eax		// 0x00071ae7
+		lea esi, [edi + 4]		// 0x00071ae9
+		je L71b1c		// 0x00071aec
+		mov edi, edi		// 0x00071aee
+L71af0:
+		mov eax, dword ptr [eax + 0xc]		// 0x00071af0
+		mov ecx, dword ptr [nxQhHost]		// 0x00071af3
+		mov edx, dword ptr [ecx]		// 0x00071af9
+		and eax, 0xffffff		// 0x00071afb
+		push eax		// 0x00071b00
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00071b01
+		push offset nxQhStr10eac0		// 0x00071b06
+		push eax		// 0x00071b0b
+		push ecx		// 0x00071b0c
+		add esi, 4		// 0x00071b0d
+		call dword ptr [edx + 0x10]		// 0x00071b10
+		mov eax, dword ptr [esi]		// 0x00071b13
+		add esp, 0x10		// 0x00071b15
+		test eax, eax		// 0x00071b18
+		jne L71af0		// 0x00071b1a
+L71b1c:
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00071b1c
+		mov eax, dword ptr [nxQhHost]		// 0x00071b22
+		mov ecx, dword ptr [eax]		// 0x00071b27
+		push offset nxQhStrNewline		// 0x00071b29
+		push edx		// 0x00071b2e
+		push eax		// 0x00071b2f
+		call dword ptr [ecx + 0x10]		// 0x00071b30
+		add esp, 0xc		// 0x00071b33
+		jmp L71b40		// 0x00071b36
+L71b38:
+		mov ebp, dword ptr [esp + 0x24]		// 0x00071b38
+		mov edi, dword ptr [esp + 0x28]		// 0x00071b3c
+L71b40:
+		xor ebx, ebx		// 0x00071b40
+		cmp ebp, ebx		// 0x00071b42
+		je L71b5c		// 0x00071b44
+		mov eax, dword ptr [ebp + 4]		// 0x00071b46
+		cmp eax, ebx		// 0x00071b49
+		lea ecx, [ebp + 4]		// 0x00071b4b
+		je L71b5c		// 0x00071b4e
+L71b50:
+		add ecx, 4		// 0x00071b50
+		mov dword ptr [eax + 0x10], ebx		// 0x00071b53
+		mov eax, dword ptr [ecx]		// 0x00071b56
+		cmp eax, ebx		// 0x00071b58
+		jne L71b50		// 0x00071b5a
+L71b5c:
+		cmp edi, ebx		// 0x00071b5c
+		je L71b98		// 0x00071b5e
+		mov eax, dword ptr [edi + 4]		// 0x00071b60
+		cmp eax, ebx		// 0x00071b63
+		lea edx, [edi + 4]		// 0x00071b65
+		je L71b98		// 0x00071b68
+		lea ebx, [ebx]		// 0x00071b6a
+L71b70:
+		mov eax, dword ptr [eax]		// 0x00071b70
+		add edx, 4		// 0x00071b72
+		cmp eax, ebx		// 0x00071b75
+		je L71b92		// 0x00071b77
+		lea ecx, [eax + 4]		// 0x00071b79
+		mov eax, dword ptr [ecx]		// 0x00071b7c
+		cmp eax, ebx		// 0x00071b7e
+		je L71b92		// 0x00071b80
+L71b82:
+		mov esi, dword ptr [eax + 0x10]		// 0x00071b82
+		add ecx, 4		// 0x00071b85
+		inc esi		// 0x00071b88
+		mov dword ptr [eax + 0x10], esi		// 0x00071b89
+		mov eax, dword ptr [ecx]		// 0x00071b8c
+		cmp eax, ebx		// 0x00071b8e
+		jne L71b82		// 0x00071b90
+L71b92:
+		mov eax, dword ptr [edx]		// 0x00071b92
+		cmp eax, ebx		// 0x00071b94
+		jne L71b70		// 0x00071b96
+L71b98:
+		cmp ebp, ebx		// 0x00071b98
+		je L71bdc		// 0x00071b9a
+		mov eax, dword ptr [ebp + 4]		// 0x00071b9c
+		cmp eax, ebx		// 0x00071b9f
+		lea esi, [ebp + 4]		// 0x00071ba1
+		je L71bdc		// 0x00071ba4
+		mov edi, esi		// 0x00071ba6
+		sub edi, ebp		// 0x00071ba8
+		sub edi, 8		// 0x00071baa
+		lea ecx, [ecx]		// 0x00071bad
+L71bb0:
+		mov ecx, dword ptr [eax + 0x10]		// 0x00071bb0
+		add esi, 4		// 0x00071bb3
+		add edi, 4		// 0x00071bb6
+		test ecx, ecx		// 0x00071bb9
+		jne L71bd2		// 0x00071bbb
+		mov eax, edi		// 0x00071bbd
+		sar eax, 2		// 0x00071bbf
+		push eax		// 0x00071bc2
+		push ebp		// 0x00071bc3
+		call qh_setdelnth		// 0x00071bc4
+		add esp, 8		// 0x00071bc9
+		sub esi, 4		// 0x00071bcc
+		sub edi, 4		// 0x00071bcf
+L71bd2:
+		mov eax, dword ptr [esi]		// 0x00071bd2
+		test eax, eax		// 0x00071bd4
+		jne L71bb0		// 0x00071bd6
+		mov edi, dword ptr [esp + 0x28]		// 0x00071bd8
+L71bdc:
+		push edi		// 0x00071bdc
+		call qh_setsize		// 0x00071bdd
+		mov ebx, dword ptr [qh_qh + 0x8e4]		// 0x00071be2
+		add ebx, eax		// 0x00071be8
+		push ebp		// 0x00071bea
+		mov dword ptr [qh_qh + 0x8e4], ebx		// 0x00071beb
+		call qh_setsize		// 0x00071bf1
+		add esp, 8		// 0x00071bf6
+		test eax, eax		// 0x00071bf9
+		jne L71c31		// 0x00071bfb
+		cmp dword ptr [qh_qh + 0x68], 4		// 0x00071bfd
+		jl L71c27		// 0x00071c04
+		mov ecx, dword ptr [esp + 0x20]		// 0x00071c06
+		mov edx, dword ptr [ecx + 0x14]		// 0x00071c0a
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00071c0d
+		and edx, 0xffffff		// 0x00071c12
+		push edx		// 0x00071c18
+		push offset nxQhStr10ea8c		// 0x00071c19
+		push eax		// 0x00071c1e
+		call nxQhCallFprintf		// 0x00071c1f
+		add esp, 0xc		// 0x00071c24
+L71c27:
+		pop edi		// 0x00071c27
+		pop esi		// 0x00071c28
+		pop ebp		// 0x00071c29
+		xor eax, eax		// 0x00071c2a
+		pop ebx		// 0x00071c2c
+		add esp, 0xc		// 0x00071c2d
+		ret		// 0x00071c30
+L71c31:
+		push offset qh_comparemerge		// 0x00071c31
+		push 4		// 0x00071c36
+		push ebp		// 0x00071c38
+		lea ebx, [ebp + 4]		// 0x00071c39
+		call qh_setsize		// 0x00071c3c
+		add esp, 4		// 0x00071c41
+		push eax		// 0x00071c44
+		push ebx		// 0x00071c45
+		call nxQhCallQsort		// 0x00071c46
+		mov eax, dword ptr [qh_qh + 0x188]		// 0x00071c4b
+		add esp, 0x10		// 0x00071c50
+		test eax, eax		// 0x00071c53
+		je L71c8a		// 0x00071c55
+		push ebp		// 0x00071c57
+		call qh_setsize		// 0x00071c58
+		mov esi, dword ptr [qh_qhstat + 0x338]		// 0x00071c5d
+		mov edx, dword ptr [qh_qhstat + 0x358]		// 0x00071c63
+		mov ecx, dword ptr [qh_qhstat + 0x348]		// 0x00071c69
+		add esp, 4		// 0x00071c6f
+		inc esi		// 0x00071c72
+		add edx, eax		// 0x00071c73
+		cmp ecx, eax		// 0x00071c75
+		mov dword ptr [qh_qhstat + 0x338], esi		// 0x00071c77
+		mov dword ptr [qh_qhstat + 0x358], edx		// 0x00071c7d
+		jge L71c8a		// 0x00071c83
+		mov dword ptr [qh_qhstat + 0x348], eax		// 0x00071c85
+L71c8a:
+		push edi		// 0x00071c8a
+		call qh_setsize		// 0x00071c8b
+		push eax		// 0x00071c90
+		call qh_newhashtable		// 0x00071c91
+		mov esi, dword ptr [esp + 0x30]		// 0x00071c96
+		add esp, 8		// 0x00071c9a
+		test esi, esi		// 0x00071c9d
+		mov ebp, eax		// 0x00071c9f
+		je L71ccf		// 0x00071ca1
+		mov eax, dword ptr [esi + 4]		// 0x00071ca3
+		add esi, 4		// 0x00071ca6
+		test eax, eax		// 0x00071ca9
+		je L71ccf		// 0x00071cab
+		lea ecx, [ecx]		// 0x00071cad
+L71cb0:
+		mov ecx, dword ptr [esp + 0x20]		// 0x00071cb0
+		mov edx, dword ptr [qh_qh + 0x8f8]		// 0x00071cb4
+		push ecx		// 0x00071cba
+		push eax		// 0x00071cbb
+		push ebp		// 0x00071cbc
+		push edx		// 0x00071cbd
+		add esi, 4		// 0x00071cbe
+		call qh_hashridge		// 0x00071cc1
+		mov eax, dword ptr [esi]		// 0x00071cc6
+		add esp, 0x10		// 0x00071cc8
+		test eax, eax		// 0x00071ccb
+		jne L71cb0		// 0x00071ccd
+L71ccf:
+		mov eax, dword ptr [esp + 0x24]		// 0x00071ccf
+		xor edi, edi		// 0x00071cd3
+		test eax, eax		// 0x00071cd5
+		je L71d5c		// 0x00071cd7
+		mov edi, dword ptr [ebx]		// 0x00071cdd
+		test edi, edi		// 0x00071cdf
+		je L71d5c		// 0x00071ce1
+L71ce7:
+		add ebx, 4		// 0x00071ce7
+		push edi		// 0x00071cea
+		mov dword ptr [esp + 0x18], ebx		// 0x00071ceb
+		call qh_vertexridges		// 0x00071cef
+		add esp, 4		// 0x00071cf4
+		xor esi, esi		// 0x00071cf7
+		test eax, eax		// 0x00071cf9
+		mov dword ptr [esp + 0x10], eax		// 0x00071cfb
+		je L71d41		// 0x00071cff
+		mov esi, dword ptr [eax + 4]		// 0x00071d01
+		test esi, esi		// 0x00071d04
+		lea ebx, [eax + 4]		// 0x00071d06
+		je L71d41		// 0x00071d09
+		jmp L71d10		// 0x00071d0b
+		lea ecx, [ecx]		// 0x00071d0d
+L71d10:
+		mov ecx, dword ptr [esp + 0x20]		// 0x00071d10
+		mov edx, dword ptr [qh_qh + 0x8f8]		// 0x00071d14
+		lea eax, [esp + 0x18]		// 0x00071d1a
+		push eax		// 0x00071d1e
+		push ecx		// 0x00071d1f
+		push edi		// 0x00071d20
+		push esi		// 0x00071d21
+		push ebp		// 0x00071d22
+		push edx		// 0x00071d23
+		add ebx, 4		// 0x00071d24
+		call qh_hashridge_find		// 0x00071d27
+		add esp, 0x18		// 0x00071d2c
+		test eax, eax		// 0x00071d2f
+		jne L71d3b		// 0x00071d31
+		mov esi, dword ptr [ebx]		// 0x00071d33
+		test esi, esi		// 0x00071d35
+		jne L71d10		// 0x00071d37
+		jmp L71d41		// 0x00071d39
+L71d3b:
+		inc dword ptr [qh_qhstat + 0x260]		// 0x00071d3b
+L71d41:
+		lea eax, [esp + 0x10]		// 0x00071d41
+		push eax		// 0x00071d45
+		call qh_settempfree		// 0x00071d46
+		add esp, 4		// 0x00071d4b
+		test esi, esi		// 0x00071d4e
+		je L71db1		// 0x00071d50
+		mov ebx, dword ptr [esp + 0x14]		// 0x00071d52
+		mov edi, dword ptr [ebx]		// 0x00071d56
+		test edi, edi		// 0x00071d58
+		jne L71ce7		// 0x00071d5a
+L71d5c:
+		mov ecx, dword ptr [qh_qhstat + 0x2b0]		// 0x00071d5c
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x00071d62
+		inc ecx		// 0x00071d67
+		test eax, eax		// 0x00071d68
+		mov dword ptr [qh_qhstat + 0x2b0], ecx		// 0x00071d6a
+		je L71d9a		// 0x00071d70
+		mov edx, dword ptr [esp + 0x20]		// 0x00071d72
+		mov ecx, dword ptr [qh_qh + 0x870]		// 0x00071d76
+		mov eax, dword ptr [edx + 0x14]		// 0x00071d7c
+		push ecx		// 0x00071d7f
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x00071d80
+		and eax, 0xffffff		// 0x00071d86
+		push eax		// 0x00071d8b
+		push offset nxQhStr10ea38		// 0x00071d8c
+		push ecx		// 0x00071d91
+		call nxQhCallFprintf		// 0x00071d92
+		add esp, 0x10		// 0x00071d97
+L71d9a:
+		push offset qh_qh + 0x8f8		// 0x00071d9a
+		call qh_setfree		// 0x00071d9f
+		add esp, 4		// 0x00071da4
+		mov eax, edi		// 0x00071da7
+		pop edi		// 0x00071da9
+		pop esi		// 0x00071daa
+		pop ebp		// 0x00071dab
+		pop ebx		// 0x00071dac
+		add esp, 0xc		// 0x00071dad
+		ret		// 0x00071db0
+L71db1:
+		test edi, edi		// 0x00071db1
+		je L71d5c		// 0x00071db3
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x00071db5
+		jl L71d9a		// 0x00071dbc
+		mov ecx, dword ptr [esp + 0x28]		// 0x00071dbe
+		push ecx		// 0x00071dc2
+		call qh_setsize		// 0x00071dc3
+		mov edx, dword ptr [esp + 0x28]		// 0x00071dc8
+		add esp, 4		// 0x00071dcc
+		push eax		// 0x00071dcf
+		push edx		// 0x00071dd0
+		call qh_setsize		// 0x00071dd1
+		mov edx, dword ptr [edi + 0x14]		// 0x00071dd6
+		add esp, 4		// 0x00071dd9
+		push eax		// 0x00071ddc
+		mov eax, dword ptr [esp + 0x28]		// 0x00071ddd
+		mov ecx, dword ptr [eax + 0x14]		// 0x00071de1
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00071de4
+		and ecx, 0xffffff		// 0x00071de9
+		push ecx		// 0x00071def
+		and edx, 0xffffff		// 0x00071df0
+		push edx		// 0x00071df6
+		push offset nxQhStr10e9e8		// 0x00071df7
+		push eax		// 0x00071dfc
+		call nxQhCallFprintf		// 0x00071dfd
+		add esp, 0x18		// 0x00071e02
+		jmp L71d9a		// 0x00071e05
+		}
+	}
+
+// phys_fn_002995 (0x00071e10, 583 B), 188 instructions
+__declspec(naked) void qh_mergecycle(facetT *samecycle, facetT *newfacet)
+	{
+	__asm
+		{
+		sub esp, 8		// 0x00071e10
+		push ebx		// 0x00071e13
+		mov ebx, dword ptr [esp + 0x14]		// 0x00071e14
+		mov eax, dword ptr [ebx + 0x50]		// 0x00071e18
+		push esi		// 0x00071e1b
+		xor esi, esi		// 0x00071e1c
+		test ah, 2		// 0x00071e1e
+		push edi		// 0x00071e21
+		mov dword ptr [esp + 0xc], esi		// 0x00071e22
+		mov dword ptr [esp + 0x10], esi		// 0x00071e26
+		je L71e5e		// 0x00071e2a
+		cmp dword ptr [qh_qh + 0x218], esi		// 0x00071e2c
+		jne L71e57		// 0x00071e32
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00071e34
+		mov eax, dword ptr [nxQhHost]		// 0x00071e3a
+		mov ecx, dword ptr [eax]		// 0x00071e3f
+		push offset nxQhStr10ebf8		// 0x00071e41
+		push edx		// 0x00071e46
+		push eax		// 0x00071e47
+		call dword ptr [ecx + 0x10]		// 0x00071e48
+		push esi		// 0x00071e4b
+		push ebx		// 0x00071e4c
+		push 5		// 0x00071e4d
+		call qh_errexit		// 0x00071e4f
+		add esp, 0x18		// 0x00071e54
+L71e57:
+		and dword ptr [ebx + 0x50], 0xeffffdff		// 0x00071e57
+L71e5e:
+		cmp dword ptr [qh_qh + 0x670], esi		// 0x00071e5e
+		jne L71e6b		// 0x00071e64
+		call qh_vertexneighbors		// 0x00071e66
+L71e6b:
+		mov ecx, dword ptr [qh_qhstat + 0x628]		// 0x00071e6b
+		mov eax, dword ptr [qh_qh + 0x1c8]		// 0x00071e71
+		inc ecx		// 0x00071e76
+		cmp eax, esi		// 0x00071e77
+		mov dword ptr [qh_qhstat + 0x628], ecx		// 0x00071e79
+		je L71ea0		// 0x00071e7f
+		cmp dword ptr [qh_qh + 0x8c0], esi		// 0x00071e81
+		je L71ea0		// 0x00071e87
+		mov edx, dword ptr [qh_qh + 0x944]		// 0x00071e89
+		add edx, eax		// 0x00071e8f
+		cmp ecx, edx		// 0x00071e91
+		jle L71ea0		// 0x00071e93
+		call qh_tracemerging		// 0x00071e95
+		mov ecx, dword ptr [qh_qhstat + 0x628]		// 0x00071e9a
+L71ea0:
+		cmp dword ptr [qh_qh + 0x210], ecx		// 0x00071ea0
+		jne L71eb7		// 0x00071ea6
+		mov eax, dword ptr [qh_qh + 0x1fc]		// 0x00071ea8
+		mov dword ptr [qh_qh + 0x68], eax		// 0x00071ead
+		mov dword ptr [qhmem + 0x38], eax		// 0x00071eb2
+L71eb7:
+		cmp dword ptr [qh_qh + 0x68], 2		// 0x00071eb7
+		mov esi, dword ptr [esp + 0x18]		// 0x00071ebe
+		jl L71ee6		// 0x00071ec2
+		mov eax, dword ptr [ebx + 0x4c]		// 0x00071ec4
+		mov edx, dword ptr [esi + 0x4c]		// 0x00071ec7
+		push eax		// 0x00071eca
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00071ecb
+		push edx		// 0x00071ed0
+		push ecx		// 0x00071ed1
+		push offset nxQhStr10eba8		// 0x00071ed2
+		push eax		// 0x00071ed7
+		call nxQhCallFprintf		// 0x00071ed8
+		mov ecx, dword ptr [qh_qhstat + 0x628]		// 0x00071edd
+		add esp, 0x14		// 0x00071ee3
+L71ee6:
+		cmp ebx, dword ptr [qh_qh + 0x82c]		// 0x00071ee6
+		push ebp		// 0x00071eec
+		mov ebp, 4		// 0x00071eed
+		jne L71f36		// 0x00071ef2
+		mov edx, dword ptr [qh_qh + 0x68]		// 0x00071ef4
+		mov edi, dword ptr [qh_qh + 0x870]		// 0x00071efa
+		mov eax, dword ptr [nxQhHost]		// 0x00071f00
+		push edi		// 0x00071f05
+		mov dword ptr [qh_qh + 0x68], ebp		// 0x00071f06
+		mov edi, dword ptr [ebx + 0x4c]		// 0x00071f0c
+		push edi		// 0x00071f0f
+		mov edi, dword ptr [esi + 0x4c]		// 0x00071f10
+		push edi		// 0x00071f13
+		push ecx		// 0x00071f14
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x00071f15
+		push offset nxQhStr10eb48		// 0x00071f1b
+		push ecx		// 0x00071f20
+		mov dword ptr [esp + 0x2c], edx		// 0x00071f21
+		mov edx, dword ptr [eax]		// 0x00071f25
+		push eax		// 0x00071f27
+		call dword ptr [edx + 0x10]		// 0x00071f28
+		add esp, 0x1c		// 0x00071f2b
+		mov dword ptr [esp + 0x10], 1		// 0x00071f2e
+L71f36:
+		cmp dword ptr [qh_qh + 0x68], ebp		// 0x00071f36
+		jl L71fc2		// 0x00071f3c
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x00071f42
+		mov eax, dword ptr [nxQhHost]		// 0x00071f48
+		mov edx, dword ptr [eax]		// 0x00071f4d
+		push offset nxQhStr10eb38		// 0x00071f4f
+		push ecx		// 0x00071f54
+		push eax		// 0x00071f55
+		call dword ptr [edx + 0x10]		// 0x00071f56
+		mov edi, dword ptr [esi + 0x20]		// 0x00071f59
+		add esp, 0xc		// 0x00071f5c
+		test edi, edi		// 0x00071f5f
+		je L71f8c		// 0x00071f61
+L71f63:
+		mov ecx, dword ptr [edi + 0x4c]		// 0x00071f63
+		mov eax, dword ptr [nxQhHost]		// 0x00071f66
+		mov edx, dword ptr [eax]		// 0x00071f6b
+		push ecx		// 0x00071f6d
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x00071f6e
+		push offset nxQhStr10c274		// 0x00071f74
+		push ecx		// 0x00071f79
+		push eax		// 0x00071f7a
+		call dword ptr [edx + 0x10]		// 0x00071f7b
+		add esp, 0x10		// 0x00071f7e
+		cmp edi, esi		// 0x00071f81
+		je L71f8c		// 0x00071f83
+		mov edi, dword ptr [edi + 0x20]		// 0x00071f85
+		test edi, edi		// 0x00071f88
+		jne L71f63		// 0x00071f8a
+L71f8c:
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x00071f8c
+		mov eax, dword ptr [nxQhHost]		// 0x00071f92
+		mov edx, dword ptr [eax]		// 0x00071f97
+		push offset nxQhStrNewline		// 0x00071f99
+		push ecx		// 0x00071f9e
+		push eax		// 0x00071f9f
+		call dword ptr [edx + 0x10]		// 0x00071fa0
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x00071fa3
+		add esp, 0xc		// 0x00071fa8
+		cmp eax, ebp		// 0x00071fab
+		jl L71fc2		// 0x00071fad
+		push 0		// 0x00071faf
+		push 0		// 0x00071fb1
+		push ebx		// 0x00071fb3
+		push esi		// 0x00071fb4
+		push offset nxQhStr10eb28		// 0x00071fb5
+		call qh_errprint		// 0x00071fba
+		add esp, 0x14		// 0x00071fbf
+L71fc2:
+		mov edx, dword ptr [esi + 0x34]		// 0x00071fc2
+		mov ebp, dword ptr [edx + 4]		// 0x00071fc5
+		push ebx		// 0x00071fc8
+		call qh_makeridges		// 0x00071fc9
+		push ebx		// 0x00071fce
+		push esi		// 0x00071fcf
+		call qh_mergecycle_neighbors		// 0x00071fd0
+		push ebx		// 0x00071fd5
+		push esi		// 0x00071fd6
+		call qh_mergecycle_ridges		// 0x00071fd7
+		push ebx		// 0x00071fdc
+		push esi		// 0x00071fdd
+		call qh_mergecycle_vneighbors		// 0x00071fde
+		mov eax, dword ptr [ebx + 0x34]		// 0x00071fe3
+		mov ecx, dword ptr [eax + 4]		// 0x00071fe6
+		lea edi, [ebx + 0x34]		// 0x00071fe9
+		add esp, 0x1c		// 0x00071fec
+		cmp ecx, ebp		// 0x00071fef
+		je L71fff		// 0x00071ff1
+		push ebp		// 0x00071ff3
+		push 0		// 0x00071ff4
+		push edi		// 0x00071ff6
+		call qh_setaddnth		// 0x00071ff7
+		add esp, 0xc		// 0x00071ffc
+L71fff:
+		mov eax, dword ptr [ebx + 0x50]		// 0x00071fff
+		test ah, 4		// 0x00072002
+		pop ebp		// 0x00072005
+		jne L72013		// 0x00072006
+		mov ecx, dword ptr [edi]		// 0x00072008
+		push ecx		// 0x0007200a
+		call qh_newvertices		// 0x0007200b
+		add esp, 4		// 0x00072010
+L72013:
+		push ebx		// 0x00072013
+		push esi		// 0x00072014
+		call qh_mergecycle_facets		// 0x00072015
+		push ebx		// 0x0007201a
+		push esi		// 0x0007201b
+		call qh_tracemerge		// 0x0007201c
+		mov eax, dword ptr [esp + 0x1c]		// 0x00072021
+		add esp, 0x10		// 0x00072025
+		test eax, eax		// 0x00072028
+		pop edi		// 0x0007202a
+		pop esi		// 0x0007202b
+		pop ebx		// 0x0007202c
+		je L72053		// 0x0007202d
+		mov ecx, dword ptr [qh_qh + 0x7fc]		// 0x0007202f
+		mov eax, dword ptr [nxQhHost]		// 0x00072035
+		mov edx, dword ptr [eax]		// 0x0007203a
+		push offset nxQhStr10eb04		// 0x0007203c
+		push ecx		// 0x00072041
+		push eax		// 0x00072042
+		call dword ptr [edx + 0x10]		// 0x00072043
+		mov edx, dword ptr [esp + 0x10]		// 0x00072046
+		add esp, 0xc		// 0x0007204a
+		mov dword ptr [qh_qh + 0x68], edx		// 0x0007204d
+L72053:
+		add esp, 8		// 0x00072053
+		ret		// 0x00072056
+		}
+	}
+
+// phys_fn_003051 (0x000744a0, 187 B), 74 instructions
+__declspec(naked) boolT qh_matchvertices(int firstindex, setT *verticesA, int skipA, setT *verticesB, int *skipB, boolT *same)
+	{
+	__asm
+		{
+		mov eax, dword ptr [esp + 4]		// 0x000744a0
+		mov edx, dword ptr [esp + 8]		// 0x000744a4
+		push ebx		// 0x000744a8
+		mov ebx, dword ptr [esp + 0x14]		// 0x000744a9
+		push ebp		// 0x000744ad
+		push esi		// 0x000744ae
+		push edi		// 0x000744af
+		mov edi, dword ptr [esp + 0x1c]		// 0x000744b0
+		lea esi, [edx + eax*4 + 4]		// 0x000744b4
+		xor ecx, ecx		// 0x000744b8
+		lea eax, [ebx + eax*4 + 4]		// 0x000744ba
+		lea ebp, [edx + edi*4 + 4]		// 0x000744be
+L744c2:
+		cmp esi, ebp		// 0x000744c2
+		je L744e0		// 0x000744c4
+		mov edx, dword ptr [esi]		// 0x000744c6
+		cmp edx, dword ptr [eax]		// 0x000744c8
+		je L744dd		// 0x000744ca
+		lea esp, [esp]		// 0x000744cc
+L744d0:
+		add eax, 4		// 0x000744d0
+		test ecx, ecx		// 0x000744d3
+		jne L74554		// 0x000744d5
+		cmp edx, dword ptr [eax]		// 0x000744d7
+		mov ecx, eax		// 0x000744d9
+		jne L744d0		// 0x000744db
+L744dd:
+		add eax, 4		// 0x000744dd
+L744e0:
+		mov edx, dword ptr [esi + 4]		// 0x000744e0
+		add esi, 4		// 0x000744e3
+		test edx, edx		// 0x000744e6
+		jne L744c2		// 0x000744e8
+		test ecx, ecx		// 0x000744ea
+		jne L744f1		// 0x000744ec
+		lea ecx, [eax + 4]		// 0x000744ee
+L744f1:
+		mov edx, dword ptr [esp + 0x24]		// 0x000744f1
+		mov esi, dword ptr [esp + 0x28]		// 0x000744f5
+		mov eax, ecx		// 0x000744f9
+		sub eax, ebx		// 0x000744fb
+		sub eax, 8		// 0x000744fd
+		sar eax, 2		// 0x00074500
+		mov dword ptr [edx], eax		// 0x00074503
+		not eax		// 0x00074505
+		xor eax, edi		// 0x00074507
+		and eax, 1		// 0x00074509
+		mov dword ptr [esi], eax		// 0x0007450c
+		cmp dword ptr [qh_qh + 0x68], 4		// 0x0007450e
+		jl L7454a		// 0x00074515
+		mov edx, dword ptr [edx]		// 0x00074517
+		push eax		// 0x00074519
+		mov eax, dword ptr [ecx - 4]		// 0x0007451a
+		mov ecx, dword ptr [eax + 0x14]		// 0x0007451d
+		mov eax, dword ptr [ebp]		// 0x00074520
+		and ecx, 0xffffff		// 0x00074523
+		push ecx		// 0x00074529
+		mov ecx, dword ptr [eax + 0x14]		// 0x0007452a
+		push edx		// 0x0007452d
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x0007452e
+		and ecx, 0xffffff		// 0x00074534
+		push ecx		// 0x0007453a
+		push edi		// 0x0007453b
+		push offset nxQhStr10f808		// 0x0007453c
+		push edx		// 0x00074541
+		call nxQhCallFprintf		// 0x00074542
+		add esp, 0x1c		// 0x00074547
+L7454a:
+		pop edi		// 0x0007454a
+		pop esi		// 0x0007454b
+		pop ebp		// 0x0007454c
+		mov eax, 1		// 0x0007454d
+		pop ebx		// 0x00074552
+		ret		// 0x00074553
+L74554:
+		pop edi		// 0x00074554
+		pop esi		// 0x00074555
+		pop ebp		// 0x00074556
+		xor eax, eax		// 0x00074557
+		pop ebx		// 0x00074559
+		ret		// 0x0007455a
+		}
+	}
+
+// phys_fn_003093 (0x00075eb0, 300 B), 104 instructions
+__declspec(naked) void qh_checkvertex(vertexT *vertex)
+	{
+	__asm
+		{
+		push ecx		// 0x00075eb0
+		push ebx		// 0x00075eb1
+		push ebp		// 0x00075eb2
+		push esi		// 0x00075eb3
+		push edi		// 0x00075eb4
+		mov edi, dword ptr [esp + 0x18]		// 0x00075eb5
+		mov eax, dword ptr [edi + 8]		// 0x00075eb9
+		xor ebx, ebx		// 0x00075ebc
+		push eax		// 0x00075ebe
+		mov dword ptr [esp + 0x14], ebx		// 0x00075ebf
+		call qh_pointid		// 0x00075ec3
+		add esp, 4		// 0x00075ec8
+		cmp eax, -1		// 0x00075ecb
+		jne L75ef3		// 0x00075ece
+		mov edx, dword ptr [edi + 8]		// 0x00075ed0
+		mov eax, dword ptr [nxQhHost]		// 0x00075ed3
+		mov ecx, dword ptr [eax]		// 0x00075ed8
+		push edx		// 0x00075eda
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00075edb
+		push offset nxQhStr110354		// 0x00075ee1
+		push edx		// 0x00075ee6
+		push eax		// 0x00075ee7
+		call dword ptr [ecx + 0x10]		// 0x00075ee8
+		add esp, 0x10		// 0x00075eeb
+		mov ebx, 1		// 0x00075eee
+L75ef3:
+		mov ecx, dword ptr [edi + 0x14]		// 0x00075ef3
+		mov edx, dword ptr [qh_qh + 0x85c]		// 0x00075ef6
+		mov eax, ecx		// 0x00075efc
+		and eax, 0xffffff		// 0x00075efe
+		cmp eax, edx		// 0x00075f03
+		jb L75f27		// 0x00075f05
+		mov ecx, dword ptr [nxQhHost]		// 0x00075f07
+		mov edx, dword ptr [ecx]		// 0x00075f0d
+		push eax		// 0x00075f0f
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00075f10
+		push offset nxQhStr110314		// 0x00075f15
+		push eax		// 0x00075f1a
+		push ecx		// 0x00075f1b
+		call dword ptr [edx + 0x10]		// 0x00075f1c
+		add esp, 0x10		// 0x00075f1f
+		jmp L75fb4		// 0x00075f22
+L75f27:
+		test ebx, ebx		// 0x00075f27
+		jne L75fb4		// 0x00075f29
+		test ecx, 0x8000000		// 0x00075f2f
+		jne L75fd6		// 0x00075f35
+		mov ecx, dword ptr [edi + 0xc]		// 0x00075f3b
+		push ecx		// 0x00075f3e
+		call qh_setsize		// 0x00075f3f
+		add esp, 4		// 0x00075f44
+		test eax, eax		// 0x00075f47
+		je L75fd6		// 0x00075f49
+		mov eax, dword ptr [edi + 0xc]		// 0x00075f4f
+		test eax, eax		// 0x00075f52
+		je L75fd6		// 0x00075f54
+		mov esi, dword ptr [eax + 4]		// 0x00075f5a
+		test esi, esi		// 0x00075f5d
+		lea ebp, [eax + 4]		// 0x00075f5f
+		je L75fd6		// 0x00075f62
+L75f64:
+		mov edx, dword ptr [esi + 0x34]		// 0x00075f64
+		push edi		// 0x00075f67
+		push edx		// 0x00075f68
+		add ebp, 4		// 0x00075f69
+		call qh_setin		// 0x00075f6c
+		add esp, 8		// 0x00075f71
+		test eax, eax		// 0x00075f74
+		jne L75fa9		// 0x00075f76
+		mov edx, dword ptr [edi + 0x14]		// 0x00075f78
+		mov eax, dword ptr [nxQhHost]		// 0x00075f7b
+		mov ecx, dword ptr [eax]		// 0x00075f80
+		and edx, 0xffffff		// 0x00075f82
+		push edx		// 0x00075f88
+		mov edx, dword ptr [esi + 0x4c]		// 0x00075f89
+		push edx		// 0x00075f8c
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00075f8d
+		push offset nxQhStr1102c8		// 0x00075f93
+		push edx		// 0x00075f98
+		push eax		// 0x00075f99
+		call dword ptr [ecx + 0x10]		// 0x00075f9a
+		add esp, 0x14		// 0x00075f9d
+		mov dword ptr [esp + 0x10], esi		// 0x00075fa0
+		mov ebx, 1		// 0x00075fa4
+L75fa9:
+		mov esi, dword ptr [ebp]		// 0x00075fa9
+		test esi, esi		// 0x00075fac
+		jne L75f64		// 0x00075fae
+		test ebx, ebx		// 0x00075fb0
+		je L75fd6		// 0x00075fb2
+L75fb4:
+		push edi		// 0x00075fb4
+		push 0		// 0x00075fb5
+		push 0		// 0x00075fb7
+		push 0		// 0x00075fb9
+		push offset nxQhStr10ef58		// 0x00075fbb
+		call qh_errprint		// 0x00075fc0
+		mov eax, dword ptr [esp + 0x24]		// 0x00075fc5
+		push 0		// 0x00075fc9
+		push eax		// 0x00075fcb
+		push 5		// 0x00075fcc
+		call qh_errexit		// 0x00075fce
+		add esp, 0x20		// 0x00075fd3
+L75fd6:
+		pop edi		// 0x00075fd6
+		pop esi		// 0x00075fd7
+		pop ebp		// 0x00075fd8
+		pop ebx		// 0x00075fd9
+		pop ecx		// 0x00075fda
+		ret		// 0x00075fdb
 		}
 	}
 
@@ -1763,6 +4739,221 @@ L765f6:
 		mov esp, ebp		// 0x0007660b
 		pop ebp		// 0x0007660d
 		ret		// 0x0007660e
+		}
+	}
+
+// phys_fn_003146 (0x00077580, 143 B), 57 instructions
+__declspec(naked) void qh_triangulate_mirror(facetT *facetA, facetT *facetB)
+	{
+	__asm
+		{
+		cmp dword ptr [qh_qh + 0x68], 3		// 0x00077580
+		push ebx		// 0x00077587
+		mov ebx, dword ptr [esp + 8]		// 0x00077588
+		push ebp		// 0x0007758c
+		mov ebp, dword ptr [esp + 0x10]		// 0x0007758d
+		jl L775af		// 0x00077591
+		mov eax, dword ptr [ebp + 0x4c]		// 0x00077593
+		mov ecx, dword ptr [ebx + 0x4c]		// 0x00077596
+		mov edx, dword ptr [qh_qh + 0x7fc]		// 0x00077599
+		push eax		// 0x0007759f
+		push ecx		// 0x000775a0
+		push offset nxQhStr110a64		// 0x000775a1
+		push edx		// 0x000775a6
+		call nxQhCallFprintf		// 0x000775a7
+		add esp, 0x10		// 0x000775ac
+L775af:
+		mov eax, dword ptr [ebx + 0x3c]		// 0x000775af
+		test eax, eax		// 0x000775b2
+		je L775f9		// 0x000775b4
+		push esi		// 0x000775b6
+		push edi		// 0x000775b7
+		mov edi, dword ptr [eax + 4]		// 0x000775b8
+		push eax		// 0x000775bb
+		xor esi, esi		// 0x000775bc
+		call qh_setsize		// 0x000775be
+		mov ecx, eax		// 0x000775c3
+		add esp, 4		// 0x000775c5
+		test ecx, ecx		// 0x000775c8
+		mov dword ptr [esp + 0x14], ecx		// 0x000775ca
+		jle L775f7		// 0x000775ce
+L775d0:
+		mov eax, dword ptr [ebp + 0x3c]		// 0x000775d0
+		mov eax, dword ptr [eax + esi*4 + 4]		// 0x000775d3
+		cmp edi, eax		// 0x000775d7
+		je L775eb		// 0x000775d9
+		push eax		// 0x000775db
+		push ebp		// 0x000775dc
+		push edi		// 0x000775dd
+		push ebx		// 0x000775de
+		call qh_triangulate_link		// 0x000775df
+		mov ecx, dword ptr [esp + 0x24]		// 0x000775e4
+		add esp, 0x10		// 0x000775e8
+L775eb:
+		mov edx, dword ptr [ebx + 0x3c]		// 0x000775eb
+		mov edi, dword ptr [edx + esi*4 + 8]		// 0x000775ee
+		inc esi		// 0x000775f2
+		cmp esi, ecx		// 0x000775f3
+		jl L775d0		// 0x000775f5
+L775f7:
+		pop edi		// 0x000775f7
+		pop esi		// 0x000775f8
+L775f9:
+		push 0		// 0x000775f9
+		push ebx		// 0x000775fb
+		call qh_willdelete		// 0x000775fc
+		push 0		// 0x00077601
+		push ebp		// 0x00077603
+		call qh_willdelete		// 0x00077604
+		add esp, 0x10		// 0x00077609
+		pop ebp		// 0x0007760c
+		pop ebx		// 0x0007760d
+		ret		// 0x0007760e
+		}
+	}
+
+// phys_fn_003164 and phys_fn_003166 (one function) (0x00078970, 387 B), 127 instructions
+__declspec(naked) void qh_createsimplex(setT *vertices)
+	{
+	__asm
+		{
+		sub esp, 0xc		// 0x00078970
+		mov eax, dword ptr [qh_qh + 0x24c]		// 0x00078973
+		push esi		// 0x00078978
+		inc eax		// 0x00078979
+		push edi		// 0x0007897a
+		push eax		// 0x0007897b
+		mov dword ptr [esp + 0xc], 1		// 0x0007897c
+		call qh_settemp		// 0x00078984
+		mov dword ptr [esp + 0x14], eax		// 0x00078989
+		call qh_newfacet		// 0x0007898d
+		xor edi, edi		// 0x00078992
+		push edi		// 0x00078994
+		mov dword ptr [qh_qh + 0x814], eax		// 0x00078995
+		mov dword ptr [qh_qh + 0x81c], eax		// 0x0007899a
+		mov dword ptr [qh_qh + 0x810], eax		// 0x0007899f
+		mov dword ptr [qh_qh + 0x824], edi		// 0x000789a4
+		mov dword ptr [qh_qh + 0x848], edi		// 0x000789aa
+		mov dword ptr [qh_qh + 0x844], edi		// 0x000789b0
+		call qh_newvertex		// 0x000789b6
+		mov dword ptr [qh_qh + 0x83c], eax		// 0x000789bb
+		mov dword ptr [qh_qh + 0x840], eax		// 0x000789c0
+		mov dword ptr [qh_qh + 0x838], eax		// 0x000789c5
+		mov eax, dword ptr [esp + 0x20]		// 0x000789ca
+		add esp, 8		// 0x000789ce
+		cmp eax, edi		// 0x000789d1
+		je L78a6b		// 0x000789d3
+		push ebx		// 0x000789d9
+		push ebp		// 0x000789da
+		mov ebp, dword ptr [eax + 4]		// 0x000789db
+		lea esi, [eax + 4]		// 0x000789de
+		push eax		// 0x000789e1
+		call qh_setsize		// 0x000789e2
+		mov ebx, eax		// 0x000789e7
+		add esp, 4		// 0x000789e9
+		cmp ebx, edi		// 0x000789ec
+		jle L78a69		// 0x000789ee
+		mov dword ptr [esp + 0x14], esi		// 0x000789f0
+L789f4:
+		call qh_newfacet		// 0x000789f4
+		mov ecx, dword ptr [esp + 0x20]		// 0x000789f9
+		push 0		// 0x000789fd
+		push edi		// 0x000789ff
+		push ebx		// 0x00078a00
+		push ecx		// 0x00078a01
+		mov esi, eax		// 0x00078a02
+		call qh_setnew_delnthsorted		// 0x00078a04
+		mov ecx, dword ptr [esi + 0x50]		// 0x00078a09
+		mov edx, dword ptr [esp + 0x20]		// 0x00078a0c
+		shl edx, 0xc		// 0x00078a10
+		xor edx, ecx		// 0x00078a13
+		and edx, 0x1000		// 0x00078a15
+		xor ecx, edx		// 0x00078a1b
+		push esi		// 0x00078a1d
+		mov dword ptr [esi + 0x34], eax		// 0x00078a1e
+		mov dword ptr [esi + 0x50], ecx		// 0x00078a21
+		call qh_appendfacet		// 0x00078a24
+		mov ecx, dword ptr [esi + 0x50]		// 0x00078a29
+		or ecx, 0x400		// 0x00078a2c
+		push ebp		// 0x00078a32
+		mov dword ptr [esi + 0x50], ecx		// 0x00078a33
+		call qh_appendvertex		// 0x00078a36
+		lea eax, [esp + 0x30]		// 0x00078a3b
+		push esi		// 0x00078a3f
+		push eax		// 0x00078a40
+		call qh_setappend		// 0x00078a41
+		mov esi, dword ptr [esp + 0x30]		// 0x00078a46
+		mov eax, dword ptr [esp + 0x34]		// 0x00078a4a
+		mov ebp, dword ptr [eax + 4]		// 0x00078a4e
+		xor esi, 1		// 0x00078a51
+		add esp, 0x20		// 0x00078a54
+		add eax, 4		// 0x00078a57
+		inc edi		// 0x00078a5a
+		cmp edi, ebx		// 0x00078a5b
+		mov dword ptr [esp + 0x10], esi		// 0x00078a5d
+		mov dword ptr [esp + 0x14], eax		// 0x00078a61
+		jl L789f4		// 0x00078a65
+		xor edi, edi		// 0x00078a67
+L78a69:
+		pop ebp		// 0x00078a69
+		pop ebx		// 0x00078a6a
+L78a6b:
+		mov eax, dword ptr [qh_qh + 0x81c]		// 0x00078a6b
+		mov esi, eax		// 0x00078a70
+		cmp esi, edi		// 0x00078a72
+		je L78ac3		// 0x00078a74
+		jmp L78a80		// 0x00078a76
+L78a78:
+		mov eax, dword ptr [qh_qh + 0x81c]		// 0x00078a78
+		lea ecx, [ecx]		// 0x00078a7d
+L78a80:
+		cmp dword ptr [esi + 0x30], edi		// 0x00078a80
+		je L78ac3		// 0x00078a83
+		cmp eax, edi		// 0x00078a85
+		je L78aaa		// 0x00078a87
+		xor ecx, ecx		// 0x00078a89
+		jmp L78a90		// 0x00078a8b
+		lea ecx, [ecx]		// 0x00078a8d
+L78a90:
+		cmp dword ptr [eax + 0x30], edi		// 0x00078a90
+		je L78aaa		// 0x00078a93
+		cmp eax, esi		// 0x00078a95
+		je L78aa3		// 0x00078a97
+		mov edx, dword ptr [esi + 0x3c]		// 0x00078a99
+		mov dword ptr [edx + ecx + 4], eax		// 0x00078a9c
+		add ecx, 4		// 0x00078aa0
+L78aa3:
+		mov eax, dword ptr [eax + 0x30]		// 0x00078aa3
+		cmp eax, edi		// 0x00078aa6
+		jne L78a90		// 0x00078aa8
+L78aaa:
+		mov eax, dword ptr [qh_qh + 0x24c]		// 0x00078aaa
+		mov ecx, dword ptr [esi + 0x3c]		// 0x00078aaf
+		push eax		// 0x00078ab2
+		push ecx		// 0x00078ab3
+		call qh_settruncate		// 0x00078ab4
+		mov esi, dword ptr [esi + 0x30]		// 0x00078ab9
+		add esp, 8		// 0x00078abc
+		cmp esi, edi		// 0x00078abf
+		jne L78a78		// 0x00078ac1
+L78ac3:
+		lea edx, [esp + 0x10]		// 0x00078ac3
+		push edx		// 0x00078ac7
+		call qh_settempfree		// 0x00078ac8
+		mov eax, dword ptr [qh_qh + 0x68]		// 0x00078acd
+		add esp, 4		// 0x00078ad2
+		cmp eax, 1		// 0x00078ad5
+		pop edi		// 0x00078ad8
+		pop esi		// 0x00078ad9
+		jl L78aef		// 0x00078ada
+		mov eax, dword ptr [qh_qh + 0x7fc]		// 0x00078adc
+		push offset nxQhStr111694		// 0x00078ae1
+		push eax		// 0x00078ae6
+		call nxQhCallFprintf		// 0x00078ae7
+		add esp, 8		// 0x00078aec
+L78aef:
+		add esp, 0xc		// 0x00078aef
+		ret		// 0x00078af2
 		}
 	}
 

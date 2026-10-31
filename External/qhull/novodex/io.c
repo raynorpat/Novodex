@@ -36,6 +36,8 @@
  * Geometry Center licence clause 1: the copyright notice below is intact.
  * Clause 3: see ../NOTICE.txt. Clause 4: the original source may be
  * obtained from http://www.qhull.org.
+ * [vendored rows] setT *qh_detvridge ( (phys_fn_002697): the body is guarded off; the oracle's own instructions are transcribed in
+ *     QhullRows.c. established at 0x00066b20
  */
 /*<html><pre>  -<a                             href="qh-io.htm"
   >-------------------------------</a><a name="TOP">-</a>
@@ -476,6 +478,7 @@ pointT *qh_detvnorm (vertexT *vertex, vertexT *vertexA, setT *centers, realT *of
     temporary set of centers (facets, i.e., Voronoi vertices)
     sorted by center id
 */
+#ifndef NX_VENDORED_LISTING_ROWS
 setT *qh_detvridge (vertexT *vertex) {
   setT *centers= qh_settemp (qh TEMPsize);
   setT *tricenters= qh_settemp (qh TEMPsize);
@@ -498,6 +501,8 @@ setT *qh_detvridge (vertexT *vertex) {
   qh_settempfree (&tricenters);
   return centers;
 } /* detvridge */      
+#endif
+/* NX_VENDORED_LISTING_ROWS: transcribed in QhullRows.c (phys_fn_002697) */
 
 /*-<a                             href="qh-io.htm#TOC"
   >-------------------------------</a><a name="detvridge3">-</a>

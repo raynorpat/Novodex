@@ -276,6 +276,7 @@ HOST_SEAMS = {
 ORACLE_HOST_GLOBALS = frozenset({0x00125080})
 # The candidate's copy of that pointer (Physics/src/QhullHost.cpp), and the alias the vendored-rows transcriptions
 # (External/qhull/novodex/QhullRows.c) read it through: a virtual call through it is a host call, as in the oracle.
+TRANSCRIPTION_ALIAS = re.compile(r"_nx(Qh|Op)Call")
 CANDIDATE_HOST_SYMBOLS = frozenset({"?gQhullHost@@3PAVQhullHost@@A", "_nxQhHost"})
 
 
@@ -782,7 +783,9 @@ class SymbolIndex:
         self.sorted = sorted(symbols, key=lambda s: s.rva)
         self.rvas = [s.rva for s in self.sorted]
         self.function_at = {}
-        for s in symbols:
+        # The vendored-rows transcriptions reach their callees through /alternatename aliases (nxQhCall*, nxOpCall*)
+        # that the map lists at the callee's own address; the callee is named by its own symbol, never the alias.
+        for s in sorted(symbols, key=lambda s: bool(TRANSCRIPTION_ALIAS.match(s.name))):
             if s.is_function:
                 self.function_at.setdefault(s.rva, s)
         # Overloads share a short key; give each its parameter list so that a call to one

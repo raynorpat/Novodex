@@ -14,12 +14,14 @@ extern "C" void nxQhCallFloor();
 extern "C" void nxQhCallFprintf();
 extern "C" void nxQhCallLocaltime32();
 extern "C" void nxQhCallMalloc();
+extern "C" void nxQhCallQsort();
 extern "C" void nxQhCallTime32();
 #pragma comment(linker, "/alternatename:_nxQhCallClock=_clock")
 #pragma comment(linker, "/alternatename:_nxQhCallFloor=_floor")
 #pragma comment(linker, "/alternatename:_nxQhCallFprintf=_fprintf")
 #pragma comment(linker, "/alternatename:_nxQhCallLocaltime32=__localtime32")
 #pragma comment(linker, "/alternatename:_nxQhCallMalloc=_malloc")
+#pragma comment(linker, "/alternatename:_nxQhCallQsort=_qsort")
 #pragma comment(linker, "/alternatename:_nxQhCallTime32=__time32")
 extern int qh_rand_seed;   /* geom2.c, not in a header */
 extern void* nxQhHost;

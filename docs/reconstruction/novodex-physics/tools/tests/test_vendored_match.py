@@ -757,6 +757,13 @@ class CandidateHostGlobalsTest(unittest.TestCase):
         self.assertEqual(vm.candidate_host_globals(syms), frozenset({0x2000}))
 
 
+class TranscriptionAliasTest(unittest.TestCase):
+    def test_a_transcription_alias_never_names_a_function(self):
+        index = vm.SymbolIndex(vm.parse_map(map_text([("_nxQhCallQsort", 0x1100, "f", "ucrt:x.dll"),
+                                                       ("_qsort", 0x1100, "f", "ucrt:x.dll")]), BASE))
+        self.assertEqual(vm.candidate_identity(index, 0x1100), "qsort")
+
+
 class SeamsAndDropsTest(unittest.TestCase):
     def test_resolve_seams_replaces_rva_tokens(self):
         _, rows, functions = oracle_setup()

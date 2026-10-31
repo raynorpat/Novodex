@@ -44,3 +44,42 @@ SYMBOLS = {0x000f4d5a: '_fprintf', 0x000f4722: '_malloc', 0x000f5bff: '__time32'
            0x000f515d: '_clock', 0x000f4dc0: '_floor'}   # 0x000f4dc0 is floor: its caller fistps st(0)
 PUSHES = dict(DATA)   # pushed addresses of qh_qh fields
 TABLES = {0x1005c7ac: 7}   # qh_distplane's switch on qh hull_dim - 2 (cmp ecx, 6)
+
+# Task 4: qhull rows the existing drives reach (the merge, vertex and simplex paths).
+R['phys_fn_002697'] = ('qh_detvridge', 'setT *qh_detvridge(vertexT *vertex)')
+R['phys_fn_002884'] = ('qh_appendmergeset', 'void qh_appendmergeset(facetT *facet, facetT *neighbor, mergeType mergetype, realT *angle)')
+R['phys_fn_002900'] = ('qh_degen_redundant_facet', 'void qh_degen_redundant_facet(facetT *facet)')
+NAMES['phys_fn_002902'] = 'qh_degen_redundant_facet'
+R['phys_fn_002921'] = ('qh_maydropneighbor', 'void qh_maydropneighbor(facetT *facet)')
+NAMES['phys_fn_002923'] = 'qh_maydropneighbor'
+NAMES['phys_fn_002925'] = 'qh_maydropneighbor'
+R['phys_fn_002927'] = ('qh_mergecycle_neighbors', 'void qh_mergecycle_neighbors(facetT *samecycle, facetT *newfacet)')
+R['phys_fn_002929'] = ('qh_mergecycle_ridges', 'void qh_mergecycle_ridges(facetT *samecycle, facetT *newfacet)')
+NAMES['phys_fn_002931'] = 'qh_mergecycle_ridges'
+R['phys_fn_002933'] = ('qh_mergecycle_vneighbors', 'void qh_mergecycle_vneighbors(facetT *samecycle, facetT *newfacet)')
+R['phys_fn_002937'] = ('qh_mergeneighbors', 'void qh_mergeneighbors(facetT *facet1, facetT *facet2)')
+R['phys_fn_002939'] = ('qh_mergeridges', 'void qh_mergeridges(facetT *facet1, facetT *facet2)')
+R['phys_fn_002943'] = ('qh_mergevertex_neighbors', 'void qh_mergevertex_neighbors(facetT *facet1, facetT *facet2)')
+NAMES['phys_fn_002945'] = 'qh_mergevertex_neighbors'
+R['phys_fn_002947'] = ('qh_mergevertices', 'void qh_mergevertices(setT *vertices1, setT **vertices2)')
+NAMES['phys_fn_002949'] = 'qh_mergevertices'
+R['phys_fn_002951'] = ('qh_neighbor_intersections', 'setT *qh_neighbor_intersections(vertexT *vertex)')
+NAMES['phys_fn_002953'] = 'qh_neighbor_intersections'
+R['phys_fn_002972'] = ('qh_updatetested', 'void qh_updatetested(facetT *facet1, facetT *facet2)')
+R['phys_fn_002987'] = ('qh_vertexridges', 'setT *qh_vertexridges(vertexT *vertex)')
+NAMES['phys_fn_002989'] = 'qh_vertexridges'
+R['phys_fn_002991'] = ('qh_find_newvertex', 'vertexT *qh_find_newvertex(vertexT *oldvertex, setT *vertices, setT *ridges)')
+NAMES['phys_fn_002993'] = 'qh_find_newvertex'
+R['phys_fn_002995'] = ('qh_mergecycle', 'void qh_mergecycle(facetT *samecycle, facetT *newfacet)')
+R['phys_fn_003051'] = ('qh_matchvertices', 'boolT qh_matchvertices(int firstindex, setT *verticesA, int skipA, setT *verticesB, int *skipB, boolT *same)')
+R['phys_fn_003093'] = ('qh_checkvertex', 'void qh_checkvertex(vertexT *vertex)')
+R['phys_fn_003146'] = ('qh_triangulate_mirror', 'void qh_triangulate_mirror(facetT *facetA, facetT *facetB)')
+R['phys_fn_003164'] = ('qh_createsimplex', 'void qh_createsimplex(setT *vertices)')
+NAMES['phys_fn_003166'] = 'qh_createsimplex'
+NAMES.update({k: v[0] for k, v in R.items()})
+DECLS.update({k: '__declspec(naked) ' + v[1] for k, v in R.items()})
+# Task 4: qsort and its comparators (pushed by address), and the one-character string qhull prints.
+SYMBOLS[0x000f5cb0] = '_qsort'
+PUSHES[0x100662e0] = 'qh_compare_facetvisit'
+PUSHES[0x1006e650] = 'qh_comparemerge'
+STRINGS = {0x101086e4: 'nxQhStrNewline'}
