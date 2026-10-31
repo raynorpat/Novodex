@@ -30,6 +30,20 @@ class CandidatesTest(unittest.TestCase):
         self.assertIsNone(mutate_rows.mutate('ret'))
 
 
+class DataFlowMutationTest(unittest.TestCase):
+    def test_decimal_offsets_are_mutated(self):
+        self.assertEqual(mutate_rows.mutate('lea esi, [esp + 8]'), 'lea esi, [esp + 12]')
+
+    def test_stack_frame_arithmetic_is_not_a_candidate(self):
+        # sub/add esp only unbalance the stack: a crash, which says nothing about the row's data flow
+        self.assertIsNone(mutate_rows.mutate('sub esp, 0x24'))
+        self.assertIsNone(mutate_rows.mutate('add esp, 0xc'))
+
+    def test_pick_spreads_attempts_across_the_row(self):
+        self.assertEqual(mutate_rows.pick(list(range(12)), 3), [0, 4, 8])
+        self.assertEqual(mutate_rows.pick([1, 2], 6), [1, 2])
+
+
 class DetectionTest(unittest.TestCase):
     def test_detect_family_mismatches(self):
         out = 'thirdparty name=fam rva=0x1 owner=x words=9 oracle=ab mismatches=12 worst_ulp=0 verdict=FAILED\n'

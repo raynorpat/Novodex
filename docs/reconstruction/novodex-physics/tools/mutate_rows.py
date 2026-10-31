@@ -38,9 +38,15 @@ def mutate(text):
     op, rest = m.group(1), m.group(2)
     if op in INV:
         return '%s %s' % (INV[op], rest)
+    # sub/add esp only unbalance the stack: a crash, which says nothing about the row's data flow
+    if op in ('sub', 'add') and rest.startswith('esp,'):
+        return None
     mo = re.search(r'\[(\w+) \+ 0x([0-9a-f]+)\]', rest)
     if mo:
         return text.replace(mo.group(0), '[%s + 0x%x]' % (mo.group(1), int(mo.group(2), 16) + 4), 1)
+    mo = re.search(r'\[(\w+) \+ (\d+)\]', rest)
+    if mo:
+        return text.replace(mo.group(0), '[%s + %d]' % (mo.group(1), int(mo.group(2)) + 4), 1)
     mo = re.search(r'\[(\w+)\]', rest)
     if mo and mo.group(1) in REGS:
         return text.replace(mo.group(0), '[%s + 4]' % mo.group(1), 1)
@@ -65,6 +71,14 @@ def candidates(text, lo, hi):
             if after and after != before:
                 found.append((addr, before, after))
     return found
+
+
+def pick(found, limit):
+    """At most `limit` of the candidates, evenly spaced, so the attempts cover the row rather than its first lines."""
+    if len(found) <= limit:
+        return list(found)
+    step = len(found) / float(limit)
+    return [found[int(i * step)] for i in range(limit)]
 
 
 def detect_family(stdout, family):
@@ -106,9 +120,7 @@ def sweep(path, lo, hi, run, limit):
     text = original.decode('utf-8')
     attempts = 0
     try:
-        for addr, before, after in candidates(text, lo, hi):
-            if attempts >= limit:
-                break
+        for addr, before, after in pick(candidates(text, lo, hi), limit):
             mutated = _swap_line(text, addr, after)
             if mutated is None:
                 continue
