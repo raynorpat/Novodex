@@ -22,3 +22,7 @@ CAUGHT phys_fn_001229 NxPhysicsActorShapeMutationTests stdout_delta=379 0x00024c
 NOT CAUGHT phys_fn_001231
 CAUGHT phys_fn_001233 NxPhysicsActorShapeMutationTests stdout_delta=371 0x00024cfd  jne L24d27  ->  je L24d27
 CAUGHT phys_fn_001235 NxPhysicsActorShapeMutationTests stdout_delta=369 0x00024d5d  jne L24d87  ->  je L24d87
+CAUGHT phys_fn_001103 NxPhysicsActorShapeMutationTests stdout_delta=405 0x000239ad  jne L239d7  ->  je L239d7
+CAUGHT phys_fn_001135 NxPhysicsActorShapeMutationTests stdout_delta=523 0x00023e6d  jne L23e97  ->  je L23e97
+CAUGHT phys_fn_001139 NxPhysicsActorShapeMutationTests stdout_delta=513 0x00023f2d  jne L23f57  ->  je L23f57
+CAUGHT phys_fn_001157 NxPhysicsActorShapeMutationTests stdout_delta=353 0x000241fd  jne L24227  ->  je L24227
