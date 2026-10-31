@@ -109,6 +109,18 @@ class SweepTest(unittest.TestCase):
             self.assertIsNone(got)
             self.assertEqual(len(calls), 2)
 
+    def test_build_is_restored_after_the_sweep(self):
+        # the built binaries must match the restored source, or the next run measures the last mutant
+        with tempfile.TemporaryDirectory() as d:
+            p = self.source(d)
+            restored = []
+            mutate_rows.sweep(p, 0x1000, 0x100c, lambda t: ('family', None), 2, restore_build=lambda: restored.append(1))
+            self.assertEqual(restored, [1])
+            with self.assertRaises(OSError):
+                mutate_rows.sweep(p, 0x1000, 0x100c, lambda t: (_ for _ in ()).throw(OSError('x')), 2,
+                                  restore_build=lambda: restored.append(2))
+            self.assertEqual(restored, [1, 2])
+
     def test_source_is_restored_after_a_failed_run(self):
         with tempfile.TemporaryDirectory() as d:
             p = self.source(d)

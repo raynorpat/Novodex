@@ -501,6 +501,53 @@ static NxMat33 axisRotation(unsigned axis, float c, float sn)
 	return r;
 	}
 
+// The testing pass: every shape change marks the shape dirty in its scene's deferred-update queue
+// (phys_fn_001325 and phys_fn_001327), and the queue grows by reallocation when it fills. One actor with enough
+// shapes marks more than any initial capacity before the scene next flushes, so both the append and the growth
+// copy run; each shape's resulting pose and flag are printed for the two DLLs to compare.
+static void runMarkDirtyGrowthCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
+	{
+	errors.enabled = true;
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* scene = sdk->createScene(sceneDesc);
+	if(!scene) { printf("shape_mutation dirty_growth_scene=0\n"); return; }
+	const unsigned kShapes = 40;
+	NxBoxShapeDesc boxes[kShapes];
+	NxActorDesc desc;
+	for(unsigned i = 0; i < kShapes; ++i)
+		{
+		boxes[i].dimensions = NxVec3(0.5f + 0.01f * i, 0.5f, 0.5f);
+		boxes[i].localPose.t = NxVec3(3.0f * i, 0.0f, 0.0f);
+		desc.shapes.pushBack(&boxes[i]);
+		}
+	NxActor* actor = scene->createActor(desc);
+	printf("shape_mutation dirty_growth_actor=%u\n", actor ? 1u : 0u);
+	if(actor)
+		{
+		NxShape* const* shapes = actor->getShapes();
+		for(unsigned round = 0; round < 3; ++round)
+			{
+			for(unsigned i = 0; i < kShapes; ++i)
+				{
+				shapes[i]->setLocalPosition(NxVec3(3.0f * i + round, 0.25f * round, -0.5f * i));
+				shapes[i]->setFlag(NX_SF_VISUALIZATION, ((i + round) & 1) != 0);
+				}
+			scene->flushStream();
+			}
+		for(unsigned i = 0; i < kShapes; ++i)
+			{
+			const NxMat34 pose = shapes[i]->getGlobalPose();
+			printf("shape_mutation dirty_growth_shape=%u.%u.%x.%x.%x\n", i,
+				shapes[i]->getFlag(NX_SF_VISUALIZATION) ? 1u : 0u,
+				*reinterpret_cast<const unsigned*>(&pose.t.x), *reinterpret_cast<const unsigned*>(&pose.t.y),
+				*reinterpret_cast<const unsigned*>(&pose.t.z));
+			}
+		scene->releaseActor(*actor);
+		}
+	sdk->releaseScene(*scene);
+	}
+
 static void runTask4Cases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allocator,
 	NxActorErrorStream& errors)
 	{
@@ -1657,6 +1704,7 @@ int wmain(int argc, wchar_t** argv)
 	scene->releaseActor(*groupActor);
 	sdk->releaseScene(*scene);
 	runTask4Cases(sdk, allocator, errors);
+	runMarkDirtyGrowthCases(sdk, errors);
 	runTask5Cases(sdk, allocator, errors);
 	runTask5DynamicCases(sdk, allocator, errors);
 	runTask5ReviewCases(sdk, errors);

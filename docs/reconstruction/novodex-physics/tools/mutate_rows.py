@@ -109,11 +109,12 @@ def _swap_line(text, addr, new):
     return rx.sub(lambda m: m.group(1) + new + m.group(2) + m.group(3), text)
 
 
-def sweep(path, lo, hi, run, limit):
+def sweep(path, lo, hi, run, limit, restore_build=None):
     """Mutate the row's lines one at a time until `run` reports a detection.
 
     run(mutated_text) -> (gate kind, detection N or None). Returns (mutation text, gate kind, N) or None. The file is
     restored after every attempt, and a RuntimeError is raised if its bytes then differ from the original.
+    restore_build() runs once at the end, however the sweep ends, so the built binaries match the restored source.
     """
     path = Path(path)
     original = path.read_bytes()
@@ -134,6 +135,8 @@ def sweep(path, lo, hi, run, limit):
                 return ('0x%08x  %s  ->  %s' % (addr, before, after), kind, n)
     finally:
         path.write_bytes(original)
+        if restore_build:
+            restore_build()
     if path.read_bytes() != original:
         raise RuntimeError('%s was not restored' % path)
     return None
@@ -144,13 +147,20 @@ def build_targets(target, staged):
     return ['NxPhysics', target] if staged else [target]
 
 
+def _build(target, staged):
+    """Build what a run needs; False when the build failed."""
+    for t in build_targets(target, staged):
+        build = subprocess.run('cmake --build build --config Release --target %s' % t, shell=True,
+                               capture_output=True, text=True, cwd=REPO)
+        if ': error' in build.stdout or 'LNK2' in build.stdout:
+            return False
+    return True
+
+
 def _real_run(target, family, staged):
     def run(_mutated_text):
-        for t in build_targets(target, staged):
-            build = subprocess.run('cmake --build build --config Release --target %s' % t, shell=True,
-                                   capture_output=True, text=True, cwd=REPO)
-            if ': error' in build.stdout or 'LNK2' in build.stdout:
-                return ('build-failed', None)
+        if not _build(target, staged):
+            return ('build-failed', None)
         try:
             if staged:
                 r = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
@@ -181,7 +191,8 @@ def main(argv=None):
     row = next(r for r in inv['functions'] if r['id'] == a.row or r['id'].endswith(a.row))
     lo = int(row['rva'], 16)
     hi = lo + int(row['size'])
-    got = sweep(a.source, lo, hi, _real_run(a.target, a.family, a.staged), a.limit)
+    got = sweep(a.source, lo, hi, _real_run(a.target, a.family, a.staged), a.limit,
+                restore_build=lambda: _build(a.target, a.staged))
     if got:
         text, kind, n = got
         line = 'CAUGHT %s %s %s=%d %s' % (row['id'], a.target, kind, n, text)
