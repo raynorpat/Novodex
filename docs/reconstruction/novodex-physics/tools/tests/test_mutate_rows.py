@@ -72,6 +72,31 @@ class RepoRootTest(unittest.TestCase):
         self.assertTrue((mutate_rows.REPO / 'Physics' / 'src').is_dir())
 
 
+class AtomicWriteTest(unittest.TestCase):
+    def test_a_failed_write_leaves_the_original_intact(self):
+        # a full disk truncated a source file mid-write; the target must be replaced whole or not at all
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'rows.cpp'
+            p.write_bytes(b'original')
+
+            def failing(tmp, data):
+                tmp.write_bytes(data[:3])
+                raise OSError(28, 'No space left on device')
+
+            with self.assertRaises(OSError):
+                mutate_rows.write_atomic(p, b'mutated text', writer=failing)
+            self.assertEqual(p.read_bytes(), b'original')
+            self.assertEqual([x.name for x in Path(d).iterdir()], ['rows.cpp'])
+
+    def test_a_good_write_replaces_the_file_whole(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'rows.cpp'
+            p.write_bytes(b'original')
+            mutate_rows.write_atomic(p, b'mutated text')
+            self.assertEqual(p.read_bytes(), b'mutated text')
+            self.assertEqual([x.name for x in Path(d).iterdir()], ['rows.cpp'])
+
+
 class BuildTargetsTest(unittest.TestCase):
     def test_staged_runs_also_rebuild_the_candidate_dll(self):
         # a staged pair stages build/Release/NxPhysics.dll, so a stale DLL would report nothing caught

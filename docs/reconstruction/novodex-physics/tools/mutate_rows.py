@@ -12,6 +12,7 @@ mutation (default limit 6 attempts). Exit code 0 when caught, 1 when not.
 """
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -109,6 +110,28 @@ def _swap_line(text, addr, new):
     return rx.sub(lambda m: m.group(1) + new + m.group(2) + m.group(3), text)
 
 
+def _write_tmp(tmp, data):
+    tmp.write_bytes(data)
+
+
+def write_atomic(path, data, writer=_write_tmp):
+    """Replace `path` whole or not at all: write a sibling temp file, then os.replace it.
+
+    A full disk once truncated a source file mid-restore; with this the file is either the old bytes or the new ones.
+    """
+    path = Path(path)
+    tmp = path.with_name(path.name + '.mutate-tmp')
+    try:
+        writer(tmp, data)
+        os.replace(str(tmp), str(path))
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
+
+
 def sweep(path, lo, hi, run, limit, restore_build=None):
     """Mutate the row's lines one at a time until `run` reports a detection.
 
@@ -126,15 +149,15 @@ def sweep(path, lo, hi, run, limit, restore_build=None):
             if mutated is None:
                 continue
             attempts += 1
-            path.write_bytes(mutated.encode('utf-8'))
+            write_atomic(path, mutated.encode('utf-8'))
             try:
                 kind, n = run(mutated)
             finally:
-                path.write_bytes(original)
+                write_atomic(path, original)
             if n:
                 return ('0x%08x  %s  ->  %s' % (addr, before, after), kind, n)
     finally:
-        path.write_bytes(original)
+        write_atomic(path, original)
         if restore_build:
             restore_build()
     if path.read_bytes() != original:
