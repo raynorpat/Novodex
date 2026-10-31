@@ -51,6 +51,22 @@ class DetectionTest(unittest.TestCase):
         self.assertIsNone(mutate_rows.detect_staged(out))
 
 
+class RepoRootTest(unittest.TestCase):
+    def test_repo_is_the_checkout_root(self):
+        # build/, Physics/ and the test exes live under it; a wrong root runs every command in the wrong directory
+        self.assertTrue((mutate_rows.REPO / 'build').is_dir())
+        self.assertTrue((mutate_rows.REPO / 'Physics' / 'src').is_dir())
+
+
+class BuildTargetsTest(unittest.TestCase):
+    def test_staged_runs_also_rebuild_the_candidate_dll(self):
+        # a staged pair stages build/Release/NxPhysics.dll, so a stale DLL would report nothing caught
+        self.assertEqual(mutate_rows.build_targets('T', True), ['NxPhysics', 'T'])
+
+    def test_a_harness_target_is_built_alone(self):
+        self.assertEqual(mutate_rows.build_targets('T', False), ['T'])
+
+
 class SweepTest(unittest.TestCase):
     def source(self, d):
         p = Path(d) / 'rows.cpp'

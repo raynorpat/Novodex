@@ -17,7 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 ORACLE_DIR = 'D:/FlamingEnt__/Unreal_3/Binaries'
 ORACLE_SHA = '4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c'
 TIMEOUT = 300
@@ -127,12 +127,18 @@ def sweep(path, lo, hi, run, limit):
     return None
 
 
+def build_targets(target, staged):
+    """What a run must rebuild: a staged pair stages build/Release/NxPhysics.dll, a harness links the sources itself."""
+    return ['NxPhysics', target] if staged else [target]
+
+
 def _real_run(target, family, staged):
     def run(_mutated_text):
-        build = subprocess.run('cmake --build build --config Release --target %s' % target, shell=True,
-                               capture_output=True, text=True, cwd=REPO)
-        if ': error' in build.stdout or 'LNK2' in build.stdout:
-            return ('build-failed', None)
+        for t in build_targets(target, staged):
+            build = subprocess.run('cmake --build build --config Release --target %s' % t, shell=True,
+                                   capture_output=True, text=True, cwd=REPO)
+            if ': error' in build.stdout or 'LNK2' in build.stdout:
+                return ('build-failed', None)
         try:
             if staged:
                 r = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
