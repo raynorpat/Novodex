@@ -1,0 +1,39 @@
+{
+ "source": "External/qhull/novodex/QhullRows.c",
+ "compare": "evidence/vendored-rows-qhull-listing-compare.py",
+ "doc": "evidence/vendored-correspondence.md",
+ "instructions": 7542,
+ "mappings": 402,
+ "rows": {
+  "phys_fn_002485": {
+   "symbol": "qh_findgooddist",
+   "what": "qhull qh_findgooddist",
+   "group": "0x0005f170",
+   "family": "vendored_rows_qhull_good"
+  },
+  "phys_fn_002884": {
+   "symbol": "qh_appendmergeset",
+   "what": "qhull qh_appendmergeset",
+   "group": "0x0006e0b0",
+   "family": "vendored_rows_qhull_cycles2"
+  },
+  "phys_fn_002970": {
+   "symbol": "qh_tracemerging",
+   "what": "qhull qh_tracemerging",
+   "group": "0x00070e90",
+   "family": "vendored_rows_qhull_good"
+  },
+  "phys_fn_003146": {
+   "symbol": "qh_triangulate_mirror",
+   "what": "qhull qh_triangulate_mirror",
+   "group": "0x00077580",
+   "family": "vendored_rows_qhull_mirror"
+  },
+  "phys_fn_003412": {
+   "symbol": "qh_printallstatistics",
+   "what": "qhull qh_printallstatistics",
+   "group": "0x000847d0",
+   "family": "vendored_rows_qhull_good"
+  }
+ }
+}

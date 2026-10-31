@@ -403,7 +403,8 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_options_x87", 3, 0, 0, 2ull, 0, 0, 0, 2ull, 1.0325074129013956e-14 },	// qhull-gap: option-gated arms
 	{ "qhull_merge_x87", 1, 0, 0, 1ull, 0, 0, 0, 1ull, 3.2585045772748344e-13 },	// qhull-gap: large and near-degenerate inputs
 	{ "qhull_direct_x87", 691, 0, 0, kInf64, 38, 3, 0, 4503599627370496ull, 2.2204460492503131e-16 },	// qhull-gap: out-of-line printers and helpers; the inf words are distances next to 0
-	{ "qhull_exact_other_x87", 1, 0, 0, 1ull, 0, 0, 0, 1ull, 0.0 },	// exact until the vendored-rows pass: the transcribed qh_distplane (oracle code) on normals the upstream geometry rows round in their own last bit; one double, 1 ulp
+	{ "qhull_exact_other_x87", 1, 0, 0, 1ull, 0, 0, 0, 1ull, 0.0 },
+	{ "vendored_rows_qhull_cycles2_x87", 2, 0, 0, 1ull, 0, 0, 0, 1ull, 0.0 },	// vendored-rows pass: two words 1 ulp apart over the larger merge-cycle inputs	// exact until the vendored-rows pass: the transcribed qh_distplane (oracle code) on normals the upstream geometry rows round in their own last bit; one double, 1 ulp
 	{ "qhull_paths", 4, 4, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// set 16 retains four measured distance-test counter words
 	{ "qhull_paths_x87", 186, 0, 0, 1618481116086272ull, 14, 0, 0, 1618481116086272ull, 1.9984014443252818e-15 },	// same runs' doubles
 	{ "hull_create_qhull", 242, 179, 0xffffffffu, 0, 16, 12, 0, 18874368ull, 14.0 },	// 0x027f box facet topology and short-quantization doubles; inputs and per-set effects are measured by hull_qhull_direct
@@ -3125,20 +3126,59 @@ static void nxBuildModel(const NxOracleRows& o, NxModelPair& p, bool selfOnly)
 		}
 	}
 
-static void nxReleaseModels(const NxOracleRows& o)
+// With a family name, the release is compared (the vendored-rows pass, Task 6: Model::~Model, phys_fn_005366,
+// which nothing else runs in a compared family): each side's destructor runs on its own model, and the tape is
+// what it does to the object -- Release() deletes the source and optimized trees and leaves both pointers null,
+// and ~BaseModel takes the object's table. Pointers are taped as present / null, never as values.
+static void nxReleaseModels(const NxOracleRows& o, const char* family = 0, bool selfOnly = false)
 	{
+	if(family)
+		{
+		gOracleTape.reset();
+		gCandidateTape.reset();
+		}
 	for(int i = 0; i < gNbModels; ++i)
 		{
 		NxModelPair& p = gModels[i];
+		Model* const om = (Model*) p.oracle;
+		const void* const oracleTable = *(void**) om;
+		if(family)
+			{
+			gOracleTape.push(p.built ? 1u : 0u);
+			gOracleTape.push(om->GetSourceTree() ? 1u : 0u);
+			gOracleTape.push(om->GetTree() ? 1u : 0u);
+			}
 		((NxDtorFn) nxAt(o, kOpcModelDtor))(p.oracle);
+		if(family)
+			{
+			gOracleTape.push(*(void**) om != oracleTable ? 1u : 0u);
+			gOracleTape.push(om->GetSourceTree() ? 1u : 0u);
+			gOracleTape.push(om->GetTree() ? 1u : 0u);
+			}
 		nxOracleFree(p.oracle, sizeof(Model));
-		delete p.candidate;
+		if(p.candidate && family)
+			{
+			Model* const cm = p.candidate;
+			const void* const candidateTable = *(void**) cm;
+			gCandidateTape.push(p.candidateBuilt ? 1u : 0u);
+			gCandidateTape.push(cm->GetSourceTree() ? 1u : 0u);
+			gCandidateTape.push(cm->GetTree() ? 1u : 0u);
+			cm->Model::~Model();		// the destructor itself, not the deleting one
+			gCandidateTape.push(*(void**) cm != candidateTable ? 1u : 0u);
+			gCandidateTape.push(cm->GetSourceTree() ? 1u : 0u);
+			gCandidateTape.push(cm->GetTree() ? 1u : 0u);
+			Model::operator delete(cm);
+			}
+		else
+			delete p.candidate;
 		free(p.oracleMesh.verts);
 		free(p.oracleMesh.tris);
 		free(p.candidateMesh.verts);
 		free(p.candidateMesh.tris);
 		}
 	gNbModels = 0;
+	if(family)
+		nxReport(family, "0x000e90e0", "phys_fn_005366", "OPC_Model.cpp,OPC_BaseModel.cpp", selfOnly);
 	}
 
 // Two build families, because the builds split into two kinds of outcome.
@@ -5154,6 +5194,76 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 // reassociated sums and unrounded intermediates of the summation-order work
 // unit. Plane::Set/Triangle and Matrix4x4 were divergent the same way until the
 // vendored-rows pass transcribed them; they are exact now.
+// The vendored-rows pass (Task 6): two OPCODE rows no exact family reaches. OBBCollider::ValidateSettings
+// (phys_fn_005111, ICF-folded with PlanesCollider's) reads only the collider's flags word (+4): it runs over
+// every value of the four low flag bits on a buffer holding just that word, against both candidate definitions,
+// and the tape is the message it returns (hashed) or 0. OBB::ComputeWorldEdgeNormal (phys_fn_005204) runs
+// only inside ice_obb, whose divergence is the other OBB rows' rotations: here it is called alone, every edge of
+// boxes drawn as the ICE drive draws them, and the tape is the normal's words.
+static unsigned nxHashString(const char* text)
+	{
+	if(!text)
+		return 0;
+	unsigned h = 2166136261u;
+	for(; *text; ++text)
+		h = (h ^ (unsigned char) *text) * 16777619u;
+	return h | 1;
+	}
+
+static void nxDriveVendoredRowsOpcode(const NxOracleRows& o, bool selfOnly)
+	{
+	typedef const char* (__thiscall* NxValidateFn)(void*);
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	for(unsigned flags = 0; flags < 16; ++flags)
+		{
+		unsigned collider[8] = { 0, flags, 0, 0, 0, 0, 0, 0 };
+		const char* const oracle = ((NxValidateFn) nxAt(o, 0x000e1530))(collider);
+		gOracleTape.push(nxHashString(oracle));
+		gOracleTape.push(nxHashString(oracle));
+		if(!selfOnly)
+			{
+			gCandidateTape.push(nxHashString(((OBBCollider*) collider)->OBBCollider::ValidateSettings()));
+			gCandidateTape.push(nxHashString(((PlanesCollider*) collider)->PlanesCollider::ValidateSettings()));
+			}
+		}
+	nxReport("vendored_rows_opcode_validate", "0x000e1530", "phys_fn_005111",
+		"OPC_OBBCollider.cpp,OPC_PlanesCollider.cpp", selfOnly);
+
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gState = 0x7e11d000u;
+	for(unsigned c = 0; c < 200; ++c)
+		{
+		OBB box;
+		const float centerX = nxRange(-5, 5).value;
+		const float centerY = nxRange(-5, 5).value;
+		const float centerZ = nxRange(-5, 5).value;
+		box.mCenter = Point(centerX, centerY, centerZ);
+		const float extentX = nxRange(0, 2).value;
+		const float extentY = nxRange(0, 2).value;
+		const float extentZ = nxRange(0, 2).value;
+		box.mExtents = Point(extentX, extentY, extentZ);
+		float r[3][3];
+		nxRotation(r);
+		for(int i = 0; i < 3; ++i)
+			for(int j = 0; j < 3; ++j)
+				box.mRot.m[i][j] = r[i][j];
+		for(udword edge = 0; edge < 12; ++edge)
+			{
+			Point normal;
+			((NxEdgeNormalFn) nxAt(o, kIceOBBEdgeNormal))(&box, edge, &normal);
+			nxTapeFloatWords(gOracleTape, &normal, sizeof(normal));
+			if(!selfOnly)
+				{
+				box.ComputeWorldEdgeNormal(edge, normal);
+				nxTapeFloatWords(gCandidateTape, &normal, sizeof(normal));
+				}
+			}
+		}
+	nxReport("vendored_rows_opcode_edge_normal", "0x000e4cb0", "phys_fn_005204", "Ice/IceOBB.cpp", selfOnly);
+	}
+
 static void nxDriveIceMaths(const NxOracleRows& o, bool selfOnly)
 	{
 	static const bool kX87[5] = { false, false, false, false, true };
@@ -5522,9 +5632,10 @@ static void nxDriveVendoredCoverage(const NxOracleRows& o, bool selfOnly)
 	nxDriveHullShape(o, selfOnly);
 	nxDriveVanilla(o, selfOnly);
 	nxDriveRefit(o, selfOnly);
-	nxReleaseModels(o);
+	nxReleaseModels(o, "vendored_rows_opcode_model_release", selfOnly);
 	nxDriveSap(o, selfOnly);
 	nxDriveIceMaths(o, selfOnly);
+	nxDriveVendoredRowsOpcode(o, selfOnly);
 
 	*errorSlot = shippedReporter;
 	VirtualProtect(errorSlot, sizeof(void*), wasProtected, &wasProtected);
@@ -7261,6 +7372,65 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 	nxQhGapFamily(o, "qhull_paths", "qhull_paths_x87", "0x0005c5c0", "phys_fn_002425", "geom.c,qhull.c,poly2.c,merge.c,io.c",
 		"0x0005c5c0", "phys_fn_002425", "geom.c,geom2.c,merge.c", kPaths, sizeof(kPaths) / sizeof(kPaths[0]),
 		selfOnly, kDivergent, 0);
+
+	// The vendored-rows pass (Task 6): runs that reach the transcribed qhull rows no family above executes --
+	// merge cycles and their neighbour, ridge and vertex updates (cube faces jittered off the face and tight
+	// clusters under C-0; not the 4-d lattice, set 16, whose distance-test counter qhull_paths attributes), the check and trace-4 printers (Tc, T4), the good-facet and
+	// furthest-outside paths (QG, Q9), the statistics printer (Ts), and Delaunay triangulation mirrors (d Qt; not over set 23, whose
+	// doubles carry the qhull_output_delaunay3_x87 class).
+	// Each family is exact: an execution counts only if both its tapes match the oracle's word for word.
+	static const NxQhGapRun kRowsCycles[] =
+		{
+		{ 17, "C-0", 0 }, { 17, "C-0 Qc", 0 }, { 19, "C-0", 0 }, { 17, "Qx C-0", 0 }, { 19, "C-0 Qc", 0 },
+		{ 2, "C-0", 0 }, { 1, "C-0", 0 }, { 6, "C-0", 0 }, { 5, "C-0", 0 }, { 5, "Qx", 0 },
+		
+		};
+	nxQhGapFamily(o, "vendored_rows_qhull_cycles", "vendored_rows_qhull_cycles_x87", "0x00071e10", "phys_fn_002995",
+		"merge.c,poly2.c", "0x00071e10", "phys_fn_002995", "merge.c,geom.c,geom2.c", kRowsCycles,
+		sizeof(kRowsCycles) / sizeof(kRowsCycles[0]), selfOnly, 0, kDivergent);
+	// Merge cycles over the larger cospherical and box inputs, apart: their doubles may carry the last-bit class.
+	static const NxQhGapRun kRowsCycles2[] =
+		{
+		{ 3, "C-0", 0 }, { 18, "C-0", 0 }, { 20, "C-0", 0 }, { 21, "C-0", 0 },
+		{ 17, "C-0 A-0.99", 0 }, { 19, "Qx C0.001", 0 }, { 6, "C-0 Qx", 0 },
+		};
+	nxQhGapFamily(o, "vendored_rows_qhull_cycles2", "vendored_rows_qhull_cycles2_x87", "0x00071e10", "phys_fn_002995",
+		"merge.c,poly2.c", "0x00071e10", "phys_fn_002995", "merge.c,geom.c,geom2.c", kRowsCycles2,
+		sizeof(kRowsCycles2) / sizeof(kRowsCycles2[0]), selfOnly, 0, kDivergent);
+	static const NxQhGapRun kRowsChecks[] =
+		{
+		{ 2, "Tc", 0 }, { 17, "C-0 Tc", 0 }, { 19, "C-0 Tc", 0 },
+		{ 17, "TP1 C-0", 0 }, { 19, "TP3 C-0", 0 }, { 2, "TP4 C-0", 0 },
+		{ 17, "TP0 C-0", 0 }, { 17, "TP2 C-0", 0 }, { 19, "TP5 C-0", 0 }, { 1, "TP0 C-0", 0 },
+		};
+	nxQhGapFamily(o, "vendored_rows_qhull_checks", "vendored_rows_qhull_checks_x87", "0x00075eb0", "phys_fn_003093",
+		"poly2.c,qset.c,merge.c", "0x00075eb0", "phys_fn_003093", "poly2.c,geom.c,geom2.c", kRowsChecks,
+		sizeof(kRowsChecks) / sizeof(kRowsChecks[0]), selfOnly, 0, kDivergent);
+	// Trace level 4 (the hash-table and set printers) over the two smallest inputs: its output is large.
+	static const NxQhGapRun kRowsTrace4[] =
+		{
+		{ 0, "T4", 0 }, { 1, "T4", 0 },
+		};
+	nxQhGapFamily(o, "vendored_rows_qhull_trace4", "vendored_rows_qhull_trace4_x87", "0x00076e10", "phys_fn_003133",
+		"poly2.c,qset.c", "0x00076e10", "phys_fn_003133", "poly2.c,geom.c,geom2.c", kRowsTrace4,
+		sizeof(kRowsTrace4) / sizeof(kRowsTrace4[0]), selfOnly, 0, kDivergent);
+	static const NxQhGapRun kRowsGood[] =
+		{
+		{ 3, "QG0 Qg", 0 }, { 4, "QG1", 0 }, { 3, "Q9", 0 }, { 18, "Q9", 0 }, { 3, "Ts", 0 }, { 17, "C-0 Ts", 0 },
+		{ 21, "QG0 Qg", 0 }, { 21, "Q9", 0 },
+		{ 17, "TF1 C0.01", 0 }, { 19, "TF1 C0.01", 0 }, { 17, "Ts TF1 C0.01", 0 }, { 2, "Ts TF1 C-0", 0 },
+		{ 17, "TF4 C0.01", 0 }, { 19, "TF4 C0.01", 0 }, { 21, "TF4 C0.001", 0 },
+		};
+	nxQhGapFamily(o, "vendored_rows_qhull_good", "vendored_rows_qhull_good_x87", "0x0005f170", "phys_fn_002485",
+		"geom2.c,poly2.c,stat.c", "0x0005f170", "phys_fn_002485", "geom2.c,geom.c", kRowsGood,
+		sizeof(kRowsGood) / sizeof(kRowsGood[0]), selfOnly, 0, kDivergent);
+	static const NxQhGapRun kRowsMirror[] =
+		{
+		{ 2, "d Qt", 1 }, { 17, "C-0 Qt", 0 },
+		};
+	nxQhGapFamily(o, "vendored_rows_qhull_mirror", "vendored_rows_qhull_mirror_x87", "0x00077580", "phys_fn_003146",
+		"poly2.c", "0x00077580", "phys_fn_003146", "poly2.c,geom.c,geom2.c", kRowsMirror,
+		sizeof(kRowsMirror) / sizeof(kRowsMirror[0]), selfOnly, 0, kDivergent);
 
 	// Keep trace level 4 separate: its candidate visits one extra neighbour,
 	// shifting the remaining tape, while the ordinary path cases remain aligned.

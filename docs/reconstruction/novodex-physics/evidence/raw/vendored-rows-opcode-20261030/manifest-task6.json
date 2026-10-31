@@ -1,0 +1,27 @@
+{
+ "source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+ "compare": "evidence/vendored-rows-opcode-listing-compare.py",
+ "doc": "evidence/vendored-correspondence.md",
+ "instructions": 1300,
+ "mappings": 41,
+ "rows": {
+  "phys_fn_005111": {
+   "symbol": "?ValidateSettings@OBBCollider@Opcode@@UAEPBDXZ",
+   "what": "opcode OBBCollider::ValidateSettings  [ICF-folded with PlanesCollider::ValidateSettings, OPC_PlanesCollider.cpp:80]",
+   "group": "0x000e1530",
+   "family": "vendored_rows_opcode_validate"
+  },
+  "phys_fn_005204": {
+   "symbol": "?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z",
+   "what": "opcode OBB::ComputeWorldEdgeNormal(udword, Point&) const",
+   "group": "0x000e4cb0",
+   "family": "vendored_rows_opcode_edge_normal"
+  },
+  "phys_fn_005366": {
+   "symbol": "nxOpModelDtor",
+   "what": "opcode Model::~Model",
+   "group": "0x000e90e0",
+   "family": "vendored_rows_opcode_model_release"
+  }
+ }
+}

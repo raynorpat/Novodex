@@ -359,7 +359,9 @@ void qh_all_merges (boolT othermerge, boolT vneighbors) {
 #ifdef NX_VENDORED_LISTING_ROWS
 /* The oracle inlines qh_appendmergeset into this file's callers and keeps the out-of-line row (phys_fn_002884),
    which QhullRows.c transcribes: so the callers below keep a static copy to inline, and the external symbol is the
-   transcription. established at 0x0006e900, 0x0006f110 and 0x00073710 (inlined) against 0x0006e0b0 (the row). */
+   transcription; only those three callers are pointed at the copy, as the oracle's qh_test_appendmerge calls the
+   row. established at 0x0006e900, 0x0006f110 and 0x00073710 (inlined) against 0x0006e0b0 (the row) and its
+   call at 0x000708e0. */
 #define qh_appendmergeset qh_appendmergeset_inlined
 static
 #endif
@@ -405,6 +407,9 @@ void qh_appendmergeset(facetT *facet, facetT *neighbor, mergeType mergetype, rea
     qh_setappend (&(qh degen_mergeset), merge);
   }
 } /* appendmergeset */
+#ifdef NX_VENDORED_LISTING_ROWS
+#undef qh_appendmergeset
+#endif
 /* NX_VENDORED_LISTING_ROWS: the external qh_appendmergeset is transcribed in QhullRows.c (phys_fn_002884) */
 
 
@@ -750,6 +755,9 @@ void qh_degen_redundant_facet (facetT *facet) {
     test for redundant neighbor
     test for degenerate neighbor
 */
+#ifdef NX_VENDORED_LISTING_ROWS
+#define qh_appendmergeset qh_appendmergeset_inlined	/* the oracle inlines it here */
+#endif
 void qh_degen_redundant_neighbors (facetT *facet, facetT *delfacet) {
   vertexT *vertex, **vertexp;
   facetT *neighbor, **neighborp;
@@ -788,6 +796,9 @@ void qh_degen_redundant_neighbors (facetT *facet, facetT *delfacet) {
     }
   }
 } /* degen_redundant_neighbors */
+#ifdef NX_VENDORED_LISTING_ROWS
+#undef qh_appendmergeset
+#endif
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -1025,6 +1036,9 @@ facetT *qh_findbestneighbor(facetT *facet, realT *distp, realT *mindistp, realT 
       merge degenerate and redundant facets
     remove flipped merges from qh.facet_mergeset
 */
+#ifdef NX_VENDORED_LISTING_ROWS
+#define qh_appendmergeset qh_appendmergeset_inlined	/* the oracle inlines it here */
+#endif
 void qh_flippedmerges(facetT *facetlist, boolT *wasmerge) {
   facetT *facet, *neighbor, *facet1;
   realT dist, mindist, maxdist;
@@ -1069,6 +1083,9 @@ void qh_flippedmerges(facetT *facetlist, boolT *wasmerge) {
     *wasmerge= True;
   trace1((qh ferr, "qh_flippedmerges: merged %d flipped facets into a good neighbor\n", nummerge));
 } /* flippedmerges */
+#ifdef NX_VENDORED_LISTING_ROWS
+#undef qh_appendmergeset
+#endif
 
 
 /*-<a                             href="qh-merge.htm#TOC"
@@ -1503,6 +1520,9 @@ void qh_makeridges(facetT *facet) {
      restore the missing neighbor from the neighbor set that was qh_MERGEridge
      add the missing ridge for this neighbor
 */
+#ifdef NX_VENDORED_LISTING_ROWS
+#define qh_appendmergeset qh_appendmergeset_inlined	/* the oracle inlines it here */
+#endif
 void qh_mark_dupridges(facetT *facetlist) {
   facetT *facet, *neighbor, **neighborp;
   int nummerge=0;
@@ -1542,6 +1562,9 @@ void qh_mark_dupridges(facetT *facetlist) {
   trace1((qh ferr, "qh_mark_dupridges: found %d duplicated ridges\n", 
                 nummerge));
 } /* mark_dupridges */
+#ifdef NX_VENDORED_LISTING_ROWS
+#undef qh_appendmergeset
+#endif
 
 /*-<a                             href="qh-merge.htm#TOC"
   >-------------------------------</a><a name="maydropneighbor">-</a>

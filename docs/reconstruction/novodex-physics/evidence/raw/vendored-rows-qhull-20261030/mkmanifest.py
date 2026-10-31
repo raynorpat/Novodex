@@ -29,9 +29,17 @@ for sym, lo, hi, tag, decl in ns['ROWS']:
         if rid in rows or (only and rid not in only) or inv[rid]['state'] != 'discovered':
             continue
         line = cov.get(group)
-        fams = re.findall(r'(\w+)=exact', line['differential']) if line else []
+        # A family of an execution in which every family is exact (an execution is one harness segment chunk,
+        # `fam=cls+sibling=cls`; its class is the worst of them), so the cited run matched in every word.
+        fams = []
+        for chunk in (line['differential'].split(';') if line else []):
+            if 'via-inline' in chunk:
+                continue  # a copy inlined into a caller is not this row's code
+            pairs = re.findall(r'(\w+)=(\w+)', chunk.split(':', 1)[-1])
+            if pairs and all(c == 'exact' for _, c in pairs):
+                fams.append(pairs[0][0])
         # The family that drives the function itself, where there is one, before families that reach it in passing.
-        fams.sort(key=lambda f: next((k for k, p in enumerate(PREFER) if f == p), len(PREFER)))
+        fams.sort(key=lambda f: (not f.startswith('vendored_rows_'), next((k for k, p in enumerate(PREFER) if f == p), len(PREFER))))  # this pass's own drives first
         if not line or line['family_best'] != 'exact' or not fams:
             held.append((rid, group, line and line['family_best']))
             continue

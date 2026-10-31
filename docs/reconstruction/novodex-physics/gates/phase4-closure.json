@@ -54,9 +54,9 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 897,
+    "deferred_reconstructed_not_falsified": 903,
     "deferred_not_reconstructed_in_phase": 17,
-    "deferred_vendored_not_falsified": 25,
+    "deferred_vendored_not_falsified": 19,
     "oracle_differential_falsified": 55,
     "differential_falsified": 16,
     "deferred_blocked_on_later_phase": 43
@@ -2309,7 +2309,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002446",
@@ -2486,9 +2486,10 @@
       "id": "phys_fn_002485",
       "rva": "0x0005f170",
       "size": 482,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002487",
@@ -2677,7 +2678,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002534",
@@ -2686,7 +2687,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002536",
@@ -2695,7 +2696,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002538",
@@ -2704,7 +2705,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002540",
@@ -3262,25 +3263,25 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002699",
       "rva": "0x00066bf0",
       "size": 269,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed; held: no fully exact execution (vendored-rows pass, Task 6)."
     },
     {
       "id": "phys_fn_002701",
       "rva": "0x00066d00",
       "size": 219,
-      "reason": "reconstructed_not_falsified",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed; held: no fully exact execution (vendored-rows pass, Task 6)."
     },
     {
       "id": "phys_fn_002703",
@@ -3289,7 +3290,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002705",
@@ -3298,7 +3299,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002707",
@@ -3460,7 +3461,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_output_delaunay."
     },
     {
       "id": "phys_fn_002745",
@@ -4078,9 +4079,10 @@
       "id": "phys_fn_002884",
       "rva": "0x0006e0b0",
       "size": 393,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002886",
@@ -4296,7 +4298,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002939",
@@ -4305,7 +4307,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002941",
@@ -4323,7 +4325,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002945",
@@ -4332,7 +4334,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002947",
@@ -4341,7 +4343,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002949",
@@ -4350,7 +4352,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002951",
@@ -4359,7 +4361,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_mirror."
     },
     {
       "id": "phys_fn_002953",
@@ -4368,7 +4370,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_direct."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_mirror."
     },
     {
       "id": "phys_fn_002955",
@@ -4446,9 +4448,10 @@
       "id": "phys_fn_002970",
       "rva": "0x00070e90",
       "size": 190,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002972",
@@ -4529,7 +4532,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002989",
@@ -4538,7 +4541,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002991",
@@ -4547,7 +4550,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002993",
@@ -4556,7 +4559,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in qhull_merge."
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_002995",
@@ -5239,9 +5242,10 @@
       "id": "phys_fn_003146",
       "rva": "0x00077580",
       "size": 143,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_mirror."
     },
     {
       "id": "phys_fn_003148",
@@ -6416,9 +6420,10 @@
       "id": "phys_fn_003412",
       "rva": "0x000847d0",
       "size": 48,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_qhull_good."
     },
     {
       "id": "phys_fn_003415",
@@ -7468,9 +7473,10 @@
       "id": "phys_fn_005111",
       "rva": "0x000e1530",
       "size": 22,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_opcode_validate."
     },
     {
       "id": "phys_fn_005113",
@@ -7818,9 +7824,10 @@
       "id": "phys_fn_005204",
       "rva": "0x000e4cb0",
       "size": 124,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_opcode_edge_normal."
     },
     {
       "id": "phys_fn_005206",
@@ -8398,9 +8405,10 @@
       "id": "phys_fn_005366",
       "rva": "0x000e90e0",
       "size": 22,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in vendored_rows_opcode_model_release."
     },
     {
       "id": "phys_fn_005368",

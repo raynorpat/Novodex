@@ -7,7 +7,7 @@
     "code_bytes": 938467,
     "open_code_rows": 2786,
     "terminally_closed_code_rows": 0,
-    "mapped_code_rows": 2413,
+    "mapped_code_rows": 2419,
     "source_correspondence_only_rows": 287,
     "directly_exported_code_rows": 41,
     "artifact_rows": 3552,
@@ -84,8 +84,8 @@
         "deferred_reasons": {
           "blocked_on_later_phase": 43,
           "not_reconstructed_in_phase": 17,
-          "reconstructed_not_falsified": 897,
-          "vendored_not_falsified": 25
+          "reconstructed_not_falsified": 903,
+          "vendored_not_falsified": 19
         }
       },
       "5": {
@@ -142,12 +142,12 @@
         "rows": 1053,
         "bytes": 441595,
         "open_rows": 1053,
-        "rows_without_implementation_mapping": 96,
+        "rows_without_implementation_mapping": 90,
         "rows_with_unresolved_indirect_calls": 313,
         "by_state": {
-          "discovered": 25,
+          "discovered": 19,
           "dynamically_gated": 71,
-          "reconstructed": 957
+          "reconstructed": 963
         }
       },
       "5": {
@@ -87101,7 +87101,7 @@
           {
             "id": "phys_fn_005366",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005368",
@@ -97610,7 +97610,7 @@
           {
             "id": "phys_fn_005204",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005404",
@@ -105762,17 +105762,23 @@
       "size": 482,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002485",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/qhull/novodex/QhullRows.c",
+        "role": "reconstruction",
+        "symbol": "_qh_findgooddist",
+        "file_exists": true,
+        "oracle_source": "External/qhull/novodex/QhullRows.c",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "_qh_findgooddist",
+          "address": "0x100cd2f0",
+          "object": "NxQhull:QhullRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -105837,13 +105843,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -105851,8 +105857,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002485",
         "rva": "0x0005f170",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -113728,23 +113734,17 @@
       "size": 269,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "discovered",
       "label": "phys_fn_002699",
       "implementation": {
-        "path": "External/qhull/novodex/QhullRows.c",
-        "role": "reconstruction",
-        "symbol": "_qh_detvridge3",
-        "file_exists": true,
-        "oracle_source": "External/qhull/novodex/QhullRows.c",
-        "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": true,
-        "candidate_map_reference_basis": "inventory",
-        "candidate_map_reference": {
-          "path": "build/Release/NxPhysics.map",
-          "symbol": "_qh_detvridge3",
-          "address": "0x100cc710",
-          "object": "NxQhull:QhullRows.obj"
-        }
+        "path": null,
+        "role": "unmapped",
+        "symbol": null,
+        "file_exists": null,
+        "oracle_source": null,
+        "source_correspondence_recorded": false,
+        "candidate_map_reference_recorded": false,
+        "candidate_map_reference_basis": null
       },
       "reachability": {
         "status": "not_proven",
@@ -113796,13 +113796,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
-        "static_proof_recorded": true,
-        "dynamic_proof_recorded": true,
+        "strength": "no_behavioral_proof_recorded",
+        "inventory_state": "discovered",
+        "static_proof_recorded": false,
+        "dynamic_proof_recorded": false,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "vendored_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -113810,8 +113810,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002699",
         "rva": "0x00066bf0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "recover_contract_and_reconstruct",
+        "ledger_reason": "vendored_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -113822,23 +113822,17 @@
       "size": 219,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "discovered",
       "label": "phys_fn_002701",
       "implementation": {
-        "path": "External/qhull/novodex/QhullRows.c",
-        "role": "reconstruction",
-        "symbol": "_qh_detvridge3",
-        "file_exists": true,
-        "oracle_source": "External/qhull/novodex/QhullRows.c",
-        "source_correspondence_recorded": true,
-        "candidate_map_reference_recorded": true,
-        "candidate_map_reference_basis": "inventory",
-        "candidate_map_reference": {
-          "path": "build/Release/NxPhysics.map",
-          "symbol": "_qh_detvridge3",
-          "address": "0x100cc710",
-          "object": "NxQhull:QhullRows.obj"
-        }
+        "path": null,
+        "role": "unmapped",
+        "symbol": null,
+        "file_exists": null,
+        "oracle_source": null,
+        "source_correspondence_recorded": false,
+        "candidate_map_reference_recorded": false,
+        "candidate_map_reference_basis": null
       },
       "reachability": {
         "status": "not_proven",
@@ -113901,13 +113895,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
-        "static_proof_recorded": true,
-        "dynamic_proof_recorded": true,
+        "strength": "no_behavioral_proof_recorded",
+        "inventory_state": "discovered",
+        "static_proof_recorded": false,
+        "dynamic_proof_recorded": false,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "vendored_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -113915,8 +113909,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002701",
         "rva": "0x00066d00",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "recover_contract_and_reconstruct",
+        "ledger_reason": "vendored_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -113976,7 +113970,7 @@
           {
             "id": "phys_fn_002699",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "discovered"
           },
           {
             "id": "phys_fn_003057",
@@ -122691,17 +122685,23 @@
       "size": 393,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002884",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/qhull/novodex/QhullRows.c",
+        "role": "reconstruction",
+        "symbol": "_qh_appendmergeset",
+        "file_exists": true,
+        "oracle_source": "External/qhull/novodex/QhullRows.c",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "_qh_appendmergeset",
+          "address": "0x100cbff0",
+          "object": "NxQhull:QhullRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -122780,13 +122780,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -122794,8 +122794,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002884",
         "rva": "0x0006e0b0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -126448,7 +126448,7 @@
           {
             "id": "phys_fn_002884",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005716",
@@ -126762,17 +126762,23 @@
       "size": 190,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_002970",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/qhull/novodex/QhullRows.c",
+        "role": "reconstruction",
+        "symbol": "_qh_tracemerging",
+        "file_exists": true,
+        "oracle_source": "External/qhull/novodex/QhullRows.c",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "_qh_tracemerging",
+          "address": "0x100d1290",
+          "object": "NxQhull:QhullRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -126832,13 +126838,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -126846,8 +126852,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_002970",
         "rva": "0x00070e90",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -128133,7 +128139,7 @@
           {
             "id": "phys_fn_002970",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002981",
@@ -128328,7 +128334,7 @@
           {
             "id": "phys_fn_002970",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_002972",
@@ -130345,7 +130351,7 @@
           {
             "id": "phys_fn_003412",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_005716",
@@ -135387,7 +135393,7 @@
           {
             "id": "phys_fn_002884",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_003203",
@@ -135457,17 +135463,23 @@
       "size": 143,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_003146",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/qhull/novodex/QhullRows.c",
+        "role": "reconstruction",
+        "symbol": "_qh_triangulate_mirror",
+        "file_exists": true,
+        "oracle_source": "External/qhull/novodex/QhullRows.c",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "_qh_triangulate_mirror",
+          "address": "0x100d1350",
+          "object": "NxQhull:QhullRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -135525,13 +135537,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -135539,8 +135551,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_003146",
         "rva": "0x00077580",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -135946,7 +135958,7 @@
           {
             "id": "phys_fn_002485",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_003057",
@@ -138044,7 +138056,7 @@
           {
             "id": "phys_fn_003146",
             "kind": "code",
-            "state": "discovered"
+            "state": "reconstructed"
           },
           {
             "id": "phys_fn_003283",
@@ -148120,17 +148132,23 @@
       "size": 48,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_003412",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/qhull/novodex/QhullRows.c",
+        "role": "reconstruction",
+        "symbol": "_qh_printallstatistics",
+        "file_exists": true,
+        "oracle_source": "External/qhull/novodex/QhullRows.c",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "_qh_printallstatistics",
+          "address": "0x100d07f0",
+          "object": "NxQhull:QhullRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -148182,13 +148200,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -148196,8 +148214,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_003412",
         "rva": "0x000847d0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -218135,17 +218153,23 @@
       "size": 22,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_005111",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?ValidateSettings@OBBCollider@Opcode@@UAEPBDXZ",
+        "file_exists": true,
+        "oracle_source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?ValidateSettings@OBBCollider@Opcode@@UAEPBDXZ",
+          "address": "0x100f6b10",
+          "object": "NxOpcode:OpcodeVendoredRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -218173,13 +218197,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -218187,8 +218211,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_005111",
         "rva": "0x000e1530",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -221720,17 +221744,23 @@
       "size": 124,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_005204",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+        "role": "reconstruction",
+        "symbol": "?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z",
+        "file_exists": true,
+        "oracle_source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "?ComputeWorldEdgeNormal@OBB@IceMaths@@QBEXIAAVPoint@2@@Z",
+          "address": "0x100f5ff0",
+          "object": "NxOpcode:OpcodeVendoredRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -221758,13 +221788,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -221772,8 +221802,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_005204",
         "rva": "0x000e4cb0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -228826,17 +228856,23 @@
       "size": 22,
       "phase": 4,
       "kind": "code",
-      "state": "discovered",
+      "state": "reconstructed",
       "label": "phys_fn_005366",
       "implementation": {
-        "path": null,
-        "role": "unmapped",
-        "symbol": null,
-        "file_exists": null,
-        "oracle_source": null,
-        "source_correspondence_recorded": false,
-        "candidate_map_reference_recorded": false,
-        "candidate_map_reference_basis": null
+        "path": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+        "role": "reconstruction",
+        "symbol": "_nxOpModelDtor",
+        "file_exists": true,
+        "oracle_source": "External/opcode/novodex/OpcodeVendoredRows.cpp",
+        "source_correspondence_recorded": true,
+        "candidate_map_reference_recorded": true,
+        "candidate_map_reference_basis": "inventory",
+        "candidate_map_reference": {
+          "path": "build/Release/NxPhysics.map",
+          "symbol": "_nxOpModelDtor",
+          "address": "0x100f6b70",
+          "object": "NxOpcode:OpcodeVendoredRows.obj"
+        }
       },
       "reachability": {
         "status": "not_proven",
@@ -228872,13 +228908,13 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "no_behavioral_proof_recorded",
-        "inventory_state": "discovered",
-        "static_proof_recorded": false,
-        "dynamic_proof_recorded": false,
+        "strength": "proof_text_recorded",
+        "inventory_state": "reconstructed",
+        "static_proof_recorded": true,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
         "ledger_disposition": "deferred",
-        "ledger_reason": "vendored_not_falsified",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -228886,8 +228922,8 @@
         "owner_phase": 4,
         "row_id": "phys_fn_005366",
         "rva": "0x000e90e0",
-        "action": "recover_contract_and_reconstruct",
-        "ledger_reason": "vendored_not_falsified",
+        "action": "add_row_specific_falsification",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -234452,14 +234488,14 @@
     }
   ],
   "source": {
-    "inventory_sha256": "3c61f9247b88dc014bf9cf0d835d3c21feca32ad1cfe24d03e58018a157f0689",
+    "inventory_sha256": "7836054741ed79c29b63f9b66a3fc8936811e91d1fcecf43647b6b545ee56814",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "e0b4d1bf4df8a25263fa53dc601f65ca9452f3685f6903805d9c3dacfbe6d20a",
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "a9040905ae4406cd19df4bfe5aa11ea6f85ff0ddc0775d18d4af0a047123264a",
-      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "01f1ca44dba1914d3c8eaf35e8135d4907a08181b34adf6f9b2b14991d3fd04d",
+      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "ced691ca7d6c99bc177b78283466d74f091231f652fed3efbe3ef6f7389b524b",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "ee8110bf6967bc42eaa9a4e61826a1c30f735505c5d4e0ce63b7b19bf7f5a815",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "3a06f8dd0723b3aab63876d1c12d90cc0f454379bf640a92643e8195de823b59"
