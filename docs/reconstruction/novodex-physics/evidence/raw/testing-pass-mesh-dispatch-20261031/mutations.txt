@@ -1,0 +1,2 @@
+NOT CAUGHT phys_fn_001876
+CAUGHT phys_fn_001876 NxPhysicsCollisionTests mismatches=4 0x00046c39  mov edx, dword ptr [edi + 0x10]  ->  mov edx, dword ptr [edi + 0x14]

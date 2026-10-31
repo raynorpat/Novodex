@@ -54,9 +54,9 @@
   },
   "counts": {
     "differential_falsified": 110,
-    "oracle_differential_falsified": 96,
+    "oracle_differential_falsified": 97,
     "deferred_not_reconstructed_in_phase": 74,
-    "deferred_reconstructed_not_falsified": 110,
+    "deferred_reconstructed_not_falsified": 109,
     "deferred_blocked_on_later_phase": 2
   },
   "closed": [
@@ -2761,6 +2761,16 @@
         6,
         7
       ]
+    },
+    {
+      "id": "phys_fn_001876",
+      "rva": "0x00046ab0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "0x00046c39 mov edx, dword ptr [edi + 0x10] -> mov edx, dword ptr [edi + 0x14]",
+        "detected": "mismatches=4"
+      }
     }
   ],
   "deferred": [
@@ -4263,18 +4273,6 @@
         3
       ],
       "note": "Task 2l: listing-exact 001874 with 12 exact oracle/candidate checks under both x87 control words; see the sphere run and cdb trace. No mutation probe was run."
-    },
-    {
-      "id": "phys_fn_001876",
-      "rva": "0x00046ab0",
-      "size": 1597,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        4
-      ],
-      "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase3-mesh-mesh-contact.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001901",

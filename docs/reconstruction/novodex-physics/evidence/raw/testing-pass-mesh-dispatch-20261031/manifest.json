@@ -1,0 +1,11 @@
+{
+ "doc": "evidence/raw/testing-pass-mesh-dispatch-20261031/mutations.txt",
+ "rows": {
+  "phys_fn_001876": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "contact_mesh_mesh",
+   "mutation": "0x00046c39 mov edx, dword ptr [edi + 0x10] -> mov edx, dword ptr [edi + 0x14]",
+   "detected": "mismatches=4"
+  }
+ }
+}
