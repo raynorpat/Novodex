@@ -148,6 +148,7 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
                              else ('differential_falsified', staged_targets))
         if spec['gate'] not in registered:
             raise ValueError('%s: gate %s is not a registered %s target' % (rid, spec['gate'], proof))
+        gate_phases = sorted(registered[spec['gate']])
         if r['state'] != 'reconstructed' or AWAITS not in (r.get('notes') or ''):
             raise ValueError('%s is %s and does not await the testing pass' % (rid, r['state']))
         r['state'] = 'dynamically_gated'
@@ -163,24 +164,53 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
         if counts.get('deferred_reconstructed_not_falsified', 0) <= 0:
             raise ValueError('phase %d closure count deferred_reconstructed_not_falsified is already 0' % phase)
         e = entries[0]
+        closed = {'id': rid, 'rva': e['rva'], 'proof': proof, 'gate': spec['gate'],
+                  'falsification': {'mutation': spec['mutation'], 'detected': spec['detected']}}
+        if phase not in gate_phases:
+            # the gate does not run when this phase is gated: a later phase that does run it discharges the row
+            later = [p for p in gate_phases if p > phase]
+            if not later:
+                raise ValueError('%s: gate %s runs in phases %s, none later than phase %d'
+                                 % (rid, spec['gate'], gate_phases, phase))
+            closed['discharged_by_phase'] = later[0]
+            closed['driving_phases'] = later
         ledger['deferred'].remove(e)
         counts['deferred_reconstructed_not_falsified'] -= 1
         counts[proof] = counts.get(proof, 0) + 1
-        ledger.setdefault('closed', []).append({'id': rid, 'rva': e['rva'], 'proof': proof, 'gate': spec['gate'],
-                                                'falsification': {'mutation': spec['mutation'], 'detected': spec['detected']},
-                                                'driving_phases': e.get('driving_phases', [])})
+        ledger.setdefault('closed', []).append(closed)
     return inventory, closures
 
 
+def bump_gate(artifact, n):
+    """gates/phase<N>.json: n rows move from deferred to closed."""
+    artifact['counts']['closed'] += n
+    artifact['counts']['deferred'] -= n
+    return artifact
+
+
+def bump_program(program, closed_by_phase):
+    """program.json's per-phase record: each closed row moves from remaining_functions to closed_functions."""
+    for rec in program['phases']:
+        if rec.get('closed_functions') is None:
+            continue  # an evidence-only phase keeps no counts
+        n = closed_by_phase.get(rec['phase'], 0)
+        rec['closed_functions'] += n
+        rec['remaining_functions'] -= n
+    return program
+
+
 def gate_targets(path):
-    """(oracle-differential targets, staged-pair targets) read from gate_targets.ps1."""
+    """({oracle-differential target: its phases}, {staged-pair target: its phases}) read from gate_targets.ps1."""
     text = open(path, encoding='utf-8-sig').read()
 
-    def names(block):
-        return set(re.findall(r"'(Nx\w+)'", block))
-    oracle = re.search(r'\$NxRegisteredOracleDifferentialTargets\s*=\s*@\((.*?)\)', text, re.S).group(1)
-    staged = re.search(r'\$NxPhaseTestTargets\s*=\s*\[ordered\]\s*@\{(.*?)\r?\n\}', text, re.S).group(1)
-    return names(oracle), names(staged)
+    def phases(variable):
+        block = re.search(r'\$%s\s*=\s*\[ordered\]\s*@\{(.*?)\r?\n\}' % variable, text, re.S).group(1)
+        out = {}
+        for number, names in re.findall(r"'(\d)'\s*=\s*@\((.*?)\)", block, re.S):
+            for name in re.findall(r"'(Nx\w+)'", names):
+                out.setdefault(name, []).append(int(number))
+        return out
+    return phases('NxPhaseOracleDifferentialTargets'), phases('NxPhaseTestTargets')
 
 
 def _read(p):
@@ -215,6 +245,15 @@ def main(argv=None):
     if a.falsified:
         oracle, staged = gate_targets(str(here / 'tools' / 'gate_targets.ps1'))
         falsify(manifest, inventory, closures, oracle, staged)
+        program, pnl = _read(str(here / 'program.json'))
+        closed_by_phase = {ph: sum(1 for r in inventory['functions'] if r['id'] in manifest['rows'] and int(r['phase']) == ph)
+                           for ph in phases}
+        bump_program(program, closed_by_phase)
+        _write(str(here / 'program.json'), program, pnl)
+        for ph, n in closed_by_phase.items():
+            artifact, anl = _read(str(Path(a.closure_dir) / ('phase%d.json' % ph)))
+            bump_gate(artifact, n)
+            _write(str(Path(a.closure_dir) / ('phase%d.json' % ph)), artifact, anl)
     else:
         close(manifest, inventory, closures, read_map(a.map), coverage)
     _write(a.inventory, inventory, inl)

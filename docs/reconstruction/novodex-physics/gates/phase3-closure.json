@@ -53,10 +53,10 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 72,
+    "differential_falsified": 87,
     "oracle_differential_falsified": 96,
     "deferred_not_reconstructed_in_phase": 74,
-    "deferred_reconstructed_not_falsified": 148,
+    "deferred_reconstructed_not_falsified": 133,
     "deferred_blocked_on_later_phase": 2
   },
   "closed": [
@@ -2165,6 +2165,234 @@
         "mutation": "In a throwaway edit of Physics/src/ObjectModel.cpp, the translation record offset `add edi, 0x24` at 0x0001c5ae made 0x28; rebuilt and run against the pinned oracle, file restored (evidence/raw/phase3-mesh-debug-mass-20261020/). Family: mesh_mass.",
         "detected": "mismatches=35"
       }
+    },
+    {
+      "id": "phys_fn_001307",
+      "rva": "0x00025c10",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00025c27 je L25c5b -> jne L25c5b",
+        "detected": "stdout_delta=29"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001325",
+      "rva": "0x00026c90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00026c96 je L26d7f -> jne L26d7f",
+        "detected": "stdout_delta=10"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001331",
+      "rva": "0x00026df0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00026df6 je L26e0e -> jne L26e0e",
+        "detected": "stdout_delta=4"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001333",
+      "rva": "0x00026e30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00026e3a je L26e69 -> jne L26e69",
+        "detected": "stdout_delta=29"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001335",
+      "rva": "0x00026ec0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00026eca je L26ef9 -> jne L26ef9",
+        "detected": "stdout_delta=29"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001337",
+      "rva": "0x00026f50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00026f5a je L26f89 -> jne L26f89",
+        "detected": "stdout_delta=29"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001339",
+      "rva": "0x00026fd0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00026fe8 je L2701d -> jne L2701d",
+        "detected": "stdout_delta=29"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001341",
+      "rva": "0x00027360",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00027378 je L273ad -> jne L273ad",
+        "detected": "stdout_delta=29"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001309",
+      "rva": "0x00025f60",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "0x00025f7a je L26067 -> jne L26067",
+        "detected": "stdout_delta=4"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001313",
+      "rva": "0x00026430",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "0x00026447 je L2652b -> jne L2652b",
+        "detected": "stdout_delta=4"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001311",
+      "rva": "0x00026280",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "0x000262d0 fsub st(0), st(1) -> fadd st(0), st(1)",
+        "detected": "stdout_delta=4"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001317",
+      "rva": "0x00026ad0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "0x00026b43 mov edx, dword ptr [esp + 0x30] -> mov edx, dword ptr [esp + 0x34]",
+        "detected": "stdout_delta=2"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001319",
+      "rva": "0x00026b70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "0x00026b83 mov ecx, dword ptr [esp + 4] -> mov ecx, dword ptr [esp + 8]",
+        "detected": "stdout_delta=2"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001321",
+      "rva": "0x00026ba0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "0x00026bb8 lea esi, [esp + 8] -> lea esi, [esp + 12]",
+        "detected": "stdout_delta=2"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001327",
+      "rva": "0x00026d20",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00026d67 mov dword ptr [esi + 0x14], eax -> mov dword ptr [esi + 0x18], eax",
+        "detected": "stdout_delta=10"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
     }
   ],
   "deferred": [
@@ -3000,69 +3228,6 @@
       "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
-      "id": "phys_fn_001307",
-      "rva": "0x00025c10",
-      "size": 846,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001309",
-      "rva": "0x00025f60",
-      "size": 797,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001311",
-      "rva": "0x00026280",
-      "size": 424,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001313",
-      "rva": "0x00026430",
-      "size": 617,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001317",
-      "rva": "0x00026ad0",
-      "size": 157,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001319",
-      "rva": "0x00026b70",
-      "size": 41,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001321",
-      "rva": "0x00026ba0",
-      "size": 40,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_001323",
       "rva": "0x00026bd0",
       "size": 182,
@@ -3072,78 +3237,6 @@
         3
       ],
       "note": "reconstructed and driven through owner-present scene teardown; candidate differential and breakpoints for 001323, 001955 and 001945 are recorded in evidence/convex-mesh-gap-001323-owner-cdb-raw.txt."
-    },
-    {
-      "id": "phys_fn_001325",
-      "rva": "0x00026c90",
-      "size": 141,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001327",
-      "rva": "0x00026d20",
-      "size": 99,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001331",
-      "rva": "0x00026df0",
-      "size": 53,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001333",
-      "rva": "0x00026e30",
-      "size": 139,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001335",
-      "rva": "0x00026ec0",
-      "size": 129,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001337",
-      "rva": "0x00026f50",
-      "size": 117,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001339",
-      "rva": "0x00026fd0",
-      "size": 905,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001341",
-      "rva": "0x00027360",
-      "size": 903,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001345",

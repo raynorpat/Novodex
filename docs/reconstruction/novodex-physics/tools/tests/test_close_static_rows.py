@@ -174,8 +174,8 @@ def frow(n, state='reconstructed', **extra):
 
 FMAN = {'doc': 'evidence/phase3-x.md', 'rows': {
     'phys_fn_000001': {'gate': 'NxPhysicsCollisionTests', 'family': 'fam', 'mutation': 'je -> jne at 0x1004', 'detected': 'mismatches=12'}}}
-ORACLE = {'NxPhysicsCollisionTests'}
-STAGED = {'NxPhysicsActorShapeMutationTests'}
+ORACLE = {'NxPhysicsCollisionTests': [3, 7]}
+STAGED = {'NxPhysicsActorShapeMutationTests': [5, 6, 7], 'NxPhysicsEarlyTests': [2]}
 
 
 def fclosure(*ids):
@@ -212,6 +212,39 @@ class FalsifiedModeTest(unittest.TestCase):
         _, closures = frun(m)
         self.assertEqual(closures[3]['closed'][0]['proof'], 'differential_falsified')
         self.assertEqual(closures[3]['counts']['differential_falsified'], 3)
+
+    def test_falsified_discharges_to_the_later_phase_that_runs_the_gate(self):
+        m = {'doc': 'd', 'rows': {'phys_fn_000001': {'gate': 'NxPhysicsActorShapeMutationTests', 'family': 'pair',
+                                                    'mutation': 'm', 'detected': 'stdout_delta=4'}}}
+        _, closures = frun(m)
+        e = closures[3]['closed'][0]
+        self.assertEqual((e['discharged_by_phase'], e['driving_phases']), (5, [5, 6, 7]))
+
+    def test_falsified_own_phase_gate_has_no_discharge(self):
+        _, closures = frun()
+        self.assertNotIn('discharged_by_phase', closures[3]['closed'][0])
+
+    def test_falsified_refuses_a_gate_no_later_phase_runs(self):
+        m = {'doc': 'd', 'rows': {'phys_fn_000001': {'gate': 'NxPhysicsEarlyTests', 'family': 'f',
+                                                    'mutation': 'm', 'detected': 'stdout_delta=4'}}}
+        with self.assertRaises(ValueError):
+            frun(m)
+
+    def test_program_counts_leave_phases_without_counts_alone(self):
+        program = {'phases': [{'phase': 1, 'closed_functions': None, 'remaining_functions': None}]}
+        close_static_rows.bump_program(program, {1: 0})
+        self.assertEqual(program['phases'][0], {'phase': 1, 'closed_functions': None, 'remaining_functions': None})
+
+    def test_gate_artifact_counts_follow_the_closures(self):
+        artifact = {'counts': {'closed': 168, 'deferred': 224}, 'closure_ledger': 'x'}
+        close_static_rows.bump_gate(artifact, 15)
+        self.assertEqual(artifact['counts'], {'closed': 183, 'deferred': 209})
+
+    def test_program_counts_follow_the_closures(self):
+        program = {'phases': [{'phase': 3, 'closed_functions': 10, 'remaining_functions': 20}]}
+        close_static_rows.bump_program(program, {3: 4})
+        self.assertEqual(program['phases'][0], {'phase': 3, 'closed_functions': 14, 'remaining_functions': 16})
+
 
     def test_falsified_refuses_an_unregistered_gate(self):
         m = {'doc': 'd', 'rows': {'phys_fn_000001': dict(FMAN['rows']['phys_fn_000001'], gate='NxPhysicsNoSuchTests')}}

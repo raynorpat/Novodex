@@ -1,0 +1,30 @@
+NOT CAUGHT phys_fn_001307
+CAUGHT phys_fn_001307 NxPhysicsActorShapeMutationTests stdout_delta=29 0x00025c27  je L25c5b  ->  jne L25c5b
+CAUGHT phys_fn_001307 NxPhysicsActorShapeMutationTests stdout_delta=29 0x00025c27  je L25c5b  ->  jne L25c5b
+NOT CAUGHT phys_fn_001311
+NOT CAUGHT phys_fn_001317
+NOT CAUGHT phys_fn_001319
+CAUGHT phys_fn_001325 NxPhysicsActorShapeMutationTests stdout_delta=10 0x00026c96  je L26d7f  ->  jne L26d7f
+NOT CAUGHT phys_fn_001327
+CAUGHT phys_fn_001331 NxPhysicsActorShapeMutationTests stdout_delta=4 0x00026df6  je L26e0e  ->  jne L26e0e
+CAUGHT phys_fn_001333 NxPhysicsActorShapeMutationTests stdout_delta=29 0x00026e3a  je L26e69  ->  jne L26e69
+CAUGHT phys_fn_001335 NxPhysicsActorShapeMutationTests stdout_delta=29 0x00026eca  je L26ef9  ->  jne L26ef9
+CAUGHT phys_fn_001337 NxPhysicsActorShapeMutationTests stdout_delta=29 0x00026f5a  je L26f89  ->  jne L26f89
+CAUGHT phys_fn_001339 NxPhysicsActorShapeMutationTests stdout_delta=29 0x00026fe8  je L2701d  ->  jne L2701d
+CAUGHT phys_fn_001341 NxPhysicsActorShapeMutationTests stdout_delta=29 0x00027378  je L273ad  ->  jne L273ad
+CAUGHT phys_fn_001309 NxPhysicsActorDynamicSetterTests stdout_delta=4 0x00025f7a  je L26067  ->  jne L26067
+CAUGHT phys_fn_001313 NxPhysicsActorDynamicSetterTests stdout_delta=4 0x00026447  je L2652b  ->  jne L2652b
+NOT CAUGHT phys_fn_001321
+NOT CAUGHT phys_fn_001311
+CAUGHT phys_fn_001311 NxPhysicsActorDynamicSetterTests stdout_delta=4 0x000262d0  fsub st(0), st(1)  ->  fadd st(0), st(1)
+NOT CAUGHT phys_fn_001317
+CAUGHT phys_fn_001317 NxPhysicsActorDynamicSetterTests stdout_delta=2 0x00026b43  mov edx, dword ptr [esp + 0x30]  ->  mov edx, dword ptr [esp + 0x34]
+NOT CAUGHT phys_fn_001319
+CAUGHT phys_fn_001319 NxPhysicsActorDynamicSetterTests stdout_delta=2 0x00026b83  mov ecx, dword ptr [esp + 4]  ->  mov ecx, dword ptr [esp + 8]
+NOT CAUGHT phys_fn_001321
+CAUGHT phys_fn_001321 NxPhysicsActorDynamicSetterTests stdout_delta=2 0x00026bb8  lea esi, [esp + 8]  ->  lea esi, [esp + 12]
+NOT CAUGHT phys_fn_001327
+NOT CAUGHT phys_fn_001327
+NOT CAUGHT phys_fn_001327
+NOT CAUGHT phys_fn_001327
+CAUGHT phys_fn_001327 NxPhysicsActorShapeMutationTests stdout_delta=10 0x00026d67  mov dword ptr [esi + 0x14], eax  ->  mov dword ptr [esi + 0x18], eax

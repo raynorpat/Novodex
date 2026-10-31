@@ -1,0 +1,95 @@
+{
+ "doc": "evidence/phase3-shape-rows.md",
+ "rows": {
+  "phys_fn_001307": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00025c27 je L25c5b -> jne L25c5b",
+   "detected": "stdout_delta=29"
+  },
+  "phys_fn_001325": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00026c96 je L26d7f -> jne L26d7f",
+   "detected": "stdout_delta=10"
+  },
+  "phys_fn_001331": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00026df6 je L26e0e -> jne L26e0e",
+   "detected": "stdout_delta=4"
+  },
+  "phys_fn_001333": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00026e3a je L26e69 -> jne L26e69",
+   "detected": "stdout_delta=29"
+  },
+  "phys_fn_001335": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00026eca je L26ef9 -> jne L26ef9",
+   "detected": "stdout_delta=29"
+  },
+  "phys_fn_001337": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00026f5a je L26f89 -> jne L26f89",
+   "detected": "stdout_delta=29"
+  },
+  "phys_fn_001339": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00026fe8 je L2701d -> jne L2701d",
+   "detected": "stdout_delta=29"
+  },
+  "phys_fn_001341": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00027378 je L273ad -> jne L273ad",
+   "detected": "stdout_delta=29"
+  },
+  "phys_fn_001309": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "0x00025f7a je L26067 -> jne L26067",
+   "detected": "stdout_delta=4"
+  },
+  "phys_fn_001313": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "0x00026447 je L2652b -> jne L2652b",
+   "detected": "stdout_delta=4"
+  },
+  "phys_fn_001311": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "0x000262d0 fsub st(0), st(1) -> fadd st(0), st(1)",
+   "detected": "stdout_delta=4"
+  },
+  "phys_fn_001317": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "0x00026b43 mov edx, dword ptr [esp + 0x30] -> mov edx, dword ptr [esp + 0x34]",
+   "detected": "stdout_delta=2"
+  },
+  "phys_fn_001319": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "0x00026b83 mov ecx, dword ptr [esp + 4] -> mov ecx, dword ptr [esp + 8]",
+   "detected": "stdout_delta=2"
+  },
+  "phys_fn_001321": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "0x00026bb8 lea esi, [esp + 8] -> lea esi, [esp + 12]",
+   "detected": "stdout_delta=2"
+  },
+  "phys_fn_001327": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00026d67 mov dword ptr [esi + 0x14], eax -> mov dword ptr [esi + 0x18], eax",
+   "detected": "stdout_delta=10"
+  }
+ }
+}
