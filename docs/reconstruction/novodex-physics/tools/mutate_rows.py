@@ -22,7 +22,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[4]
 ORACLE_DIR = 'D:/FlamingEnt__/Unreal_3/Binaries'
 ORACLE_SHA = '4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c'
-TIMEOUT = 300
+TIMEOUT = 120
 CRASH = 0xC0000000
 
 INV = {'je': 'jne', 'jne': 'je', 'jb': 'jae', 'jae': 'jb', 'jbe': 'ja', 'ja': 'jbe', 'jl': 'jge', 'jge': 'jl',
@@ -190,6 +190,18 @@ def build_targets(target, staged):
     return ['NxPhysics', target] if staged else [target]
 
 
+def run_tree(cmd, timeout, cwd):
+    """subprocess.run that, on a timeout, kills the whole process tree (a hung mutant test otherwise keeps the DLLs locked)."""
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
+    try:
+        out, err = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        subprocess.run(['taskkill', '/F', '/T', '/PID', str(proc.pid)], capture_output=True)
+        out, err = proc.communicate()
+        raise subprocess.TimeoutExpired(cmd, timeout, output=out, stderr=err)
+    return subprocess.CompletedProcess(cmd, proc.returncode, out, err)
+
+
 def remove_stale_dll(root):
     """Delete the built candidate DLL: MSBuild's tracker can call the link up to date after an object changed."""
     try:
@@ -216,13 +228,13 @@ def _real_run(target, family, staged):
             return ('build-failed', None)
         try:
             if staged:
-                r = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
-                                    'docs/reconstruction/novodex-physics/tools/run_differential.ps1', '-Targets', target],
-                                   capture_output=True, text=True, cwd=REPO, timeout=TIMEOUT)
+                r = run_tree(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
+                              'docs/reconstruction/novodex-physics/tools/run_differential.ps1', '-Targets', target],
+                             timeout=TIMEOUT, cwd=REPO)
                 n = detect_staged(r.stdout)
                 return ('stdout_delta' if n else 'stdout_delta[%s]' % staged_note(r.stdout), n)
-            r = subprocess.run([str(REPO / 'build' / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA],
-                               capture_output=True, text=True, cwd=REPO, timeout=TIMEOUT)
+            r = run_tree([str(REPO / 'build' / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA],
+                         timeout=TIMEOUT, cwd=REPO)
             return ('mismatches', detect_family(r.stdout, family))
         except subprocess.TimeoutExpired:
             return ('timeout', None)

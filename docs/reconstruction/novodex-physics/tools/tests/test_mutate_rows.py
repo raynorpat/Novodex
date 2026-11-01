@@ -121,6 +121,23 @@ class ReplaceRetryTest(unittest.TestCase):
             self.assertEqual(len(calls), 3)
 
 
+class RunTreeTest(unittest.TestCase):
+    def test_a_timeout_kills_the_whole_process_tree(self):
+        # subprocess.run only kills its direct child; a hung mutant test then kept the staged DLLs locked
+        import subprocess
+        code = ("import subprocess,sys,time;"
+                "c=subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']);"
+                "print(c.pid,flush=True);time.sleep(60)")
+        pids = []
+        with self.assertRaises(subprocess.TimeoutExpired) as ctx:
+            mutate_rows.run_tree([sys.executable, '-c', code], timeout=3, cwd=str(TOOLS_DIR))
+        out = ctx.exception.output or b''
+        grandchild = int(out.split()[0]) if out.split() else None
+        self.assertIsNotNone(grandchild)
+        alive = subprocess.run(['tasklist', '/FI', 'PID eq %d' % grandchild], capture_output=True, text=True).stdout
+        self.assertNotIn(str(grandchild), alive)
+
+
 class BuildTargetsTest(unittest.TestCase):
     def test_staged_runs_also_rebuild_the_candidate_dll(self):
         # a staged pair stages build/Release/NxPhysics.dll, so a stale DLL would report nothing caught
