@@ -136,6 +136,8 @@ unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
 unsigned __fastcall nxTM2247(void*, void*);
 unsigned __fastcall nxTM2256(void*, void*, unsigned);
 unsigned __fastcall nxTM2255(void*, void*);
+unsigned __fastcall nxTM1524(void*, void*);
+unsigned __fastcall nxTM1528(void*, void*, unsigned);
 unsigned __fastcall nxTM2200(void*, void*, unsigned, unsigned);
 unsigned __fastcall nxTM2205(void*, void*, unsigned, unsigned);
 #endif
@@ -202,6 +204,11 @@ namespace
 		nxFoundationSDKAllocator->free(hull->mVertexGraph);
 		hull->mVertexGraph = 0;
 		}
+#if NX_TRIANGLE_MESH_ROWS
+	// phys_fn_001528: the hull subclass's scalar deleting destructor, which also frees the object
+	nxTM1528(hull, 0, 1);
+	return;
+#endif
 	if(hull->mVertexNormals)
 		nxFoundationSDKAllocator->free(hull->mVertexNormals);
 	if(hull->mPolygonVRefs)
@@ -228,6 +235,10 @@ namespace
 	if(!hull)
 		return false;
 	memset(hull, 0, sizeof(*hull));
+#if NX_TRIANGLE_MESH_ROWS
+	// phys_fn_001524: the hull subclass's constructor
+	nxTM1524(hull, 0);
+#endif
 	hull->mNbFaces = mesh.mTriangleCount;
 	hull->mNbVerts = mesh.mVertexCount;
 
