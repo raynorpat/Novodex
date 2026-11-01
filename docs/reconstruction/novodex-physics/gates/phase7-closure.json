@@ -22,9 +22,9 @@
   "counts": {
     "differential_falsified": 333,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 196,
+    "oracle_differential_falsified": 199,
     "deferred_not_reconstructed_in_phase": 1,
-    "deferred_reconstructed_not_falsified": 29
+    "deferred_reconstructed_not_falsified": 26
   },
   "closed": [
     {
@@ -5713,6 +5713,36 @@
         "detected": "mismatches=36"
       },
       "note": "The exact restored differential emits 53 ordered pairs with digest da98b5fb. See evidence/phase7-pairwise-box-pruning-004826.md and evidence/raw/phase7-pairwise-box-pruning-004826-20261019/."
+    },
+    {
+      "id": "phys_fn_002316",
+      "rva": "0x0005a0f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x0005a0f0 mov eax, dword ptr [esp + 8] -> mov eax, dword ptr [esp + 12]",
+        "detected": "mismatches=3"
+      }
+    },
+    {
+      "id": "phys_fn_002280",
+      "rva": "0x000572a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000572a8 fld dword ptr [eax + 0xc] -> fld dword ptr [eax + 0x10]",
+        "detected": "mismatches=12"
+      }
+    },
+    {
+      "id": "phys_fn_002288",
+      "rva": "0x00057c70",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x00057c70 mov edx, dword ptr [eax + 0x1c] -> mov edx, dword ptr [eax + 0x20]",
+        "detected": "mismatches=4"
+      }
     }
   ],
   "deferred": [
@@ -5762,15 +5792,6 @@
       "note": "Transcribed from its listing (evidence/phase7-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
-      "id": "phys_fn_002280",
-      "rva": "0x000572a0",
-      "size": 139,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase7-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_002282",
       "rva": "0x00057330",
       "size": 392,
@@ -5792,15 +5813,6 @@
       "id": "phys_fn_002286",
       "rva": "0x00057980",
       "size": 739,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase7-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002288",
-      "rva": "0x00057c70",
-      "size": 133,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
@@ -5900,15 +5912,6 @@
       "id": "phys_fn_002310",
       "rva": "0x000597c0",
       "size": 2239,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase7-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002316",
-      "rva": "0x0005a0f0",
-      "size": 122,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],

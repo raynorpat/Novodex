@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 153 of the 184 rows closed; 31 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 156 of the 184 rows closed; 28 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -292,3 +292,23 @@ into the collision harness. The family **`phase3_rows`** (57 checks):
 Two fixture lessons: the fifth stack argument of the renderer's slot-14 call is an address of a local, so it is not
 logged (a digest that folded it changed every run); and the 001345 drive must not free the shape itself, or a mutated
 candidate double-frees and dies without printing a mismatch.
+
+## Update (eleventh slice: the small Phase 7 rows)
+
+Three of the 26 Phase 7 rows in `Phase7Rows.cpp` are closed (`raw/testing-pass-phase7-rows-20261101/`): **002316** (a sweep
+object's constructor from a descriptor), **002280** (the swept box merged into an output box through the sweep cache's
+margin) and **002288** (the sweep cache's per-shape callback record, whose first argument arrives in `eax`). They are
+driven directly, not wired. Phase 7 has not passed, but its gate list can still discharge a row: `NxPhysicsPhase6RowsTests`
+is now registered in phase 7's oracle list as well (phase 7 floor 3227; phase 6 floor 1853), so these close on a gate that
+runs in the row's own phase. The family is `phase7_rows` (38 checks); the sweep cache slot (`nxP7SweepCache`, now
+exported from `Phase7Rows.cpp`) is set on both sides, the oracle's through the operand of its own load. `Phase7Rows.cpp`
+is linked into the collision harness.
+
+Fixture lessons: 002280 takes the output box first and the motion vector second (the listing's `[esp+0x3c]` is the
+*second* stack argument, because of the saved register), and a swapped call made 13 mutations invisible; 002288's record
+has two uninitialised words (offsets 0 and 0x20) that must not be logged.
+
+**Still held (23 Phase 7 rows in Phase7Rows.cpp, plus 004820, 004822, 004824).** The remaining Phase7Rows rows are the
+sweep tests proper (002268/002270 through 002310: 4 to 22 hundred instructions each), the controller creation rows
+(002332 and 002336), the step row 002350 and 002400, which is an unconditional loop and cannot return. They need the
+sweep cache populated with real shapes and oracle-internal geometry helpers; none was attempted.

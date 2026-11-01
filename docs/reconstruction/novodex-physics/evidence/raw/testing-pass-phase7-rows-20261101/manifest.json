@@ -1,0 +1,23 @@
+{
+ "doc": "evidence/raw/testing-pass-phase7-rows-20261101/mutations.txt",
+ "rows": {
+  "phys_fn_002316": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x0005a0f0 mov eax, dword ptr [esp + 8] -> mov eax, dword ptr [esp + 12]",
+   "detected": "mismatches=3"
+  },
+  "phys_fn_002280": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x000572a8 fld dword ptr [eax + 0xc] -> fld dword ptr [eax + 0x10]",
+   "detected": "mismatches=12"
+  },
+  "phys_fn_002288": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x00057c70 mov edx, dword ptr [eax + 0x1c] -> mov edx, dword ptr [eax + 0x20]",
+   "detected": "mismatches=4"
+  }
+ }
+}

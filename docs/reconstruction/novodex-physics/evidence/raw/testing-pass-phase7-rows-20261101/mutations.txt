@@ -1,0 +1,3 @@
+CAUGHT phys_fn_002316 NxPhysicsCollisionTests mismatches=3 0x0005a0f0  mov eax, dword ptr [esp + 8]  ->  mov eax, dword ptr [esp + 12]
+CAUGHT phys_fn_002280 NxPhysicsCollisionTests mismatches=12 0x000572a8  fld dword ptr [eax + 0xc]  ->  fld dword ptr [eax + 0x10]
+CAUGHT phys_fn_002288 NxPhysicsCollisionTests mismatches=4 0x00057c70  mov edx, dword ptr [eax + 0x1c]  ->  mov edx, dword ptr [eax + 0x20]

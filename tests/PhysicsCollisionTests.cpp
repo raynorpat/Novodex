@@ -6226,6 +6226,168 @@ static unsigned nxDrivePhase3Rows(unsigned char* base)
 	return mismatches;
 	}
 
+// The Phase 7 rows small enough to drive on hand-built objects: 002316 (a sweep object's constructor from a descriptor),
+// 002280 (the swept box merged into an output box through the sweep cache) and 002288 (the sweep cache's per-shape
+// callback record, which takes its first argument in eax). Each runs at its oracle address and as the transcription;
+// the sweep cache's slot is set on both sides (the oracle's through the operand of its own load), and the cache's
+// virtual callee is a fake that logs the record it is handed.
+unsigned __fastcall nxP72316(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxP72280(void* self, void* edxUnused, unsigned a0, unsigned a1);
+unsigned __fastcall nxP72288(void* self, void* edxUnused);
+extern unsigned nxP7SweepCache;
+
+static void __fastcall p7Slot0(void* self, void*, unsigned record)
+	{
+	const unsigned* r = (const unsigned*) record;
+	p6log(0x700, (unsigned) self, r[1], r[2]);
+	p6log(r[3], r[4], r[5], r[6]);
+	p6log(r[7], r[9], r[10], r[11]);
+	p6log(r[12], 0, 0, 0);
+	}
+static void* gP7VtCache[16] = { (void*) p7Slot0 };
+
+static void p7CallEaxEcx(const void* function, void* inEax, void* inEcx, void* stackArg)
+	{
+	__asm
+		{
+		push stackArg
+		mov eax, inEax
+		mov ecx, inEcx
+		call function
+		add esp, 4
+		}
+	}
+
+static unsigned nxDrivePhase7Rows(unsigned char* base)
+	{
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0;
+	unsigned* const oracleCache = *(unsigned**) (base + 0x572a4);
+	if(base[0x572a3] != 0xa1 || base[0x57cd1] != 0xa1 || *(unsigned**) (base + 0x57cd2) != oracleCache)
+		return nxFail("phase 7 rows fixture: the sweep cache operand is not where expected");
+	const unsigned savedOracleCache = *oracleCache, savedCandidateCache = nxP7SweepCache;
+	#define P7_FINISH(NAME) do { ++cases; if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_rows row=%s case=%u\n", NAME, cases); } } while(0)
+
+	// phys_fn_002316 (0x0005a0f0): the sweep object's constructor from a descriptor and a word.
+	{
+	static const unsigned witnesses[5] = { 0x00000000u, 0x3fc00000u, 0x80000000u, 0x7fc00000u, 0xbf800000u };
+	for(unsigned c = 0; c < 10; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x2316c0deu + c * 41u;
+			NxP6Canon canon;
+			canon.scrubAll = true;
+			unsigned* self = (unsigned*) ::calloc(1, 0x40);
+			unsigned* descriptor = (unsigned*) ::calloc(1, 0x30);
+			memset(self, 0xcd, 0x40);
+			for(unsigned i = 0; i < 12; ++i) descriptor[i] = nxLeafNext(&seed);
+			descriptor[0x1c / 4] = witnesses[c % 5];
+			canon.add(self, 0x40);
+			const unsigned word = nxLeafNext(&seed);
+			unsigned result;
+			if(side == 0) result = (unsigned) ((void* (__thiscall*)(void*, void*, unsigned)) (base + 0x0005a0f0))(self, descriptor, word);
+			else result = nxP72316(self, 0, (unsigned) descriptor, word);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned rv = canon.word(result);
+			nxFoldInput(&d, &rv, 4);
+			canon.fold(&d, self, 0x38);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(self); ::free(descriptor);
+			}
+		P7_FINISH("002316");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+
+	// phys_fn_002280 (0x000572a0): the swept box through the sweep cache's margin, merged into an output box.
+	for(unsigned c = 0; c < 12; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x2280c0deu + c * 53u;
+			float* self = (float*) ::calloc(1, 0x40);
+			float* cache = (float*) ::calloc(1, 0x40);
+			float* motion = (float*) ::calloc(1, 0x10);
+			float* out = (float*) ::calloc(1, 0x40);
+			for(unsigned i = 1; i < 7; ++i) p6Float(&seed, &self[i]);
+			cache[3] = 0.25f + 0.25f * (float) (c % 4);
+			for(unsigned i = 0; i < 3; ++i) p6Float(&seed, &motion[i]);
+			for(unsigned i = 0; i < 6; ++i) { float v; p6Float(&seed, &v); if(c & 1) out[i] = v; }
+			if(side == 0) *oracleCache = (unsigned) cache; else nxP7SweepCache = (unsigned) cache;
+			if(side == 0) ((void (__thiscall*)(void*, void*, void*)) (base + 0x000572a0))(self, out, motion);
+			else nxP72280(self, 0, (unsigned) out, (unsigned) motion);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, out, 0x40);
+			nxFoldInput(&d, self, 0x20);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(self); ::free(cache); ::free(motion); ::free(out);
+			}
+		P7_FINISH("002280");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+
+	// phys_fn_002288 (0x00057c70): the per-shape callback record, handed to the cache's virtual callee.
+	for(unsigned c = 0; c < 16; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x2288c0deu + c * 61u;
+			NxP6Canon canon;
+			unsigned* record = (unsigned*) ::calloc(1, 0x40);
+			unsigned* cache = (unsigned*) ::calloc(1, 0x40);
+			unsigned* callee = (unsigned*) ::calloc(1, 16);
+			unsigned* table = (unsigned*) ::calloc(4, 4);
+			unsigned* owner = (unsigned*) ::calloc(1, 0x20);
+			unsigned* entry = (unsigned*) ::calloc(1, 0xb0);
+			float* vector = (float*) ::calloc(1, 0x10);
+			canon.add(record, 0x40); canon.add(cache, 0x40); canon.add(callee, 16); canon.add(table, 16); canon.add(owner, 0x20); canon.add(entry, 0xb0);
+			callee[0] = (unsigned) gP7VtCache;
+			cache[0x14 / 4] = (c & 8) ? 0u : (unsigned) callee;
+			for(unsigned i = 0; i < 6; ++i) record[i] = nxLeafNext(&seed);
+			record[0x1c / 4] = c % 4;
+			owner[2] = (unsigned) table;
+			table[1] = (unsigned) entry; table[3] = (unsigned) entry;
+			entry[0x9c / 4] = nxLeafNext(&seed);
+			for(unsigned i = 0; i < 3; ++i) p6Float(&seed, &vector[i]);
+			if(side == 0) *oracleCache = (unsigned) cache; else nxP7SweepCache = (unsigned) cache;
+			gP6LN = 0;
+			memset(gP6L, 0, sizeof(gP6L));
+			p7CallEaxEcx(side == 0 ? (const void*) (base + 0x00057c70) : (const void*) nxP72288, record, vector, owner);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &gP6LN, 4);
+			canon.fold(&d, gP6L, gP6LN * 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(record); ::free(cache); ::free(callee); ::free(table); ::free(owner); ::free(entry); ::free(vector);
+			}
+		P7_FINISH("002288");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	#undef P7_FINISH
+	*oracleCache = savedOracleCache;
+	nxP7SweepCache = savedCandidateCache;
+	printf("collision name=phase7_rows index=- rva=0x0005a0f0 owner=phys_fn_002316 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=002316,002280,002288\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=phase7_rows row=002316 case=sweep_object_constructor_from_descriptor\n");
+	printf("collision coverage name=phase7_rows row=002280 case=swept_box_merge_through_cache_margin\n");
+	printf("collision coverage name=phase7_rows row=002288 case=per_shape_callback_record\n");
+	nxPrintInput("phase7_rows", &inputDigest);
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -6310,6 +6472,7 @@ int wmain(int argc, wchar_t** argv)
 		unsigned mismatches = nxDrivePhase6Rows(base);
 		mismatches += nxDrivePhase6Large(base);
 		mismatches += nxDrivePhase3Rows(base);
+		mismatches += nxDrivePhase7Rows(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;
@@ -19840,3 +20003,4 @@ static unsigned nxDrivePrunerCluster(unsigned char* base)
 	nx2iFoundationEnd();
 	return mismatches;
 	}
+ 
