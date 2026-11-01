@@ -459,9 +459,10 @@ class NxType3CountingAllocator : public NxUserAllocator
 {
 public:
 	unsigned frees;
-	NxType3CountingAllocator() : frees(0) {}
-	void* mallocDEBUG(size_t size, const char*, int) override { return ::calloc(1, size); }
-	void* malloc(size_t size) override { return ::calloc(1, size); }
+	unsigned allocs;
+	NxType3CountingAllocator() : frees(0), allocs(0) {}
+	void* mallocDEBUG(size_t size, const char*, int) override { ++allocs; return ::calloc(1, size); }
+	void* malloc(size_t size) override { ++allocs; return ::calloc(1, size); }
 	void* realloc(void* memory, size_t size) override { return ::realloc(memory, size); }
 	void free(void* memory) override { if(memory) ++frees; ::free(memory); }
 };
@@ -715,7 +716,8 @@ unsigned __fastcall nxP45471(void* self, void* edxUnused, unsigned a0, unsigned 
 unsigned __fastcall nxP45473(void* self, void* edxUnused, unsigned a0);
 
 typedef unsigned (__fastcall* NxDeleteRowFn)(void*, void*, unsigned);
-static NxType3CountingAllocator* gTypeSlotsAllocator;
+static NxType3CountingAllocator* gTypeSlotsOracleAllocator;
+static NxType3CountingAllocator* gTypeSlotsCandidateAllocator;
 static unsigned nxGuardedDelete(NxDeleteRowFn row, void* self)
 {
 	__try { row(self, 0, 1); return 0; }
@@ -725,6 +727,8 @@ static unsigned nxGuardedDelete(NxDeleteRowFn row, void* self)
 static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4Fn aabbRow, NxRow4Fn sphereRow,
 	NxRow5Fn planeRow, NxDeleteRowFn deleteRow, unsigned* checksOut)
 {
+	const int oracleLiveBefore = static_cast<int>(gTypeSlotsOracleAllocator->allocs - gTypeSlotsOracleAllocator->frees);
+	const int candidateLiveBefore = static_cast<int>(gTypeSlotsCandidateAllocator->allocs - gTypeSlotsCandidateAllocator->frees);
 	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
 	void* const oraclePruner = reinterpret_cast<OracleFactoryFn>(base + 0x000b5090)(type);
 	Pruner* const candidatePruner = nxPruningEngineCreatePruner(type);
@@ -878,23 +882,23 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 		}
 	// the scalar deleting destructor with the flag set
 	typedef void* (__thiscall* DeleteFn)(void*, unsigned);
-	gTypeSlotsAllocator->frees = 0;
 	reinterpret_cast<DeleteFn>(oracleVtable[0])(oraclePruner, 1);
-	const unsigned oracleFrees = gTypeSlotsAllocator->frees;
-	gTypeSlotsAllocator->frees = 0;
 	unsigned deleteFault = 0;
 	if(deleteRow) deleteFault = nxGuardedDelete(deleteRow, candidatePruner);
 	else nxPruningEngineDestroyPruner(candidatePruner);
-	++checks;
-	if(deleteFault || oracleFrees != gTypeSlotsAllocator->frees)
-		{
-		++mismatches;
-		printf("collision mismatch name=pruner_support_types type=%u destructor oracle_frees=%u candidate_frees=%u fault=%u\n", type, oracleFrees, gTypeSlotsAllocator->frees, deleteFault ? 1u : 0u);
-		}
 	for(unsigned i = 0; i != 4; ++i)
 		{
 		void** const table = *reinterpret_cast<void***>(oracleObjects[i]);
 		reinterpret_cast<DeleteFn>(table[0])(oracleObjects[i], 0);
+		}
+	// each side's allocator is back where it started: the destructor released what the pruner built
+	const int oracleLive = static_cast<int>(gTypeSlotsOracleAllocator->allocs - gTypeSlotsOracleAllocator->frees) - oracleLiveBefore;
+	const int candidateLive = static_cast<int>(gTypeSlotsCandidateAllocator->allocs - gTypeSlotsCandidateAllocator->frees) - candidateLiveBefore;
+	++checks;
+	if(deleteFault || oracleLive != candidateLive)
+		{
+		++mismatches;
+		printf("collision mismatch name=pruner_support_types type=%u destructor oracle_live=%d candidate_live=%d fault=%u\n", type, oracleLive, candidateLive, deleteFault ? 1u : 0u);
 		}
 	*oracleOwnerAabbSlot = savedOracleOwnerAabb;
 	gPrunableOwnerWorldAABB = savedCandidateOwnerAabb;
@@ -906,18 +910,19 @@ unsigned nxDrivePrunerSupportTypeSlots(unsigned char* base)
 {
 	if(!nx2iFoundationBegin())
 		return 1;
-	NxType3CountingAllocator allocator;
-	gTypeSlotsAllocator = &allocator;
+	NxType3CountingAllocator oracleAllocator, candidateAllocator;
+	gTypeSlotsOracleAllocator = &oracleAllocator;
+	gTypeSlotsCandidateAllocator = &candidateAllocator;
 	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
-	nxFoundationSDKAllocator = &allocator;
+	nxFoundationSDKAllocator = &candidateAllocator;
 	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
 	SdkAllocatorBridge candidateBridge;
-	candidateBridge.mAllocator = &allocator;
+	candidateBridge.mAllocator = &candidateAllocator;
 	nxSetSdkAllocatorBridge(&candidateBridge);
 	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
 	const OracleSetAllocatorFn oracleSetAllocator = reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
 	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
-	NxType3SdkAllocator oracleBridge(&allocator);
+	NxType3SdkAllocator oracleBridge(&oracleAllocator);
 	if(!oracleSetAllocator(&oracleBridge))
 		return 1;
 	unsigned checks = 0, mismatches = 0;
