@@ -700,3 +700,220 @@ unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 	printf("collision name=pruner_support_type3 rows=005454,005456,005458,005460,005462 checks=%u frees=%u mismatches=%u\n", checks, freesOracle, mismatches);
 	return mismatches;
 }
+
+// The static, bounded and dynamic pruners' slots as the pruner support rows have them. The static pruner's AABB query
+// is phys_fn_005231 (slot 7); the bounded pruner's scalar deleting destructor is 005263 (slot 0) and its AABB query
+// 005262 (slot 7); the dynamic pruner's destructor is 005473 (slot 0), its plane query 005466 (slot 5), AABB query
+// 005471 (slot 7) and sphere query 005470 (slot 8). The oracle runs its own slots through the table of a pruner its
+// factory built; the candidate's pruner of the same type runs the transcribed rows over the same objects.
+unsigned __fastcall nxP45231(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3);
+unsigned __fastcall nxP45262(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3);
+unsigned __fastcall nxP45263(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45466(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3, unsigned a4);
+unsigned __fastcall nxP45470(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3);
+unsigned __fastcall nxP45471(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3);
+unsigned __fastcall nxP45473(void* self, void* edxUnused, unsigned a0);
+
+typedef unsigned (__fastcall* NxDeleteRowFn)(void*, void*, unsigned);
+
+static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4Fn aabbRow, NxRow4Fn sphereRow,
+	NxRow5Fn planeRow, NxDeleteRowFn deleteRow, unsigned* checksOut)
+{
+	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
+	void* const oraclePruner = reinterpret_cast<OracleFactoryFn>(base + 0x000b5090)(type);
+	Pruner* const candidatePruner = nxPruningEngineCreatePruner(type);
+	if(!oraclePruner || !candidatePruner)
+		return 1;
+	NxU8 oracleObjects[4][0x2c] = {};
+	Prunable candidateObjects[4];
+	NxType3TestOwner oracleOwners[4] = {};
+	NxType3TestOwner candidateOwners[4] = {};
+	typedef void (__thiscall* OracleCtorFn)(void*);
+	const OracleCtorFn oraclePrunableCtor = reinterpret_cast<OracleCtorFn>(base + 0x000b54a0);
+	static const float boxes[4][6] = {
+		{0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+		{10.0f, 0.0f, 0.0f, 11.0f, 1.0f, 1.0f},
+		{4.0f, 0.0f, 0.0f, 5.0f, 1.0f, 1.0f},
+		{-6.0f, -2.0f, -2.0f, -4.0f, 2.0f, 2.0f}};
+	for(unsigned i = 0; i != 4; ++i)
+		{
+		oraclePrunableCtor(oracleObjects[i]);
+		*reinterpret_cast<void**>(oracleObjects[i] + 4) = &oracleOwners[i];
+		*reinterpret_cast<NxU32*>(oracleObjects[i] + 8) = PRUNABLE_FLAG_WORLD_AABB_VALID;
+		*reinterpret_cast<NxU32*>(oracleObjects[i] + 0x24) = 0xffffffffu;
+		candidateObjects[i].mOwner = &candidateOwners[i];
+		candidateObjects[i].mFlags = PRUNABLE_FLAG_WORLD_AABB_VALID;
+		candidateObjects[i].mPrunable24 = 0xffffffffu;
+		memcpy(oracleOwners[i].worldBounds, boxes[i], sizeof(boxes[i]));
+		memcpy(candidateOwners[i].worldBounds, boxes[i], sizeof(boxes[i]));
+		}
+	void (* const savedCandidateOwnerAabb)(void*, AABB*) = gPrunableOwnerWorldAABB;
+	void (** const oracleOwnerAabbSlot)(void*, AABB*) = reinterpret_cast<void (**)(void*, AABB*)>(base + 0x00128478);
+	void (* const savedOracleOwnerAabb)(void*, AABB*) = *oracleOwnerAabbSlot;
+	gPrunableOwnerWorldAABB = nxType3UpdateWorldAabb;
+	*oracleOwnerAabbSlot = nxType3UpdateWorldAabb;
+
+	typedef bool (__thiscall* AddObjectFn)(void*, void*);
+	void** const oracleVtable = *reinterpret_cast<void***>(oraclePruner);
+	unsigned mismatches = 0, checks = 0;
+	for(unsigned i = 0; i != 4; ++i)
+		if(!reinterpret_cast<AddObjectFn>(oracleVtable[1])(oraclePruner, oracleObjects[i]) || !candidatePruner->AddObject(&candidateObjects[i]))
+			++mismatches;
+	if(type == 0)
+		for(unsigned side = 0; side != 2; ++side)
+			{
+			void* const pruner = side ? static_cast<void*>(candidatePruner) : oraclePruner;
+			float* const poolBoxes = *reinterpret_cast<float**>(static_cast<unsigned char*>(pruner) + 0x14);
+			for(unsigned i = 0; i != 4; ++i)
+				{
+				const unsigned handle = side ? candidateObjects[i].mHandle : *reinterpret_cast<NxU16*>(oracleObjects[i] + 0x28);
+				if(poolBoxes && handle < 4) memcpy(poolBoxes + handle * 6, boxes[i], sizeof(boxes[i]));
+				}
+			}
+
+	struct TestOutput { NxU32 capacity; NxU32 count; NxU32* entries; float growthFactor; };
+	struct Hits { bool result; unsigned count; unsigned indices[16]; };
+	const NxU32 oracleBase = reinterpret_cast<NxU32>(oracleObjects[0]);
+	const NxU32 candidateBase = reinterpret_cast<NxU32>(&candidateObjects[0]);
+	struct Fold
+		{
+		static void indices(Hits& hits, const NxU32* entries, unsigned count, NxU32 base, NxU32 stride)
+			{
+			hits.count = count;
+			for(unsigned i = 0; i < count && i < 16; ++i)
+				hits.indices[i] = (entries[i] - base) / stride;
+			for(unsigned i = 0; i < count && i < 16; ++i)
+				for(unsigned j = i + 1; j < count && j < 16; ++j)
+					if(hits.indices[j] < hits.indices[i]) { unsigned t = hits.indices[i]; hits.indices[i] = hits.indices[j]; hits.indices[j] = t; }
+			}
+		};
+	#define COMPARE_HITS(NAME, OH, CH) do { ++checks; \
+		const bool same = (OH).result == (CH).result && (OH).count == (CH).count && \
+			memcmp((OH).indices, (CH).indices, 4 * ((OH).count < 16 ? (OH).count : 16)) == 0; \
+		if(!same) { ++mismatches; printf("collision mismatch name=pruner_support_types type=%u query=%s check=%u oracle_count=%u candidate_count=%u\n", type, NAME, checks, (OH).count, (CH).count); } } while(0)
+	static const float aabbs[5][6] = {
+		{3.0f, -1.0f, -1.0f, 6.0f, 2.0f, 2.0f}, {-100.0f, -100.0f, -100.0f, 100.0f, 100.0f, 100.0f},
+		{9.5f, 0.5f, 0.5f, 10.5f, 0.6f, 0.6f}, {50.0f, 50.0f, 50.0f, 51.0f, 51.0f, 51.0f}, {-7.0f, -3.0f, -3.0f, -3.0f, 3.0f, 3.0f}};
+	static const float spheres[4][4] = {{4.5f, 0.5f, 0.5f, 0.4f}, {0.0f, 0.0f, 0.0f, 100.0f}, {10.5f, 0.5f, 0.5f, 0.1f}, {30.0f, 30.0f, 30.0f, 1.0f}};
+	static const float planeSets[3][8] = {
+		{1.0f, 0.0f, 0.0f, -3.0f, -1.0f, 0.0f, 0.0f, 6.0f},
+		{1.0f, 0.0f, 0.0f, 100.0f, -1.0f, 0.0f, 0.0f, 100.0f},
+		{0.0f, 1.0f, 0.0f, -0.5f, 0.0f, -1.0f, 0.0f, 0.6f}};
+	for(unsigned pass = 0; pass != 2; ++pass)	// the second pass queries the pruner again after the first built whatever it builds
+		{
+		if(aabbRow)
+			for(unsigned q = 0; q != 5; ++q)
+				{
+				NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
+				TestOutput oracleOutput = {16, 0, oracleEntries, 2.0f};
+				TestOutput candidateOutput = {16, 0, candidateEntries, 2.0f};
+				typedef bool (__thiscall* AabbQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
+				Hits o = {}, c = {};
+				o.result = reinterpret_cast<AabbQueryFn>(oracleVtable[7])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(aabbs[q]), 0, 0xffffffffu);
+				const unsigned rc = nxGuardedRow4(aabbRow, candidatePruner, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(aabbs[q]), 0, 0xffffffffu);
+				c.result = rc != 0xfa11ed00u && rc != 0;
+				if(rc == 0xfa11ed00u) candidateOutput.count = 0xfffe;
+				Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, sizeof(oracleObjects[0]));
+				Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, sizeof(Prunable));
+				COMPARE_HITS("aabb", o, c);
+				}
+		if(sphereRow)
+			for(unsigned q = 0; q != 4; ++q)
+				{
+				NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
+				TestOutput oracleOutput = {16, 0, oracleEntries, 2.0f};
+				TestOutput candidateOutput = {16, 0, candidateEntries, 2.0f};
+				typedef bool (__thiscall* SphereQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
+				Hits o = {}, c = {};
+				o.result = reinterpret_cast<SphereQueryFn>(oracleVtable[8])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(spheres[q]), 0, 0xffffffffu);
+				const unsigned rc = nxGuardedRow4(sphereRow, candidatePruner, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(spheres[q]), 0, 0xffffffffu);
+				c.result = rc != 0xfa11ed00u && rc != 0;
+				if(rc == 0xfa11ed00u) candidateOutput.count = 0xfffe;
+				Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, sizeof(oracleObjects[0]));
+				Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, sizeof(Prunable));
+				COMPARE_HITS("sphere", o, c);
+				}
+		if(planeRow)
+			for(unsigned q = 0; q != 3; ++q)
+				{
+				NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
+				TestOutput oracleOutput = {16, 0, oracleEntries, 2.0f};
+				TestOutput candidateOutput = {16, 0, candidateEntries, 2.0f};
+				typedef bool (__thiscall* PlaneQueryFn)(void*, NxU32, NxU32, NxU32, NxU32, NxU32);
+				Hits o = {}, c = {};
+				o.result = reinterpret_cast<PlaneQueryFn>(oracleVtable[5])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(planeSets[q]), 2, 0, 0xffffffffu);
+				const unsigned rc = nxGuardedRow5(planeRow, candidatePruner, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(planeSets[q]), 2, 0, 0xffffffffu);
+				c.result = rc != 0xfa11ed00u && rc != 0;
+				if(rc == 0xfa11ed00u) candidateOutput.count = 0xfffe;
+				Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, sizeof(oracleObjects[0]));
+				Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, sizeof(Prunable));
+				COMPARE_HITS("planes", o, c);
+				}
+		if(pass == 0)
+			{
+			// move an object, as the update slot does, so the second pass sees a changed pruner
+			memcpy(oracleOwners[0].worldBounds, aabbs[0], sizeof(aabbs[0]));
+			memcpy(candidateOwners[0].worldBounds, aabbs[0], sizeof(aabbs[0]));
+			*reinterpret_cast<NxU32*>(oracleObjects[0] + 8) &= ~PRUNABLE_FLAG_WORLD_AABB_VALID;
+			candidateObjects[0].mFlags &= ~PRUNABLE_FLAG_WORLD_AABB_VALID;
+			typedef bool (__thiscall* UpdateObjectFn)(void*, void*);
+			const bool ou = reinterpret_cast<UpdateObjectFn>(oracleVtable[3])(oraclePruner, oracleObjects[0]);
+			const bool cu = candidatePruner->UpdateObject(&candidateObjects[0]);
+			++checks;
+			if(ou != cu) ++mismatches;
+			}
+		}
+	#undef COMPARE_HITS
+	for(unsigned i = 0; i != 4; ++i)
+		{
+		typedef bool (__thiscall* RemoveObjectFn)(void*, void*);
+		reinterpret_cast<RemoveObjectFn>(oracleVtable[2])(oraclePruner, oracleObjects[i]);
+		candidatePruner->RemoveObject(&candidateObjects[i]);
+		}
+	// the scalar deleting destructor with the flag set
+	const unsigned frees0 = 0;
+	(void) frees0;
+	typedef void* (__thiscall* DeleteFn)(void*, unsigned);
+	reinterpret_cast<DeleteFn>(oracleVtable[0])(oraclePruner, 1);
+	if(deleteRow) deleteRow(candidatePruner, 0, 1);
+	else nxPruningEngineDestroyPruner(candidatePruner);
+	for(unsigned i = 0; i != 4; ++i)
+		{
+		void** const table = *reinterpret_cast<void***>(oracleObjects[i]);
+		reinterpret_cast<DeleteFn>(table[0])(oracleObjects[i], 0);
+		}
+	*oracleOwnerAabbSlot = savedOracleOwnerAabb;
+	gPrunableOwnerWorldAABB = savedCandidateOwnerAabb;
+	*checksOut += checks;
+	return mismatches;
+}
+
+unsigned nxDrivePrunerSupportTypeSlots(unsigned char* base)
+{
+	if(!nx2iFoundationBegin())
+		return 1;
+	NxType3CountingAllocator allocator;
+	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
+	NxType3SdkAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return 1;
+	unsigned checks = 0, mismatches = 0;
+	mismatches += nxRunPrunerTypeSlots(base, 0, reinterpret_cast<NxRow4Fn>(nxP45231), 0, 0, 0, &checks);
+	mismatches += nxRunPrunerTypeSlots(base, 1, reinterpret_cast<NxRow4Fn>(nxP45262), 0, 0, nxP45263, &checks);
+	mismatches += nxRunPrunerTypeSlots(base, 2, reinterpret_cast<NxRow4Fn>(nxP45471), reinterpret_cast<NxRow4Fn>(nxP45470),
+		reinterpret_cast<NxRow5Fn>(nxP45466), nxP45473, &checks);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedFoundationAllocator;
+	nx2iFoundationEnd();
+	printf("collision name=pruner_support_types rows=005231,005262,005263,005466,005470,005471,005473 checks=%u mismatches=%u\n", checks, mismatches);
+	return mismatches;
+}
