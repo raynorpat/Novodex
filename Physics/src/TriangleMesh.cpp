@@ -131,6 +131,11 @@ unsigned __fastcall nxNpMesh2132(void*, void*, unsigned, unsigned);
 unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
 #endif
 
+#if NX_TRIANGLE_MESH_ROWS
+// The oracle's internal mesh rows (TriangleMeshRows.cpp): the part maps.
+unsigned __fastcall nxTM2247(void*, void*);
+#endif
+
 namespace
 	{
     using NxTriangleMeshPrivate::TriangleMeshConvexData;
@@ -889,9 +894,16 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 	if(!nxInternalMeshBuildTopology(&mInternal))
 		return false;
 	nxInternalMeshBuildTriangleData(&mInternal);
+#if NX_TRIANGLE_MESH_ROWS
+	// phys_fn_002247
+	if(!(mHullFlags & NX_MF_CONVEX) && mHeightFieldVerticalAxis == NX_NOT_HEIGHTFIELD &&
+		!(nxTM2247(this, 0) & 0xff))
+		return false;
+#else
 	if(!(mHullFlags & NX_MF_CONVEX) && mHeightFieldVerticalAxis == NX_NOT_HEIGHTFIELD &&
 		!nxTriangleMeshBuildPartMaps(this))
 		return false;
+#endif
 	if(!buildModel())
 		return false;
 	if(source.pmap && !loadPMap(*source.pmap))
