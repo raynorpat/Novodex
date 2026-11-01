@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 108 of the 184 rows closed; 76 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 122 of the 184 rows closed; 62 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -36,7 +36,7 @@ time. The ruling is in the ledger; the sweeper's default still refuses a crash.
 * 001935 and 001947: the visualisation walk passes a callback shape the candidate's walk does not; 001947 needs the
   scene globals linked into the ObjectModel-only targets.
 
-**Phase 4 (31 rows).**
+**Phase 4 (17 rows).**
 * 001988, 001992–002006, 002010–002014 (the cell-run coder): the encoder rows are interior fragments of
   phys_fn_001990 with no callable head, the decoder takes its stream in `esi`, and the whole coder keeps its cursor in
   `.data` statics where `PMap.cpp` passes a cursor struct. Wiring means rewriting `PMap.cpp`'s coder around the
@@ -175,3 +175,28 @@ Fixture notes: the families' allocator hands out zeroed memory (the constructors
 object folds treat any word in `[0x00100000, 0x7fff0000)` as an address, because the test executable can load as low
 as `0x00100000`. A null file name was left out of the 004790 cases: the oracle's CRT returns a null `FILE*` for it, the
 candidate's CRT faults. 004828 (the sorters' destructors) stays held until a RadixSort can be built on the oracle side.
+
+## Update (sixth slice: the pruner slots)
+
+Fourteen more pruner support rows are closed (`raw/testing-pass-pruner-slots-20261101/`): the type 3 pruner's slots
+005452, 005454, 005456, 005458, 005460, 005462; the static pruner's AABB query 005231; the bounded pruner's destructor
+005263 and AABB query 005262; the dynamic pruner's destructor 005473, plane query 005466, AABB query 005471 and sphere
+query 005470; and the tree-walk wrapper 005568.
+
+Two families in `tests/PhysicsType3PrunerFixture.cpp` (beside the existing type 3 refit fixture), run by
+`--type3-pruner-only` (the phase 4 target, floor now 637) and by their own flags:
+* `pruner_support_type3`: the oracle's slots 5-8 and 0 of a type 3 pruner built by its factory, against the
+  transcribed rows run on the candidate's pruner over the same four objects. Results, hit lists (as object indices)
+  and the destructor's frees are compared. 17 checks.
+* `pruner_support_types`: the same for types 0, 1 and 2, each queried twice (a second pass after an object moves), and
+  type 1 again with 40 objects. 86 checks. The destructor check compares each side's net allocations after the
+  destructor, not raw free counts: the candidate's octree build allocates more containers than the oracle's, so the
+  counts differ though both sides end balanced.
+
+The slot-to-row mapping was read from the oracle image's tables (type 0 at `0x1011b9c8`, 1 at `0x1011b9f0`, 2 at
+`0x1011bbc0`, 3 at `0x1011bb98`). The candidate's row calls are wrapped in a structured-exception handler so a mutated
+row that faults reads as a mismatch instead of ending the run (without it 005460 and 005462 were never caught).
+
+Still held in this group: **005566** (the recursive octree walk: even with 40 objects the walk never recurses past the
+root, so it needs a fixture that builds a deeper tree), **005479** (no caller found in the oracle), **005539** and
+**005386** (reachable only through tables) and **004828** (needs a RadixSort built on the oracle side).
