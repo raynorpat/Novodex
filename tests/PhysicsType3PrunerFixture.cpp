@@ -734,14 +734,14 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 	Pruner* const candidatePruner = nxPruningEngineCreatePruner(type);
 	if(!oraclePruner || !candidatePruner)
 		return 1;
-	static NxU8 oracleObjects[48][0x2c];
-	static Prunable candidateObjects[48];
-	static NxType3TestOwner oracleOwners[48];
-	static NxType3TestOwner candidateOwners[48];
+	static NxU8 oracleObjects[256][0x2c];
+	static Prunable candidateObjects[256];
+	static NxType3TestOwner oracleOwners[256];
+	static NxType3TestOwner candidateOwners[256];
 	memset(oracleObjects, 0, sizeof(oracleObjects));
 	memset(oracleOwners, 0, sizeof(oracleOwners));
 	memset(candidateOwners, 0, sizeof(candidateOwners));
-	for(unsigned i = 0; i != 48; ++i) candidateObjects[i] = Prunable();
+	for(unsigned i = 0; i != 256; ++i) candidateObjects[i] = Prunable();
 	typedef void (__thiscall* OracleCtorFn)(void*);
 	const OracleCtorFn oraclePrunableCtor = reinterpret_cast<OracleCtorFn>(base + 0x000b54a0);
 	static const float seedBoxes[4][6] = {
@@ -750,13 +750,13 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 		{4.0f, 0.0f, 0.0f, 5.0f, 1.0f, 1.0f},
 		{-6.0f, -2.0f, -2.0f, -4.0f, 2.0f, 2.0f}};
 	// the first four are the fixed boxes; any more sit on a grid, so a bigger population gives the trees some depth
-	float boxes[48][6];
+	float boxes[256][6];
 	for(unsigned i = 0; i != objectCount; ++i)
 		{
 		if(i < 4) memcpy(boxes[i], seedBoxes[i], sizeof(boxes[i]));
 		else
 			{
-			const float x = 20.0f + static_cast<float>(i % 6) * 3.0f, y = static_cast<float>((i / 6) % 4) * 3.0f - 3.0f, z = static_cast<float>(i % 5) * 0.5f;
+			const float x = 20.0f + static_cast<float>(i % 10) * 3.0f, y = static_cast<float>((i / 10) % 10) * 3.0f - 3.0f, z = static_cast<float>((i / 100) % 3) * 4.0f + static_cast<float>(i % 5) * 0.5f;
 			const float b[6] = {x, y, z, x + 1.0f + static_cast<float>(i % 3) * 0.25f, y + 1.0f, z + 1.0f};
 			memcpy(boxes[i], b, sizeof(b));
 			}
@@ -798,7 +798,7 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 			}
 
 	struct TestOutput { NxU32 capacity; NxU32 count; NxU32* entries; float growthFactor; };
-	struct Hits { bool result; unsigned count; unsigned indices[64]; };
+	struct Hits { bool result; unsigned count; unsigned indices[256]; };
 	const NxU32 oracleBase = reinterpret_cast<NxU32>(oracleObjects[0]);
 	const NxU32 candidateBase = reinterpret_cast<NxU32>(&candidateObjects[0]);
 	struct Fold
@@ -806,16 +806,16 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 		static void indices(Hits& hits, const NxU32* entries, unsigned count, NxU32 base, NxU32 stride)
 			{
 			hits.count = count;
-			for(unsigned i = 0; i < count && i < 64; ++i)
+			for(unsigned i = 0; i < count && i < 256; ++i)
 				hits.indices[i] = (entries[i] - base) / stride;
-			for(unsigned i = 0; i < count && i < 64; ++i)
-				for(unsigned j = i + 1; j < count && j < 64; ++j)
+			for(unsigned i = 0; i < count && i < 256; ++i)
+				for(unsigned j = i + 1; j < count && j < 256; ++j)
 					if(hits.indices[j] < hits.indices[i]) { unsigned t = hits.indices[i]; hits.indices[i] = hits.indices[j]; hits.indices[j] = t; }
 			}
 		};
 	#define COMPARE_HITS(NAME, OH, CH) do { ++checks; \
 		const bool same = (OH).result == (CH).result && (OH).count == (CH).count && \
-			memcmp((OH).indices, (CH).indices, 4 * ((OH).count < 64 ? (OH).count : 64)) == 0; \
+			memcmp((OH).indices, (CH).indices, 4 * ((OH).count < 256 ? (OH).count : 256)) == 0; \
 		if(!same) { ++mismatches; printf("collision mismatch name=pruner_support_types type=%u query=%s check=%u oracle_count=%u candidate_count=%u\n", type, NAME, checks, (OH).count, (CH).count); } } while(0)
 	static const float aabbs[8][6] = {
 		{3.0f, -1.0f, -1.0f, 6.0f, 2.0f, 2.0f}, {-100.0f, -100.0f, -100.0f, 100.0f, 100.0f, 100.0f},
@@ -831,9 +831,9 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 		if(aabbRow)
 			for(unsigned q = 0; q != 8; ++q)
 				{
-				NxU32 oracleEntries[64] = {}, candidateEntries[64] = {};
-				TestOutput oracleOutput = {64, 0, oracleEntries, 2.0f};
-				TestOutput candidateOutput = {64, 0, candidateEntries, 2.0f};
+				NxU32 oracleEntries[256] = {}, candidateEntries[256] = {};
+				TestOutput oracleOutput = {256, 0, oracleEntries, 2.0f};
+				TestOutput candidateOutput = {256, 0, candidateEntries, 2.0f};
 				typedef bool (__thiscall* AabbQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
 				Hits o = {}, c = {};
 				o.result = reinterpret_cast<AabbQueryFn>(oracleVtable[7])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(aabbs[q]), 0, 0xffffffffu);
@@ -847,9 +847,9 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 		if(sphereRow)
 			for(unsigned q = 0; q != 4; ++q)
 				{
-				NxU32 oracleEntries[64] = {}, candidateEntries[64] = {};
-				TestOutput oracleOutput = {64, 0, oracleEntries, 2.0f};
-				TestOutput candidateOutput = {64, 0, candidateEntries, 2.0f};
+				NxU32 oracleEntries[256] = {}, candidateEntries[256] = {};
+				TestOutput oracleOutput = {256, 0, oracleEntries, 2.0f};
+				TestOutput candidateOutput = {256, 0, candidateEntries, 2.0f};
 				typedef bool (__thiscall* SphereQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
 				Hits o = {}, c = {};
 				o.result = reinterpret_cast<SphereQueryFn>(oracleVtable[8])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(spheres[q]), 0, 0xffffffffu);
@@ -863,9 +863,9 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 		if(planeRow)
 			for(unsigned q = 0; q != 3; ++q)
 				{
-				NxU32 oracleEntries[64] = {}, candidateEntries[64] = {};
-				TestOutput oracleOutput = {64, 0, oracleEntries, 2.0f};
-				TestOutput candidateOutput = {64, 0, candidateEntries, 2.0f};
+				NxU32 oracleEntries[256] = {}, candidateEntries[256] = {};
+				TestOutput oracleOutput = {256, 0, oracleEntries, 2.0f};
+				TestOutput candidateOutput = {256, 0, candidateEntries, 2.0f};
 				typedef bool (__thiscall* PlaneQueryFn)(void*, NxU32, NxU32, NxU32, NxU32, NxU32);
 				Hits o = {}, c = {};
 				o.result = reinterpret_cast<PlaneQueryFn>(oracleVtable[5])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(planeSets[q]), 2, 0, 0xffffffffu);
@@ -945,7 +945,7 @@ unsigned nxDrivePrunerSupportTypeSlots(unsigned char* base)
 	unsigned checks = 0, mismatches = 0;
 	mismatches += nxRunPrunerTypeSlots(base, 0, reinterpret_cast<NxRow4Fn>(nxP45231), 0, 0, 0, &checks, 4);
 	mismatches += nxRunPrunerTypeSlots(base, 1, reinterpret_cast<NxRow4Fn>(nxP45262), 0, 0, nxP45263, &checks, 4);
-	mismatches += nxRunPrunerTypeSlots(base, 1, reinterpret_cast<NxRow4Fn>(nxP45262), 0, 0, nxP45263, &checks, 40);
+	mismatches += nxRunPrunerTypeSlots(base, 1, reinterpret_cast<NxRow4Fn>(nxP45262), 0, 0, nxP45263, &checks, 200);
 	mismatches += nxRunPrunerTypeSlots(base, 2, reinterpret_cast<NxRow4Fn>(nxP45471), reinterpret_cast<NxRow4Fn>(nxP45470),
 		reinterpret_cast<NxRow5Fn>(nxP45466), nxP45473, &checks, 4);
 	oracleSetAllocator(savedOracleSdk);
