@@ -97,6 +97,30 @@ class AtomicWriteTest(unittest.TestCase):
             self.assertEqual([x.name for x in Path(d).iterdir()], ['rows.cpp'])
 
 
+class ReplaceRetryTest(unittest.TestCase):
+    def test_a_transiently_locked_target_is_retried(self):
+        # Windows briefly denies os.replace while an indexer or scanner holds the file; a sweep once died with the source mutated
+        real = mutate_rows.os.replace
+        calls = []
+
+        def flaky(a, b):
+            calls.append(1)
+            if len(calls) < 3:
+                raise PermissionError(5, 'Access is denied')
+            real(a, b)
+
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'rows.cpp'
+            p.write_bytes(b'original')
+            mutate_rows.os.replace = flaky
+            try:
+                mutate_rows.write_atomic(p, b'mutated', pause=0)
+            finally:
+                mutate_rows.os.replace = real
+            self.assertEqual(p.read_bytes(), b'mutated')
+            self.assertEqual(len(calls), 3)
+
+
 class BuildTargetsTest(unittest.TestCase):
     def test_staged_runs_also_rebuild_the_candidate_dll(self):
         # a staged pair stages build/Release/NxPhysics.dll, so a stale DLL would report nothing caught

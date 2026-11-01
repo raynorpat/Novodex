@@ -16,6 +16,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
@@ -123,7 +124,7 @@ def _write_tmp(tmp, data):
     tmp.write_bytes(data)
 
 
-def write_atomic(path, data, writer=_write_tmp):
+def write_atomic(path, data, writer=_write_tmp, pause=0.3):
     """Replace `path` whole or not at all: write a sibling temp file, then os.replace it.
 
     A full disk once truncated a source file mid-restore; with this the file is either the old bytes or the new ones.
@@ -132,7 +133,15 @@ def write_atomic(path, data, writer=_write_tmp):
     tmp = path.with_name(path.name + '.mutate-tmp')
     try:
         writer(tmp, data)
-        os.replace(str(tmp), str(path))
+        for attempt in range(10):
+            try:
+                os.replace(str(tmp), str(path))
+                break
+            except PermissionError:
+                # Windows briefly denies the replace while a scanner or indexer holds the file
+                if attempt == 9:
+                    raise
+                time.sleep(pause)
     except BaseException:
         try:
             tmp.unlink()
