@@ -636,3 +636,16 @@ Per-row measurements (row, mutation, count):
 - `phys_fn_004872`: 0x000b548d mov ecx, dword ptr [edx + 4] -> mov ecx, dword ptr [edx + 8]; `NxPhysicsType3PrunerTests` mismatches=4.
 - `phys_fn_005279`: 0x000e6b6a jbe Le6c02 -> ja Le6c02; `NxPhysicsType3PrunerTests` mismatches=10.
 - `phys_fn_005380`: 0x000e9420 mov eax, dword ptr [ecx + 0x10] -> mov eax, dword ptr [ecx + 0x14]; `NxPhysicsType3PrunerTests` mismatches=1.
+
+## Testing pass
+
+- `phys_fn_005586`: 0x000f25a6 mov al, 1 -> mov al, 2; `NxPhysicsType3PrunerTests` mismatches=12.
+- `phys_fn_005588`: 0x000f25f7 add ecx, 4 -> add ecx, 5; `NxPhysicsType3PrunerTests` mismatches=12.
+- `phys_fn_005590`: 0x000f2663 test byte ptr [edx + eax + 0x18], 1 -> test byte ptr [edx + eax + 0x18], 2; `NxPhysicsType3PrunerTests` mismatches=6.
+- `phys_fn_005606`: 0x000f2ec8 shl edx, 5 -> shl edx, 6; `NxPhysicsType3PrunerTests` mismatches=10.
+- `phys_fn_005608`: 0x000f2f34 shl ecx, 5 -> shl ecx, 6; `NxPhysicsType3PrunerTests` mismatches=10.
+- `phys_fn_005610`: 0x000f2fa3 test byte ptr [ecx + eax + 0x18], 1 -> test byte ptr [ecx + eax + 0x18], 2; `NxPhysicsType3PrunerTests` mismatches=6.
+- `phys_fn_005624`: 0x000f3640 shl edx, 4 -> shl edx, 5; `NxPhysicsType3PrunerTests` mismatches=10.
+- `phys_fn_005642`: 0x000f3d51 shl edx, 2 -> shl edx, 3; `NxPhysicsType3PrunerTests` mismatches=10.
+- `phys_fn_005644`: 0x000f3e38 mov ebp, dword ptr [ebx + 8] -> mov ebp, dword ptr [ebx + 12]; `NxPhysicsType3PrunerTests` mismatches=10.
+- `phys_fn_005646`: 0x000f3e73 test byte ptr [ecx + eax + 0xc], 1 -> test byte ptr [ecx + eax + 0xc], 2; `NxPhysicsType3PrunerTests` mismatches=6.

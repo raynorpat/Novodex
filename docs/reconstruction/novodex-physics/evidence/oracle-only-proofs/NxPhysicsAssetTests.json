@@ -3,14 +3,14 @@
   "target": "NxPhysicsAssetTests",
   "format": "asset_oracle_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "3d58ad43d4e930f4f486b66c9c86befebff4416e6eefcf50caf2565c270479c6",
+  "fixture_source_sha256": "56b5bc63d5ab21e0447dc150d3b09b18333956e1a5a939441d9fa340d3ae2b31",
   "fixture_sources": [
     "tests/PhysicsAssetTests.cpp",
     "docs/reconstruction/novodex-physics/cases/assets/formats.json",
     "docs/reconstruction/novodex-physics/cases/assets/oracle-transcript.txt"
   ],
   "proof_lines_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f",
-  "baseline_sha256": "d9e06991a8ee6aecea87bd1278e5b7b7641cf9f52555a00b123cc83c7922c5f9",
+  "baseline_sha256": "808c64f7e8502f49c75f2ff7cb05fcae1f6c831907a3dbfd7a03a6c60459d3bd",
   "cases": 32,
   "accepted": 15,
   "rejected": 16,
@@ -18,5 +18,5 @@
   "oracle_output_digest_fnv32": "1daa095e",
   "oracle_output_digest_sha256": "d5a8af1d8f966312133a2100057cab5e2d9d76ff50e97ac32c489d598df76d3f",
   "coverage_line": "asset coverage driven=32 accepted=15 rejected=16 errors=10",
-  "proof_sha256": "9203eb97de0dcfbbb40a78651c777181fb8ef72a32fe3346e73e28d4bedc7811"
+  "proof_sha256": "e0bbd5b7683d50d499e7ecde6f973b4bfdfb3b151639745073ede0333ca235f7"
 }

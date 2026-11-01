@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 90 of the 184 rows closed; 94 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 100 of the 184 rows closed; 84 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -36,7 +36,7 @@ time. The ruling is in the ledger; the sweeper's default still refuses a crash.
 * 001935 and 001947: the visualisation walk passes a callback shape the candidate's walk does not; 001947 needs the
   scene globals linked into the ObjectModel-only targets.
 
-**Phase 4 (49 rows).**
+**Phase 4 (39 rows).**
 * 001988, 001992–002006, 002010–002014 (the cell-run coder): the encoder rows are interior fragments of
   phys_fn_001990 with no callable head, the decoder takes its stream in `esi`, and the whole coder keeps its cursor in
   `.data` statics where `PMap.cpp` passes a cursor struct. Wiring means rewriting `PMap.cpp`'s coder around the
@@ -129,3 +129,25 @@ linked into `NxPhysicsCollisionTests`.
 
 The other 41 pruner support rows need real pruner, pool or stream fixtures (see above); 001935 and 001947 are
 unchanged.
+
+## Update (fourth slice: the pool save and load rows)
+
+Ten pruner support rows are closed (`raw/testing-pass-pruner-stream-20261101/`): the pool save rows 005586, 005606,
+005624 and 005642 and the pool load rows 005588/005590, 005608/005610 and 005644/005646. A second family,
+`pruner_support_stream` (in `tests/PhysicsCollisionTests.cpp`, run by `--type3-pruner-only` and
+`--pruner-support-stream-only`), runs each row at its oracle address on an oracle `MemoryStream` and as the candidate
+transcription on a candidate stream, over the same objects. It compares the stream's blocks, the allocator's request
+sizes, the return value and the loaded object; the loads read the oracle's own flattened save output. 100 checks, zero
+mismatches. The family's lines are registered under `NxPhysicsType3PrunerTests` and the phase 4 coverage floor is 623.
+
+Two product changes came out of it:
+* `MemoryStream::flushBits`, `storeByte` and `storeDword` now return the stream, as the oracle's do (each ends
+  `mov eax, esi`). The rows chain `storeDword` calls and read the stream from `eax` after `flushBits`; the candidate's
+  `void` versions left garbage there, so the first run of the family faulted. The mangled names in
+  `PrunerSupportRows.cpp`, `PMapRows.cpp` and `PhysicsAssetTests.cpp` were updated.
+* `PhysicsAssetTests.cpp` and `PhysicsCollisionTests.cpp` changed, so both baselines were re-pinned and every retained
+  oracle proof regenerated.
+
+**004799 stays held.** The same family catches a mutation in it, but it is a phase 6 row and the only registered gate
+that could discharge it is `NxPhysicsCollisionTests` in phase 7, which program.json records as pending; the ledger
+will not close a row on a gate that has not passed. Closing it needs the family hosted by a phase 6 oracle target.

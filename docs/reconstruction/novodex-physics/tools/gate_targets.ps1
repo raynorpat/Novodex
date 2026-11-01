@@ -5633,7 +5633,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=pruner_support_leaf row=004870 case=owner_query_hook_installed_and_absent',
         'collision coverage name=pruner_support_leaf row=004872 case=owner_notify_hook_installed_and_absent',
         'collision coverage name=pruner_support_leaf row=005279 case=visualise_walk_with_and_without_callback',
-        'collision input name=pruner_support_leaf words=828 input=c13be63a1041f42a'
+        'collision input name=pruner_support_leaf words=828 input=c13be63a1041f42a',
+        # the pruner support rows that serialise through the memory stream (PrunerSupportRows.cpp)
+        'collision name=pruner_support_stream index=- rva=0x000b3f50 owner=phys_fn_004799 checks=100 oracle=4701fb540aa892a8',
+        'collision coverage name=pruner_support_stream row=004799 case=block_store_growth',
+        'collision coverage name=pruner_support_stream row=005586 case=pool_save_and_load',
+        'collision coverage name=pruner_support_stream row=005606 case=pool_save_and_load',
+        'collision coverage name=pruner_support_stream row=005624 case=pool_save',
+        'collision coverage name=pruner_support_stream row=005642 case=pool_save_and_load',
+        'collision input name=pruner_support_stream words=1056 input=95884b08005aec63'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -6518,7 +6526,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 616  # plus the seven pruner_support_leaf lines (rows 005404, 005380, 004870, 004872, 005279); previous 609: plus the 15 vendored-rows drive families (the vendored-rows pass, Task 6); previous 594: plus the two hull-shape families (rows 001411, 001415 to 001419)
+	'4' = 623  # plus the seven pruner_support_stream lines (rows 004799, 005586-005646); previous 616: plus the seven pruner_support_leaf lines (rows 005404, 005380, 004870, 004872, 005279); previous 609: plus the 15 vendored-rows drive families (the vendored-rows pass, Task 6); previous 594: plus the two hull-shape families (rows 001411, 001415 to 001419)
 	           # previous 592: the three P-Hull class families (rows 001443 to 001494)
 	           # previous 589: the seven hull-flood families (rows 001423 to 001437, 001655)
 	           # previous 582: the three PMap compute-arm families (rows 002019/002021/002025 and the nearest-face collider)
