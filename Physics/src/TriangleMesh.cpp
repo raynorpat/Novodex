@@ -134,6 +134,7 @@ unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
 #if NX_TRIANGLE_MESH_ROWS
 // The oracle's internal mesh rows (TriangleMeshRows.cpp): the part maps.
 unsigned __fastcall nxTM2247(void*, void*);
+unsigned __fastcall nxTM2256(void*, void*, unsigned);
 #endif
 
 namespace
@@ -800,6 +801,63 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 		cookedTriangles = const_cast<void*>(cooked.triangles);
 		}
 
+#if NX_TRIANGLE_MESH_ROWS
+	// phys_fn_002256 rebuilds the internal mesh from the descriptor (arrays, materials, topology) and runs the part
+	// maps (phys_fn_002247) for a mesh that is neither convex nor a height field.
+	NxTriangleMeshDesc rebuild = cooked;
+	void* identity = 0;
+	if(!rebuild.triangles)
+		{
+		// no index array: every three vertices are a triangle
+		rebuild.numTriangles = cooked.numTriangles ? cooked.numTriangles : cooked.numVertices / 3;
+		identity = nxFoundationSDKAllocator->malloc(rebuild.numTriangles * 3 * sizeof(NxU32), NX_MEMORY_PERSISTENT);
+		if(!identity)
+			{
+			nxTriangleMeshFree(cookedPoints);
+			nxTriangleMeshFree(cookedTriangles);
+			return false;
+			}
+		NxU32* indices = static_cast<NxU32*>(identity);
+		for(NxU32 i = 0; i < rebuild.numTriangles * 3; ++i)
+			indices[i] = i;
+		rebuild.triangles = identity;
+		rebuild.triangleStrideBytes = 3 * sizeof(NxU32);
+		rebuild.flags &= ~(NX_MF_16_BIT_INDICES | NX_MF_FLIPNORMALS);
+		}
+	rebuild.heightFieldVerticalAxis = source.heightFieldVerticalAxis;
+	rebuild.materialIndices = 0;
+	rebuild.materialIndexStride = 0;
+	if(source.materialIndices && source.numTriangles && !(source.flags & NX_MF_COMPUTE_CONVEX))
+		{
+		rebuild.materialIndices = source.materialIndices;
+		rebuild.materialIndexStride = source.materialIndexStride;
+		}
+	mConvexEdgeThreshold = source.convexEdgeThreshold;
+	mHeightFieldVerticalAxis = source.heightFieldVerticalAxis;
+	mHeightFieldVerticalExtent = source.heightFieldVerticalExtent;
+	mHullFlags = cooked.flags & ~NX_MF_16_BIT_INDICES;
+	mCachedMass = -1.0f;
+	const bool rebuilt = (nxTM2256(this, 0, reinterpret_cast<unsigned>(&rebuild)) & 0xff) != 0;
+	nxTriangleMeshFree(identity);
+	nxTriangleMeshFree(cookedPoints);
+	nxTriangleMeshFree(cookedTriangles);
+	if(!rebuilt)
+		return false;
+	for(unsigned axis = 0; axis < 3; ++axis)
+		{
+		mBounds44[axis] = FLT_MAX;
+		mBounds44[axis + 3] = -FLT_MAX;
+		}
+	const NxVec3* rebuiltVertices = static_cast<const NxVec3*>(mInternal.mVertices);
+	for(NxU32 i = 0; i < mInternal.mVertexCount; ++i)
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float coordinate = rebuiltVertices[i][axis];
+			if(coordinate < mBounds44[axis]) mBounds44[axis] = coordinate;
+			if(coordinate > mBounds44[axis + 3]) mBounds44[axis + 3] = coordinate;
+			}
+	nxInternalMeshBuildTriangleData(&mInternal);
+#else
 	const NxU32 pointStride = cooked.pointStrideBytes;
 	const NxU32 triangleStride = cooked.triangleStrideBytes;
 	void* vertices = nxTriangleMeshCopy(cooked.points, cooked.numVertices, pointStride, sizeof(NxVec3));
@@ -903,6 +961,7 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 	if(!(mHullFlags & NX_MF_CONVEX) && mHeightFieldVerticalAxis == NX_NOT_HEIGHTFIELD &&
 		!nxTriangleMeshBuildPartMaps(this))
 		return false;
+#endif
 #endif
 	if(!buildModel())
 		return false;
