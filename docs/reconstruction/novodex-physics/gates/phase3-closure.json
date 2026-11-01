@@ -54,9 +54,9 @@
   },
   "counts": {
     "differential_falsified": 115,
-    "oracle_differential_falsified": 97,
+    "oracle_differential_falsified": 102,
     "deferred_not_reconstructed_in_phase": 74,
-    "deferred_reconstructed_not_falsified": 104,
+    "deferred_reconstructed_not_falsified": 99,
     "deferred_blocked_on_later_phase": 2
   },
   "closed": [
@@ -2851,6 +2851,76 @@
         6,
         7
       ]
+    },
+    {
+      "id": "phys_fn_001303",
+      "rva": "0x000258f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000258f6 mov ecx, dword ptr [eax + 8] -> mov ecx, dword ptr [eax + 12]",
+        "detected": "mismatches=4"
+      },
+      "discharged_by_phase": 6,
+      "driving_phases": [
+        6
+      ]
+    },
+    {
+      "id": "phys_fn_001305",
+      "rva": "0x00025960",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x00025969 fld dword ptr [gParameter + 0xb0] -> fld dword ptr [gParameter + 0xb4]",
+        "detected": "mismatches=16"
+      },
+      "discharged_by_phase": 6,
+      "driving_phases": [
+        6
+      ]
+    },
+    {
+      "id": "phys_fn_001345",
+      "rva": "0x00027710",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x00027718 test byte ptr [esp + 8], 1 -> test byte ptr [esp + 12], 1",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 6,
+      "driving_phases": [
+        6
+      ]
+    },
+    {
+      "id": "phys_fn_001935",
+      "rva": "0x0004b9c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x0004b9ea mov al, 1 -> mov al, 2",
+        "detected": "mismatches=4"
+      },
+      "discharged_by_phase": 6,
+      "driving_phases": [
+        6
+      ]
+    },
+    {
+      "id": "phys_fn_001947",
+      "rva": "0x0004bc20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x0004bc3b mov esi, dword ptr [edi + 0x2c] -> mov esi, dword ptr [edi + 0x30]",
+        "detected": "mismatches=2"
+      },
+      "discharged_by_phase": 6,
+      "driving_phases": [
+        6
+      ]
     }
   ],
   "deferred": [
@@ -3416,24 +3486,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_001303",
-      "rva": "0x000258f0",
-      "size": 98,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001305",
-      "rva": "0x00025960",
-      "size": 685,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_001323",
       "rva": "0x00026bd0",
       "size": 182,
@@ -3443,15 +3495,6 @@
         3
       ],
       "note": "reconstructed and driven through owner-present scene teardown; candidate differential and breakpoints for 001323, 001955 and 001945 are recorded in evidence/convex-mesh-gap-001323-owner-cdb-raw.txt."
-    },
-    {
-      "id": "phys_fn_001345",
-      "rva": "0x00027710",
-      "size": 34,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001351",
@@ -4364,15 +4407,6 @@
       "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001911-mutation.patch (`fadd` -> `fsub` at 0x0004913e, the plane value) gave contact_convex_convex 205, contact_convex_hulls 244. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
     },
     {
-      "id": "phys_fn_001935",
-      "rva": "0x0004b9c0",
-      "size": 46,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-prunable-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_001945",
       "rva": "0x0004bbd0",
       "size": 74,
@@ -4380,15 +4414,6 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "Reconstructed in Physics/src/opcode/IcePrunable.cpp and driven against the pinned oracle for null and allocated SweepAndPrune teardown, including compound-child dispatch (24 checks, seven frees); candidate cdb breakpoint hit. See evidence/convex-mesh-gap-001945-cdb-raw.txt. No mutation aimed at this row is recorded."
-    },
-    {
-      "id": "phys_fn_001947",
-      "rva": "0x0004bc20",
-      "size": 89,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-prunable-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001955",

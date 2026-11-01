@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 148 of the 184 rows closed; 36 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 153 of the 184 rows closed; 31 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -268,3 +268,27 @@ digest, and the callbacks and renderer are fakes that log what they are handed (
 The mutations recorded are the sweeper's first catch for each row, which for these rows is an argument-slot or field
 offset change near the row's start; 004171 (a second row of the same function, from 0x0009ae50) has its own.
 Deeper-in-body mutations were not swept.
+
+## Update (tenth slice: the five held Phase 3 rows)
+
+All five held Phase 3 rows are closed (`raw/testing-pass-phase3-rows-20261101/`). They were held for want of wiring; this
+slice drives the listing transcriptions directly, as the Phase 6 rows were, so none of the five is wired into the
+product (001303 is reached only by the CCD path the product does not run, and the others have no candidate caller).
+They close on `NxPhysicsPhase6RowsTests` (a later, passed phase's gate; floor now 1848); `PrunableRows.cpp` is now linked
+into the collision harness. The family **`phase3_rows`** (57 checks):
+
+* **001303** the CCD box refresh, over the body's flag row (000738) and the prunable's world box, with the owner AABB
+  hook faked on both sides (16 cases).
+* **001305** the box shape's debug render, with the oracle's three parameter floats found through its own code
+  operands and set equal on both sides, a fake shape (slot 10) and a fake renderer (slots 8 and 14) (32 cases).
+* **001345** the shape's scalar deleting destructor with the flag clear and set; the oracle shape is zeroed, the
+  candidate's is a real `ShapeBase`; the digest is the allocator's frees.
+* **001947** (with 001945) the removal of an owner's prunables, against the oracle: no sweep-and-prune, a populated
+  one, and a compound owner with a child.
+* **001935** the visualisation node callback on its two **non-drawing** paths only (no node, a node with no box). The
+  drawing path needs the oracle's `PhysicsSDK` instance and a live debug renderable; it is not driven. The recorded
+  mutation (`mov al, 1` -> `mov al, 2`) is on the return value both paths share.
+
+Two fixture lessons: the fifth stack argument of the renderer's slot-14 call is an address of a local, so it is not
+logged (a digest that folded it changed every run); and the 001345 drive must not free the shape itself, or a mutated
+candidate double-frees and dies without printing a mismatch.

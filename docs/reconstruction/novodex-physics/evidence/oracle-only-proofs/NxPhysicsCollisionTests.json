@@ -3,13 +3,13 @@
   "target": "NxPhysicsCollisionTests",
   "format": "collision_oracle_digest",
   "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
-  "fixture_source_sha256": "fc0dc2acb52377178476483561e0a3010215733736cae2b1b051a54f8ee2a786",
+  "fixture_source_sha256": "d53bccdde621dbabee134e852aaddc845dae638bae131b1b866f6c00cc0374ed",
   "fixture_source": "tests/PhysicsCollisionTests.cpp",
   "proof_lines_sha256": "569aea83b39941b854b443e8f6c278c5e8b63ccdb9669244abbb9d43db3978d1",
-  "baseline_sha256": "2d0b647fc87bfed0e326128f3010a154e3265bcde05a161c42144d663e99afb6",
+  "baseline_sha256": "8e53e9af6692b04afd324326931beeb0ef0ad3bb87b07a7f7fc45d6c2f76f8b6",
   "input_line_count": 121,
   "coverage_line_count": 149,
   "oracle_output_line_count": 148,
   "selected_lines_sha256": "569aea83b39941b854b443e8f6c278c5e8b63ccdb9669244abbb9d43db3978d1",
-  "proof_sha256": "0487095119b9ff468242de4895174315d27098c06facf68170afcb8563b78f3b"
+  "proof_sha256": "03dfdfb85664bfe00b60a7f7389798abc85d95f0a090f87fdf0509d064b831b3"
 }

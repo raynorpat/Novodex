@@ -5959,6 +5959,273 @@ static unsigned nxDrivePhase6Large(unsigned char* base)
 	return mismatches;
 	}
 
+// The Phase 3 rows the testing pass held: 001303 (a shape's CCD box refresh), 001305 (a box shape's conditional debug
+// render), 001345 (a shape's scalar deleting destructor), 001935 (the visualisation walk's node callback) and the
+// 001945/001947 function (the scene's removal of an owner's prunables). Each runs at its oracle address and as the
+// transcription over hand-built objects; the hooks and the renderer are fakes that log what they are handed.
+unsigned __fastcall nxShp1303(void* self, void* edxUnused);
+unsigned __fastcall nxShp1305(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxShp1345(void* self, void* edxUnused, unsigned a0);
+bool __cdecl nxPrunerVisualizeNodeCallback(void* unused, void* node);
+void __fastcall nxPrunerOwnerDestroyRow(void* manager, void* edxUnused, void* owner);
+
+static void __cdecl p3OwnerAabbHook(void* owner, AABB* box) { p6log(0x300, (unsigned) owner, (unsigned) box, 0); }
+static void __fastcall p3Pos(void* self, void*, unsigned out)
+	{
+	const float* s = (const float*) self;
+	float* o = (float*) out;
+	o[0] = s[0x34 / 4]; o[1] = s[0x38 / 4]; o[2] = s[0x3c / 4];
+	p6log(0x310, (unsigned) self, 0, 0);
+	}
+static void __fastcall p3Poly(void*, void*, unsigned n, unsigned points, unsigned color, unsigned w, unsigned z)
+	{
+	const unsigned* p = (const unsigned*) points;
+	p6log(0x320, n, color, 0);
+	p6log(z, p[0], p[1], p[2]);
+
+	}
+static void* gP3VtShape[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (void*) p3Pos };
+static void* gP3VtRenderer[16] = { 0, 0, 0, 0, 0, 0, 0, 0, (void*) p6Draw, 0, 0, 0, 0, 0, (void*) p3Poly };
+
+static unsigned nxDrivePhase3Rows(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("phase 3 rows fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("phase 3 rows fixture could not install oracle allocator");
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0;
+	#define P3_FINISH(NAME) do { ++cases; if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase3_rows row=%s case=%u\n", NAME, cases); } } while(0)
+
+	// phys_fn_001303 (0x000258f0): the CCD box refresh, through the body's flag row (000738) and the prunable's world box.
+	{
+	void (** const oracleHook)(void*, AABB*) = (void (**)(void*, AABB*)) (base + 0x00128478);
+	void (* const savedOracleHook)(void*, AABB*) = *oracleHook;
+	void (* const savedCandidateHook)(void*, AABB*) = gPrunableOwnerWorldAABB;
+	*oracleHook = p3OwnerAabbHook;
+	gPrunableOwnerWorldAABB = p3OwnerAabbHook;
+	Prunable probe;
+	const unsigned ownerOffset = (unsigned) ((unsigned char*) &probe.mOwner - (unsigned char*) &probe);
+	for(unsigned c = 0; c < 16; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			NxP6Canon canon;
+			unsigned char* self = (unsigned char*) ::calloc(1, 0x100);
+			unsigned char* link = (unsigned char*) ::calloc(1, 0x20);
+			unsigned char* body = (unsigned char*) ::calloc(1, 0x300);
+			unsigned char* pruner = (unsigned char*) ::calloc(1, 0x20);
+			unsigned char* inner = (unsigned char*) ::calloc(1, 0x20);
+			unsigned char* boxes = (unsigned char*) ::calloc(8, 24);
+			canon.add(self, 0x100); canon.add(link, 0x20); canon.add(body, 0x300); canon.add(pruner, 0x20); canon.add(inner, 0x20); canon.add(boxes, 24 * 8);
+			*(unsigned char**) (self + 4) = link;
+			*(unsigned char**) (link + 8) = (c & 1) ? body : 0;
+			*(unsigned*) (body + 0x1e4) = (c & 2) ? 0x200u : 0u;
+			*(unsigned char**) (self + 0xc4) = pruner;
+			*(unsigned char**) (pruner + 4) = inner;
+			*(unsigned char**) (inner + 0x10) = boxes;
+			*(unsigned*) (self + 0xcc) = (c & 4) ? 0xffffu : (c % 3);
+			*(unsigned*) (self + 0xac) = (c & 8) ? 2u : 0u;
+			*(unsigned*) (self + 0xa4 + ownerOffset) = 0x0badf00du;
+			canon.add((void*) 0x0badf00du, 1);
+			gP6LN = 0;
+			memset(gP6L, 0, sizeof(gP6L));
+			unsigned result;
+			if(side == 0) result = ((unsigned (__thiscall*)(void*)) (base + 0x000258f0))(self);
+			else result = nxShp1303(self, 0);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned rv = canon.word(result);
+			nxFoldInput(&d, &rv, 4);
+			canon.fold(&d, self, 0x100);
+			nxFoldInput(&d, &gP6LN, 4);
+			canon.fold(&d, gP6L, gP6LN * 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(self); ::free(link); ::free(body); ::free(pruner); ::free(inner); ::free(boxes);
+			}
+		P3_FINISH("001303");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	*oracleHook = savedOracleHook;
+	gPrunableOwnerWorldAABB = savedCandidateHook;
+	}
+
+	// phys_fn_001305 (0x00025960): the box shape's debug render, over the three parameters it reads.
+	{
+	const unsigned char* const code = base;
+	if(code[0x25969] != 0xd9 || code[0x25985] != 0xd9 || code[0x25a99] != 0xd9)
+		return nxFail("phase 3 rows fixture: row 001305's parameter operands are not where expected");
+	float* const oracleB0 = *(float**) (base + 0x2596b);
+	float* const oracle34 = *(float**) (base + 0x25987);
+	float* const oracleC0 = *(float**) (base + 0x25a9b);
+	const float saved[6] = { oracleB0[0], oracle34[0], oracleC0[0], gParameter[0xb0 / 4], gParameter[0x34 / 4], gParameter[0xc0 / 4] };
+	for(unsigned c = 0; c < 32; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x1305c0deu + c * 29u;
+			const float b0 = (c & 1) ? 1.5f : 0.0f, c0 = (c & 2) ? 2.0f : 0.0f, h34 = (c & 4) ? 0.5f : 1.0f;
+			oracleB0[0] = b0; oracle34[0] = h34; oracleC0[0] = c0;
+			gParameter[0xb0 / 4] = b0; gParameter[0x34 / 4] = h34; gParameter[0xc0 / 4] = c0;
+			NxP6Canon canon;
+			unsigned* shape = (unsigned*) ::calloc(1, 0x80);
+			unsigned* renderer = (unsigned*) ::calloc(1, 16);
+			canon.add(shape, 0x80); canon.add(renderer, 16);
+			for(unsigned i = 3; i < 0x40 / 4; ++i) p6Float(&seed, (float*) &shape[i]);
+			shape[0] = (unsigned) gP3VtShape;
+			renderer[0] = (unsigned) gP3VtRenderer;
+			gP6LN = 0;
+			memset(gP6L, 0, sizeof(gP6L));
+			if(side == 0) ((void (__thiscall*)(void*, void*)) (base + 0x00025960))(shape, renderer);
+			else nxShp1305(shape, 0, (unsigned) renderer);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &gP6LN, 4);
+			canon.fold(&d, gP6L, gP6LN * 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(shape); ::free(renderer);
+			}
+		P3_FINISH("001305");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	oracleB0[0] = saved[0]; oracle34[0] = saved[1]; oracleC0[0] = saved[2];
+	gParameter[0xb0 / 4] = saved[3]; gParameter[0x34 / 4] = saved[4]; gParameter[0xc0 / 4] = saved[5];
+	}
+
+	// phys_fn_001345 (0x00027710): the shape's scalar deleting destructor, flag clear and set.
+	for(unsigned flag = 0; flag < 2; ++flag)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			allocator.reset();
+			void* shape;
+			if(side == 0)
+				{
+				NxU8* bytes = (NxU8*) allocator.malloc(0xe0);
+				memset(bytes, 0, 0xe0);
+				*(NxU32*) (bytes + 0xcc) = 0xffffu;
+				shape = bytes;
+				}
+			else shape = new(allocator.malloc(sizeof(ShapeBase))) ShapeBase(0, 0);
+			const unsigned before = allocator.frees;
+			if(side == 0) ((void (__thiscall*)(void*, unsigned)) (base + 0x00027710))(shape, flag);
+			else nxShp1345(shape, 0, flag);
+			const unsigned freed = allocator.frees - before;
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &freed, 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P3_FINISH("001345");
+		nxFoldInput(&inputDigest, &flag, 4);
+		}
+	allocator.reset();
+
+	// phys_fn_001935 (0x0004b9c0): the visualisation node callback, on the two paths that draw nothing (no node, a node with no box).
+	{
+	for(unsigned c = 0; c < 4; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned char node[0x30];
+			memset(node, 0, sizeof(node));
+			void* const argument = (c & 1) ? 0 : node;
+			const unsigned result = side == 0 ? ((bool (__cdecl*)(void*, void*)) (base + 0x0004b9c0))(0, argument) & 0xffu
+				: nxPrunerVisualizeNodeCallback(0, argument) & 0xffu;
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &result, 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P3_FINISH("001935");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+
+	// phys_fn_001945 / 001947 (0x0004bbd0): the scene's removal of an owner's prunables, the oracle against the row.
+	{
+	struct Fixture { NxU8 manager[0x90], owner[0xb0], shape[0x100], child[0x100]; void* children[4]; void* sap; };
+	for(unsigned kind = 0; kind < 3; ++kind)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			allocator.reset();
+			Fixture f;
+			memset(&f, 0, sizeof(f));
+			const bool withSap = kind != 0, compound = kind == 2;
+			*(void**) (f.owner + 0x10) = f.shape;
+			*(NxU32*) (f.shape + 0xa0) = 0xabcdef01u;
+			*(NxU32*) (f.shape + 0xcc) = 0xffffu; *(NxU32*) (f.child + 0xcc) = 0xffffu;
+			*(NxU32*) (f.shape + 0xd0) = compound ? 5u : 0x7fffffffu;
+			if(compound) { f.children[0] = f.child; *(void***) (f.shape + 0xe0) = f.children; *(void***) (f.shape + 0xe4) = f.children + 1; }
+			if(withSap)
+				{
+				f.sap = allocator.malloc(0x30);
+				memset(f.sap, 0, 0x30);
+				*(void**) (f.manager + 0x2c) = f.sap;
+				NxU8* sap = (NxU8*) f.sap;
+				*(void**) (sap + 0x1c) = allocator.malloc(8); *(void**) (sap + 0x20) = allocator.malloc(8);
+				*(void**) (sap + 0x24) = allocator.malloc(8); *(void**) (sap + 0x28) = allocator.malloc(8);
+				NxU8* pairAllocation = (NxU8*) allocator.malloc(8);
+				*(void**) (sap + 8) = pairAllocation + 4;
+				*(void**) (sap + 0x14) = allocator.malloc(8);
+				}
+			if(side == 0) ((void (__thiscall*)(void*, void*)) (base + 0x0004bbd0))(f.manager, f.owner);
+			else nxPrunerOwnerDestroyRow(f.manager, 0, f.owner);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned freed = allocator.frees;
+			const NxU32 a0 = *(NxU32*) (f.shape + 0xa0);
+			const NxU32 sapLeft = *(void**) (f.manager + 0x2c) ? 1u : 0u;
+			nxFoldInput(&d, &freed, 4); nxFoldInput(&d, &a0, 4); nxFoldInput(&d, &sapLeft, 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P3_FINISH("001947");
+		nxFoldInput(&inputDigest, &kind, 4);
+		}
+	allocator.reset();
+	}
+	#undef P3_FINISH
+	printf("collision name=phase3_rows index=- rva=0x000258f0 owner=phys_fn_001303 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=001303,001305,001345,001935,001947\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=phase3_rows row=001303 case=ccd_refresh_body_flag_and_world_box\n");
+	printf("collision coverage name=phase3_rows row=001305 case=box_debug_render_parameter_gates\n");
+	printf("collision coverage name=phase3_rows row=001345 case=shape_scalar_deleting_destructor\n");
+	printf("collision coverage name=phase3_rows row=001935 case=visualize_node_callback_no_draw_paths\n");
+	printf("collision coverage name=phase3_rows row=001947 case=owner_prunable_removal_row\n");
+	nxPrintInput("phase3_rows", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -6042,6 +6309,7 @@ int wmain(int argc, wchar_t** argv)
 		{
 		unsigned mismatches = nxDrivePhase6Rows(base);
 		mismatches += nxDrivePhase6Large(base);
+		mismatches += nxDrivePhase3Rows(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;

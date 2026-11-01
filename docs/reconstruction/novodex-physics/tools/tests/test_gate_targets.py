@@ -526,7 +526,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"2": 18, "3": 988, "4": 565, "5": 2970, "6": 1841, "7": 3117}
+    MINIMUM = {"2": 18, "3": 988, "4": 565, "5": 2970, "6": 1848, "7": 3117}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
