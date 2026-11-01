@@ -602,3 +602,21 @@ Per-row measurements (row, mutation, count):
 - `phys_fn_002132`: 0x00053158 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
 - `phys_fn_002134`: 0x00053170 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
 - `phys_fn_002136`: 0x000531f8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+
+## Testing pass
+
+- `phys_fn_002247`: 0x00055187 lea ecx, [esp + 0x20] -> lea ecx, [esp + 0x24] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=29.
+- `phys_fn_002077`: 0x000520b0 mov dword ptr [ebx], ebp -> mov dword ptr [ebx + 4], ebp [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002190`: 0x00054501 mov ebx, dword ptr [esp + 8] -> mov ebx, dword ptr [esp + 12] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=29.
+- `phys_fn_002192`: 0x0005455f mov ebx, dword ptr [esi + 0xc] -> mov ebx, dword ptr [esi + 0x10] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=29.
+- `phys_fn_002194`: 0x000545d3 mov ebp, dword ptr [esi + 0x98] -> mov ebp, dword ptr [esi + 0x9c] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=29.
+- `phys_fn_002256`: 0x000556c9 lea edi, [ebx + 8] -> lea edi, [ebx + 12] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=29.
+- `phys_fn_002255`: 0x000555f3 mov ecx, dword ptr [esi + 0xa0] -> mov ecx, dword ptr [esi + 0xa4] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=19.
+- `phys_fn_002243`: 0x00054e77 mov eax, dword ptr [ebp + 0x3c] -> mov eax, dword ptr [ebp + 0x40] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=19.
+- `phys_fn_002245`: 0x00054f10 mov edx, dword ptr [esp + 0x10] -> mov edx, dword ptr [esp + 0x14] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=19.
+- `phys_fn_002184`: 0x000542b9 mov edx, dword ptr [ebp + 0x3c] -> mov edx, dword ptr [ebp + 0x40] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=19.
+- `phys_fn_002178`: 0x00053f46 mov eax, dword ptr [esi + 0xa0] -> mov eax, dword ptr [esi + 0xa4] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=19.
+- `phys_fn_002200`: 0x00054640 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002205`: 0x00054720 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_001524`: 0x0002d950 lea ecx, [esi + 0x80] -> lea ecx, [esi + 0x84] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=18.
+- `phys_fn_001528`: 0x0002d99a mov edx, dword ptr [eax] -> mov edx, dword ptr [eax + 4] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=18.

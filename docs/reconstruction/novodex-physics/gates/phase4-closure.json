@@ -54,11 +54,11 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 879,
+    "deferred_reconstructed_not_falsified": 864,
     "deferred_not_reconstructed_in_phase": 17,
     "deferred_vendored_not_falsified": 19,
     "oracle_differential_falsified": 55,
-    "differential_falsified": 40,
+    "differential_falsified": 55,
     "deferred_blocked_on_later_phase": 43
   },
   "closed": [
@@ -1040,6 +1040,156 @@
         "mutation": "0x000531f8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
         "detected": "stdout_delta=28"
       }
+    },
+    {
+      "id": "phys_fn_002247",
+      "rva": "0x00055180",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x00055187 lea ecx, [esp + 0x20] -> lea ecx, [esp + 0x24] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=29"
+      }
+    },
+    {
+      "id": "phys_fn_002077",
+      "rva": "0x00052060",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x000520b0 mov dword ptr [ebx], ebp -> mov dword ptr [ebx + 4], ebp [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_002190",
+      "rva": "0x00054500",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x00054501 mov ebx, dword ptr [esp + 8] -> mov ebx, dword ptr [esp + 12] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=29"
+      }
+    },
+    {
+      "id": "phys_fn_002192",
+      "rva": "0x00054550",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x0005455f mov ebx, dword ptr [esi + 0xc] -> mov ebx, dword ptr [esi + 0x10] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=29"
+      }
+    },
+    {
+      "id": "phys_fn_002194",
+      "rva": "0x000545d0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x000545d3 mov ebp, dword ptr [esi + 0x98] -> mov ebp, dword ptr [esi + 0x9c] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=29"
+      }
+    },
+    {
+      "id": "phys_fn_002256",
+      "rva": "0x000556c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x000556c9 lea edi, [ebx + 8] -> lea edi, [ebx + 12] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=29"
+      }
+    },
+    {
+      "id": "phys_fn_002255",
+      "rva": "0x000555b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "0x000555f3 mov ecx, dword ptr [esi + 0xa0] -> mov ecx, dword ptr [esi + 0xa4] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=19"
+      }
+    },
+    {
+      "id": "phys_fn_002243",
+      "rva": "0x00054e70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "0x00054e77 mov eax, dword ptr [ebp + 0x3c] -> mov eax, dword ptr [ebp + 0x40] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=19"
+      }
+    },
+    {
+      "id": "phys_fn_002245",
+      "rva": "0x00054f10",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "0x00054f10 mov edx, dword ptr [esp + 0x10] -> mov edx, dword ptr [esp + 0x14] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=19"
+      }
+    },
+    {
+      "id": "phys_fn_002184",
+      "rva": "0x00054270",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "0x000542b9 mov edx, dword ptr [ebp + 0x3c] -> mov edx, dword ptr [ebp + 0x40] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=19"
+      }
+    },
+    {
+      "id": "phys_fn_002178",
+      "rva": "0x00053f40",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "0x00053f46 mov eax, dword ptr [esi + 0xa0] -> mov eax, dword ptr [esi + 0xa4] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=19"
+      }
+    },
+    {
+      "id": "phys_fn_002200",
+      "rva": "0x00054640",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x00054640 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_002205",
+      "rva": "0x00054720",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x00054720 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=28"
+      }
+    },
+    {
+      "id": "phys_fn_001524",
+      "rva": "0x0002d940",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "0x0002d950 lea ecx, [esi + 0x80] -> lea ecx, [esi + 0x84] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=18"
+      }
+    },
+    {
+      "id": "phys_fn_001528",
+      "rva": "0x0002d980",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsConvexMeshTests",
+      "falsification": {
+        "mutation": "0x0002d99a mov edx, dword ptr [eax] -> mov edx, dword ptr [eax + 4] [swept with --count-crash: a candidate fault with differing output counts]",
+        "detected": "stdout_delta=18"
+      }
     }
   ],
   "deferred": [
@@ -1114,24 +1264,6 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001522-mutation.patch (`jne` -> `je` at 0x0002d774, the edge loop's comparison) gave polygon_interface 631, contact_convex_convex 1415, contact_convex_hulls 17116. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
-    },
-    {
-      "id": "phys_fn_001524",
-      "rva": "0x0002d940",
-      "size": 43,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001528",
-      "rva": "0x0002d980",
-      "size": 40,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001537",
@@ -1824,15 +1956,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_002077",
-      "rva": "0x00052060",
-      "size": 331,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_002079",
       "rva": "0x000521b0",
       "size": 133,
@@ -1967,24 +2090,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_002178",
-      "rva": "0x00053f40",
-      "size": 511,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002184",
-      "rva": "0x00054270",
-      "size": 337,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_002186",
       "rva": "0x000543d0",
       "size": 143,
@@ -2001,51 +2106,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_002190",
-      "rva": "0x00054500",
-      "size": 70,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002192",
-      "rva": "0x00054550",
-      "size": 121,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002194",
-      "rva": "0x000545d0",
-      "size": 73,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002200",
-      "rva": "0x00054640",
-      "size": 89,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002205",
-      "rva": "0x00054720",
-      "size": 115,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002217",
@@ -2168,33 +2228,6 @@
       "note": "Transcribed from its listing (evidence/phase3-mesh-debug-mass.md) as a callee of the mesh shape's slot 4 (phys_fn_001397) and driven there by NxPhysicsCollisionTests' mesh_mass family, exact, with row-aimed mutations rejected (the cache sign test `jp` at 0x00054bd8 made `jnp`; mismatches=210). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
-      "id": "phys_fn_002243",
-      "rva": "0x00054e70",
-      "size": 157,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002245",
-      "rva": "0x00054f10",
-      "size": 619,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002247",
-      "rva": "0x00055180",
-      "size": 309,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_002249",
       "rva": "0x000552c0",
       "size": 459,
@@ -2218,24 +2251,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002255",
-      "rva": "0x000555b0",
-      "size": 272,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_002256",
-      "rva": "0x000556c0",
-      "size": 330,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-triangle-mesh-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002260",

@@ -270,6 +270,7 @@ def main(argv=None):
     if a.falsified:
         oracle, staged = gate_targets(str(here / 'tools' / 'gate_targets.ps1'))
         falsify(manifest, inventory, closures, oracle, staged)
+        publish_measurements(manifest, inventory, closures, str(here))
         program, pnl = _read(str(here / 'program.json'))
         closed_by_phase = {ph: sum(1 for r in inventory['functions'] if r['id'] in manifest['rows'] and int(r['phase']) == ph)
                            for ph in phases}
