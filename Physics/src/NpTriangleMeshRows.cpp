@@ -9,8 +9,8 @@
 // NpTriangleMeshRows.cpp: the public triangle mesh's methods (the oracle's NpTriangleMesh.cpp, vtable at .rdata
 // 0x00108298): each one takes every scene's lock (the SDK's scene list), calls the internal mesh at +4 through its
 // table and releases the locks. Naked listing transcriptions of phys_fn_002095 to 002138, each a thunk-and-body pair
-// the inventory splits at the loop's jump target. The candidate has no public triangle-mesh facade object yet, so
-// nothing calls them. Compare script: docs/reconstruction/novodex-physics/evidence/phase4-np-triangle-mesh-rows-listing-compare.py.
+// the inventory splits at the loop's jump target. The DLL's NxTriangleMesh wrapper (TriangleMesh.cpp, under
+// NX_NP_TRIANGLE_MESH_ROWS) calls them. Compare script: docs/reconstruction/novodex-physics/evidence/phase4-np-triangle-mesh-rows-listing-compare.py.
 #include "NxPhysics.h"
 
 extern "C" void nxNpMeshCallGetNbScenes();

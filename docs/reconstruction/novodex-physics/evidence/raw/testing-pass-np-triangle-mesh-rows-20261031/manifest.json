@@ -1,0 +1,149 @@
+{
+ "doc": "evidence/raw/testing-pass-np-triangle-mesh-rows-20261031/mutations.txt",
+ "rows": {
+  "phys_fn_002097": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052ab9 call dword ptr [edx + 8] -> call dword ptr [edx + 12]",
+   "detected": "stdout_delta=26"
+  },
+  "phys_fn_002126": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00053054 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]",
+   "detected": "stdout_delta=28"
+  },
+  "phys_fn_002130": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x000530f4 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]",
+   "detected": "stdout_delta=20"
+  },
+  "phys_fn_002138": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00053234 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]",
+   "detected": "stdout_delta=28"
+  },
+  "phys_fn_002095": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052a73 jbe L52aae -> ja L52aae [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=23"
+  },
+  "phys_fn_002098": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052b63 jbe L52b9e -> ja L52b9e [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=26"
+  },
+  "phys_fn_002100": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052b7c mov eax, dword ptr [eax + 0x6cc] -> mov eax, dword ptr [eax + 0x6d0] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=6"
+  },
+  "phys_fn_002101": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052c53 jbe L52c8e -> ja L52c8e [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=26"
+  },
+  "phys_fn_002103": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052c6c mov eax, dword ptr [eax + 0x6cc] -> mov eax, dword ptr [eax + 0x6d0] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=6"
+  },
+  "phys_fn_002104": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052d38 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=26"
+  },
+  "phys_fn_002106": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052d50 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=6"
+  },
+  "phys_fn_002108": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052dc8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=26"
+  },
+  "phys_fn_002110": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052de0 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=6"
+  },
+  "phys_fn_002112": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052e58 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=26"
+  },
+  "phys_fn_002114": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052e94 mov ecx, dword ptr [ebx + 4] -> mov ecx, dword ptr [ebx + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=26"
+  },
+  "phys_fn_002116": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052ef8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=28"
+  },
+  "phys_fn_002118": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052f10 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=6"
+  },
+  "phys_fn_002120": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052f88 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=28"
+  },
+  "phys_fn_002122": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00052fa0 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=6"
+  },
+  "phys_fn_002124": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00053018 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=28"
+  },
+  "phys_fn_002128": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x000530b8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=28"
+  },
+  "phys_fn_002132": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00053158 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=28"
+  },
+  "phys_fn_002134": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00053170 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=6"
+  },
+  "phys_fn_002136": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x000531f8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]",
+   "detected": "stdout_delta=28"
+  }
+ }
+}

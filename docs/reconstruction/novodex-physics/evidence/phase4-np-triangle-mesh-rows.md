@@ -31,10 +31,8 @@ into a thunk and a body at the first loop's jump target.
 expected (`raw/phase4-np-triangle-mesh-rows-20261030/listing-compare.txt`). `PhysicsSDK::instance` is reached by
 name, through an alias.
 
-**Not wired.** The candidate exposes the internal mesh directly and has no public triangle-mesh facade object, so
-nothing calls these rows. They are listed for the testing pass, which needs that facade to drive them.
+**Wired and driven.** The DLL's `NxTriangleMesh` wrapper (`TriangleMesh.cpp`, under `NX_NP_TRIANGLE_MESH_ROWS`) calls the twelve methods, and the internal `TriangleMesh` carries a table for the slots they call (slots 3 and 9 take one argument; the `push ebx` before it is the row saving the register). `NxPhysicsTriangleMeshApiTests` drives every method, with a scene alive so the lock loops run. All 24 rows are falsified by a mutation inside their range (`raw/testing-pass-np-triangle-mesh-rows-20261031/`); 20 of them by a mutation that faults the candidate while its output differs (`--count-crash`), the rest by an output difference.
 
 Rows with indirect calls: all except 002120/002122 (the internal mesh's table) and the write-lock rows (the error
 import).
-
-The rows await the testing pass.
+
