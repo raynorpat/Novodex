@@ -134,6 +134,7 @@ unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
 #if NX_TRIANGLE_MESH_ROWS
 // The oracle's internal mesh rows (TriangleMeshRows.cpp): the part maps.
 unsigned __fastcall nxTM2247(void*, void*);
+unsigned __fastcall nxTM2239(void*, void*);
 unsigned __fastcall nxTM2256(void*, void*, unsigned);
 unsigned __fastcall nxTM2255(void*, void*);
 unsigned __fastcall nxPMapScalarDelete(void*, void*, unsigned);
@@ -614,6 +615,10 @@ TriangleMesh::~TriangleMesh()
 		mPublicObject = 0;
 		}
 
+#if NX_TRIANGLE_MESH_ROWS
+	// phys_fn_002239: the mesh's release, everything after the public wrapper
+	nxTM2239(this, 0);
+#else
 	// phys_fn_002253 calls 002067 through the cleanup helper before releasing
 	// its adjacent TriangleMesh-owned arrays and cache objects.
 	nxInternalMeshRelease(&mInternal);
@@ -662,6 +667,7 @@ TriangleMesh::~TriangleMesh()
 		nxIceFree(mAdjacencies);
 		mAdjacencies = 0;
 		}
+#endif
 	}
 
 // phys_fn_002258 (oracle RVA 0x00055810): a live MeshShape owns one reference
