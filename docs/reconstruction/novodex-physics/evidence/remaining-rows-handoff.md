@@ -101,3 +101,7 @@ for the testing pass:
 Found in passing, outside the pass: `evidence/convex-mesh-gap-2f-listing-compare.py`, `-2g-` and `-2l-` fail before
 comparing (a symbol lookup that matches two candidates, and an unpacking error), with the committed
 `listing_compare_lib.py` as well; they predate the pass and need their symbol names refreshed.
+
+## Update: the testing pass
+
+The testing pass that this hand-off asked for is recorded in `evidence/testing-pass-handoff.md`: 80 of the 184 rows were wired, driven and falsified; 104 are held with reasons.

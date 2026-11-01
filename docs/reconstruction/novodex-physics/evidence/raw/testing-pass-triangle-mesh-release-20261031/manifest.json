@@ -1,0 +1,11 @@
+{
+ "doc": "evidence/raw/testing-pass-triangle-mesh-release-20261031/mutations.txt",
+ "rows": {
+  "phys_fn_002239": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "0x00054a85 lea ecx, [esi + 8] -> lea ecx, [esi + 12] [swept with --count-crash]",
+   "detected": "stdout_delta=26"
+  }
+ }
+}

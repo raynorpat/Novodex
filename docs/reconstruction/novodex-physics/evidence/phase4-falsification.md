@@ -624,3 +624,7 @@ Per-row measurements (row, mutation, count):
 ## Testing pass
 
 - `phys_fn_002031`: 0x0004ff23 mov eax, dword ptr [esi + 0x70] -> mov eax, dword ptr [esi + 0x74] [swept with --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+
+## Testing pass
+
+- `phys_fn_002239`: 0x00054a85 lea ecx, [esi + 8] -> lea ecx, [esi + 12] [swept with --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.

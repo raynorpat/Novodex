@@ -1,0 +1,1 @@
+CAUGHT phys_fn_002239 NxPhysicsTriangleMeshApiTests stdout_delta=26 0x00054a85  lea ecx, [esi + 8]  ->  lea ecx, [esi + 12]  [swept with --count-crash]
