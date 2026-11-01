@@ -54,10 +54,10 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 847,
+    "deferred_reconstructed_not_falsified": 839,
     "deferred_not_reconstructed_in_phase": 17,
     "deferred_vendored_not_falsified": 19,
-    "oracle_differential_falsified": 70,
+    "oracle_differential_falsified": 78,
     "differential_falsified": 57,
     "deferred_blocked_on_later_phase": 43
   },
@@ -1359,6 +1359,86 @@
       "falsification": {
         "mutation": "0x000f3e73 test byte ptr [ecx + eax + 0xc], 1 -> test byte ptr [ecx + eax + 0xc], 2",
         "detected": "mismatches=6"
+      }
+    },
+    {
+      "id": "phys_fn_004852",
+      "rva": "0x000b5090",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000b5090 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8]",
+        "detected": "mismatches=4"
+      }
+    },
+    {
+      "id": "phys_fn_005448",
+      "rva": "0x000ef670",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000ef67e mov dword ptr [esi], offset nxKnVtType3 -> mov dword ptr [esi + 4], offset nxKnVtType3",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_004830",
+      "rva": "0x000b4cc0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000b4cdc push 0x1c -> push 0x1d",
+        "detected": "mismatches=4"
+      }
+    },
+    {
+      "id": "phys_fn_004832",
+      "rva": "0x000b4d20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000b4d2c mov eax, dword ptr [eax] -> mov eax, dword ptr [eax + 4]",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_004834",
+      "rva": "0x000b4d40",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000b4d48 je Lb4d6a -> jne Lb4d6a",
+        "detected": "mismatches=4"
+      }
+    },
+    {
+      "id": "phys_fn_004790",
+      "rva": "0x000b3d20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000b3d20 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8]",
+        "detected": "mismatches=4"
+      }
+    },
+    {
+      "id": "phys_fn_004793",
+      "rva": "0x000b3dc0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000b3ddd je Lb3df2 -> jne Lb3df2",
+        "detected": "mismatches=9"
+      }
+    },
+    {
+      "id": "phys_fn_004801",
+      "rva": "0x000b3fb0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsType3PrunerTests",
+      "falsification": {
+        "mutation": "0x000b3fbd mov eax, dword ptr [esp + 0x10] -> mov eax, dword ptr [esp + 0x14]",
+        "detected": "mismatches=12"
       }
     }
   ],
@@ -6635,63 +6715,9 @@
       "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_004790",
-      "rva": "0x000b3d20",
-      "size": 144,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004793",
-      "rva": "0x000b3dc0",
-      "size": 102,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004801",
-      "rva": "0x000b3fb0",
-      "size": 79,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_004828",
       "rva": "0x000b4c40",
       "size": 123,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004830",
-      "rva": "0x000b4cc0",
-      "size": 82,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004832",
-      "rva": "0x000b4d20",
-      "size": 21,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004834",
-      "rva": "0x000b4d40",
-      "size": 43,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
@@ -6714,15 +6740,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "Transcribed from its listing (evidence/vendored-correspondence.md) and executed exactly against the oracle in container_copy."
-    },
-    {
-      "id": "phys_fn_004852",
-      "rva": "0x000b5090",
-      "size": 147,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004899",
@@ -8589,15 +8606,6 @@
       "size": 133,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_005448",
-      "rva": "0x000ef670",
-      "size": 29,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
       "driving_phases": [],
       "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },

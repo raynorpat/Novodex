@@ -5641,7 +5641,20 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=pruner_support_stream row=005606 case=pool_save_and_load',
         'collision coverage name=pruner_support_stream row=005624 case=pool_save',
         'collision coverage name=pruner_support_stream row=005642 case=pool_save_and_load',
-        'collision input name=pruner_support_stream words=1056 input=95884b08005aec63'
+        'collision input name=pruner_support_stream words=1056 input=95884b08005aec63',
+        # the pruner process pool, the pruner factory and the stream-to-file rows (PrunerSupportRows.cpp)
+        'collision name=pruner_support_pool index=- rva=0x000b5090 owner=phys_fn_004852 checks=9 oracle=099917f7be0369be',
+        'collision coverage name=pruner_support_pool row=004852 case=factory_types_and_refusal',
+        'collision coverage name=pruner_support_pool row=005448 case=type3_pruner_construction',
+        'collision coverage name=pruner_support_pool row=004830 case=owner_registered_pool_created',
+        'collision coverage name=pruner_support_pool row=004832 case=owner_removed',
+        'collision coverage name=pruner_support_pool row=004834 case=pool_released',
+        'collision input name=pruner_support_pool words=53 input=39877a5fb41d6d00',
+        'collision name=pruner_support_file index=- rva=0x000b3d20 owner=phys_fn_004790 checks=26 oracle=efad0520faa90226',
+        'collision coverage name=pruner_support_file row=004790 case=file_sizes_missing_null_and_empty_name',
+        'collision coverage name=pruner_support_file row=004793 case=blocks_written_to_file',
+        'collision coverage name=pruner_support_file row=004801 case=default_explicit_and_append_modes_and_open_failure',
+        'collision input name=pruner_support_file words=460 input=cf614665a6409537'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -6526,7 +6539,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 623  # plus the seven pruner_support_stream lines (rows 004799, 005586-005646); previous 616: plus the seven pruner_support_leaf lines (rows 005404, 005380, 004870, 004872, 005279); previous 609: plus the 15 vendored-rows drive families (the vendored-rows pass, Task 6); previous 594: plus the two hull-shape families (rows 001411, 001415 to 001419)
+	'4' = 635  # plus the twelve pruner_support_pool and pruner_support_file lines (rows 004852, 005448, 004830-004834, 004790-004801); previous 623: plus the seven pruner_support_stream lines (rows 004799, 005586-005646); previous 616: plus the seven pruner_support_leaf lines (rows 005404, 005380, 004870, 004872, 005279); previous 609: plus the 15 vendored-rows drive families (the vendored-rows pass, Task 6); previous 594: plus the two hull-shape families (rows 001411, 001415 to 001419)
 	           # previous 592: the three P-Hull class families (rows 001443 to 001494)
 	           # previous 589: the seven hull-flood families (rows 001423 to 001437, 001655)
 	           # previous 582: the three PMap compute-arm families (rows 002019/002021/002025 and the nearest-face collider)

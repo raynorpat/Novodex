@@ -1,0 +1,53 @@
+{
+ "doc": "evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt",
+ "rows": {
+  "phys_fn_004852": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b5090 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8]",
+   "detected": "mismatches=4"
+  },
+  "phys_fn_005448": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000ef67e mov dword ptr [esi], offset nxKnVtType3 -> mov dword ptr [esi + 4], offset nxKnVtType3",
+   "detected": "mismatches=1"
+  },
+  "phys_fn_004830": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b4cdc push 0x1c -> push 0x1d",
+   "detected": "mismatches=4"
+  },
+  "phys_fn_004832": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b4d2c mov eax, dword ptr [eax] -> mov eax, dword ptr [eax + 4]",
+   "detected": "mismatches=1"
+  },
+  "phys_fn_004834": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b4d48 je Lb4d6a -> jne Lb4d6a",
+   "detected": "mismatches=4"
+  },
+  "phys_fn_004790": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b3d20 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8]",
+   "detected": "mismatches=4"
+  },
+  "phys_fn_004793": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b3ddd je Lb3df2 -> jne Lb3df2",
+   "detected": "mismatches=9"
+  },
+  "phys_fn_004801": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b3fbd mov eax, dword ptr [esp + 0x10] -> mov eax, dword ptr [esp + 0x14]",
+   "detected": "mismatches=12"
+  }
+ }
+}

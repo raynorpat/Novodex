@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 100 of the 184 rows closed; 84 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 108 of the 184 rows closed; 76 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -36,7 +36,7 @@ time. The ruling is in the ledger; the sweeper's default still refuses a crash.
 * 001935 and 001947: the visualisation walk passes a callback shape the candidate's walk does not; 001947 needs the
   scene globals linked into the ObjectModel-only targets.
 
-**Phase 4 (39 rows).**
+**Phase 4 (31 rows).**
 * 001988, 001992–002006, 002010–002014 (the cell-run coder): the encoder rows are interior fragments of
   phys_fn_001990 with no callable head, the decoder takes its stream in `esi`, and the whole coder keeps its cursor in
   `.data` statics where `PMap.cpp` passes a cursor struct. Wiring means rewriting `PMap.cpp`'s coder around the
@@ -151,3 +151,27 @@ Two product changes came out of it:
 **004799 stays held.** The same family catches a mutation in it, but it is a phase 6 row and the only registered gate
 that could discharge it is `NxPhysicsCollisionTests` in phase 7, which program.json records as pending; the ledger
 will not close a row on a gate that has not passed. Closing it needs the family hosted by a phase 6 oracle target.
+
+## Update (fifth slice: the pruner pool, the factory and the stream-to-file rows)
+
+Eight more pruner support rows are closed (`raw/testing-pass-pruner-pool-file-20261101/`) by two oracle-differential
+families in `tests/PhysicsCollisionTests.cpp`, both run by `--type3-pruner-only` (the phase 4 target
+`NxPhysicsType3PrunerTests`, floor now 635) and by their own flags:
+
+* `pruner_support_pool`: the pruner factory 004852 (with 005448 under it for the fourth type) and the process pool
+  registry 004830 (register an owner, creating the pool), 004832 (remove) and 004834 (release the pool).
+* `pruner_support_file`: 004790 (a stream over a file), 004793 (write the blocks to a `FILE*`) and 004801 (open a file
+  in a mode and write).
+
+Two product defects came out of it:
+* **Row 004834 called the wrong release.** It called `nxOpcodeReleasePool`, which on the candidate destroys and frees
+  the whole singleton; the oracle's callee releases the pool's own storage and the row then frees the object. The
+  candidate side double-freed. The row now calls the pool's destructor (`??1NxPrunerProcessPool`).
+* **`MemoryStream`'s block allocator took a `FILE*` for a memset.** Its third argument is a `FILE*` the data is read
+  from with `fread` (`push fill, 1, size, data`, `add esp, 0x10`); it was reconstructed as a memset of the byte 1.
+  Nothing had driven it, since every other caller passes zero.
+
+Fixture notes: the families' allocator hands out zeroed memory (the constructors leave padding untouched), and the
+object folds treat any word in `[0x00100000, 0x7fff0000)` as an address, because the test executable can load as low
+as `0x00100000`. A null file name was left out of the 004790 cases: the oracle's CRT returns a null `FILE*` for it, the
+candidate's CRT faults. 004828 (the sorters' destructors) stays held until a RadixSort can be built on the oracle side.

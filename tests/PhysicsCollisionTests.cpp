@@ -4806,7 +4806,8 @@ static void nxLeafFoldObject(NxDigest* digest, const void* object, unsigned byte
 	for(unsigned i = 0; i < bytes / 4; ++i)
 		{
 		unsigned value = words[i];
-		if(value >= 0x00400000u && value < 0x7fff0000u) value = 0xa11add00u;
+		// the executable can load as low as 0x00100000
+		if(value >= 0x00100000u && value < 0x7fff0000u) value = 0xa11add00u;
 		nxFoldInput(digest, &value, 4);
 		}
 	}
