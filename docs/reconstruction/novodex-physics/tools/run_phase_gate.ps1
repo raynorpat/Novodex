@@ -213,7 +213,7 @@ Assert-True ($configuredPlatform -ceq 'Win32') 'the configured platform is Win32
 Invoke-Gate 'build_physics' 'cmake.exe' (@('--build', $buildRoot, '--config', 'Release', '--target', 'NxPhysics') + $targets + $staticProofTargets + $oracleDifferentialTargets)
 
 foreach ($target in ($targets + $staticProofTargets + $oracleDifferentialTargets)) {
-	$executableTarget = if ($target -ceq 'NxPhysicsType3PrunerTests') { 'NxPhysicsCollisionTests' } else { $target }
+	$executableTarget = if ($target -ceq 'NxPhysicsType3PrunerTests' -or $target -ceq 'NxPhysicsPhase6RowsTests') { 'NxPhysicsCollisionTests' } else { $target }
 	$exe = Join-Path $releaseRoot "$executableTarget.exe"
     Assert-True (Test-Path -LiteralPath $exe -PathType Leaf) "built test target exists: $exe"
 }
@@ -253,11 +253,14 @@ if ($oracleDifferentialTargets.Count -gt 0) {
     Write-Host '=== oracle differential (one run, not one per pair) ==='
     foreach ($target in $oracleDifferentialTargets) {
         $targetOracleTranscript = [Collections.Generic.List[string]]::new()
-        $executableTarget = if ($target -ceq 'NxPhysicsType3PrunerTests') { 'NxPhysicsCollisionTests' } else { $target }
+        $executableTarget = if ($target -ceq 'NxPhysicsType3PrunerTests' -or $target -ceq 'NxPhysicsPhase6RowsTests') { 'NxPhysicsCollisionTests' } else { $target }
         $exe = Join-Path $releaseRoot "$executableTarget.exe"
         $targetArguments = @($oracleDirectory, $oracleHash)
         if ($target -ceq 'NxPhysicsType3PrunerTests') {
             $targetArguments += '--type3-pruner-only'
+        }
+        if ($target -ceq 'NxPhysicsPhase6RowsTests') {
+            $targetArguments += '--phase6-rows-only'
         }
         if ($target -ceq 'NxPhysicsFluidEmitterAbiTests') {
             $targetArguments += $oracleImageAlias

@@ -122,7 +122,7 @@ function New-Pair([string] $Name, [string] $PhysicsSource, [string] $FoundationS
 }
 
 function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
-    $executableTarget = if ($Target -ceq 'NxPhysicsType3PrunerTests') { 'NxPhysicsCollisionTests' } else { $Target }
+    $executableTarget = if ($Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsPhase6RowsTests') { 'NxPhysicsCollisionTests' } else { $Target }
     $exe = Join-Path $releaseRoot "$executableTarget.exe"
     Assert-True (Test-Path -LiteralPath $exe -PathType Leaf) "test target is built: $exe"
 
@@ -131,7 +131,7 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
     # Most probes receive only the pair directory. Direct oracle fixtures pin
     # the exact staged Physics image before making private RVA calls.
     $arguments = @('"' + $Pair.Directory + '"')
-    if ($Target -ceq 'NxPhysicsThirdPartyTests' -or $Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsJointSupportTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
+    if ($Target -ceq 'NxPhysicsThirdPartyTests' -or $Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsPhase6RowsTests' -or $Target -ceq 'NxPhysicsJointSupportTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
         # This probe hashes the staged oracle before loading it. Supplying the
         # staged pair's identity keeps direct invocations bound to the exact
         # DLL selected by the differential runner.
@@ -144,6 +144,9 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
     }
     if ($Target -ceq 'NxPhysicsType3PrunerTests') {
         $arguments += '--type3-pruner-only'
+    }
+    if ($Target -ceq 'NxPhysicsPhase6RowsTests') {
+        $arguments += '--phase6-rows-only'
     }
     $startInfo.Arguments = $arguments -join ' '
     $startInfo.WorkingDirectory = $pairsRoot
@@ -171,7 +174,7 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
 
     $lines = @($stdout -split "`r?`n")
     Assert-NoCandidateFailures -Lines $lines -Context "$Target/$($Pair.Name)"
-    if ($Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests') {
+    if ($Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsPhase6RowsTests') {
         $expectedOracle = "oracle module path=$(Join-Path $Pair.Directory 'NxPhysics.dll') sha256=$($Pair.PhysicsSha256)"
         Assert-True ($lines -ccontains $expectedOracle) "$Target/$($Pair.Name) reported the staged oracle identity: $expectedOracle"
     }
@@ -189,7 +192,7 @@ function Invoke-Child([string] $Target, $Pair, [string] $CandidateSha256 = '') {
         $expectedFoundation = "binding NxComputeSquareDistance path=$candidateFoundation sha256=$candidateFoundationSha256"
         Assert-True ($lines -ccontains $expectedFoundation) "$Target/$($Pair.Name) reported the staged Foundation binding: $expectedFoundation"
     }
-    $loadedModules = if ($Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsThirdPartyTests') {
+    $loadedModules = if ($Target -ceq 'NxPhysicsCollisionTests' -or $Target -ceq 'NxPhysicsType3PrunerTests' -or $Target -ceq 'NxPhysicsPhase6RowsTests' -or $Target -ceq 'NxPhysicsThirdPartyTests') {
         @()
     }
     elseif ($Target -ceq 'NxPhysicsShapeVtableTests' -or $Target -ceq 'NxPhysicsObjectLayoutTests') {
@@ -342,7 +345,7 @@ foreach ($target in $Targets) {
         if (-not $exitExact) { $differences++ }
         continue
     }
-    if ($target -ceq 'NxPhysicsCollisionTests' -or $target -ceq 'NxPhysicsType3PrunerTests' -or $target -ceq 'NxPhysicsJointSupportTests') {
+    if ($target -ceq 'NxPhysicsCollisionTests' -or $target -ceq 'NxPhysicsType3PrunerTests' -or $target -ceq 'NxPhysicsPhase6RowsTests' -or $target -ceq 'NxPhysicsJointSupportTests') {
         # The fixture directly compares pinned oracle RVAs against candidate
         # implementations linked into the harness, so there is no second DLL
         # run to compare. Its own oracle-side assertions and coverage lines are

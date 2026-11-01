@@ -1262,6 +1262,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# Phase 4's focused type-3 oracle differential uses the same in-process
 	# candidate harness with a narrow command-line fixture selector.
 	add_custom_target(NxPhysicsType3PrunerTests DEPENDS NxPhysicsCollisionTests)
+	# Phase 6's focused row differential: the same harness, selected by --phase6-rows-only.
+	add_custom_target(NxPhysicsPhase6RowsTests DEPENDS NxPhysicsCollisionTests)
 	# No architecture rule here: source file properties are per directory, so
 	# the /arch:IA32 rule above already covers these two files in this target
 	# too. A second rule naming them would set the same value and silently

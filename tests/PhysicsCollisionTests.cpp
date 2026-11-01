@@ -5410,6 +5410,251 @@ static unsigned nxDrivePrunerSupportSorters(unsigned char* base)
 	return mismatches;
 	}
 
+// The Phase 6 rows that are small enough to drive on raw objects: phys_fn_004537 (the abstract NxJoint's scalar deleting
+// destructor), 004759 (an event list's constructor, over the list-node constructor 004407), 004405 (its factory, which
+// allocates 0x28 bytes from the Foundation allocator) and 004761 (the list's slot 5, which walks the nodes). Each runs at
+// its oracle address and as the candidate's transcription over the same inputs; the objects (addresses scrubbed), the
+// results, the allocator's requests and the calls a probe saw are compared.
+unsigned __fastcall nxP64537(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP64759(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2);
+unsigned __cdecl nxP64405();
+unsigned __fastcall nxP64761(void* self, void* edxUnused, unsigned a0);
+
+class NxLeafFailingAllocator : public NxUserAllocator
+	{
+	public:
+	unsigned sizes[64];
+	unsigned count;
+	bool fail;
+	NxLeafFailingAllocator() : count(0), fail(false) { memset(sizes, 0, sizeof(sizes)); }
+	void reset() { count = 0; fail = false; memset(sizes, 0, sizeof(sizes)); }
+	void* mallocDEBUG(size_t size, const char*, int) override { return take(size); }
+	void* malloc(size_t size) override { return take(size); }
+	void* realloc(void* memory, size_t size) override { return ::realloc(memory, size); }
+	void free(void* memory) override { ::free(memory); }
+	private:
+	void* take(size_t size) { if(count < 64) sizes[count] = (unsigned) size; ++count; return fail ? 0 : ::calloc(1, size); }
+	};
+
+static unsigned gPhase6Log[64];
+static unsigned gPhase6LogCount;
+static void __fastcall nxPhase6Probe(void* node, void*, unsigned argument)
+	{
+	if(gPhase6LogCount < 62) { gPhase6Log[gPhase6LogCount++] = *(unsigned*) ((unsigned char*) node + 0x28); gPhase6Log[gPhase6LogCount++] = argument; }
+	}
+
+static unsigned nxDrivePhase6Rows(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("phase 6 rows fixture could not initialize foundation");
+	NxLeafFailingAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("phase 6 rows fixture could not install oracle allocator");
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, cases = 0;
+	unsigned seed = 0x6001c0deu;
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	#define P6_FINISH(NAME) do { ++cases; if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase6_rows row=%s case=%u\n", NAME, cases); } } while(0)
+
+	// phys_fn_004537 (0x000b15e0): the NxJoint table stored; the object freed only when bit 0 of the flag is set, so the
+	// flags used leave it clear (a freed object would have to come from each side's own CRT heap).
+	{
+	static const unsigned flags[4] = { 0, 2, 4, 0xfffffffeu };
+	for(unsigned c = 0; c < 4; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned char object[0x20];
+			memset(object, 0xcd, sizeof(object));
+			const unsigned result = side == 0 ? ((unsigned (__thiscall*)(void*, unsigned)) (base + 0x000b15e0))(object, flags[c])
+				: nxP64537(object, 0, flags[c]);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned same = result == (unsigned) object;
+			nxFoldInput(&d, &same, 4);
+			nxLeafFoldObject(&d, object, sizeof(object));
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P6_FINISH("004537");
+		nxFoldInput(&inputDigest, &flags[c], 4);
+		}
+	}
+
+	// phys_fn_004759 (0x000b38a0): the list constructor, with and without a parent.
+	{
+	for(unsigned c = 0; c < 8; ++c)
+		{
+		const unsigned a1 = nxLeafNext(&seed), a2 = nxLeafNext(&seed);
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned char parent[0x30], object[0x30];
+			memset(parent, 0, sizeof(parent));
+			memset(object, 0xcd, sizeof(object));
+			unsigned head = 0;
+			if(c & 1) { *(unsigned*) (parent + 0xc) = (unsigned) &head; *(unsigned*) (parent + 0x1c) = 0x11; *(unsigned*) (parent + 0x20) = c; }
+			void* const parentPointer = (c & 2) ? 0 : parent;
+			const unsigned result = side == 0 ? ((unsigned (__thiscall*)(void*, void*, unsigned, unsigned)) (base + 0x000b38a0))(object, parentPointer, a1, a2)
+				: nxP64759(object, 0, (unsigned) parentPointer, a1, a2);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned same = result == (unsigned) object;
+			nxFoldInput(&d, &same, 4);
+			// the parent's links point at the object: fold them as offsets from it
+			unsigned scrubParent[12], scrubObject[12];
+			memcpy(scrubParent, parent, sizeof(parent)); memcpy(scrubObject, object, sizeof(object));
+			for(unsigned i = 0; i < 12; ++i)
+				{
+				if(scrubParent[i] == (unsigned) object) scrubParent[i] = 0x0b1ec700u;
+				if(scrubParent[i] == (unsigned) &head) scrubParent[i] = 0x0eadc000u;
+				if(scrubObject[i] == (unsigned) object) scrubObject[i] = 0x0b1ec700u;
+				if(scrubObject[i] == (unsigned) parent) scrubObject[i] = 0x0a2e7700u;
+				if(scrubObject[i] == (unsigned) &head) scrubObject[i] = 0x0eadc000u;
+				}
+			nxLeafFoldObject(&d, scrubParent, sizeof(parent));
+			nxLeafFoldObject(&d, scrubObject, sizeof(object));
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P6_FINISH("004759");
+		nxFoldInput(&inputDigest, &c, 4);
+		nxFoldInput(&inputDigest, &a1, 4);
+		}
+	}
+
+	// phys_fn_004405 (0x000b02e0): the factory, including the allocation failure.
+	{
+	for(unsigned c = 0; c < 6; ++c)
+		{
+		const unsigned a0 = c & 1 ? 0u : 0x1000u, a1 = nxLeafNext(&seed), a2 = nxLeafNext(&seed);
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			allocator.reset();
+			allocator.fail = (c >= 4);
+			unsigned char parent[0x30];
+			memset(parent, 0, sizeof(parent));
+			const unsigned parentArgument = (c & 1) ? 0u : (unsigned) parent;
+			(void) a0;
+			unsigned result;
+			{
+				const unsigned x = parentArgument, y = a1, z = a2;
+				if(side == 0)
+					{
+					const void* const function = base + 0x000b02e0;
+					__asm { push z
+						push y
+						push x
+						call function
+						add esp, 12
+						mov result, eax }
+					}
+				else
+					{
+					const void* const function = (const void*) nxP64405;
+					__asm { push z
+						push y
+						push x
+						call function
+						add esp, 12
+						mov result, eax }
+					}
+			}
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned made = result ? 1u : 0u;
+			nxFoldInput(&d, &made, 4);
+			if(result)
+				{
+				unsigned object[10];
+				memcpy(object, (void*) result, sizeof(object));
+				for(unsigned i = 0; i < 10; ++i)
+					{
+					if(object[i] == (unsigned) parent) object[i] = 0x0a2e7700u;
+					if(object[i] == result) object[i] = 0x0b1ec700u;
+					}
+				nxLeafFoldObject(&d, object, sizeof(object));
+				allocator.free((void*) result);
+				}
+			nxFoldInput(&d, allocator.sizes, 4 * (allocator.count < 64 ? allocator.count : 64));
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P6_FINISH("004405");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	allocator.reset();
+	}
+
+	// phys_fn_004761 (0x000b38d0): slot 5, which calls slot 5 (+0x14) of every node on the list at +0xc with the argument.
+	{
+	for(unsigned c = 0; c < 6; ++c)
+		{
+		const unsigned argument = nxLeafNext(&seed);
+		const unsigned nodes = c % 4;	// 0 to 3 nodes
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			void* table[16];
+			for(unsigned i = 0; i < 16; ++i) table[i] = 0;
+			table[5] = (void*) nxPhase6Probe;
+			unsigned char node[3][0x40];
+			memset(node, 0, sizeof(node));
+			for(unsigned i = 0; i < nodes; ++i)
+				{
+				*(void***) node[i] = table;
+				*(unsigned*) (node[i] + 0x28) = 100 + i;
+				*(unsigned char**) (node[i] + 0x10) = i + 1 < nodes ? node[i + 1] : 0;
+				}
+			unsigned char list[0x30];
+			memset(list, 0, sizeof(list));
+			*(unsigned char**) (list + 0xc) = nodes ? node[0] : 0;
+			gPhase6LogCount = 0;
+			memset(gPhase6Log, 0, sizeof(gPhase6Log));
+			if(side == 0) ((unsigned (__thiscall*)(void*, unsigned)) (base + 0x000b38d0))(list, argument);
+			else nxP64761(list, 0, argument);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &gPhase6LogCount, 4);
+			nxFoldInput(&d, gPhase6Log, 4 * gPhase6LogCount);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P6_FINISH("004761");
+		nxFoldInput(&inputDigest, &argument, 4);
+		nxFoldInput(&inputDigest, &nodes, 4);
+		}
+	}
+	#undef P6_FINISH
+	printf("collision name=phase6_rows index=- rva=0x000b15e0 owner=phys_fn_004537 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=004537,004759,004405,004761\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=phase6_rows row=004537 case=joint_scalar_delete_flag_clear\n");
+	printf("collision coverage name=phase6_rows row=004759 case=event_list_constructor_with_and_without_parent\n");
+	printf("collision coverage name=phase6_rows row=004405 case=event_list_factory_and_allocation_failure\n");
+	printf("collision coverage name=phase6_rows row=004761 case=event_list_slot5_node_walk\n");
+	nxPrintInput("phase6_rows", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -5440,9 +5685,10 @@ int wmain(int argc, wchar_t** argv)
 	const bool prunerSupportType3Only = argc == 4 && wcscmp(argv[3], L"--pruner-support-type3-only") == 0;
 	const bool prunerSupportTypesOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-types-only") == 0;
 	const bool pmapCoderOnly = argc == 4 && wcscmp(argv[3], L"--pmap-coder-only") == 0;
+	const bool phase6RowsOnly = argc == 4 && wcscmp(argv[3], L"--phase6-rows-only") == 0;
 	const bool prunerSupportReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-reserve-only") == 0;
 	const bool prunerSupportSortersOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-sorters-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly && !prunerSupportType3Only && !prunerSupportTypesOnly && !pmapCoderOnly && !prunerSupportReserveOnly && !prunerSupportSortersOnly)
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly && !prunerSupportType3Only && !prunerSupportTypesOnly && !pmapCoderOnly && !phase6RowsOnly && !prunerSupportReserveOnly && !prunerSupportSortersOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -5487,6 +5733,13 @@ int wmain(int argc, wchar_t** argv)
 	if(prunerSupportReserveOnly)
 		{
 		return nxDrivePrunerSupportReserveAndBase(base) ? 1 : 0;
+		}
+	if(phase6RowsOnly)
+		{
+		unsigned mismatches = nxDrivePhase6Rows(base);
+		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
+		mismatches += nxDrivePrunerSupportStreams(base);
+		return mismatches ? 1 : 0;
 		}
 	if(pmapCoderOnly)
 		{

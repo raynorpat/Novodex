@@ -1,0 +1,5 @@
+CAUGHT phys_fn_004537 NxPhysicsCollisionTests mismatches=4 0x000b15e8  mov dword ptr [esi], offset nxKnVtNxJoint  ->  mov dword ptr [esi + 4], offset nxKnVtNxJoint
+CAUGHT phys_fn_004759 NxPhysicsCollisionTests mismatches=8 0x000b38a0  mov eax, dword ptr [esp + 0xc]  ->  mov eax, dword ptr [esp + 0x10]
+CAUGHT phys_fn_004405 NxPhysicsCollisionTests mismatches=6 0x000b02eb  push 0x28  ->  push 0x29
+CAUGHT phys_fn_004761 NxPhysicsCollisionTests mismatches=4 0x000b38d9  mov edi, dword ptr [esp + 0xc]  ->  mov edi, dword ptr [esp + 0x10]
+CAUGHT phys_fn_004799 NxPhysicsCollisionTests mismatches=54 0x000b3f7b  mov ecx, dword ptr [edx + 4]  ->  mov ecx, dword ptr [edx + 8]

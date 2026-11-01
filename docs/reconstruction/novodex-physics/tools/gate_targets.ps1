@@ -66,7 +66,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '3' = @('NxPhysicsCollisionTests', 'NxPhysicsJointSupportTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsType3PrunerTests')
     '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsRangeIterationTests')
-    '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests')
+    '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsJointSupportTests', 'NxPhysicsPhase6RowsTests')
     '7' = @('NxPhysicsJointSupportTests', 'NxPhysicsFluidEmitterAbiTests', 'NxPhysicsObjectLayoutTests', 'NxPhysicsCollisionTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsPlaneShapeDescValidationTests', 'NxPhysicsSceneAuxiliaryBlockTests')
     '8' = @()
 }
@@ -5668,6 +5668,22 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=pmap_coder row=002010 case=cell_run_decoder_round_trip',
         'collision input name=pmap_coder words=867 input=ea31b87eece18ee8'
     )
+    # Phase 6's small rows (Phase6Rows.cpp), and the pool stream family that also closes row 004799
+    'NxPhysicsPhase6RowsTests' = @(
+        'collision name=phase6_rows index=- rva=0x000b15e0 owner=phys_fn_004537 checks=24 oracle=58dfe81ad12bb814',
+        'collision coverage name=phase6_rows row=004537 case=joint_scalar_delete_flag_clear',
+        'collision coverage name=phase6_rows row=004759 case=event_list_constructor_with_and_without_parent',
+        'collision coverage name=phase6_rows row=004405 case=event_list_factory_and_allocation_failure',
+        'collision coverage name=phase6_rows row=004761 case=event_list_slot5_node_walk',
+        'collision input name=phase6_rows words=38 input=7167cc1af30ee6a7',
+        'collision name=pruner_support_stream index=- rva=0x000b3f50 owner=phys_fn_004799 checks=100 oracle=4701fb540aa892a8',
+        'collision coverage name=pruner_support_stream row=004799 case=block_store_growth',
+        'collision coverage name=pruner_support_stream row=005586 case=pool_save_and_load',
+        'collision coverage name=pruner_support_stream row=005606 case=pool_save_and_load',
+        'collision coverage name=pruner_support_stream row=005624 case=pool_save',
+        'collision coverage name=pruner_support_stream row=005642 case=pool_save_and_load',
+        'collision input name=pruner_support_stream words=1056 input=95884b08005aec63'
+    )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
     # load path and the mesh-header rejects, and stayed green as Task 4 added
@@ -6662,7 +6678,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1820  # includes the row 003503 FluidCreate argument digest marker
+	'6' = 1833  # plus the phase6_rows and pruner_support_stream lines of NxPhysicsPhase6RowsTests (rows 004405, 004537, 004759, 004761, 004799); previous 1820: includes the row 003503 FluidCreate argument digest marker
 	          # includes current locked-array, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059
@@ -6935,6 +6951,7 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsSceneAuxiliaryBlockTests',
     'NxPhysicsRangeIterationTests',
     'NxPhysicsThirdPartyTests',
-    'NxPhysicsType3PrunerTests'
+    'NxPhysicsType3PrunerTests',
+    'NxPhysicsPhase6RowsTests'
 )
 $NxSkippedExitCode = 3

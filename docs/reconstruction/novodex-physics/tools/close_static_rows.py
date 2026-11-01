@@ -282,6 +282,8 @@ def main(argv=None):
         bump_program(program, closed_by_phase)
         _write(str(here / 'program.json'), program, pnl)
         for ph, n in closed_by_phase.items():
+            if not (Path(a.closure_dir) / ('phase%d.json' % ph)).exists():
+                continue  # phase 6's gate artifact is its closure file alone
             artifact, anl = _read(str(Path(a.closure_dir) / ('phase%d.json' % ph)))
             bump_gate(artifact, n)
             _write(str(Path(a.closure_dir) / ('phase%d.json' % ph)), artifact, anl)

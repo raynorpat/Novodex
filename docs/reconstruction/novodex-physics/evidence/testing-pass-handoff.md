@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 137 of the 184 rows closed; 47 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 142 of the 184 rows closed; 42 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -225,3 +225,26 @@ builder). **004799** and **004820/004822/004824** stay blocked on phase 6 / phas
 
 The 001988 mutation recorded is `or eax, 0xffffffff -> or eax, 0x100000000`, a literal the assembler narrows; it changes
 the cursor the reset writes and is detected.
+
+## Update (eighth slice: the small Phase 6 rows)
+
+Five more rows are closed (`raw/testing-pass-phase6-rows-20261101/`). A phase 6 or phase 7 row cannot close on a phase 4
+gate, and phase 7 has not passed, so this slice adds a phase 6 alias gate, **`NxPhysicsPhase6RowsTests`** (a CMake custom
+target over `NxPhysicsCollisionTests`, run with `--phase6-rows-only`; registered in phase 6's oracle list, floor now
+1833). It runs two families:
+
+* **`phase6_rows`** (rows 004537 the NxJoint scalar deleting destructor with the flag clear, 004759 the event list's
+  constructor over the node constructor 004407, 004405 its factory including the allocation failure, 004761 its slot 5
+  walking the nodes): 24 checks, each against the oracle at its address.
+* **`pruner_support_stream`**, the existing family, registered under the new target as well: **004799** (the stream's
+  block store) is a phase 6 row, and now closes on a phase 6 gate.
+
+`close_static_rows.py` no longer requires a `gates/phase<N>.json` artifact for the phase (phase 6 keeps its closure file
+alone).
+
+**Retry of the two held pruner rows: both stay held.** 005566 (the octree walk): installing the adapter-notify hook
+(`base+0x128500`) so inserts populate the tree corrupted the heap in the 200-object run (the Prunable copy-assign breaks
+the back-pointers); the experiment was discarded. 005386 (the Opcode model's stream load) calls the vendored tree
+builder and needs a loadable model.
+
+Still held in phase 6: 4159, 4161, 4169, 4171, 4401, 4413 (large rows whose drives need a populated joint scene).
