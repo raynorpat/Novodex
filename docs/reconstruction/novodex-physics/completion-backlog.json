@@ -69,22 +69,22 @@
       },
       "3": {
         "phase": 3,
-        "closed_rows": 183,
-        "deferred_rows": 209,
+        "closed_rows": 207,
+        "deferred_rows": 185,
         "deferred_reasons": {
           "blocked_on_later_phase": 2,
           "not_reconstructed_in_phase": 74,
-          "reconstructed_not_falsified": 133
+          "reconstructed_not_falsified": 109
         }
       },
       "4": {
         "phase": 4,
-        "closed_rows": 71,
-        "deferred_rows": 982,
+        "closed_rows": 111,
+        "deferred_rows": 942,
         "deferred_reasons": {
           "blocked_on_later_phase": 43,
           "not_reconstructed_in_phase": 17,
-          "reconstructed_not_falsified": 903,
+          "reconstructed_not_falsified": 863,
           "vendored_not_falsified": 19
         }
       },
@@ -134,8 +134,8 @@
         "rows_without_implementation_mapping": 98,
         "rows_with_unresolved_indirect_calls": 153,
         "by_state": {
-          "dynamically_gated": 183,
-          "reconstructed": 209
+          "dynamically_gated": 207,
+          "reconstructed": 185
         }
       },
       "4": {
@@ -146,8 +146,8 @@
         "rows_with_unresolved_indirect_calls": 313,
         "by_state": {
           "discovered": 19,
-          "dynamically_gated": 71,
-          "reconstructed": 963
+          "dynamically_gated": 111,
+          "reconstructed": 923
         }
       },
       "5": {
@@ -47035,7 +47035,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001103",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -47056,7 +47056,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -47107,23 +47107,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001103",
         "rva": "0x000239a0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -47133,7 +47137,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001105",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -47154,7 +47158,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -47205,23 +47209,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001105",
         "rva": "0x00023a00",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -48314,7 +48322,7 @@
       "size": 89,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001131",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -48335,7 +48343,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -48386,23 +48394,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001131",
         "rva": "0x00023da0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -48412,7 +48424,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001133",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -48433,7 +48445,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -48484,23 +48496,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001133",
         "rva": "0x00023e00",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -48510,7 +48526,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001135",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -48531,7 +48547,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -48582,23 +48598,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001135",
         "rva": "0x00023e60",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -48608,7 +48628,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001137",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -48629,7 +48649,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -48680,23 +48700,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001137",
         "rva": "0x00023ec0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -48706,7 +48730,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001139",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -48727,7 +48751,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -48778,23 +48802,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001139",
         "rva": "0x00023f20",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -48804,7 +48832,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001141",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -48825,7 +48853,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -48876,23 +48904,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001141",
         "rva": "0x00023f80",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -48902,7 +48934,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001143",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -48923,7 +48955,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -48974,23 +49006,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001143",
         "rva": "0x00023fe0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -49000,7 +49036,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001145",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -49021,7 +49057,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -49072,23 +49108,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001145",
         "rva": "0x00024040",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -49098,7 +49138,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001147",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -49119,7 +49159,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -49170,23 +49210,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001147",
         "rva": "0x000240a0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -49559,7 +49603,7 @@
       "size": 89,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001157",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -49580,7 +49624,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -49631,23 +49675,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001157",
         "rva": "0x000241f0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -49977,7 +50025,7 @@
       "size": 89,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001167",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -49998,7 +50046,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -50049,23 +50097,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001167",
         "rva": "0x00024340",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -50675,7 +50727,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001181",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -50696,7 +50748,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -50747,23 +50799,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001181",
         "rva": "0x000245e0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -51974,7 +52030,7 @@
       "size": 89,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001211",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -51995,7 +52051,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -52046,23 +52102,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001211",
         "rva": "0x00024990",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -52072,7 +52132,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001213",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -52093,7 +52153,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -52144,23 +52204,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001213",
         "rva": "0x000249f0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -52170,7 +52234,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001215",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -52191,7 +52255,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -52242,23 +52306,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001215",
         "rva": "0x00024a50",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -52268,7 +52336,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001217",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -52289,7 +52357,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -52340,23 +52408,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001217",
         "rva": "0x00024ab0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -52630,7 +52702,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001225",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -52651,7 +52723,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -52702,23 +52774,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001225",
         "rva": "0x00024ba0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -52728,7 +52804,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001227",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -52749,7 +52825,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -52800,23 +52876,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001227",
         "rva": "0x00024c00",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -52826,7 +52906,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001229",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -52847,7 +52927,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -52898,23 +52978,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001229",
         "rva": "0x00024c60",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -53018,7 +53102,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001233",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -53039,7 +53123,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -53090,23 +53174,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001233",
         "rva": "0x00024cf0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -53116,7 +53204,7 @@
       "size": 84,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001235",
       "implementation": {
         "path": "Physics/src/NpShapeHandleRows.cpp",
@@ -53137,7 +53225,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsActorShapeMutationTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -53188,23 +53276,27 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsActorShapeMutationTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001235",
         "rva": "0x00024d50",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [
+          5,
+          6,
+          7
+        ],
         "requires_dependency_review": true
       }
     },
@@ -65028,7 +65120,7 @@
       "size": 43,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001524",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -65049,7 +65141,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsConvexMeshTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -65082,22 +65174,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsConvexMeshTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_001524",
         "rva": "0x0002d940",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -65182,7 +65274,7 @@
       "size": 40,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001528",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -65203,7 +65295,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsConvexMeshTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -65247,22 +65339,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsConvexMeshTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_001528",
         "rva": "0x0002d980",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -79594,7 +79686,7 @@
       "size": 1597,
       "phase": 3,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_001876",
       "implementation": {
         "path": "Physics/src/ContactMeshMeshRow.cpp",
@@ -79615,7 +79707,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsCollisionTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -79687,9 +79779,7 @@
           "0x00046db0",
           "0x00046ff3"
         ],
-        "schedule_blockers": [
-          4
-        ],
+        "schedule_blockers": [],
         "requires_virtual_dispatch_review": true
       },
       "applicable_contexts": {
@@ -79698,25 +79788,23 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 3,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsCollisionTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 3,
+        "owner_phase": 8,
         "row_id": "phys_fn_001876",
         "rva": "0x00046ab0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
-        "driving_phases": [
-          4
-        ],
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
+        "driving_phases": [],
         "requires_dependency_review": true
       }
     },
@@ -86328,7 +86416,7 @@
       "size": 81,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002031",
       "implementation": {
         "path": "Physics/src/PMapRows.cpp",
@@ -86349,7 +86437,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -86384,22 +86472,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002031",
         "rva": "0x0004ff20",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -88534,7 +88622,7 @@
       "size": 331,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002077",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -88555,7 +88643,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -88592,22 +88680,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002077",
         "rva": "0x00052060",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -89415,7 +89503,7 @@
       "size": 23,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002095",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -89436,7 +89524,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -89469,22 +89557,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002095",
         "rva": "0x00052a60",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -89495,7 +89583,7 @@
       "size": 208,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002097",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -89516,7 +89604,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -89576,22 +89664,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002097",
         "rva": "0x00052a80",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -89602,7 +89690,7 @@
       "size": 23,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002098",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -89623,7 +89711,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -89656,22 +89744,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002098",
         "rva": "0x00052b50",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -89682,7 +89770,7 @@
       "size": 208,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002100",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -89703,7 +89791,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -89763,22 +89851,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002100",
         "rva": "0x00052b70",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -89789,7 +89877,7 @@
       "size": 23,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002101",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -89810,7 +89898,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -89843,22 +89931,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002101",
         "rva": "0x00052c40",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -89869,7 +89957,7 @@
       "size": 208,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002103",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -89890,7 +89978,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -89950,22 +90038,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002103",
         "rva": "0x00052c60",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -89976,7 +90064,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002104",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -89997,7 +90085,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90030,22 +90118,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002104",
         "rva": "0x00052d30",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90056,7 +90144,7 @@
       "size": 110,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002106",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90077,7 +90165,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90135,22 +90223,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002106",
         "rva": "0x00052d50",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90161,7 +90249,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002108",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90182,7 +90270,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90215,22 +90303,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002108",
         "rva": "0x00052dc0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90241,7 +90329,7 @@
       "size": 110,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002110",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90262,7 +90350,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90320,22 +90408,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002110",
         "rva": "0x00052de0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90346,7 +90434,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002112",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90367,7 +90455,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90400,22 +90488,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002112",
         "rva": "0x00052e50",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90426,7 +90514,7 @@
       "size": 124,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002114",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90447,7 +90535,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90505,22 +90593,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002114",
         "rva": "0x00052e70",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90531,7 +90619,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002116",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90552,7 +90640,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90585,22 +90673,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002116",
         "rva": "0x00052ef0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90611,7 +90699,7 @@
       "size": 110,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002118",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90632,7 +90720,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90690,22 +90778,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002118",
         "rva": "0x00052f10",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90716,7 +90804,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002120",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90737,7 +90825,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90770,22 +90858,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002120",
         "rva": "0x00052f80",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90796,7 +90884,7 @@
       "size": 106,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002122",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90817,7 +90905,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90871,22 +90959,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002122",
         "rva": "0x00052fa0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90897,7 +90985,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002124",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90918,7 +91006,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -90951,22 +91039,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002124",
         "rva": "0x00053010",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -90977,7 +91065,7 @@
       "size": 124,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002126",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -90998,7 +91086,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -91056,22 +91144,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002126",
         "rva": "0x00053030",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -91082,7 +91170,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002128",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -91103,7 +91191,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -91136,22 +91224,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002128",
         "rva": "0x000530b0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -91162,7 +91250,7 @@
       "size": 124,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002130",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -91183,7 +91271,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -91241,22 +91329,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002130",
         "rva": "0x000530d0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -91267,7 +91355,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002132",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -91288,7 +91376,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -91321,22 +91409,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002132",
         "rva": "0x00053150",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -91347,7 +91435,7 @@
       "size": 124,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002134",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -91368,7 +91456,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -91426,22 +91514,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002134",
         "rva": "0x00053170",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -91452,7 +91540,7 @@
       "size": 29,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002136",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -91473,7 +91561,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -91506,22 +91594,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002136",
         "rva": "0x000531f0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -91532,7 +91620,7 @@
       "size": 124,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002138",
       "implementation": {
         "path": "Physics/src/NpTriangleMeshRows.cpp",
@@ -91553,7 +91641,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -91611,22 +91699,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002138",
         "rva": "0x00053210",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -92317,7 +92405,7 @@
           {
             "id": "phys_fn_001524",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004803",
@@ -92621,7 +92709,7 @@
           {
             "id": "phys_fn_001524",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002158",
@@ -93188,7 +93276,7 @@
       "size": 511,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002178",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -93209,7 +93297,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsConvexMeshTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -93250,22 +93338,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsConvexMeshTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002178",
         "rva": "0x00053f40",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -93414,7 +93502,7 @@
       "size": 337,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002184",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -93435,7 +93523,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsConvexMeshTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -93458,22 +93546,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsConvexMeshTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002184",
         "rva": "0x00054270",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -93686,7 +93774,7 @@
       "size": 70,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002190",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -93707,7 +93795,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -93723,7 +93811,7 @@
           {
             "id": "phys_fn_002077",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -93744,22 +93832,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002190",
         "rva": "0x00054500",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -93770,7 +93858,7 @@
       "size": 121,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002192",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -93791,7 +93879,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -93820,22 +93908,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002192",
         "rva": "0x00054550",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -93846,7 +93934,7 @@
       "size": 73,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002194",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -93867,7 +93955,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [],
@@ -93894,22 +93982,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002194",
         "rva": "0x000545d0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -94048,7 +94136,7 @@
       "size": 89,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002200",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -94069,7 +94157,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -94102,22 +94190,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002200",
         "rva": "0x00054640",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -94192,7 +94280,7 @@
       "size": 115,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002205",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -94213,7 +94301,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -94250,22 +94338,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002205",
         "rva": "0x00054720",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -95548,7 +95636,7 @@
       "size": 157,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002243",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -95569,7 +95657,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsConvexMeshTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -95610,22 +95698,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsConvexMeshTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002243",
         "rva": "0x00054e70",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -95636,7 +95724,7 @@
       "size": 619,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002245",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -95657,7 +95745,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsConvexMeshTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -95680,7 +95768,7 @@
           {
             "id": "phys_fn_002184",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -95703,22 +95791,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsConvexMeshTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002245",
         "rva": "0x00054f10",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -95729,7 +95817,7 @@
       "size": 309,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002247",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -95750,7 +95838,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -95802,7 +95890,7 @@
           {
             "id": "phys_fn_002190",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004803",
@@ -95854,22 +95942,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002247",
         "rva": "0x00055180",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -96131,7 +96219,7 @@
       "size": 272,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002255",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -96152,7 +96240,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsConvexMeshTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -96199,12 +96287,12 @@
           {
             "id": "phys_fn_002178",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002243",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004803",
@@ -96241,22 +96329,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsConvexMeshTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002255",
         "rva": "0x000555b0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -96267,7 +96355,7 @@
       "size": 330,
       "phase": 4,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_002256",
       "implementation": {
         "path": "Physics/src/TriangleMeshRows.cpp",
@@ -96288,7 +96376,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsTriangleMeshApiTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -96332,7 +96420,7 @@
           {
             "id": "phys_fn_002247",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -96356,22 +96444,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 4,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsTriangleMeshApiTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 4,
+        "owner_phase": 8,
         "row_id": "phys_fn_002256",
         "rva": "0x000556c0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -96545,12 +96633,12 @@
           {
             "id": "phys_fn_002255",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_002256",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           }
         ]
       },
@@ -96705,7 +96793,7 @@
           {
             "id": "phys_fn_002255",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004780",
@@ -234536,14 +234624,14 @@
     }
   ],
   "source": {
-    "inventory_sha256": "cf594c3d0682c8e45d5534cc224359737f05ba5ea6307c78be22dfa408b3c65d",
+    "inventory_sha256": "3e475a883563f3eeb25a5bb5332a168645f9d3fe052382f0ecff410cdea43e22",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
     "closure_ledgers_sha256": {
       "docs/reconstruction/novodex-physics/gates/phase2-closure.json": "e0b4d1bf4df8a25263fa53dc601f65ca9452f3685f6903805d9c3dacfbe6d20a",
-      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "d2d32cfe6fb9aa878515204dc3190f91d4fd0cab51060916fd52facd9081f537",
-      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "ced691ca7d6c99bc177b78283466d74f091231f652fed3efbe3ef6f7389b524b",
+      "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "59097543a257f936bcb769a0978a1205cf7ca92e4475469c3fbb819f4356d601",
+      "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "5b72af035e13941eaf74e501c9562aebfe231fc792e32c5e3465bce5bfe7de59",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "ee8110bf6967bc42eaa9a4e61826a1c30f735505c5d4e0ce63b7b19bf7f5a815",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "3a06f8dd0723b3aab63876d1c12d90cc0f454379bf640a92643e8195de823b59"
