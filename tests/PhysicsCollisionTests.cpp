@@ -4738,7 +4738,7 @@ static unsigned nxDrivePrunerSupportStreams(unsigned char* base)
 				}
 			++cases;
 			if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_stream row=%s save case=%u\n", pair.name, c); }
-			nxFoldInput(&inputDigest, data, count * pair.stride);
+			nxLeafFoldScrubbed(&inputDigest, data, count * pair.stride, (unsigned) data);
 			nxFoldInput(&inputDigest, &count, 4);
 			// the load, from the oracle's flattened bytes on both sides
 			if(pair.loadRva)
