@@ -4541,7 +4541,7 @@ class NxLeafSizeAllocator : public NxUserAllocator
 	NxLeafSizeAllocator() : count(0), frees(0) { memset(sizes, 0, sizeof(sizes)); }
 	void reset() { count = 0; frees = 0; memset(sizes, 0, sizeof(sizes)); }
 	void* mallocDEBUG(size_t size, const char*, int) override { return malloc(size); }
-	void* malloc(size_t size) override { if(count < 512) sizes[count] = (unsigned) size; ++count; return ::malloc(size); }
+	void* malloc(size_t size) override { if(count < 512) sizes[count] = (unsigned) size; ++count; return ::calloc(1, size); }
 	void* realloc(void* memory, size_t size) override { if(count < 512) sizes[count] = (unsigned) size; ++count; return ::realloc(memory, size); }
 	void free(void* memory) override { if(memory) { ++frees; ::free(memory); } }
 	};
@@ -4787,6 +4787,157 @@ static unsigned nxDrivePrunerSupportStreams(unsigned char* base)
 	return mismatches;
 	}
 
+// The pruner support rows around the pruner process pool and the pruner factory: phys_fn_004852 (the factory, with
+// 005448 under it for the fourth type), 004830 (register an owner, creating the pool on first use), 004832 (remove)
+// and 004834 (release the pool). Each runs at its oracle address and as the candidate's transcription; the objects
+// are compared byte for byte with pointers scrubbed, together with the allocator's request sizes.
+unsigned __fastcall nxP44852(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP44830(void* self, void* edxUnused);
+unsigned __fastcall nxP44832(void* self, void* edxUnused);
+unsigned __cdecl nxP44834();
+class NxPrunerProcessPool;
+extern NxPrunerProcessPool* gNxPrunerProcessPool;
+
+// Words that look like addresses compare equal (the two sides' objects live in different places and carry different
+// tables); everything else is folded as is.
+static void nxLeafFoldObject(NxDigest* digest, const void* object, unsigned bytes)
+	{
+	const unsigned* words = (const unsigned*) object;
+	for(unsigned i = 0; i < bytes / 4; ++i)
+		{
+		unsigned value = words[i];
+		if(value >= 0x00400000u && value < 0x7fff0000u) value = 0xa11add00u;
+		nxFoldInput(digest, &value, 4);
+		}
+	}
+
+static unsigned nxDrivePrunerSupportPool(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("pruner support pool fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("pruner support pool fixture could not install oracle allocator");
+
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, cases = 0;
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+
+	// phys_fn_004852 (0x000b5090): the factory, one object per type; type 4 is refused.
+	{
+	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
+	static const unsigned sizes[5] = { 0x90, 0x40, 0x3c, 0xa0, 0 };
+	for(unsigned type = 0; type < 5; ++type)
+		{
+		NxDigest local[2];
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			nxDigestInit(&local[side]);
+			allocator.reset();
+			void* const object = side == 0 ? ((OracleFactoryFn) (base + 0x000b5090))(type) : (void*) nxP44852(0, 0, type);
+			const unsigned made = object ? 1u : 0u;
+			nxFoldInput(&local[side], &made, 4);
+			if(object) nxLeafFoldObject(&local[side], object, sizes[type]);
+			nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			if(object)
+				{
+				// the oracle's scalar deleting destructor, or the candidate's pruner destruction
+				if(side == 0) { typedef void* (__thiscall* DelFn)(void*, unsigned); ((DelFn) (*(void***) object)[0])(object, 1); }
+				else nxPruningEngineDestroyPruner((Pruner*) object);
+				}
+			nxFoldInput(&local[side], &allocator.frees, 4);
+			results[side] = local[side].state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_pool row=004852 type=%u\n", type); }
+		nxFoldInput(&inputDigest, &type, 4);
+		}
+	}
+
+	// phys_fn_004830, 004832 and 004834: the owner registry over the process pool singleton.
+	{
+	unsigned** const oraclePool = (unsigned**) *(unsigned*) (base + 0x000b4cc1);
+	void* const savedOraclePool = *(void**) oraclePool;
+	void* const savedCandidatePool = (void*) gNxPrunerProcessPool;
+	*(void**) oraclePool = 0;
+	gNxPrunerProcessPool = 0;
+	typedef void* (__thiscall* OracleOwnerFn)(void*);
+	typedef void (__cdecl* OracleReleaseFn)();
+	// op codes: 1 add owner k, 2 remove owner k, 3 release the pool
+	static const unsigned scripts[][12] =
+		{
+		{ 1, 0, 1, 1, 1, 2, 3, 0, 0, 0, 0, 0 },
+		{ 2, 0, 3, 0, 1, 0, 2, 0, 3, 0, 0, 0 },
+		{ 1, 0, 3, 0, 1, 0, 1, 1, 2, 0, 3, 0 },
+		{ 1, 3, 1, 2, 2, 3, 2, 2, 1, 1, 3, 0 },
+		};
+	for(unsigned sc = 0; sc < 4; ++sc)
+		{
+		NxDigest local[2];
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			nxDigestInit(&local[side]);
+			allocator.reset();
+			unsigned owners[4][2];
+			memset(owners, 0xee, sizeof(owners));
+			for(unsigned step = 0; step < 6; ++step)
+				{
+				const unsigned op = scripts[sc][step * 2], k = scripts[sc][step * 2 + 1];
+				void* owner = owners[k];
+				if(op == 1) { if(side == 0) ((OracleOwnerFn) (base + 0x000b4cc0))(owner); else nxP44830(owner, 0); }
+				else if(op == 2) { if(side == 0) ((OracleOwnerFn) (base + 0x000b4d20))(owner); else nxP44832(owner, 0); }
+				else { if(side == 0) ((OracleReleaseFn) (base + 0x000b4d40))(); else nxP44834(); }
+				void* const pool = side == 0 ? *(void**) oraclePool : (void*) gNxPrunerProcessPool;
+				const unsigned present = pool ? 1u : 0u;
+				nxFoldInput(&local[side], &present, 4);
+				if(pool) nxLeafFoldObject(&local[side], pool, 0x1c);
+				nxLeafFoldObject(&local[side], owners, sizeof(owners));
+				}
+			nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			// leave nothing behind
+			if(side == 0) ((OracleReleaseFn) (base + 0x000b4d40))(); else nxP44834();
+			nxFoldInput(&local[side], &allocator.frees, 4);
+			results[side] = local[side].state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_pool row=004830 script=%u\n", sc); }
+		nxFoldInput(&inputDigest, scripts[sc], sizeof(scripts[sc]));
+		}
+	*(void**) oraclePool = savedOraclePool;
+	gNxPrunerProcessPool = (NxPrunerProcessPool*) savedCandidatePool;
+	}
+	printf("collision name=pruner_support_pool index=- rva=0x000b5090 owner=phys_fn_004852 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=004852,005448,004830,004832,004834\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pruner_support_pool row=004852 case=factory_types_and_refusal\n");
+	printf("collision coverage name=pruner_support_pool row=005448 case=type3_pruner_construction\n");
+	printf("collision coverage name=pruner_support_pool row=004830 case=owner_registered_pool_created\n");
+	printf("collision coverage name=pruner_support_pool row=004832 case=owner_removed\n");
+	printf("collision coverage name=pruner_support_pool row=004834 case=pool_released\n");
+	nxPrintInput("pruner_support_pool", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -4812,7 +4963,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
 	const bool prunerSupportLeafOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-leaf-only") == 0;
 	const bool prunerSupportStreamOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-stream-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly)
+	const bool prunerSupportPoolOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-pool-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4850,6 +5002,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(prunerSupportPoolOnly)
+		{
+		return nxDrivePrunerSupportPool(base) ? 1 : 0;
+		}
 	if(prunerSupportStreamOnly)
 		{
 		return nxDrivePrunerSupportStreams(base) ? 1 : 0;
@@ -4870,6 +5026,7 @@ int wmain(int argc, wchar_t** argv)
 		// the phase 4 pruner rows that are leaves run under this target too
 		mismatches += nxDrivePrunerSupportLeaves(base);
 		mismatches += nxDrivePrunerSupportStreams(base);
+		mismatches += nxDrivePrunerSupportPool(base);
 		return mismatches ? 1 : 0;
 		}
 	if(prunerPoolReserveOnly)

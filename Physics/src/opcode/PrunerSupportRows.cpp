@@ -98,7 +98,7 @@ extern "C" void nxP4CallUpdateWorldAABB();
 #pragma comment(linker, "/alternatename:_nxP4CallFwrite=_fwrite")
 #pragma comment(linker, "/alternatename:_nxP4CallInitBlock=?initBlock@MemoryStream@@AAE_NIPBXII@Z")
 #pragma comment(linker, "/alternatename:_nxP4CallNxGetSdkAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
-#pragma comment(linker, "/alternatename:_nxP4CallNxOpcodeReleasePool=?nxOpcodeReleasePool@@YAXXZ")
+#pragma comment(linker, "/alternatename:_nxP4CallNxOpcodeReleasePool=??1NxPrunerProcessPool@@QAE@XZ")
 #pragma comment(linker, "/alternatename:_nxP4CallNxPCBoundedCtor=?nxPCBoundedCtor@@YIPAXPAX@Z")
 #pragma comment(linker, "/alternatename:_nxP4CallNxPCBuildTree=?nxPCBuildTree@@YI_NPAX@Z")
 #pragma comment(linker, "/alternatename:_nxP4CallNxPCOctreeRelease=?nxPCOctreeRelease@@YIXPAX@Z")
