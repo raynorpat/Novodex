@@ -136,6 +136,8 @@ unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
 unsigned __fastcall nxTM2247(void*, void*);
 unsigned __fastcall nxTM2256(void*, void*, unsigned);
 unsigned __fastcall nxTM2255(void*, void*);
+unsigned __fastcall nxTM2200(void*, void*, unsigned, unsigned);
+unsigned __fastcall nxTM2205(void*, void*, unsigned, unsigned);
 #endif
 
 namespace
@@ -168,13 +170,14 @@ namespace
 	static NxU32 __fastcall nxTriMeshSlot13(TriangleMesh*, void*)
 		{ return 0; }
 
+	// Slots 5 and 7 are the oracle's own rows: phys_fn_002200 (the count) and phys_fn_002205 (the base).
 	static void** nxTriangleMeshVtableToken()
 		{
 		static void* table[19] = {
 			0, 0,
 			reinterpret_cast<void*>(&nxTriMeshSlot2), reinterpret_cast<void*>(&nxTriMeshSlot3), 0,
-			reinterpret_cast<void*>(&nxTriMeshSlot5), reinterpret_cast<void*>(&nxTriMeshSlot6),
-			reinterpret_cast<void*>(&nxTriMeshSlot7), reinterpret_cast<void*>(&nxTriMeshSlot8),
+			reinterpret_cast<void*>(&nxTM2200), reinterpret_cast<void*>(&nxTriMeshSlot6),
+			reinterpret_cast<void*>(&nxTM2205), reinterpret_cast<void*>(&nxTriMeshSlot8),
 			reinterpret_cast<void*>(&nxTriMeshSlot9), reinterpret_cast<void*>(&nxTriMeshSlot10),
 			reinterpret_cast<void*>(&nxTriMeshSlot11), reinterpret_cast<void*>(&nxTriMeshSlot12),
 			reinterpret_cast<void*>(&nxTriMeshSlot13) };
