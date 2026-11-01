@@ -5328,6 +5328,87 @@ static unsigned nxDrivePMapCoder(unsigned char* base)
 	return mismatches;
 	}
 
+// phys_fn_004828 (0x000b4c40): the box-pruning sorters' release. Each of the three statics is a RadixSort the
+// first box pruning call made; the row destroys and frees whichever are set and clears them. The oracle's run on its
+// own statics (0x10128468, 0x10128464, 0x10128460) and objects, the transcription on the candidate's statics and
+// objects; the statics afterwards and each side's net allocations are compared.
+unsigned __cdecl nxP44828();
+namespace IceCore { class RadixSort; }
+extern IceCore::RadixSort* gBipartiteSorter0;
+extern IceCore::RadixSort* gBipartiteSorter1;
+extern IceCore::RadixSort* gCompleteSorter;
+extern "C" void nxPTRadixCtor();
+#pragma comment(linker, "/alternatename:_nxPTRadixCtor=??0RadixSort@IceCore@@QAE@XZ")
+
+static unsigned nxDrivePrunerSupportSorters(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("pruner support sorter fixture could not initialize foundation");
+	NxLeafSizeAllocator oracleAllocator, candidateAllocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &candidateAllocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &candidateAllocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&oracleAllocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("pruner support sorter fixture could not install oracle allocator");
+	void** const oracleStatics[3] = { (void**) (base + 0x00128468), (void**) (base + 0x00128464), (void**) (base + 0x00128460) };
+	void** const candidateStatics[3] = { (void**) &gBipartiteSorter1, (void**) &gBipartiteSorter0, (void**) &gCompleteSorter };
+	void* const savedOracle[3] = { *oracleStatics[0], *oracleStatics[1], *oracleStatics[2] };
+	void* const savedCandidate[3] = { *candidateStatics[0], *candidateStatics[1], *candidateStatics[2] };
+	typedef void (__thiscall* CtorFn)(void*);
+	unsigned mismatches = 0, cases = 0;
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	for(unsigned mask = 0; mask < 8; ++mask)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			NxLeafSizeAllocator& allocator = side == 0 ? oracleAllocator : candidateAllocator;
+			void** const* statics = side == 0 ? oracleStatics : candidateStatics;
+			const unsigned liveBefore = allocator.count - allocator.frees;
+			for(unsigned k = 0; k < 3; ++k)
+				{
+				*statics[k] = 0;
+				if(mask & (1u << k))
+					{
+					void* const sorter = allocator.malloc(0x18);
+					if(side == 0) ((CtorFn) (base + 0x000e32c0))(sorter);
+					else ((CtorFn) (void*) nxPTRadixCtor)(sorter);
+					*statics[k] = sorter;
+					}
+				}
+			if(side == 0) ((unsigned (__cdecl*)()) (base + 0x000b4c40))();
+			else nxP44828();
+			NxDigest local;
+			nxDigestInit(&local);
+			for(unsigned k = 0; k < 3; ++k) { const unsigned set = *statics[k] ? 1u : 0u; nxFoldInput(&local, &set, 4); }
+			const int live = (int) (allocator.count - allocator.frees) - (int) liveBefore;
+			nxFoldInput(&local, &live, 4);
+			results[side] = local.state;
+			nxFoldInput(side == 0 ? &oracleDigest : &candidateDigest, &results[side], 8);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_sorters mask=%u\n", mask); }
+		nxFoldInput(&inputDigest, &mask, 4);
+		}
+	for(unsigned k = 0; k < 3; ++k) { *oracleStatics[k] = savedOracle[k]; *candidateStatics[k] = savedCandidate[k]; }
+	printf("collision name=pruner_support_sorters rows=004828 checks=%u mismatches=%u\n", cases, mismatches);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -5358,7 +5439,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool prunerSupportType3Only = argc == 4 && wcscmp(argv[3], L"--pruner-support-type3-only") == 0;
 	const bool prunerSupportTypesOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-types-only") == 0;
 	const bool pmapCoderOnly = argc == 4 && wcscmp(argv[3], L"--pmap-coder-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly && !prunerSupportType3Only && !prunerSupportTypesOnly && !pmapCoderOnly)
+	const bool prunerSupportSortersOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-sorters-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly && !prunerSupportType3Only && !prunerSupportTypesOnly && !pmapCoderOnly && !prunerSupportSortersOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -5396,6 +5478,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(prunerSupportSortersOnly)
+		{
+		return nxDrivePrunerSupportSorters(base) ? 1 : 0;
+		}
 	if(pmapCoderOnly)
 		{
 		return nxDrivePMapCoder(base) ? 1 : 0;
@@ -5441,6 +5527,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePrunerSupportType3Slots(base);
 		mismatches += nxDrivePrunerSupportTypeSlots(base);
 		mismatches += nxDrivePMapCoder(base);
+		mismatches += nxDrivePrunerSupportSorters(base);
 		return mismatches ? 1 : 0;
 		}
 	if(prunerPoolReserveOnly)
