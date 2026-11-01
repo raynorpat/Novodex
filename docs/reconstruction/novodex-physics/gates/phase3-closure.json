@@ -53,10 +53,10 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 110,
+    "differential_falsified": 115,
     "oracle_differential_falsified": 97,
     "deferred_not_reconstructed_in_phase": 74,
-    "deferred_reconstructed_not_falsified": 109,
+    "deferred_reconstructed_not_falsified": 104,
     "deferred_blocked_on_later_phase": 2
   },
   "closed": [
@@ -2771,6 +2771,86 @@
         "mutation": "0x00046c39 mov edx, dword ptr [edi + 0x10] -> mov edx, dword ptr [edi + 0x14]",
         "detected": "mismatches=4"
       }
+    },
+    {
+      "id": "phys_fn_001099",
+      "rva": "0x00023940",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00023944 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+        "detected": "stdout_delta=268"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001101",
+      "rva": "0x00023970",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00023974 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+        "detected": "stdout_delta=268"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001151",
+      "rva": "0x00024130",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00024135 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+        "detected": "stdout_delta=319"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001153",
+      "rva": "0x00024160",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00024165 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+        "detected": "stdout_delta=268"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001231",
+      "rva": "0x00024cc0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorShapeMutationTests",
+      "falsification": {
+        "mutation": "0x00024cc4 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+        "detected": "stdout_delta=268"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5,
+        6,
+        7
+      ]
     }
   ],
   "deferred": [
@@ -3071,24 +3151,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_001099",
-      "rva": "0x00023940",
-      "size": 39,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-handle-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001101",
-      "rva": "0x00023970",
-      "size": 39,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-handle-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_001107",
       "rva": "0x00023a60",
       "size": 43,
@@ -3111,24 +3173,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001151",
-      "rva": "0x00024130",
-      "size": 43,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-handle-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_001153",
-      "rva": "0x00024160",
-      "size": 43,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-handle-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001155",
@@ -3233,15 +3277,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001231",
-      "rva": "0x00024cc0",
-      "size": 39,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase3-shape-handle-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001237",

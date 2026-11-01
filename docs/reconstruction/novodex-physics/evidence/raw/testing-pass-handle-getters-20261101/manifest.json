@@ -1,0 +1,35 @@
+{
+ "doc": "evidence/raw/testing-pass-handle-getters-20261101/mutations.txt",
+ "rows": {
+  "phys_fn_001099": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00023944 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+   "detected": "stdout_delta=268"
+  },
+  "phys_fn_001101": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00023974 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+   "detected": "stdout_delta=268"
+  },
+  "phys_fn_001151": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00024135 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+   "detected": "stdout_delta=319"
+  },
+  "phys_fn_001153": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00024165 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+   "detected": "stdout_delta=268"
+  },
+  "phys_fn_001231": {
+   "gate": "NxPhysicsActorShapeMutationTests",
+   "family": "NxPhysicsActorShapeMutationTests",
+   "mutation": "0x00024cc4 mov edi, dword ptr [esi + 0x14] -> mov edi, dword ptr [esi + 0x18] [swept with --count-crash]",
+   "detected": "stdout_delta=268"
+  }
+ }
+}

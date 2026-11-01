@@ -104,4 +104,4 @@ comparing (a symbol lookup that matches two candidates, and an unpacking error),
 
 ## Update: the testing pass
 
-The testing pass that this hand-off asked for is recorded in `evidence/testing-pass-handoff.md`: 80 of the 184 rows were wired, driven and falsified; 104 are held with reasons.
+The testing pass that this hand-off asked for is recorded in `evidence/testing-pass-handoff.md`: 85 of the 184 rows were wired, driven and falsified; 99 are held with reasons.

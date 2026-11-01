@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 80 of the 184 rows closed; 104 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 85 of the 184 rows closed; 99 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -14,7 +14,7 @@ manifest `close_static_rows.py --falsified` read and the `mutations.txt` the swe
 | Unit | Rows closed | Gate | How driven |
 |---|---|---|---|
 | Internal shapes (`ShapeRows.cpp`) | 15 of 18 (001307–001341) | `NxPhysicsActorShapeMutationTests`, `NxPhysicsActorDynamicSetterTests` (staged) | already wired through the handle helpers; a dirty-queue growth family and a handle-method family were added to the shape mutation test |
-| Shape handles (`NpShapeHandleRows.cpp`) | 23 of 28 | `NxPhysicsActorShapeMutationTests` (staged) | the plane/sphere/capsule/box/mesh slot tables already pointed at the rows; the new `runHandleMethodCases` family drives every public handle method |
+| Shape handles (`NpShapeHandleRows.cpp`) | 28 of 28 | `NxPhysicsActorShapeMutationTests` (staged) | the plane/sphere/capsule/box/mesh slot tables already pointed at the rows; the new `runHandleMethodCases` family drives every public handle method |
 | Mesh/mesh dispatcher | 001876 | `NxPhysicsCollisionTests`, family `contact_mesh_mesh` | oracle differential |
 | `NpTriangleMeshRows.cpp` | 24 of 24 | `NxPhysicsTriangleMeshApiTests` (staged) | the DLL's `NxTriangleMesh` wrapper calls the twelve methods (`NX_NP_TRIANGLE_MESH_ROWS`); the test calls them with a scene alive |
 | `TriangleMeshRows.cpp` | 16 of 16 | `NxPhysicsTriangleMeshApiTests`, `NxPhysicsConvexMeshTests` (staged) | 002239 (the mesh release), 002247, 002256, 002255 (with 002243/002245/002184/002178), 002200, 002205, 001524 and 001528 replace C++ in `TriangleMesh.cpp` (`NX_TRIANGLE_MESH_ROWS`) |
@@ -28,10 +28,7 @@ time. The ruling is in the ledger; the sweeper's default still refuses a crash.
 
 ## Held, with reasons
 
-**Phase 3 (10 rows).**
-* 001099, 001101, 001151, 001153, 001231: the shape handle getters. Every non-crashing mutation in range was
-  tried (8 attempts each) and none changed the output; the remaining mutable lines are calls and stack offsets that
-  fault the candidate. Sweeping them with `--count-crash` is the next step.
+**Phase 3 (5 rows).**
 * 001303 (the CCD refresh) and 001345 (the scalar deleting destructor): no public API reaches them; wiring needs the
   candidate's CCD path and a deleting-destructor entry the handle tables lack.
 * 001305: needs the candidate `gParameter` bound in `NxPhysicsShapeVtableTests` before `BoxShape::nxDebugRender`
@@ -106,3 +103,9 @@ Known and accepted:
 * The two macros are meant to be set together; `NX_NP_TRIANGLE_MESH_ROWS` without `NX_TRIANGLE_MESH_ROWS` does
   not compile. Some `#if NX_TRIANGLE_MESH_ROWS` blocks sit inside the other arm and are dead.
 * `runHandleMethodCases` does not release its triangle mesh.
+
+## Update (second slice)
+
+The five shape-handle getters (001099, 001101, 001151, 001153, 001231) were re-swept with `--count-crash` and are
+closed (`raw/testing-pass-handle-getters-20261101/`): their only mutable lines are calls and offsets, so a mutant
+faults the candidate, and the output then differs from the oracle's.
