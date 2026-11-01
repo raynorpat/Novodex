@@ -466,6 +466,21 @@ public:
 	void free(void* memory) override { if(memory) ++frees; ::free(memory); }
 };
 
+
+// A mutated row can fault; the fault is the observation, not the end of the run.
+typedef unsigned (__fastcall* NxRow4Fn)(void*, void*, unsigned, unsigned, unsigned, unsigned);
+typedef unsigned (__fastcall* NxRow5Fn)(void*, void*, unsigned, unsigned, unsigned, unsigned, unsigned);
+static unsigned nxGuardedRow4(NxRow4Fn row, void* self, unsigned a, unsigned b, unsigned c, unsigned d)
+{
+	__try { return row(self, 0, a, b, c, d) & 0xffu; }
+	__except(EXCEPTION_EXECUTE_HANDLER) { return 0xfa11ed00u; }
+}
+static unsigned nxGuardedRow5(NxRow5Fn row, void* self, unsigned a, unsigned b, unsigned c, unsigned d, unsigned e)
+{
+	__try { return row(self, 0, a, b, c, d, e) & 0xffu; }
+	__except(EXCEPTION_EXECUTE_HANDLER) { return 0xfa11ed00u; }
+}
+
 unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 {
 	if(!nx2iFoundationBegin())
@@ -577,7 +592,9 @@ unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 		typedef bool (__thiscall* AabbQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
 		Hits o = {}, c = {};
 		o.result = reinterpret_cast<AabbQueryFn>(oracleVtable[7])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(aabbs[q]), 0, 0xffffffffu);
-		c.result = (nxP45462(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(aabbs[q]), 0, 0xffffffffu) & 0xff) != 0;
+		const unsigned rc = nxGuardedRow4(nxP45462, candidatePruner, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(aabbs[q]), 0, 0xffffffffu);
+		c.result = rc != 0xfa11ed00u && rc != 0;
+		if(rc == 0xfa11ed00u) candidateOutput.count = 0xfffe;
 		Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, oracleStride);
 		Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, candidateStride);
 		COMPARE_HITS("aabb", o, c);
@@ -592,7 +609,9 @@ unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 		typedef bool (__thiscall* SphereQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
 		Hits o = {}, c = {};
 		o.result = reinterpret_cast<SphereQueryFn>(oracleVtable[8])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(spheres[q]), 0, 0xffffffffu);
-		c.result = (nxP45460(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(spheres[q]), 0, 0xffffffffu) & 0xff) != 0;
+		const unsigned rc = nxGuardedRow4(nxP45460, candidatePruner, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(spheres[q]), 0, 0xffffffffu);
+		c.result = rc != 0xfa11ed00u && rc != 0;
+		if(rc == 0xfa11ed00u) candidateOutput.count = 0xfffe;
 		Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, oracleStride);
 		Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, candidateStride);
 		COMPARE_HITS("sphere", o, c);
@@ -610,7 +629,9 @@ unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 		typedef bool (__thiscall* PlaneQueryFn)(void*, NxU32, NxU32, NxU32, NxU32, NxU32);
 		Hits o = {}, c = {};
 		o.result = reinterpret_cast<PlaneQueryFn>(oracleVtable[5])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(planeSets[q]), 2, 0, 0xffffffffu);
-		c.result = (nxP45456(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(planeSets[q]), 2, 0, 0xffffffffu) & 0xff) != 0;
+		const unsigned rc = nxGuardedRow5(nxP45456, candidatePruner, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(planeSets[q]), 2, 0, 0xffffffffu);
+		c.result = rc != 0xfa11ed00u && rc != 0;
+		if(rc == 0xfa11ed00u) candidateOutput.count = 0xfffe;
 		Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, oracleStride);
 		Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, candidateStride);
 		COMPARE_HITS("planes", o, c);
@@ -630,13 +651,15 @@ unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 		o.result = reinterpret_cast<RaycastFn>(oracleVtable[6])(oraclePruner, oracleRayHits, worldRay, rays[q].distance, rays[q].first, 0xffffffffu);
 		unsigned distanceBits;
 		memcpy(&distanceBits, &rays[q].distance, 4);
-		c.result = (nxP45458(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateRayHits), reinterpret_cast<unsigned>(&worldRay),
-			distanceBits, rays[q].first ? 1u : 0u, 0xffffffffu) & 0xff) != 0;
+		const unsigned rc = nxGuardedRow5(nxP45458, candidatePruner, reinterpret_cast<unsigned>(&candidateRayHits), reinterpret_cast<unsigned>(&worldRay),
+			distanceBits, rays[q].first ? 1u : 0u, 0xffffffffu);
+		c.result = rc != 0xfa11ed00u && rc != 0;
+		const bool faulted = rc == 0xfa11ed00u;
 		NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
 		for(unsigned i = 0; i < oracleRayHits.GetNbEntries() && i < 16; ++i) oracleEntries[i] = oracleRayHits.GetEntry(i);
 		for(unsigned i = 0; i < candidateRayHits.GetNbEntries() && i < 16; ++i) candidateEntries[i] = candidateRayHits.GetEntry(i);
 		Fold::indices(o, oracleEntries, oracleRayHits.GetNbEntries(), oracleBase, oracleStride);
-		Fold::indices(c, candidateEntries, candidateRayHits.GetNbEntries(), candidateBase, candidateStride);
+		Fold::indices(c, candidateEntries, faulted ? 0xfffeu : candidateRayHits.GetNbEntries(), candidateBase, candidateStride);
 		COMPARE_HITS("ray", o, c);
 		oracleRayHits.Empty();
 		candidateRayHits.Empty();
