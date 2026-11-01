@@ -4413,10 +4413,13 @@ static unsigned nxDrivePrunerSupportLeaves(unsigned char* base)
 		memset(&a, 0, sizeof(a)); memset(&b, 0, sizeof(b));
 		gLeafBase = (unsigned) sub;
 		gLeafLogCount = 0;
-		const unsigned ra = oracle(outer);
+		unsigned ra;
+		// a mutated row that dereferences the sentinel faults; the fault is the observation, not the end of the run
+		__try { ra = oracle(outer); } __except(EXCEPTION_EXECUTE_HANDLER) { ra = 0xfa11ed00u; }
 		LEAF_CAPTURE(a, ra);
 		gLeafLogCount = 0;
-		const unsigned rb = nxP45380(outer, 0);
+		unsigned rb;
+		__try { rb = nxP45380(outer, 0); } __except(EXCEPTION_EXECUTE_HANDLER) { rb = 0xfa11ed00u; }
 		LEAF_CAPTURE(b, rb);
 		LEAF_COMPARE("005380", a, b);
 		outer[4] = c == 3 ? 0xffffffe0u : 1u;
