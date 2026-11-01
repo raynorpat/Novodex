@@ -259,6 +259,22 @@ static int nxTestPMapComputeFirst(HMODULE physics, NxPhysicsSDK* sdk, NxU32 dens
 		static_cast<const NxU8*>(pmap.data)[4] == 4 &&
 		static_cast<const NxU8*>(pmap.data)[8] == 32 &&
 		hash == 0x9a70de00aaf0edd4ull;
+	// A mesh released with a penetration map must hand the map back to the allocator it came from.
+	if(valid)
+		{
+		const long long liveBeforePMapMesh = gAllocator.liveAllocations;
+		NxTriangleMesh* pmapMesh = sdk->createTriangleMesh(desc);
+		bool pmapMeshBalanced = false;
+		if(pmapMesh)
+			{
+			pmapMesh->loadPMap(pmap);
+			sdk->releaseTriangleMesh(*pmapMesh);
+			pmapMeshBalanced = gAllocator.liveAllocations == liveBeforePMapMesh;
+			}
+		printf("triangle_mesh pmap_release balanced=%u\n", pmapMeshBalanced ? 1u : 0u);
+		if(!pmapMeshBalanced)
+			return nxFail("releasing a mesh with a penetration map did not return the allocator to its starting level");
+		}
 	const bool loaded = valid && mesh->loadPMap(pmap);
 	const NxU32 roundTripSize = loaded ? mesh->getPMapSize() : 0;
 	void* roundTripBytes = roundTripSize ? malloc(roundTripSize) : 0;
@@ -377,6 +393,26 @@ static int nxTestDescriptorPath(NxPhysicsSDK* sdk, const char* name,
 	return 0;
 	}
 
+// Prints what a descriptor cooks to without expecting anything, so a case the oracle and candidate treat differently
+// shows up as a differential delta and not as a failed expectation.
+static void nxProbeDescriptor(NxPhysicsSDK* sdk, const char* name, const NxTriangleMeshDesc& input)
+	{
+	NxTriangleMesh* mesh = sdk->createTriangleMesh(input);
+	if(!mesh)
+		{
+		printf("triangle_mesh probe=%s created=0\n", name);
+		return;
+		}
+	NxTriangleMeshDesc saved;
+	saved.setToDefault();
+	const bool savedOk = mesh->saveToDesc(saved);
+	printf("triangle_mesh probe=%s created=1 saved=%u vertices=%u triangles=%u vertex_hash=%016llx triangle_hash=%016llx flags=%08x material_hash=%016llx\n",
+		name, savedOk ? 1u : 0u, mesh->getCount(0, NX_ARRAY_VERTICES), mesh->getCount(0, NX_ARRAY_TRIANGLES),
+		nxMeshArrayHash(*mesh, NX_ARRAY_VERTICES), nxMeshArrayHash(*mesh, NX_ARRAY_TRIANGLES), saved.flags,
+		nxMeshSavedMaterialsHash(saved));
+	sdk->releaseTriangleMesh(*mesh);
+	}
+
 static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	{
 	struct PointWithPadding { NxVec3 point; NxU32 padding; };
@@ -419,6 +455,25 @@ static int nxTestDescriptorVariants(NxPhysicsSDK* sdk)
 	status = nxTestDescriptorPath(sdk, "implicit_indices", unindexed, 4, 2, 0);
 	if(status)
 		return status;
+
+	// An index-less descriptor with FLIPNORMALS and materials, with numTriangles left at zero and set to one; and
+	// a mesh of one zero-area triangle.
+	const MaterialWithPadding implicitMaterials[] = { { 5, 0xaaaa }, { 9, 0xbbbb } };
+	NxTriangleMeshDesc unindexedFlip = unindexed;
+	unindexedFlip.flags = NX_MF_FLIPNORMALS;
+	unindexedFlip.materialIndices = implicitMaterials;
+	unindexedFlip.materialIndexStride = sizeof(MaterialWithPadding);
+	nxProbeDescriptor(sdk, "implicit_flip", unindexedFlip);
+	NxTriangleMeshDesc unindexedFlipCounted = unindexedFlip;
+	unindexedFlipCounted.numTriangles = 1;
+	nxProbeDescriptor(sdk, "implicit_flip_counted", unindexedFlipCounted);
+	const NxVec3 collinear[] = { NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f), NxVec3(2.0f, 0.0f, 0.0f) };
+	NxTriangleMeshDesc degenerate;
+	degenerate.setToDefault();
+	degenerate.numVertices = 3;
+	degenerate.points = collinear;
+	degenerate.pointStrideBytes = sizeof(NxVec3);
+	nxProbeDescriptor(sdk, "zero_area", degenerate);
 
 	const NxVec3 tetraPoints[] = {
 		NxVec3(-1.0f, -1.0f, -1.0f), NxVec3(1.0f, -1.0f, -1.0f),

@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PMap.h"
+#include "NxUserAllocator.h"
 #include "PMapCompute.h"
 #include "NxPhysicsBackend.h"
 #if !NX_PHYSICS_USE_X87
@@ -1724,6 +1725,12 @@ void PenetrationMap::buildSpreadTable()
 
 // phys_fn_001984 at 0x0004cae0. The grid first, the spread table second, both
 // through the CRT free at 0x000f48bb, and both pointers nulled after.
+void PenetrationMap::operator delete(void* memory)
+	{
+	if(memory)
+		nxFoundationSDKAllocator->free(memory);
+	}
+
 PenetrationMap::~PenetrationMap()
 	{
 	if(mGrid)

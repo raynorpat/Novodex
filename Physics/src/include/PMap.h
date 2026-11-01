@@ -111,6 +111,10 @@ class PenetrationMap
 						PenetrationMap();
 	// phys_fn_001984 (0x0004cae0). Virtual: the one slot of 0x10107f40.
 	virtual				~PenetrationMap();
+	// The deleting destructor (slot 0 of the table, the oracle's phys_fn_002031) frees through the SDK allocator the
+	// map was allocated from, as the oracle's does, not through the CRT.
+	static void operator delete(void* memory);
+	static void operator delete(void*, void*) {}
 
 	/**
 	phys_fn_002047 (0x00050640), the LOAD arm only.
