@@ -955,3 +955,130 @@ unsigned nxDrivePrunerSupportTypeSlots(unsigned char* base)
 	printf("collision name=pruner_support_types rows=005231,005262,005263,005466,005470,005471,005473 checks=%u mismatches=%u\n", checks, mismatches);
 	return mismatches;
 }
+
+// phys_fn_005479 (0x000eff20): the pruning pool's Reserve, replacing both arrays with exact-size storage; and
+// phys_fn_005539 (0x000f15c0): the pruner base class's scalar deleting destructor, which leaves the process pool and
+// frees the object. Each runs at its oracle address on an oracle-side object and as the transcription on a
+// candidate-side one; the object's bytes (addresses scrubbed), the results and each side's net allocations are
+// compared.
+unsigned __fastcall nxP45479(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45539(void* self, void* edxUnused, unsigned a0);
+class NxPrunerProcessPool;
+extern NxPrunerProcessPool* gNxPrunerProcessPool;
+
+static unsigned long long nxFoldBytes(unsigned long long state, const void* bytes, unsigned length)
+{
+	const unsigned char* p = static_cast<const unsigned char*>(bytes);
+	for(unsigned i = 0; i < length; ++i) { state ^= p[i]; state *= 1099511628211ull; }
+	return state;
+}
+
+static unsigned long long nxFoldScrubbed(unsigned long long state, const void* object, unsigned length)
+{
+	const unsigned* words = static_cast<const unsigned*>(object);
+	for(unsigned i = 0; i < length / 4; ++i)
+		{
+		unsigned value = words[i];
+		if(value >= 0x00100000u && value < 0x7fff0000u) value = 0xa11add00u;
+		state = nxFoldBytes(state, &value, 4);
+		}
+	return state;
+}
+
+unsigned nxDrivePrunerSupportReserveAndBase(unsigned char* base)
+{
+	if(!nx2iFoundationBegin())
+		return 1;
+	NxType3CountingAllocator oracleAllocator, candidateAllocator;
+	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &candidateAllocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &candidateAllocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
+	NxType3SdkAllocator oracleBridge(&oracleAllocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return 1;
+	unsigned mismatches = 0, checks = 0;
+
+	// 005479: capacities in sequence on a pool object that starts zeroed.
+	{
+	static const unsigned capacities[8] = { 0, 5, 9, 1, 300, 0, 7, 65535 };
+	unsigned char pools[2][0x20];
+	memset(pools, 0, sizeof(pools));
+	unsigned long long results[2] = { 14695981039346656037ull, 14695981039346656037ull };
+	for(unsigned step = 0; step != 8; ++step)
+		for(unsigned side = 0; side != 2; ++side)
+			{
+			NxType3CountingAllocator& allocator = side ? candidateAllocator : oracleAllocator;
+			const unsigned before = allocator.allocs;
+			unsigned result;
+			if(side == 0) result = reinterpret_cast<unsigned char (__thiscall*)(void*, unsigned)>(base + 0x000eff20)(pools[0], capacities[step]);
+			else result = nxP45479(pools[1], 0, capacities[step]) & 0xffu;
+			result &= 0xffu;
+			const unsigned made = allocator.allocs - before;
+			results[side] = nxFoldBytes(results[side], &result, 4);
+			results[side] = nxFoldBytes(results[side], &made, 4);
+			results[side] = nxFoldScrubbed(results[side], pools[side], 0x20);
+			}
+	++checks;
+	if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_reserve row=005479\n"); }
+	// release what the last step left, each side with its own allocator
+	for(unsigned side = 0; side != 2; ++side)
+		{
+		NxType3CountingAllocator& allocator = side ? candidateAllocator : oracleAllocator;
+		for(unsigned slot = 0x10; slot <= 0x14; slot += 4)
+			{
+			void* const block = *reinterpret_cast<void**>(pools[side] + slot);
+			if(block) allocator.free(block);
+			}
+		}
+	}
+
+	// 005539: the pruner base's deleting destructor on a pruner built by the factory, flag 0 and 1.
+	{
+	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
+	unsigned** const oraclePoolSlot = reinterpret_cast<unsigned**>(*reinterpret_cast<unsigned*>(base + 0x000b4cc1));
+	for(unsigned flag = 0; flag != 2; ++flag)
+		for(unsigned count = 1; count != 4; ++count)
+			{
+			unsigned long long results[2] = { 14695981039346656037ull, 14695981039346656037ull };
+			for(unsigned side = 0; side != 2; ++side)
+				{
+				NxType3CountingAllocator& allocator = side ? candidateAllocator : oracleAllocator;
+				const int liveBefore = static_cast<int>(allocator.allocs - allocator.frees);
+				void* pruners[3] = {};
+				for(unsigned i = 0; i != count; ++i)
+					pruners[i] = side == 0 ? reinterpret_cast<OracleFactoryFn>(base + 0x000b5090)(2) : static_cast<void*>(nxPruningEngineCreatePruner(2));
+				// delete the middle one (or the only one) through the base destructor
+				void* const victim = pruners[count / 2];
+				if(side == 0) reinterpret_cast<void* (__thiscall*)(void*, unsigned)>(base + 0x000f15c0)(victim, flag);
+				else nxP45539(victim, 0, flag);
+				if(!flag) allocator.free(victim);
+				void* const pool = side == 0 ? static_cast<void*>(*oraclePoolSlot) : static_cast<void*>(gNxPrunerProcessPool);
+				results[side] = nxFoldScrubbed(results[side], pool, 0x1c);
+				// the others go through their full destructors
+				for(unsigned i = 0; i != count; ++i)
+					{
+					if(pruners[i] == victim) continue;
+					if(side == 0) reinterpret_cast<void* (__thiscall*)(void*, unsigned)>((*reinterpret_cast<void***>(pruners[i]))[0])(pruners[i], 1);
+					else nxPruningEngineDestroyPruner(static_cast<Pruner*>(pruners[i]));
+					}
+				const int live = static_cast<int>(allocator.allocs - allocator.frees) - liveBefore;
+				results[side] = nxFoldBytes(results[side], &live, 4);
+				}
+			++checks;
+			if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_reserve row=005539 flag=%u count=%u\n", flag, count); }
+			}
+	}
+
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedFoundationAllocator;
+	nx2iFoundationEnd();
+	printf("collision name=pruner_support_reserve rows=005479,005539 checks=%u mismatches=%u\n", checks, mismatches);
+	return mismatches;
+}
