@@ -190,6 +190,27 @@ def frun(manifest=FMAN, rows=None):
     return close_static_rows.falsify(manifest, {'functions': rows}, clo, ORACLE, STAGED)
 
 
+class PublishMeasurementsTest(unittest.TestCase):
+    def test_a_closed_row_is_named_in_the_phase_evidence_file_with_its_count(self):
+        # validate_inventory reads each closed row's count back from the ledger's evidence_file
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / 'evidence').mkdir()
+            doc = Path(d) / 'evidence' / 'p.md'
+            rows = [inv_row(1, phase='4'), inv_row(2, phase='4')]
+            m = {'doc': 'x', 'rows': {
+                'phys_fn_000001': {'gate': 'G', 'family': 'f', 'mutation': 'je -> jne', 'detected': 'stdout_delta=26'},
+                'phys_fn_000002': {'gate': 'G', 'family': 'f', 'mutation': 'jb -> jae', 'detected': 'stdout_delta=7'}}}
+            doc.write_text('# Evidence\n- phys_fn_000002 already: 7\n', encoding='utf-8')
+            close_static_rows.publish_measurements(m, {'functions': rows}, {4: {'evidence_file': 'evidence/p.md'}}, d)
+            text = doc.read_text(encoding='utf-8')
+            self.assertIn('phys_fn_000001', text)
+            self.assertIn('stdout_delta=26', text)
+            self.assertEqual(text.count('phys_fn_000002'), 1)  # already named with its count
+            close_static_rows.publish_measurements(m, {'functions': rows}, {4: {}}, d)  # no evidence_file: untouched
+            self.assertEqual(doc.read_text(encoding='utf-8'), text)
+
+
 class FalsifiedModeTest(unittest.TestCase):
     def test_falsified_closes_the_row(self):
         inventory, closures = frun()

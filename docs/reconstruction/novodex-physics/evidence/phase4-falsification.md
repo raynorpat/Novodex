@@ -575,3 +575,30 @@ Per-row measurements (row, mutation, count):
 - `phys_fn_002023`: `seta` to `setb` at 0x0004e859; `pmap_classify` mismatches=360.
 - `phys_fn_002025`: `jbe` to `ja` at 0x0004e89c; `pmap_corners` mismatches=30073.
 - `phys_fn_002027`: `fmul` to `fdiv` at 0x0004ea87; `pmap_corners` mismatches=19499.
+
+## Testing pass
+
+- `phys_fn_002097`: 0x00052ab9 call dword ptr [edx + 8] -> call dword ptr [edx + 12]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+- `phys_fn_002126`: 0x00053054 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002130`: 0x000530f4 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]; `NxPhysicsTriangleMeshApiTests` stdout_delta=20.
+- `phys_fn_002138`: 0x00053234 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002095`: 0x00052a73 jbe L52aae -> ja L52aae [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=23.
+- `phys_fn_002098`: 0x00052b63 jbe L52b9e -> ja L52b9e [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+- `phys_fn_002100`: 0x00052b7c mov eax, dword ptr [eax + 0x6cc] -> mov eax, dword ptr [eax + 0x6d0] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
+- `phys_fn_002101`: 0x00052c53 jbe L52c8e -> ja L52c8e [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+- `phys_fn_002103`: 0x00052c6c mov eax, dword ptr [eax + 0x6cc] -> mov eax, dword ptr [eax + 0x6d0] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
+- `phys_fn_002104`: 0x00052d38 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+- `phys_fn_002106`: 0x00052d50 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
+- `phys_fn_002108`: 0x00052dc8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+- `phys_fn_002110`: 0x00052de0 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
+- `phys_fn_002112`: 0x00052e58 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+- `phys_fn_002114`: 0x00052e94 mov ecx, dword ptr [ebx + 4] -> mov ecx, dword ptr [ebx + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+- `phys_fn_002116`: 0x00052ef8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002118`: 0x00052f10 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
+- `phys_fn_002120`: 0x00052f88 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002122`: 0x00052fa0 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
+- `phys_fn_002124`: 0x00053018 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002128`: 0x000530b8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002132`: 0x00053158 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
+- `phys_fn_002134`: 0x00053170 mov ecx, dword ptr [edi + 4] -> mov ecx, dword ptr [edi + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=6.
+- `phys_fn_002136`: 0x000531f8 mov edi, dword ptr [eax + 4] -> mov edi, dword ptr [eax + 8] [candidate faults, output differs: --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.

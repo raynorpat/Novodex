@@ -181,6 +181,31 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
     return inventory, closures
 
 
+def publish_measurements(manifest, inventory, closures, root):
+    """Append each falsified row's measurement to its phase ledger's evidence_file, where the validator reads it back.
+
+    One line per row naming the row and the count it spends; a row an existing line already names with that count is skipped.
+    """
+    by = {r['id']: r for r in inventory['functions']}
+    for ph, ledger in closures.items():
+        name = ledger.get('evidence_file')
+        if not name:
+            continue
+        path = Path(root) / name
+        text = path.read_text(encoding='utf-8')
+        add = []
+        for rid, spec in manifest['rows'].items():
+            if int(by[rid]['phase']) != ph:
+                continue
+            count = spec['detected'].split('=')[1]
+            if any(rid in l and re.search(r'(?<![0-9])%s(?![0-9])' % count, l) for l in text.splitlines()):
+                continue
+            add.append('- `%s`: %s; `%s` %s.' % (rid, spec['mutation'], spec['gate'], spec['detected']))
+        if add:
+            body = text.rstrip('\n') + '\n\n## Testing pass\n\n' + '\n'.join(add) + '\n'
+            path.write_text(body, encoding='utf-8')
+
+
 def bump_gate(artifact, n):
     """gates/phase<N>.json: n rows move from deferred to closed."""
     artifact['counts']['closed'] += n
