@@ -65,6 +65,14 @@ class DetectionTest(unittest.TestCase):
         self.assertIsNone(mutate_rows.detect_staged(out))
 
 
+class HarnessCommandTest(unittest.TestCase):
+    def test_extra_arguments_follow_the_oracle_directory_and_hash(self):
+        cmd = mutate_rows.harness_command('T', ['--only'])
+        self.assertEqual([Path(cmd[0]).name, cmd[1], cmd[2], cmd[3]],
+                         ['T.exe', mutate_rows.ORACLE_DIR, mutate_rows.ORACLE_SHA, '--only'])
+        self.assertEqual(len(mutate_rows.harness_command('T', None)), 3)
+
+
 class CountCrashTest(unittest.TestCase):
     def test_a_crash_counts_only_when_asked(self):
         out = 'differential target=T oracle_exit=0 candidate_exit=-1073741819 both_exit_zero=False stdout_delta=26 stderr_exact=True'

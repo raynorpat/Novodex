@@ -4322,6 +4322,193 @@ static unsigned nxDriveRayAabbSlabRow002272(unsigned char* base)
 	return mismatches;
 	}
 
+// The pruner support rows that are leaves: phys_fn_005404 (an OBB's 4x4 matrix), 005380 (a tail call through a
+// sub-object's table), 004870 and 004872 (the owner hooks' tail jumps) and 005279 (the visualisation walk over a
+// node array). Each runs at its oracle address and as the candidate's transcription (PrunerSupportRows.cpp) over
+// the same fixtures; the observed results (return value, output memory, the calls a probe saw) are compared.
+unsigned __fastcall nxP45404(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45380(void* self, void* edxUnused);
+unsigned __cdecl nxP44870();
+unsigned __cdecl nxP44872();
+unsigned __fastcall nxP45279(void* self, void* edxUnused, unsigned a0, unsigned a1);
+namespace IceMaths { class AABB; }
+extern unsigned (*gPrunableOwnerQuery)(void* owner);
+extern void (*gPrunableOwnerNotify)(void* owner, IceMaths::AABB* box);
+
+static unsigned gLeafLog[512];
+static unsigned gLeafLogCount;
+static unsigned gLeafBase;	// pointers are logged relative to this, so the digests do not depend on where the fixtures landed
+static void nxLeafLogWord(unsigned word) { if(gLeafLogCount < 512) gLeafLog[gLeafLogCount++] = word; }
+static unsigned __fastcall nxLeafProbeThis(void* self, void*)
+	{
+	nxLeafLogWord((unsigned) self - gLeafBase);
+	return *(unsigned*) ((unsigned char*) self + 4) ^ 0x5a5a5a5au;
+	}
+static unsigned __cdecl nxLeafProbeQuery(void* owner) { nxLeafLogWord((unsigned) owner); return 0x51510000u | (unsigned) (size_t) owner; }
+static void __cdecl nxLeafProbeNotify(void* owner, IceMaths::AABB* box) { nxLeafLogWord((unsigned) owner); nxLeafLogWord((unsigned) box); }
+static void __cdecl nxLeafProbeWalk(const unsigned* box, unsigned user)
+	{
+	for(unsigned i = 0; i < 6; ++i) nxLeafLogWord(box[i]);
+	nxLeafLogWord(user);
+	}
+
+static unsigned nxLeafNext(unsigned* state) { unsigned x = *state; x ^= x << 13; x ^= x >> 17; x ^= x << 5; return *state = x; }
+
+static unsigned nxDrivePrunerSupportLeaves(unsigned char* base)
+	{
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, cases = 0;
+	unsigned seed = 0x5eed1234u;
+	// An observation is the return value, the log of probe calls and any output memory.
+	struct Observation { unsigned result; unsigned logCount; unsigned log[64]; unsigned char out[0x40]; };
+	#define LEAF_COMPARE(NAME, OBS0, OBS1) \
+		do { ++cases; const bool same = (OBS0).result == (OBS1).result && (OBS0).logCount == (OBS1).logCount && \
+			memcmp((OBS0).log, (OBS1).log, sizeof((OBS0).log)) == 0 && memcmp((OBS0).out, (OBS1).out, sizeof((OBS0).out)) == 0; \
+			mismatches += same ? 0u : 1u; \
+			if(!same) printf("collision mismatch name=pruner_support_leaf row=%s case=%u oracle=%08x candidate=%08x\n", NAME, cases, (OBS0).result, (OBS1).result); \
+			nxFoldInput(&oracleDigest, &(OBS0), sizeof(Observation)); nxFoldInput(&candidateDigest, &(OBS1), sizeof(Observation)); } while(0)
+	#define LEAF_CAPTURE(OBS, RESULT) do { (OBS).result = (RESULT); (OBS).logCount = gLeafLogCount; \
+		memset((OBS).log, 0, sizeof((OBS).log)); memcpy((OBS).log, gLeafLog, 4 * (gLeafLogCount < 64 ? gLeafLogCount : 64)); } while(0)
+
+	// phys_fn_005404 (0x000e9b20): the OBB at `this`, its matrix to the pointer argument.
+	{
+	typedef void (__thiscall* OracleFn)(void*, void*);
+	const OracleFn oracle = (OracleFn) (base + 0x000e9b20);
+	for(unsigned c = 0; c < 24; ++c)
+		{
+		unsigned words[10];
+		for(unsigned i = 0; i < 10; ++i) words[i] = nxLeafNext(&seed);
+		if(c < 6) { for(unsigned i = 2; i < 9; ++i) words[i] = 0x3f800000u + (c << 20) + i; }
+		Observation a, b;
+		memset(&a, 0, sizeof(a)); memset(&b, 0, sizeof(b));
+		memset(a.out, 0xcd, sizeof(a.out)); memset(b.out, 0xcd, sizeof(b.out));
+		gLeafLogCount = 0;
+		oracle(words, a.out);
+		LEAF_CAPTURE(a, 0);
+		gLeafLogCount = 0;
+		nxP45404(words, 0, (unsigned) b.out);
+		LEAF_CAPTURE(b, 0);
+		LEAF_COMPARE("005404", a, b);
+		nxFoldInput(&inputDigest, words, sizeof(words));
+		}
+	}
+
+	// phys_fn_005380 (0x000e9420): a tail call through the sub-object at +0x10, or zero for the -0x20 sentinel.
+	{
+	typedef unsigned (__thiscall* OracleFn)(void*);
+	const OracleFn oracle = (OracleFn) (base + 0x000e9420);
+	for(unsigned c = 0; c < 8; ++c)
+		{
+		unsigned sub[4] = { 0, nxLeafNext(&seed), 0, 0 };
+		void* table[8];
+		for(unsigned i = 0; i < 8; ++i) table[i] = (void*) nxLeafProbeThis;
+		sub[0] = (unsigned) table;
+		unsigned outer[8];
+		for(unsigned i = 0; i < 8; ++i) outer[i] = nxLeafNext(&seed);
+		outer[4] = c == 3 ? 0xffffffe0u : (unsigned) sub;
+		Observation a, b;
+		memset(&a, 0, sizeof(a)); memset(&b, 0, sizeof(b));
+		gLeafBase = (unsigned) sub;
+		gLeafLogCount = 0;
+		const unsigned ra = oracle(outer);
+		LEAF_CAPTURE(a, ra);
+		gLeafLogCount = 0;
+		const unsigned rb = nxP45380(outer, 0);
+		LEAF_CAPTURE(b, rb);
+		LEAF_COMPARE("005380", a, b);
+		outer[4] = c == 3 ? 0xffffffe0u : 1u;
+		nxFoldInput(&inputDigest, outer, sizeof(outer));
+		}
+	}
+
+	// phys_fn_004870 and 004872 (0x000b5460, 0x000b5480): tail jumps through the owner hooks.
+	{
+	typedef unsigned (__cdecl* HookFn)(void*);
+	typedef void (__cdecl* NotifyFn)(void*, void*);
+	unsigned** const oracleQuery = (unsigned**) *(unsigned*) (base + 0x000b5461);
+	unsigned** const oracleNotify = (unsigned**) *(unsigned*) (base + 0x000b5481);
+	void* const savedOracleQuery = *(void**) oracleQuery;
+	void* const savedOracleNotify = *(void**) oracleNotify;
+	void* const savedQuery = (void*) gPrunableOwnerQuery;
+	void* const savedNotify = (void*) gPrunableOwnerNotify;
+	for(unsigned c = 0; c < 8; ++c)
+		{
+		const bool installed = (c & 1) != 0;
+		unsigned owner[4] = { nxLeafNext(&seed), nxLeafNext(&seed), nxLeafNext(&seed), nxLeafNext(&seed) };
+		Observation a, b;
+		memset(&a, 0, sizeof(a)); memset(&b, 0, sizeof(b));
+		// 004870
+		*(void**) oracleQuery = installed ? (void*) nxLeafProbeQuery : 0;
+		gPrunableOwnerQuery = installed ? nxLeafProbeQuery : 0;
+		gLeafLogCount = 0;
+		const unsigned qa = ((HookFn) (base + 0x000b5460))(owner);
+		LEAF_CAPTURE(a, qa);
+		gLeafLogCount = 0;
+		const unsigned qb = ((HookFn) nxP44870)(owner);
+		LEAF_CAPTURE(b, qb);
+		LEAF_COMPARE("004870", a, b);
+		// 004872
+		memset(&a, 0, sizeof(a)); memset(&b, 0, sizeof(b));
+		*(void**) oracleNotify = installed ? (void*) nxLeafProbeNotify : 0;
+		gPrunableOwnerNotify = installed ? nxLeafProbeNotify : 0;
+		gLeafLogCount = 0;
+		((NotifyFn) (base + 0x000b5480))(owner, (void*) 0x1234);
+		LEAF_CAPTURE(a, 0);
+		gLeafLogCount = 0;
+		((NotifyFn) nxP44872)(owner, (void*) 0x1234);
+		LEAF_CAPTURE(b, 0);
+		LEAF_COMPARE("004872", a, b);
+		nxFoldInput(&inputDigest, owner, sizeof(owner));
+		}
+	*(void**) oracleQuery = savedOracleQuery;
+	*(void**) oracleNotify = savedOracleNotify;
+	gPrunableOwnerQuery = (unsigned (*)(void*)) savedQuery;
+	gPrunableOwnerNotify = (void (*)(void*, IceMaths::AABB*)) savedNotify;
+	}
+
+	// phys_fn_005279 (0x000e6b50): the visualisation walk; the callback sees each node's six words and the user value.
+	{
+	typedef unsigned (__thiscall* OracleFn)(void*, void*, unsigned);
+	const OracleFn oracle = (OracleFn) (base + 0x000e6b50);
+	for(unsigned c = 0; c < 12; ++c)
+		{
+		const unsigned nodes = c % 5;
+		unsigned cells[4][6];
+		unsigned* pointers[4 * 6];
+		for(unsigned n = 0; n < 4; ++n)
+			for(unsigned i = 0; i < 6; ++i) { cells[n][i] = nxLeafNext(&seed); pointers[n * 6 + i] = &cells[n][i]; }
+		unsigned object[16];
+		for(unsigned i = 0; i < 16; ++i) object[i] = nxLeafNext(&seed);
+		object[6] = nodes;
+		object[7] = (unsigned) pointers;
+		const unsigned user = nxLeafNext(&seed);
+		void* const callback = c >= 10 ? 0 : (void*) nxLeafProbeWalk;
+		Observation a, b;
+		memset(&a, 0, sizeof(a)); memset(&b, 0, sizeof(b));
+		gLeafLogCount = 0;
+		oracle(object, callback, user);
+		LEAF_CAPTURE(a, 0);
+		gLeafLogCount = 0;
+		nxP45279(object, 0, (unsigned) callback, user);
+		LEAF_CAPTURE(b, 0);
+		LEAF_COMPARE("005279", a, b);
+		object[7] = 0;
+		nxFoldInput(&inputDigest, object, sizeof(object));
+		nxFoldInput(&inputDigest, cells, sizeof(cells));
+		nxFoldInput(&inputDigest, &user, 4);
+		}
+	}
+	#undef LEAF_COMPARE
+	#undef LEAF_CAPTURE
+	printf("collision name=pruner_support_leaf index=- rva=0x000e9b20 owner=phys_fn_005404 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=005404,005380,004870,004872,005279\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	nxPrintInput("pruner_support_leaf", &inputDigest);
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -4345,7 +4532,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool type3PrunerOnly = argc == 4 && wcscmp(argv[3], L"--type3-pruner-only") == 0;
 	const bool prunerPoolReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-pool-reserve-only") == 0;
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly)
+	const bool prunerSupportLeafOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-leaf-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4383,6 +4571,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(prunerSupportLeafOnly)
+		{
+		return nxDrivePrunerSupportLeaves(base) ? 1 : 0;
+		}
 	if(rayAabbSlabOnly)
 		{
 		const unsigned mismatches = nxDriveRayAabbSlabRow002272(base);
@@ -9884,6 +10076,8 @@ int wmain(int argc, wchar_t** argv)
 	totalMismatch += nxDriveTask2b(base);
 	// Phase 7 row 002272 is the same slab kernel with direction passed in ECX.
 	totalMismatch += nxDriveRayAabbSlabRow002272(base);
+	// The pruner support rows that are leaves (PrunerSupportRows.cpp).
+	totalMismatch += nxDrivePrunerSupportLeaves(base);
 
 	// The kernel fuzz harness's signalling-NaN variants; see nxDriveFuzzSnan.
 	totalMismatch += nxDriveFuzzSnan(physics);

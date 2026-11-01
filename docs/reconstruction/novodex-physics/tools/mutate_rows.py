@@ -234,7 +234,12 @@ def _build(target, staged):
     return True
 
 
-def _real_run(target, family, staged, count_crash=False):
+def harness_command(target, extra_args):
+    """The command line of an oracle-differential harness, with any extra arguments after the oracle directory and hash."""
+    return [str(REPO / 'build' / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA] + list(extra_args or [])
+
+
+def _real_run(target, family, staged, count_crash=False, extra_args=None):
     def run(_mutated_text):
         if not _build(target, staged):
             return ('build-failed', None)
@@ -245,8 +250,7 @@ def _real_run(target, family, staged, count_crash=False):
                              timeout=TIMEOUT, cwd=REPO)
                 n = detect_staged(r.stdout, count_crash)
                 return ('stdout_delta' if n else 'stdout_delta[%s]' % staged_note(r.stdout), n)
-            r = run_tree([str(REPO / 'build' / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA],
-                         timeout=TIMEOUT, cwd=REPO)
+            r = run_tree(harness_command(target, extra_args), timeout=TIMEOUT, cwd=REPO)
             return ('mismatches', detect_family(r.stdout, family))
         except subprocess.TimeoutExpired:
             return ('timeout', None)
@@ -262,6 +266,7 @@ def main(argv=None):
     g.add_argument('--family')
     g.add_argument('--staged', action='store_true')
     ap.add_argument('--limit', type=int, default=6)
+    ap.add_argument('--exe-arg', action='append', default=[], help='an extra argument for a harness target (repeatable)')
     ap.add_argument('--no-control', action='store_true', help='skip the unmutated control run')
     ap.add_argument('--count-crash', action='store_true', help='a faulting candidate with differing output counts as a detection')
     ap.add_argument('--log')
@@ -273,7 +278,7 @@ def main(argv=None):
     lo = int(row['rva'], 16)
     hi = lo + int(row['size'])
     tried = []
-    run = _real_run(a.target, a.family, a.staged, a.count_crash)
+    run = _real_run(a.target, a.family, a.staged, a.count_crash, a.exe_arg)
     got = sweep(a.source, lo, hi, run, a.limit, control=None if a.no_control else run,
                 restore_build=lambda: _build(a.target, a.staged),
                 trace=lambda addr, before, after, kind, n: tried.append('TRY 0x%08x  %s  ->  %s  :  %s %s' % (addr, before, after, kind, n)))

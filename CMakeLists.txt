@@ -1233,7 +1233,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/PrunerOctree.cpp Physics/src/opcode/IcePruningEngine.cpp
 		Physics/src/PrunerRegistration.cpp
-		Physics/src/opcode/NovodexBoxPruning.cpp
+		Physics/src/opcode/NovodexBoxPruning.cpp Physics/src/opcode/PrunerSupportRows.cpp
 		${NX_ICE_MESH_ROW_SOURCES} Physics/src/SmoothNormals.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
