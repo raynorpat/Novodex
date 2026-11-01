@@ -620,3 +620,7 @@ Per-row measurements (row, mutation, count):
 - `phys_fn_002205`: 0x00054720 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsTriangleMeshApiTests` stdout_delta=28.
 - `phys_fn_001524`: 0x0002d950 lea ecx, [esi + 0x80] -> lea ecx, [esi + 0x84] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=18.
 - `phys_fn_001528`: 0x0002d99a mov edx, dword ptr [eax] -> mov edx, dword ptr [eax + 4] [swept with --count-crash: a candidate fault with differing output counts]; `NxPhysicsConvexMeshTests` stdout_delta=18.
+
+## Testing pass
+
+- `phys_fn_002031`: 0x0004ff23 mov eax, dword ptr [esi + 0x70] -> mov eax, dword ptr [esi + 0x74] [swept with --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.

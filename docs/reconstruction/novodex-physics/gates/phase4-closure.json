@@ -54,11 +54,11 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 864,
+    "deferred_reconstructed_not_falsified": 863,
     "deferred_not_reconstructed_in_phase": 17,
     "deferred_vendored_not_falsified": 19,
     "oracle_differential_falsified": 55,
-    "differential_falsified": 55,
+    "differential_falsified": 56,
     "deferred_blocked_on_later_phase": 43
   },
   "closed": [
@@ -1190,6 +1190,16 @@
         "mutation": "0x0002d99a mov edx, dword ptr [eax] -> mov edx, dword ptr [eax + 4] [swept with --count-crash: a candidate fault with differing output counts]",
         "detected": "stdout_delta=18"
       }
+    },
+    {
+      "id": "phys_fn_002031",
+      "rva": "0x0004ff20",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "0x0004ff23 mov eax, dword ptr [esi + 0x70] -> mov eax, dword ptr [esi + 0x74] [swept with --count-crash]",
+        "detected": "stdout_delta=26"
+      }
     }
   ],
   "deferred": [
@@ -1820,15 +1830,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002031",
-      "rva": "0x0004ff20",
-      "size": 81,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pmap-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_002037",

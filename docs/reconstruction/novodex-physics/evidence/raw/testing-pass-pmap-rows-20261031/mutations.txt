@@ -1,0 +1,1 @@
+CAUGHT phys_fn_002031 NxPhysicsTriangleMeshApiTests stdout_delta=26 0x0004ff23  mov eax, dword ptr [esi + 0x70]  ->  mov eax, dword ptr [esi + 0x74]  [swept with --count-crash]
