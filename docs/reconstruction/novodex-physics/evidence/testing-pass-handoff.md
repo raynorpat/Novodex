@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 122 of the 184 rows closed; 62 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 137 of the 184 rows closed; 47 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -200,3 +200,28 @@ row that faults reads as a mismatch instead of ending the run (without it 005460
 Still held in this group: **005566** (the recursive octree walk: even with 40 objects the walk never recurses past the
 root, so it needs a fixture that builds a deeper tree), **005479** (no caller found in the oracle), **005539** and
 **005386** (reachable only through tables) and **004828** (needs a RadixSort built on the oracle side).
+
+## Update (seventh slice: the penetration map's cell-run coder and the last pruner rows)
+
+Fifteen more rows are closed (`raw/testing-pass-pmap-coder-and-pruner-rest-20261101/`), all registered under the phase 4
+target (`NxPhysicsType3PrunerTests`, floor now 644). **Every phase 4 PMapRows row is now closed.**
+
+* **`pmap_coder`** (`tests/PhysicsCollisionTests.cpp`; rows 001988, 001992-002006, 002010-002014). The encoder rows are
+  the tail of a function whose head (001990) is C++, so they cannot be called alone. The family runs the oracle's own
+  head and patches a jump over the first instruction of its tail (`0x0004cee0`), which hands control to the
+  transcription; the hybrid run is compared with the oracle's unpatched run. The oracle's head reads the coder's cursor
+  from `.data` statics the transcription does not write, so they are copied across after each hybrid call.
+  `PMapRows.cpp`'s two statics are now exported and the file is linked into the collision harness. The decoder runs
+  standalone through a small stub (`esi` = stream, cell list and resolution on the stack, plain return), on the
+  oracle's own flushed encoder output. 27 checks.
+* **`pruner_support_sorters`** (004828): the three RadixSort statics set in every combination; the statics afterwards and
+  each side's net allocations compared. 8 checks.
+* **`pruner_support_reserve`** (005479 the pruning pool's Reserve, 005539 the pruner base's scalar deleting
+  destructor): 7 checks.
+
+Still held in the pruner group: **005566** (the octree walk: its node count is zero for every population tried, up to
+200 objects, so it never recurses) and **005386** (the Opcode model's stream load, which calls the vendored tree
+builder). **004799** and **004820/004822/004824** stay blocked on phase 6 / phase 7 gates that have not passed.
+
+The 001988 mutation recorded is `or eax, 0xffffffff -> or eax, 0x100000000`, a literal the assembler narrows; it changes
+the cursor the reset writes and is detected.

@@ -677,3 +677,21 @@ Per-row measurements (row, mutation, count):
 - `phys_fn_005263`: 0x000e6434 mov edi, dword ptr [esi + 0x3c] -> mov edi, dword ptr [esi + 0x40]; `NxPhysicsType3PrunerTests` mismatches=1.
 - `phys_fn_005473`: 0x000efe93 je Lefea2 -> jne Lefea2; `NxPhysicsType3PrunerTests` mismatches=1.
 - `phys_fn_005568`: 0x000f216a mov ecx, dword ptr [ecx + 0x4c] -> mov ecx, dword ptr [ecx + 0x50]; `NxPhysicsType3PrunerTests` mismatches=10.
+
+## Testing pass
+
+- `phys_fn_001988`: 0x0004cba0 or eax, 0xffffffff -> or eax, 0x100000000; `NxPhysicsType3PrunerTests` mismatches=7.
+- `phys_fn_001992`: 0x0004cf29 jne L4d33e -> je L4d33e; `NxPhysicsType3PrunerTests` mismatches=9.
+- `phys_fn_001994`: 0x0004d270 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]; `NxPhysicsType3PrunerTests` mismatches=9.
+- `phys_fn_001996`: 0x0004d300 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]; `NxPhysicsType3PrunerTests` mismatches=10.
+- `phys_fn_001998`: 0x0004d560 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]; `NxPhysicsType3PrunerTests` mismatches=11.
+- `phys_fn_002000`: 0x0004d690 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]; `NxPhysicsType3PrunerTests` mismatches=6.
+- `phys_fn_002002`: 0x0004d6e0 mov dl, byte ptr [esi + 0x19] -> mov dl, byte ptr [esi + 0x1d]; `NxPhysicsType3PrunerTests` mismatches=9.
+- `phys_fn_002004`: 0x0004dac0 test dword ptr [esp + 0x10], edi -> test dword ptr [esp + 0x14], edi; `NxPhysicsType3PrunerTests` mismatches=12.
+- `phys_fn_002006`: 0x0004db00 mov ebx, dword ptr [esp + 0x14] -> mov ebx, dword ptr [esp + 0x18]; `NxPhysicsType3PrunerTests` mismatches=12.
+- `phys_fn_002010`: 0x0004df30 mov al, byte ptr [esi + 0x18] -> mov al, byte ptr [esi + 0x1c]; `NxPhysicsType3PrunerTests` mismatches=4.
+- `phys_fn_002012`: 0x0004e030 mov al, byte ptr [esi + 0x18] -> mov al, byte ptr [esi + 0x1c]; `NxPhysicsType3PrunerTests` mismatches=9.
+- `phys_fn_002014`: 0x0004e070 mov al, byte ptr [esi + 0x18] -> mov al, byte ptr [esi + 0x1c]; `NxPhysicsType3PrunerTests` mismatches=8.
+- `phys_fn_004828`: 0x000b4c5f mov dword ptr [nxKnBipartiteSorter1], 0 -> mov dword ptr [nxKnBipartiteSorter1], 1; `NxPhysicsType3PrunerTests` mismatches=4.
+- `phys_fn_005479`: 0x000eff22 mov edi, dword ptr [esp + 0xc] -> mov edi, dword ptr [esp + 0x10]; `NxPhysicsType3PrunerTests` mismatches=1.
+- `phys_fn_005539`: 0x000f15c3 lea ecx, [esi + 0x34] -> lea ecx, [esi + 0x38]; `NxPhysicsType3PrunerTests` mismatches=5.
