@@ -65,6 +65,16 @@ class DetectionTest(unittest.TestCase):
         self.assertIsNone(mutate_rows.detect_staged(out))
 
 
+class CountCrashTest(unittest.TestCase):
+    def test_a_crash_counts_only_when_asked(self):
+        out = 'differential target=T oracle_exit=0 candidate_exit=-1073741819 both_exit_zero=False stdout_delta=26 stderr_exact=True'
+        self.assertIsNone(mutate_rows.detect_staged(out))
+        self.assertEqual(mutate_rows.detect_staged(out, count_crash=True), 26)
+        # a crash with the output identical is still nothing
+        same = 'differential target=T oracle_exit=0 candidate_exit=-1073741819 both_exit_zero=False stdout_delta=0 stderr_exact=True'
+        self.assertIsNone(mutate_rows.detect_staged(same, count_crash=True))
+
+
 class RepoRootTest(unittest.TestCase):
     def test_repo_is_the_checkout_root(self):
         # build/, Physics/ and the test exes live under it; a wrong root runs every command in the wrong directory

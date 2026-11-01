@@ -93,13 +93,17 @@ def detect_family(stdout, family):
     return None
 
 
-def detect_staged(output):
-    """N from `stdout_delta=N` (N > 0) when the candidate did not crash, else None."""
+def detect_staged(output, count_crash=False):
+    """N from `stdout_delta=N` (N > 0) when the candidate did not crash, else None.
+
+    count_crash also accepts a crashed candidate whose output differs from the oracle's: for a row that only walks
+    structures, a data-offset mutant that faults is the gate failing, not noise.
+    """
     m = re.search(r'candidate_exit=(-?\d+).*?stdout_delta=(\d+)', output)
     if not m:
         return None
     code = int(m.group(1))
-    if code < 0 or code >= CRASH:
+    if (code < 0 or code >= CRASH) and not count_crash:
         return None
     return int(m.group(2)) or None
 
@@ -222,7 +226,7 @@ def _build(target, staged):
     return True
 
 
-def _real_run(target, family, staged):
+def _real_run(target, family, staged, count_crash=False):
     def run(_mutated_text):
         if not _build(target, staged):
             return ('build-failed', None)
@@ -231,7 +235,7 @@ def _real_run(target, family, staged):
                 r = run_tree(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
                               'docs/reconstruction/novodex-physics/tools/run_differential.ps1', '-Targets', target],
                              timeout=TIMEOUT, cwd=REPO)
-                n = detect_staged(r.stdout)
+                n = detect_staged(r.stdout, count_crash)
                 return ('stdout_delta' if n else 'stdout_delta[%s]' % staged_note(r.stdout), n)
             r = run_tree([str(REPO / 'build' / 'Release' / ('%s.exe' % target)), ORACLE_DIR, ORACLE_SHA],
                          timeout=TIMEOUT, cwd=REPO)
@@ -250,6 +254,7 @@ def main(argv=None):
     g.add_argument('--family')
     g.add_argument('--staged', action='store_true')
     ap.add_argument('--limit', type=int, default=6)
+    ap.add_argument('--count-crash', action='store_true', help='a faulting candidate with differing output counts as a detection')
     ap.add_argument('--log')
     ap.add_argument('--verbose', action='store_true', help='print every attempt and what the gate reported')
     ap.add_argument('--inventory', default=str(Path(__file__).resolve().parents[1] / 'inventory.json'))
@@ -259,7 +264,7 @@ def main(argv=None):
     lo = int(row['rva'], 16)
     hi = lo + int(row['size'])
     tried = []
-    got = sweep(a.source, lo, hi, _real_run(a.target, a.family, a.staged), a.limit,
+    got = sweep(a.source, lo, hi, _real_run(a.target, a.family, a.staged, a.count_crash), a.limit,
                 restore_build=lambda: _build(a.target, a.staged),
                 trace=lambda addr, before, after, kind, n: tried.append('TRY 0x%08x  %s  ->  %s  :  %s %s' % (addr, before, after, kind, n)))
     if got:
