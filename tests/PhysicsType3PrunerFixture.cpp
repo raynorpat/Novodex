@@ -443,3 +443,237 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 	nx2iFoundationEnd();
 	return mismatches;
 }
+
+// The type 3 pruner's slots as the pruner support rows have them: phys_fn_005462 (the AABB query, slot 7), 005460
+// (the sphere query, slot 8), 005456 (the plane query, slot 5), 005458 (the raycast, slot 6), 005452 (the tree
+// refit each of them runs first) and 005454 (the scalar deleting destructor, slot 0). The oracle runs its own
+// slots through its table; the candidate's pruner, built the same way, runs the transcribed rows on the same
+// objects. Results, hit lists (as object indices) and the allocator's frees are compared.
+unsigned __fastcall nxP45454(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45456(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3, unsigned a4);
+unsigned __fastcall nxP45458(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3, unsigned a4);
+unsigned __fastcall nxP45460(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3);
+unsigned __fastcall nxP45462(void* self, void* edxUnused, unsigned a0, unsigned a1, unsigned a2, unsigned a3);
+
+class NxType3CountingAllocator : public NxUserAllocator
+{
+public:
+	unsigned frees;
+	NxType3CountingAllocator() : frees(0) {}
+	void* mallocDEBUG(size_t size, const char*, int) override { return ::calloc(1, size); }
+	void* malloc(size_t size) override { return ::calloc(1, size); }
+	void* realloc(void* memory, size_t size) override { return ::realloc(memory, size); }
+	void free(void* memory) override { if(memory) ++frees; ::free(memory); }
+};
+
+unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
+{
+	if(!nx2iFoundationBegin())
+		return 1;
+	NxType3CountingAllocator allocator;
+	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = reinterpret_cast<OracleSetAllocatorFn>(base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
+	NxType3SdkAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return 1;
+	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
+	const OracleFactoryFn oracleFactory = reinterpret_cast<OracleFactoryFn>(base + 0x000b5090);
+	void* const oraclePruner = oracleFactory(3);
+	Pruner* const candidatePruner = nxPruningEngineCreatePruner(3);
+	if(!oraclePruner || !candidatePruner)
+		return 1;
+
+	NxU8 oracleObjects[4][0x2c] = {};
+	Prunable candidateObjects[4];
+	NxType3TestOwner oracleOwners[4] = {};
+	NxType3TestOwner candidateOwners[4] = {};
+	typedef void (__thiscall* OracleCtorFn)(void*);
+	const OracleCtorFn oraclePrunableCtor = reinterpret_cast<OracleCtorFn>(base + 0x000b54a0);
+	static const float boxes[4][6] = {
+		{0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+		{10.0f, 0.0f, 0.0f, 11.0f, 1.0f, 1.0f},
+		{4.0f, 0.0f, 0.0f, 5.0f, 1.0f, 1.0f},
+		{-6.0f, -2.0f, -2.0f, -4.0f, 2.0f, 2.0f}};
+	for(unsigned i = 0; i != 4; ++i)
+		{
+		oraclePrunableCtor(oracleObjects[i]);
+		*reinterpret_cast<void**>(oracleObjects[i] + 4) = &oracleOwners[i];
+		*reinterpret_cast<NxU32*>(oracleObjects[i] + 8) = PRUNABLE_FLAG_WORLD_AABB_VALID;
+		*reinterpret_cast<NxU32*>(oracleObjects[i] + 0x24) = 0xffffffffu;
+		candidateObjects[i].mOwner = &candidateOwners[i];
+		candidateObjects[i].mFlags = PRUNABLE_FLAG_WORLD_AABB_VALID;
+		candidateObjects[i].mPrunable24 = 0xffffffffu;
+		memcpy(oracleOwners[i].worldBounds, boxes[i], sizeof(boxes[i]));
+		memcpy(candidateOwners[i].worldBounds, boxes[i], sizeof(boxes[i]));
+		}
+	void (* const savedCandidateOwnerAabb)(void*, AABB*) = gPrunableOwnerWorldAABB;
+	void (** const oracleOwnerAabbSlot)(void*, AABB*) = reinterpret_cast<void (**)(void*, AABB*)>(base + 0x00128478);
+	void (* const savedOracleOwnerAabb)(void*, AABB*) = *oracleOwnerAabbSlot;
+	gPrunableOwnerWorldAABB = nxType3UpdateWorldAabb;
+	*oracleOwnerAabbSlot = nxType3UpdateWorldAabb;
+
+	typedef bool (__thiscall* AddObjectFn)(void*, void*);
+	void** const oracleVtable = *reinterpret_cast<void***>(oraclePruner);
+	const AddObjectFn oracleAdd = reinterpret_cast<AddObjectFn>(oracleVtable[1]);
+	unsigned mismatches = 0, checks = 0;
+	for(unsigned i = 0; i != 4; ++i)
+		if(!oracleAdd(oraclePruner, oracleObjects[i]) || !candidatePruner->AddObject(&candidateObjects[i]))
+			++mismatches;
+	// the pool boxes, as the fixture before this sets them
+	for(unsigned side = 0; side != 2; ++side)
+		{
+		void* const pruner = side ? static_cast<void*>(candidatePruner) : oraclePruner;
+		float* const poolBoxes = *reinterpret_cast<float**>(static_cast<unsigned char*>(pruner) + 0x14);
+		unsigned char* const objects = side ? reinterpret_cast<unsigned char*>(candidateObjects) : 0;
+		for(unsigned i = 0; i != 4; ++i)
+			{
+			const unsigned handle = side ? candidateObjects[i].mHandle : *reinterpret_cast<NxU16*>(oracleObjects[i] + 0x28);
+			if(poolBoxes && handle < 4) memcpy(poolBoxes + handle * 6, boxes[i], sizeof(boxes[i]));
+			else ++mismatches;
+			}
+		(void) objects;
+		}
+
+	struct TestOutput { NxU32 capacity; NxU32 count; NxU32* entries; float growthFactor; };
+	// the hits, as indices of the four objects, sorted
+	struct Hits { bool result; unsigned count; unsigned indices[16]; };
+	const NxU32 oracleBase = reinterpret_cast<NxU32>(oracleObjects[0]);
+	const NxU32 candidateBase = reinterpret_cast<NxU32>(&candidateObjects[0]);
+	const NxU32 oracleStride = sizeof(oracleObjects[0]);
+	const NxU32 candidateStride = sizeof(Prunable);
+	struct Fold
+		{
+		static void indices(Hits& hits, const NxU32* entries, unsigned count, NxU32 base, NxU32 stride)
+			{
+			hits.count = count;
+			for(unsigned i = 0; i < count && i < 16; ++i)
+				hits.indices[i] = stride ? (entries[i] - base) / stride : 0xffffu;
+			for(unsigned i = 0; i < count && i < 16; ++i)
+				for(unsigned j = i + 1; j < count && j < 16; ++j)
+					if(hits.indices[j] < hits.indices[i]) { unsigned t = hits.indices[i]; hits.indices[i] = hits.indices[j]; hits.indices[j] = t; }
+			}
+		};
+	#define COMPARE_HITS(NAME, OH, CH) do { ++checks; \
+		const bool same = (OH).result == (CH).result && (OH).count == (CH).count && \
+			memcmp((OH).indices, (CH).indices, 4 * ((OH).count < 16 ? (OH).count : 16)) == 0; \
+		if(!same) { ++mismatches; printf("collision mismatch name=pruner_support_type3 query=%s check=%u oracle_count=%u candidate_count=%u\n", NAME, checks, (OH).count, (CH).count); } } while(0)
+
+	// phys_fn_005462 / slot 7: boxes
+	static const float aabbs[5][6] = {
+		{3.0f, -1.0f, -1.0f, 6.0f, 2.0f, 2.0f}, {-100.0f, -100.0f, -100.0f, 100.0f, 100.0f, 100.0f},
+		{9.5f, 0.5f, 0.5f, 10.5f, 0.6f, 0.6f}, {50.0f, 50.0f, 50.0f, 51.0f, 51.0f, 51.0f}, {-7.0f, -3.0f, -3.0f, -3.0f, 3.0f, 3.0f}};
+	for(unsigned q = 0; q != 5; ++q)
+		{
+		NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
+		TestOutput oracleOutput = {16, 0, oracleEntries, 2.0f};
+		TestOutput candidateOutput = {16, 0, candidateEntries, 2.0f};
+		typedef bool (__thiscall* AabbQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
+		Hits o = {}, c = {};
+		o.result = reinterpret_cast<AabbQueryFn>(oracleVtable[7])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(aabbs[q]), 0, 0xffffffffu);
+		c.result = (nxP45462(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(aabbs[q]), 0, 0xffffffffu) & 0xff) != 0;
+		Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, oracleStride);
+		Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, candidateStride);
+		COMPARE_HITS("aabb", o, c);
+		}
+	// phys_fn_005460 / slot 8: spheres
+	static const float spheres[4][4] = {{4.5f, 0.5f, 0.5f, 0.4f}, {0.0f, 0.0f, 0.0f, 100.0f}, {10.5f, 0.5f, 0.5f, 0.1f}, {30.0f, 30.0f, 30.0f, 1.0f}};
+	for(unsigned q = 0; q != 4; ++q)
+		{
+		NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
+		TestOutput oracleOutput = {16, 0, oracleEntries, 2.0f};
+		TestOutput candidateOutput = {16, 0, candidateEntries, 2.0f};
+		typedef bool (__thiscall* SphereQueryFn)(void*, NxU32, NxU32, NxU32, NxU32);
+		Hits o = {}, c = {};
+		o.result = reinterpret_cast<SphereQueryFn>(oracleVtable[8])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(spheres[q]), 0, 0xffffffffu);
+		c.result = (nxP45460(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(spheres[q]), 0, 0xffffffffu) & 0xff) != 0;
+		Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, oracleStride);
+		Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, candidateStride);
+		COMPARE_HITS("sphere", o, c);
+		}
+	// phys_fn_005456 / slot 5: plane sets
+	static const float planeSets[3][8] = {
+		{1.0f, 0.0f, 0.0f, -3.0f, -1.0f, 0.0f, 0.0f, 6.0f},
+		{1.0f, 0.0f, 0.0f, 100.0f, -1.0f, 0.0f, 0.0f, 100.0f},
+		{0.0f, 1.0f, 0.0f, -0.5f, 0.0f, -1.0f, 0.0f, 0.6f}};
+	for(unsigned q = 0; q != 3; ++q)
+		{
+		NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
+		TestOutput oracleOutput = {16, 0, oracleEntries, 2.0f};
+		TestOutput candidateOutput = {16, 0, candidateEntries, 2.0f};
+		typedef bool (__thiscall* PlaneQueryFn)(void*, NxU32, NxU32, NxU32, NxU32, NxU32);
+		Hits o = {}, c = {};
+		o.result = reinterpret_cast<PlaneQueryFn>(oracleVtable[5])(oraclePruner, reinterpret_cast<NxU32>(&oracleOutput), reinterpret_cast<NxU32>(planeSets[q]), 2, 0, 0xffffffffu);
+		c.result = (nxP45456(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateOutput), reinterpret_cast<unsigned>(planeSets[q]), 2, 0, 0xffffffffu) & 0xff) != 0;
+		Fold::indices(o, oracleEntries, oracleOutput.count, oracleBase, oracleStride);
+		Fold::indices(c, candidateEntries, candidateOutput.count, candidateBase, candidateStride);
+		COMPARE_HITS("planes", o, c);
+		}
+	// phys_fn_005458 / slot 6: rays
+	struct RayCase { float origin[3]; float direction[3]; float distance; bool first; };
+	static const RayCase rays[4] = {
+		{{0.0f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, 8.0f, true}, {{0.0f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, 100.0f, false},
+		{{-10.0f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, 3.0f, true}, {{0.5f, 10.0f, 0.5f}, {0.0f, -1.0f, 0.0f}, 20.0f, true}};
+	for(unsigned q = 0; q != 4; ++q)
+		{
+		const Ray worldRay(Point(rays[q].origin[0], rays[q].origin[1], rays[q].origin[2]),
+			Point(rays[q].direction[0], rays[q].direction[1], rays[q].direction[2]));
+		Container oracleRayHits, candidateRayHits;
+		typedef bool (__thiscall* RaycastFn)(void*, Container&, const Ray&, float, bool, NxU32);
+		Hits o = {}, c = {};
+		o.result = reinterpret_cast<RaycastFn>(oracleVtable[6])(oraclePruner, oracleRayHits, worldRay, rays[q].distance, rays[q].first, 0xffffffffu);
+		unsigned distanceBits;
+		memcpy(&distanceBits, &rays[q].distance, 4);
+		c.result = (nxP45458(candidatePruner, 0, reinterpret_cast<unsigned>(&candidateRayHits), reinterpret_cast<unsigned>(&worldRay),
+			distanceBits, rays[q].first ? 1u : 0u, 0xffffffffu) & 0xff) != 0;
+		NxU32 oracleEntries[16] = {}, candidateEntries[16] = {};
+		for(unsigned i = 0; i < oracleRayHits.GetNbEntries() && i < 16; ++i) oracleEntries[i] = oracleRayHits.GetEntry(i);
+		for(unsigned i = 0; i < candidateRayHits.GetNbEntries() && i < 16; ++i) candidateEntries[i] = candidateRayHits.GetEntry(i);
+		Fold::indices(o, oracleEntries, oracleRayHits.GetNbEntries(), oracleBase, oracleStride);
+		Fold::indices(c, candidateEntries, candidateRayHits.GetNbEntries(), candidateBase, candidateStride);
+		COMPARE_HITS("ray", o, c);
+		oracleRayHits.Empty();
+		candidateRayHits.Empty();
+		}
+	#undef COMPARE_HITS
+
+	// removal, then phys_fn_005454: the scalar deleting destructor (slot 0) with the flag set.
+	for(unsigned i = 0; i != 4; ++i)
+		{
+		typedef bool (__thiscall* RemoveObjectFn)(void*, void*);
+		reinterpret_cast<RemoveObjectFn>(oracleVtable[2])(oraclePruner, oracleObjects[i]);
+		candidatePruner->RemoveObject(&candidateObjects[i]);
+		}
+	unsigned freesOracle, freesCandidate;
+	{
+		allocator.frees = 0;
+		typedef void* (__thiscall* DeleteFn)(void*, unsigned);
+		reinterpret_cast<DeleteFn>(oracleVtable[0])(oraclePruner, 1);
+		freesOracle = allocator.frees;
+		allocator.frees = 0;
+		nxP45454(candidatePruner, 0, 1);
+		freesCandidate = allocator.frees;
+	}
+	++checks;
+	if(freesOracle != freesCandidate) { ++mismatches; printf("collision mismatch name=pruner_support_type3 destructor oracle_frees=%u candidate_frees=%u\n", freesOracle, freesCandidate); }
+	for(unsigned i = 0; i != 4; ++i)
+		{
+		void** const table = *reinterpret_cast<void***>(oracleObjects[i]);
+		typedef void* (__thiscall* DeleteFn)(void*, unsigned);
+		reinterpret_cast<DeleteFn>(table[0])(oracleObjects[i], 0);
+		}
+	*oracleOwnerAabbSlot = savedOracleOwnerAabb;
+	gPrunableOwnerWorldAABB = savedCandidateOwnerAabb;
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedFoundationAllocator;
+	nx2iFoundationEnd();
+	printf("collision name=pruner_support_type3 rows=005454,005456,005458,005460,005462 checks=%u frees=%u mismatches=%u\n", checks, freesOracle, mismatches);
+	return mismatches;
+}

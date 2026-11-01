@@ -2760,6 +2760,7 @@ static unsigned nxDrivePSceneBaseDtorOwner(unsigned char* base);
 static unsigned nxDrivePScenePrunerOwnerDestroy(unsigned char* base);
 static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base);
 unsigned nxDriveType3PrunerRefit(unsigned char* base);
+unsigned nxDrivePrunerSupportType3Slots(unsigned char* base);
 unsigned nxDrivePrunerPoolReserve(unsigned char* base);
 extern "C" void __fastcall NxScenePrunerNodeRemove(void* node);
 extern "C" void __stdcall NxScenePrunerNodeDestroy(void* node);
@@ -5124,7 +5125,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool prunerSupportStreamOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-stream-only") == 0;
 	const bool prunerSupportPoolOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-pool-only") == 0;
 	const bool prunerSupportFileOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-file-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly)
+	const bool prunerSupportType3Only = argc == 4 && wcscmp(argv[3], L"--pruner-support-type3-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly && !prunerSupportType3Only)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -5162,6 +5164,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(prunerSupportType3Only)
+		{
+		return nxDrivePrunerSupportType3Slots(base) ? 1 : 0;
+		}
 	if(prunerSupportFileOnly)
 		{
 		return nxDrivePrunerSupportFiles(base) ? 1 : 0;
@@ -5192,6 +5198,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePrunerSupportStreams(base);
 		mismatches += nxDrivePrunerSupportPool(base);
 		mismatches += nxDrivePrunerSupportFiles(base);
+		mismatches += nxDrivePrunerSupportType3Slots(base);
 		return mismatches ? 1 : 0;
 		}
 	if(prunerPoolReserveOnly)
