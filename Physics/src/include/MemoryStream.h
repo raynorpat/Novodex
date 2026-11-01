@@ -53,7 +53,7 @@ initialOffset)`, which is why it ends in `ret 0x10`. The allocator takes one
 16-byte block and one `size`-byte data buffer from nxGetSdkAllocator, links
 them as current and head, and then: a non-null `buffer` is copied in and the
 block starts FULL (`offset = initialOffset`); a null `buffer` with non-zero
-`fill` memsets the data to the BYTE 1 and also stores `initialOffset`; a null
+`fill` (a FILE*) reads the data from the file with fread and also stores `initialOffset`; a null
 `buffer` with zero `fill` starts empty at offset 0. Both known callers pass
 `(size, buffer)` with fill 0 and initialOffset = size, so a stream over given
 bytes is born full and is rewound with phys_fn_004780 seek(0), while a growable

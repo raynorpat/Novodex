@@ -8,6 +8,7 @@
 #include "MemoryStream.h"
 
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
 // The block is four words and both halves index it as {data, offset, size,
@@ -31,7 +32,7 @@ static_assert(sizeof(MemoryStream) == 0x1c, "the stream object is twenty-eight b
 // both through nxGetSdkAllocator -- slot 0 with (size, 0) at 0x000b3b62 and
 // 0x000b3b8d. A non-null buffer is copied in (rep movsd / rep movsb at
 // 0x000b3be1/0x000b3be8) and the block starts full; a null buffer with a
-// non-zero fill memsets the BYTE 1 over the data at 0x000b3bb3..0x000b3bbf;
+// non-zero fill is a FILE* the data is read from (fread, 0x000b3ba9..0x000b3bb6);
 // otherwise the block starts empty. `initialOffset` reaches [block+4] only on
 // those two arms (0x000b3bc8), so an empty stream starts at offset 0 whatever
 // the caller passed.
@@ -64,7 +65,10 @@ bool MemoryStream::initBlock(NxU32 size, const void* buffer, NxU32 fill, NxU32 i
 		}
 	else if(fill)
 		{
-		memset(data, 1, size);					// 0x000b3bb3..0x000b3bbf, value 1
+		// `fill` is a FILE*: 0x000b3ba9..0x000b3bb6 push it, 1, the size and the data and call fread (the cleanup is
+		// `add esp, 0x10`). phys_fn_004790 reads a file into its stream this way. It was first read as a memset of the
+		// byte 1 until the file-read row was driven against the oracle.
+		fread(data, size, 1, reinterpret_cast<FILE*>(fill));
 		block->mOffset = initialOffset;			// 0x000b3bc8
 		}
 	mLastAddress = block->mData;				// 0x000b3bd1

@@ -4938,6 +4938,164 @@ static unsigned nxDrivePrunerSupportPool(unsigned char* base)
 	return mismatches;
 	}
 
+// The pruner support rows that move a memory stream to and from a file: phys_fn_004790 (open a file, read its size,
+// build the stream's first block), 004793 (write the blocks) and 004801 (open a file in a mode and write the stream).
+// Each runs at its oracle address on an oracle stream and as the candidate's transcription on a candidate stream; the
+// stream, the return value and the bytes left in the file are compared.
+unsigned __fastcall nxP44790(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP44793(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP44801(void* self, void* edxUnused, unsigned a0, unsigned a1);
+
+static unsigned nxLeafReadFile(const char* path, unsigned char* out, unsigned capacity)
+	{
+	FILE* file = fopen(path, "rb");
+	if(!file) return 0xffffffffu;
+	const unsigned length = (unsigned) fread(out, 1, capacity, file);
+	fclose(file);
+	return length;
+	}
+
+static unsigned nxDrivePrunerSupportFiles(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("pruner support file fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("pruner support file fixture could not install oracle allocator");
+
+	char directory[MAX_PATH];
+	GetTempPathA(MAX_PATH, directory);
+	char paths[2][MAX_PATH];
+	sprintf(paths[0], "%snx_leaf_file_oracle_%u.bin", directory, (unsigned) GetCurrentProcessId());
+	sprintf(paths[1], "%snx_leaf_file_candidate_%u.bin", directory, (unsigned) GetCurrentProcessId());
+	char missing[MAX_PATH];
+	sprintf(missing, "%snx_leaf_no_such_dir_%u%cfile.bin", directory, (unsigned) GetCurrentProcessId(), 92);
+
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, cases = 0;
+	unsigned seed = 0xf11e5eedu;
+	NxLeafStreamSide sides[2] = { { true, base }, { false, base } };
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+
+	// phys_fn_004790 (0x000b3d20): a stream over a file's contents.
+	{
+	static const unsigned sizes[] = { 0, 1, 37, 300, 5000 };
+	for(unsigned c = 0; c < 8; ++c)
+		{
+		// c 0-4: files of those sizes; 5 and 7: a missing file; 6: an empty name (a null name faults the candidate CRT, not the oracle's)
+		unsigned char content[5000];
+		for(unsigned i = 0; i < sizeof(content); ++i) content[i] = (unsigned char) nxLeafNext(&seed);
+		const unsigned size = c < 5 ? sizes[c] : 0;
+		NxDigest local[2];
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			nxDigestInit(&local[side]);
+			allocator.reset();
+			if(c < 5)
+				{
+				FILE* file = fopen(paths[side], "wb");
+				if(file) { fwrite(content, 1, size, file); fclose(file); }
+				}
+			const char* name = c < 5 ? paths[side] : c == 5 ? missing : c == 6 ? "" : missing;
+			unsigned char stream[0x1c];
+			memset(stream, 0xcd, sizeof(stream));
+			const unsigned result = side == 0 ? ((unsigned (__thiscall*)(void*, const char*)) (base + 0x000b3d20))(stream, name)
+				: nxP44790(stream, 0, (unsigned) name);
+			const unsigned same = result == (unsigned) stream;
+			nxFoldInput(&local[side], &same, 4);
+			// the fields the row clears, then the blocks if it built one
+			nxLeafFoldObject(&local[side], stream + 8, 0x10);
+			nxFoldInput(&local[side], stream + 0x18, 2);
+			if(*(unsigned*) stream != 0xcdcdcdcdu) nxLeafFoldStream(&local[side], stream, 0);
+			nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			if(*(unsigned*) stream != 0xcdcdcdcdu)
+				{
+				if(side == 0) ((void (__thiscall*)(void*)) (base + 0x000b3bf0))(stream);
+				else ((MemoryStream*) stream)->~MemoryStream();
+				}
+			results[side] = local[side].state;
+			nxFoldInput(digests[side], &results[side], 8);
+			if(c < 5) DeleteFileA(paths[side]);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_file row=004790 case=%u\n", c); }
+		nxFoldInput(&inputDigest, &c, 4);
+		nxFoldInput(&inputDigest, content, 64);
+		}
+	}
+
+	// phys_fn_004793 and 004801 (0x000b3dc0, 0x000b3fb0): the stream written to a file.
+	{
+	static const unsigned lengths[] = { 0, 1, 16, 17, 100, 700 };
+	static const char* const modes[] = { 0, "wb", "ab" };
+	for(unsigned c = 0; c < 18; ++c)
+		{
+		const unsigned length = lengths[c % 6];
+		const unsigned modeIndex = (c / 6) % 3;
+		unsigned char source[800];
+		for(unsigned i = 0; i < sizeof(source); ++i) source[i] = (unsigned char) nxLeafNext(&seed);
+		NxDigest local[2];
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			nxDigestInit(&local[side]);
+			allocator.reset();
+			{ FILE* file = fopen(paths[side], "wb"); if(file) { fwrite("PRE", 1, 3, file); fclose(file); } }
+			void* const stream = sides[side].make(16, 0);
+			if(side == 0) ((void* (__thiscall*)(void*, const void*, unsigned)) (base + 0x000b3f50))(stream, source, length);
+			else nxP44799(stream, 0, (unsigned) source, length);
+			const char* const mode = modes[modeIndex];
+			const unsigned ok = side == 0 ? (((unsigned (__thiscall*)(void*, const char*, const char*)) (base + 0x000b3fb0))(stream, paths[side], mode) & 0xff)
+				: (nxP44801(stream, 0, (unsigned) paths[side], (unsigned) mode) & 0xff);
+			nxFoldInput(&local[side], &ok, 4);
+			unsigned char written[1024];
+			const unsigned got = nxLeafReadFile(paths[side], written, sizeof(written));
+			nxFoldInput(&local[side], &got, 4);
+			if(got != 0xffffffffu) nxFoldInput(&local[side], written, got);
+			// the bad path
+			const unsigned bad = side == 0 ? (((unsigned (__thiscall*)(void*, const char*, const char*)) (base + 0x000b3fb0))(stream, missing, mode) & 0xff)
+				: (nxP44801(stream, 0, (unsigned) missing, (unsigned) mode) & 0xff);
+			nxFoldInput(&local[side], &bad, 4);
+			nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			sides[side].destroy(stream);
+			DeleteFileA(paths[side]);
+			results[side] = local[side].state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_file row=004801 case=%u\n", c); }
+		nxFoldInput(&inputDigest, source, 64);
+		nxFoldInput(&inputDigest, &length, 4);
+		nxFoldInput(&inputDigest, &modeIndex, 4);
+		}
+	}
+	printf("collision name=pruner_support_file index=- rva=0x000b3d20 owner=phys_fn_004790 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=004790,004793,004801\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pruner_support_file row=004790 case=file_sizes_missing_null_and_empty_name\n");
+	printf("collision coverage name=pruner_support_file row=004793 case=blocks_written_to_file\n");
+	printf("collision coverage name=pruner_support_file row=004801 case=default_explicit_and_append_modes_and_open_failure\n");
+	nxPrintInput("pruner_support_file", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -4964,7 +5122,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool prunerSupportLeafOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-leaf-only") == 0;
 	const bool prunerSupportStreamOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-stream-only") == 0;
 	const bool prunerSupportPoolOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-pool-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly)
+	const bool prunerSupportFileOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-file-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -5002,6 +5161,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(prunerSupportFileOnly)
+		{
+		return nxDrivePrunerSupportFiles(base) ? 1 : 0;
+		}
 	if(prunerSupportPoolOnly)
 		{
 		return nxDrivePrunerSupportPool(base) ? 1 : 0;
@@ -5027,6 +5190,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePrunerSupportLeaves(base);
 		mismatches += nxDrivePrunerSupportStreams(base);
 		mismatches += nxDrivePrunerSupportPool(base);
+		mismatches += nxDrivePrunerSupportFiles(base);
 		return mismatches ? 1 : 0;
 		}
 	if(prunerPoolReserveOnly)
