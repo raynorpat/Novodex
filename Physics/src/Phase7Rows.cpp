@@ -115,7 +115,7 @@ extern "C" void* nxKnOwnerWorldAABB;
 extern "C" void* nxKnAdapterNotify;
 #pragma comment(linker, "/alternatename:_nxKnAdapterNotify=?gPrunableAdapterNotify@@3P6AXPAVPrunable@@PAVAABB@IceMaths@@@ZA")
 // .data 0x1012466c and 0x10124670: a guard byte and the sweep cache 002300 to 002308 keep.
-static unsigned char nxP7SweepGuard; static unsigned nxP7SweepCache;
+static unsigned char nxP7SweepGuard; unsigned nxP7SweepCache;
 // .data 0x101222f8: the six signed axes (written once by the image, read here as a table).
 static float nxP7Axes[18] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f };
 extern "C" void* nxP7Tab108740[2]; extern "C" void* nxP7TabR1[8]; extern "C" void* nxP7TabR2[6];
