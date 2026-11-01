@@ -4508,6 +4508,11 @@ static unsigned nxDrivePrunerSupportLeaves(unsigned char* base)
 	#undef LEAF_CAPTURE
 	printf("collision name=pruner_support_leaf index=- rva=0x000e9b20 owner=phys_fn_005404 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=005404,005380,004870,004872,005279\n",
 		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pruner_support_leaf row=005404 case=obb_matrix_random_and_unit_extents\n");
+	printf("collision coverage name=pruner_support_leaf row=005380 case=tail_call_and_minus_0x20_sentinel\n");
+	printf("collision coverage name=pruner_support_leaf row=004870 case=owner_query_hook_installed_and_absent\n");
+	printf("collision coverage name=pruner_support_leaf row=004872 case=owner_notify_hook_installed_and_absent\n");
+	printf("collision coverage name=pruner_support_leaf row=005279 case=visualise_walk_with_and_without_callback\n");
 	nxPrintInput("pruner_support_leaf", &inputDigest);
 	return mismatches;
 	}
@@ -4585,8 +4590,10 @@ int wmain(int argc, wchar_t** argv)
 		}
 	if(type3PrunerOnly)
 		{
-		const unsigned mismatches = nxDriveType3PrunerRefit(base);
+		unsigned mismatches = nxDriveType3PrunerRefit(base);
 		printf("collision type3_pruner mismatches=%u\n", mismatches);
+		// the phase 4 pruner rows that are leaves run under this target too
+		mismatches += nxDrivePrunerSupportLeaves(base);
 		return mismatches ? 1 : 0;
 		}
 	if(prunerPoolReserveOnly)
@@ -10079,8 +10086,8 @@ int wmain(int argc, wchar_t** argv)
 	totalMismatch += nxDriveTask2b(base);
 	// Phase 7 row 002272 is the same slab kernel with direction passed in ECX.
 	totalMismatch += nxDriveRayAabbSlabRow002272(base);
-	// The pruner support rows that are leaves (PrunerSupportRows.cpp).
-	totalMismatch += nxDrivePrunerSupportLeaves(base);
+	// The pruner support rows that are leaves run under --type3-pruner-only (phase 4) and --pruner-support-leaf-only, not
+	// here: the full run's output is pinned line for line by the phase 3 and 7 oracle proofs.
 
 	// The kernel fuzz harness's signalling-NaN variants; see nxDriveFuzzSnan.
 	totalMismatch += nxDriveFuzzSnan(physics);

@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 85 of the 184 rows closed; 99 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 90 of the 184 rows closed; 94 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -36,12 +36,12 @@ time. The ruling is in the ledger; the sweeper's default still refuses a crash.
 * 001935 and 001947: the visualisation walk passes a callback shape the candidate's walk does not; 001947 needs the
   scene globals linked into the ObjectModel-only targets.
 
-**Phase 4 (54 rows).**
+**Phase 4 (49 rows).**
 * 001988, 001992–002006, 002010–002014 (the cell-run coder): the encoder rows are interior fragments of
   phys_fn_001990 with no callable head, the decoder takes its stream in `esi`, and the whole coder keeps its cursor in
   `.data` statics where `PMap.cpp` passes a cursor struct. Wiring means rewriting `PMap.cpp`'s coder around the
   statics.
-* The pruner and box-pruning rows (004790–005646, `PrunerSupportRows.cpp`) are unwired: none is referenced from the
+* The pruner and box-pruning rows other than the five leaves closed in the third slice (004790–005646, `PrunerSupportRows.cpp`) are unwired: none is referenced from the
   candidate, which implements the same behaviour in `opcode/Ice*.cpp` and `Novodex*.cpp` under other names. Each
   needs its candidate counterpart identified and replaced, one subsystem at a time (stream, sorters, process pool,
   factory and owner adapters, pruner slots, pool save/load), each against the gate the plan names.
@@ -109,3 +109,23 @@ Known and accepted:
 The five shape-handle getters (001099, 001101, 001151, 001153, 001231) were re-swept with `--count-crash` and are
 closed (`raw/testing-pass-handle-getters-20261101/`): their only mutable lines are calls and offsets, so a mutant
 faults the candidate, and the output then differs from the oracle's.
+
+## Update (third slice: the pruner leaf rows)
+
+Five pruner support rows that are leaves (005404, 005380, 004870, 004872, 005279) are closed
+(`raw/testing-pass-pruner-leaf-20261101/`) by a new oracle-differential family, `pruner_support_leaf`, in
+`tests/PhysicsCollisionTests.cpp`. Each row runs at its oracle address and as the candidate's transcription over the
+same fixtures; the return value, output memory and the calls a probe saw are compared. `PrunerSupportRows.cpp` is now
+linked into `NxPhysicsCollisionTests`.
+
+* The family runs under `--type3-pruner-only` (the phase 4 target `NxPhysicsType3PrunerTests`, which now registers its
+  lines and raised the phase 4 coverage floor to 616) and under its own `--pruner-support-leaf-only`. It is
+  deliberately **not** in the full run: the phase 3 and 7 oracle proofs pin that run's output line for line.
+* The oracle-only baseline for `NxPhysicsCollisionTests` pins the source hash of `PhysicsCollisionTests.cpp`; it was
+  re-pinned and every retained proof in `evidence/oracle-only-proofs/` regenerated from gates 3-7 (they are bound to
+  a hash of the whole baseline).
+* 005380 needed its fixture to observe a fault (`__try`) in the sentinel case, since a mutant that dereferences the
+  sentinel otherwise ends the run. `mutate_rows.py --exe-arg` passes `--pruner-support-leaf-only` to a sweep.
+
+The other 41 pruner support rows need real pruner, pool or stream fixtures (see above); 001935 and 001947 are
+unchanged.

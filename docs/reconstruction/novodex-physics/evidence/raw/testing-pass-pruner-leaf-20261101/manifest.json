@@ -1,0 +1,35 @@
+{
+ "doc": "evidence/raw/testing-pass-pruner-leaf-20261101/mutations.txt",
+ "rows": {
+  "phys_fn_005404": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000e9b21 fld dword ptr [ecx + 0x20] -> fld dword ptr [ecx + 0x24]",
+   "detected": "mismatches=24"
+  },
+  "phys_fn_004870": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b5469 mov ecx, dword ptr [esp + 4] -> mov ecx, dword ptr [esp + 8]",
+   "detected": "mismatches=4"
+  },
+  "phys_fn_004872": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000b548d mov ecx, dword ptr [edx + 4] -> mov ecx, dword ptr [edx + 8]",
+   "detected": "mismatches=4"
+  },
+  "phys_fn_005279": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000e6b6a jbe Le6c02 -> ja Le6c02",
+   "detected": "mismatches=10"
+  },
+  "phys_fn_005380": {
+   "gate": "NxPhysicsType3PrunerTests",
+   "family": "NxPhysicsType3PrunerTests",
+   "mutation": "0x000e9420 mov eax, dword ptr [ecx + 0x10] -> mov eax, dword ptr [ecx + 0x14]",
+   "detected": "mismatches=1"
+  }
+ }
+}

@@ -628,3 +628,11 @@ Per-row measurements (row, mutation, count):
 ## Testing pass
 
 - `phys_fn_002239`: 0x00054a85 lea ecx, [esi + 8] -> lea ecx, [esi + 12] [swept with --count-crash]; `NxPhysicsTriangleMeshApiTests` stdout_delta=26.
+
+## Testing pass
+
+- `phys_fn_005404`: 0x000e9b21 fld dword ptr [ecx + 0x20] -> fld dword ptr [ecx + 0x24]; `NxPhysicsType3PrunerTests` mismatches=24.
+- `phys_fn_004870`: 0x000b5469 mov ecx, dword ptr [esp + 4] -> mov ecx, dword ptr [esp + 8]; `NxPhysicsType3PrunerTests` mismatches=4.
+- `phys_fn_004872`: 0x000b548d mov ecx, dword ptr [edx + 4] -> mov ecx, dword ptr [edx + 8]; `NxPhysicsType3PrunerTests` mismatches=4.
+- `phys_fn_005279`: 0x000e6b6a jbe Le6c02 -> ja Le6c02; `NxPhysicsType3PrunerTests` mismatches=10.
+- `phys_fn_005380`: 0x000e9420 mov eax, dword ptr [ecx + 0x10] -> mov eax, dword ptr [ecx + 0x14]; `NxPhysicsType3PrunerTests` mismatches=1.
