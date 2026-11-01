@@ -136,6 +136,7 @@ unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
 unsigned __fastcall nxTM2247(void*, void*);
 unsigned __fastcall nxTM2256(void*, void*, unsigned);
 unsigned __fastcall nxTM2255(void*, void*);
+unsigned __fastcall nxPMapScalarDelete(void*, void*, unsigned);
 unsigned __fastcall nxTM1524(void*, void*);
 unsigned __fastcall nxTM1528(void*, void*, unsigned);
 unsigned __fastcall nxTM2200(void*, void*, unsigned, unsigned);
@@ -634,8 +635,12 @@ TriangleMesh::~TriangleMesh()
 	mConvexMesh = 0;
 	if(mPMap)
 		{
+#if NX_TRIANGLE_MESH_ROWS
+		nxPMapScalarDelete(mPMap, 0, 1);	// phys_fn_002031
+#else
 		mPMap->~PenetrationMap();
 		nxFoundationSDKAllocator->free(mPMap);
+#endif
 		mPMap = 0;
 		}
 	if(mEdgeList)
@@ -689,8 +694,12 @@ bool TriangleMesh::loadPMap(const NxPMap& pmap)
 
 	if(mPMap)
 		{
+#if NX_TRIANGLE_MESH_ROWS
+		nxPMapScalarDelete(mPMap, 0, 1);	// phys_fn_002031
+#else
 		mPMap->~PenetrationMap();
 		nxFoundationSDKAllocator->free(mPMap);
+#endif
 		mPMap = 0;
 		}
 	if(!nxFoundationSDKAllocator)
