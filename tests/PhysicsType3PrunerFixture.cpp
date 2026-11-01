@@ -715,6 +715,12 @@ unsigned __fastcall nxP45471(void* self, void* edxUnused, unsigned a0, unsigned 
 unsigned __fastcall nxP45473(void* self, void* edxUnused, unsigned a0);
 
 typedef unsigned (__fastcall* NxDeleteRowFn)(void*, void*, unsigned);
+static NxType3CountingAllocator* gTypeSlotsAllocator;
+static unsigned nxGuardedDelete(NxDeleteRowFn row, void* self)
+{
+	__try { row(self, 0, 1); return 0; }
+	__except(EXCEPTION_EXECUTE_HANDLER) { return 0xfa11ed00u; }
+}
 
 static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4Fn aabbRow, NxRow4Fn sphereRow,
 	NxRow5Fn planeRow, NxDeleteRowFn deleteRow, unsigned* checksOut)
@@ -871,12 +877,20 @@ static unsigned nxRunPrunerTypeSlots(unsigned char* base, unsigned type, NxRow4F
 		candidatePruner->RemoveObject(&candidateObjects[i]);
 		}
 	// the scalar deleting destructor with the flag set
-	const unsigned frees0 = 0;
-	(void) frees0;
 	typedef void* (__thiscall* DeleteFn)(void*, unsigned);
+	gTypeSlotsAllocator->frees = 0;
 	reinterpret_cast<DeleteFn>(oracleVtable[0])(oraclePruner, 1);
-	if(deleteRow) deleteRow(candidatePruner, 0, 1);
+	const unsigned oracleFrees = gTypeSlotsAllocator->frees;
+	gTypeSlotsAllocator->frees = 0;
+	unsigned deleteFault = 0;
+	if(deleteRow) deleteFault = nxGuardedDelete(deleteRow, candidatePruner);
 	else nxPruningEngineDestroyPruner(candidatePruner);
+	++checks;
+	if(deleteFault || oracleFrees != gTypeSlotsAllocator->frees)
+		{
+		++mismatches;
+		printf("collision mismatch name=pruner_support_types type=%u destructor oracle_frees=%u candidate_frees=%u fault=%u\n", type, oracleFrees, gTypeSlotsAllocator->frees, deleteFault ? 1u : 0u);
+		}
 	for(unsigned i = 0; i != 4; ++i)
 		{
 		void** const table = *reinterpret_cast<void***>(oracleObjects[i]);
@@ -893,6 +907,7 @@ unsigned nxDrivePrunerSupportTypeSlots(unsigned char* base)
 	if(!nx2iFoundationBegin())
 		return 1;
 	NxType3CountingAllocator allocator;
+	gTypeSlotsAllocator = &allocator;
 	NxUserAllocator* const savedFoundationAllocator = nxFoundationSDKAllocator;
 	nxFoundationSDKAllocator = &allocator;
 	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
