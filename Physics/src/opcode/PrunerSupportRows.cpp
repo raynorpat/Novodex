@@ -90,7 +90,7 @@ extern "C" void nxP4CallUpdateWorldAABB();
 #pragma comment(linker, "/alternatename:_nxP4CallCreateTree=?CreateTree@BaseModel@Opcode@@IAE_N_N0@Z")
 #pragma comment(linker, "/alternatename:_nxP4CallEmpty=?empty@SdkContainer@@QAEXXZ")
 #pragma comment(linker, "/alternatename:_nxP4CallFclose=_fclose")
-#pragma comment(linker, "/alternatename:_nxP4CallFlushBits=?flushBits@MemoryStream@@QAEXXZ")
+#pragma comment(linker, "/alternatename:_nxP4CallFlushBits=?flushBits@MemoryStream@@QAEPAV1@XZ")
 #pragma comment(linker, "/alternatename:_nxP4CallFopen=_fopen")
 #pragma comment(linker, "/alternatename:_nxP4CallFree=_free")
 #pragma comment(linker, "/alternatename:_nxP4CallFseek=_fseek")
@@ -115,7 +115,7 @@ extern "C" void nxP4CallUpdateWorldAABB();
 #pragma comment(linker, "/alternatename:_nxP4CallReportTouched=?ReportTouched@StaticPruner@@QAEXAAVContainer@IceCore@@I@Z")
 #pragma comment(linker, "/alternatename:_nxP4CallResize=?resize@SdkContainer@@QAE_NI@Z")
 #pragma comment(linker, "/alternatename:_nxP4CallSort=?Sort@RadixSort@IceCore@@QAEAAV12@PBMI@Z")
-#pragma comment(linker, "/alternatename:_nxP4CallStoreDword=?storeDword@MemoryStream@@QAEXI@Z")
+#pragma comment(linker, "/alternatename:_nxP4CallStoreDword=?storeDword@MemoryStream@@QAEPAV1@I@Z")
 #pragma comment(linker, "/alternatename:_nxP4CallUpdateWorldAABB=?UpdateWorldAABB@Prunable@@QAEXPAVAABB@IceMaths@@@Z")
 extern "C" void* nxSdkInstanceSlot;
 #pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")

@@ -39,6 +39,7 @@
 #include <wchar.h>
 
 #include "NarrowPhase.h"
+#include "MemoryStream.h"
 #include "ContactGeneration.h"
 #include "NxIntersectionRayTriangle.h"
 #include "NxSmoothNormals.h"
@@ -4517,6 +4518,275 @@ static unsigned nxDrivePrunerSupportLeaves(unsigned char* base)
 	return mismatches;
 	}
 
+// The pruner support rows that serialise through the memory stream: phys_fn_004799 (the block store), the pool save
+// rows 005586, 005606, 005624 and 005642, and the pool load rows 005588, 005608 and 005644. Each runs at its oracle
+// address on an oracle stream and as the candidate's transcription on a candidate stream, over the same objects;
+// the stream's blocks, the allocator's request sizes, the return value and the loaded object are compared. The loads
+// read the oracle's own flattened save output, so the two sides see identical bytes.
+unsigned __fastcall nxP45586(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45606(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45624(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45642(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45588(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45608(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP45644(void* self, void* edxUnused, unsigned a0);
+unsigned __fastcall nxP44799(void* self, void* edxUnused, unsigned a0, unsigned a1);
+
+class NxLeafSizeAllocator : public NxUserAllocator
+	{
+	public:
+	unsigned sizes[512];
+	unsigned count;
+	unsigned frees;
+	NxLeafSizeAllocator() : count(0), frees(0) { memset(sizes, 0, sizeof(sizes)); }
+	void reset() { count = 0; frees = 0; memset(sizes, 0, sizeof(sizes)); }
+	void* mallocDEBUG(size_t size, const char*, int) override { return malloc(size); }
+	void* malloc(size_t size) override { if(count < 512) sizes[count] = (unsigned) size; ++count; return ::malloc(size); }
+	void* realloc(void* memory, size_t size) override { if(count < 512) sizes[count] = (unsigned) size; ++count; return ::realloc(memory, size); }
+	void free(void* memory) override { if(memory) { ++frees; ::free(memory); } }
+	};
+
+struct NxLeafStreamSide
+	{
+	bool oracle;
+	unsigned char* base;
+	void* make(unsigned size, const void* buffer) const
+		{
+		void* memory = ::malloc(0x1c);
+		if(oracle) ((void* (__thiscall*)(void*, unsigned, const void*)) (base + 0x000b3ce0))(memory, size, buffer);
+		else new(memory) MemoryStream(size, buffer);
+		return memory;
+		}
+	void rewind(void* stream) const
+		{
+		if(oracle) ((void (__thiscall*)(void*, unsigned)) (base + 0x000b3b30))(stream, 0);
+		else ((MemoryStream*) stream)->seek(0);
+		}
+	void destroy(void* stream) const
+		{
+		if(oracle) ((void (__thiscall*)(void*)) (base + 0x000b3bf0))(stream);
+		else ((MemoryStream*) stream)->~MemoryStream();
+		::free(stream);
+		}
+	};
+
+// Folds a value, replacing dwords that point into [lo, lo + 0x1000) with their offset so the digest does not depend on
+// where the fixture landed.
+static void nxLeafFoldScrubbed(NxDigest* digest, const unsigned char* bytes, unsigned length, unsigned lo)
+	{
+	unsigned char copy[4096];
+	if(length > sizeof(copy)) length = sizeof(copy);
+	memcpy(copy, bytes, length);
+	for(unsigned i = 0; i + 4 <= length; ++i)
+		{
+		unsigned value;
+		memcpy(&value, copy + i, 4);
+		if(value >= lo && value < lo + 0x1000)
+			{
+			value = 0xa0000000u | (value - lo);
+			memcpy(copy + i, &value, 4);
+			i += 3;
+			}
+		}
+	nxFoldInput(digest, copy, length);
+	}
+
+// The stream's blocks (layout: current at +0, head at +4; block data, offset, size, next), its bit state, and which
+// block is current.
+static void nxLeafFoldStream(NxDigest* digest, const unsigned char* stream, unsigned lo)
+	{
+	const unsigned* head = *(const unsigned**) (stream + 4);
+	const unsigned* current = *(const unsigned**) stream;
+	unsigned index = 0, currentIndex = 0xffffffffu;
+	for(const unsigned* block = head; block && index < 64; block = (const unsigned*) block[3], ++index)
+		{
+		if(block == current) currentIndex = index;
+		nxFoldInput(digest, &block[1], 8);
+		nxLeafFoldScrubbed(digest, (const unsigned char*) block[0], block[1] < 4096 ? block[1] : 4096, lo);
+		}
+	nxFoldInput(digest, &currentIndex, 4);
+	nxFoldInput(digest, stream + 0x18, 2);
+	}
+
+// Copies the stream's blocks end to end into `out`; returns the length.
+static unsigned nxLeafFlatten(const unsigned char* stream, unsigned char* out, unsigned capacity)
+	{
+	unsigned length = 0;
+	for(const unsigned* block = *(const unsigned**) (stream + 4); block; block = (const unsigned*) block[3])
+		{
+		if(length + block[1] > capacity) break;
+		memcpy(out + length, (const void*) block[0], block[1]);
+		length += block[1];
+		}
+	return length;
+	}
+
+static unsigned nxDrivePrunerSupportStreams(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("pruner support stream fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("pruner support stream fixture could not install oracle allocator");
+
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, cases = 0;
+	unsigned seed = 0x57e4a11du;
+	NxLeafStreamSide sides[2] = { { true, base }, { false, base } };
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+
+	// phys_fn_004799 (0x000b3f50): a block of bytes into the stream, growing it by doubling.
+	{
+	typedef void* (__thiscall* OracleBlockFn)(void*, const void*, unsigned);
+	static const unsigned lengths[] = { 0, 1, 5, 16, 17, 40, 100, 300 };
+	for(unsigned c = 0; c < 16; ++c)
+		{
+		const unsigned length = lengths[c % 8];
+		const unsigned capacity = c < 8 ? 16 : 64;
+		unsigned char source[320];
+		for(unsigned i = 0; i < sizeof(source); ++i) source[i] = (unsigned char) nxLeafNext(&seed);
+		unsigned long long results[2] = { 0, 0 };
+		NxDigest local[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			nxDigestInit(&local[side]);
+			allocator.reset();
+			void* const stream = sides[side].make(capacity, 0);
+			void* const result = side == 0 ? ((OracleBlockFn) (base + 0x000b3f50))(stream, source, length)
+				: (void*) nxP44799(stream, 0, (unsigned) source, length);
+			const unsigned same = result == stream;
+			nxFoldInput(&local[side], &same, 4);
+			nxLeafFoldStream(&local[side], (const unsigned char*) stream, 0);
+			nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			nxFoldInput(&local[side], &allocator.count, 4);
+			sides[side].destroy(stream);
+			nxFoldInput(&local[side], &allocator.frees, 4);
+			results[side] = local[side].state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_stream row=004799 case=%u\n", c); }
+		nxFoldInput(&inputDigest, source, 64);
+		nxFoldInput(&inputDigest, &length, 4);
+		nxFoldInput(&inputDigest, &capacity, 4);
+		}
+	}
+
+	// The pool save rows and the pool load rows, as pairs sharing an element size.
+	struct Pair { const char* name; unsigned saveRva; unsigned loadRva; unsigned stride; unsigned fieldA; unsigned fieldB; unsigned trailing; };
+	static const Pair pairs[] =
+		{
+		{ "005586/005588", 0x000f2580, 0x000f25b0, 0x1c, 0x18, 0xffffffffu, 0 },
+		{ "005606/005608", 0x000f2ec0, 0x000f2ef0, 0x20, 0x18, 0x1c, 0 },
+		{ "005624/-",      0x000f3630, 0,          0x10, 0xffffffffu, 0xffffffffu, 0 },
+		{ "005642/005644", 0x000f3d40, 0x000f3dc0, 0x14, 0x0c, 0x10, 1 },
+		};
+	for(unsigned pi = 0; pi < 4; ++pi)
+		{
+		const Pair& pair = pairs[pi];
+		for(unsigned c = 0; c < 12; ++c)
+			{
+			const unsigned count = c % 6;
+			unsigned char* data = (unsigned char*) ::malloc(count * pair.stride + 64);
+			for(unsigned i = 0; i < count * pair.stride + 64; i += 4) { const unsigned w = nxLeafNext(&seed); memcpy(data + i, &w, 4); }
+			for(unsigned k = 0; k < count; ++k)
+				{
+				const unsigned fields[2] = { pair.fieldA, pair.fieldB };
+				for(unsigned f = 0; f < 2; ++f)
+					if(fields[f] != 0xffffffffu)
+						{
+						const unsigned value = (k & 1) ? (nxLeafNext(&seed) | 1u) : (unsigned) (data + 8 * k);
+						memcpy(data + k * pair.stride + fields[f], &value, 4);
+						}
+				}
+			unsigned object[16];
+			for(unsigned i = 0; i < 16; ++i) object[i] = nxLeafNext(&seed);
+			object[1] = count;
+			object[2] = (unsigned) data;
+			const unsigned capacity = (c & 1) ? 16 : 64;
+			NxDigest local[2];
+			unsigned char flat[4096];
+			unsigned flatLength = 0;
+			unsigned long long results[2];
+			for(unsigned side = 0; side < 2; ++side)
+				{
+				nxDigestInit(&local[side]);
+				allocator.reset();
+				void* const stream = sides[side].make(capacity, 0);
+				const unsigned al = side == 0 ? (((unsigned (__thiscall*)(void*, void*)) (base + pair.saveRva))(object, stream) & 0xff)
+					: ((pi == 0 ? nxP45586 : pi == 1 ? nxP45606 : pi == 2 ? nxP45624 : nxP45642)(object, 0, (unsigned) stream) & 0xff);
+				nxFoldInput(&local[side], &al, 4);
+				nxLeafFoldStream(&local[side], (const unsigned char*) stream, (unsigned) data);
+				nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+				if(side == 0) flatLength = nxLeafFlatten((const unsigned char*) stream, flat, sizeof(flat));
+				sides[side].destroy(stream);
+				results[side] = local[side].state;
+				nxFoldInput(digests[side], &results[side], 8);
+				}
+			++cases;
+			if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_stream row=%s save case=%u\n", pair.name, c); }
+			nxFoldInput(&inputDigest, data, count * pair.stride);
+			nxFoldInput(&inputDigest, &count, 4);
+			// the load, from the oracle's flattened bytes on both sides
+			if(pair.loadRva)
+				{
+				unsigned char* arrays[2] = { 0, 0 };
+				for(unsigned side = 0; side < 2; ++side)
+					{
+					nxDigestInit(&local[side]);
+					allocator.reset();
+					unsigned loaded[16];
+					for(unsigned i = 0; i < 16; ++i) loaded[i] = 0;
+					void* const stream = sides[side].make(flatLength, flat);
+					sides[side].rewind(stream);
+					const unsigned al = side == 0 ? (((unsigned (__thiscall*)(void*, void*)) (base + pair.loadRva))(loaded, stream) & 0xff)
+						: ((pi == 0 ? nxP45588 : pi == 1 ? nxP45608 : nxP45644)(loaded, 0, (unsigned) stream) & 0xff);
+					nxFoldInput(&local[side], &al, 4);
+					unsigned array = loaded[2];
+					loaded[2] = array ? 1u : 0u;
+					nxFoldInput(&local[side], loaded, sizeof(loaded));
+					if(array) nxLeafFoldScrubbed(&local[side], (const unsigned char*) array, loaded[1] * pair.stride, array);
+					nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+					sides[side].destroy(stream);
+					arrays[side] = (unsigned char*) array;
+					results[side] = local[side].state;
+					nxFoldInput(digests[side], &results[side], 8);
+					if(array) ::free((void*) (array - 4));
+					}
+				++cases;
+				if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pruner_support_stream row=%s load case=%u\n", pair.name, c); }
+				}
+			::free(data);
+			}
+		}
+	printf("collision name=pruner_support_stream index=- rva=0x000b3f50 owner=phys_fn_004799 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=004799,005586,005588,005606,005608,005624,005642,005644\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pruner_support_stream row=004799 case=block_store_growth\n");
+	printf("collision coverage name=pruner_support_stream row=005586 case=pool_save_and_load\n");
+	printf("collision coverage name=pruner_support_stream row=005606 case=pool_save_and_load\n");
+	printf("collision coverage name=pruner_support_stream row=005624 case=pool_save\n");
+	printf("collision coverage name=pruner_support_stream row=005642 case=pool_save_and_load\n");
+	nxPrintInput("pruner_support_stream", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -4541,7 +4811,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool prunerPoolReserveOnly = argc == 4 && wcscmp(argv[3], L"--pruner-pool-reserve-only") == 0;
 	const bool rayAabbSlabOnly = argc == 4 && wcscmp(argv[3], L"--ray-aabb-slab-only") == 0;
 	const bool prunerSupportLeafOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-leaf-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly)
+	const bool prunerSupportStreamOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-stream-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -4579,6 +4850,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(prunerSupportStreamOnly)
+		{
+		return nxDrivePrunerSupportStreams(base) ? 1 : 0;
+		}
 	if(prunerSupportLeafOnly)
 		{
 		return nxDrivePrunerSupportLeaves(base) ? 1 : 0;
@@ -4594,6 +4869,7 @@ int wmain(int argc, wchar_t** argv)
 		printf("collision type3_pruner mismatches=%u\n", mismatches);
 		// the phase 4 pruner rows that are leaves run under this target too
 		mismatches += nxDrivePrunerSupportLeaves(base);
+		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;
 		}
 	if(prunerPoolReserveOnly)

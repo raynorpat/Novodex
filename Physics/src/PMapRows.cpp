@@ -25,7 +25,7 @@ extern "C" void* nxPMImpImpnxFoundationSDKAllocator3PAVNxUserAll;
 #pragma comment(linker, "/alternatename:_nxPMCallFree=_free")
 #pragma comment(linker, "/alternatename:_nxPMCallReadByte=?readByte@MemoryStream@@QAEEXZ")
 #pragma comment(linker, "/alternatename:_nxPMCallResize=?resize@SdkContainer@@QAE_NI@Z")
-#pragma comment(linker, "/alternatename:_nxPMCallStoreByte=?storeByte@MemoryStream@@QAEXE@Z")
+#pragma comment(linker, "/alternatename:_nxPMCallStoreByte=?storeByte@MemoryStream@@QAEPAV1@E@Z")
 #pragma comment(linker, "/alternatename:_nxPMImpImpnxFoundationSDKAllocator3PAVNxUserAll=__imp_?nxFoundationSDKAllocator@@3PAVNxUserAllocator@@A")
 extern "C" void* nxSdkInstanceSlot;
 #pragma comment(linker, "/alternatename:_nxSdkInstanceSlot=?instance@PhysicsSDK@@2PAV1@A")

@@ -224,10 +224,10 @@ bool MemoryStream::appendBlock(MemoryStreamBlock* prev, NxU32 size)
 // grow-then-write shape the raw stores use. The self-call at 0x000b3c9e is in
 // the image and re-enters with the count already cleared, which returns at
 // once; the recursion is kept because the source had it.
-void MemoryStream::flushBits()
+MemoryStream* MemoryStream::flushBits()
 	{
 	if(mBitMask == 0)							// 0x000b3c73
-		return;
+		return this;
 	while(mBitMask != 0)						// loop head 0x000b3c80
 		{
 		mBitAccumulator = static_cast<NxU8>(mBitAccumulator << 1);	// shl dl,1
@@ -243,10 +243,11 @@ void MemoryStream::flushBits()
 			*mLastAddress = mBitAccumulator;	// 0x000b3cca
 			}
 		}
+	return this;
 	}
 
 // phys_fn_004770 (0x000b3a60).
-void MemoryStream::storeByte(NxU8 value)
+MemoryStream* MemoryStream::storeByte(NxU8 value)
 	{
 	flushBits();								// 0x000b3a64
 	if(mCurrent->mOffset + 1 > mCurrent->mSize)	// 0x000b3a71
@@ -254,10 +255,11 @@ void MemoryStream::storeByte(NxU8 value)
 	mLastAddress = mCurrent->mData + mCurrent->mOffset;	// 0x000b3a87
 	mCurrent->mOffset += 1;						// 0x000b3a8c
 	*mLastAddress = value;						// 0x000b3a96
+	return this;
 	}
 
 // phys_fn_004797 (0x000b3f00).
-void MemoryStream::storeDword(NxU32 value)
+MemoryStream* MemoryStream::storeDword(NxU32 value)
 	{
 	flushBits();								// 0x000b3f04
 	if(mCurrent->mOffset + 4 > mCurrent->mSize)	// 0x000b3f11
@@ -265,6 +267,7 @@ void MemoryStream::storeDword(NxU32 value)
 	mLastAddress = mCurrent->mData + mCurrent->mOffset;	// 0x000b3f27
 	mCurrent->mOffset += 4;						// 0x000b3f2e
 	memcpy(mLastAddress, &value, sizeof(value));	// 0x000b3f39, a native dword store
+	return this;
 	}
 
 // phys_fn_004768 (0x000b3a30). Every non-last block is exactly full -- each

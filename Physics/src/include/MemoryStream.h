@@ -119,13 +119,13 @@ class MemoryStream
 	void				storeBitsMsbFirst(NxU32 value, NxU32 count);
 
 	// phys_fn_004770 (0x000b3a60), 63 bytes.
-	void				storeByte(NxU8 value);
+	MemoryStream*		storeByte(NxU8 value);
 	// phys_fn_004797 (0x000b3f00), 66 bytes. Model::Save reaches this row by
 	// direct call at 0x000e944e.
-	void				storeDword(NxU32 value);
+	MemoryStream*		storeDword(NxU32 value);
 	// phys_fn_004786 (0x000b3c70), 105 bytes. Pads the partial byte with
 	// zero bits by shifting the accumulator left until the count wraps.
-	void				flushBits();
+	MemoryStream*		flushBits();
 
 	// phys_fn_004768 (0x000b3a30), 37 bytes: the sum of every block's offset.
 	NxU32				getLength() const;

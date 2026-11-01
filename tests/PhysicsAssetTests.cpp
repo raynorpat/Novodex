@@ -1629,7 +1629,7 @@ int wmain(int argc, wchar_t** argv)
 	oracle.streamFlushBits = (NxStreamFlushBitsFn)
 		(candidateSelf
 			? nxOracleMapTarget(oracle.base,
-				"?flushBits@MemoryStream@@QAEXXZ",
+				"?flushBits@MemoryStream@@QAEPAV1@XZ",
 				"phys_fn_004786 MemoryStream::flushBits")
 			: oracle.base + kStreamFlushBitsRva);
 	oracle.meshHeader = (NxMeshHeaderFn) nxOracleTarget(candidateSelf, oracle.base, kMeshHeaderRva,
@@ -1741,7 +1741,7 @@ int wmain(int argc, wchar_t** argv)
 		"?appendBlock@MemoryStream@@AAE_NPAUMemoryStreamBlock@@I@Z",
 		"phys_fn_004766 MemoryStream::appendBlock");
 	candidateStream.streamFlushBits = (NxStreamFlushBitsFn) nxOracleMapTarget(candidateStream.base,
-		"?flushBits@MemoryStream@@QAEXXZ", "phys_fn_004786 MemoryStream::flushBits");
+		"?flushBits@MemoryStream@@QAEPAV1@XZ", "phys_fn_004786 MemoryStream::flushBits");
 	typedef bool (__cdecl* NxCandidateSetAllocatorFn)(SdkAllocator*);
 	typedef SdkAllocator* (__cdecl* NxCandidateGetAllocatorFn)();
 	NxCandidateSetAllocatorFn candidateSetAllocator = (NxCandidateSetAllocatorFn)
