@@ -5655,6 +5655,310 @@ static unsigned nxDrivePhase6Rows(unsigned char* base)
 	return mismatches;
 	}
 
+// The large Phase 6 rows, driven on hand-built object graphs. phys_fn_004161 is a quicksort of 16-byte records by the key
+// at +0xc; 004169 (and its second entry 004171) walks a chain of actors through their joint lists, collecting event lists
+// through 004159 (the recursive walk) and 004405 (the list factory); 004401 is a constraint row's solver step over two
+// bodies with a callback object; 004413 draws a joint through a renderer and then its event list. Each runs at its oracle
+// address and as the transcription over graphs built twice from one seed; every block is given an index, so the words
+// compared are the same on both sides, and the callbacks and the renderer are fakes that log what they are handed.
+unsigned __cdecl nxP64159();
+unsigned __cdecl nxP64161();
+unsigned __cdecl nxP64169();
+unsigned __cdecl nxP64401();
+unsigned __fastcall nxP64413(void* self, void* edxUnused, unsigned a0);
+extern NxReal gParameter[];
+
+struct NxP6Canon
+	{
+	unsigned char* block[256];
+	unsigned size[256];
+	unsigned count;
+	bool scrubAll;
+	NxP6Canon() : count(0), scrubAll(false) {}
+	void add(void* b, unsigned s) { if(count < 256) { block[count] = (unsigned char*) b; size[count] = s; ++count; } }
+	unsigned word(unsigned w) const
+		{
+		for(unsigned i = 0; i < count; ++i)
+			if(w >= (unsigned) block[i] && w - (unsigned) block[i] < size[i]) return 0x7e000000u + i * 0x1000u + (w - (unsigned) block[i]);
+		if(scrubAll && w >= 0x00100000u && w < 0x7fff0000u) return 0xa11add00u;
+		return w;
+		}
+	void fold(NxDigest* d, const void* object, unsigned bytes) const
+		{
+		const unsigned* words = (const unsigned*) object;
+		for(unsigned i = 0; i < bytes / 4; ++i) { const unsigned v = word(words[i]); nxFoldInput(d, &v, 4); }
+		}
+	};
+
+static unsigned gP6L[512];
+static unsigned gP6LN;
+static void p6log(unsigned a, unsigned b, unsigned c, unsigned d) { if(gP6LN < 508) { gP6L[gP6LN++] = a; gP6L[gP6LN++] = b; gP6L[gP6LN++] = c; gP6L[gP6LN++] = d; } }
+static void __fastcall p6Slot0(void* self, void*, unsigned a) { p6log(0x100, (unsigned) self, a, 0); }
+static void __fastcall p6Slot3(void* self, void*, unsigned a, unsigned b, unsigned c) { p6log(0x103, (unsigned) self, a, b); p6log(0x104, c, 0, 0); }
+static void __fastcall p6Draw(void* self, void*, unsigned p0, unsigned p1, unsigned color)
+	{
+	const unsigned* a = (const unsigned*) p0;
+	const unsigned* b = (const unsigned*) p1;
+	p6log(0x120, color, a[0], a[1]);
+	p6log(a[2], b[0], b[1], b[2]);
+	}
+static void __fastcall p6Node(void* self, void*, unsigned renderer) { p6log(0x130, (unsigned) self, renderer, 0); }
+static void* gP6Vt0[16] = { (void*) p6Slot0, 0, 0, (void*) p6Slot3 };
+static void* gP6VtDraw[16] = { 0, 0, 0, 0, 0, 0, 0, 0, (void*) p6Draw };
+static void* gP6VtNode[16] = { 0, 0, 0, 0, 0, 0, (void*) p6Node };
+
+static void p6Float(unsigned* seed, float* out)
+	{
+	static const float pick[10] = { -2.0f, -1.0f, -0.5f, 0.0f, 0.25f, 0.5f, 1.0f, 1.5f, 3.0f, 0.125f };
+	*out = pick[nxLeafNext(seed) % 10];
+	}
+
+static unsigned nxDrivePhase6Large(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("phase 6 large rows fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("phase 6 large rows fixture could not install oracle allocator");
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0;
+	typedef void (__cdecl* SortFn)(void*, void*);
+	typedef void* (__cdecl* IslandFn)(void*);
+	typedef void (__cdecl* SolveFn)(unsigned, unsigned, void*);
+	#define P6L_FINISH(NAME) do { ++cases; if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase6_large row=%s case=%u\n", NAME, cases); } } while(0)
+
+	// phys_fn_004161 (0x0009abb0): the record sort.
+	{
+	static const unsigned lengths[12] = { 1, 2, 3, 4, 5, 8, 16, 33, 64, 100, 2, 7 };
+	for(unsigned c = 0; c < 12; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x4161c0deu + c;
+			const unsigned n = lengths[c];
+			unsigned (*records)[4] = (unsigned (*)[4]) ::calloc(n, 16);
+			for(unsigned i = 0; i < n; ++i)
+				{
+				records[i][0] = i; records[i][1] = 0xabc0u + i; records[i][2] = i * 3u;
+				records[i][3] = nxLeafNext(&seed) % (c % 3 == 0 ? 4u : 1000u);
+				}
+			SortFn f = side == 0 ? (SortFn) (base + 0x0009abb0) : (SortFn) nxP64161;
+			f(records, records + n - 1);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, records, n * 16);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(records);
+			}
+		P6L_FINISH("004161");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+
+	// phys_fn_004169 / 004171 (0x0009adb0), through 004159 and 004405: the actor chain's island walk.
+	for(unsigned c = 0; c < 24; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x4169c0deu + c * 977u;
+			const unsigned na = 1 + nxLeafNext(&seed) % 6, ne = nxLeafNext(&seed) % 10;
+			unsigned char* actor[8];
+			unsigned char* edge[16];
+			NxP6Canon canon;
+			canon.scrubAll = true;
+			for(unsigned i = 0; i < na; ++i)
+				{
+				actor[i] = (unsigned char*) ::calloc(1, 0x200);
+				canon.add(actor[i], 0x200);
+				*(unsigned*) (actor[i] + 0x10c) = (nxLeafNext(&seed) % 4 == 0) ? 0x80u : 0u;
+				*(unsigned*) (actor[i] + 0x1e4) = nxLeafNext(&seed) & 0x18u;
+				}
+			for(unsigned i = 0; i + 1 < na; ++i) *(unsigned char**) (actor[i] + 0x1d0) = actor[i + 1];
+			for(unsigned i = 0; i < ne; ++i)
+				{
+				edge[i] = (unsigned char*) ::calloc(1, 0x60);
+				canon.add(edge[i], 0x60);
+				const unsigned a = nxLeafNext(&seed) % na, b = nxLeafNext(&seed) % (na + 1);
+				*(unsigned char**) (edge[i] + 8) = actor[a];
+				*(unsigned char**) (edge[i] + 0xc) = b < na ? actor[b] : 0;
+				*(unsigned*) (edge[i] + 0x44) = (nxLeafNext(&seed) & 1) ? 0x1234u : 0u;
+				*(unsigned char**) (edge[i] + 0x34) = *(unsigned char**) (actor[a] + 0x1d8);
+				*(unsigned char**) (actor[a] + 0x1d8) = edge[i];
+				if(b < na)
+					{
+					*(unsigned char**) (edge[i] + 0x38) = *(unsigned char**) (actor[b] + 0x1dc);
+					*(unsigned char**) (actor[b] + 0x1dc) = edge[i];
+					}
+				}
+			allocator.reset();
+			IslandFn f = side == 0 ? (IslandFn) (base + 0x0009adb0) : (IslandFn) nxP64169;
+			unsigned char* const container = (unsigned char*) f(actor[0]);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned made = container ? 1u : 0u;
+			nxFoldInput(&d, &made, 4);
+			if(container)
+				{
+				canon.add(container, 0x20);
+				unsigned char** const begin = *(unsigned char***) (container + 0x10);
+				unsigned char** const end = *(unsigned char***) (container + 0x14);
+				for(unsigned char** p = begin; p != end && canon.count < 250; ++p) canon.add(*p, 0x28);
+				canon.fold(&d, container, 0x20);
+				for(unsigned char** p = begin; p != end && p < begin + 64; ++p) canon.fold(&d, *p, 0x28);
+				}
+			for(unsigned i = 0; i < na; ++i) canon.fold(&d, actor[i], 0x200);
+			for(unsigned i = 0; i < ne; ++i) canon.fold(&d, edge[i], 0x60);
+			nxFoldInput(&d, &allocator.count, 4);
+			nxFoldInput(&d, allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			nxFoldInput(&d, &allocator.frees, 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			for(unsigned i = 0; i < na; ++i) ::free(actor[i]);
+			for(unsigned i = 0; i < ne; ++i) ::free(edge[i]);
+			}
+		P6L_FINISH("004169");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	allocator.reset();
+
+	// phys_fn_004401 (0x000afcc0): the constraint row's step over two bodies and a callback object.
+	for(unsigned c = 0; c < 48; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x4401c0deu + c * 131u;
+			NxP6Canon canon;
+			float* body[2];
+			unsigned char* record = (unsigned char*) ::calloc(1, 0x60);
+			unsigned* callback = (unsigned*) ::calloc(1, 16);
+			canon.add(record, 0x60);
+			for(unsigned k = 0; k < 2; ++k)
+				{
+				body[k] = (float*) ::calloc(1, 0x60);
+				canon.add(body[k], 0x60);
+				for(unsigned i = 0; i < 0x18; ++i) p6Float(&seed, &body[k][i]);
+				if(nxLeafNext(&seed) % 3 == 0) body[k][3] = 0.0f;
+				}
+			canon.add(callback, 16);
+			callback[0] = (unsigned) gP6Vt0;
+			float* rf = (float*) record;
+			for(unsigned i = 0; i < 0x14; ++i) p6Float(&seed, &rf[i]);
+			static const unsigned flagPick[6] = { 0u, 0x26u, 0x25u, 0x40u, 0x1u, 0x20u };
+			*(unsigned*) (record + 0xc) = flagPick[c % 6];
+			*(unsigned*) (record + 0x10) = (c & 8) ? 0u : (unsigned) body[0];
+			*(unsigned*) (record + 0x14) = (c & 16) ? 0u : (unsigned) body[1];
+			*(unsigned*) (record + 0x30) = (unsigned) callback;
+			static const float limit[3] = { 0.0f, 0.5f, 100.0f };
+			rf[0x48 / 4] = limit[(c / 6) % 3];
+			p6Float(&seed, &rf[0x4c / 4]);
+			gP6LN = 0;
+			memset(gP6L, 0, sizeof(gP6L));
+			SolveFn f = side == 0 ? (SolveFn) (base + 0x000afcc0) : (SolveFn) nxP64401;
+			f(0x6000u + c, (c & 1) ? 1u : 0u, record);
+			NxDigest d;
+			nxDigestInit(&d);
+			canon.fold(&d, record, 0x50);
+			canon.fold(&d, body[0], 0x60);
+			canon.fold(&d, body[1], 0x60);
+			nxFoldInput(&d, &gP6LN, 4);
+			canon.fold(&d, gP6L, gP6LN * 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(record); ::free(callback); ::free(body[0]); ::free(body[1]);
+			}
+		P6L_FINISH("004401");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+
+	// phys_fn_004413 (0x000b03b0): the joint's debug draw.
+	{
+	float* const oracleScale = *(float**) (base + 0x000b03f9);
+	float* const oracleHalf = *(float**) (base + 0x000b03ff);
+	const float savedScale = oracleScale[0], savedHalf = oracleHalf[0], savedCandidateScale = gParameter[0x68 / 4], savedCandidateHalf = gParameter[0x34 / 4];
+	for(unsigned c = 0; c < 32; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x4413c0deu + c * 17u;
+			oracleScale[0] = 2.0f; oracleHalf[0] = 0.5f;
+			gParameter[0x68 / 4] = 2.0f; gParameter[0x34 / 4] = 0.5f;
+			NxP6Canon canon;
+			unsigned char* bodyA = (unsigned char*) ::calloc(1, 0x180);
+			unsigned char* bodyB = (unsigned char*) ::calloc(1, 0x180);
+			unsigned char* owner = (unsigned char*) ::calloc(1, 0x40);
+			unsigned char* self = (unsigned char*) ::calloc(1, 0x40);
+			unsigned* renderer = (unsigned*) ::calloc(1, 16);
+			unsigned* node[3];
+			canon.add(bodyA, 0x180); canon.add(bodyB, 0x180); canon.add(owner, 0x40); canon.add(self, 0x40); canon.add(renderer, 16);
+			for(unsigned i = 0x130 / 4; i < 0x168 / 4; ++i) { p6Float(&seed, &((float*) bodyA)[i]); p6Float(&seed, &((float*) bodyB)[i]); }
+			renderer[0] = (unsigned) gP6VtDraw;
+			const unsigned nodes = c % 3;
+			for(unsigned i = 0; i < 3; ++i)
+				{
+				node[i] = (unsigned*) ::calloc(1, 0x20);
+				canon.add(node[i], 0x20);
+				node[i][0] = (unsigned) gP6VtNode;
+				}
+			for(unsigned i = 0; i < nodes; ++i) node[i][4] = i + 1 < nodes ? (unsigned) node[i + 1] : 0;
+			*(unsigned char**) (owner + 0x14) = (c & 4) ? 0 : bodyA;
+			*(unsigned char**) (self + 8) = (c & 2) ? 0 : owner;
+			*(unsigned char**) (self + 0x14) = (c & 1) ? 0 : bodyB;
+			*(unsigned**) (self + 0xc) = nodes ? node[0] : 0;
+			gP6LN = 0;
+			memset(gP6L, 0, sizeof(gP6L));
+			if(side == 0) ((void (__thiscall*)(void*, void*)) (base + 0x000b03b0))(self, renderer);
+			else nxP64413(self, 0, (unsigned) renderer);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &gP6LN, 4);
+			canon.fold(&d, gP6L, gP6LN * 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			for(unsigned i = 0; i < 3; ++i) ::free(node[i]);
+			::free(bodyA); ::free(bodyB); ::free(owner); ::free(self); ::free(renderer);
+			}
+		P6L_FINISH("004413");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	oracleScale[0] = savedScale; oracleHalf[0] = savedHalf;
+	gParameter[0x68 / 4] = savedCandidateScale; gParameter[0x34 / 4] = savedCandidateHalf;
+	}
+	#undef P6L_FINISH
+	printf("collision name=phase6_large index=- rva=0x0009abb0 owner=phys_fn_004161 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=004159,004161,004169,004171,004401,004413\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=phase6_large row=004161 case=record_quicksort\n");
+	printf("collision coverage name=phase6_large row=004159 case=recursive_joint_walk_and_event_lists\n");
+	printf("collision coverage name=phase6_large row=004169 case=actor_chain_island_walk\n");
+	printf("collision coverage name=phase6_large row=004171 case=actor_chain_island_walk_second_entry\n");
+	printf("collision coverage name=phase6_large row=004401 case=constraint_step_and_callback\n");
+	printf("collision coverage name=phase6_large row=004413 case=joint_debug_draw_and_event_list\n");
+	nxPrintInput("phase6_large", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -5737,6 +6041,7 @@ int wmain(int argc, wchar_t** argv)
 	if(phase6RowsOnly)
 		{
 		unsigned mismatches = nxDrivePhase6Rows(base);
+		mismatches += nxDrivePhase6Large(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;

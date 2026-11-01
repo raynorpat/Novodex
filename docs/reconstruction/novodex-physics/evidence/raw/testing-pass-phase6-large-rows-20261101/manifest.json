@@ -1,0 +1,41 @@
+{
+ "doc": "evidence/raw/testing-pass-phase6-large-rows-20261101/mutations.txt",
+ "rows": {
+  "phys_fn_004161": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x0009abb0 mov edx, dword ptr [esp + 4] -> mov edx, dword ptr [esp + 8]",
+   "detected": "mismatches=26"
+  },
+  "phys_fn_004159": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x0009ab03 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]",
+   "detected": "mismatches=24"
+  },
+  "phys_fn_004169": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x0009adb3 mov eax, dword ptr [esp + 0x28] -> mov eax, dword ptr [esp + 0x2c]",
+   "detected": "mismatches=24"
+  },
+  "phys_fn_004401": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x000afcfa fld dword ptr [ecx + 0x14] -> fld dword ptr [ecx + 0x18]",
+   "detected": "mismatches=2"
+  },
+  "phys_fn_004413": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x000b03b6 mov eax, dword ptr [ebx + 0x14] -> mov eax, dword ptr [ebx + 0x18]",
+   "detected": "mismatches=16"
+  },
+  "phys_fn_004171": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "NxPhysicsPhase6RowsTests",
+   "mutation": "0x0009ae50 mov ecx, dword ptr [eax + 8] -> mov ecx, dword ptr [eax + 12]",
+   "detected": "mismatches=7"
+  }
+ }
+}

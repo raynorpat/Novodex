@@ -5676,6 +5676,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=phase6_rows row=004405 case=event_list_factory_and_allocation_failure',
         'collision coverage name=phase6_rows row=004761 case=event_list_slot5_node_walk',
         'collision input name=phase6_rows words=38 input=7167cc1af30ee6a7',
+        'collision name=phase6_large index=- rva=0x0009abb0 owner=phys_fn_004161 checks=116 oracle=61bab74c1dfed038',
+        'collision coverage name=phase6_large row=004161 case=record_quicksort',
+        'collision coverage name=phase6_large row=004159 case=recursive_joint_walk_and_event_lists',
+        'collision coverage name=phase6_large row=004169 case=actor_chain_island_walk',
+        'collision coverage name=phase6_large row=004171 case=actor_chain_island_walk_second_entry',
+        'collision coverage name=phase6_large row=004401 case=constraint_step_and_callback',
+        'collision coverage name=phase6_large row=004413 case=joint_debug_draw_and_event_list',
+        'collision input name=phase6_large words=116 input=3082762947abc4a5',
         'collision name=pruner_support_stream index=- rva=0x000b3f50 owner=phys_fn_004799 checks=100 oracle=4701fb540aa892a8',
         'collision coverage name=pruner_support_stream row=004799 case=block_store_growth',
         'collision coverage name=pruner_support_stream row=005586 case=pool_save_and_load',
@@ -6678,7 +6686,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # 136 Task 4, 110 + 32 Task 5 and review, 13 final review I1); unioned at the
                # second merge of main into the scene-raycast block. The broader full-DLL
                # vtable audit remains tracked in the completion roadmap.
-	'6' = 1833  # plus the phase6_rows and pruner_support_stream lines of NxPhysicsPhase6RowsTests (rows 004405, 004537, 004759, 004761, 004799); previous 1820: includes the row 003503 FluidCreate argument digest marker
+	'6' = 1841  # plus the phase6_large lines (rows 004159, 004161, 004169, 004171, 004401, 004413); previous 1833: plus the phase6_rows and pruner_support_stream lines of NxPhysicsPhase6RowsTests (rows 004405, 004537, 004759, 004761, 004799); previous 1820: includes the row 003503 FluidCreate argument digest marker
 	          # includes current locked-array, fluid, locked-accessor, and global-call markers
 	           # includes phys_fn_001083 capsule setFlag write-lock behavior
 	           # includes box-shape setFlag foreign-lock behavior (001045); setter-lock rows 001047-001059

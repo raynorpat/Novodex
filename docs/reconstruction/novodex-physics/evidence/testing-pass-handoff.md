@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 142 of the 184 rows closed; 42 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 148 of the 184 rows closed; 36 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -247,4 +247,24 @@ alone).
 the back-pointers); the experiment was discarded. 005386 (the Opcode model's stream load) calls the vendored tree
 builder and needs a loadable model.
 
-Still held in phase 6: 4159, 4161, 4169, 4171, 4401, 4413 (large rows whose drives need a populated joint scene).
+Phase 6 is now fully closed except where noted in the ninth slice.
+
+## Update (ninth slice: the six large Phase 6 rows)
+
+Six more rows are closed (`raw/testing-pass-phase6-large-rows-20261101/`), under the same `NxPhysicsPhase6RowsTests`
+target (phase 6 floor now 1841). The family **`phase6_large`** builds hand-made object graphs, twice from one seed, and
+runs each row at its oracle address and as the transcription; every block gets an index so addresses never enter a
+digest, and the callbacks and renderer are fakes that log what they are handed (116 checks):
+
+* **004161** the record quicksort (key at +0xc), 12 arrays including heavy duplicates.
+* **004159 / 004169 / 004171** the actor chain's island walk over random joint graphs (1-6 actors, up to 9 edges, null
+  partners, self edges, flagged actors), through the recursive walk and the event-list factory; the digest covers the
+  returned container and nodes, every actor and edge afterwards, and each side's allocation sizes and frees.
+* **004401** the constraint step over two bodies and a callback object (48 cases over the flag paths, null bodies,
+  zero masses and the three limit thresholds).
+* **004413** the joint's debug draw through a fake renderer (the oracle's two parameter floats read from its own code
+  operands and set equal on both sides), then its event list (32 cases).
+
+The mutations recorded are the sweeper's first catch for each row, which for these rows is an argument-slot or field
+offset change near the row's start; 004171 (a second row of the same function, from 0x0009ae50) has its own.
+Deeper-in-body mutations were not swept.

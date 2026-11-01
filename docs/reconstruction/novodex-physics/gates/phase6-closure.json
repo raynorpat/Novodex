@@ -65,8 +65,8 @@
   },
   "counts": {
     "differential_falsified": 161,
-    "oracle_differential_falsified": 22,
-    "deferred_reconstructed_not_falsified": 248,
+    "oracle_differential_falsified": 28,
+    "deferred_reconstructed_not_falsified": 242,
     "deferred_not_reconstructed_in_phase": 2
   },
   "closed": [
@@ -1913,6 +1913,66 @@
         "mutation": "0x000b3f7b mov ecx, dword ptr [edx + 4] -> mov ecx, dword ptr [edx + 8]",
         "detected": "mismatches=54"
       }
+    },
+    {
+      "id": "phys_fn_004161",
+      "rva": "0x0009abb0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x0009abb0 mov edx, dword ptr [esp + 4] -> mov edx, dword ptr [esp + 8]",
+        "detected": "mismatches=26"
+      }
+    },
+    {
+      "id": "phys_fn_004159",
+      "rva": "0x0009ab00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x0009ab03 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]",
+        "detected": "mismatches=24"
+      }
+    },
+    {
+      "id": "phys_fn_004169",
+      "rva": "0x0009adb0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x0009adb3 mov eax, dword ptr [esp + 0x28] -> mov eax, dword ptr [esp + 0x2c]",
+        "detected": "mismatches=24"
+      }
+    },
+    {
+      "id": "phys_fn_004401",
+      "rva": "0x000afcc0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000afcfa fld dword ptr [ecx + 0x14] -> fld dword ptr [ecx + 0x18]",
+        "detected": "mismatches=2"
+      }
+    },
+    {
+      "id": "phys_fn_004413",
+      "rva": "0x000b03b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000b03b6 mov eax, dword ptr [ebx + 0x14] -> mov eax, dword ptr [ebx + 0x18]",
+        "detected": "mismatches=16"
+      }
+    },
+    {
+      "id": "phys_fn_004171",
+      "rva": "0x0009ae50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x0009ae50 mov ecx, dword ptr [eax + 8] -> mov ecx, dword ptr [eax + 12]",
+        "detected": "mismatches=7"
+      }
     }
   ],
   "deferred": [
@@ -2213,24 +2273,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_004159",
-      "rva": "0x0009ab00",
-      "size": 167,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004161",
-      "rva": "0x0009abb0",
-      "size": 226,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_004163",
       "rva": "0x0009aca0",
       "size": 56,
@@ -2238,24 +2280,6 @@
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004169",
-      "rva": "0x0009adb0",
-      "size": 157,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004171",
-      "rva": "0x0009ae50",
-      "size": 640,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004178",
@@ -3058,15 +3082,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_004401",
-      "rva": "0x000afcc0",
-      "size": 794,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
       "id": "phys_fn_004407",
       "rva": "0x000b0310",
       "size": 79,
@@ -3092,15 +3107,6 @@
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_004413",
-      "rva": "0x000b03b0",
-      "size": 408,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase6-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_004415",
