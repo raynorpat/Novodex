@@ -135,6 +135,7 @@ unsigned __fastcall nxNpMesh2136(void*, void*, unsigned, unsigned);
 // The oracle's internal mesh rows (TriangleMeshRows.cpp): the part maps.
 unsigned __fastcall nxTM2247(void*, void*);
 unsigned __fastcall nxTM2256(void*, void*, unsigned);
+unsigned __fastcall nxTM2255(void*, void*);
 #endif
 
 namespace
@@ -976,6 +977,10 @@ bool TriangleMesh::loadFromDesc(const NxTriangleMeshDesc& source)
 	if(!nxTriangleMeshBuildConvexData(&convexData, mInternal))
 		return false;
 	mConvexMesh = convexData;
+#if NX_TRIANGLE_MESH_ROWS
+	// phys_fn_002255: the convex form's support maps
+	nxTM2255(this, 0);
+#endif
 		}
 	return true;
 	}
