@@ -5099,6 +5099,235 @@ static unsigned nxDrivePrunerSupportFiles(unsigned char* base)
 	return mismatches;
 	}
 
+// The penetration map's cell-run coder rows: phys_fn_001988 (the coder statics' reset), 001992 to 002006 (the encoder
+// from 0x0004cee0, the tail of the function whose head is 001990) and 002010 to 002014 (the decoder, transcribed with
+// the 002008 body it falls out of). The encoder rows start mid-function, so they are driven in place: the oracle's own
+// head (001990) runs, and a jump patched over its first instruction of the tail hands control to the transcription,
+// which finishes the call; the result is compared with the oracle's unpatched run. The coder's cursor lives in .data
+// statics; the oracle's are read by its head, so they are copied from the transcription's after each hybrid call.
+extern unsigned nxPMapCursor[3];
+extern unsigned nxPMapCodeCounts[32];
+unsigned __cdecl nxPMapCoderReset();
+unsigned __fastcall nxPMapEncodeCellRun(void* self, void* edxUnused);
+unsigned __fastcall nxPMapDecodeCellRun(void* self, void* edxUnused, unsigned a0, unsigned a1);
+
+struct NxLeafCellList { unsigned maximum; unsigned count; unsigned* entries; float growth; };
+
+// eax = the cell list, esi = the stream, the resolution on the stack, plain return.
+static void nxPMapCallEncoder(const void* function, void* stream, NxLeafCellList* cells, unsigned resolution)
+	{
+	__asm
+		{
+		push esi
+		mov esi, stream
+		mov eax, cells
+		push resolution
+		call function
+		add esp, 4
+		pop esi
+		}
+	}
+
+// esi = the stream; the cell list and the resolution on the stack, plain return.
+static void nxPMapCallDecoder(const void* function, void* stream, NxLeafCellList* cells, unsigned resolution)
+	{
+	__asm
+		{
+		push esi
+		mov esi, stream
+		push resolution
+		push cells
+		call function
+		add esp, 8
+		pop esi
+		}
+	}
+
+static unsigned nxDrivePMapCoder(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("pmap coder fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("pmap coder fixture could not install oracle allocator");
+
+	unsigned* const oracleCursor = (unsigned*) (base + 0x001222e8);
+	unsigned* const oracleCounts = (unsigned*) (base + 0x001240a0);
+	typedef unsigned (__cdecl* ResetFn)();
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	unsigned mismatches = 0, cases = 0;
+	unsigned seed = 0xc0de7a11u;
+	NxLeafStreamSide oracleSide = { true, base };
+
+	// phys_fn_001988 (0x0004cba0): the statics' reset, from a dirtied state.
+	{
+	for(unsigned c = 0; c < 3; ++c)
+		{
+		for(unsigned i = 0; i < 3; ++i) { oracleCursor[i] = nxLeafNext(&seed); nxPMapCursor[i] = nxLeafNext(&seed); }
+		for(unsigned i = 0; i < 32; ++i) { oracleCounts[i] = nxLeafNext(&seed); nxPMapCodeCounts[i] = nxLeafNext(&seed); }
+		((ResetFn) (base + 0x0004cba0))();
+		nxPMapCoderReset();
+		++cases;
+		const bool same = memcmp(oracleCursor, nxPMapCursor, 12) == 0 && memcmp(oracleCounts, nxPMapCodeCounts, 128) == 0;
+		mismatches += same ? 0u : 1u;
+		if(!same) printf("collision mismatch name=pmap_coder row=001988 case=%u\n", c);
+		nxFoldInput(&oracleDigest, oracleCursor, 12);
+		nxFoldInput(&oracleDigest, oracleCounts, 128);
+		nxFoldInput(&candidateDigest, nxPMapCursor, 12);
+		nxFoldInput(&candidateDigest, nxPMapCodeCounts, 128);
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+
+	// A group of cells: a walk of adjacent steps with the occasional jump along one, two or three axes.
+	struct Group { unsigned cells[96]; unsigned count; };
+	static const unsigned resolutions[3] = { 32, 64, 80 };
+	DWORD protection;
+	unsigned char* const patch = base + 0x0004cee0;
+	unsigned char saved[5];
+	memcpy(saved, patch, 5);
+
+	for(unsigned scenario = 0; scenario < 12; ++scenario)
+		{
+		const unsigned resolution = resolutions[scenario % 3];
+		Group groups[3];
+		for(unsigned g = 0; g < 3; ++g)
+			{
+			static const unsigned sizes[6] = { 0, 1, 2, 9, 40, 90 };
+			groups[g].count = sizes[(scenario + g * 2) % 6];
+			int x = (int) (nxLeafNext(&seed) % resolution), y = (int) (nxLeafNext(&seed) % resolution), z = (int) (nxLeafNext(&seed) % resolution);
+			for(unsigned i = 0; i < groups[g].count; ++i)
+				{
+				const unsigned kind = nxLeafNext(&seed) % 8;
+				if(kind < 5)
+					{
+					x += (int) (nxLeafNext(&seed) % 3) - 1; y += (int) (nxLeafNext(&seed) % 3) - 1; z += (int) (nxLeafNext(&seed) % 3) - 1;
+					}
+				else if(kind == 5) x = (int) (nxLeafNext(&seed) % resolution);
+				else if(kind == 6) { y = (int) (nxLeafNext(&seed) % resolution); z = (int) (nxLeafNext(&seed) % resolution); }
+				else { x = (int) (nxLeafNext(&seed) % resolution); y = (int) (nxLeafNext(&seed) % resolution); z = (int) (nxLeafNext(&seed) % resolution); }
+				x = (x + (int) resolution) % (int) resolution; y = (y + (int) resolution) % (int) resolution; z = (z + (int) resolution) % (int) resolution;
+				groups[g].cells[i] = ((unsigned) z * resolution + (unsigned) y) * resolution + (unsigned) x;
+				}
+			}
+		// the encoder, pure oracle then the oracle head with the transcribed tail
+		NxDigest local[2];
+		unsigned long long results[2];
+		unsigned char flat[8192];
+		unsigned flatLengths[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			nxDigestInit(&local[side]);
+			allocator.reset();
+			((ResetFn) (base + 0x0004cba0))();
+			if(side == 1)
+				{
+				nxPMapCoderReset();
+				VirtualProtect(patch, 5, PAGE_EXECUTE_READWRITE, &protection);
+				patch[0] = 0xe9;
+				const int displacement = (int) ((unsigned char*) (void*) nxPMapEncodeCellRun - (patch + 5));
+				memcpy(patch + 1, &displacement, 4);
+				FlushInstructionCache(GetCurrentProcess(), patch, 5);
+				}
+			void* const stream = oracleSide.make(64, 0);
+			for(unsigned g = 0; g < 3; ++g)
+				{
+				NxLeafCellList list = { groups[g].count, groups[g].count, groups[g].cells, 2.0f };
+				nxPMapCallEncoder(base + 0x0004cc60, stream, &list, resolution);
+				const unsigned* cursor = side == 0 ? oracleCursor : nxPMapCursor;
+				const unsigned* counts = side == 0 ? oracleCounts : nxPMapCodeCounts;
+				nxFoldInput(&local[side], cursor, 12);
+				nxFoldInput(&local[side], counts, 128);
+				nxLeafFoldStream(&local[side], (const unsigned char*) stream, 0);
+				if(side == 1)
+					{
+					// the head reads the oracle's statics on the next call
+					memcpy(oracleCursor, nxPMapCursor, 12);
+					memcpy(oracleCounts, nxPMapCodeCounts, 128);
+					}
+				}
+			flatLengths[side] = nxLeafFlatten((const unsigned char*) stream, side == 0 ? flat : flat + 4096, 4096);
+			if(side == 1)
+				{
+				memcpy(patch, saved, 5);
+				FlushInstructionCache(GetCurrentProcess(), patch, 5);
+				VirtualProtect(patch, 5, protection, &protection);
+				}
+			nxFoldInput(&local[side], allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			oracleSide.destroy(stream);
+			results[side] = local[side].state;
+			nxFoldInput(side == 0 ? &oracleDigest : &candidateDigest, &results[side], 8);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=pmap_coder row=001992 scenario=%u\n", scenario); }
+		nxFoldInput(&inputDigest, &resolution, 4);
+		for(unsigned g = 0; g < 3; ++g) nxFoldInput(&inputDigest, groups[g].cells, 4 * groups[g].count);
+
+		// the decoder: the oracle's against the transcription, on the first group's bytes
+		unsigned long long decoded[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			NxDigest d;
+			nxDigestInit(&d);
+			allocator.reset();
+			((ResetFn) (base + 0x0004cba0))();
+			nxPMapCoderReset();
+			// the encoder's first group only: a fresh single-group stream from the oracle
+			NxLeafCellList source = { groups[0].count, groups[0].count, groups[0].cells, 2.0f };
+			void* const encoded = oracleSide.make(64, 0);
+			nxPMapCallEncoder(base + 0x0004cc60, encoded, &source, resolution);
+			((void (__thiscall*)(void*)) (base + 0x000b3c70))(encoded);	// the last partial byte, so the decoder reads whole bytes
+			unsigned char bytes[2048];
+			const unsigned length = nxLeafFlatten((const unsigned char*) encoded, bytes, sizeof(bytes));
+			oracleSide.destroy(encoded);
+			((ResetFn) (base + 0x0004cba0))();
+			nxPMapCoderReset();
+			NxLeafStreamSide streamSide = { side == 0, base };
+			void* const input = streamSide.make(length ? length : 1, bytes);
+			streamSide.rewind(input);
+			NxLeafCellList output = { 0, 0, 0, 2.0f };
+			nxPMapCallDecoder(side == 0 ? (const void*) (base + 0x0004dba0) : (const void*) nxPMapDecodeCellRun, input, &output, resolution);
+			nxFoldInput(&d, &output.count, 4);
+			if(output.entries) nxFoldInput(&d, output.entries, 4 * (output.count < 4096 ? output.count : 4096));
+			const unsigned* cursor = side == 0 ? oracleCursor : nxPMapCursor;
+			const unsigned* counts = side == 0 ? oracleCounts : nxPMapCodeCounts;
+			nxFoldInput(&d, cursor, 12);
+			nxFoldInput(&d, counts, 128);
+			nxFoldInput(&d, allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			if(output.entries) allocator.free(output.entries);
+			streamSide.destroy(input);
+			decoded[side] = d.state;
+			nxFoldInput(side == 0 ? &oracleDigest : &candidateDigest, &decoded[side], 8);
+			}
+		++cases;
+		if(decoded[0] != decoded[1]) { ++mismatches; printf("collision mismatch name=pmap_coder row=002010 scenario=%u\n", scenario); }
+		}
+	printf("collision name=pmap_coder index=- rva=0x0004cee0 owner=phys_fn_001992 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=001988,001992-002006,002010-002014\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=pmap_coder row=001988 case=statics_reset_from_dirty\n");
+	printf("collision coverage name=pmap_coder row=001992 case=encoder_tail_patched_into_the_oracle_head\n");
+	printf("collision coverage name=pmap_coder row=002010 case=cell_run_decoder_round_trip\n");
+	nxPrintInput("pmap_coder", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -5128,7 +5357,8 @@ int wmain(int argc, wchar_t** argv)
 	const bool prunerSupportFileOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-file-only") == 0;
 	const bool prunerSupportType3Only = argc == 4 && wcscmp(argv[3], L"--pruner-support-type3-only") == 0;
 	const bool prunerSupportTypesOnly = argc == 4 && wcscmp(argv[3], L"--pruner-support-types-only") == 0;
-	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly && !prunerSupportType3Only && !prunerSupportTypesOnly)
+	const bool pmapCoderOnly = argc == 4 && wcscmp(argv[3], L"--pmap-coder-only") == 0;
+	if(argc != 3 && !task2jOnly && !task2kOnly && !sphereMeshOnly && !meshDebugOnly && !meshMassOnly && !meshTopologyOnly && !pruner_clusterOnly && !pruner_octree_queryOnly && !pruner_octreeOnly && !planeMeshOnly && !ownerPairOnly && !sceneOwnerPairRecordsOnly && !scenePrunerNodeOnly && !scenePrunerShapeOnly && !sceneBaseDtorOnly && !scenePrunerOwnerOnly && !sceneBaseDtorOwnerOnly && !sceneTriggerPairDuplicatesOnly && !type3PrunerOnly && !prunerPoolReserveOnly && !rayAabbSlabOnly && !prunerSupportLeafOnly && !prunerSupportStreamOnly && !prunerSupportPoolOnly && !prunerSupportFileOnly && !prunerSupportType3Only && !prunerSupportTypesOnly && !pmapCoderOnly)
 		{
 		fprintf(stderr, "usage: NxPhysicsCollisionTests <oracle directory> <NxPhysics.dll sha256> [--task2j-only|--task2k-only|--plane-mesh-only|--owner-pair-only|--scene-owner-pair-records-only|--scene-pruner-node-only|--type3-pruner-only]\n");
 		return 2;
@@ -5166,6 +5396,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("oracle pin=matched\n");
 
 	unsigned char* base = (unsigned char*) physics;
+	if(pmapCoderOnly)
+		{
+		return nxDrivePMapCoder(base) ? 1 : 0;
+		}
 	if(prunerSupportTypesOnly)
 		{
 		return nxDrivePrunerSupportTypeSlots(base) ? 1 : 0;
@@ -5206,6 +5440,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePrunerSupportFiles(base);
 		mismatches += nxDrivePrunerSupportType3Slots(base);
 		mismatches += nxDrivePrunerSupportTypeSlots(base);
+		mismatches += nxDrivePMapCoder(base);
 		return mismatches ? 1 : 0;
 		}
 	if(prunerPoolReserveOnly)

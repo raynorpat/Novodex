@@ -32,8 +32,8 @@ extern "C" void* nxSdkInstanceSlot;
 extern "C" unsigned gNxApiReentry;
 extern "C" const char* gNxApiReentryMessage;
 // .data 0x101222e8 (three words, the cell cursor) and 0x101240a0 (32 words), the cell-run coder statics.
-static unsigned nxPMapCursor[3];
-static unsigned nxPMapCodeCounts[32];
+unsigned nxPMapCursor[3];
+unsigned nxPMapCodeCounts[32];
 extern "C" void nxPMCallSdkAllocator();
 #pragma comment(linker, "/alternatename:_nxPMCallSdkAllocator=?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ")
 extern "C" void* nxPMapVtable;
