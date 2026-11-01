@@ -228,6 +228,49 @@ class SweepTest(unittest.TestCase):
                                   restore_build=lambda: restored.append(2))
             self.assertEqual(restored, [1, 2])
 
+    def test_a_baseline_that_already_differs_is_not_a_detection(self):
+        # without a control, a target that already reports a delta on the unmutated source "catches" the first mutant
+        with tempfile.TemporaryDirectory() as d:
+            p = self.source(d)
+            runs = []
+            restored = []
+
+            def run(text):
+                runs.append(text)
+                return ('family', 3)
+
+            with self.assertRaises(RuntimeError):
+                mutate_rows.sweep(p, 0x1000, 0x100c, run, 6, restore_build=lambda: restored.append(1),
+                                  control=lambda text: ('family', 3))
+            self.assertEqual(runs, [])
+            self.assertEqual(restored, [1])
+            self.assertEqual(p.read_bytes(), SOURCE.encode())
+
+    def test_a_clean_control_lets_the_sweep_run(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = self.source(d)
+            got = mutate_rows.sweep(p, 0x1000, 0x100c, lambda text: ('family', 2), 6, control=lambda text: ('family', None))
+            self.assertEqual(got[2], 2)
+
+    def test_the_restored_check_also_covers_the_caught_path(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = self.source(d)
+            real = mutate_rows.write_atomic
+            calls = []
+
+            def lying(path, data, **kw):
+                calls.append(1)
+                if len(calls) >= 2:  # no restore ever lands
+                    return
+                real(path, data, **kw)
+
+            mutate_rows.write_atomic = lying
+            try:
+                with self.assertRaises(RuntimeError):
+                    mutate_rows.sweep(p, 0x1000, 0x100c, lambda text: ('family', 1), 6)
+            finally:
+                mutate_rows.write_atomic = real
+
     def test_source_is_restored_after_a_failed_run(self):
         with tempfile.TemporaryDirectory() as d:
             p = self.source(d)

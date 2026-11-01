@@ -151,6 +151,11 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
         gate_phases = sorted(registered[spec['gate']])
         if r['state'] != 'reconstructed' or AWAITS not in (r.get('notes') or ''):
             raise ValueError('%s is %s and does not await the testing pass' % (rid, r['state']))
+        at = re.search(r'0x([0-9a-fA-F]+)', spec['mutation'])
+        lo = int(r['rva'], 16)
+        if not at or not lo <= int(at.group(1), 16) < lo + int(r['size']):
+            raise ValueError('%s: mutation %r is not at an address inside the row (%s, %s bytes)'
+                             % (rid, spec['mutation'], r['rva'], r['size']))
         r['state'] = 'dynamically_gated'
         r['dynamic_proof'] = ('%s (%s): a mutation inside the row itself (%s) is detected (%s). See %s.'
                               % (spec['gate'], spec['family'], spec['mutation'], spec['detected'], manifest['doc']))

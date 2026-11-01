@@ -154,18 +154,25 @@ def write_atomic(path, data, writer=_write_tmp, pause=0.3):
         raise
 
 
-def sweep(path, lo, hi, run, limit, restore_build=None, trace=None):
+def sweep(path, lo, hi, run, limit, restore_build=None, trace=None, control=None):
     """Mutate the row's lines one at a time until `run` reports a detection.
 
     run(mutated_text) -> (gate kind, detection N or None). Returns (mutation text, gate kind, N) or None. The file is
     restored after every attempt, and a RuntimeError is raised if its bytes then differ from the original.
     restore_build() runs once at the end, however the sweep ends, so the built binaries match the restored source.
+    control(original_text) runs the gate on the unmutated source first; a detection there means the baseline already
+    differs, and every mutant would be "caught", so the sweep refuses to start.
     """
     path = Path(path)
     original = path.read_bytes()
     text = original.decode('utf-8')
     attempts = 0
+    result = None
     try:
+        if control is not None:
+            kind, n = control(text)
+            if n:
+                raise RuntimeError('the unmutated source already reports %s=%s; the baseline differs' % (kind, n))
         for addr, before, after in pick(candidates(text, lo, hi), limit):
             mutated = _swap_line(text, addr, after)
             if mutated is None:
@@ -179,14 +186,15 @@ def sweep(path, lo, hi, run, limit, restore_build=None, trace=None):
             if trace:
                 trace(addr, before, after, kind, n)
             if n:
-                return ('0x%08x  %s  ->  %s' % (addr, before, after), kind, n)
+                result = ('0x%08x  %s  ->  %s' % (addr, before, after), kind, n)
+                break
     finally:
         write_atomic(path, original)
         if restore_build:
             restore_build()
     if path.read_bytes() != original:
         raise RuntimeError('%s was not restored' % path)
-    return None
+    return result
 
 
 def build_targets(target, staged):
@@ -221,7 +229,7 @@ def _build(target, staged):
     for t in build_targets(target, staged):
         build = subprocess.run('cmake --build build --config Release --target %s' % t, shell=True,
                                capture_output=True, text=True, cwd=REPO)
-        if ': error' in build.stdout or 'LNK2' in build.stdout:
+        if build.returncode != 0 or ': error' in build.stdout or 'LNK2' in build.stdout:
             return False
     return True
 
@@ -254,6 +262,7 @@ def main(argv=None):
     g.add_argument('--family')
     g.add_argument('--staged', action='store_true')
     ap.add_argument('--limit', type=int, default=6)
+    ap.add_argument('--no-control', action='store_true', help='skip the unmutated control run')
     ap.add_argument('--count-crash', action='store_true', help='a faulting candidate with differing output counts as a detection')
     ap.add_argument('--log')
     ap.add_argument('--verbose', action='store_true', help='print every attempt and what the gate reported')
@@ -264,7 +273,8 @@ def main(argv=None):
     lo = int(row['rva'], 16)
     hi = lo + int(row['size'])
     tried = []
-    got = sweep(a.source, lo, hi, _real_run(a.target, a.family, a.staged, a.count_crash), a.limit,
+    run = _real_run(a.target, a.family, a.staged, a.count_crash)
+    got = sweep(a.source, lo, hi, run, a.limit, control=None if a.no_control else run,
                 restore_build=lambda: _build(a.target, a.staged),
                 trace=lambda addr, before, after, kind, n: tried.append('TRY 0x%08x  %s  ->  %s  :  %s %s' % (addr, before, after, kind, n)))
     if got:

@@ -18,7 +18,7 @@ manifest `close_static_rows.py --falsified` read and the `mutations.txt` the swe
 | Mesh/mesh dispatcher | 001876 | `NxPhysicsCollisionTests`, family `contact_mesh_mesh` | oracle differential |
 | `NpTriangleMeshRows.cpp` | 24 of 24 | `NxPhysicsTriangleMeshApiTests` (staged) | the DLL's `NxTriangleMesh` wrapper calls the twelve methods (`NX_NP_TRIANGLE_MESH_ROWS`); the test calls them with a scene alive |
 | `TriangleMeshRows.cpp` | 16 of 16 | `NxPhysicsTriangleMeshApiTests`, `NxPhysicsConvexMeshTests` (staged) | 002239 (the mesh release), 002247, 002256, 002255 (with 002243/002245/002184/002178), 002200, 002205, 001524 and 001528 replace C++ in `TriangleMesh.cpp` (`NX_TRIANGLE_MESH_ROWS`) |
-| `PMapRows.cpp` | 1 of 13 (002031) | `NxPhysicsTriangleMeshApiTests`, `NxPhysicsPMapResolution80Tests` | the penetration map's scalar deleting destructor replaces the two deletion sites in `TriangleMesh.cpp` |
+| `PMapRows.cpp` | 1 of 13 (002031) | `NxPhysicsTriangleMeshApiTests`, `NxPhysicsPMapResolution80Tests` | the penetration map's scalar deleting destructor: replaces the `loadPMap` deletion site; a mesh release reaches it through 002239's call on the map's table, whose slot 0 (the class's deleting destructor) frees through the SDK allocator |
 
 Rows marked in `mutations.txt` with `--count-crash` were caught by a mutation that **faults the candidate while its
 output differs from the oracle's** (`stdout_delta > 0`, candidate exit non-zero), not by an output difference alone.
@@ -85,3 +85,24 @@ Each is pinned by the differential it ran under (oracle and candidate agree on t
   against a stale DLL (the sweeper now deletes the DLL before each staged build); a timeout killed only the direct
   child, leaving a hung mutant holding the staged DLLs (it now kills the process tree); Windows briefly denies
   `os.replace` (retried); a sweep must rebuild the restored source (`restore_build`) and write atomically.
+
+## Review follow-up (whole-branch review, then fixes)
+
+Fixed, each with a test that failed first: a mesh released with a penetration map freed the map through the CRT, not
+the SDK allocator (`PenetrationMap::operator delete`; pinned by `pmap_release` in `NxPhysicsTriangleMeshApiTests`);
+`loadFromDesc` now matches the oracle on index-less descriptors (flip normals kept, materials passed, triangle count
+`numVertices/3`) and no longer fails a mesh whose topology build reports nothing (`implicit_flip`,
+`implicit_flip_counted`, `zero_area` probes); `close_static_rows.py --falsified` refuses a mutation outside the row's
+address range; `mutate_rows.py` runs the gate on the unmutated source first and refuses to sweep if it already
+reports a delta, treats a non-zero build exit as a failed build, and checks the restored bytes on the caught path.
+
+Known and accepted:
+* 002255 runs only when a hull is first built; the oracle runs it at the end of every successful load (convex or
+  not, and on reload). That is why 002243, 002245, 002184 and 002178 are caught only by `NxPhysicsConvexMeshTests`.
+* A second `loadFromDesc` on a non-convex mesh leaks the old part maps (002247 overwrites `+0x94`/`+0x98`); the
+  oracle does the same, but the C++ path it replaced freed them.
+* The internal table's slots 0 and 1 are null and slot 13 returns 0, so `getPMapDensity` is 0 even with a map;
+  `SceneDump` now reads the mesh through real slots 3, 10 and 13 instead of the opaque token.
+* The two macros are meant to be set together; `NX_NP_TRIANGLE_MESH_ROWS` without `NX_TRIANGLE_MESH_ROWS` does
+  not compile. Some `#if NX_TRIANGLE_MESH_ROWS` blocks sit inside the other arm and are dead.
+* `runHandleMethodCases` does not release its triangle mesh.

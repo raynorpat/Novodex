@@ -173,7 +173,7 @@ def frow(n, state='reconstructed', **extra):
 
 
 FMAN = {'doc': 'evidence/phase3-x.md', 'rows': {
-    'phys_fn_000001': {'gate': 'NxPhysicsCollisionTests', 'family': 'fam', 'mutation': 'je -> jne at 0x1004', 'detected': 'mismatches=12'}}}
+    'phys_fn_000001': {'gate': 'NxPhysicsCollisionTests', 'family': 'fam', 'mutation': 'je -> jne at 0x1014', 'detected': 'mismatches=12'}}}
 ORACLE = {'NxPhysicsCollisionTests': [3, 7]}
 STAGED = {'NxPhysicsActorShapeMutationTests': [5, 6, 7], 'NxPhysicsEarlyTests': [2]}
 
@@ -216,27 +216,35 @@ class FalsifiedModeTest(unittest.TestCase):
         inventory, closures = frun()
         r = inventory['functions'][0]
         self.assertEqual(r['state'], 'dynamically_gated')
-        for needle in ('NxPhysicsCollisionTests', 'fam', 'je -> jne at 0x1004', 'mismatches=12'):
+        for needle in ('NxPhysicsCollisionTests', 'fam', 'je -> jne at 0x1014', 'mismatches=12'):
             self.assertIn(needle, r['dynamic_proof'])
         self.assertNotIn('awaits the testing pass', r['notes'])
         c = closures[3]
         self.assertEqual(c['deferred'], [])
         e = c['closed'][0]
         self.assertEqual((e['proof'], e['gate']), ('oracle_differential_falsified', 'NxPhysicsCollisionTests'))
-        self.assertEqual(e['falsification'], {'mutation': 'je -> jne at 0x1004', 'detected': 'mismatches=12'})
+        self.assertEqual(e['falsification'], {'mutation': 'je -> jne at 0x1014', 'detected': 'mismatches=12'})
         self.assertEqual(c['counts'], {'deferred_reconstructed_not_falsified': 0, 'oracle_differential_falsified': 5,
                                       'differential_falsified': 2})
 
+    def test_falsified_refuses_a_mutation_outside_the_row(self):
+        # the row is 0x1010..0x1020; a typo in a hand-edited manifest must not close it
+        for mutation in ('je -> jne at 0x1004', 'je -> jne at 0x1020', 'je -> jne with no address'):
+            m = {'doc': 'd', 'rows': {'phys_fn_000001': {'gate': 'NxPhysicsCollisionTests', 'family': 'f',
+                                                        'mutation': mutation, 'detected': 'mismatches=3'}}}
+            with self.assertRaises(ValueError, msg=mutation):
+                frun(m)
+
     def test_falsified_kind_follows_the_detection(self):
         m = {'doc': 'd', 'rows': {'phys_fn_000001': {'gate': 'NxPhysicsActorShapeMutationTests', 'family': 'pair',
-                                                    'mutation': 'm', 'detected': 'stdout_delta=4'}}}
+                                                    'mutation': 'm at 0x1014', 'detected': 'stdout_delta=4'}}}
         _, closures = frun(m)
         self.assertEqual(closures[3]['closed'][0]['proof'], 'differential_falsified')
         self.assertEqual(closures[3]['counts']['differential_falsified'], 3)
 
     def test_falsified_discharges_to_the_later_phase_that_runs_the_gate(self):
         m = {'doc': 'd', 'rows': {'phys_fn_000001': {'gate': 'NxPhysicsActorShapeMutationTests', 'family': 'pair',
-                                                    'mutation': 'm', 'detected': 'stdout_delta=4'}}}
+                                                    'mutation': 'm at 0x1014', 'detected': 'stdout_delta=4'}}}
         _, closures = frun(m)
         e = closures[3]['closed'][0]
         self.assertEqual((e['discharged_by_phase'], e['driving_phases']), (5, [5, 6, 7]))
@@ -247,7 +255,7 @@ class FalsifiedModeTest(unittest.TestCase):
 
     def test_falsified_refuses_a_gate_no_later_phase_runs(self):
         m = {'doc': 'd', 'rows': {'phys_fn_000001': {'gate': 'NxPhysicsEarlyTests', 'family': 'f',
-                                                    'mutation': 'm', 'detected': 'stdout_delta=4'}}}
+                                                    'mutation': 'm at 0x1014', 'detected': 'stdout_delta=4'}}}
         with self.assertRaises(ValueError):
             frun(m)
 
