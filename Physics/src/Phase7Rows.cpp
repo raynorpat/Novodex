@@ -82,7 +82,8 @@ extern "C" void* nxP7ImpImpnxFoundationSDKAllocator3PAVNxUserAll;
 #pragma comment(linker, "/alternatename:_nxP7CallNxIceIdentityPoses=?nxIceIdentityPoses@@YAPBMXZ")
 #pragma comment(linker, "/alternatename:_nxP7CallNxP45404=?nxP45404@@YIIPAX0I@Z")
 #pragma comment(linker, "/alternatename:_nxP7CallNxPOSetCenterExtents=?nxPOSetCenterExtents@@YIXPAX0PBX1@Z")
-#pragma comment(linker, "/alternatename:_nxP7CallNxRayAABBSlab=?NxRayAABBSlab@@YAHPBM000PAM1@Z")
+#pragma comment(linker, "/alternatename:_nxP7CallNxRayAABBSlab=_nxP7SlabRegcall")
+#pragma comment(linker, "/alternatename:_nxP7SlabCdecl=?NxRayAABBSlab@@YAHPBM000PAM1@Z")
 #pragma comment(linker, "/alternatename:_nxP7CallOverlapAABBShapes=?overlapAABBShapes@NxSceneInternal@@QAEIABVNxBounds3@@W4NxShapesType@@IPAPAVNxShape@@PAV?$NxUserEntityReport@PAVNxShape@@@@@Z")
 #pragma comment(linker, "/alternatename:_nxP7CallResize=?resize@SdkContainer@@QAE_NI@Z")
 #pragma comment(linker, "/alternatename:_nxP7CallSimulateFrame=?simulateFrame@NxSceneInternal@@QAEXXZ")
@@ -164,6 +165,22 @@ unsigned __fastcall nxP72389(void* self, void* edxUnused);
 unsigned __fastcall nxP72400(void* self, void* edxUnused);
 unsigned __fastcall nxP74031(void* self, void* edxUnused, unsigned a0);
 // @@PROTOS-END@@
+// The oracle's slab test takes its first operand in ecx and five more on the stack (the caller clears them); the
+// candidate's NxRayAABBSlab is cdecl with all six on the stack. This puts ecx on the stack under the five and leaves the
+// stack as the caller expects it.
+extern "C" void nxP7SlabCdecl();
+extern "C" __declspec(naked) void nxP7SlabRegcall()
+	{
+	__asm
+		{
+		pop edx
+		push ecx
+		call nxP7SlabCdecl
+		add esp, 4
+		push edx
+		ret
+		}
+	}
 // The controller classes' tables, entry for entry as the oracle has them (0x10108740; 0x1010878c..0x101087ac, which
 // the oracle's 0x10108798, 0x1010879c and 0x101087a8 point into; 0x10108818..0x10108830, with 0x10108824 inside it).
 extern "C" void* nxP7Tab108740[2] = { (void*) &nxP72298, (void*) &nxP72280 };
