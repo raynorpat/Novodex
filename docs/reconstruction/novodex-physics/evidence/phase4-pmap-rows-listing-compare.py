@@ -13,7 +13,7 @@ ROWS = [('nxPMapCoderReset', 0x4cba0, 0x4cc55),
         ('nxPMapDecodeCellRun', 0x4dba0, 0x4e112),
         ('nxPMapScalarDelete', 0x4ff20, 0x4ff71),
         ('nxPMapRelease5159', 0xe32e0, 0xe3328)]
-EXPECTED = {0xb3a60: '?storeByte@MemoryStream@@QAEXE@Z',
+EXPECTED = {0xb3a60: '?storeByte@MemoryStream@@QAEPAV1@E@Z',
             0xb3aa0: '?readByte@MemoryStream@@QAEEXZ',
             0xb4000: '?nxGetSdkAllocator@@YAPAVSdkAllocator@@XZ',
             0xb4de0: '?resize@SdkContainer@@QAE_NI@Z',

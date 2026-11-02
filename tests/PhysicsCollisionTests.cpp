@@ -5743,19 +5743,28 @@ static unsigned nxDrivePhase6Large(unsigned char* base)
 
 	// phys_fn_004161 (0x0009abb0): the record sort.
 	{
-	static const unsigned lengths[12] = { 1, 2, 3, 4, 5, 8, 16, 33, 64, 100, 2, 7 };
-	for(unsigned c = 0; c < 12; ++c)
+	static const unsigned lengths[20] = { 1, 2, 3, 4, 5, 8, 16, 33, 64, 100, 2, 7, 9, 12, 21, 40, 77, 150, 300, 6 };
+	for(unsigned c = 0; c < 120; ++c)
 		{
 		unsigned long long results[2];
 		for(unsigned side = 0; side < 2; ++side)
 			{
 			unsigned seed = 0x4161c0deu + c;
-			const unsigned n = lengths[c];
+			const unsigned n = lengths[c % 20];
 			unsigned (*records)[4] = (unsigned (*)[4]) ::calloc(n, 16);
 			for(unsigned i = 0; i < n; ++i)
 				{
 				records[i][0] = i; records[i][1] = 0xabc0u + i; records[i][2] = i * 3u;
-				records[i][3] = nxLeafNext(&seed) % (c % 3 == 0 ? 4u : 1000u);
+				const unsigned random = nxLeafNext(&seed);
+				switch((c / 20) % 6)
+					{
+					case 0: records[i][3] = random % 4u; break;		// few distinct keys
+					case 1: records[i][3] = random % 1000u; break;
+					case 2: records[i][3] = i; break;					// already sorted
+					case 3: records[i][3] = n - i; break;				// reversed
+					case 4: records[i][3] = 7u; break;				// all equal
+					default: records[i][3] = random; break;			// the whole range
+					}
 				}
 			SortFn f = side == 0 ? (SortFn) (base + 0x0009abb0) : (SortFn) nxP64161;
 			f(records, records + n - 1);
@@ -5772,15 +5781,15 @@ static unsigned nxDrivePhase6Large(unsigned char* base)
 	}
 
 	// phys_fn_004169 / 004171 (0x0009adb0), through 004159 and 004405: the actor chain's island walk.
-	for(unsigned c = 0; c < 24; ++c)
+	for(unsigned c = 0; c < 400; ++c)
 		{
 		unsigned long long results[2];
 		for(unsigned side = 0; side < 2; ++side)
 			{
 			unsigned seed = 0x4169c0deu + c * 977u;
-			const unsigned na = 1 + nxLeafNext(&seed) % 6, ne = nxLeafNext(&seed) % 10;
-			unsigned char* actor[8];
-			unsigned char* edge[16];
+			const unsigned na = 1 + nxLeafNext(&seed) % 12, ne = nxLeafNext(&seed) % 24;
+			unsigned char* actor[16];
+			unsigned char* edge[32];
 			NxP6Canon canon;
 			canon.scrubAll = true;
 			for(unsigned i = 0; i < na; ++i)
@@ -5890,6 +5899,8 @@ static unsigned nxDrivePhase6Large(unsigned char* base)
 
 	// phys_fn_004413 (0x000b03b0): the joint's debug draw.
 	{
+	if(base[0x000b03f7] != 0xd9 || base[0x000b03fd] != 0xd8)
+		return nxFail("phase 6 large rows fixture: row 004413's parameter operands are not where expected");
 	float* const oracleScale = *(float**) (base + 0x000b03f9);
 	float* const oracleHalf = *(float**) (base + 0x000b03ff);
 	const float savedScale = oracleScale[0], savedHalf = oracleHalf[0], savedCandidateScale = gParameter[0x68 / 4], savedCandidateHalf = gParameter[0x34 / 4];

@@ -25365,7 +25365,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3429",
       "static_proof": "Capstone listing at RVA 0x000258f0: a CCD-path refresh: calls 000738 on the owner and, when it returns a record, Prunable::UpdateWorldAABB on the shape's prunable. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000258f6 mov ecx, dword ptr [eax + 8] -> mov ecx, dword ptr [eax + 12]) is detected (mismatches=4). See evidence/raw/testing-pass-phase3-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/ShapeRows.cpp",
       "implementation_symbol": "?nxShp1303@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -25409,7 +25409,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3434",
       "static_proof": "Capstone listing at RVA 0x00025960: the shared debug render: gated on SDK parameter elements 44 and 48 (gParameter +0xb0 and +0xc0) against a constant, scaled by element 13, drawing through the renderer's slots +0x20, +0x28 and +0x38. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x00025969 fld dword ptr [gParameter + 0xb0] -> fld dword ptr [gParameter + 0xb4]) is detected (mismatches=16). See evidence/raw/testing-pass-phase3-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/ShapeRows.cpp",
       "implementation_symbol": "?nxShp1305@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -26260,7 +26260,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3506",
       "static_proof": "Capstone listing at RVA 0x00027710: a scalar deleting destructor: the base shape destructor (001323), then the object freed through the Foundation allocator when bit 0 of the flag is set. Transcribed instruction for instruction into a naked row in Physics/src/ShapeRows.cpp; evidence/phase3-shape-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1861 instructions of its rows equal, with the 13 call mappings as expected. See evidence/phase3-shape-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x00027718 test byte ptr [esp + 8], 1 -> test byte ptr [esp + 12], 1) is detected (mismatches=1). See evidence/raw/testing-pass-phase3-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/ShapeRows.cpp",
       "implementation_symbol": "?nxShp1345@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -37478,7 +37478,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5874",
       "static_proof": "Capstone listing at RVA 0x0004b9c0: the pruners' visualisation-walk callback: a node with a box at +0x18 is drawn through the SDK's debug renderable (slot +0x2c, colour 0xffff0000); returns true. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunableRows.cpp; evidence/phase3-prunable-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 80 instructions of its rows equal, with the 7 call mappings as expected. See evidence/phase3-prunable-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x0004b9ea mov al, 1 -> mov al, 2) is detected (mismatches=4). See evidence/raw/testing-pass-phase3-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunableRows.cpp",
       "implementation_symbol": "?nxPrunerVisualizeNodeCallback@@YA_NPAX0@Z",
       "candidate_map_reference": {
@@ -37728,7 +37728,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5895",
       "static_proof": "Capstone listing at RVA 0x0004bc20: the loop and tail of 001945 (one function split at the loop target 0x0004bc20): each compound child's prunable dispatched for removal, then the manager's SweepAndPrune destroyed and freed through the SDK allocator and the owner's prunable link cleared. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunableRows.cpp; evidence/phase3-prunable-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 80 instructions of its rows equal, with the 7 call mappings as expected. See evidence/phase3-prunable-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x0004bc3b mov esi, dword ptr [edi + 0x2c] -> mov esi, dword ptr [edi + 0x30]) is detected (mismatches=2). See evidence/raw/testing-pass-phase3-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunableRows.cpp",
       "implementation_symbol": "?nxPrunerOwnerDestroyRow@@YIXPAX00@Z",
       "candidate_map_reference": {
@@ -38574,7 +38574,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6051",
       "static_proof": "Capstone listing at RVA 0x0004cba0: resets the cell-run coder's statics: the three cursor words and the 32 code counts. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004cba0 or eax, 0xffffffff -> or eax, 0x100000000) is detected (mismatches=7). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapCoderReset@@YAIXZ",
       "candidate_map_reference": {
@@ -38656,7 +38656,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6067",
       "static_proof": "Capstone listing at RVA 0x0004cee0: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004cf29 jne L4d33e -> je L4d33e) is detected (mismatches=9). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -38700,7 +38700,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6101",
       "static_proof": "Capstone listing at RVA 0x0004d270: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004d270 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]) is detected (mismatches=9). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -38744,7 +38744,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6107",
       "static_proof": "Capstone listing at RVA 0x0004d300: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004d300 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]) is detected (mismatches=10). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -38788,7 +38788,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6135",
       "static_proof": "Capstone listing at RVA 0x0004d560: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004d560 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]) is detected (mismatches=11). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -38832,7 +38832,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6149",
       "static_proof": "Capstone listing at RVA 0x0004d690: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004d690 mov cl, byte ptr [esi + 0x19] -> mov cl, byte ptr [esi + 0x1d]) is detected (mismatches=6). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -38876,7 +38876,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6153",
       "static_proof": "Capstone listing at RVA 0x0004d6e0: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004d6e0 mov dl, byte ptr [esi + 0x19] -> mov dl, byte ptr [esi + 0x1d]) is detected (mismatches=9). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -38920,7 +38920,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6192",
       "static_proof": "Capstone listing at RVA 0x0004dac0: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004dac0 test dword ptr [esp + 0x10], edi -> test dword ptr [esp + 0x14], edi) is detected (mismatches=12). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -38964,7 +38964,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6195",
       "static_proof": "Capstone listing at RVA 0x0004db00: the cell-run encoder (one function the inventory splits eight ways at 0x0004cee0): the cell indices written as 5-bit codes, one-cell moves or absolute coordinates, through MemoryStream::storeByte, with the cursor and the 32 code counts in .data. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004db00 mov ebx, dword ptr [esp + 0x14] -> mov ebx, dword ptr [esp + 0x18]) is detected (mismatches=12). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapEncodeCellRun@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -39046,7 +39046,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6255",
       "static_proof": "Capstone listing at RVA 0x0004df30: the cell decoder's part of the cell-run decoder 002008 (one function 0x0004dba0-0x0004e112 that 002008 falls through into; its jump table of 32 codes is a compare chain): the 5-bit codes read through MemoryStream::readByte into the cursor and the container, which grows through SdkContainer::resize. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004df30 mov al, byte ptr [esi + 0x18] -> mov al, byte ptr [esi + 0x1c]) is detected (mismatches=4). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapDecodeCellRun@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -39090,7 +39090,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6268",
       "static_proof": "Capstone listing at RVA 0x0004e030: the cell decoder's part of the cell-run decoder 002008 (one function 0x0004dba0-0x0004e112 that 002008 falls through into; its jump table of 32 codes is a compare chain): the 5-bit codes read through MemoryStream::readByte into the cursor and the container, which grows through SdkContainer::resize. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004e030 mov al, byte ptr [esi + 0x18] -> mov al, byte ptr [esi + 0x1c]) is detected (mismatches=9). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapDecodeCellRun@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -39134,7 +39134,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6271",
       "static_proof": "Capstone listing at RVA 0x0004e070: the cell decoder's part of the cell-run decoder 002008 (one function 0x0004dba0-0x0004e112 that 002008 falls through into; its jump table of 32 codes is a compare chain): the 5-bit codes read through MemoryStream::readByte into the cursor and the container, which grows through SdkContainer::resize. Transcribed instruction for instruction into a naked row in Physics/src/PMapRows.cpp; evidence/phase4-pmap-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1639 instructions of its rows equal, with the 64 call mappings as expected. See evidence/phase4-pmap-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x0004e070 mov al, byte ptr [esi + 0x18] -> mov al, byte ptr [esi + 0x1c]) is detected (mismatches=8). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/PMapRows.cpp",
       "implementation_symbol": "?nxPMapDecodeCellRun@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -44248,7 +44248,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7100",
       "static_proof": "Capstone listing at RVA 0x00056690: a listing of 374 instructions; calls nothing directly (part 1 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00056693 fld dword ptr [eax] -> fld dword ptr [eax + 4]) is detected (mismatches=24). See evidence/raw/testing-pass-phase7-sweep-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72268@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -44292,7 +44292,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7101",
       "static_proof": "Capstone listing at RVA 0x00056700: a listing of 374 instructions; calls nothing directly (part 2 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00056700 fld dword ptr [eax + 4] -> fld dword ptr [eax + 8]) is detected (mismatches=11). See evidence/raw/testing-pass-phase7-sweep-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72268@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -44380,7 +44380,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7107",
       "static_proof": "Capstone listing at RVA 0x00056b10: a listing of 100 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00056b10 fld dword ptr [ecx] -> fld dword ptr [ecx + 4]) is detected (mismatches=169). See evidence/raw/testing-pass-phase7-sweep-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72274@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -44424,7 +44424,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7115",
       "static_proof": "Capstone listing at RVA 0x00056c40: a listing of 277 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00056c43 mov eax, dword ptr [esp + 0x3c] -> mov eax, dword ptr [esp + 0x40]) is detected (mismatches=69). See evidence/raw/testing-pass-phase7-sweep-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72276@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -44468,7 +44468,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7126",
       "static_proof": "Capstone listing at RVA 0x00056fa0: a listing of 232 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00056fa3 fld dword ptr [esi] -> fld dword ptr [esi + 4]) is detected (mismatches=53). See evidence/raw/testing-pass-phase7-sweep-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72278@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -44512,7 +44512,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7131",
       "static_proof": "Capstone listing at RVA 0x000572a0: a listing of 45 instructions; calls nxPOSetCenterExtents, AABB::Add. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_rows): a mutation inside the row itself (0x000572a8 fld dword ptr [eax + 0xc] -> fld dword ptr [eax + 0x10]) is detected (mismatches=12). See evidence/raw/testing-pass-phase7-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72280@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -44556,7 +44556,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7132",
       "static_proof": "Capstone listing at RVA 0x00057330: a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 1 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00057330 mov ecx, dword ptr [esp + 4] -> mov ecx, dword ptr [esp + 8]) is detected (mismatches=63). See evidence/raw/testing-pass-phase7-sweep2-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72282@@YAIXZ",
       "candidate_map_reference": {
@@ -44600,7 +44600,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7134",
       "static_proof": "Capstone listing at RVA 0x000574c0: a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 2 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x000574c0 fld dword ptr [esp + 0x90] -> fld dword ptr [esp + 0x94]) is detected (mismatches=3). See evidence/raw/testing-pass-phase7-sweep2-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72282@@YAIXZ",
       "candidate_map_reference": {
@@ -44644,7 +44644,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7141",
       "static_proof": "Capstone listing at RVA 0x00057980: a listing of 657 instructions; calls nxP72268, OBB::ComputePoints, nxP45404, IceMaths::InvertPRMatrix, NxRayAABBSlab, OBB::GetEdges, OBB::ComputeWorldEdgeNormal, nxP72276 (part 3 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00057992 faddp st(1), st(0) -> fsubp st(1), st(0)) is detected (mismatches=3). See evidence/raw/testing-pass-phase7-sweep2-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72282@@YAIXZ",
       "candidate_map_reference": {
@@ -44688,7 +44688,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7148",
       "static_proof": "Capstone listing at RVA 0x00057c70: a listing of 45 instructions; calls nothing directly; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_rows): a mutation inside the row itself (0x00057c70 mov edx, dword ptr [eax + 0x1c] -> mov edx, dword ptr [eax + 0x20]) is detected (mismatches=4). See evidence/raw/testing-pass-phase7-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72288@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -44732,7 +44732,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7152",
       "static_proof": "Capstone listing at RVA 0x00057d00: a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 1 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00057d08 mov ebp, dword ptr [esp + 0xc0] -> mov ebp, dword ptr [esp + 0xc4]) is detected (mismatches=27). See evidence/raw/testing-pass-phase7-sweep2-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72290@@YAIXZ",
       "candidate_map_reference": {
@@ -44776,7 +44776,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7155",
       "static_proof": "Capstone listing at RVA 0x00057e20: a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 2 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00057e22 je L57e4d -> jne L57e4d) is detected (mismatches=1). See evidence/raw/testing-pass-phase7-sweep2-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72290@@YAIXZ",
       "candidate_map_reference": {
@@ -44820,7 +44820,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7163",
       "static_proof": "Capstone listing at RVA 0x00058190: a listing of 504 instructions; calls Triangle::Normal, Triangle::Inflate, AABB::GetVertexNormals, nxP72278, NxRayAABBSlab, AABB::GetEdgeNormals, AABB::GetEdges, nxP72276 (part 3 of 3 of one function). Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_sweep): a mutation inside the row itself (0x00058190 mov edi, dword ptr [esp + 0xbc] -> mov edi, dword ptr [esp + 0xc0]) is detected (mismatches=8). See evidence/raw/testing-pass-phase7-sweep2-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72290@@YAIXZ",
       "candidate_map_reference": {
@@ -45288,7 +45288,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7279",
       "static_proof": "Capstone listing at RVA 0x0005a0f0: a listing of 41 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/Phase7Rows.cpp; evidence/phase7-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 5599 instructions of its rows equal, with the 111 call mappings as expected. See evidence/phase7-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (phase7_rows): a mutation inside the row itself (0x0005a0f0 mov eax, dword ptr [esp + 8] -> mov eax, dword ptr [esp + 12]) is detected (mismatches=3). See evidence/raw/testing-pass-phase7-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/Phase7Rows.cpp",
       "implementation_symbol": "?nxP72316@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -81141,7 +81141,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13808",
       "static_proof": "Capstone listing at RVA 0x0009ab00: a listing of 63 instructions; calls nxP64405, nxP64159. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x0009ab03 mov eax, dword ptr [esp + 0x14] -> mov eax, dword ptr [esp + 0x18]) is detected (mismatches=24). See evidence/raw/testing-pass-phase6-large-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64159@@YAIXZ",
       "candidate_map_reference": {
@@ -81185,7 +81185,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13816",
       "static_proof": "Capstone listing at RVA 0x0009abb0: a listing of 88 instructions; calls nxP64161. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x0009abb0 mov edx, dword ptr [esp + 4] -> mov edx, dword ptr [esp + 8]) is detected (mismatches=26). See evidence/raw/testing-pass-phase6-large-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64161@@YAIXZ",
       "candidate_map_reference": {
@@ -81339,7 +81339,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13841",
       "static_proof": "Capstone listing at RVA 0x0009adb0: a listing of 274 instructions; calls nxP64161, nxP64159; 6 indirect calls (part 1 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x0009adb3 mov eax, dword ptr [esp + 0x28] -> mov eax, dword ptr [esp + 0x2c]) is detected (mismatches=24). See evidence/raw/testing-pass-phase6-large-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64169@@YAIXZ",
       "candidate_map_reference": {
@@ -81383,7 +81383,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13850",
       "static_proof": "Capstone listing at RVA 0x0009ae50: a listing of 274 instructions; calls nxP64161, nxP64159; 6 indirect calls (part 2 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x0009ae50 mov ecx, dword ptr [eax + 8] -> mov ecx, dword ptr [eax + 12]) is detected (mismatches=7). See evidence/raw/testing-pass-phase6-large-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64169@@YAIXZ",
       "candidate_map_reference": {
@@ -85661,7 +85661,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15091",
       "static_proof": "Capstone listing at RVA 0x000afcc0: a listing of 270 instructions; calls nothing directly; 2 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000afcfa fld dword ptr [ecx + 0x14] -> fld dword ptr [ecx + 0x18]) is detected (mismatches=2). See evidence/raw/testing-pass-phase6-large-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64401@@YAIXZ",
       "candidate_map_reference": {
@@ -85743,7 +85743,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15114",
       "static_proof": "Capstone listing at RVA 0x000b02e0: a listing of 19 instructions; calls nxP64759; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000b02eb push 0x28 -> push 0x29) is detected (mismatches=6). See evidence/raw/testing-pass-phase6-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64405@@YAIXZ",
       "candidate_map_reference": {
@@ -85895,7 +85895,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15122",
       "static_proof": "Capstone listing at RVA 0x000b03b0: a listing of 126 instructions; calls nothing directly; 4 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000b03b6 mov eax, dword ptr [ebx + 0x14] -> mov eax, dword ptr [ebx + 0x18]) is detected (mismatches=16). See evidence/raw/testing-pass-phase6-large-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64413@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -88207,7 +88207,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15261",
       "static_proof": "Capstone listing at RVA 0x000b15e0: the abstract NxJoint's scalar deleting destructor: the NxJoint table stored, the object freed (CRT free) when bit 0 of the flag is set; a listing of 11 instructions; calls free. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000b15e8 mov dword ptr [esi], offset nxKnVtNxJoint -> mov dword ptr [esi + 4], offset nxKnVtNxJoint) is detected (mismatches=4). See evidence/raw/testing-pass-phase6-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64537@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -92328,7 +92328,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15535",
       "static_proof": "Capstone listing at RVA 0x000b38a0: a listing of 14 instructions; calls nxP64407. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000b38a0 mov eax, dword ptr [esp + 0xc] -> mov eax, dword ptr [esp + 0x10]) is detected (mismatches=8). See evidence/raw/testing-pass-phase6-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64759@@YIIPAX0III@Z",
       "candidate_map_reference": {
@@ -92372,7 +92372,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15536",
       "static_proof": "Capstone listing at RVA 0x000b38d0: a listing of 25 instructions; calls Joint::row_slot6; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/core/Phase6Rows.cpp; evidence/phase6-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 1012 instructions of its rows equal, with the 11 call mappings as expected. See evidence/phase6-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000b38d9 mov edi, dword ptr [esp + 0xc] -> mov edi, dword ptr [esp + 0x10]) is detected (mismatches=4). See evidence/raw/testing-pass-phase6-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/core/Phase6Rows.cpp",
       "implementation_symbol": "?nxP64761@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -92929,7 +92929,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15582",
       "static_proof": "Capstone listing at RVA 0x000b3d20: a listing of 58 instructions; calls fopen, fseek, ftell, fclose, MemoryStream::initBlock. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b3d20 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8]) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44790@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -92999,7 +92999,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15587",
       "static_proof": "Capstone listing at RVA 0x000b3dc0: a listing of 48 instructions; calls MemoryStream::flushBits, fwrite. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b3ddd je Lb3df2 -> jne Lb3df2) is detected (mismatches=9). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44793@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -93118,7 +93118,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15605",
       "static_proof": "Capstone listing at RVA 0x000b3f50: a listing of 42 instructions; calls MemoryStream::flushBits, MemoryStream::appendBlock. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsPhase6RowsTests (NxPhysicsPhase6RowsTests): a mutation inside the row itself (0x000b3f7b mov ecx, dword ptr [edx + 4] -> mov ecx, dword ptr [edx + 8]) is detected (mismatches=54). See evidence/raw/testing-pass-phase6-rows-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44799@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -93162,7 +93162,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15609",
       "static_proof": "Capstone listing at RVA 0x000b3fb0: a listing of 35 instructions; calls fopen, nxP44793, fclose. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b3fbd mov eax, dword ptr [esp + 0x10] -> mov eax, dword ptr [esp + 0x14]) is detected (mismatches=12). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44801@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -93729,7 +93729,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15713",
       "static_proof": "Capstone listing at RVA 0x000b4c40: a listing of 36 instructions; calls ~RadixSort, nxGetSdkAllocator; 3 indirect calls; .data: nxKnBipartiteSorter0, nxKnBipartiteSorter1, nxKnCompleteSorter. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b4c5f mov dword ptr [nxKnBipartiteSorter1], 0 -> mov dword ptr [nxKnBipartiteSorter1], 1) is detected (mismatches=4). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44828@@YAIXZ",
       "candidate_map_reference": {
@@ -93773,7 +93773,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15717",
       "static_proof": "Capstone listing at RVA 0x000b4cc0: a listing of 30 instructions; calls nxGetSdkAllocator, NxPrunerProcessPool ctor, NxPrunerProcessPool::add; 1 indirect calls; .data: nxKnPrunerPool. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b4cdc push 0x1c -> push 0x1d) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44830@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -93817,7 +93817,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15721",
       "static_proof": "Capstone listing at RVA 0x000b4d20: a listing of 8 instructions; calls NxPrunerProcessPool::remove; .data: nxKnPrunerPool. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b4d2c mov eax, dword ptr [eax] -> mov eax, dword ptr [eax + 4]) is detected (mismatches=1). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44832@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -93861,7 +93861,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15723",
       "static_proof": "Capstone listing at RVA 0x000b4d40: a listing of 14 instructions; calls nxOpcodeReleasePool, nxGetSdkAllocator; 1 indirect calls; .data: nxKnPrunerPool. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b4d48 je Lb4d6a -> jne Lb4d6a) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44834@@YAIXZ",
       "candidate_map_reference": {
@@ -94219,7 +94219,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15749",
       "static_proof": "Capstone listing at RVA 0x000b5090: a listing of 50 instructions; calls nxGetSdkAllocator, DynamicPruner ctor, nxPCBoundedCtor, StaticPruner ctor, nxP45448; 4 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b5090 mov eax, dword ptr [esp + 4] -> mov eax, dword ptr [esp + 8]) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44852@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -94563,7 +94563,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15786",
       "static_proof": "Capstone listing at RVA 0x000b5460: a listing of 9 instructions; calls nothing directly; .data: nxKnOwnerQuery. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b5469 mov ecx, dword ptr [esp + 4] -> mov ecx, dword ptr [esp + 8]) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-leaf-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44870@@YAIXZ",
       "candidate_map_reference": {
@@ -94607,7 +94607,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15788",
       "static_proof": "Capstone listing at RVA 0x000b5480: a listing of 8 instructions; calls nothing directly; .data: nxKnOwnerNotify. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000b548d mov ecx, dword ptr [edx + 4] -> mov ecx, dword ptr [edx + 8]) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-leaf-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP44872@@YAIXZ",
       "candidate_map_reference": {
@@ -101648,7 +101648,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18106",
       "static_proof": "Capstone listing at RVA 0x000e5590: a listing of 90 instructions; calls StaticPruner::BuildTree, AABBCollider ctor, AABBCollider::Collide, StaticPruner::ReportTouched, ~AABBCollider. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000e5599 mov eax, dword ptr [esi + 0x3c] -> mov eax, dword ptr [esi + 0x40]) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45231@@YIIPAX0IIII@Z",
       "candidate_map_reference": {
@@ -102319,7 +102319,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18203",
       "static_proof": "Capstone listing at RVA 0x000e6230: a listing of 169 instructions; calls nxPCBuildTree, SdkContainer ctor, atexit, nxP45568, Prunable::UpdateWorldAABB, SdkContainer::resize; .data: nxPCStatics. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000e6234 mov eax, dword ptr [ebx + 0x3c] -> mov eax, dword ptr [ebx + 0x40]) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45262@@YIIPAX0IIII@Z",
       "candidate_map_reference": {
@@ -102345,7 +102345,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18220",
       "static_proof": "Capstone listing at RVA 0x000e6430: a listing of 28 instructions; calls nxPCOctreeRelease, nxGetSdkAllocator, ~Pruner; 2 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000e6434 mov edi, dword ptr [esi + 0x3c] -> mov edi, dword ptr [esi + 0x40]) is detected (mismatches=1). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45263@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -102662,7 +102662,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18295",
       "static_proof": "Capstone listing at RVA 0x000e6b50: a listing of 63 instructions; calls nothing directly; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000e6b6a jbe Le6c02 -> ja Le6c02) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-leaf-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45279@@YIIPAX0II@Z",
       "candidate_map_reference": {
@@ -104770,7 +104770,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18545",
       "static_proof": "Capstone listing at RVA 0x000e9420: a listing of 8 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000e9420 mov eax, dword ptr [ecx + 0x10] -> mov eax, dword ptr [ecx + 0x14]) is detected (mismatches=1). See evidence/raw/testing-pass-pruner-leaf-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45380@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -105227,7 +105227,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18598",
       "static_proof": "Capstone listing at RVA 0x000e9b20: a listing of 32 instructions; calls nothing directly. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000e9b21 fld dword ptr [ecx + 0x20] -> fld dword ptr [ecx + 0x24]) is detected (mismatches=24). See evidence/raw/testing-pass-pruner-leaf-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45404@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -106054,7 +106054,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18847",
       "static_proof": "Capstone listing at RVA 0x000ef670: a listing of 9 instructions; calls StaticPruner ctor, SdkContainer ctor. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef67e mov dword ptr [esi], offset nxKnVtType3 -> mov dword ptr [esi + 4], offset nxKnVtType3) is detected (mismatches=1). See evidence/raw/testing-pass-pruner-pool-file-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45448@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -106134,7 +106134,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18850",
       "static_proof": "Capstone listing at RVA 0x000ef6d0: a listing of 30 instructions; calls StaticPruner::BuildTree, AABBTree::Refit2. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef6e2 mov eax, dword ptr [esi + 0x14] -> mov eax, dword ptr [esi + 0x18]) is detected (mismatches=8). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45452@@YIIPAX0@Z",
       "candidate_map_reference": {
@@ -106178,7 +106178,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18853",
       "static_proof": "Capstone listing at RVA 0x000ef750: a listing of 17 instructions; calls SdkContainer::empty, nxPCStaticDtorBody, nxGetSdkAllocator; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef770 je Lef77f -> jne Lef77f) is detected (mismatches=1). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45454@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -106222,7 +106222,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18855",
       "static_proof": "Capstone listing at RVA 0x000ef790: a listing of 17 instructions; calls nxP45452, nxPCStaticPlanes. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef7a0 mov edx, dword ptr [esp + 0x10] -> mov edx, dword ptr [esp + 0x14]) is detected (mismatches=2). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45456@@YIIPAX0IIIII@Z",
       "candidate_map_reference": {
@@ -106266,7 +106266,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18856",
       "static_proof": "Capstone listing at RVA 0x000ef7c0: a listing of 17 instructions; calls nxP45452, StaticPruner::Raycast. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef7d0 mov edx, dword ptr [esp + 0x10] -> mov edx, dword ptr [esp + 0x14]) is detected (mismatches=3). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45458@@YIIPAX0IIIII@Z",
       "candidate_map_reference": {
@@ -106310,7 +106310,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18857",
       "static_proof": "Capstone listing at RVA 0x000ef7f0: a listing of 15 instructions; calls nxP45452, nxP45229. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef800 mov edx, dword ptr [esp + 0xc] -> mov edx, dword ptr [esp + 0x10]) is detected (mismatches=4). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45460@@YIIPAX0IIII@Z",
       "candidate_map_reference": {
@@ -106354,7 +106354,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18858",
       "static_proof": "Capstone listing at RVA 0x000ef820: a listing of 15 instructions; calls nxP45452, nxP45231. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef830 mov edx, dword ptr [esp + 0xc] -> mov edx, dword ptr [esp + 0x10]) is detected (mismatches=5). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45462@@YIIPAX0IIII@Z",
       "candidate_map_reference": {
@@ -106435,7 +106435,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18860",
       "static_proof": "Capstone listing at RVA 0x000ef870: a listing of 180 instructions; calls Prunable::UpdateWorldAABB, SdkContainer::resize. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000ef8d1 jne Lefa72 -> je Lefa72) is detected (mismatches=2). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45466@@YIIPAX0IIIII@Z",
       "candidate_map_reference": {
@@ -106516,7 +106516,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18894",
       "static_proof": "Capstone listing at RVA 0x000efc90: a listing of 77 instructions; calls Prunable::UpdateWorldAABB, nxPQSphereAABB, SdkContainer::resize. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000efc9b mov ebx, dword ptr [ebp + 0x18] -> mov ebx, dword ptr [ebp + 0x1c]) is detected (mismatches=8). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45470@@YIIPAX0IIII@Z",
       "candidate_map_reference": {
@@ -106542,7 +106542,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18903",
       "static_proof": "Capstone listing at RVA 0x000efd60: a listing of 100 instructions; calls Prunable::UpdateWorldAABB, SdkContainer::resize. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000efd64 mov eax, dword ptr [ebx + 0x18] -> mov eax, dword ptr [ebx + 0x1c]) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45471@@YIIPAX0IIII@Z",
       "candidate_map_reference": {
@@ -106586,7 +106586,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18911",
       "static_proof": "Capstone listing at RVA 0x000efe80: a listing of 14 instructions; calls ~Pruner, nxGetSdkAllocator; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000efe93 je Lefea2 -> jne Lefea2) is detected (mismatches=1). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45473@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -106702,7 +106702,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18917",
       "static_proof": "Capstone listing at RVA 0x000eff20: a listing of 56 instructions; calls nxGetSdkAllocator; 4 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000eff22 mov edi, dword ptr [esp + 0xc] -> mov edi, dword ptr [esp + 0x10]) is detected (mismatches=1). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45479@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -107825,7 +107825,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19094",
       "static_proof": "Capstone listing at RVA 0x000f15c0: a listing of 17 instructions; calls nxP44832, nxP45477, nxGetSdkAllocator; 1 indirect calls. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f15c3 lea ecx, [esi + 0x34] -> lea ecx, [esi + 0x38]) is detected (mismatches=5). See evidence/raw/testing-pass-pmap-coder-and-pruner-rest-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45539@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -108441,7 +108441,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19155",
       "static_proof": "Capstone listing at RVA 0x000f2160: a listing of 17 instructions; calls nxP45566. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f216a mov ecx, dword ptr [ecx + 0x4c] -> mov ecx, dword ptr [ecx + 0x50]) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-slots-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45568@@YIIPAX0III@Z",
       "candidate_map_reference": {
@@ -108780,7 +108780,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19182",
       "static_proof": "Capstone listing at RVA 0x000f2580: a listing of 16 instructions; calls MemoryStream::storeDword, nxP44799. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f25a6 mov al, 1 -> mov al, 2) is detected (mismatches=12). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45586@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -108824,7 +108824,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19183",
       "static_proof": "Capstone listing at RVA 0x000f25b0: a listing of 86 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 1 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f25f7 add ecx, 4 -> add ecx, 5) is detected (mismatches=12). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45588@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -108868,7 +108868,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19188",
       "static_proof": "Capstone listing at RVA 0x000f2660: a listing of 86 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 2 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f2663 test byte ptr [edx + eax + 0x18], 1 -> test byte ptr [edx + eax + 0x18], 2) is detected (mismatches=6). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45588@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -109170,7 +109170,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19214",
       "static_proof": "Capstone listing at RVA 0x000f2ec0: a listing of 16 instructions; calls MemoryStream::storeDword, nxP44799. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f2ec8 shl edx, 5 -> shl edx, 6) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45606@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -109214,7 +109214,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19215",
       "static_proof": "Capstone listing at RVA 0x000f2ef0: a listing of 91 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 1 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f2f34 shl ecx, 5 -> shl ecx, 6) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45608@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -109258,7 +109258,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19220",
       "static_proof": "Capstone listing at RVA 0x000f2fa0: a listing of 91 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778; 2 indirect calls (part 2 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f2fa3 test byte ptr [ecx + eax + 0x18], 1 -> test byte ptr [ecx + eax + 0x18], 2) is detected (mismatches=6). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45608@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -109523,7 +109523,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19289",
       "static_proof": "Capstone listing at RVA 0x000f3630: a listing of 46 instructions; calls MemoryStream::storeDword, nxP44799. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f3640 shl edx, 4 -> shl edx, 5) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45624@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -109862,7 +109862,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19358",
       "static_proof": "Capstone listing at RVA 0x000f3d40: a listing of 46 instructions; calls MemoryStream::storeDword, nxP44799. Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f3d51 shl edx, 2 -> shl edx, 3) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45642@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -109906,7 +109906,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19359",
       "static_proof": "Capstone listing at RVA 0x000f3dc0: a listing of 109 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778, nxP44776; 2 indirect calls (part 1 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f3e38 mov ebp, dword ptr [ebx + 8] -> mov ebp, dword ptr [ebx + 12]) is detected (mismatches=10). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45644@@YIIPAX0I@Z",
       "candidate_map_reference": {
@@ -109950,7 +109950,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/19364",
       "static_proof": "Capstone listing at RVA 0x000f3e70: a listing of 109 instructions; calls MemoryStream::readDword, nxGetSdkAllocator, nxP44778, nxP44776; 2 indirect calls (part 2 of 2 of one function). Transcribed instruction for instruction into a naked row in Physics/src/opcode/PrunerSupportRows.cpp; evidence/phase4-pruner-support-rows-listing-compare.py disassembles the built candidate and the oracle and finds the 2257 instructions of its rows equal, with the 160 call mappings as expected. See evidence/phase4-pruner-support-rows.md.",
       "dynamic_proof": "NxPhysicsType3PrunerTests (NxPhysicsType3PrunerTests): a mutation inside the row itself (0x000f3e73 test byte ptr [ecx + eax + 0xc], 1 -> test byte ptr [ecx + eax + 0xc], 2) is detected (mismatches=6). See evidence/raw/testing-pass-pruner-stream-20261101/mutations.txt.",
-      "notes": "Listing transcription, wired and driven; falsified by the mutation above (testing pass).",
+      "notes": "Listing transcription, driven directly in the oracle-differential harness (not wired into the product by this closure); falsified by the mutation above (testing pass).",
       "implementation": "Physics/src/opcode/PrunerSupportRows.cpp",
       "implementation_symbol": "?nxP45644@@YIIPAX0I@Z",
       "candidate_map_reference": {

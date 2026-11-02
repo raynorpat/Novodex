@@ -197,6 +197,38 @@ def sweep(path, lo, hi, run, limit, restore_build=None, trace=None, control=None
     return result
 
 
+def survey(path, lo, hi, run, limit, skip=0, restore_build=None, trace=None):
+    """Try `limit` mutations spread over the row (after dropping its first `skip` candidates) and keep going past a catch.
+
+    Returns [(mutation text, detection N or None)] in order: a None is a mutant the gate did not notice. This measures
+    how much of the row's body the gate sees; `sweep` only needs one catch and so tends to stop on the row's first line.
+    """
+    path = Path(path)
+    original = path.read_bytes()
+    text = original.decode('utf-8')
+    out = []
+    try:
+        for addr, before, after in pick(candidates(text, lo, hi)[skip:], limit):
+            mutated = _swap_line(text, addr, after)
+            if mutated is None:
+                continue
+            write_atomic(path, mutated.encode('utf-8'))
+            try:
+                kind, n = run(mutated)
+            finally:
+                write_atomic(path, original)
+            if trace:
+                trace(addr, before, after, kind, n)
+            out.append(('0x%08x  %s  ->  %s' % (addr, before, after), n or None))
+    finally:
+        write_atomic(path, original)
+        if restore_build:
+            restore_build()
+    if path.read_bytes() != original:
+        raise RuntimeError('%s was not restored' % path)
+    return out
+
+
 def build_targets(target, staged):
     """What a run must rebuild: a staged pair stages build/Release/NxPhysics.dll, a harness links the sources itself."""
     return ['NxPhysics', target] if staged else [target]
@@ -269,6 +301,8 @@ def main(argv=None):
     ap.add_argument('--exe-arg', action='append', default=[], help='an extra argument for a harness target (repeatable)')
     ap.add_argument('--no-control', action='store_true', help='skip the unmutated control run')
     ap.add_argument('--count-crash', action='store_true', help='a faulting candidate with differing output counts as a detection')
+    ap.add_argument('--survey', action='store_true', help='try --limit mutations across the row, past any catch, and list the survivors')
+    ap.add_argument('--skip', type=int, default=0, help='with --survey: drop the first N candidates (the row head)')
     ap.add_argument('--log')
     ap.add_argument('--verbose', action='store_true', help='print every attempt and what the gate reported')
     ap.add_argument('--inventory', default=str(Path(__file__).resolve().parents[1] / 'inventory.json'))
@@ -278,6 +312,17 @@ def main(argv=None):
     lo = int(row['rva'], 16)
     hi = lo + int(row['size'])
     tried = []
+    if a.survey:
+        run = _real_run(a.target, a.family, a.staged, a.count_crash, a.exe_arg)
+        results = survey(a.source, lo, hi, run, a.limit, skip=a.skip, restore_build=lambda: _build(a.target, a.staged))
+        caught = sum(1 for _, n in results if n)
+        lines = ['SURVEY %s %s tried=%d caught=%d survived=%d' % (row['id'], a.target, len(results), caught, len(results) - caught)]
+        lines += ['  %s %s' % ('caught  ' if n else 'SURVIVED', m) for m, n in results]
+        print('\n'.join(lines))
+        if a.log:
+            with open(a.log, 'a') as f:
+                f.write('\n'.join(lines) + '\n')
+        return 0
     run = _real_run(a.target, a.family, a.staged, a.count_crash, a.exe_arg)
     got = sweep(a.source, lo, hi, run, a.limit, control=None if a.no_control else run,
                 restore_build=lambda: _build(a.target, a.staged),

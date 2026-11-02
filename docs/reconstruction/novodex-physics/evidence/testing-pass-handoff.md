@@ -366,3 +366,49 @@ was refreshed if it changed (see the commit).
 
 **Still held (17 rows).** 002296 (calls 002282/2290 and now unblocked, not attempted), 002298, 002300/002302, 002304,
 002306, 002308, 002310, 002332, 002336, 002350, 002400 (an endless loop), 004820, 004822, 004824, 005566 and 005386.
+
+## Review of the whole pass, and what it changed (fourteenth slice)
+
+A fresh reviewer read the 67 commits of this pass against the tree. No Critical findings; four Important, eight Minor.
+Rulings and fixes:
+
+* **I1 (static proofs no longer reproduced) -- fixed.** The compare scripts for PMapRows, PrunerSupportRows and
+  Phase7Rows still carried the old symbol names (`storeByte`, `storeDword`, `flushBits` now return the stream; the pool
+  destructor; the slab adapter). Their EXPECTED tables are updated; all three report `unexpected=0` again and the
+  instruction bodies were never different.
+* **I2 ("wired" overstated) -- fixed in the record.** `close_static_rows.py` wrote "wired and driven" for every row. 82
+  rows (every `NxPhysicsType3PrunerTests` and `NxPhysicsPhase6RowsTests` closure) are driven directly in the harness and
+  not called by the product. Their notes now say so; the tool takes `"wired": false` in a manifest (tested). **Read the
+  headline accordingly: 167 rows are driven and falsified; about 85 of them are also wired into the product.**
+* **I3 (mutations prove entry, not the body) -- measured.** `mutate_rows.py --survey --skip 2 --limit 8` tries mutations
+  spread over the row, past any catch, and lists the survivors. Results (survivors / tried):
+  Phase 7 sweep rows: 002292 0/8, 002284 1/8, 002286 1/8, 002268 0/8, 002270 1/8, 002294 1/8, 002290 1/8, 002282 1/8,
+  002276 0/8, 002278 0/8 (6 of 80). Phase 7 small rows: 002316 1/8, 002280 1/8, 002288 1/8. Phase 6 large rows: 004161
+  3/8, 004159 5/8, 004169 5/8 (6/8 before the drive was widened), 004171 4/8, 004401 0/8, 004413 2/8. Phase 6 small rows:
+  004537 1/1, 004759 0/2, 004405 4/7, 004761 7/8. Phase 3: 001303 2/8, 001305 5/8, 001345 3/3, 001947 4/8.
+  The reviewer's worry was right for the older families and wrong for the Phase 7 sweep rows. For the weak ones I widened
+  the 004161/004169 drives (120 sorts with six key patterns; 400 actor graphs of up to 12 actors and 24 edges): the same
+  mutants survive, so they are not limited by the data. Reading them: many are equivalent (a stack slot beside the right
+  one that is never read; an allocator vtable slot next to `malloc`), but not all: 004169's flag branches
+  (`je L9ae41`, `jne L9ae03`), 004761's children path (the `+0x18` joint owner needs a real joint), 004537's
+  flag-set free (needs the oracle's own CRT heap), 001305's lower draw calls and 001947's second arm are **not reached**.
+  **Rows with more than half their mutants surviving are only weakly falsified: 004159, 004169 (5/8), 004761 (7/8),
+  001345 (3/3), 004537 (1/1), 001305 (5/8).** They meet the recorded standard (one mutation inside the row is caught) but
+  a deeper transcription bug there would probably pass. A later pass should drive those paths with real objects.
+* **I4 (the "passed gate" rule) -- ruling.** The tool requires the gate to be registered in the row's phase or a later
+  one; it does not require that phase to be `pass` in program.json, and 14 phase 7 rows closed on
+  `NxPhysicsPhase6RowsTests` through phase 7's list while phase 7 is `pending`. This is by design of the slices after the
+  fourth (a gate that runs in the row's own phase discharges it), but the earlier slice text saying "a later, passed
+  phase's gate" is imprecise for the phase 7 rows. `run_phase_gate.ps1 -Phase 6` and `-Phase 7` were run at the final
+  floors (1866 and 3240) on every slice and passed; there is no oracle-only proof for the alias target, as for the
+  type-3 one.
+* **M3 -- fixed:** 004413 now checks the opcode bytes before reading its parameter operands.
+* **M5 -- deferred:** inventory still records 005201 (`OBB::ComputePoints`) as `reconstructed` from the upstream source;
+  it is now the listing transcription in `OpcodeVendoredRows.cpp`. Its state and `vendored_coverage.csv` line
+  (`ice_obb=discrete`) were not updated.
+* **M1, M2, M4, M6, M8 -- deferred:** summary lines that omit a few closed rows (005452, 005568, 005590, 005610, 005646, and
+  the pmap coder's unnamed rows); early `return nxFail(...)` paths that leave allocators pointing at dead stack objects;
+  the harness's PenetrationMap built with `new` and freed through the SDK allocator; the scrub that blanks all words in
+  the address range; the sweeper's hard-coded oracle path.
+* **M7:** the "Held, with reasons" section near the top of this file describes the state after the first slices; the
+  latest status is the last update below it.

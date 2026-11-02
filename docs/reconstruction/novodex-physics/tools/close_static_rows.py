@@ -159,7 +159,9 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
         r['state'] = 'dynamically_gated'
         r['dynamic_proof'] = ('%s (%s): a mutation inside the row itself (%s) is detected (%s). See %s.'
                               % (spec['gate'], spec['family'], spec['mutation'], spec['detected'], manifest['doc']))
-        r['notes'] = 'Listing transcription, wired and driven; falsified by the mutation above (testing pass).'
+        # a manifest says "wired": false for a row that is driven directly in the harness and not called by the product
+        how = 'wired and driven' if spec.get('wired', True) else 'driven directly in the oracle-differential harness (not wired into the product by this closure)'
+        r['notes'] = 'Listing transcription, %s; falsified by the mutation above (testing pass).' % how
         phase = int(r['phase'])
         ledger = closures[phase]
         entries = [e for e in ledger['deferred'] if e['id'] == rid]

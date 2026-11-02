@@ -207,6 +207,27 @@ class SweepTest(unittest.TestCase):
             self.assertEqual(got[2], 1)
             self.assertEqual(p.read_bytes(), SOURCE.encode())
 
+    def test_survey_tries_every_pick_and_reports_the_survivors(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = self.source(d)
+            calls = []
+
+            def run(text):
+                calls.append(text)
+                return ('family', 3 if len(calls) == 2 else None)
+
+            got = mutate_rows.survey(p, 0x1000, 0x100c, run, 6)
+            self.assertEqual(len(calls), 3)
+            self.assertEqual([m[1] for m in got], [None, 3, None])
+            self.assertEqual(sum(1 for m in got if m[1]), 1)
+            self.assertEqual(p.read_bytes(), SOURCE.encode())
+
+    def test_survey_can_skip_the_row_head(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = self.source(d)
+            got = mutate_rows.survey(p, 0x1000, 0x100c, lambda t: ('family', None), 6, skip=1)
+            self.assertEqual([m[0].split()[0] for m in got], ['0x00001004', '0x00001008'])
+
     def test_trace_sees_every_attempt(self):
         with tempfile.TemporaryDirectory() as d:
             p = self.source(d)

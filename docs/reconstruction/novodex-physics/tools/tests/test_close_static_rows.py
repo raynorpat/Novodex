@@ -227,6 +227,14 @@ class FalsifiedModeTest(unittest.TestCase):
         self.assertEqual(c['counts'], {'deferred_reconstructed_not_falsified': 0, 'oracle_differential_falsified': 5,
                                       'differential_falsified': 2})
 
+    def test_a_row_driven_but_not_wired_is_not_recorded_as_wired(self):
+        man = {'doc': 'x', 'rows': {'phys_fn_000001': dict(FMAN['rows']['phys_fn_000001'], wired=False)}}
+        inventory, _ = frun(man)
+        note = inventory['functions'][0]['notes']
+        self.assertNotIn('wired and driven', note)
+        self.assertIn('not wired', note)
+        self.assertIn('wired and driven', frun()[0]['functions'][0]['notes'])  # the default is unchanged
+
     def test_falsified_refuses_a_mutation_outside_the_row(self):
         # the row is 0x1010..0x1020; a typo in a hand-edited manifest must not close it
         for mutation in ('je -> jne at 0x1004', 'je -> jne at 0x1020', 'je -> jne with no address'):
