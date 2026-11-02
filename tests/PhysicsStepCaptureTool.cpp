@@ -25,6 +25,7 @@
 #include "NxCapsuleShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
 #include "NxBodyDesc.h"
+#include "NxUserContactReport.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -35,6 +36,19 @@ class NxControllerProbe
 	virtual ~NxControllerProbe() {}
 	virtual void move(const NxVec3&, NxU32, NxReal, NxU32&, NxReal = 1.0f, const NxGroupsMask* = 0) = 0;
 	virtual const NxVec3& getPosition() const = 0;
+	};
+
+// takes every contact report and does nothing with it: the step only has pairs to hand over when a report is set
+class NxQuietContactReport : public NxUserContactReport
+	{
+	public:
+	virtual void onContactNotify(NxContactPair&, NxU32) {}
+	};
+
+class NxQuietTriggerReport : public NxUserTriggerReport
+	{
+	public:
+	virtual void onTrigger(NxShape&, NxShape&, NxTriggerFlag) {}
 	};
 
 static unsigned nxFloatBits(NxReal value)
@@ -61,7 +75,7 @@ static bool capReadable(unsigned address, unsigned* lo, unsigned* hi)
 	return true;
 	}
 
-static unsigned kDepth = 3;
+static unsigned kDepth = 4;
 static void capSnapshot(CapCall& call)
 	{
 	std::vector<unsigned> queue;
@@ -82,9 +96,12 @@ static void capSnapshot(CapCall& call)
 			unsigned rlo, rhi;
 			if(!capReadable(v, &rlo, &rhi)) continue;
 			// the roots are the scene and the object that steps it: the row reaches far into both
-			const unsigned before = pass == 0 ? 0x100 : 0x20, after = pass == 0 ? 0x1000 : 0xe0;
+			const unsigned before = pass == 0 ? 0x100 : 0x40, after = pass == 0 ? 0x1000 : 0x300;
 			unsigned lo = v > rlo + before ? v - before : rlo;
 			unsigned hi = v + after < rhi ? v + after : rhi;
+			// word-aligned, so the replay's word-by-word pointer rebasing lines up with the original fields
+			lo &= ~3u;
+			hi = (hi + 3u) & ~3u;
 			// merge with every region the new one touches
 			for(size_t r = 0; r < call.regions.size();)
 				{
@@ -103,7 +120,7 @@ static void capSnapshot(CapCall& call)
 			region.bytes.assign(reinterpret_cast<unsigned char*>(lo), reinterpret_cast<unsigned char*>(hi));
 			call.regions.push_back(region);
 			for(unsigned a = lo; a + 4 <= hi; a += 4) next.push_back(*reinterpret_cast<unsigned*>(a));
-			if(call.regions.size() > 120) return;
+			if(call.regions.size() > 400) return;
 			}
 		queue.swap(next);
 		}
@@ -204,32 +221,81 @@ int wmain(int argc, wchar_t** argv)
 	if(!sdk->setParameter(NX_CONTINUOUS_CD, 1.0f)) return nxFail("enabling continuous collision detection failed");
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();
-	sceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	sceneDesc.gravity = NxVec3(0.0f, -9.8f, 0.0f);
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene) return nxFail("scene creation failed");
 	scene->setTiming(0.1f, 1, NX_TIMESTEP_VARIABLE);
+	static NxQuietContactReport report;
+	scene->setUserContactReport(&report);
+	static NxQuietTriggerReport triggerReport;
+	scene->setUserTriggerReport(&triggerReport);
+	// trigger volumes the fast bodies and the pile cross: enter, stay and leave events in every step
+	for(unsigned k = 0; k < 4; ++k)
+		{
+		NxBoxShapeDesc triggerShape;
+		triggerShape.dimensions = NxVec3(1.0f + 0.5f * k, 1.5f, 1.5f);
+		triggerShape.shapeFlags |= NX_TRIGGER_ENABLE;
+		NxActorDesc triggerDesc;
+		triggerDesc.shapes.pushBack(&triggerShape);
+		triggerDesc.globalPose.t = NxVec3(-2.0f + 2.0f * k, -0.5f * k, -1.0f + 0.7f * k);
+		scene->createActor(triggerDesc);
+		}
+	sdk->setActorGroupPairFlags(0, 0, NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_END_TOUCH | NX_NOTIFY_ON_TOUCH);
+	// two thin walls and a floor, and a crowd of fast bodies (boxes and spheres) crossing them in different directions
 	NxBoxShapeDesc wallShape;
-	wallShape.dimensions = NxVec3(0.1f, 2.0f, 2.0f);
+	wallShape.dimensions = NxVec3(0.1f, 3.0f, 3.0f);
 	NxActorDesc wallDesc;
 	wallDesc.shapes.pushBack(&wallShape);
 	NxActor* wall = scene->createActor(wallDesc);
-	NxBoxShapeDesc moverShape;
-	moverShape.dimensions = NxVec3(0.25f, 0.25f, 0.25f);
-	NxBodyDesc moverBody;
-	NxActorDesc moverDesc;
-	moverDesc.body = &moverBody;
-	moverDesc.density = 1.0f;
-	moverDesc.globalPose.t = NxVec3(-3.0f, 0.0f, 0.0f);
-	moverDesc.shapes.pushBack(&moverShape);
-	NxActor* mover = scene->createActor(moverDesc);
-	if(!wall || !mover) return nxFail("fixture actor creation failed");
-	mover->setLinearVelocity(NxVec3(100.0f, 0.0f, 0.0f));
-	for(unsigned step = 0; step != 6; ++step)
+	NxBoxShapeDesc wall2Shape;
+	wall2Shape.dimensions = NxVec3(3.0f, 3.0f, 0.1f);
+	NxActorDesc wall2Desc;
+	wall2Desc.shapes.pushBack(&wall2Shape);
+	wall2Desc.globalPose.t = NxVec3(0.0f, 0.0f, 2.0f);
+	scene->createActor(wall2Desc);
+	NxBoxShapeDesc floorShape;
+	floorShape.dimensions = NxVec3(6.0f, 0.1f, 6.0f);
+	NxActorDesc floorDesc;
+	floorDesc.shapes.pushBack(&floorShape);
+	floorDesc.globalPose.t = NxVec3(0.0f, -2.0f, 0.0f);
+	scene->createActor(floorDesc);
+	NxActor* movers[8];
+	for(unsigned i = 0; i < 8; ++i)
 		{
-		scene->simulate(0.1f);
+		NxBoxShapeDesc boxMover;
+		boxMover.dimensions = NxVec3(0.2f, 0.2f, 0.2f);
+		NxSphereShapeDesc sphereMover;
+		sphereMover.radius = 0.2f;
+		NxBodyDesc body;
+		NxActorDesc desc;
+		desc.body = &body;
+		desc.density = 1.0f + (float) i;
+		if(i & 1) desc.shapes.pushBack(&sphereMover); else desc.shapes.pushBack(&boxMover);
+		desc.globalPose.t = NxVec3(-3.0f + 0.3f * i, -1.0f + 0.4f * i, -1.5f + 0.5f * i);
+		movers[i] = scene->createActor(desc);
+		if(!movers[i]) return nxFail("fixture actor creation failed");
+		movers[i]->setLinearVelocity(NxVec3(60.0f + 10.0f * i, (i & 2) ? 20.0f : -15.0f, (i & 4) ? 25.0f : 0.0f));
+		}
+	if(!wall) return nxFail("fixture actor creation failed");
+	// a pile of overlapping boxes dropped on the floor, so the broadphase has pairs to report
+	for(unsigned i = 0; i < 10; ++i)
+		{
+		NxBoxShapeDesc pileShape;
+		pileShape.dimensions = NxVec3(0.3f, 0.3f, 0.3f);
+		NxBodyDesc pileBody;
+		NxActorDesc pileDesc;
+		pileDesc.body = &pileBody;
+		pileDesc.density = 1.0f;
+		pileDesc.shapes.pushBack(&pileShape);
+		pileDesc.globalPose.t = NxVec3(3.0f + 0.2f * (i % 3), -1.5f + 0.45f * i, 0.1f * (i % 4));
+		if(!scene->createActor(pileDesc)) return nxFail("pile actor creation failed");
+		}
+	for(unsigned step = 0; step != 14; ++step)
+		{
+		scene->simulate(0.05f);
 		scene->checkResults(NX_RIGID_BODY_FINISHED, true);
 		scene->fetchResults(NX_RIGID_BODY_FINISHED, true);
-		if(step == 1) mover->setLinearVelocity(NxVec3(-80.0f, 5.0f, 0.0f));
+		if(step % 3 == 1) for(unsigned i = 0; i < 8; ++i) movers[i]->setLinearVelocity(NxVec3((i & 1) ? -70.0f : 70.0f, (float) (i * 3) - 10.0f, (i & 2) ? 30.0f : -30.0f));
 		}
 	sdk->releaseScene(*scene);
 	sdk->setParameter(NX_CONTINUOUS_CD, 0.0f);

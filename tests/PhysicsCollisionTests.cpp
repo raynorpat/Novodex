@@ -6968,6 +6968,23 @@ unsigned __fastcall nxP72350(void* self, void* edxUnused, unsigned a0);
 // NxPhysicsStepCapture while a scene with continuous collision detection ran (tests/fixtures/step2350.bin). The machinery
 // is that of nxDrivePhase7Replay: the call's object and argument are copied with everything they reach, pointers rebased,
 // and the row run at the oracle's address and as the transcription on identical copies.
+// The step row allocates through the Foundation allocator (a temporary vector). Zeroed blocks, each entered in the side's
+// canonicaliser as it is made, so a pointer the row stores to one comes out as an index.
+class NxReplayAllocator : public NxUserAllocator
+	{
+	public:
+	NxP6Canon* canon;
+	unsigned sizes[64];
+	unsigned count, frees;
+	NxReplayAllocator() : canon(0), count(0), frees(0) { memset(sizes, 0, sizeof(sizes)); }
+	void* mallocDEBUG(size_t size, const char*, int) override { return take(size); }
+	void* malloc(size_t size) override { return take(size); }
+	void* realloc(void* memory, size_t size) override { void* fresh = take(size); if(memory) memcpy(fresh, memory, size); return fresh; }
+	void free(void* memory) override { if(memory) ++frees; }
+	private:
+	void* take(size_t size) { if(count < 64) sizes[count] = (unsigned) size; ++count; void* block = ::calloc(1, size + 16); if(canon) canon->add(block, (unsigned) size + 16); return block; }
+	};
+
 static unsigned nxDrivePhase7StepReplay(unsigned char* base)
 	{
 	FILE* file = fopen(NX_STEP_FIXTURE, "rb");
@@ -7005,7 +7022,7 @@ static unsigned nxDrivePhase7StepReplay(unsigned char* base)
 		memcpy(stack, header + 2, sizeof(stack));
 		const unsigned regionCount = header[11];
 		cursor += 12 * 4;
-		NxReplayRegion regions[130];
+		NxReplayRegion regions[520];
 		for(unsigned i = 0; i < regionCount; ++i)
 			{
 			regions[i].lo = ((const unsigned*) cursor)[0];
@@ -7058,6 +7075,10 @@ static unsigned nxDrivePhase7StepReplay(unsigned char* base)
 			unsigned w[10];
 			for(unsigned i = 0; i < 9; ++i) w[i] = Reloc::map(regions, regionCount, stack[i]);
 			w[9] = 0;
+			NxReplayAllocator replayAllocator;
+			replayAllocator.canon = &canon;
+			NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+			nxFoundationSDKAllocator = &replayAllocator;
 			unsigned answer = 0xdead;
 			__try
 				{
@@ -7070,11 +7091,16 @@ static unsigned nxDrivePhase7StepReplay(unsigned char* base)
 				{
 				++faults;
 				}
+			nxFoundationSDKAllocator = savedAllocator;
 			NxDigest d;
 			nxDigestInit(&d);
 			// the row returns nothing: eax is whatever the last call left in it, so only the memory is compared
 			const unsigned returned = 0;
 			nxFoldInput(&d, &returned, 4);
+			// what the row asked the allocator for, and how many blocks it gave back
+			nxFoldInput(&d, &replayAllocator.count, 4);
+			nxFoldInput(&d, replayAllocator.sizes, 4 * (replayAllocator.count < 64 ? replayAllocator.count : 64));
+			nxFoldInput(&d, &replayAllocator.frees, 4);
 			for(unsigned i = 0; i < regionCount; ++i)
 				for(unsigned o = 0; o + 4 <= regions[i].size; o += 4)
 					{
@@ -7109,7 +7135,7 @@ static unsigned nxDrivePhase7StepReplay(unsigned char* base)
 	::free(zero);
 	printf("collision name=phase7_step_replay index=- rva=0x0005ae50 owner=phys_fn_002350 checks=%u oracle=%016llx candidate=%016llx mismatches=%u faults=%u rows=002350\n",
 		cases, oracleDigest.state, candidateDigest.state, mismatches, faults);
-	printf("collision coverage name=phase7_step_replay row=002350 case=recorded_continuous_collision_steps_replayed\n");
+	printf("collision coverage name=phase7_step_replay row=002350 case=recorded_trigger_scene_steps_replayed\n");
 	nxPrintInput("phase7_step_replay", &inputDigest);
 	return mismatches;
 	}

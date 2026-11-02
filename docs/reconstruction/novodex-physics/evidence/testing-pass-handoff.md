@@ -532,3 +532,20 @@ call changes two words of memory (a swap of two pointers), so the bulk of the 1,
 scenes or does its work in memory the snapshot does not hold (a temporary vector it allocates and frees). **002350 stays held**;
 closing it needs a scene in which the step actually has continuous-collision pairs to resolve, or a snapshot that includes
 the allocator's blocks.
+
+### 002350 again, with triggers (twenty-first slice): the body runs, the row is still weakly covered
+
+A label-level hit count in the oracle (a breakpoint on each of the row's 50 labels while the capture ran) showed that the
+earlier scenes reached only three of them: the row never left its "no pairs" path. The vector it walks at scene `+0x5d4`
+holds **trigger** pairs, not contact pairs: a contact report and a pile of overlapping boxes changed nothing, but a trigger
+shape with `NX_TRIGGER_ENABLE` and a trigger report did (about 25 labels then run). The capture scene now has four trigger
+volumes across the bodies' paths, a floor, two walls, eight fast movers, a pile, and both reports.
+
+Two replay fixes were needed for the step row: the capture's windows must be word-aligned (an odd window start made every
+pointer field after it misread), and the row allocates through the Foundation allocator, so the replay installs one that
+enters each block in the side's canonicaliser and folds the sizes asked for and the number of frees into the digest.
+
+Result: 14 calls (1.9 MB fixture), no faults, one digest over repeated runs, transcription equal to the oracle. A survey of
+40 spread mutants catches 14 and leaves **26 alive** (the second half of the row, which handles the removal of ended pairs
+and the `+0x5fc..0x604` event vector, is reached by few or no calls). **002350 stays held.** Reaching the rest needs
+triggers that leave and re-enter across steps in more combinations; the scene is the lever now, not the machinery.
