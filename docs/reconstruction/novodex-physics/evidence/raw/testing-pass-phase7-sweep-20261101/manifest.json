@@ -1,0 +1,35 @@
+{
+ "doc": "evidence/raw/testing-pass-phase7-sweep-20261101/mutations.txt",
+ "rows": {
+  "phys_fn_002268": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00056693 fld dword ptr [eax] -> fld dword ptr [eax + 4]",
+   "detected": "mismatches=24"
+  },
+  "phys_fn_002270": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00056700 fld dword ptr [eax + 4] -> fld dword ptr [eax + 8]",
+   "detected": "mismatches=11"
+  },
+  "phys_fn_002274": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00056b10 fld dword ptr [ecx] -> fld dword ptr [ecx + 4]",
+   "detected": "mismatches=169"
+  },
+  "phys_fn_002276": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00056c43 mov eax, dword ptr [esp + 0x3c] -> mov eax, dword ptr [esp + 0x40]",
+   "detected": "mismatches=69"
+  },
+  "phys_fn_002278": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00056fa3 fld dword ptr [esi] -> fld dword ptr [esi + 4]",
+   "detected": "mismatches=53"
+  }
+ }
+}

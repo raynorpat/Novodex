@@ -6388,6 +6388,247 @@ static unsigned nxDrivePhase7Rows(unsigned char* base)
 	return mismatches;
 	}
 
+// The continuous-collision sweep tests of Phase 7, driven one at a time. They take their operands in registers the
+// listing never sets (the callers are other tests of the same family), so each is called through a stub that loads them.
+// phys_fn_002268 and 002270 (one function at 0x00056690) are the oriented-box overlap test: two boxes' rotation matrices
+// (ecx, edx), the first box's centre (eax) and extents (edi), the second's extents and centre on the stack, and a flag
+// asking for the nine edge-cross axes as well. The result is al.
+unsigned __fastcall nxP72268(void* self, void* edxUnused);
+static unsigned p7CallBoxTest(const void* function, const void* inEax, const void* inEcx, const void* inEdx, const void* inEdi,
+	const void* extentsB, const void* centreB, unsigned flag)
+	{
+	unsigned result;
+	__asm
+		{
+		push flag
+		push centreB
+		push extentsB
+		mov eax, inEax
+		mov ecx, inEcx
+		mov edx, inEdx
+		mov edi, inEdi
+		call function
+		add esp, 12
+		movzx eax, al
+		mov result, eax
+		}
+	return result;
+	}
+
+static void p7Rotation(unsigned* seed, float* m)
+	{
+	// a rotation from three angles drawn from a short table (so cases land on and off the axes)
+	static const float angle[8] = { 0.0f, 0.5f, 0.7853982f, 1.0f, 1.5707964f, 2.0f, 3.1415927f, -0.6f };
+	const float a = angle[nxLeafNext(seed) % 8], b = angle[nxLeafNext(seed) % 8], c = angle[nxLeafNext(seed) % 8];
+	const float ca = cosf(a), sa = sinf(a), cb = cosf(b), sb = sinf(b), cc = cosf(c), sc = sinf(c);
+	m[0] = cb * cc;            m[1] = -cb * sc;           m[2] = sb;
+	m[3] = ca * sc + sa * sb * cc; m[4] = ca * cc - sa * sb * sc; m[5] = -sa * cb;
+	m[6] = sa * sc - ca * sb * cc; m[7] = sa * cc + ca * sb * sc; m[8] = ca * cb;
+	}
+
+
+unsigned __fastcall nxP72276(void* self, void* edxUnused);
+unsigned __fastcall nxP72278(void* self, void* edxUnused);
+// A call with every operand register and three stack words set; the callee leaves the stack to the caller.
+static unsigned p7CallRegs(const void* function, unsigned inEax, unsigned inEbx, unsigned inEcx, unsigned inEdx, unsigned inEsi,
+	unsigned inEdi, unsigned s0, unsigned s1, unsigned s2, unsigned s3, unsigned s4)
+	{
+	unsigned result;
+	__asm
+		{
+		push s4
+		push s3
+		push s2
+		push s1
+		push s0
+		mov eax, inEax
+		mov ebx, inEbx
+		mov ecx, inEcx
+		mov edx, inEdx
+		mov esi, inEsi
+		mov edi, inEdi
+		call function
+		add esp, 20
+		mov result, eax
+		}
+	return result;
+	}
+
+// A block of floats from a short table, so a case can land on zero, on an axis, or off it.
+static void p7Block(unsigned* seed, float* block, unsigned count)
+	{
+	static const float pick[12] = { -2.0f, -1.0f, -0.5f, 0.0f, 0.25f, 0.5f, 1.0f, 1.5f, 2.0f, 3.0f, 0.125f, -0.25f };
+	for(unsigned i = 0; i < count; ++i) block[i] = pick[nxLeafNext(seed) % 12];
+	}
+
+// 7 blocks of 16 floats are made per case; `used` of them are operands, and every block is compared afterwards.
+static unsigned long long p7RegsCase(unsigned char* base, unsigned side, unsigned rva, const void* candidate, unsigned seedBase,
+	unsigned c, const unsigned* layout, unsigned flagWord, unsigned answerMask, unsigned* answerOut)
+	{
+	unsigned seed = seedBase + c * 104729u;
+	float blocks[8][16];
+	for(unsigned i = 0; i < 8; ++i) p7Block(&seed, blocks[i], 16);
+	unsigned operand[11];
+	for(unsigned i = 0; i < 11; ++i) operand[i] = layout[i] == 99 ? flagWord : (unsigned) blocks[layout[i]];
+	*answerOut = p7CallRegs(side == 0 ? (const void*) (base + rva) : candidate, operand[0], operand[1], operand[2], operand[3], operand[4], operand[5],
+		operand[6], operand[7], operand[8], operand[9], operand[10]) & answerMask;
+	NxDigest d;
+	nxDigestInit(&d);
+	nxFoldInput(&d, answerOut, 4);
+	nxFoldInput(&d, blocks, sizeof(blocks));
+	return d.state;
+	}
+
+
+
+unsigned __fastcall nxP72274(void* self, void* edxUnused);
+// phys_fn_002272 (0x00056ad0) is the head of the ray/AABB slab helper and phys_fn_002274 (0x00056b10) its loop, entered by the
+// head's jump. The head is a closed row with a C++ body; this stub is its instructions with the jump taken to the transcription
+// of the loop, so the oracle's whole helper can be compared with the head followed by the row.
+static __declspec(naked) void p7SlabHeadThenRow()
+	{
+	__asm
+		{
+		sub esp, 0xc
+		mov eax, dword ptr [esp + 0x1c]
+		mov edx, dword ptr [esp + 0x20]
+		push ebx
+		mov ebx, dword ptr [esp + 0x18]
+		push ebp
+		push esi
+		push edi
+		mov edi, dword ptr [esp + 0x20]
+		mov dword ptr [eax], 0xff7fffff
+		mov dword ptr [edx], 0x7f7fffff
+		mov edx, dword ptr [esp + 0x28]
+		xor esi, esi
+		sub edi, ecx
+		sub ebx, ecx
+		mov dword ptr [esp + 0x14], 0xffffffff
+		sub edx, ecx
+		jmp nxP72274
+		}
+	}
+static unsigned nxDrivePhase7Sweep(unsigned char* base)
+	{
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0, overlapping = 0;
+	#define P7S_FINISH(NAME) do { ++cases; if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_sweep row=%s case=%u\n", NAME, cases); } } while(0)
+
+	// phys_fn_002268 / 002270 (0x00056690): the oriented-box overlap test.
+	for(unsigned c = 0; c < 160; ++c)
+		{
+		unsigned seed = 0x2268c0deu + c * 7919u;
+		float rotationA[9], rotationB[9], centreA[3], centreB[3], extentsA[3], extentsB[3];
+		p7Rotation(&seed, rotationA);
+		p7Rotation(&seed, rotationB);
+		static const float extent[6] = { 0.25f, 0.5f, 0.75f, 1.0f, 1.5f, 2.0f };
+		static const float place[9] = { -3.0f, -2.0f, -1.0f, -0.5f, 0.0f, 0.5f, 1.0f, 2.0f, 3.0f };
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			centreA[i] = place[nxLeafNext(&seed) % 9] * 0.5f; centreB[i] = place[nxLeafNext(&seed) % 9] * 0.5f;
+			extentsA[i] = extent[nxLeafNext(&seed) % 6]; extentsB[i] = extent[nxLeafNext(&seed) % 6];
+			}
+		const unsigned flag = c & 1;
+		unsigned long long results[2];
+		unsigned answer[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			answer[side] = p7CallBoxTest(side == 0 ? (const void*) (base + 0x00056690) : (const void*) nxP72268,
+				centreA, rotationA, rotationB, extentsA, extentsB, centreB, flag);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &answer[side], 4);
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		overlapping += answer[0];
+		P7S_FINISH("002268");
+		nxFoldInput(&inputDigest, rotationA, sizeof(rotationA));
+		nxFoldInput(&inputDigest, centreB, sizeof(centreB));
+		nxFoldInput(&inputDigest, &flag, 4);
+		}
+
+	// phys_fn_002276 (0x00056c40): operands eax(unused) ecx edx esi edi, stack s0..s2 -- all blocks; the result is eax.
+	{
+	static const unsigned layout[11] = { 0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 0 };
+	for(unsigned c = 0; c < 96; ++c)
+		{
+		unsigned long long results[2];
+		unsigned answer[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			results[side] = p7RegsCase(base, side, 0x00056c40, (const void*) nxP72276, 0x2276c0deu, c, layout, 0, 0xffffffffu, &answer[side]);
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P7S_FINISH("002276");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+
+	// phys_fn_002278 (0x00056fa0): operands eax ecx esi (ebx), stack s0..s3 blocks and s4 a flag byte; the result is al.
+	{
+	static const unsigned layout[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 99 };
+	for(unsigned c = 0; c < 96; ++c)
+		{
+		unsigned long long results[2];
+		unsigned answer[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			results[side] = p7RegsCase(base, side, 0x00056fa0, (const void*) nxP72278, 0x2278c0deu, c, layout, c & 1, 0xffu, &answer[side]);
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P7S_FINISH("002278");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+
+
+	// phys_fn_002274 (0x00056b10): the slab helper's loop, through the head that enters it.
+	{
+	static const float v[9] = { -2.0f, -1.0f, -0.5f, -0.25f, 0.0f, 0.25f, 0.5f, 1.0f, 2.0f };
+	for(unsigned c = 0; c < 400; ++c)
+		{
+		unsigned seed = 0x2274c0deu + c * 3571u;
+		float mn[4], mx[4], org[4], dir[4];
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			mn[i] = v[nxLeafNext(&seed) % 9]; mx[i] = mn[i] + 0.5f * (1 + nxLeafNext(&seed) % 4);
+			org[i] = v[nxLeafNext(&seed) % 9] * 1.37f; dir[i] = v[nxLeafNext(&seed) % 9] * 0.7f;
+			}
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			float out[2] = { 123.0f, 123.0f };
+			const unsigned answer = p7CallRegs(side == 0 ? (const void*) (base + 0x00056ad0) : (const void*) p7SlabHeadThenRow, 0, 0, (unsigned) dir, 0, 0, 0,
+				(unsigned) mn, (unsigned) mx, (unsigned) org, (unsigned) &out[0], (unsigned) &out[1]);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &answer, 4);
+			nxFoldInput(&d, out, sizeof(out));
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P7S_FINISH("002274");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+	#undef P7S_FINISH
+	printf("collision name=phase7_sweep index=- rva=0x00056690 owner=phys_fn_002268 checks=%u oracle=%016llx candidate=%016llx mismatches=%u overlapping=%u rows=002268,002270,002274,002276,002278\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches, overlapping);
+	printf("collision coverage name=phase7_sweep row=002268 case=oriented_box_overlap_face_axes\n");
+	printf("collision coverage name=phase7_sweep row=002270 case=oriented_box_overlap_edge_cross_axes\n");
+	printf("collision coverage name=phase7_sweep row=002274 case=ray_aabb_slab_loop_after_the_head\n");
+	printf("collision coverage name=phase7_sweep row=002276 case=segment_box_distance_register_operands\n");
+	printf("collision coverage name=phase7_sweep row=002278 case=swept_pair_register_operands\n");
+	nxPrintInput("phase7_sweep", &inputDigest);
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -6473,6 +6714,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePhase6Large(base);
 		mismatches += nxDrivePhase3Rows(base);
 		mismatches += nxDrivePhase7Rows(base);
+		mismatches += nxDrivePhase7Sweep(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;

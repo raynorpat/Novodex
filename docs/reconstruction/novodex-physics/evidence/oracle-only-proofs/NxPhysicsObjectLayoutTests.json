@@ -12,8 +12,8 @@
     "tests/PhysicsLockedArrayDataRowFixture.inl"
   ],
   "proof_lines_sha256": "9cc51539869f01b5ce1bb0ed5f4b4318374e2ae76aab0ef32b4bc8f3edc06c7e",
-  "baseline_sha256": "835732d4ae5e69f57d5656304bb868f6bbd04f3c11e2577e18200cf33cf37d44",
+  "baseline_sha256": "1809b1bd7b503d8db7b5ca1b4f4f16219fe5d1ac45ac0a7918296e56f05b3db6",
   "oracle_digest_fnv32": "3acf0dc7",
   "coverage_line": "layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1 boxface_indices=1 applydesc=1 globalcall3=11 globalcall2=2 reciprocal003461=6 copy6003483=1",
-  "proof_sha256": "f1ca63ee039065d7db3bdd5a5219714a643364e3688f0e37048eb774e3127e50"
+  "proof_sha256": "955711e3c8baa939a339b85ea8557173592c9266ddd728c8fc1b7e3432126e82"
 }

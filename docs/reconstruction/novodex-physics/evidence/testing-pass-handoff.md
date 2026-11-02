@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 156 of the 184 rows closed; 28 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 161 of the 184 rows closed; 23 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -312,3 +312,35 @@ has two uninitialised words (offsets 0 and 0x20) that must not be logged.
 sweep tests proper (002268/002270 through 002310: 4 to 22 hundred instructions each), the controller creation rows
 (002332 and 002336), the step row 002350 and 002400, which is an unconditional loop and cannot return. They need the
 sweep cache populated with real shapes and oracle-internal geometry helpers; none was attempted.
+
+## Update (twelfth slice: the first of the Phase 7 sweep tests)
+
+Five more Phase 7 rows are closed (`raw/testing-pass-phase7-sweep-20261101/`), again on `NxPhysicsPhase6RowsTests`
+(phase 6 floor 1860, phase 7 floor 3234), in a new family **`phase7_sweep`** (752 checks):
+
+* **002268 / 002270** the oriented-box overlap test (one function at 0x00056690): two rotation matrices, two centres
+  and extent triples, and a flag for the nine edge-cross axes; the operands arrive in `eax`, `ecx`, `edx`, `edi` and on
+  the stack, so it is called through a stub. 160 random pairs (98 overlapping).
+* **002274** the loop of the ray/AABB slab helper, entered by the jump of its head (002272, a closed row with a C++
+  body). The stub is the head's instructions with the jump taken to the transcription; the oracle side is the whole helper
+  at 0x00056ad0. 400 cases.
+* **002276** and **002278** two register-ABI distance tests. Their operands are drawn as blocks of floats behind every
+  pointer register and stack word; the digest is the result and every block afterwards. **This is weaker than the others**:
+  the operand roles were inferred from the listings and a call site, not from the callers' meaning, so the inputs may
+  reach only part of each routine. Both were caught on their first mutation, and the digest was made deterministic by
+  masking 002278's result to `al` (its upper bytes are garbage).
+
+**Held, with the reason found.** 002282, 002284 and 002286 (the swept oriented-box test, one function) run to the end on
+both sides, and 124 of 128 random cases match, but four differ in the last bits of the result. The cause is not in the
+row: the vendored `OBB::ComputePoints` (005201, still `reconstructed`) is not bit-identical to the oracle's on generic
+rotations (2812 of 3000 random boxes differ; `InvertPRMatrix` and `ComputeWorldEdgeNormal` were exact). Until that helper
+is exact the swept test cannot be closed, and 002296 (which calls it) waits on the same helper. The drive was removed.
+
+Two integration defects were found and fixed on the way, both in `Phase7Rows.cpp`:
+* The row aliased its slab helper to `NxRayAABBSlab` as if it took all six arguments on the stack. The oracle's helper
+  (002272) takes the **ray direction in `ecx`** (the fourth parameter) and five on the stack; the alias is now an adapter
+  that rebuilds the cdecl call in a frame (the callee clobbers `edx`, so the return address cannot wait there).
+
+**Not attempted:** 002290/002292/002294 (the triangle sweep), 002296, 002298, 002300/002302, 002304, 002306, 002308,
+002310 (all call vendored helpers or each other and need real shapes), 002332/002336, 002350, 002400 (an endless loop)
+and 004820/004822/004824.
