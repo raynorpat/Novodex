@@ -474,3 +474,32 @@ out of a data word; with an odd case (a non-null `ecx` record) it faults earlier
 being exact was not the obstacle -- 002282 matches the oracle on its own (slice 13) -- the remaining unknown is which data
 words are integers and which are floats in the structures the sweep object builds. The drive was dropped again; 002296 and
 002298 stay held, and a captured live call is still the practical way in.
+
+## Capturing live calls (eighteenth slice): 002296 and 002298 still held
+
+Guessing 002296's operands failed twice, so this slice records real ones. `NxPhysicsSweepCapture`
+(`tests/PhysicsSweepCaptureTool.cpp`, a developer tool, not a gate) loads the oracle, writes a hook over the row's first
+instruction, runs a box controller over a triangle mesh (plus boxes, a sphere, a capsule, a dynamic body, a plane and a
+second controller) and snapshots, for each call, the registers, the nine stack words and every private-heap or stack region
+they reach (three levels deep, merged windows, pointers into the oracle's or Foundation's image noted, deeper pointers listed
+as dangling). `tests/fixtures/sweep2296.bin` is the result: 34 calls, 0.6 MB. The replay (`nxDrivePhase7Replay`, run by hand
+with `--phase7-replay-only`) copies the regions twice, rebases pointers, and calls the oracle's row and the transcription
+(and the 002298 wrapper) on identical copies.
+
+What it showed:
+* **The decoded contract was right**, and 002296 and the wrapper match the oracle on all 34 recorded calls through both
+  entries (68 checks).
+* **Every live call takes one path.** The box count (second stack word) is 0 in all 34 calls, `ecx` is 0, and the second
+  phase's two pointers are null, whatever the scene (no extra actors, two controllers, other controller types, a dynamic
+  body: no change). The controller API reaches the row only for triangle meshes. So the box walk and the second phase
+  (about two thirds of the row) never run, and a mutation survey of the replay left 11 of 16 mutants of 002296 alive and
+  4 of 9 of the wrapper (it forwards values that are mostly zero, so permuting its argument slots changes nothing). A first-
+  instruction catch exists for both, but it would make the closure the kind this pass has called weak, so **002296 and
+  002298 stay held**.
+* **The replay is not yet deterministic enough to pin.** Copies need generous zero padding (the row reads past the
+  captured windows; 0x2000 bytes fixed that), words naming the oracle's or Foundation's image must be rebased and then
+  folded as offsets, and a word the call did not change must not be scrubbed. One run in about six still differs (a single
+  mismatch with a different digest); I did not find the last source, so the family is **not registered in any gate**.
+* The CCD simulation test (`NxPhysicsCcdSimulationTests`) reaches 002350 (the step row) twice and none of 002296/2308/2310,
+  so a capture of 002350 is the next candidate for this tool; 002300-002310 need a scene that sweeps shapes against boxes,
+  which no public API of this SDK build produces.

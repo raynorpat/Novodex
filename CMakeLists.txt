@@ -497,6 +497,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsControllerSweepFaceTests PRIVATE
 		Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsControllerSweepFaceTests bcrypt)
+	# A developer tool, not a gate: records live calls of the oracle's sweep row for the collision harness to replay.
+	add_executable(NxPhysicsSweepCapture tests/PhysicsSweepCaptureTool.cpp)
+	target_include_directories(NxPhysicsSweepCapture PRIVATE
+		Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsSweepCapture bcrypt)
 	# A fresh process isolates actor/shape name-map behavior from the populated
 	# lifecycle fixture's intentionally stateful teardown sequence.
 	# Foundation created with one counting allocator, NxCreatePhysicsSDK given a
@@ -1258,6 +1263,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# it changes nothing in the executable.
 	if(MSVC)
 		target_link_options(NxPhysicsCollisionTests PRIVATE /MAP)
+	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_SWEEP_FIXTURE="${CMAKE_SOURCE_DIR}/tests/fixtures/sweep2296.bin")
 	endif()
 	# Phase 4's focused type-3 oracle differential uses the same in-process
 	# candidate harness with a narrow command-line fixture selector.
