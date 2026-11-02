@@ -514,3 +514,21 @@ rebased, and the canonicaliser covers each copy's padding. 70 consecutive runs (
 give one digest. The family `phase7_replay` is registered under `NxPhysicsPhase6RowsTests` (phase 6 floor 1870, phase 7
 floor 3244) as a **regression guard on the recorded calls**; **002296 and 002298 are still held** (every recorded call takes
 the count-zero path, see the previous section).
+
+## 002350, the step row, captured (twentieth slice): replayed, still held
+
+`NxPhysicsStepCapture` (`tests/PhysicsStepCaptureTool.cpp`) is the sweep capture pointed at phys_fn_002350
+(0x0005ae50; the row begins `push ebp; mov ebp, esp; sub esp, 0x38`, six bytes the hook displaces) while the CCD scenario
+(a body at 100 units/s towards a wall, then reversed) runs for six steps. The row is a thiscall with one stack word that it
+pops: `ecx` the stepping object, the word the scene. The roots needed wide windows (the row reads the scene up to `+0x6cc`
+and beyond), so the first level of the snapshot takes 0x100 before and 0x1000 after each root; 6 calls, 0.19 MB in
+`tests/fixtures/step2350.bin`. `nxDrivePhase7StepReplay` replays them as the sweep replay does, comparing only memory (the
+row returns nothing; eax is stale).
+
+Result: the transcription matches the oracle on all 6 calls (30 runs, one digest, no faults), and the family is a gate guard
+(`phase7_step_replay` under `NxPhysicsPhase6RowsTests`, floors 1873/3247). **It proves very little about the row:** a mutation
+survey (24 mutants spread across the body) left **all 24 alive**; only the load of the row's argument is caught. Each recorded
+call changes two words of memory (a swap of two pointers), so the bulk of the 1,982 bytes either does nothing for these
+scenes or does its work in memory the snapshot does not hold (a temporary vector it allocates and frees). **002350 stays held**;
+closing it needs a scene in which the step actually has continuous-collision pairs to resolve, or a snapshot that includes
+the allocator's blocks.

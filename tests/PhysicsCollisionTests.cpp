@@ -6947,7 +6947,6 @@ static unsigned nxDrivePhase7Replay(unsigned char* base)
 			nxFoldInput(digests[side], &results[side], 8);
 			for(unsigned i = 0; i < regionCount; ++i) { ::free(regions[i].copy); ::free(regions[i].before); }
 			}
-		printf("DBGC %u %u %016llx %016llx", c, mode, results[0], results[1]); putchar(10);
 		++cases;
 		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_replay row=%s call=%u\n", mode ? "002298" : "002296", c); }
 		}
@@ -6961,6 +6960,157 @@ static unsigned nxDrivePhase7Replay(unsigned char* base)
 	printf("collision coverage name=phase7_replay row=002296 case=recorded_controller_sweeps_count_zero_path\n");
 	printf("collision coverage name=phase7_replay row=002298 case=recorded_controller_sweeps_through_the_wrapper\n");
 	nxPrintInput("phase7_replay", &inputDigest);
+	return mismatches;
+	}
+
+unsigned __fastcall nxP72350(void* self, void* edxUnused, unsigned a0);
+// Replay of live calls of the oracle's phys_fn_002350 (0x0005ae50), a row of the simulation step, recorded by
+// NxPhysicsStepCapture while a scene with continuous collision detection ran (tests/fixtures/step2350.bin). The machinery
+// is that of nxDrivePhase7Replay: the call's object and argument are copied with everything they reach, pointers rebased,
+// and the row run at the oracle's address and as the transcription on identical copies.
+static unsigned nxDrivePhase7StepReplay(unsigned char* base)
+	{
+	FILE* file = fopen(NX_STEP_FIXTURE, "rb");
+	if(!file)
+		return nxFail("phase 7 step replay fixture is missing");
+	fseek(file, 0, SEEK_END);
+	const long length = ftell(file);
+	fseek(file, 0, SEEK_SET);
+	unsigned char* image = (unsigned char*) ::malloc(length);
+	if(fread(image, 1, length, file) != (size_t) length) { fclose(file); return nxFail("phase 7 step replay fixture is unreadable"); }
+	fclose(file);
+	const unsigned* head = (const unsigned*) image;
+	if(length < 8 || head[0] != 0x31505753u)
+		return nxFail("phase 7 step replay fixture has the wrong magic");
+	const unsigned calls = head[1];
+	gReplayOldBase = head[2];
+	gReplayImageSize = head[3];
+	gReplayNewBase = (unsigned) base;
+	gReplayOldFoundation = head[4];
+	gReplayFoundationSize = head[5];
+	gReplayNewFoundation = (unsigned) GetModuleHandleW(L"NxFoundation.dll");
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0, faults = 0;
+	unsigned char* const zero = (unsigned char*) ::calloc(1, 0x4000);
+	const unsigned char* cursor = image + 24;
+	for(unsigned c = 0; c < calls; ++c)
+		{
+		const unsigned* header = (const unsigned*) cursor;
+		const unsigned eax = header[0], ecx = header[1];
+		unsigned stack[9];
+		memcpy(stack, header + 2, sizeof(stack));
+		const unsigned regionCount = header[11];
+		cursor += 12 * 4;
+		NxReplayRegion regions[130];
+		for(unsigned i = 0; i < regionCount; ++i)
+			{
+			regions[i].lo = ((const unsigned*) cursor)[0];
+			regions[i].size = ((const unsigned*) cursor)[1];
+			regions[i].data = (unsigned char*) cursor + 8;
+			cursor += 8 + regions[i].size;
+			}
+		const unsigned danglingCount = *(const unsigned*) cursor;
+		const unsigned* dangling = (const unsigned*) cursor + 1;
+		cursor += 4 + danglingCount * 8;
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			NxP6Canon canon;
+			for(unsigned i = 0; i < regionCount; ++i)
+				{
+				regions[i].copy = (unsigned char*) ::calloc(1, regions[i].size + 0x2000);
+				memcpy(regions[i].copy, regions[i].data, regions[i].size);
+				canon.add(regions[i].copy, regions[i].size + 0x2000);
+				}
+			canon.add(zero, 0x4000);
+			struct Reloc
+				{
+				static unsigned map(const NxReplayRegion* regions, unsigned count, unsigned v)
+					{
+					if(v - gReplayOldBase < gReplayImageSize) return v - gReplayOldBase + gReplayNewBase;
+					if(gReplayNewFoundation && v - gReplayOldFoundation < gReplayFoundationSize) return v - gReplayOldFoundation + gReplayNewFoundation;
+					for(unsigned i = 0; i < count; ++i)
+						if(v >= regions[i].lo && v - regions[i].lo < regions[i].size) return (unsigned) regions[i].copy + (v - regions[i].lo);
+					// an end pointer, one past a region
+					for(unsigned i = 0; i < count; ++i)
+						if(v == regions[i].lo + regions[i].size) return (unsigned) regions[i].copy + regions[i].size;
+					return v;
+					}
+				};
+			for(unsigned i = 0; i < regionCount; ++i)
+				for(unsigned o = 0; o + 4 <= regions[i].size; o += 4)
+					{
+					unsigned* word = (unsigned*) (regions[i].copy + o);
+					*word = Reloc::map(regions, regionCount, *word);
+					}
+			for(unsigned i = 0; i < danglingCount; ++i)
+				*(unsigned*) (regions[dangling[2 * i]].copy + dangling[2 * i + 1]) = (unsigned) zero + 0x2000;
+			for(unsigned i = 0; i < regionCount; ++i)
+				{
+				regions[i].before = (unsigned char*) ::malloc(regions[i].size + 4);
+				memcpy(regions[i].before, regions[i].copy, regions[i].size);
+				}
+			unsigned w[10];
+			for(unsigned i = 0; i < 9; ++i) w[i] = Reloc::map(regions, regionCount, stack[i]);
+			w[9] = 0;
+			unsigned answer = 0xdead;
+			__try
+				{
+				// a thiscall with one stack word that the row pops (ret 4): ecx is the object, the word the scene
+				const unsigned object = Reloc::map(regions, regionCount, ecx);
+				if(side == 0) answer = ((unsigned (__thiscall*)(void*, unsigned)) (base + 0x0005ae50))((void*) object, w[0]);
+				else answer = nxP72350((void*) object, 0, w[0]);
+				}
+			__except(EXCEPTION_EXECUTE_HANDLER)
+				{
+				++faults;
+				}
+			NxDigest d;
+			nxDigestInit(&d);
+			// the row returns nothing: eax is whatever the last call left in it, so only the memory is compared
+			const unsigned returned = 0;
+			nxFoldInput(&d, &returned, 4);
+			for(unsigned i = 0; i < regionCount; ++i)
+				for(unsigned o = 0; o + 4 <= regions[i].size; o += 4)
+					{
+					const unsigned now = *(const unsigned*) (regions[i].copy + o);
+					unsigned word;
+					if(now == *(const unsigned*) (regions[i].before + o))
+						// untouched by the call: fold the fixture's own word, so a stale value that happens to equal a copy's
+						// address in this run, or a rebased pointer, cannot differ between sides or runs
+						word = *(const unsigned*) (regions[i].data + o);
+					else
+						{
+						// stored by the call: a pointer into a copy becomes an index, a name in the oracle's or Foundation's image an
+						// offset, and one of its own stack addresses (different every run) a marker
+						word = canon.word(now);
+						if(word == now && word - gReplayNewBase < gReplayImageSize) word = 0x7d000000u + (word - gReplayNewBase);
+						else if(word == now && gReplayNewFoundation && word - gReplayNewFoundation < gReplayFoundationSize) word = 0x7d800000u + (word - gReplayNewFoundation);
+						else if(word == now && now - (unsigned) &answer + 0x100000u < 0x200000u) word = 0xa11add00u;
+						}
+					nxFoldInput(&d, &word, 4);
+					}
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			for(unsigned i = 0; i < regionCount; ++i) { ::free(regions[i].copy); ::free(regions[i].before); }
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_step_replay row=002350 call=%u\n", c); }
+		}
+		nxFoldInput(&inputDigest, &c, 4);
+		nxFoldInput(&inputDigest, &ecx, 4);
+		}
+	::free(image);
+	::free(zero);
+	printf("collision name=phase7_step_replay index=- rva=0x0005ae50 owner=phys_fn_002350 checks=%u oracle=%016llx candidate=%016llx mismatches=%u faults=%u rows=002350\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches, faults);
+	printf("collision coverage name=phase7_step_replay row=002350 case=recorded_continuous_collision_steps_replayed\n");
+	nxPrintInput("phase7_step_replay", &inputDigest);
 	return mismatches;
 	}
 
@@ -7057,6 +7207,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePhase7Rows(base);
 		mismatches += nxDrivePhase7Sweep(base);
 		mismatches += nxDrivePhase7Replay(base);
+		mismatches += nxDrivePhase7StepReplay(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;
