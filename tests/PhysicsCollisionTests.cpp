@@ -5603,10 +5603,11 @@ static unsigned nxDrivePhase6Rows(unsigned char* base)
 
 	// phys_fn_004761 (0x000b38d0): slot 5, which calls slot 5 (+0x14) of every node on the list at +0xc with the argument.
 	{
-	for(unsigned c = 0; c < 6; ++c)
+	for(unsigned c = 0; c < 12; ++c)
 		{
 		const unsigned argument = nxLeafNext(&seed);
 		const unsigned nodes = c % 4;	// 0 to 3 nodes
+		const bool withOwner = c >= 6;
 		unsigned long long results[2];
 		for(unsigned side = 0; side < 2; ++side)
 			{
@@ -5623,7 +5624,10 @@ static unsigned nxDrivePhase6Rows(unsigned char* base)
 				}
 			unsigned char list[0x30];
 			memset(list, 0, sizeof(list));
+			unsigned char* owner = (unsigned char*) ::calloc(1, 0x400);
+			memset(owner + 0x100, 0xa5, 0x200);
 			*(unsigned char**) (list + 0xc) = nodes ? node[0] : 0;
+			*(unsigned char**) (list + 0x18) = withOwner ? owner : 0;
 			gPhase6LogCount = 0;
 			memset(gPhase6Log, 0, sizeof(gPhase6Log));
 			if(side == 0) ((unsigned (__thiscall*)(void*, unsigned)) (base + 0x000b38d0))(list, argument);
@@ -5632,6 +5636,8 @@ static unsigned nxDrivePhase6Rows(unsigned char* base)
 			nxDigestInit(&d);
 			nxFoldInput(&d, &gPhase6LogCount, 4);
 			nxFoldInput(&d, gPhase6Log, 4 * gPhase6LogCount);
+			nxFoldInput(&d, owner, 0x400);
+			::free(owner);
 			results[side] = d.state;
 			nxFoldInput(digests[side], &results[side], 8);
 			}
@@ -5993,6 +5999,8 @@ static void __fastcall p3Poly(void*, void*, unsigned n, unsigned points, unsigne
 	const unsigned* p = (const unsigned*) points;
 	p6log(0x320, n, color, 0);
 	p6log(z, p[0], p[1], p[2]);
+	p6log(p[3], p[4], p[5], p[6]);
+	p6log(p[7], p[8], p[9], p[10]);
 
 	}
 static void* gP3VtShape[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (void*) p3Pos };
@@ -6093,14 +6101,14 @@ static unsigned nxDrivePhase3Rows(unsigned char* base)
 		for(unsigned side = 0; side < 2; ++side)
 			{
 			unsigned seed = 0x1305c0deu + c * 29u;
-			const float b0 = (c & 1) ? 1.5f : 0.0f, c0 = (c & 2) ? 2.0f : 0.0f, h34 = (c & 4) ? 0.5f : 1.0f;
+			const float b0 = (c & 1) ? ((c & 8) ? -1.5f : 1.5f) : 0.0f, c0 = (c & 2) ? ((c & 16) ? -2.0f : 2.0f) : 0.0f, h34 = (c & 4) ? 0.5f : 1.0f;
 			oracleB0[0] = b0; oracle34[0] = h34; oracleC0[0] = c0;
 			gParameter[0xb0 / 4] = b0; gParameter[0x34 / 4] = h34; gParameter[0xc0 / 4] = c0;
 			NxP6Canon canon;
 			unsigned* shape = (unsigned*) ::calloc(1, 0x80);
 			unsigned* renderer = (unsigned*) ::calloc(1, 16);
 			canon.add(shape, 0x80); canon.add(renderer, 16);
-			for(unsigned i = 3; i < 0x40 / 4; ++i) p6Float(&seed, (float*) &shape[i]);
+			for(unsigned i = 3; i < 0x40 / 4; ++i) ((float*) shape)[i] = (float) ((int) (nxLeafNext(&seed) % 2001u) - 1000) / 256.0f;
 			shape[0] = (unsigned) gP3VtShape;
 			renderer[0] = (unsigned) gP3VtRenderer;
 			gP6LN = 0;

@@ -93,6 +93,20 @@ def detect_family(stdout, family):
     return None
 
 
+def detect_harness(stdout, returncode, family, count_crash=False):
+    """N for a harness run: the family's `mismatches=N`, or 1 for a crash that stopped the run before it printed the line.
+
+    A mutant that faults inside the row kills the process before the family's summary, so without count_crash it would be
+    scored as a survivor. A launch failure (exit 127, no output) is not a crash, so only a fault-range exit code counts.
+    """
+    n = detect_family(stdout, family)
+    if n:
+        return n
+    if count_crash and not re.search(r'\bname=%s\b' % re.escape(family), stdout) and (returncode < 0 or returncode >= CRASH):
+        return 1
+    return None
+
+
 def detect_staged(output, count_crash=False):
     """N from `stdout_delta=N` (N > 0) when the candidate did not crash, else None.
 
@@ -283,7 +297,7 @@ def _real_run(target, family, staged, count_crash=False, extra_args=None):
                 n = detect_staged(r.stdout, count_crash)
                 return ('stdout_delta' if n else 'stdout_delta[%s]' % staged_note(r.stdout), n)
             r = run_tree(harness_command(target, extra_args), timeout=TIMEOUT, cwd=REPO)
-            return ('mismatches', detect_family(r.stdout, family))
+            return ('mismatches', detect_harness(r.stdout, r.returncode, family, count_crash))
         except subprocess.TimeoutExpired:
             return ('timeout', None)
     return run

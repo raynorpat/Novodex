@@ -412,3 +412,34 @@ Rulings and fixes:
   the address range; the sweeper's hard-coded oracle path.
 * **M7:** the "Held, with reasons" section near the top of this file describes the state after the first slices; the
   latest status is the last update below it.
+
+## Strengthening the weak rows (fifteenth slice)
+
+**The survey over-counted survivors.** `mutate_rows.py` ignored `--count-crash` for harness targets, so a mutant that
+faulted the harness before it printed its summary line was scored as a survivor. `detect_harness` now scores a fault-range
+exit (not a launch failure, exit 127) with no summary line as a detection (tested). Re-run over the same rows
+(survivors / tried, 8 mutants each unless noted):
+
+* Phase 6 large: 004161 2, 004159 2, 004169 **0**, 004171 3, 004401 0, 004413 0.
+* Phase 6 small: 004537 **0** (1 candidate), 004759 0 (2), 004405 1 (7), 004761 3.
+* Phase 3: 001303 0, 001305 4, 001345 **0** (3 candidates), 001947 0.
+* Phase 7 small: 002316 0, 002280 0, 002288 0.
+* Phase 7 sweep: 002292 0, 002284 0, 002286 1, 002268 0, 002270 1, 002294 0, 002290 1, 002282 1, 002276 0, 002278 0.
+
+So the earlier "weakly falsified" list was mostly crashes. The two rows that really were weak got stronger drives:
+
+* **004761** gains a joint owner at `+0x18` (a zeroed 0x400-byte object whose tail is filled, so the row's two stores and
+  its slot-6 call run on both sides and the whole object is compared): survivors 3 -> **0**. 12 cases (30 checks in the
+  family).
+* **001305** logs the polygon call's first eleven words, uses distinct random shape floats and negative parameter values
+  (so the `test ah` branches are taken both ways): survivors 4 -> **2** of 14, both reads of a stack slot beside the one
+  in use.
+
+Residual survivors after this slice are 14 of about 200 mutants tried (7%): single mutations of a stack slot or allocator vtable slot next to
+the right one (often equivalent), and 002270's `test ah, 5 -> 6`, 002290's `shr ebx, 3 -> 4`, 002282's `push 1 -> push 2`
+(a flag the drive never varies).
+
+**002296 attempted and not closed.** It needs its operands in the right shapes: the eax holder is a triangle array (a byte
+size at +4, the data at +8) and arguments 1 and 2 are not plain float blocks (the first fault was an integer index array
+read as a pointer; the second is a loop reading past a block's end from a stack word that is not one of the drive's
+blocks). The row stays held with 002298 (its wrapper).

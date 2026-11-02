@@ -15,6 +15,25 @@ SOURCE = ('\t\tje L1\t\t// 0x00001000\r\n'
           '\t\tcmp eax, 5\t\t// 0x00001008\r\n')
 
 
+class DetectHarnessTest(unittest.TestCase):
+    LINE = 'collision name=fam index=- checks=3 mismatches=%d rows=1\n'
+
+    def test_a_mismatch_line_is_a_detection(self):
+        self.assertEqual(mutate_rows.detect_harness(self.LINE % 4, 1, 'fam', False), 4)
+        self.assertIsNone(mutate_rows.detect_harness(self.LINE % 0, 0, 'fam', False))
+
+    def test_a_crash_before_the_family_line_counts_only_when_asked(self):
+        self.assertIsNone(mutate_rows.detect_harness('', 0xC0000005, 'fam', False))
+        self.assertEqual(mutate_rows.detect_harness('', 0xC0000005, 'fam', True), 1)
+
+    def test_a_launch_failure_is_not_a_crash(self):
+        # the harness sometimes exits 127 with no output when Windows is slow to start it
+        self.assertIsNone(mutate_rows.detect_harness('', 127, 'fam', True))
+
+    def test_a_clean_exit_without_the_line_is_not_a_detection(self):
+        self.assertIsNone(mutate_rows.detect_harness('other output\n', 0, 'fam', True))
+
+
 class CandidatesTest(unittest.TestCase):
     def test_candidates_only_inside_the_row_range(self):
         found = mutate_rows.candidates(SOURCE, 0x1004, 0x1008)

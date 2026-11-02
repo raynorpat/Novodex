@@ -5670,12 +5670,12 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     # Phase 6's small rows (Phase6Rows.cpp), and the pool stream family that also closes row 004799
     'NxPhysicsPhase6RowsTests' = @(
-        'collision name=phase6_rows index=- rva=0x000b15e0 owner=phys_fn_004537 checks=24 oracle=58dfe81ad12bb814',
+        'collision name=phase6_rows index=- rva=0x000b15e0 owner=phys_fn_004537 checks=30 oracle=ea2b002c1b08afbd',
         'collision coverage name=phase6_rows row=004537 case=joint_scalar_delete_flag_clear',
         'collision coverage name=phase6_rows row=004759 case=event_list_constructor_with_and_without_parent',
         'collision coverage name=phase6_rows row=004405 case=event_list_factory_and_allocation_failure',
         'collision coverage name=phase6_rows row=004761 case=event_list_slot5_node_walk',
-        'collision input name=phase6_rows words=38 input=7167cc1af30ee6a7',
+        'collision input name=phase6_rows words=50 input=2919fc08102d896e',
         'collision name=phase6_large index=- rva=0x0009abb0 owner=phys_fn_004161 checks=600 oracle=24d1f560d16e38fc',
         'collision coverage name=phase6_large row=004161 case=record_quicksort',
         'collision coverage name=phase6_large row=004159 case=recursive_joint_walk_and_event_lists',
@@ -5684,7 +5684,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=phase6_large row=004401 case=constraint_step_and_callback',
         'collision coverage name=phase6_large row=004413 case=joint_debug_draw_and_event_list',
         'collision input name=phase6_large words=600 input=319d627881020b75',
-        'collision name=phase3_rows index=- rva=0x000258f0 owner=phys_fn_001303 checks=57 oracle=9223c29691fb1a19',
+        'collision name=phase3_rows index=- rva=0x000258f0 owner=phys_fn_001303 checks=57 oracle=f9b1577de7800498',
         'collision coverage name=phase3_rows row=001303 case=ccd_refresh_body_flag_and_world_box',
         'collision coverage name=phase3_rows row=001305 case=box_debug_render_parameter_gates',
         'collision coverage name=phase3_rows row=001345 case=shape_scalar_deleting_destructor',
