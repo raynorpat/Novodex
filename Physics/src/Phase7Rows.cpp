@@ -165,9 +165,9 @@ unsigned __fastcall nxP72389(void* self, void* edxUnused);
 unsigned __fastcall nxP72400(void* self, void* edxUnused);
 unsigned __fastcall nxP74031(void* self, void* edxUnused, unsigned a0);
 // @@PROTOS-END@@
-// The oracle's slab test takes its first operand in ecx and five more on the stack (the caller clears them); the
-// candidate's NxRayAABBSlab is cdecl with all six on the stack. This puts ecx on the stack under the five and leaves the
-// stack as the caller expects it (the callee clobbers edx, so the return address stays in the frame).
+// The oracle's slab helper (phys_fn_002272, 0x00056ad0) takes the ray direction in ecx and the box minimum, maximum,
+// origin and the two output pointers on the stack (the caller clears them); the candidate's NxRayAABBSlab is cdecl with the
+// direction fourth. This builds that call in a frame (the callee clobbers edx, so the return address cannot wait in it).
 extern "C" void nxP7SlabCdecl();
 extern "C" __declspec(naked) void nxP7SlabRegcall()
 	{
@@ -176,13 +176,13 @@ extern "C" __declspec(naked) void nxP7SlabRegcall()
 		push ebp
 		mov ebp, esp
 		sub esp, 24
-		mov dword ptr [esp], ecx
 		mov edx, dword ptr [ebp + 8]
-		mov dword ptr [esp + 4], edx
+		mov dword ptr [esp], edx
 		mov edx, dword ptr [ebp + 12]
-		mov dword ptr [esp + 8], edx
+		mov dword ptr [esp + 4], edx
 		mov edx, dword ptr [ebp + 16]
-		mov dword ptr [esp + 12], edx
+		mov dword ptr [esp + 8], edx
+		mov dword ptr [esp + 12], ecx
 		mov edx, dword ptr [ebp + 20]
 		mov dword ptr [esp + 16], edx
 		mov edx, dword ptr [ebp + 24]
