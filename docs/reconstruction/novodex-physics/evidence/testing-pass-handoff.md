@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 161 of the 184 rows closed; 23 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 167 of the 184 rows closed; 17 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -344,3 +344,25 @@ Two integration defects were found and fixed on the way, both in `Phase7Rows.cpp
 **Not attempted:** 002290/002292/002294 (the triangle sweep), 002296, 002298, 002300/002302, 002304, 002306, 002308,
 002310 (all call vendored helpers or each other and need real shapes), 002332/002336, 002350, 002400 (an endless loop)
 and 004820/004822/004824.
+
+## Update (thirteenth slice: the exact ComputePoints and the triangle sweep)
+
+Six more Phase 7 rows are closed (`raw/testing-pass-phase7-sweep2-20261101/`), in the same `phase7_sweep` family
+(now 1080 checks; phase 6 floor 1866, phase 7 floor 3240).
+
+* **The cause of the swept-box mismatch is fixed.** The oracle's `OBB::ComputePoints` (005201) keeps some partial sums in
+  x87 registers and stores others, so no source-level rewrite reproduces it. It is now a listing transcription in
+  `OpcodeVendoredRows.cpp`, with the upstream body guarded in `novodex/Ice/IceOBB.cpp`, like the neighbouring vendored
+  rows. The probe that found the difference now reports it exact. **002282, 002284 and 002286** (the swept oriented-box
+  test, one function) then matched on all 128 cases and were caught by mutations in each row's range.
+* **002290, 002292 and 002294** (the triangle-against-box sweep): seven stack words, called through a stub. Two lessons
+  that cost a day: the second-from-last operand pair is *not* all pointers (argument 2 is an integer, and a block address
+  there made the result depend on bit 3 of the address, so the digest changed from process to process), and the
+  stack below the call is now zeroed before each call. As for 002276 and 002278, the other operands are float blocks of
+  inferred roles, so reach is partial; 002292's recorded mutation is detected in one case only.
+
+The vendored coverage for 005201 was `discrete`; `NxPhysicsThirdPartyTests` reports its class again, so its pinned line
+was refreshed if it changed (see the commit).
+
+**Still held (17 rows).** 002296 (calls 002282/2290 and now unblocked, not attempted), 002298, 002300/002302, 002304,
+002306, 002308, 002310, 002332, 002336, 002350, 002400 (an endless loop), 004820, 004822, 004824, 005566 and 005386.

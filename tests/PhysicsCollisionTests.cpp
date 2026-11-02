@@ -6509,6 +6509,57 @@ static __declspec(naked) void p7SlabHeadThenRow()
 		jmp nxP72274
 		}
 	}
+
+unsigned __cdecl nxP72282();
+// An oriented box as IceMaths lays it out: centre, extents, then the rotation.
+static void p7Obb(unsigned* seed, float* obb)
+	{
+	static const float place[7] = { -1.5f, -1.0f, -0.5f, 0.0f, 0.5f, 1.0f, 1.5f };
+	static const float extent[5] = { 0.25f, 0.5f, 0.75f, 1.0f, 1.5f };
+	for(unsigned i = 0; i < 3; ++i) { obb[i] = place[nxLeafNext(seed) % 7]; obb[3 + i] = extent[nxLeafNext(seed) % 5]; }
+	p7Rotation(seed, obb + 6);
+	}
+
+
+unsigned __cdecl nxP72290();
+// The sweep reads some locals before it writes them, so the stack below the call is zeroed first: what it finds there then
+// does not depend on what ran before it, or on where the process was loaded.
+static __declspec(noinline) void p7ZeroStack()
+	{
+	volatile unsigned char scratch[16384];
+	for(unsigned i = 0; i < sizeof(scratch); ++i) scratch[i] = 0;
+	}
+// A cdecl call with seven stack words, for the triangle sweep.
+static unsigned p7Call7(const void* function, const unsigned* w)
+	{
+	unsigned result;
+	p7ZeroStack();
+	const unsigned w0 = w[0], w1 = w[1], w2 = w[2], w3 = w[3], w4 = w[4], w5 = w[5], w6 = w[6], w7 = w[7], w8 = w[8], w9 = w[9];
+	__asm
+		{
+		push w9
+		push w8
+		push w7
+		push w6
+		push w5
+		push w4
+		push w3
+		push w2
+		push w1
+		push w0
+		xor eax, eax
+		xor ebx, ebx
+		xor ecx, ecx
+		xor edx, edx
+		xor esi, esi
+		xor edi, edi
+		call function
+		add esp, 40
+		movzx eax, al
+		mov result, eax
+		}
+	return result;
+	}
 static unsigned nxDrivePhase7Sweep(unsigned char* base)
 	{
 	NxDigest oracleDigest, candidateDigest, inputDigest;
@@ -6617,14 +6668,79 @@ static unsigned nxDrivePhase7Sweep(unsigned char* base)
 		nxFoldInput(&inputDigest, &c, 4);
 		}
 	}
+
+	// phys_fn_002282 / 002284 / 002286 (0x00057330): the swept oriented-box test, cdecl (box, box, result), ebx a motion vector.
+	for(unsigned c = 0; c < 128; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x2282c0deu + c * 6700417u;
+			float boxA[16], boxB[16], motion[4], out[32];
+			memset(boxA, 0, sizeof(boxA)); memset(boxB, 0, sizeof(boxB)); memset(out, 0, sizeof(out));
+			p7Obb(&seed, boxA);
+			p7Obb(&seed, boxB);
+			static const float step[7] = { -2.0f, -1.0f, -0.5f, 0.0f, 0.5f, 1.0f, 2.0f };
+			for(unsigned i = 0; i < 4; ++i) motion[i] = step[nxLeafNext(&seed) % 7];
+			const unsigned answer = p7CallRegs(side == 0 ? (const void*) (base + 0x00057330) : (const void*) nxP72282, 0, (unsigned) motion, 0, 0, 0, 0,
+				(unsigned) boxA, (unsigned) boxB, (unsigned) out, 0, 0) & 0xffu;
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &answer, 4);
+			nxFoldInput(&d, out, sizeof(out));
+			nxFoldInput(&d, boxA, sizeof(boxA));
+			nxFoldInput(&d, boxB, sizeof(boxB));
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P7S_FINISH("002282");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+
+	// phys_fn_002290 / 002292 / 002294 (0x00057d00): the triangle-against-box sweep, cdecl with seven stack words (a triangle,
+	// five operand blocks and a direction); every word is a block of floats and the digest is the result and every block.
+	for(unsigned c = 0; c < 200; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x2290c0deu + c * 104729u;
+			float blocks[10][96];
+			for(unsigned i = 0; i < 10; ++i) p7Block(&seed, blocks[i], 96);
+			unsigned w[10];
+			for(unsigned i = 0; i < 10; ++i) w[i] = (unsigned) blocks[i];
+			w[2] = c % 12;
+			const unsigned answer = p7Call7(side == 0 ? (const void*) (base + 0x00057d00) : (const void*) nxP72290, w);
+			NxDigest d;
+			nxDigestInit(&d);
+			nxFoldInput(&d, &answer, 4);
+			// the sweep stores the address of one of its locals into an output block: that address differs from run to run
+			for(unsigned i = 0; i < sizeof(blocks) / 4; ++i)
+				{
+				unsigned word = ((unsigned*) blocks)[i];
+				if(word - (unsigned) &answer + 0x100000u < 0x200000u) word = 0xa11add00u;
+				nxFoldInput(&d, &word, 4);
+				}
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			}
+		P7S_FINISH("002290");
+		nxFoldInput(&inputDigest, &c, 4);
+		}
 	#undef P7S_FINISH
-	printf("collision name=phase7_sweep index=- rva=0x00056690 owner=phys_fn_002268 checks=%u oracle=%016llx candidate=%016llx mismatches=%u overlapping=%u rows=002268,002270,002274,002276,002278\n",
+	printf("collision name=phase7_sweep index=- rva=0x00056690 owner=phys_fn_002268 checks=%u oracle=%016llx candidate=%016llx mismatches=%u overlapping=%u rows=002268,002270,002274,002276,002278,002282,002284,002286,002290,002292,002294\n",
 		cases, oracleDigest.state, candidateDigest.state, mismatches, overlapping);
 	printf("collision coverage name=phase7_sweep row=002268 case=oriented_box_overlap_face_axes\n");
 	printf("collision coverage name=phase7_sweep row=002270 case=oriented_box_overlap_edge_cross_axes\n");
 	printf("collision coverage name=phase7_sweep row=002274 case=ray_aabb_slab_loop_after_the_head\n");
 	printf("collision coverage name=phase7_sweep row=002276 case=segment_box_distance_register_operands\n");
 	printf("collision coverage name=phase7_sweep row=002278 case=swept_pair_register_operands\n");
+	printf("collision coverage name=phase7_sweep row=002282 case=swept_obb_pair_face_and_edge_phases\n");
+	printf("collision coverage name=phase7_sweep row=002284 case=swept_obb_pair_edge_phase\n");
+	printf("collision coverage name=phase7_sweep row=002286 case=swept_obb_pair_result_record\n");
+	printf("collision coverage name=phase7_sweep row=002290 case=swept_triangle_box_setup\n");
+	printf("collision coverage name=phase7_sweep row=002292 case=swept_triangle_box_face_phase\n");
+	printf("collision coverage name=phase7_sweep row=002294 case=swept_triangle_box_edge_phase\n");
 	nxPrintInput("phase7_sweep", &inputDigest);
 	return mismatches;
 	}

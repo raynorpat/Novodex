@@ -1,0 +1,41 @@
+{
+ "doc": "evidence/raw/testing-pass-phase7-sweep2-20261101/mutations.txt",
+ "rows": {
+  "phys_fn_002282": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00057330 mov ecx, dword ptr [esp + 4] -> mov ecx, dword ptr [esp + 8]",
+   "detected": "mismatches=63"
+  },
+  "phys_fn_002284": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x000574c0 fld dword ptr [esp + 0x90] -> fld dword ptr [esp + 0x94]",
+   "detected": "mismatches=3"
+  },
+  "phys_fn_002286": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00057992 faddp st(1), st(0) -> fsubp st(1), st(0)",
+   "detected": "mismatches=3"
+  },
+  "phys_fn_002290": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00057d08 mov ebp, dword ptr [esp + 0xc0] -> mov ebp, dword ptr [esp + 0xc4]",
+   "detected": "mismatches=27"
+  },
+  "phys_fn_002292": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00057e22 je L57e4d -> jne L57e4d",
+   "detected": "mismatches=1"
+  },
+  "phys_fn_002294": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_sweep",
+   "mutation": "0x00058190 mov edi, dword ptr [esp + 0xbc] -> mov edi, dword ptr [esp + 0xc0]",
+   "detected": "mismatches=8"
+  }
+ }
+}
