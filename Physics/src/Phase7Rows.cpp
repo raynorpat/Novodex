@@ -167,17 +167,29 @@ unsigned __fastcall nxP74031(void* self, void* edxUnused, unsigned a0);
 // @@PROTOS-END@@
 // The oracle's slab test takes its first operand in ecx and five more on the stack (the caller clears them); the
 // candidate's NxRayAABBSlab is cdecl with all six on the stack. This puts ecx on the stack under the five and leaves the
-// stack as the caller expects it.
+// stack as the caller expects it (the callee clobbers edx, so the return address stays in the frame).
 extern "C" void nxP7SlabCdecl();
 extern "C" __declspec(naked) void nxP7SlabRegcall()
 	{
 	__asm
 		{
-		pop edx
-		push ecx
+		push ebp
+		mov ebp, esp
+		sub esp, 24
+		mov dword ptr [esp], ecx
+		mov edx, dword ptr [ebp + 8]
+		mov dword ptr [esp + 4], edx
+		mov edx, dword ptr [ebp + 12]
+		mov dword ptr [esp + 8], edx
+		mov edx, dword ptr [ebp + 16]
+		mov dword ptr [esp + 12], edx
+		mov edx, dword ptr [ebp + 20]
+		mov dword ptr [esp + 16], edx
+		mov edx, dword ptr [ebp + 24]
+		mov dword ptr [esp + 20], edx
 		call nxP7SlabCdecl
-		add esp, 4
-		push edx
+		mov esp, ebp
+		pop ebp
 		ret
 		}
 	}
