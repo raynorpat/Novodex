@@ -6865,7 +6865,7 @@ static unsigned nxDrivePhase7Replay(unsigned char* base)
 				{
 				regions[i].copy = (unsigned char*) ::calloc(1, regions[i].size + 0x2000);
 				memcpy(regions[i].copy, regions[i].data, regions[i].size);
-				canon.add(regions[i].copy, regions[i].size);
+				canon.add(regions[i].copy, regions[i].size + 0x2000);
 				}
 			canon.add(zero, 0x4000);
 			struct Reloc
@@ -6876,6 +6876,9 @@ static unsigned nxDrivePhase7Replay(unsigned char* base)
 					if(gReplayNewFoundation && v - gReplayOldFoundation < gReplayFoundationSize) return v - gReplayOldFoundation + gReplayNewFoundation;
 					for(unsigned i = 0; i < count; ++i)
 						if(v >= regions[i].lo && v - regions[i].lo < regions[i].size) return (unsigned) regions[i].copy + (v - regions[i].lo);
+					// an end pointer, one past a region
+					for(unsigned i = 0; i < count; ++i)
+						if(v == regions[i].lo + regions[i].size) return (unsigned) regions[i].copy + regions[i].size;
 					return v;
 					}
 				};
@@ -6924,19 +6927,27 @@ static unsigned nxDrivePhase7Replay(unsigned char* base)
 				for(unsigned o = 0; o + 4 <= regions[i].size; o += 4)
 					{
 					const unsigned now = *(const unsigned*) (regions[i].copy + o);
-					unsigned word = canon.word(now);
-					// a word that names the oracle's or Foundation's image is kept as an offset into it: those images load at a different address each boot
-					if(word == now && word - gReplayNewBase < gReplayImageSize) word = 0x7d000000u + (word - gReplayNewBase);
-					else if(word == now && gReplayNewFoundation && word - gReplayNewFoundation < gReplayFoundationSize) word = 0x7d800000u + (word - gReplayNewFoundation);
-					// a word the call stored that names one of its own stack addresses differs from run to run; a word it
-					// left alone (a stale address from the capture, say) is the same each time and is kept as it is
-					if(now != *(const unsigned*) (regions[i].before + o) && word == now && now - (unsigned) &answer + 0x100000u < 0x200000u) word = 0xa11add00u;
+					unsigned word;
+					if(now == *(const unsigned*) (regions[i].before + o))
+						// untouched by the call: fold the fixture's own word, so a stale value that happens to equal a copy's
+						// address in this run, or a rebased pointer, cannot differ between sides or runs
+						word = *(const unsigned*) (regions[i].data + o);
+					else
+						{
+						// stored by the call: a pointer into a copy becomes an index, a name in the oracle's or Foundation's image an
+						// offset, and one of its own stack addresses (different every run) a marker
+						word = canon.word(now);
+						if(word == now && word - gReplayNewBase < gReplayImageSize) word = 0x7d000000u + (word - gReplayNewBase);
+						else if(word == now && gReplayNewFoundation && word - gReplayNewFoundation < gReplayFoundationSize) word = 0x7d800000u + (word - gReplayNewFoundation);
+						else if(word == now && now - (unsigned) &answer + 0x100000u < 0x200000u) word = 0xa11add00u;
+						}
 					nxFoldInput(&d, &word, 4);
 					}
 			results[side] = d.state;
 			nxFoldInput(digests[side], &results[side], 8);
 			for(unsigned i = 0; i < regionCount; ++i) { ::free(regions[i].copy); ::free(regions[i].before); }
 			}
+		printf("DBGC %u %u %016llx %016llx", c, mode, results[0], results[1]); putchar(10);
 		++cases;
 		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_replay row=%s call=%u\n", mode ? "002298" : "002296", c); }
 		}
@@ -7033,7 +7044,7 @@ int wmain(int argc, wchar_t** argv)
 		{
 		return nxDrivePrunerSupportReserveAndBase(base) ? 1 : 0;
 		}
-	// not a gate: a replay of recorded oracle calls (see nxDrivePhase7Replay), run by hand
+	// the replay of recorded oracle calls (see nxDrivePhase7Replay) on its own
 	if(phase7ReplayOnly)
 		{
 		return nxDrivePhase7Replay(base) ? 1 : 0;
@@ -7045,6 +7056,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePhase3Rows(base);
 		mismatches += nxDrivePhase7Rows(base);
 		mismatches += nxDrivePhase7Sweep(base);
+		mismatches += nxDrivePhase7Replay(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;

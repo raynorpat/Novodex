@@ -503,3 +503,14 @@ What it showed:
 * The CCD simulation test (`NxPhysicsCcdSimulationTests`) reaches 002350 (the step row) twice and none of 002296/2308/2310,
   so a capture of 002350 is the next candidate for this tool; 002300-002310 need a scene that sweeps shapes against boxes,
   which no public API of this SDK build produces.
+
+### The replay is now deterministic and a gate family (nineteenth slice)
+
+The last source of the flake was the digest, not the replay: a word the call left alone could equal the address of a copy
+in that run (the heap sat near a stale value such as `0x007effff`), so the canonicaliser turned it into an index on one side
+and not the other. Untouched words are now folded as the fixture's own bytes; only words the call stored are canonicalised
+(copy pointer to index, image address to offset, own stack address to a marker). Also: end pointers one past a region are
+rebased, and the canonicaliser covers each copy's padding. 70 consecutive runs (40 of `--phase7-replay-only` and 30 of the gated run)
+give one digest. The family `phase7_replay` is registered under `NxPhysicsPhase6RowsTests` (phase 6 floor 1870, phase 7
+floor 3244) as a **regression guard on the recorded calls**; **002296 and 002298 are still held** (every recorded call takes
+the count-zero path, see the previous section).
