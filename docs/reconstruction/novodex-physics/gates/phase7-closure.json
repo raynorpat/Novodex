@@ -22,9 +22,9 @@
   "counts": {
     "differential_falsified": 333,
     "static_proof_falsified": 1,
-    "oracle_differential_falsified": 210,
+    "oracle_differential_falsified": 213,
     "deferred_not_reconstructed_in_phase": 1,
-    "deferred_reconstructed_not_falsified": 15
+    "deferred_reconstructed_not_falsified": 12
   },
   "closed": [
     {
@@ -5853,6 +5853,36 @@
         "mutation": "0x00058190 mov edi, dword ptr [esp + 0xbc] -> mov edi, dword ptr [esp + 0xc0]",
         "detected": "mismatches=8"
       }
+    },
+    {
+      "id": "phys_fn_004820",
+      "rva": "0x000b4790",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000b4794 mov esi, dword ptr [esp + 0x28] -> mov esi, dword ptr [esp + 0x2c]",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_004822",
+      "rva": "0x000b4910",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000b4910 add dword ptr [esp + 0x34], 4 -> add dword ptr [esp + 0x38], 4",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_004824",
+      "rva": "0x000b49f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000b49fe mov ebx, dword ptr [esp + 0x10] -> mov ebx, dword ptr [esp + 0x14]",
+        "detected": "mismatches=1"
+      }
     }
   ],
   "deferred": [
@@ -5971,33 +6001,6 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004820",
-      "rva": "0x000b4790",
-      "size": 376,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004822",
-      "rva": "0x000b4910",
-      "size": 211,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
-    },
-    {
-      "id": "phys_fn_004824",
-      "rva": "0x000b49f0",
-      "size": 299,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     }
   ]
 }

@@ -1,0 +1,26 @@
+{
+ "doc": "evidence/raw/testing-pass-phase7-pruning-20261102/mutations.txt",
+ "rows": {
+  "phys_fn_004820": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_pruning",
+   "mutation": "0x000b4794 mov esi, dword ptr [esp + 0x28] -> mov esi, dword ptr [esp + 0x2c]",
+   "detected": "mismatches=1",
+   "wired": false
+  },
+  "phys_fn_004822": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_pruning",
+   "mutation": "0x000b4910 add dword ptr [esp + 0x34], 4 -> add dword ptr [esp + 0x38], 4",
+   "detected": "mismatches=1",
+   "wired": false
+  },
+  "phys_fn_004824": {
+   "gate": "NxPhysicsPhase6RowsTests",
+   "family": "phase7_pruning",
+   "mutation": "0x000b49fe mov ebx, dword ptr [esp + 0x10] -> mov ebx, dword ptr [esp + 0x14]",
+   "detected": "mismatches=1",
+   "wired": false
+  }
+ }
+}

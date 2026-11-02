@@ -105,11 +105,11 @@
       },
       "7": {
         "phase": 7,
-        "closed_rows": 544,
-        "deferred_rows": 16,
+        "closed_rows": 547,
+        "deferred_rows": 13,
         "deferred_reasons": {
           "not_reconstructed_in_phase": 1,
-          "reconstructed_not_falsified": 15
+          "reconstructed_not_falsified": 12
         }
       }
     },
@@ -178,8 +178,8 @@
         "rows_without_implementation_mapping": 119,
         "rows_with_unresolved_indirect_calls": 300,
         "by_state": {
-          "dynamically_gated": 543,
-          "reconstructed": 16,
+          "dynamically_gated": 546,
+          "reconstructed": 13,
           "statically_reviewed": 1
         }
       }
@@ -84073,12 +84073,12 @@
           {
             "id": "phys_fn_004820",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004824",
             "kind": "code",
-            "state": "reconstructed"
+            "state": "dynamically_gated"
           },
           {
             "id": "phys_fn_004826",
@@ -206575,7 +206575,7 @@
       "size": 376,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004820",
       "implementation": {
         "path": "Physics/src/opcode/PrunerSupportRows.cpp",
@@ -206596,7 +206596,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsPhase6RowsTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -206653,22 +206653,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsPhase6RowsTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_004820",
         "rva": "0x000b4790",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -206679,7 +206679,7 @@
       "size": 211,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004822",
       "implementation": {
         "path": "Physics/src/opcode/PrunerSupportRows.cpp",
@@ -206700,7 +206700,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsPhase6RowsTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -206739,22 +206739,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsPhase6RowsTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_004822",
         "rva": "0x000b4910",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -206765,7 +206765,7 @@
       "size": 299,
       "phase": 7,
       "kind": "code",
-      "state": "reconstructed",
+      "state": "dynamically_gated",
       "label": "phys_fn_004824",
       "implementation": {
         "path": "Physics/src/opcode/PrunerSupportRows.cpp",
@@ -206786,7 +206786,7 @@
       "reachability": {
         "status": "not_proven",
         "exports": [],
-        "closure_gate": null
+        "closure_gate": "NxPhysicsPhase6RowsTests"
       },
       "dependencies": {
         "direct_rows": [
@@ -206819,22 +206819,22 @@
         "interpretation": "textual evidence only; confirm context from the call path"
       },
       "evidence": {
-        "strength": "proof_text_recorded",
-        "inventory_state": "reconstructed",
+        "strength": "row_specific_gate_falsification",
+        "inventory_state": "dynamically_gated",
         "static_proof_recorded": true,
-        "dynamic_proof_recorded": false,
+        "dynamic_proof_recorded": true,
         "ledger_phase": 7,
-        "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
-        "gate": null,
-        "falsification_recorded": false
+        "ledger_disposition": "closed",
+        "ledger_reason": null,
+        "gate": "NxPhysicsPhase6RowsTests",
+        "falsification_recorded": true
       },
       "next_packet": {
-        "owner_phase": 7,
+        "owner_phase": 8,
         "row_id": "phys_fn_004824",
         "rva": "0x000b49f0",
-        "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "action": "full_census_reclosure",
+        "ledger_reason": null,
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -234654,7 +234654,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "7a7c50bbff6856cf954f025bc9e21de66cabcaf02a99e0b974d223707df96ee3",
+    "inventory_sha256": "98906c10796a8bbabc15644f543e9b505ef736c3415c334ab82a249e4d72b0f9",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -234664,7 +234664,7 @@
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "074ae11a75de6700dee2c84374d6d9f8f63c05c3870e4c6c24b2d671839a0984",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
       "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "b247f95293a6663ef3897db9308b088f87baf7164226288a28ba45ae72877b93",
-      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "586a0dafab647f0e9077f3a762d98169cc3d071b862257b26e13c2a661bbffdc"
+      "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "fc60e825ba66e1707aefc6bb6b769b4263c72d97d41aafcfd40d0e24edc38622"
     }
   }
 }

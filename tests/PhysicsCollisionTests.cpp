@@ -7140,6 +7140,142 @@ static unsigned nxDrivePhase7StepReplay(unsigned char* base)
 	return mismatches;
 	}
 
+// The box-pruning rows of the pruner support: phys_fn_004820 and 004822 (one function at 0x000b4790), the sweep over a list of
+// boxes that reports every overlapping pair. It is cdecl (box count, box list, pairs container, axes): boxes are six floats
+// (minimum, then maximum), the container is {capacity, count, entries, growth}, and the axes name the sort axis and the two
+// others. Each runs at its oracle address and as the transcription over the same boxes; the pairs found, the container, the
+// allocator's requests and the sorter's lazily made block are compared.
+unsigned __cdecl nxP44820();
+unsigned __fastcall nxP44824(void* self, void* edxUnused);
+
+static unsigned nxDrivePhase7Pruning(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("phase 7 pruning fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("phase 7 pruning fixture could not install oracle allocator");
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0, totalPairs = 0;
+	typedef void (__cdecl* PruneFn)(unsigned, const void*, void*, const void*);
+	static const unsigned axesTable[6][3] = { { 0, 1, 2 }, { 0, 2, 1 }, { 1, 0, 2 }, { 1, 2, 0 }, { 2, 0, 1 }, { 2, 1, 0 } };
+	for(unsigned c = 0; c < 90; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x4820c0deu + c * 104729u;
+			const unsigned n = 1 + (c % 15) * 3;
+			float* boxes = (float*) ::calloc(n + 1, 24);
+			for(unsigned i = 0; i < n; ++i)
+				{
+				for(unsigned a = 0; a < 3; ++a)
+					{
+					const float low = (float) ((int) (nxLeafNext(&seed) % 17u) - 8) * 0.25f;
+					const float size = 0.25f * (float) (1 + nxLeafNext(&seed) % 6u);
+					boxes[i * 6 + a] = low;
+					boxes[i * 6 + 3 + a] = low + size;
+					}
+				}
+			unsigned container[4] = { 0, 0, 0, 0x40000000u };
+			allocator.reset();
+			PruneFn f = side == 0 ? (PruneFn) (base + 0x000b4790) : (PruneFn) nxP44820;
+			f(n, boxes, container, axesTable[c % 6]);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned count = container[1];
+			nxFoldInput(&d, &count, 4);
+			const unsigned* entries = (const unsigned*) container[2];
+			if(entries) nxFoldInput(&d, entries, 4 * (count < 4096 ? count : 4096));
+			nxFoldInput(&d, &allocator.count, 4);
+			nxFoldInput(&d, allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			if(side == 0) totalPairs += count / 2;
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			if(entries) allocator.free((void*) entries);
+			::free(boxes);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_pruning row=004820 case=%u\n", c); }
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+
+	// phys_fn_004824 (0x000b49f0): the brute-force overlap test of two box lists, cdecl (count, boxes, count, boxes, pairs); every
+	// pair (i, j) of a box of the first list with a box of the second that overlap on all three axes goes into the container.
+	{
+	typedef void (__cdecl* BipartiteFn)(unsigned, const void*, unsigned, const void*, void*);
+	for(unsigned c = 0; c < 90; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x4824c0deu + c * 7919u;
+			const unsigned n0 = 1 + (c % 9) * 2, n1 = 1 + ((c / 3) % 8) * 3;
+			float* first = (float*) ::calloc(n0 + 1, 24);
+			float* second = (float*) ::calloc(n1 + 1, 24);
+			for(unsigned list = 0; list < 2; ++list)
+				{
+				float* boxes = list ? second : first;
+				const unsigned n = list ? n1 : n0;
+				for(unsigned i = 0; i < n; ++i)
+					for(unsigned a = 0; a < 3; ++a)
+						{
+						const float low = (float) ((int) (nxLeafNext(&seed) % 13u) - 6) * 0.25f;
+						const float size = 0.25f * (float) (1 + nxLeafNext(&seed) % 5u);
+						boxes[i * 6 + a] = low;
+						boxes[i * 6 + 3 + a] = low + size;
+						}
+				}
+			unsigned container[4] = { 0, 0, 0, 0x40000000u };
+			allocator.reset();
+			BipartiteFn f = side == 0 ? (BipartiteFn) (base + 0x000b49f0) : (BipartiteFn) nxP44824;
+			f(n0, first, n1, second, container);
+			NxDigest d;
+			nxDigestInit(&d);
+			const unsigned count = container[1];
+			nxFoldInput(&d, &count, 4);
+			const unsigned* entries = (const unsigned*) container[2];
+			if(entries) nxFoldInput(&d, entries, 4 * (count < 4096 ? count : 4096));
+			nxFoldInput(&d, &allocator.count, 4);
+			nxFoldInput(&d, allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			if(side == 0) totalPairs += count / 2;
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			if(entries) allocator.free((void*) entries);
+			::free(first); ::free(second);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_pruning row=004824 case=%u\n", c); }
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	}
+	printf("collision name=phase7_pruning index=- rva=0x000b4790 owner=phys_fn_004820 checks=%u oracle=%016llx candidate=%016llx mismatches=%u pairs=%u rows=004820,004822,004824\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches, totalPairs);
+	printf("collision coverage name=phase7_pruning row=004820 case=complete_box_pruning_sort_and_setup\n");
+	printf("collision coverage name=phase7_pruning row=004822 case=complete_box_pruning_sweep_and_pairs\n");
+	printf("collision coverage name=phase7_pruning row=004824 case=bipartite_box_overlap_pairs\n");
+	nxPrintInput("phase7_pruning", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -7234,6 +7370,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePhase7Sweep(base);
 		mismatches += nxDrivePhase7Replay(base);
 		mismatches += nxDrivePhase7StepReplay(base);
+		mismatches += nxDrivePhase7Pruning(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;

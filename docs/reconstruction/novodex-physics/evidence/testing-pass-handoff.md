@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 167 of the 184 rows closed; 17 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 170 of the 184 rows closed; 14 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -549,3 +549,18 @@ Result: 14 calls (1.9 MB fixture), no faults, one digest over repeated runs, tra
 40 spread mutants catches 14 and leaves **26 alive** (the second half of the row, which handles the removal of ended pairs
 and the `+0x5fc..0x604` event vector, is reached by few or no calls). **002350 stays held.** Reaching the rest needs
 triggers that leave and re-enter across steps in more combinations; the scene is the lever now, not the machinery.
+
+## The box-pruning rows (twenty-second slice): 004820, 004822, 004824 closed
+
+These three had been listed with the Phase 7 rows only because no passed phase-7 gate existed for them; that is solved by
+`NxPhysicsPhase6RowsTests` being registered in phase 7. They are the pruner support's box-pruning sweeps and needed no scene:
+**004820/004822** (one function at 0x000b4790) is `CompleteBoxPruning(count, boxes, pairs, axes)` -- a radix-sorted sweep over
+one list of six-float boxes (minimum, then maximum) that appends every overlapping pair to an `IceCore::Container`;
+**004824** (0x000b49f0) is the brute-force test of two lists, `(count, boxes, count, boxes, pairs)`. Both are cdecl, and the
+callers' pushes in the penetration-map builder (0x0004c4b0, 0x0004c5f3) gave the argument order.
+
+The family `phase7_pruning` (180 checks, 2,649 pairs found) runs each at the oracle's address and as the transcription over
+random quantised box lists (every axis permutation; 1 to 43 boxes), and compares the container's count and entries, the
+allocator's requests and the lazily made sorter. A survey: 15 of 16 spread mutants of 004820 caught, 15 of 16 of 004822,
+16 of 16 of 004824 (the survivors are `test ah, 5 -> 6` and a `push 1 -> push 2` flag). Recorded under the gate
+`NxPhysicsPhase6RowsTests` (floors 1878/3252); not wired into the product (the penetration map still uses the C++ stand-ins).
