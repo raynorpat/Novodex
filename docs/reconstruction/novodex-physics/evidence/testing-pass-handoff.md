@@ -462,3 +462,15 @@ With those shapes the oracle still faults, always at 0x00058602 (the box walk), 
 word that a block of table floats supplies as an integer (its trip count is a float's bit pattern). The same thing hid
 behind 002290's argument 2. Finding which word is the count needs either a captured live call or the callers' structures
 (002300 through 002310, which are also held), so 002296/002298 stay held; no part of the drive was kept.
+
+### 002296, second attempt (seventeenth slice)
+
+Reading where the box-walk loop gets its trip count settled one operand: the second stack word is an **integer count**
+(`dec edi; jne` over `esi += 0x18`, with `edi` loaded from it), not a pointer; the third is the array of that many six-float
+boxes; and the matrix the row copies is the one `IdentityPoses` returns, not a stack argument. A drive built on this runs
+past the earlier fault at 0x58602 and then faults inside the oriented-box overlap test (002268/002270, reached through
+002282) on a matrix pointer 0x13ff0 bytes beyond every block, i.e. one the row computes from an index or stride it reads
+out of a data word; with an odd case (a non-null `ecx` record) it faults earlier, in the per-triangle loop at 0x581aa. ComputePoints
+being exact was not the obstacle -- 002282 matches the oracle on its own (slice 13) -- the remaining unknown is which data
+words are integers and which are floats in the structures the sweep object builds. The drive was dropped again; 002296 and
+002298 stay held, and a captured live call is still the practical way in.
