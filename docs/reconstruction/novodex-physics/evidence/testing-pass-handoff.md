@@ -583,4 +583,20 @@ object plus a model with its tree, which is its own fixture. Not forced.
 Cleanup done in this slice: M5 (inventory 005201 now points at `OpcodeVendoredRows.cpp`), M7 (the first "Held" section is
 marked superseded), M8 (`mutate_rows.py` reads `NX_ORACLE_DIR`, defaulting to the old path).
 
-Still deferred (harness-only; each needs a re-pin of expected lines and a full gate cycle): M1 (summary and coverage lines that omit some closed rows), M2 (early `nxFail` returns leave allocator hooks pointing at dead stack objects), M4 (harness `new`/SDK-allocator `delete` mismatch for `PenetrationMap`; the product `operator delete` already null-checks the block), M6 (`scrubAll` blanks every word in the heap window).
+## The deferred cleanup (twenty-fourth slice)
+
+* **M1:** the `pruner_support_stream` row list gains 005590, 005610, 005646; the `pruner_support_type3` list gains 005452 and
+  005568; `pmap_coder` prints a coverage line for each of 001994-002006 and 002012/002014 (phase 4 floor 644 -> 653). 005452 and
+  005568 were closed by the type-3 slot family, 005590/005610/005646 by the stream family; the lists now say so.
+* **M2:** every `nxFail`/`return 1` after an allocator was installed (the `oracleSetAllocator` refusals in eleven drive
+  functions, the two operand checks of phase 6 large / phase 3 rows, and the type-3 fixture's refusals and null-pruner exit)
+  now restores the allocator, the SDK bridge and the oracle bridge and calls `nx2iFoundationEnd`.
+* **M4:** `nxBuildTestPMap` builds the `PenetrationMap` in an SDK-allocator block with placement new, as `TriangleMesh.cpp`
+  does, so `PenetrationMap::operator delete` releases what it was given. The product operator already null-checked the block.
+* **M6:** `nxLeafFoldObject` and the `NxP6Canon` scrub no longer blank the floats the fixtures carry (bit patterns
+  0x35800000..0x4a800000, 1e-6 to 1e6). Asking `VirtualQuery` instead was tried and rejected: the digest then varied with the
+  run's address layout. Two pinned digests moved (`pruner_support_pool`, `phase7_rows`/002316) and are repinned; both are
+  stable over repeated runs in every mode.
+
+Every minor from the whole-pass review is now closed; nothing is deferred.
+

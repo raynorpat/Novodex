@@ -29,6 +29,7 @@
 // both go into the digest.
 
 #define NOMINMAX
+#include <new>
 #include <windows.h>
 #include <bcrypt.h>
 #include <math.h>
@@ -3242,7 +3243,12 @@ static unsigned nxDrivePSceneTriggerPairDuplicates(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("trigger-pair duplicate fixture could not install oracle allocator");
+		}
 
 	NxU8 oracleScene[0x710] = {};
 	NxU8 oracleShapes[2][0xe0] = {};
@@ -4640,7 +4646,12 @@ static unsigned nxDrivePrunerSupportStreams(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("pruner support stream fixture could not install oracle allocator");
+		}
 
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest);
@@ -4775,7 +4786,7 @@ static unsigned nxDrivePrunerSupportStreams(unsigned char* base)
 			::free(data);
 			}
 		}
-	printf("collision name=pruner_support_stream index=- rva=0x000b3f50 owner=phys_fn_004799 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=004799,005586,005588,005606,005608,005624,005642,005644\n",
+	printf("collision name=pruner_support_stream index=- rva=0x000b3f50 owner=phys_fn_004799 checks=%u oracle=%016llx candidate=%016llx mismatches=%u rows=004799,005586,005588,005590,005606,005608,005610,005624,005642,005644,005646\n",
 		cases, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=pruner_support_stream row=004799 case=block_store_growth\n");
 	printf("collision coverage name=pruner_support_stream row=005586 case=pool_save_and_load\n");
@@ -4803,6 +4814,14 @@ extern NxPrunerProcessPool* gNxPrunerProcessPool;
 
 // Words that look like addresses compare equal (the two sides' objects live in different places and carry different
 // tables); everything else is folded as is.
+// A word counts as an address when it lies in the range the executable, heaps and stacks load into, except that the floats
+// the fixtures actually carry (1e-6 to 1e6 in magnitude, bit patterns 0x35800000..0x4a800000) are compared as themselves.
+// Asking the system whether the word is mapped would make the digest depend on the run's address layout.
+static bool nxWordIsAddress(unsigned value)
+	{
+	return value >= 0x00100000u && value < 0x7fff0000u && !(value >= 0x35800000u && value <= 0x4a800000u);
+	}
+
 static void nxLeafFoldObject(NxDigest* digest, const void* object, unsigned bytes)
 	{
 	const unsigned* words = (const unsigned*) object;
@@ -4810,7 +4829,7 @@ static void nxLeafFoldObject(NxDigest* digest, const void* object, unsigned byte
 		{
 		unsigned value = words[i];
 		// the executable can load as low as 0x00100000
-		if(value >= 0x00100000u && value < 0x7fff0000u) value = 0xa11add00u;
+		if(nxWordIsAddress(value)) value = 0xa11add00u;
 		nxFoldInput(digest, &value, 4);
 		}
 	}
@@ -4831,7 +4850,12 @@ static unsigned nxDrivePrunerSupportPool(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("pruner support pool fixture could not install oracle allocator");
+		}
 
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest);
@@ -4975,7 +4999,12 @@ static unsigned nxDrivePrunerSupportFiles(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("pruner support file fixture could not install oracle allocator");
+		}
 
 	char directory[MAX_PATH];
 	GetTempPathA(MAX_PATH, directory);
@@ -5160,7 +5189,12 @@ static unsigned nxDrivePMapCoder(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("pmap coder fixture could not install oracle allocator");
+		}
 
 	unsigned* const oracleCursor = (unsigned*) (base + 0x001222e8);
 	unsigned* const oracleCounts = (unsigned*) (base + 0x001240a0);
@@ -5321,6 +5355,15 @@ static unsigned nxDrivePMapCoder(unsigned char* base)
 	printf("collision coverage name=pmap_coder row=001988 case=statics_reset_from_dirty\n");
 	printf("collision coverage name=pmap_coder row=001992 case=encoder_tail_patched_into_the_oracle_head\n");
 	printf("collision coverage name=pmap_coder row=002010 case=cell_run_decoder_round_trip\n");
+	printf("collision coverage name=pmap_coder row=001994 case=encoder_fragment_via_the_patched_head\n");
+	printf("collision coverage name=pmap_coder row=001996 case=encoder_fragment_via_the_patched_head\n");
+	printf("collision coverage name=pmap_coder row=001998 case=encoder_fragment_via_the_patched_head\n");
+	printf("collision coverage name=pmap_coder row=002000 case=encoder_fragment_via_the_patched_head\n");
+	printf("collision coverage name=pmap_coder row=002002 case=encoder_fragment_via_the_patched_head\n");
+	printf("collision coverage name=pmap_coder row=002004 case=encoder_fragment_via_the_patched_head\n");
+	printf("collision coverage name=pmap_coder row=002006 case=encoder_fragment_via_the_patched_head\n");
+	printf("collision coverage name=pmap_coder row=002012 case=cell_run_decoder_round_trip\n");
+	printf("collision coverage name=pmap_coder row=002014 case=cell_run_decoder_round_trip\n");
 	nxPrintInput("pmap_coder", &inputDigest);
 	oracleSetAllocator(savedOracleSdk);
 	nxSetSdkAllocatorBridge(savedCandidateSdk);
@@ -5357,7 +5400,12 @@ static unsigned nxDrivePrunerSupportSorters(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&oracleAllocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("pruner support sorter fixture could not install oracle allocator");
+		}
 	void** const oracleStatics[3] = { (void**) (base + 0x00128468), (void**) (base + 0x00128464), (void**) (base + 0x00128460) };
 	void** const candidateStatics[3] = { (void**) &gBipartiteSorter1, (void**) &gBipartiteSorter0, (void**) &gCompleteSorter };
 	void* const savedOracle[3] = { *oracleStatics[0], *oracleStatics[1], *oracleStatics[2] };
@@ -5459,7 +5507,12 @@ static unsigned nxDrivePhase6Rows(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("phase 6 rows fixture could not install oracle allocator");
+		}
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
@@ -5686,7 +5739,7 @@ struct NxP6Canon
 		{
 		for(unsigned i = 0; i < count; ++i)
 			if(w >= (unsigned) block[i] && w - (unsigned) block[i] < size[i]) return 0x7e000000u + i * 0x1000u + (w - (unsigned) block[i]);
-		if(scrubAll && w >= 0x00100000u && w < 0x7fff0000u) return 0xa11add00u;
+		if(scrubAll && nxWordIsAddress(w)) return 0xa11add00u;
 		return w;
 		}
 	void fold(NxDigest* d, const void* object, unsigned bytes) const
@@ -5735,7 +5788,12 @@ static unsigned nxDrivePhase6Large(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("phase 6 large rows fixture could not install oracle allocator");
+		}
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
@@ -5906,7 +5964,13 @@ static unsigned nxDrivePhase6Large(unsigned char* base)
 	// phys_fn_004413 (0x000b03b0): the joint's debug draw.
 	{
 	if(base[0x000b03f7] != 0xd9 || base[0x000b03fd] != 0xd8)
+		{
+		oracleSetAllocator(savedOracleSdk);
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("phase 6 large rows fixture: row 004413's parameter operands are not where expected");
+		}
 	float* const oracleScale = *(float**) (base + 0x000b03f9);
 	float* const oracleHalf = *(float**) (base + 0x000b03ff);
 	const float savedScale = oracleScale[0], savedHalf = oracleHalf[0], savedCandidateScale = gParameter[0x68 / 4], savedCandidateHalf = gParameter[0x34 / 4];
@@ -6022,7 +6086,12 @@ static unsigned nxDrivePhase3Rows(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("phase 3 rows fixture could not install oracle allocator");
+		}
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
@@ -6090,7 +6159,13 @@ static unsigned nxDrivePhase3Rows(unsigned char* base)
 	{
 	const unsigned char* const code = base;
 	if(code[0x25969] != 0xd9 || code[0x25985] != 0xd9 || code[0x25a99] != 0xd9)
+		{
+		oracleSetAllocator(savedOracleSdk);
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("phase 3 rows fixture: row 001305's parameter operands are not where expected");
+		}
 	float* const oracleB0 = *(float**) (base + 0x2596b);
 	float* const oracle34 = *(float**) (base + 0x25987);
 	float* const oracleC0 = *(float**) (base + 0x25a9b);
@@ -7164,7 +7239,12 @@ static unsigned nxDrivePhase7Pruning(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("phase 7 pruning fixture could not install oracle allocator");
+		}
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
@@ -7299,7 +7379,12 @@ static unsigned nxDrivePhase7Query(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
 	NxSceneSdkTestAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+		{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedAllocator;
+		nx2iFoundationEnd();
 		return nxFail("phase 7 query fixture could not install oracle allocator");
+		}
 	NxDigest oracleDigest, candidateDigest, inputDigest;
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
@@ -16954,7 +17039,8 @@ static PenetrationMap* nxBuildTestPMap(const Nx2hMesh& mesh, unsigned* image)
 			if(verts[3 * v + i] > mx[i]) mx[i] = verts[3 * v + i];
 			}
 	for(unsigned i = 0; i < 3; ++i) { mn[i] -= 0.5f; mx[i] += 0.5f; }
-	PenetrationMap* pm = new PenetrationMap;
+	// as the product does (TriangleMesh.cpp): the SDK allocator's block, since PenetrationMap::operator delete frees it there
+	PenetrationMap* pm = new(nxFoundationSDKAllocator->malloc(sizeof(PenetrationMap), NX_MEMORY_PERSISTENT)) PenetrationMap;
 	unsigned char* raw = (unsigned char*) pm;
 	const unsigned* spread = *(const unsigned* const*) (raw + 4);
 	float* f = (float*) raw;

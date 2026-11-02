@@ -5643,7 +5643,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=pruner_support_stream row=005642 case=pool_save_and_load',
         'collision input name=pruner_support_stream words=1056 input=95884b08005aec63',
         # the pruner process pool, the pruner factory and the stream-to-file rows (PrunerSupportRows.cpp)
-        'collision name=pruner_support_pool index=- rva=0x000b5090 owner=phys_fn_004852 checks=9 oracle=099917f7be0369be',
+        'collision name=pruner_support_pool index=- rva=0x000b5090 owner=phys_fn_004852 checks=9 oracle=84530a4a25510f56',
         'collision coverage name=pruner_support_pool row=004852 case=factory_types_and_refusal',
         'collision coverage name=pruner_support_pool row=005448 case=type3_pruner_construction',
         'collision coverage name=pruner_support_pool row=004830 case=owner_registered_pool_created',
@@ -5656,7 +5656,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=pruner_support_file row=004801 case=default_explicit_and_append_modes_and_open_failure',
         'collision input name=pruner_support_file words=460 input=cf614665a6409537',
         # the pruner slot rows (PrunerSupportRows.cpp): the type 3 pruner's, then the static, bounded and dynamic pruners'
-        'collision name=pruner_support_type3 rows=005454,005456,005458,005460,005462 checks=17 frees=4 mismatches=0',
+        'collision name=pruner_support_type3 rows=005452,005454,005456,005458,005460,005462,005568 checks=17 frees=4 mismatches=0',
         'collision name=pruner_support_types rows=005231,005262,005263,005466,005470,005471,005473 checks=86 mismatches=0',
         # the box-pruning sorters' release, the pruning pool's reserve and the pruner base destructor (PrunerSupportRows.cpp)
         'collision name=pruner_support_sorters rows=004828 checks=8 mismatches=0',
@@ -5666,6 +5666,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=pmap_coder row=001988 case=statics_reset_from_dirty',
         'collision coverage name=pmap_coder row=001992 case=encoder_tail_patched_into_the_oracle_head',
         'collision coverage name=pmap_coder row=002010 case=cell_run_decoder_round_trip',
+        'collision coverage name=pmap_coder row=001994 case=encoder_fragment_via_the_patched_head',
+        'collision coverage name=pmap_coder row=001996 case=encoder_fragment_via_the_patched_head',
+        'collision coverage name=pmap_coder row=001998 case=encoder_fragment_via_the_patched_head',
+        'collision coverage name=pmap_coder row=002000 case=encoder_fragment_via_the_patched_head',
+        'collision coverage name=pmap_coder row=002002 case=encoder_fragment_via_the_patched_head',
+        'collision coverage name=pmap_coder row=002004 case=encoder_fragment_via_the_patched_head',
+        'collision coverage name=pmap_coder row=002006 case=encoder_fragment_via_the_patched_head',
+        'collision coverage name=pmap_coder row=002012 case=cell_run_decoder_round_trip',
+        'collision coverage name=pmap_coder row=002014 case=cell_run_decoder_round_trip',
         'collision input name=pmap_coder words=867 input=ea31b87eece18ee8'
     )
     # Phase 6's small rows (Phase6Rows.cpp), and the pool stream family that also closes row 004799
@@ -5691,7 +5700,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'collision coverage name=phase3_rows row=001935 case=visualize_node_callback_no_draw_paths',
         'collision coverage name=phase3_rows row=001947 case=owner_prunable_removal_row',
         'collision input name=phase3_rows words=57 input=d2f88467e79832f7',
-        'collision name=phase7_rows index=- rva=0x0005a0f0 owner=phys_fn_002316 checks=38 oracle=622fab4859857654',
+        'collision name=phase7_rows index=- rva=0x0005a0f0 owner=phys_fn_002316 checks=38 oracle=394e62e5859ccdb9',
         'collision coverage name=phase7_rows row=002316 case=sweep_object_constructor_from_descriptor',
         'collision coverage name=phase7_rows row=002280 case=swept_box_merge_through_cache_margin',
         'collision coverage name=phase7_rows row=002288 case=per_shape_callback_record',
@@ -6615,7 +6624,7 @@ $NxPhaseCoverageFloor = [ordered] @{
                # prior floor 540 plus mesh/mesh dispatch coverage and both direct input digests
                # previous 533 plus public dynamic-body record-slot release assertion
                # 18 for NxPhysicsKernelFuzzTests and 341 collision assertions after convex-mesh gap
-	'4' = 644  # plus the pruner_support_sorters, pruner_support_reserve and pmap_coder lines (rows 004828, 005479, 005539, 001988-002014); previous 637: plus the pruner_support_type3 and pruner_support_types lines (rows 005452-005462, 005231, 005262, 005263, 005466-005473, 005568); previous 635: plus the twelve pruner_support_pool and pruner_support_file lines (rows 004852, 005448, 004830-004834, 004790-004801); previous 623: plus the seven pruner_support_stream lines (rows 004799, 005586-005646); previous 616: plus the seven pruner_support_leaf lines (rows 005404, 005380, 004870, 004872, 005279); previous 609: plus the 15 vendored-rows drive families (the vendored-rows pass, Task 6); previous 594: plus the two hull-shape families (rows 001411, 001415 to 001419)
+	'4' = 653  # plus the nine pmap_coder coverage lines for the encoder fragments and decoder rows; previous 644: plus the pruner_support_sorters, pruner_support_reserve and pmap_coder lines (rows 004828, 005479, 005539, 001988-002014); previous 637: plus the pruner_support_type3 and pruner_support_types lines (rows 005452-005462, 005231, 005262, 005263, 005466-005473, 005568); previous 635: plus the twelve pruner_support_pool and pruner_support_file lines (rows 004852, 005448, 004830-004834, 004790-004801); previous 623: plus the seven pruner_support_stream lines (rows 004799, 005586-005646); previous 616: plus the seven pruner_support_leaf lines (rows 005404, 005380, 004870, 004872, 005279); previous 609: plus the 15 vendored-rows drive families (the vendored-rows pass, Task 6); previous 594: plus the two hull-shape families (rows 001411, 001415 to 001419)
 	           # previous 592: the three P-Hull class families (rows 001443 to 001494)
 	           # previous 589: the seven hull-flood families (rows 001423 to 001437, 001655)
 	           # previous 582: the three PMap compute-arm families (rows 002019/002021/002025 and the nearest-face collider)

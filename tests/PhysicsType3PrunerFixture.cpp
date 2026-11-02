@@ -58,7 +58,12 @@ unsigned nxDrivePrunerPoolReserve(unsigned char* base)
 		*reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
 	NxType3SdkAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+	{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedFoundationAllocator;
+		nx2iFoundationEnd();
 		return 1;
+	}
 	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
 	const OracleFactoryFn oracleFactory =
 		reinterpret_cast<OracleFactoryFn>(base + 0x000b5090);
@@ -162,14 +167,25 @@ unsigned nxDriveType3PrunerRefit(unsigned char* base)
 		*reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
 	NxType3SdkAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+	{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedFoundationAllocator;
+		nx2iFoundationEnd();
 		return 1;
+	}
 	typedef void* (__cdecl* OracleFactoryFn)(unsigned);
 	const OracleFactoryFn oracleFactory =
 		reinterpret_cast<OracleFactoryFn>(base + 0x000b5090);
 	void* const oraclePruner = oracleFactory(3);
 	Pruner* const candidatePruner = nxPruningEngineCreatePruner(3);
 	if(!oraclePruner || !candidatePruner)
+	{
+		oracleSetAllocator(savedOracleSdk);
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedFoundationAllocator;
+		nx2iFoundationEnd();
 		return 1;
+	}
 
 	NxU8 oracleObjects[3][0x2c] = {};
 	Prunable candidateObjects[3];
@@ -498,13 +514,24 @@ unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
 	NxType3SdkAllocator oracleBridge(&allocator);
 	if(!oracleSetAllocator(&oracleBridge))
+	{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedFoundationAllocator;
+		nx2iFoundationEnd();
 		return 1;
+	}
 	typedef void* (__stdcall* OracleFactoryFn)(unsigned);
 	const OracleFactoryFn oracleFactory = reinterpret_cast<OracleFactoryFn>(base + 0x000b5090);
 	void* const oraclePruner = oracleFactory(3);
 	Pruner* const candidatePruner = nxPruningEngineCreatePruner(3);
 	if(!oraclePruner || !candidatePruner)
+	{
+		oracleSetAllocator(savedOracleSdk);
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedFoundationAllocator;
+		nx2iFoundationEnd();
 		return 1;
+	}
 
 	NxU8 oracleObjects[4][0x2c] = {};
 	Prunable candidateObjects[4];
@@ -698,7 +725,7 @@ unsigned nxDrivePrunerSupportType3Slots(unsigned char* base)
 	nxSetSdkAllocatorBridge(savedCandidateSdk);
 	nxFoundationSDKAllocator = savedFoundationAllocator;
 	nx2iFoundationEnd();
-	printf("collision name=pruner_support_type3 rows=005454,005456,005458,005460,005462 checks=%u frees=%u mismatches=%u\n", checks, freesOracle, mismatches);
+	printf("collision name=pruner_support_type3 rows=005452,005454,005456,005458,005460,005462,005568 checks=%u frees=%u mismatches=%u\n", checks, freesOracle, mismatches);
 	return mismatches;
 }
 
@@ -941,7 +968,12 @@ unsigned nxDrivePrunerSupportTypeSlots(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
 	NxType3SdkAllocator oracleBridge(&oracleAllocator);
 	if(!oracleSetAllocator(&oracleBridge))
+	{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedFoundationAllocator;
+		nx2iFoundationEnd();
 		return 1;
+	}
 	unsigned checks = 0, mismatches = 0;
 	mismatches += nxRunPrunerTypeSlots(base, 0, reinterpret_cast<NxRow4Fn>(nxP45231), 0, 0, 0, &checks, 4);
 	mismatches += nxRunPrunerTypeSlots(base, 1, reinterpret_cast<NxRow4Fn>(nxP45262), 0, 0, nxP45263, &checks, 4);
@@ -1001,7 +1033,12 @@ unsigned nxDrivePrunerSupportReserveAndBase(unsigned char* base)
 	SdkAllocator* const savedOracleSdk = *reinterpret_cast<SdkAllocator**>(base + 0x0012845c);
 	NxType3SdkAllocator oracleBridge(&oracleAllocator);
 	if(!oracleSetAllocator(&oracleBridge))
+	{
+		nxSetSdkAllocatorBridge(savedCandidateSdk);
+		nxFoundationSDKAllocator = savedFoundationAllocator;
+		nx2iFoundationEnd();
 		return 1;
+	}
 	unsigned mismatches = 0, checks = 0;
 
 	// 005479: capacities in sequence on a pool object that starts zeroed.
