@@ -582,3 +582,5 @@ object plus a model with its tree, which is its own fixture. Not forced.
 
 Cleanup done in this slice: M5 (inventory 005201 now points at `OpcodeVendoredRows.cpp`), M7 (the first "Held" section is
 marked superseded), M8 (`mutate_rows.py` reads `NX_ORACLE_DIR`, defaulting to the old path).
+
+Still deferred (harness-only; each needs a re-pin of expected lines and a full gate cycle): M1 (summary and coverage lines that omit some closed rows), M2 (early `nxFail` returns leave allocator hooks pointing at dead stack objects), M4 (harness `new`/SDK-allocator `delete` mismatch for `PenetrationMap`; the product `operator delete` already null-checks the block), M6 (`scrubAll` blanks every word in the heap window).
