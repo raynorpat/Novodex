@@ -1,0 +1,1 @@
+CAUGHT phys_fn_005566 NxPhysicsCollisionTests mismatches=36 0x000f2091  mov ebx, dword ptr [esp + 8]  ->  mov ebx, dword ptr [esp + 12]

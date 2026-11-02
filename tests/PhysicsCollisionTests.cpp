@@ -7276,6 +7276,118 @@ static unsigned nxDrivePhase7Pruning(unsigned char* base)
 	return mismatches;
 	}
 
+// phys_fn_005566 (0x000f2090): the recursive octree query of the pruner support. cdecl (node index, query); the query is
+// {node count, node array, node container, subtree container, query box}. A node is 32 bytes: the box's six floats, a flag at
+// +0x18 (zero: the node is skipped) and a chain of items at +0x1c (each item's next link is at +0xc). A node box that is
+// inside the query box appends its whole subtree; one that only overlaps appends its own chain and recurses into the children
+// at node * 8 + 1 .. 8. It is driven here over synthetic trees, since no scene reaches it from a captured call.
+unsigned __cdecl nxP45566();
+
+static unsigned nxDrivePhase7Query(unsigned char* base)
+	{
+	if(!nx2iFoundationBegin())
+		return nxFail("phase 7 query fixture could not initialize foundation");
+	NxLeafSizeAllocator allocator;
+	NxUserAllocator* const savedAllocator = nxFoundationSDKAllocator;
+	nxFoundationSDKAllocator = &allocator;
+	SdkAllocator* const savedCandidateSdk = nxGetSdkAllocator();
+	SdkAllocatorBridge candidateBridge;
+	candidateBridge.mAllocator = &allocator;
+	nxSetSdkAllocatorBridge(&candidateBridge);
+	typedef bool (__cdecl* OracleSetAllocatorFn)(void*);
+	const OracleSetAllocatorFn oracleSetAllocator = (OracleSetAllocatorFn) (base + 0x000b4020);
+	SdkAllocator* const savedOracleSdk = *(SdkAllocator**) (base + 0x0012845c);
+	NxSceneSdkTestAllocator oracleBridge(&allocator);
+	if(!oracleSetAllocator(&oracleBridge))
+		return nxFail("phase 7 query fixture could not install oracle allocator");
+	NxDigest oracleDigest, candidateDigest, inputDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	nxDigestInit(&inputDigest);
+	NxDigest* digests[2] = { &oracleDigest, &candidateDigest };
+	unsigned mismatches = 0, cases = 0, totalEntries = 0;
+	typedef void (__cdecl* QueryFn)(unsigned, void*);
+	for(unsigned c = 0; c < 120; ++c)
+		{
+		unsigned long long results[2];
+		for(unsigned side = 0; side < 2; ++side)
+			{
+			unsigned seed = 0x5566c0deu + c * 6700417u;
+			const unsigned n = 1 + (c % 12) * 9 + (c % 5);
+			unsigned* nodes = (unsigned*) ::calloc(n + 1, 32);
+			unsigned* items = (unsigned*) ::calloc(4 * n + 4, 16);
+			unsigned nextItem = 0;
+			for(unsigned i = 0; i < n; ++i)
+				{
+				float* box = (float*) (nodes + i * 8);
+				for(unsigned a = 0; a < 3; ++a)
+					{
+					const float low = (float) ((int) (nxLeafNext(&seed) % 17u) - 8) * 0.25f;
+					const float size = 0.25f * (float) (1 + nxLeafNext(&seed) % 8u);
+					box[a] = low;
+					box[3 + a] = low + size;
+					}
+				nodes[i * 8 + 6] = (nxLeafNext(&seed) % 7u) != 0;
+				unsigned* previous = 0;
+				const unsigned chain = nxLeafNext(&seed) % 4u;
+				for(unsigned k = 0; k < chain; ++k)
+					{
+					unsigned* item = items + 4 * nextItem;
+					item[0] = 0x1000u * (i + 1) + k;
+					item[3] = 0;
+					if(previous) previous[3] = (unsigned) (size_t) item;
+					else nodes[i * 8 + 7] = (unsigned) (size_t) item;
+					previous = item;
+					++nextItem;
+					}
+				}
+			float query[6];
+			for(unsigned a = 0; a < 3; ++a)
+				{
+				const float low = (float) ((int) (nxLeafNext(&seed) % 9u) - 6) * 0.25f;
+				const float size = 0.25f * (float) (1 + nxLeafNext(&seed) % (c % 3 == 0 ? 40u : 10u));
+				query[a] = low;
+				query[3 + a] = low + size;
+				}
+			unsigned nodeBox[4] = { 0, 0, 0, 0x40000000u }, subtreeBox[4] = { 0, 0, 0, 0x40000000u };
+			unsigned q[5] = { n, (unsigned) (size_t) nodes, (unsigned) (size_t) nodeBox, (unsigned) (size_t) subtreeBox, (unsigned) (size_t) query };
+			allocator.reset();
+			QueryFn f = side == 0 ? (QueryFn) (base + 0x000f2090) : (QueryFn) nxP45566;
+			f(0, q);
+			NxDigest d;
+			nxDigestInit(&d);
+			for(unsigned which = 0; which < 2; ++which)
+				{
+				const unsigned* box = which ? subtreeBox : nodeBox;
+				const unsigned count = box[1];
+				nxFoldInput(&d, &count, 4);
+				const unsigned* entries = (const unsigned*) box[2];
+				for(unsigned k = 0; entries && k < count && k < 4096; ++k)
+					nxFoldInput(&d, (const unsigned*) entries[k], 4);
+				if(side == 0) totalEntries += count;
+				if(entries) allocator.free((void*) entries);
+				}
+			nxFoldInput(&d, &allocator.count, 4);
+			nxFoldInput(&d, allocator.sizes, 4 * (allocator.count < 512 ? allocator.count : 512));
+			results[side] = d.state;
+			nxFoldInput(digests[side], &results[side], 8);
+			::free(nodes); ::free(items);
+			}
+		++cases;
+		if(results[0] != results[1]) { ++mismatches; printf("collision mismatch name=phase7_query row=005566 case=%u\n", c); }
+		nxFoldInput(&inputDigest, &c, 4);
+		}
+	printf("collision name=phase7_query index=- rva=0x000f2090 owner=phys_fn_005566 checks=%u oracle=%016llx candidate=%016llx mismatches=%u entries=%u rows=005566\n",
+		cases, oracleDigest.state, candidateDigest.state, mismatches, totalEntries);
+	printf("collision coverage name=phase7_query row=005566 case=octree_box_query_subtree_and_children\n");
+	nxPrintInput("phase7_query", &inputDigest);
+	oracleSetAllocator(savedOracleSdk);
+	nxSetSdkAllocatorBridge(savedCandidateSdk);
+	nxFoundationSDKAllocator = savedAllocator;
+	nx2iFoundationEnd();
+	return mismatches;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	const bool task2jOnly = argc == 4 && wcscmp(argv[3], L"--task2j-only") == 0;
@@ -7371,6 +7483,7 @@ int wmain(int argc, wchar_t** argv)
 		mismatches += nxDrivePhase7Replay(base);
 		mismatches += nxDrivePhase7StepReplay(base);
 		mismatches += nxDrivePhase7Pruning(base);
+		mismatches += nxDrivePhase7Query(base);
 		// 004799, the stream block store, is a phase 6 row: its family runs under this target too
 		mismatches += nxDrivePrunerSupportStreams(base);
 		return mismatches ? 1 : 0;

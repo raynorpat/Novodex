@@ -1,0 +1,13 @@
+SURVEY phys_fn_005566 NxPhysicsCollisionTests tried=12 caught=12 survived=0
+  caught   0x000f209a  cmp ebx, dword ptr [edi]  ->  cmp ebx, dword ptr [edi + 4]
+  caught   0x000f20a8  shl esi, 5  ->  shl esi, 6
+  caught   0x000f20bc  fld dword ptr [ecx + 0xc]  ->  fld dword ptr [ecx + 0x10]
+  caught   0x000f20c6  jnp Lf2153  ->  jp Lf2153
+  caught   0x000f20d3  test ah, 5  ->  test ah, 6
+  caught   0x000f20db  fcomp dword ptr [esi + 4]  ->  fcomp dword ptr [esi + 8]
+  caught   0x000f20e8  fcomp dword ptr [ecx + 4]  ->  fcomp dword ptr [ecx + 8]
+  caught   0x000f20f2  fld dword ptr [ecx + 0x14]  ->  fld dword ptr [ecx + 0x18]
+  caught   0x000f20fd  jnp Lf2153  ->  jp Lf2153
+  caught   0x000f2107  test ah, 5  ->  test ah, 6
+  caught   0x000f2118  mov eax, dword ptr [edi + 0xc]  ->  mov eax, dword ptr [edi + 0x10]
+  caught   0x000f2130  mov eax, dword ptr [edi + 8]  ->  mov eax, dword ptr [edi + 12]

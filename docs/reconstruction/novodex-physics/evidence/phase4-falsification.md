@@ -695,3 +695,7 @@ Per-row measurements (row, mutation, count):
 - `phys_fn_004828`: 0x000b4c5f mov dword ptr [nxKnBipartiteSorter1], 0 -> mov dword ptr [nxKnBipartiteSorter1], 1; `NxPhysicsType3PrunerTests` mismatches=4.
 - `phys_fn_005479`: 0x000eff22 mov edi, dword ptr [esp + 0xc] -> mov edi, dword ptr [esp + 0x10]; `NxPhysicsType3PrunerTests` mismatches=1.
 - `phys_fn_005539`: 0x000f15c3 lea ecx, [esi + 0x34] -> lea ecx, [esi + 0x38]; `NxPhysicsType3PrunerTests` mismatches=5.
+
+## Testing pass
+
+- `phys_fn_005566`: 0x000f2091 mov ebx, dword ptr [esp + 8] -> mov ebx, dword ptr [esp + 12]; `NxPhysicsPhase6RowsTests` mismatches=36.

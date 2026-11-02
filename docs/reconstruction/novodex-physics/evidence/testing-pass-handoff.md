@@ -6,7 +6,7 @@ an oracle differential in a gated target, and **falsified** by a recorded mutati
 row is `dynamically_gated` and its closure entry is `closed`. A row that could not be wired or driven safely, or whose
 mutations were never caught, is held with the reason below; no row was forced.
 
-**Result: 170 of the 184 rows closed; 14 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
+**Result: 171 of the 184 rows closed; 13 held.** The records are in `raw/testing-pass-*-20261031/` (each has the
 manifest `close_static_rows.py --falsified` read and the `mutations.txt` the sweeps wrote).
 
 ## Closed, by unit
@@ -26,7 +26,7 @@ That is a weaker detection than a clean delta, and applies to 20 of the `NpTrian
 `TriangleMeshRows` and `PMapRows` row. The rows only walk structures, so a data-offset mutant faults almost every
 time. The ruling is in the ledger; the sweeper's default still refuses a crash.
 
-## Held, with reasons
+## Held, with reasons (superseded: see the end of this file for the current list)
 
 **Phase 3 (5 rows).**
 * 001303 (the CCD refresh) and 001345 (the scalar deleting destructor): no public API reaches them; wiring needs the
@@ -564,3 +564,21 @@ random quantised box lists (every axis permutation; 1 to 43 boxes), and compares
 allocator's requests and the lazily made sorter. A survey: 15 of 16 spread mutants of 004820 caught, 15 of 16 of 004822,
 16 of 16 of 004824 (the survivors are `test ah, 5 -> 6` and a `push 1 -> push 2` flag). Recorded under the gate
 `NxPhysicsPhase6RowsTests` (floors 1878/3252); not wired into the product (the penetration map still uses the C++ stand-ins).
+
+## The pruner/octree capture attempt (twenty-third slice): 005566 closed, 005386 held
+
+**005566** (0x000f2090) is the recursive octree query `(node index, query)`, cdecl, with the query
+`{node count, node array, node container, subtree container, query box}` and 32-byte nodes (box floats, a flag at `+0x18`,
+an item chain at `+0x1c`). Live, it is reached 32 times by the type-3 pruner fixture, but a capture was not needed: the
+whole input is a tree, a box and two containers, so `phase7_query` (120 trees of 1 to 110 nodes; 770 entries appended)
+drives the oracle and the transcription over built ones and compares the two containers' entries, the allocator's requests
+and the frees. A spread survey of 12 mutants catches all 12 (first spread; `survey.log` in
+`evidence/raw/testing-pass-phase7-query-20261102/`), the recorded mutation is caught with 36 mismatches. Gate
+`NxPhysicsPhase6RowsTests`, floors 1881/3255; not wired (the product keeps its stand-ins).
+
+**005386** (0x000e94c0, the Opcode model stream load) stays **held**: no breakpoint on it ever hit in any target, the SDK
+has no cooking or stream-create entry (only `createTriangleMesh(desc)`), and a synthetic drive needs a hand-built stream
+object plus a model with its tree, which is its own fixture. Not forced.
+
+Cleanup done in this slice: M5 (inventory 005201 now points at `OpcodeVendoredRows.cpp`), M7 (the first "Held" section is
+marked superseded), M8 (`mutate_rows.py` reads `NX_ORACLE_DIR`, defaulting to the old path).

@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
-ORACLE_DIR = 'D:/FlamingEnt__/Unreal_3/Binaries'
+ORACLE_DIR = os.environ.get('NX_ORACLE_DIR', 'D:/FlamingEnt__/Unreal_3/Binaries')
 ORACLE_SHA = '4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c'
 TIMEOUT = 120
 CRASH = 0xC0000000

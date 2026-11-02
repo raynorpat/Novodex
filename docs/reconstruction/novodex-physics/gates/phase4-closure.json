@@ -54,10 +54,10 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 810,
+    "deferred_reconstructed_not_falsified": 809,
     "deferred_not_reconstructed_in_phase": 17,
     "deferred_vendored_not_falsified": 19,
-    "oracle_differential_falsified": 107,
+    "oracle_differential_falsified": 108,
     "differential_falsified": 57,
     "deferred_blocked_on_later_phase": 43
   },
@@ -1730,6 +1730,21 @@
         "mutation": "0x000f15c3 lea ecx, [esi + 0x34] -> lea ecx, [esi + 0x38]",
         "detected": "mismatches=5"
       }
+    },
+    {
+      "id": "phys_fn_005566",
+      "rva": "0x000f2090",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsPhase6RowsTests",
+      "falsification": {
+        "mutation": "0x000f2091 mov ebx, dword ptr [esp + 8] -> mov ebx, dword ptr [esp + 12]",
+        "detected": "mismatches=36"
+      },
+      "discharged_by_phase": 6,
+      "driving_phases": [
+        6,
+        7
+      ]
     }
   ],
   "deferred": [
@@ -8925,15 +8940,6 @@
       ],
       "blocked_on_type": "Pruner",
       "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1dc7 (mov eax, dword ptr [esp + 0x14]) made `mov eax, dword ptr [esp + 0x18]`; mismatches=18). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005566",
-      "rva": "0x000f2090",
-      "size": 199,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-support-rows.md) with a static proof only; it awaits the testing pass, so no mutation has been aimed at it yet."
     },
     {
       "id": "phys_fn_001526",
