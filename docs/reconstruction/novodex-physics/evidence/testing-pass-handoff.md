@@ -443,3 +443,22 @@ the right one (often equivalent), and 002270's `test ah, 5 -> 6`, 002290's `shr 
 size at +4, the data at +8) and arguments 1 and 2 are not plain float blocks (the first fault was an integer index array
 read as a pointer; the second is a loop reading past a block's end from a stack word that is not one of the drive's
 blocks). The row stays held with 002298 (its wrapper).
+
+## 002296 and 002298: the contract, and why they are still held (sixteenth slice)
+
+The wrapper 002298 is slot 0 of the sweep object's table (`nxP7Tab108740`, slot 1 is 002280), called with ten stack words
+(`ret 0x28`). Decoding its pushes (a symbolic walk of the stack offsets) gives 002296's calling convention:
+
+* `eax` = the wrapper's first argument (a0) -- a **triangle holder**: a dword count at `+4` (the row divides it by nine, so
+  nine floats per triangle) and the data pointer at `+8`. (An earlier drive used a byte count, which ran the loop four
+  times past its data.)
+* `ecx` = the wrapper's second argument (a1) -- an optional record whose `+8` is read.
+* Nine stack words: a2, a3, a4, a5, a6, a7, **the sweep object plus 0x10**, a8, a9. Uses: the first is a record whose `+8`
+  points at an array of per-triangle dwords (the integer handed to 002290); the second is an optional 3x3 matrix; the third
+  an axis-aligned box walked in 0x18-byte steps; one is a result record (`+0x1c` is set to -1 first, `+0x18` is a
+  distance); the rest are vectors and tables.
+
+With those shapes the oracle still faults, always at 0x00058602 (the box walk), because a loop count comes out of a data
+word that a block of table floats supplies as an integer (its trip count is a float's bit pattern). The same thing hid
+behind 002290's argument 2. Finding which word is the count needs either a captured live call or the callers' structures
+(002300 through 002310, which are also held), so 002296/002298 stay held; no part of the drive was kept.
