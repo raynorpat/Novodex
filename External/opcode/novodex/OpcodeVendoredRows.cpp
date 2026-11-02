@@ -1554,4 +1554,301 @@ Le1541:
 		jmp nxOpCallValidateSettings		// 0x000e1541
 		}
 	}
+
+// phys_fn_005201 (0x000e48e0, 960 B), 288 instructions
+__declspec(naked) bool IceMaths::OBB::ComputePoints(Point* pts) const
+	{
+	__asm
+		{
+		mov eax, dword ptr [esp + 4]		// 0x000e48e0
+		sub esp, 0x3c		// 0x000e48e4
+		test eax, eax		// 0x000e48e7
+		jne Le48f3		// 0x000e48e9
+		xor al, al		// 0x000e48eb
+		add esp, 0x3c		// 0x000e48ed
+		ret 4		// 0x000e48f0
+Le48f3:
+		mov edx, dword ptr [ecx + 0x20]		// 0x000e48f3
+		fld dword ptr [ecx + 0x18]		// 0x000e48f6
+		fld dword ptr [ecx + 0x1c]		// 0x000e48f9
+		mov dword ptr [esp + 0x20], edx		// 0x000e48fc
+		mov edx, dword ptr [ecx + 0x24]		// 0x000e4900
+		mov dword ptr [esp], edx		// 0x000e4903
+		mov edx, dword ptr [ecx + 0x28]		// 0x000e4906
+		mov dword ptr [esp + 4], edx		// 0x000e4909
+		mov edx, dword ptr [ecx + 0x2c]		// 0x000e490d
+		mov dword ptr [esp + 8], edx		// 0x000e4910
+		mov edx, dword ptr [ecx + 0x30]		// 0x000e4914
+		mov dword ptr [esp + 0xc], edx		// 0x000e4917
+		mov edx, dword ptr [ecx + 0x34]		// 0x000e491b
+		mov dword ptr [esp + 0x10], edx		// 0x000e491e
+		mov edx, dword ptr [ecx + 0x38]		// 0x000e4922
+		mov dword ptr [esp + 0x14], edx		// 0x000e4925
+		mov edx, dword ptr [ecx + 0xc]		// 0x000e4929
+		mov dword ptr [esp + 0x40], edx		// 0x000e492c
+		fld dword ptr [esp + 0x40]		// 0x000e4930
+		push esi		// 0x000e4934
+		fmul st(0), st(2)		// 0x000e4935
+		mov edx, eax		// 0x000e4937
+		fstp dword ptr [esp + 0x1c]		// 0x000e4939
+		fmul dword ptr [esp + 0x44]		// 0x000e493d
+		fstp st(1)		// 0x000e4941
+		fld dword ptr [esp + 0x24]		// 0x000e4943
+		fmul dword ptr [esp + 0x44]		// 0x000e4947
+		fld dword ptr [ecx + 0x10]		// 0x000e494b
+		fld dword ptr [esp + 4]		// 0x000e494e
+		fmul st(0), st(1)		// 0x000e4952
+		fstp dword ptr [esp + 4]		// 0x000e4954
+		fld dword ptr [esp + 8]		// 0x000e4958
+		fmul st(0), st(1)		// 0x000e495c
+		fstp dword ptr [esp + 8]		// 0x000e495e
+		fld dword ptr [esp + 0xc]		// 0x000e4962
+		fmul st(0), st(1)		// 0x000e4966
+		fstp dword ptr [esp + 0xc]		// 0x000e4968
+		fstp st(0)		// 0x000e496c
+		fld dword ptr [ecx + 0x14]		// 0x000e496e
+		fld dword ptr [esp + 0x10]		// 0x000e4971
+		fmul st(0), st(1)		// 0x000e4975
+		fstp dword ptr [esp + 0x10]		// 0x000e4977
+		fld dword ptr [esp + 0x14]		// 0x000e497b
+		fmul st(0), st(1)		// 0x000e497f
+		fstp dword ptr [esp + 0x14]		// 0x000e4981
+		fld dword ptr [esp + 0x18]		// 0x000e4985
+		fmul st(0), st(1)		// 0x000e4989
+		fstp dword ptr [esp + 0x18]		// 0x000e498b
+		fstp st(0)		// 0x000e498f
+		fld dword ptr [ecx]		// 0x000e4991
+		fsub dword ptr [esp + 0x1c]		// 0x000e4993
+		fld dword ptr [ecx + 4]		// 0x000e4997
+		fsub st(0), st(3)		// 0x000e499a
+		fld dword ptr [ecx + 8]		// 0x000e499c
+		fsub st(0), st(3)		// 0x000e499f
+		fstp dword ptr [esp + 0x30]		// 0x000e49a1
+		fxch st(1)		// 0x000e49a5
+		fsub dword ptr [esp + 4]		// 0x000e49a7
+		fstp dword ptr [esp + 0x34]		// 0x000e49ab
+		fsub dword ptr [esp + 8]		// 0x000e49af
+		fld dword ptr [esp + 0x30]		// 0x000e49b3
+		fsub dword ptr [esp + 0xc]		// 0x000e49b7
+		fld dword ptr [esp + 0x34]		// 0x000e49bb
+		fsub dword ptr [esp + 0x10]		// 0x000e49bf
+		fstp dword ptr [esp + 0x28]		// 0x000e49c3
+		mov esi, dword ptr [esp + 0x28]		// 0x000e49c7
+		fxch st(1)		// 0x000e49cb
+		mov dword ptr [edx], esi		// 0x000e49cd
+		fsub dword ptr [esp + 0x14]		// 0x000e49cf
+		fstp dword ptr [esp + 0x2c]		// 0x000e49d3
+		mov esi, dword ptr [esp + 0x2c]		// 0x000e49d7
+		mov dword ptr [edx + 4], esi		// 0x000e49db
+		fsub dword ptr [esp + 0x18]		// 0x000e49de
+		fstp dword ptr [esp + 0x30]		// 0x000e49e2
+		mov esi, dword ptr [esp + 0x30]		// 0x000e49e6
+		fld dword ptr [esp + 0x1c]		// 0x000e49ea
+		mov dword ptr [edx + 8], esi		// 0x000e49ee
+		fadd dword ptr [ecx]		// 0x000e49f1
+		fld st(2)		// 0x000e49f3
+		fadd dword ptr [ecx + 4]		// 0x000e49f5
+		fld st(2)		// 0x000e49f8
+		fadd dword ptr [ecx + 8]		// 0x000e49fa
+		lea edx, [eax + 0xc]		// 0x000e49fd
+		fstp dword ptr [esp + 0x3c]		// 0x000e4a00
+		fxch st(1)		// 0x000e4a04
+		fsub dword ptr [esp + 4]		// 0x000e4a06
+		fstp dword ptr [esp + 0x28]		// 0x000e4a0a
+		fsub dword ptr [esp + 8]		// 0x000e4a0e
+		fld dword ptr [esp + 0x3c]		// 0x000e4a12
+		fsub dword ptr [esp + 0xc]		// 0x000e4a16
+		fld dword ptr [esp + 0x28]		// 0x000e4a1a
+		fsub dword ptr [esp + 0x10]		// 0x000e4a1e
+		fstp dword ptr [esp + 0x28]		// 0x000e4a22
+		mov esi, dword ptr [esp + 0x28]		// 0x000e4a26
+		mov dword ptr [edx], esi		// 0x000e4a2a
+		fxch st(1)		// 0x000e4a2c
+		fsub dword ptr [esp + 0x14]		// 0x000e4a2e
+		fstp dword ptr [esp + 0x2c]		// 0x000e4a32
+		mov esi, dword ptr [esp + 0x2c]		// 0x000e4a36
+		mov dword ptr [edx + 4], esi		// 0x000e4a3a
+		fsub dword ptr [esp + 0x18]		// 0x000e4a3d
+		fstp dword ptr [esp + 0x30]		// 0x000e4a41
+		mov esi, dword ptr [esp + 0x30]		// 0x000e4a45
+		fld dword ptr [esp + 0x1c]		// 0x000e4a49
+		mov dword ptr [edx + 8], esi		// 0x000e4a4d
+		fadd dword ptr [ecx]		// 0x000e4a50
+		lea edx, [eax + 0x18]		// 0x000e4a52
+		fld st(2)		// 0x000e4a55
+		fadd dword ptr [ecx + 4]		// 0x000e4a57
+		fld st(2)		// 0x000e4a5a
+		fadd dword ptr [ecx + 8]		// 0x000e4a5c
+		fstp dword ptr [esp + 0x3c]		// 0x000e4a5f
+		fxch st(1)		// 0x000e4a63
+		fadd dword ptr [esp + 4]		// 0x000e4a65
+		fstp dword ptr [esp + 0x28]		// 0x000e4a69
+		fadd dword ptr [esp + 8]		// 0x000e4a6d
+		fld dword ptr [esp + 0x3c]		// 0x000e4a71
+		fadd dword ptr [esp + 0xc]		// 0x000e4a75
+		fld dword ptr [esp + 0x28]		// 0x000e4a79
+		fsub dword ptr [esp + 0x10]		// 0x000e4a7d
+		fstp dword ptr [esp + 0x28]		// 0x000e4a81
+		mov esi, dword ptr [esp + 0x28]		// 0x000e4a85
+		mov dword ptr [edx], esi		// 0x000e4a89
+		fxch st(1)		// 0x000e4a8b
+		fsub dword ptr [esp + 0x14]		// 0x000e4a8d
+		fstp dword ptr [esp + 0x2c]		// 0x000e4a91
+		mov esi, dword ptr [esp + 0x2c]		// 0x000e4a95
+		mov dword ptr [edx + 4], esi		// 0x000e4a99
+		fsub dword ptr [esp + 0x18]		// 0x000e4a9c
+		fstp dword ptr [esp + 0x30]		// 0x000e4aa0
+		mov esi, dword ptr [esp + 0x30]		// 0x000e4aa4
+		mov dword ptr [edx + 8], esi		// 0x000e4aa8
+		fld dword ptr [ecx]		// 0x000e4aab
+		fsub dword ptr [esp + 0x1c]		// 0x000e4aad
+		lea edx, [eax + 0x24]		// 0x000e4ab1
+		fld dword ptr [ecx + 4]		// 0x000e4ab4
+		fsub st(0), st(3)		// 0x000e4ab7
+		fld dword ptr [ecx + 8]		// 0x000e4ab9
+		fsub st(0), st(3)		// 0x000e4abc
+		fstp dword ptr [esp + 0x3c]		// 0x000e4abe
+		fxch st(1)		// 0x000e4ac2
+		fadd dword ptr [esp + 4]		// 0x000e4ac4
+		fstp dword ptr [esp + 0x28]		// 0x000e4ac8
+		fadd dword ptr [esp + 8]		// 0x000e4acc
+		fld dword ptr [esp + 0x3c]		// 0x000e4ad0
+		fadd dword ptr [esp + 0xc]		// 0x000e4ad4
+		fld dword ptr [esp + 0x28]		// 0x000e4ad8
+		fsub dword ptr [esp + 0x10]		// 0x000e4adc
+		fstp dword ptr [esp + 0x28]		// 0x000e4ae0
+		mov esi, dword ptr [esp + 0x28]		// 0x000e4ae4
+		fxch st(1)		// 0x000e4ae8
+		mov dword ptr [edx], esi		// 0x000e4aea
+		fsub dword ptr [esp + 0x14]		// 0x000e4aec
+		fstp dword ptr [esp + 0x2c]		// 0x000e4af0
+		mov esi, dword ptr [esp + 0x2c]		// 0x000e4af4
+		mov dword ptr [edx + 4], esi		// 0x000e4af8
+		fsub dword ptr [esp + 0x18]		// 0x000e4afb
+		fstp dword ptr [esp + 0x30]		// 0x000e4aff
+		mov esi, dword ptr [esp + 0x30]		// 0x000e4b03
+		mov dword ptr [edx + 8], esi		// 0x000e4b07
+		fld dword ptr [ecx]		// 0x000e4b0a
+		fsub dword ptr [esp + 0x1c]		// 0x000e4b0c
+		fld dword ptr [ecx + 4]		// 0x000e4b10
+		lea edx, [eax + 0x30]		// 0x000e4b13
+		fsub st(0), st(3)		// 0x000e4b16
+		fld dword ptr [ecx + 8]		// 0x000e4b18
+		fsub st(0), st(3)		// 0x000e4b1b
+		fstp dword ptr [esp + 0x3c]		// 0x000e4b1d
+		fxch st(1)		// 0x000e4b21
+		fsub dword ptr [esp + 4]		// 0x000e4b23
+		fstp dword ptr [esp + 0x28]		// 0x000e4b27
+		fsub dword ptr [esp + 8]		// 0x000e4b2b
+		fld dword ptr [esp + 0x3c]		// 0x000e4b2f
+		fsub dword ptr [esp + 0xc]		// 0x000e4b33
+		fld dword ptr [esp + 0x28]		// 0x000e4b37
+		fadd dword ptr [esp + 0x10]		// 0x000e4b3b
+		fstp dword ptr [esp + 0x28]		// 0x000e4b3f
+		mov esi, dword ptr [esp + 0x28]		// 0x000e4b43
+		mov dword ptr [edx], esi		// 0x000e4b47
+		fxch st(1)		// 0x000e4b49
+		fadd dword ptr [esp + 0x14]		// 0x000e4b4b
+		fstp dword ptr [esp + 0x2c]		// 0x000e4b4f
+		mov esi, dword ptr [esp + 0x2c]		// 0x000e4b53
+		mov dword ptr [edx + 4], esi		// 0x000e4b57
+		fadd dword ptr [esp + 0x18]		// 0x000e4b5a
+		fstp dword ptr [esp + 0x30]		// 0x000e4b5e
+		mov esi, dword ptr [esp + 0x30]		// 0x000e4b62
+		fld dword ptr [esp + 0x1c]		// 0x000e4b66
+		mov dword ptr [edx + 8], esi		// 0x000e4b6a
+		fadd dword ptr [ecx]		// 0x000e4b6d
+		lea edx, [eax + 0x3c]		// 0x000e4b6f
+		fld st(2)		// 0x000e4b72
+		fadd dword ptr [ecx + 4]		// 0x000e4b74
+		fld st(2)		// 0x000e4b77
+		fadd dword ptr [ecx + 8]		// 0x000e4b79
+		fstp dword ptr [esp + 0x3c]		// 0x000e4b7c
+		fxch st(1)		// 0x000e4b80
+		fsub dword ptr [esp + 4]		// 0x000e4b82
+		fstp dword ptr [esp + 0x28]		// 0x000e4b86
+		fsub dword ptr [esp + 8]		// 0x000e4b8a
+		fld dword ptr [esp + 0x3c]		// 0x000e4b8e
+		fsub dword ptr [esp + 0xc]		// 0x000e4b92
+		fld dword ptr [esp + 0x28]		// 0x000e4b96
+		fadd dword ptr [esp + 0x10]		// 0x000e4b9a
+		fstp dword ptr [esp + 0x28]		// 0x000e4b9e
+		mov esi, dword ptr [esp + 0x28]		// 0x000e4ba2
+		mov dword ptr [edx], esi		// 0x000e4ba6
+		fxch st(1)		// 0x000e4ba8
+		fadd dword ptr [esp + 0x14]		// 0x000e4baa
+		fstp dword ptr [esp + 0x2c]		// 0x000e4bae
+		mov esi, dword ptr [esp + 0x2c]		// 0x000e4bb2
+		mov dword ptr [edx + 4], esi		// 0x000e4bb6
+		fadd dword ptr [esp + 0x18]		// 0x000e4bb9
+		fstp dword ptr [esp + 0x30]		// 0x000e4bbd
+		mov esi, dword ptr [esp + 0x30]		// 0x000e4bc1
+		fld dword ptr [esp + 0x1c]		// 0x000e4bc5
+		mov dword ptr [edx + 8], esi		// 0x000e4bc9
+		fadd dword ptr [ecx]		// 0x000e4bcc
+		lea edx, [eax + 0x48]		// 0x000e4bce
+		fld st(2)		// 0x000e4bd1
+		fadd dword ptr [ecx + 4]		// 0x000e4bd3
+		fld st(2)		// 0x000e4bd6
+		fadd dword ptr [ecx + 8]		// 0x000e4bd8
+		fstp dword ptr [esp + 0x3c]		// 0x000e4bdb
+		fxch st(1)		// 0x000e4bdf
+		fadd dword ptr [esp + 4]		// 0x000e4be1
+		fstp dword ptr [esp + 0x28]		// 0x000e4be5
+		fadd dword ptr [esp + 8]		// 0x000e4be9
+		fld dword ptr [esp + 0x3c]		// 0x000e4bed
+		fadd dword ptr [esp + 0xc]		// 0x000e4bf1
+		fld dword ptr [esp + 0x28]		// 0x000e4bf5
+		fadd dword ptr [esp + 0x10]		// 0x000e4bf9
+		fstp dword ptr [esp + 0x28]		// 0x000e4bfd
+		mov esi, dword ptr [esp + 0x28]		// 0x000e4c01
+		fxch st(1)		// 0x000e4c05
+		mov dword ptr [edx], esi		// 0x000e4c07
+		fadd dword ptr [esp + 0x14]		// 0x000e4c09
+		fstp dword ptr [esp + 0x2c]		// 0x000e4c0d
+		mov esi, dword ptr [esp + 0x2c]		// 0x000e4c11
+		mov dword ptr [edx + 4], esi		// 0x000e4c15
+		fadd dword ptr [esp + 0x18]		// 0x000e4c18
+		fstp dword ptr [esp + 0x30]		// 0x000e4c1c
+		mov esi, dword ptr [esp + 0x30]		// 0x000e4c20
+		mov dword ptr [edx + 8], esi		// 0x000e4c24
+		fld dword ptr [ecx]		// 0x000e4c27
+		fsub dword ptr [esp + 0x1c]		// 0x000e4c29
+		add eax, 0x54		// 0x000e4c2d
+		pop esi		// 0x000e4c30
+		fstp dword ptr [esp + 0x24]		// 0x000e4c31
+		fld dword ptr [ecx + 4]		// 0x000e4c35
+		fsub st(0), st(2)		// 0x000e4c38
+		fstp dword ptr [esp + 0x28]		// 0x000e4c3a
+		fld dword ptr [ecx + 8]		// 0x000e4c3e
+		fsub st(0), st(1)		// 0x000e4c41
+		fstp st(2)		// 0x000e4c43
+		fstp st(0)		// 0x000e4c45
+		fld dword ptr [esp + 0x24]		// 0x000e4c47
+		fadd dword ptr [esp]		// 0x000e4c4b
+		fld dword ptr [esp + 0x28]		// 0x000e4c4e
+		fadd dword ptr [esp + 4]		// 0x000e4c52
+		fstp dword ptr [esp + 0x1c]		// 0x000e4c56
+		fxch st(1)		// 0x000e4c5a
+		fadd dword ptr [esp + 8]		// 0x000e4c5c
+		fstp dword ptr [esp + 0x20]		// 0x000e4c60
+		fadd dword ptr [esp + 0xc]		// 0x000e4c64
+		fstp dword ptr [esp + 0x24]		// 0x000e4c68
+		mov ecx, dword ptr [esp + 0x24]		// 0x000e4c6c
+		fld dword ptr [esp + 0x1c]		// 0x000e4c70
+		mov dword ptr [eax], ecx		// 0x000e4c74
+		fadd dword ptr [esp + 0x10]		// 0x000e4c76
+		fstp dword ptr [esp + 0x28]		// 0x000e4c7a
+		mov edx, dword ptr [esp + 0x28]		// 0x000e4c7e
+		fld dword ptr [esp + 0x20]		// 0x000e4c82
+		mov dword ptr [eax + 4], edx		// 0x000e4c86
+		fadd dword ptr [esp + 0x14]		// 0x000e4c89
+		fstp dword ptr [esp + 0x2c]		// 0x000e4c8d
+		mov ecx, dword ptr [esp + 0x2c]		// 0x000e4c91
+		mov dword ptr [eax + 8], ecx		// 0x000e4c95
+		mov al, 1		// 0x000e4c98
+		add esp, 0x3c		// 0x000e4c9a
+		ret 4		// 0x000e4c9d
+		}
+	}
 // @@ROWS-END@@
