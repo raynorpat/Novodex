@@ -99,9 +99,9 @@
         "closed_rows": 207,
         "deferred_rows": 226,
         "deferred_reasons": {
-          "not_independently_falsifiable": 36,
-          "not_reconstructed_in_phase": 2,
-          "reconstructed_not_falsified": 188
+          "not_independently_falsifiable": 94,
+          "not_reconstructed_in_phase": 1,
+          "reconstructed_not_falsified": 131
         }
       },
       "7": {
@@ -181167,7 +181167,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -181176,7 +181176,7 @@
         "row_id": "phys_fn_004210",
         "rva": "0x0009e1a0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -181325,7 +181325,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -181334,7 +181334,7 @@
         "row_id": "phys_fn_004214",
         "rva": "0x0009e3c0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -181457,7 +181457,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -181466,7 +181466,7 @@
         "row_id": "phys_fn_004218",
         "rva": "0x0009e470",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -181693,7 +181693,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -181702,7 +181702,7 @@
         "row_id": "phys_fn_004222",
         "rva": "0x0009ea60",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -182179,7 +182179,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -182188,7 +182188,7 @@
         "row_id": "phys_fn_004234",
         "rva": "0x0009f470",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -182810,7 +182810,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -182819,7 +182819,7 @@
         "row_id": "phys_fn_004250",
         "rva": "0x000a0f70",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183337,7 +183337,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -183346,7 +183346,7 @@
         "row_id": "phys_fn_004262",
         "rva": "0x000a1b50",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -183923,7 +183923,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -183932,7 +183932,7 @@
         "row_id": "phys_fn_004276",
         "rva": "0x000a2a80",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -184156,7 +184156,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -184165,7 +184165,7 @@
         "row_id": "phys_fn_004282",
         "rva": "0x000a2bf0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -184220,7 +184220,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -184229,7 +184229,7 @@
         "row_id": "phys_fn_004284",
         "rva": "0x000a2c10",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -184837,7 +184837,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -184846,7 +184846,7 @@
         "row_id": "phys_fn_004300",
         "rva": "0x000a48f0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -185744,7 +185744,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -185753,7 +185753,7 @@
         "row_id": "phys_fn_004320",
         "rva": "0x000a76a0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -186073,7 +186073,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -186082,7 +186082,7 @@
         "row_id": "phys_fn_004328",
         "rva": "0x000a8d20",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -187558,7 +187558,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -187567,7 +187567,7 @@
         "row_id": "phys_fn_004366",
         "rva": "0x000ac540",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -188123,7 +188123,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -188132,7 +188132,7 @@
         "row_id": "phys_fn_004380",
         "rva": "0x000ad6e0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -188906,7 +188906,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "gate": null,
         "falsification_recorded": false
       },
@@ -188915,7 +188915,7 @@
         "row_id": "phys_fn_004399",
         "rva": "0x000afc10",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "not_reconstructed_in_phase",
+        "ledger_reason": "reconstructed_not_falsified",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -190927,7 +190927,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -190936,7 +190936,7 @@
         "row_id": "phys_fn_004451",
         "rva": "0x000b0890",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -191104,7 +191104,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -191113,7 +191113,7 @@
         "row_id": "phys_fn_004455",
         "rva": "0x000b0940",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -192583,7 +192583,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -192592,7 +192592,7 @@
         "row_id": "phys_fn_004489",
         "rva": "0x000b0ec0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -192848,7 +192848,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -192857,7 +192857,7 @@
         "row_id": "phys_fn_004495",
         "rva": "0x000b0fa0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -193111,7 +193111,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -193120,7 +193120,7 @@
         "row_id": "phys_fn_004501",
         "rva": "0x000b1050",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -193198,7 +193198,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -193207,7 +193207,7 @@
         "row_id": "phys_fn_004503",
         "rva": "0x000b10b0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -193272,7 +193272,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -193281,7 +193281,7 @@
         "row_id": "phys_fn_004505",
         "rva": "0x000b1110",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -193959,7 +193959,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -193968,7 +193968,7 @@
         "row_id": "phys_fn_004521",
         "rva": "0x000b1390",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -194136,7 +194136,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -194145,7 +194145,7 @@
         "row_id": "phys_fn_004525",
         "rva": "0x000b1440",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -194223,7 +194223,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -194232,7 +194232,7 @@
         "row_id": "phys_fn_004527",
         "rva": "0x000b1490",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -194310,7 +194310,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -194319,7 +194319,7 @@
         "row_id": "phys_fn_004529",
         "rva": "0x000b14f0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -194384,7 +194384,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -194393,7 +194393,7 @@
         "row_id": "phys_fn_004531",
         "rva": "0x000b1550",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -195230,7 +195230,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -195239,7 +195239,7 @@
         "row_id": "phys_fn_004551",
         "rva": "0x000b1860",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -195407,7 +195407,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -195416,7 +195416,7 @@
         "row_id": "phys_fn_004555",
         "rva": "0x000b1910",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -195494,7 +195494,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -195503,7 +195503,7 @@
         "row_id": "phys_fn_004557",
         "rva": "0x000b1960",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -195581,7 +195581,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -195590,7 +195590,7 @@
         "row_id": "phys_fn_004559",
         "rva": "0x000b19c0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -195655,7 +195655,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -195664,7 +195664,7 @@
         "row_id": "phys_fn_004561",
         "rva": "0x000b1a20",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -196518,7 +196518,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -196527,7 +196527,7 @@
         "row_id": "phys_fn_004581",
         "rva": "0x000b1d00",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -196695,7 +196695,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -196704,7 +196704,7 @@
         "row_id": "phys_fn_004585",
         "rva": "0x000b1db0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -196782,7 +196782,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -196791,7 +196791,7 @@
         "row_id": "phys_fn_004587",
         "rva": "0x000b1e00",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -196869,7 +196869,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -196878,7 +196878,7 @@
         "row_id": "phys_fn_004589",
         "rva": "0x000b1e60",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -196943,7 +196943,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -196952,7 +196952,7 @@
         "row_id": "phys_fn_004591",
         "rva": "0x000b1ec0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -197630,7 +197630,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -197639,7 +197639,7 @@
         "row_id": "phys_fn_004607",
         "rva": "0x000b2140",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -197807,7 +197807,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -197816,7 +197816,7 @@
         "row_id": "phys_fn_004611",
         "rva": "0x000b21f0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -197894,7 +197894,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -197903,7 +197903,7 @@
         "row_id": "phys_fn_004613",
         "rva": "0x000b2240",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -197981,7 +197981,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -197990,7 +197990,7 @@
         "row_id": "phys_fn_004615",
         "rva": "0x000b22a0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198055,7 +198055,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -198064,7 +198064,7 @@
         "row_id": "phys_fn_004617",
         "rva": "0x000b2300",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -198742,7 +198742,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -198751,7 +198751,7 @@
         "row_id": "phys_fn_004633",
         "rva": "0x000b2580",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199007,7 +199007,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -199016,7 +199016,7 @@
         "row_id": "phys_fn_004639",
         "rva": "0x000b2670",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199094,7 +199094,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -199103,7 +199103,7 @@
         "row_id": "phys_fn_004641",
         "rva": "0x000b26c0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199181,7 +199181,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -199190,7 +199190,7 @@
         "row_id": "phys_fn_004643",
         "rva": "0x000b2720",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -199429,7 +199429,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -199438,7 +199438,7 @@
         "row_id": "phys_fn_004649",
         "rva": "0x000b2840",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -200116,7 +200116,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -200125,7 +200125,7 @@
         "row_id": "phys_fn_004665",
         "rva": "0x000b2ac0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -200293,7 +200293,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -200302,7 +200302,7 @@
         "row_id": "phys_fn_004669",
         "rva": "0x000b2b70",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -200380,7 +200380,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -200389,7 +200389,7 @@
         "row_id": "phys_fn_004671",
         "rva": "0x000b2bc0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -200467,7 +200467,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -200476,7 +200476,7 @@
         "row_id": "phys_fn_004673",
         "rva": "0x000b2c20",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -200541,7 +200541,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -200550,7 +200550,7 @@
         "row_id": "phys_fn_004675",
         "rva": "0x000b2c80",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -202685,7 +202685,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -202694,7 +202694,7 @@
         "row_id": "phys_fn_004725",
         "rva": "0x000b33a0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -203372,7 +203372,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -203381,7 +203381,7 @@
         "row_id": "phys_fn_004741",
         "rva": "0x000b3620",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -203637,7 +203637,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -203646,7 +203646,7 @@
         "row_id": "phys_fn_004747",
         "rva": "0x000b3700",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -203724,7 +203724,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -203733,7 +203733,7 @@
         "row_id": "phys_fn_004749",
         "rva": "0x000b3750",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -203811,7 +203811,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -203820,7 +203820,7 @@
         "row_id": "phys_fn_004751",
         "rva": "0x000b37b0",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -203885,7 +203885,7 @@
         "dynamic_proof_recorded": true,
         "ledger_phase": 6,
         "ledger_disposition": "deferred",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "gate": null,
         "falsification_recorded": false
       },
@@ -203894,7 +203894,7 @@
         "row_id": "phys_fn_004753",
         "rva": "0x000b3810",
         "action": "add_row_specific_falsification",
-        "ledger_reason": "reconstructed_not_falsified",
+        "ledger_reason": "not_independently_falsifiable",
         "driving_phases": [],
         "requires_dependency_review": true
       }
@@ -234658,7 +234658,7 @@
     }
   ],
   "source": {
-    "inventory_sha256": "264188e9b53f86801bcf442e2fcbab0317db09ace3f903d1e545208b28db3931",
+    "inventory_sha256": "76823d843d25d49be5410885a7eb9eb93472d60a861c54bd57ba990242fa3d05",
     "capstone_sha256": "869d38285f364bb1df5ea4b6558e43e334de5c6a44b97ee842198690557c44b0",
     "generator_sha256": "bcd3d2f22a70b9a0e9b346d3edc0494f05f7cbabf7b2f9a99a3b6b9d45655e83",
     "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
@@ -234667,7 +234667,7 @@
       "docs/reconstruction/novodex-physics/gates/phase3-closure.json": "439d62e5f99f5c8d8c50ac01fd1b92510a464a5315e90ad6aab54efad6e45c84",
       "docs/reconstruction/novodex-physics/gates/phase4-closure.json": "23063a6a073ef475d1d925c2dc6af48cdfd43b2887070310f2fd2678a507d79a",
       "docs/reconstruction/novodex-physics/gates/phase5-closure.json": "b18ca9a708196adeb192612b3c77672c0122d989ee3f464d79c929b57d9c2289",
-      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "90e20300b2a110a50bdf997ace9c8834e3da6d62b545393997c03d66b7bd1a7d",
+      "docs/reconstruction/novodex-physics/gates/phase6-closure.json": "d66cf2597043eb5aee2988be17abb4ce9be8d862a0ffcb0cd40f241f5c4d5f33",
       "docs/reconstruction/novodex-physics/gates/phase7-closure.json": "a00b92c5f52ad55af6ac1873288c21358549140044b019d10955717008de46cc"
     }
   }
