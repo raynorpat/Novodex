@@ -1,0 +1,131 @@
+SURVEY phys_fn_001676 NxPhysicsCollisionTests tried=4 caught=3 survived=1 rejected=4 nobuild=2
+CAUGHT phys_fn_001676 NxPhysicsCollisionTests mismatches=92398 line 456: (double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2]  ->  !((double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2])  (neg)
+CAUGHT phys_fn_001676 NxPhysicsCollisionTests mismatches=56 line 456: <=  ->  <  (cmp)
+  SURVIVED line 449: 3  ->  4  (const)
+  rejected line 452: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 452: 2  ->  3  (const)  [build failed]
+  rejected line 463: <=  ->  <  (cmp)  [build failed]
+  rejected line 466: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001828 NxPhysicsCollisionTests tried=4 caught=4 survived=0 rejected=4 nobuild=2
+CAUGHT phys_fn_001828 NxPhysicsCollisionTests mismatches=1 line 569: +  ->  -  (arith) [0x00041849]
+CAUGHT phys_fn_001828 NxPhysicsCollisionTests mismatches=14518 line 601: +  ->  -  (arith) [0x0004189f]
+  rejected line 588: +  ->  -  (arith) [0x0004187a]  [no change in the DLL]
+  rejected line 594: +  ->  -  (arith) [0x0004188c]  [build failed]
+  rejected line 634: +  ->  -  (arith) [0x000418f8]  [build failed]
+  rejected line 640: 8  ->  9  (const) [0x0004190d]  [no change in the DLL]
+SURVEY phys_fn_001833 NxPhysicsCollisionTests tried=4 caught=3 survived=1 rejected=4 nobuild=2
+CAUGHT phys_fn_001833 NxPhysicsCollisionTests mismatches=1 line 939: +  ->  -  (arith) [0x00041ba2]
+CAUGHT phys_fn_001833 NxPhysicsCollisionTests mismatches=7625 line 970: +  ->  -  (arith) [0x00041beb]
+  SURVIVED line 964: +  ->  -  (arith) [0x00041bdb]
+  rejected line 942: 8  ->  9  (const) [0x00041bab]  [no change in the DLL]
+  rejected line 948: +  ->  -  (arith) [0x00041bba]  [build failed]
+  rejected line 976: +  ->  -  (arith) [0x00041bfc]  [build failed]
+  rejected line 977: 8  ->  9  (const) [0x00041bff]  [no change in the DLL]
+SURVEY phys_fn_001844 NxPhysicsCollisionTests tried=4 caught=4 survived=0 rejected=4 nobuild=1
+CAUGHT phys_fn_001844 NxPhysicsCollisionTests mismatches=1 line 2190: -  ->  +  (arith) [0x000427d1]
+CAUGHT phys_fn_001844 NxPhysicsCollisionTests mismatches=51939 line 2585: +  ->  -  (arith) [0x00042c6d]
+  rejected line 2318: +  ->  -  (arith) [0x0004293f]  [no change in the DLL]
+  rejected line 2467: +  ->  -  (arith) [0x00042aff]  [build failed]
+  rejected line 2988: -  ->  +  (arith) [0x000430f3]  [line is outside the row's oracle range]
+  rejected line 3149: -  ->  +  (arith) [0x000432c0]  [line is outside the row's oracle range]
+SURVEY phys_fn_001849 NxPhysicsCollisionTests tried=4 caught=4 survived=0 rejected=4 nobuild=2
+CAUGHT phys_fn_001849 NxPhysicsCollisionTests mismatches=1 line 3451: -  ->  +  (arith) [0x00043681]
+CAUGHT phys_fn_001849 NxPhysicsCollisionTests mismatches=1 line 3849: -  ->  +  (arith) [0x00043b6b]
+  rejected line 3621: -  ->  +  (arith) [0x00043889]  [no change in the DLL]
+  rejected line 3744: 2  ->  3  (const) [0x00043a08]  [build failed]
+  rejected line 4294: 4  ->  5  (const) [0x00044066]  [build failed]
+  rejected line 4425: -  ->  +  (arith) [0x000441c3]  [no change in the DLL]
+SURVEY phys_fn_001670 NxPhysicsCollisionTests tried=3 caught=3 survived=0 rejected=5 nobuild=2
+CAUGHT phys_fn_001670 NxPhysicsCollisionTests mismatches=187634 line 73: -  ->  +  (arith)
+CAUGHT phys_fn_001670 NxPhysicsCollisionTests mismatches=16192 line 84: +  ->  -  (arith)
+  rejected line 77: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 79: 8  ->  9  (const)  [build failed]
+  rejected line 111: 2  ->  3  (const)  [changed bytes outside NxPointBoxSquareDistance]
+  rejected line 117: >  ->  >=  (cmp)  [build failed]
+  rejected line 126: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001688 NxPhysicsCollisionTests tried=3 caught=3 survived=0 rejected=5 nobuild=2
+CAUGHT phys_fn_001688 NxPhysicsCollisionTests mismatches=205821 line 701: 2  ->  3  (const)
+CAUGHT phys_fn_001688 NxPhysicsCollisionTests mismatches=13479 line 712: >=  ->  >  (cmp)
+  rejected line 703: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 704: -  ->  +  (arith)  [build failed]
+  rejected line 716: segmentParam  ->  !(segmentParam)  (neg)  [changed bytes outside NxSegmentBoxSquareDistance]
+  rejected line 722: 2  ->  3  (const)  [build failed]
+  rejected line 730: segmentParam  ->  !(segmentParam)  (neg)  [no change in the DLL]
+SURVEY phys_fn_001692 NxPhysicsCollisionTests tried=4 caught=4 survived=0 rejected=4 nobuild=2
+CAUGHT phys_fn_001692 NxPhysicsCollisionTests mismatches=167231 line 1102: -  ->  +  (arith)
+CAUGHT phys_fn_001692 NxPhysicsCollisionTests mismatches=185285 line 1113: 2  ->  3  (const)
+  rejected line 1106: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1110: 2  ->  3  (const)  [build failed]
+  rejected line 1140: 2  ->  3  (const)  [build failed]
+  rejected line 1147: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001760 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8 nobuild=2
+  rejected line 112: +  ->  -  (arith)  [changed bytes outside NxTrianglePlane]
+  rejected line 114: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 120: +  ->  -  (arith)  [build failed]
+  rejected line 123: +  ->  -  (arith)  [changed bytes outside NxTrianglePlane]
+  rejected line 126: 3  ->  4  (const)  [changed bytes outside NxTrianglePlane]
+  rejected line 141: 4  ->  5  (const)  [changed bytes outside NxTrianglePlane]
+  rejected line 167: +  ->  -  (arith)  [build failed]
+  rejected line 178: +  ->  -  (arith)  [no change in the DLL]
+SKIPPED phys_fn_001694 the unmutated run already reports a difference (control not exact)
+SKIPPED phys_fn_001753 the unmutated run already reports a difference (control not exact)
+SKIPPED phys_fn_001855 the unmutated run already reports a difference (control not exact)
+SURVEY phys_fn_001678 NxPhysicsCollisionTests tried=6 caught=6 survived=0 rejected=2 nobuild=2
+CAUGHT phys_fn_001678 NxPhysicsCollisionTests mismatches=84 line 485: >=  ->  >  (cmp)
+CAUGHT phys_fn_001678 NxPhysicsCollisionTests mismatches=8728 line 492: delta >= 0.0  ->  !(delta >= 0.0)  (neg)
+  rejected line 480: -  ->  +  (arith)  [build failed]
+  rejected line 496: lineParam  ->  !(lineParam)  (neg)  [build failed]
+SURVEY phys_fn_001830 NxPhysicsCollisionTests tried=6 caught=6 survived=0 rejected=2 nobuild=2
+CAUGHT phys_fn_001830 NxPhysicsCollisionTests mismatches=30483 line 679: +  ->  -  (arith) [0x0004193f]
+CAUGHT phys_fn_001830 NxPhysicsCollisionTests mismatches=52618 line 685: +  ->  -  (arith) [0x00041952]
+  rejected line 672: 8  ->  9  (const) [0x00041930]  [build failed]
+  rejected line 691: +  ->  -  (arith) [0x00041964]  [build failed]
+SURVEY phys_fn_001834 NxPhysicsCollisionTests tried=6 caught=6 survived=0 rejected=2 nobuild=2
+CAUGHT phys_fn_001834 NxPhysicsCollisionTests mismatches=5242 line 1054: +  ->  -  (arith) [0x00041c9b]
+CAUGHT phys_fn_001834 NxPhysicsCollisionTests mismatches=3096 line 1090: +  ->  -  (arith) [0x00041cfd]
+  rejected line 1007: -  ->  +  (arith) [0x00041c11]  [build failed]
+  rejected line 1128: +  ->  -  (arith) [0x00041d64]  [build failed]
+SURVEY phys_fn_001846 NxPhysicsCollisionTests tried=2 caught=1 survived=1 rejected=6 nobuild=0
+CAUGHT phys_fn_001846 NxPhysicsCollisionTests mismatches=42368 line 2988: -  ->  +  (arith) [0x000430f3]
+  SURVIVED line 3149: -  ->  +  (arith) [0x000432c0]
+  rejected line 2190: -  ->  +  (arith) [0x000427d1]  [line is outside the row's oracle range]
+  rejected line 2318: +  ->  -  (arith) [0x0004293f]  [line is outside the row's oracle range]
+  rejected line 2467: +  ->  -  (arith) [0x00042aff]  [line is outside the row's oracle range]
+  rejected line 2585: +  ->  -  (arith) [0x00042c6d]  [line is outside the row's oracle range]
+  rejected line 2704: +  ->  -  (arith) [0x00042dc6]  [line is outside the row's oracle range]
+  rejected line 2843: +  ->  -  (arith) [0x00042f50]  [line is outside the row's oracle range]
+SURVEY phys_fn_001851 NxPhysicsCollisionTests tried=6 caught=6 survived=0 rejected=2 nobuild=2
+CAUGHT phys_fn_001851 NxPhysicsCollisionTests mismatches=4983 line 4483: +  ->  -  (arith) [0x00044253]
+CAUGHT phys_fn_001851 NxPhysicsCollisionTests mismatches=1586 line 4503: +  ->  -  (arith) [0x000442a8]
+  rejected line 4452: +  ->  -  (arith) [0x000441e7]  [build failed]
+  rejected line 4524: +  ->  -  (arith) [0x0004432f]  [build failed]
+SURVEY phys_fn_002264 NxPhysicsCcdSimulationTests tried=5 caught=0 survived=5 rejected=3 nobuild=2
+  SURVIVED line 1088: 2  ->  3  (const)
+  SURVIVED line 1131: +  ->  -  (arith)
+  SURVIVED line 1135: +  ->  -  (arith)
+  SURVIVED line 1161: 6  ->  7  (const)
+  SURVIVED line 1179: 2  ->  3  (const)
+  rejected line 1053: 16  ->  17  (const)  [build failed]
+  rejected line 1062: 15  ->  16  (const)  [no change in the DLL]
+  rejected line 1107: sweepDistance * 0.5f > travel  ->  !(sweepDistance * 0.5f > travel)  (neg)  [build failed]
+SURVEY phys_fn_001680 NxPhysicsCollisionTests tried=8 caught=7 survived=1 rejected=0 nobuild=0
+CAUGHT phys_fn_001680 NxPhysicsCollisionTests mismatches=1 line 545: lineParam  ->  !(lineParam)  (neg)
+CAUGHT phys_fn_001680 NxPhysicsCollisionTests mismatches=4866 line 546: -  ->  +  (arith)
+  SURVIVED line 557: >  ->  >=  (cmp)
+SURVEY phys_fn_001832 NxPhysicsCollisionTests tried=8 caught=8 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_001832 NxPhysicsCollisionTests mismatches=1 line 742: +  ->  -  (arith) [0x000419b3]
+CAUGHT phys_fn_001832 NxPhysicsCollisionTests mismatches=123480 line 769: +  ->  -  (arith) [0x00041a00]
+SURVEY phys_fn_001840 NxPhysicsCollisionTests tried=8 caught=8 survived=0 rejected=0 nobuild=0
+CAUGHT phys_fn_001840 NxPhysicsCollisionTests mismatches=1 line 1772: +  ->  -  (arith) [0x00042463]
+CAUGHT phys_fn_001840 NxPhysicsCollisionTests mismatches=1 line 1785: +  ->  -  (arith) [0x00042485]
+SURVEY phys_fn_001847 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8 nobuild=0
+  rejected line 3181: +  ->  -  (arith) [0x000432d7]  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3209: +  ->  -  (arith) [0x00043348]  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3233: +  ->  -  (arith) [0x000433c0]  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3256: +  ->  -  (arith) [0x0004344d]  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3288: +  ->  -  (arith) [0x000434bf]  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3314: +  ->  -  (arith) [0x00043528]  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3343: +  ->  -  (arith) [0x0004359e]  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3408: +  ->  -  (arith) [0x00043664]  [changed bytes outside NxContactConvexHeightfield]
+SKIPPED phys_fn_001684 the candidate function NxLineBoxSquareDistance (640 bytes) is far larger than the row (237 bytes): other rows share it
+SKIPPED phys_fn_001686 function not found

@@ -61,11 +61,11 @@
     "differential_falsified": 88,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 10,
-    "deferred_homeless_shared_code": 9,
+    "deferred_homeless_shared_code": 10,
     "deferred_reconstructed_not_falsified": 17,
     "deferred_blocked_on_later_phase": 3,
     "deferred_unreachable_in_phase_2": 5,
-    "deferred_not_independently_falsifiable": 5
+    "deferred_not_independently_falsifiable": 4
   },
   "closed": [
     {
@@ -1774,7 +1774,7 @@
       "id": "phys_fn_001730",
       "rva": "0x00038050",
       "size": 61,
-      "reason": "not_independently_falsifiable",
+      "reason": "homeless_shared_code",
       "phase_provenance": "shared_by_callers",
       "translation_unit_zone": "gap IceAdjacencies.cpp .. ContactConvexHeightfield.cpp",
       "reachability": "unreachable_from_phase_2",
@@ -1783,7 +1783,7 @@
         5
       ],
       "callers": 3,
-      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "Not surveyed: the candidate function NxRayAABBSlab (368 bytes) is far larger than the row (61 bytes): other rows share it; an edit in it cannot be credited to this row alone."
     },
     {
       "id": "phys_fn_001732",

@@ -1,0 +1,133 @@
+{
+ "doc": "evidence/falsify-first-party.md",
+ "rows": {
+  "phys_fn_001694": {
+   "reason": "keep",
+   "note": "Not surveyed: the unmutated run already reports a difference (control not exact)."
+  },
+  "phys_fn_001753": {
+   "reason": "keep",
+   "note": "Not surveyed: the unmutated run already reports a difference (control not exact)."
+  },
+  "phys_fn_001855": {
+   "reason": "keep",
+   "note": "Not surveyed: the unmutated run already reports a difference (control not exact)."
+  },
+  "phys_fn_001684": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function NxLineBoxSquareDistance (640 bytes) is far larger than the row (237 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_001686": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002085": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002158": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for nxTriangleMeshBuildConvexData."
+  },
+  "phys_fn_002087": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002164": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for TriangleMesh::loadFromDesc."
+  },
+  "phys_fn_002089": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002091": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002168": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for TriangleMesh::loadPMap."
+  },
+  "phys_fn_002093": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_002251": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for TriangleMesh::TriangleMesh."
+  },
+  "phys_fn_002260": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for TriangleMesh::loadFromDesc."
+  },
+  "phys_fn_001008": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_001730": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function NxRayAABBSlab (368 bytes) is far larger than the row (61 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_002156": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function nxDoubleToFloat9_2156 (240 bytes) is far larger than the row (46 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_001371": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_001403": {
+   "reason": "keep",
+   "note": "Not surveyed: source file missing."
+  },
+  "phys_fn_005246": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005229": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_005260": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004037": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function SceneDump::writeJoint (2468 bytes) is far larger than the row (409 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_003649": {
+   "reason": "keep",
+   "note": "Not surveyed: no unique map symbol for if."
+  },
+  "phys_fn_004039": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004041": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004043": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004051": {
+   "reason": "homeless_shared_code",
+   "note": "Not surveyed: the candidate function SceneDump::writeAsset (3504 bytes) is far larger than the row (409 bytes): other rows share it; an edit in it cannot be credited to this row alone."
+  },
+  "phys_fn_004053": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004055": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  },
+  "phys_fn_004061": {
+   "reason": "keep",
+   "note": "Not surveyed: function not found."
+  }
+ }
+}

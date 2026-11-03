@@ -613,7 +613,9 @@ disposition matrix and trajectory scenarios move to the Phase 8 audit.
 
 ## Falsifying the remaining reconstructed rows (twenty-sixth slice)
 
-New tools: `falsify_queue.py`, `mutate_cpp.py`, `defer_rows.py`, `survey_to_deferrals.py`; `close_static_rows.py` closes C++ rows on a
-source mutation. 55 rows closed (18 joints, 37 collision/mesh/scene/pruner/other), 197 deferred after a survey with the counts in
-the ledger note, 321 deferred without a survey because no gate or family could be named; 792 rows (636 vendored, 114 undriven,
-17 unmapped, 25 others) are untouched. Details: `evidence/falsify-joints.md`, `evidence/falsify-first-party.md`.
+New tools: `falsify_queue.py`, `mutate_cpp.py`, `defer_rows.py`, `survey_to_deferrals.py`, `reopen_rows.py`; `close_static_rows.py`
+closes C++ rows on a source mutation. 71 rows closed (18 joints, 53 collision/mesh/pruner/other), 173 deferred after a survey with
+the counts in the ledger note, 32 not surveyed (control not exact, shared function, not located) and 321 deferred without a
+survey because no gate or family could be named; the rest of the 1,365 (636 vendored, 114 undriven, 17 unmapped, 25 others)
+are untouched. An independent review found the first run's collision-test closures rested on crashes only (a keying bug);
+they were reopened and re-run (see `evidence/falsify-first-party.md`). Details: `evidence/falsify-joints.md`.

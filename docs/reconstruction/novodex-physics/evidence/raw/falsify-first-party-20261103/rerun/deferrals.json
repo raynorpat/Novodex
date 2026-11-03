@@ -1,17 +1,77 @@
 {
- "doc": "evidence/raw/falsify-first-party-20261103/survey-pruner.log",
+ "doc": "evidence/raw/falsify-first-party-20261103/rerun/all.log",
  "rows": {
+  "phys_fn_001760": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_002264": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCcdSimulationTests caught 0 of 5 mutations tried (5 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001847": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_002067": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_002166": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsTriangleMeshApiTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001006": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsShapeVtableTests caught 1 of 4 mutations tried (3 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_000837": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 2 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_001774": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 2 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_001785": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_001789": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 2 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_001012": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
+  "phys_fn_000983": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsActorDynamicSetterTests caught 4 of 7 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_000839": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 7 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_001732": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_002241": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCollisionTests caught 5 of 8 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_001253": {
+   "reason": "not_independently_falsifiable",
+   "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_001373": {
+   "reason": "not_independently_falsifiable",
+   "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
+  },
   "phys_fn_004857": {
    "reason": "reconstructed_not_falsified",
    "note": "NxPhysicsSceneRaycastTests caught 2 of 8 mutations tried (6 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
-  },
-  "phys_fn_002148": {
-   "reason": "reconstructed_not_falsified",
-   "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
-  },
-  "phys_fn_005295": {
-   "reason": "reconstructed_not_falsified",
-   "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
   },
   "phys_fn_005545": {
    "reason": "not_independently_falsifiable",
@@ -20,10 +80,6 @@
   "phys_fn_005208": {
    "reason": "not_independently_falsifiable",
    "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
-  },
-  "phys_fn_005303": {
-   "reason": "reconstructed_not_falsified",
-   "note": "NxPhysicsCollisionTests caught 1 of 7 mutations tried (6 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
   },
   "phys_fn_005547": {
    "reason": "not_independently_falsifiable",
@@ -48,10 +104,6 @@
   "phys_fn_005236": {
    "reason": "not_independently_falsifiable",
    "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
-  },
-  "phys_fn_005550": {
-   "reason": "reconstructed_not_falsified",
-   "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
   },
   "phys_fn_005216": {
    "reason": "not_independently_falsifiable",
@@ -89,10 +141,6 @@
    "reason": "not_independently_falsifiable",
    "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
   },
-  "phys_fn_005254": {
-   "reason": "reconstructed_not_falsified",
-   "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
-  },
   "phys_fn_005464": {
    "reason": "not_independently_falsifiable",
    "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
@@ -100,10 +148,6 @@
   "phys_fn_005483": {
    "reason": "not_independently_falsifiable",
    "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
-  },
-  "phys_fn_005301": {
-   "reason": "reconstructed_not_falsified",
-   "note": "NxPhysicsCollisionTests caught 1 of 6 mutations tried (5 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
   },
   "phys_fn_005485": {
    "reason": "not_independently_falsifiable",
@@ -120,6 +164,14 @@
   "phys_fn_005543": {
    "reason": "not_independently_falsifiable",
    "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+  },
+  "phys_fn_004048": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCoreDumpTests caught 3 of 6 mutations tried (3 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+  },
+  "phys_fn_004062": {
+   "reason": "reconstructed_not_falsified",
+   "note": "NxPhysicsCoreDumpTests caught 3 of 6 mutations tried (3 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
   }
  }
 }

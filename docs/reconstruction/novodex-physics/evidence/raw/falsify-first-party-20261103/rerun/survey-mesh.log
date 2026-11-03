@@ -1,0 +1,39 @@
+SURVEY phys_fn_001990 NxPhysicsTriangleMeshApiTests tried=4 caught=2 survived=2 rejected=4 nobuild=0
+CAUGHT phys_fn_001990 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 1898: 5  ->  6  (const)
+CAUGHT phys_fn_001990 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 1913: ==  ->  !=  (cmp)
+  SURVIVED line 1909: -  ->  +  (arith)
+  SURVIVED line 1936: 31  ->  32  (const)
+  rejected line 1878: count && !ordered  ->  !(count && !ordered)  (neg)  [no change in the DLL]
+  rejected line 1925: !changeX && changeY && !changeZ  ->  !(!changeX && changeY && !changeZ)  (neg)  [no change in the DLL]
+  rejected line 1932: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 1934: 27  ->  28  (const)  [changed bytes outside PenetrationMap::encodeCellRun]
+SURVEY phys_fn_002067 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8 nobuild=0
+  rejected line 71: +  ->  -  (arith) [0x00051ef3]  [no change in the DLL]
+  rejected line 88: +  ->  -  (arith) [0x00051f18]  [changed bytes outside nxMTReleaseRow]
+  rejected line 98: +  ->  -  (arith) [0x00051f30]  [changed bytes outside nxMTReleaseRow]
+  rejected line 108: +  ->  -  (arith) [0x00051f48]  [changed bytes outside nxMTReleaseRow]
+  rejected line 118: +  ->  -  (arith) [0x00051f60]  [no change in the DLL]
+  rejected line 128: +  ->  -  (arith) [0x00051f78]  [no change in the DLL]
+  rejected line 131: 8  ->  9  (const) [0x00051f7e]  [changed bytes outside nxMTReleaseRow]
+  rejected line 139: 8  ->  9  (const) [0x00051f93]  [changed bytes outside nxMTReleaseRow]
+SURVEY phys_fn_002017 NxPhysicsTriangleMeshApiTests tried=6 caught=4 survived=2 rejected=2 nobuild=0
+CAUGHT phys_fn_002017 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 1984: !=  ->  ==  (cmp)
+CAUGHT phys_fn_002017 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 1988: ==  ->  !=  (cmp)
+CAUGHT phys_fn_002017 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 2003: +  ->  -  (arith)
+CAUGHT phys_fn_002017 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 2017: !encodeCellRun(stream, groupCount ? group : 0, groupCount, m  ->  !(!encodeCellRun(stream, groupCount ? group : 0, groupCount,  (neg)
+  SURVIVED line 1965: >  ->  >=  (cmp)
+  SURVIVED line 1954: mCellCount && (!ordered || !group)  ->  !(mCellCount && (!ordered || !group))  (neg)
+  rejected line 1982: item.value == kPMapEmptyValue  ->  !(item.value == kPMapEmptyValue)  (neg)  [no change in the DLL]
+  rejected line 2029: ==  ->  !=  (cmp)  [no change in the DLL]
+SKIPPED phys_fn_002085 function not found
+SKIPPED phys_fn_002158 no unique map symbol for nxTriangleMeshBuildConvexData
+SKIPPED phys_fn_002087 function not found
+SKIPPED phys_fn_002164 no unique map symbol for TriangleMesh::loadFromDesc
+SKIPPED phys_fn_002089 function not found
+SURVEY phys_fn_002166 NxPhysicsTriangleMeshApiTests tried=1 caught=0 survived=1 rejected=0 nobuild=0
+  SURVIVED line 1019: !mInternal.mVertices || !mInternal.mTriangles  ->  !(!mInternal.mVertices || !mInternal.mTriangles)  (neg)
+SKIPPED phys_fn_002091 function not found
+SKIPPED phys_fn_002168 no unique map symbol for TriangleMesh::loadPMap
+SKIPPED phys_fn_002093 function not found
+SKIPPED phys_fn_002251 no unique map symbol for TriangleMesh::TriangleMesh
+SKIPPED phys_fn_002260 no unique map symbol for TriangleMesh::loadFromDesc

@@ -6001,7 +6001,8 @@
       "size": 2452,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed: no unique map symbol for if."
     }
   ]
 }

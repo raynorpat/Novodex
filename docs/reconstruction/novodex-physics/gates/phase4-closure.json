@@ -54,13 +54,14 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 801,
-    "deferred_not_reconstructed_in_phase": 17,
+    "deferred_reconstructed_not_falsified": 786,
+    "deferred_not_reconstructed_in_phase": 15,
     "deferred_vendored_not_falsified": 19,
-    "oracle_differential_falsified": 108,
-    "differential_falsified": 57,
-    "deferred_blocked_on_later_phase": 26,
-    "deferred_not_independently_falsifiable": 25
+    "oracle_differential_falsified": 138,
+    "differential_falsified": 61,
+    "deferred_blocked_on_later_phase": 7,
+    "deferred_not_independently_falsifiable": 25,
+    "deferred_homeless_shared_code": 2
   },
   "closed": [
     {
@@ -1746,6 +1747,466 @@
         6,
         7
       ]
+    },
+    {
+      "id": "phys_fn_001676",
+      "rva": "0x000335f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/Distance.cpp line 456: (double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2] -> !((double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2]) (neg)",
+        "detected": "mismatches=92398"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001670",
+      "rva": "0x00032840",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/Distance.cpp line 73: - -> + (arith)",
+        "detected": "mismatches=187634"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001688",
+      "rva": "0x00033d00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/Distance.cpp line 701: 2 -> 3 (const)",
+        "detected": "mismatches=205821"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001678",
+      "rva": "0x000336c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/Distance.cpp line 485: >= -> > (cmp)",
+        "detected": "mismatches=84"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001680",
+      "rva": "0x000338a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/Distance.cpp line 545: lineParam -> !(lineParam) (neg)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001990",
+      "rva": "0x0004cc60",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "Physics/src/PMap.cpp line 1898: 5 -> 6 (const)",
+        "detected": "stdout_delta=32"
+      }
+    },
+    {
+      "id": "phys_fn_002017",
+      "rva": "0x0004e1a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "Physics/src/PMap.cpp line 1984: != -> == (cmp)",
+        "detected": "stdout_delta=32"
+      }
+    },
+    {
+      "id": "phys_fn_002148",
+      "rva": "0x00053810",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1941: + -> - (arith) [0x00053821]",
+        "detected": "mismatches=2"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005295",
+      "rva": "0x000e7250",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 232: + -> - (arith) [0x000e7253]",
+        "detected": "mismatches=393"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005223",
+      "rva": "0x000e52d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2014: + -> - (arith) [0x000e52d3]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005303",
+      "rva": "0x000e7380",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 299: + -> - (arith) [0x000e7383]",
+        "detected": "mismatches=24"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005305",
+      "rva": "0x000e7570",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 472: + -> - (arith) [0x000e7573]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005307",
+      "rva": "0x000e75d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 521: + -> - (arith) [0x000e75d0]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005550",
+      "rva": "0x000f1ac0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1336: + -> - (arith) [0x000f1ac3]",
+        "detected": "mismatches=20"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005238",
+      "rva": "0x000e5810",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2463: + -> - (arith) [0x000e5832]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005309",
+      "rva": "0x000e75f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 546: + -> - (arith) [0x000e7602]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005552",
+      "rva": "0x000f1c60",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1501: + -> - (arith) [0x000f1c69]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005313",
+      "rva": "0x000e7690",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 601: 4 -> 5 (const) [0x000e7690]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005554",
+      "rva": "0x000f1cb0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1531: + -> - (arith) [0x000f1cb6]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005315",
+      "rva": "0x000e76c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 656: 2 -> 3 (const) [0x000e7710]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005556",
+      "rva": "0x000f1d10",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1581: + -> - (arith) [0x000f1d16]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005317",
+      "rva": "0x000e7850",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 816: + -> - (arith) [0x000e78af]",
+        "detected": "mismatches=23"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005558",
+      "rva": "0x000f1d50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1605: + -> - (arith) [0x000f1d56]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005248",
+      "rva": "0x000e5a00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2657: + -> - (arith) [0x000e5a03]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005318",
+      "rva": "0x000e7b80",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1104: + -> - (arith) [0x000e7b84]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005560",
+      "rva": "0x000f1db0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1654: + -> - (arith) [0x000f1db3]",
+        "detected": "mismatches=20"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005250",
+      "rva": "0x000e5a30",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2682: + -> - (arith) [0x000e5a31]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005252",
+      "rva": "0x000e5a90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2729: + -> - (arith) [0x000e5a90]",
+        "detected": "mismatches=15"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005254",
+      "rva": "0x000e5ab0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2749: + -> - (arith) [0x000e5ab3]",
+        "detected": "mismatches=11"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005256",
+      "rva": "0x000e5de0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 3043: + -> - (arith) [0x000e5de6]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005468",
+      "rva": "0x000efa90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/IcePruner.cpp line 1442: + -> - (arith)",
+        "detected": "stdout_delta=5167"
+      }
+    },
+    {
+      "id": "phys_fn_005258",
+      "rva": "0x000e6060",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 3276: + -> - (arith) [0x000e6065]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005481",
+      "rva": "0x000effc0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/IcePruner.cpp line 138: mNbTotal == mMaxNbObjects -> !(mNbTotal == mMaxNbObjects) (neg)",
+        "detected": "stdout_delta=2811"
+      }
+    },
+    {
+      "id": "phys_fn_005301",
+      "rva": "0x000e7360",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1969: + -> - (arith) [0x000e7364]",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
     }
   ],
   "deferred": [
@@ -2146,15 +2607,6 @@
       "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
-      "id": "phys_fn_001670",
-      "rva": "0x00032840",
-      "size": 403,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
-    },
-    {
       "id": "phys_fn_001674",
       "rva": "0x00032f10",
       "size": 1751,
@@ -2162,24 +2614,6 @@
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
       "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
-    },
-    {
-      "id": "phys_fn_001676",
-      "rva": "0x000335f0",
-      "size": 194,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
-    },
-    {
-      "id": "phys_fn_001678",
-      "rva": "0x000336c0",
-      "size": 471,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "NxPhysicsCollisionTests caught 2 of 6 mutations tried (4 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001682",
@@ -2194,10 +2628,10 @@
       "id": "phys_fn_001684",
       "rva": "0x00033a50",
       "size": 237,
-      "reason": "reconstructed_not_falsified",
+      "reason": "homeless_shared_code",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "NxPhysicsCollisionTests caught 0 of 8 mutations tried (8 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+      "note": "Not surveyed: the candidate function NxLineBoxSquareDistance (640 bytes) is far larger than the row (237 bytes): other rows share it; an edit in it cannot be credited to this row alone."
     },
     {
       "id": "phys_fn_001686",
@@ -2206,16 +2640,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001688",
-      "rva": "0x00033d00",
-      "size": 378,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_001694",
@@ -2224,7 +2649,7 @@
       "reason": "not_independently_falsifiable",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
+      "note": "Not surveyed: the unmutated run already reports a difference (control not exact)."
     },
     {
       "id": "phys_fn_001984",
@@ -2404,7 +2829,7 @@
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the release row it runs first, the model delete flag `push 1` at 0x00051eff made `push 0` (the row own `lea ecx, [esi + 0x24]` is unobservable: the no-op it jumps to ignores ecx); mismatches=42). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_002087",
@@ -2416,7 +2841,7 @@
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the kill-zero-area-faces flag `mov byte ptr [esp + 0x58], 1` at 0x00052422 made 0; mismatches=16). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_002089",
@@ -2428,7 +2853,7 @@
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the remap allocation size `shl edx, 2` at 0x000525e8 made `shl edx, 3`; mismatches=8). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_002091",
@@ -2440,7 +2865,7 @@
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the vertex array size `shl eax, 2` at 0x00052684 made `shl eax, 3`; mismatches=144). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_002093",
@@ -2452,7 +2877,7 @@
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the triangle pointer step `add ecx, 4` at 0x000529ac made `add ecx, 8`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_002144",
@@ -2469,7 +2894,8 @@
       "size": 154,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed: no unique map symbol for nxTriangleMeshBuildConvexData."
     },
     {
       "id": "phys_fn_002164",
@@ -2477,7 +2903,8 @@
       "size": 265,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed: no unique map symbol for TriangleMesh::loadFromDesc."
     },
     {
       "id": "phys_fn_002168",
@@ -2485,7 +2912,8 @@
       "size": 281,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed: no unique map symbol for TriangleMesh::loadPMap."
     },
     {
       "id": "phys_fn_002172",
@@ -2632,7 +3060,7 @@
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "NxPhysicsCollisionTests caught 2 of 8 mutations tried (6 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+      "note": "NxPhysicsCollisionTests caught 5 of 8 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_002249",
@@ -2649,7 +3077,8 @@
       "size": 216,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed: no unique map symbol for TriangleMesh::TriangleMesh."
     },
     {
       "id": "phys_fn_002253",
@@ -2666,7 +3095,8 @@
       "size": 1044,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed: no unique map symbol for TriangleMesh::loadFromDesc."
     },
     {
       "id": "phys_fn_002425",
@@ -8282,7 +8712,8 @@
       "size": 133,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_005232",
@@ -8351,19 +8782,7 @@
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e58cf (je Le59eb) made `jne Le59eb`; mismatches=16). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005254",
-      "rva": "0x000e5ab0",
-      "size": 807,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_005260",
@@ -8375,7 +8794,7 @@
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e613c (mov eax, dword ptr [esp + 0x24]) made `mov eax, dword ptr [esp + 0x28]`; mismatches=11). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_005265",
@@ -8493,30 +8912,6 @@
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
       "note": "vendored row promoted by vendored-correspondence Task 5b on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_005295",
-      "rva": "0x000e7250",
-      "size": 217,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
-    },
-    {
-      "id": "phys_fn_005303",
-      "rva": "0x000e7380",
-      "size": 452,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "NxPhysicsCollisionTests caught 1 of 7 mutations tried (6 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_005357",
@@ -8661,18 +9056,6 @@
       ],
       "blocked_on_type": "Pruner",
       "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
-    },
-    {
-      "id": "phys_fn_005550",
-      "rva": "0x000f1ac0",
-      "size": 412,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001526",
@@ -8828,18 +9211,6 @@
       "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
-      "id": "phys_fn_002148",
-      "rva": "0x00053810",
-      "size": 98,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row.",
-      "blocked_on_type": "Pruner"
-    },
-    {
       "id": "phys_fn_002150",
       "rva": "0x00053880",
       "size": 24,
@@ -8870,12 +9241,12 @@
       "id": "phys_fn_002156",
       "rva": "0x000538e0",
       "size": 46,
-      "reason": "reconstructed_not_falsified",
+      "reason": "homeless_shared_code",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
-      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row.",
+      "note": "Not surveyed: the candidate function nxDoubleToFloat9_2156 (240 bytes) is far larger than the row (46 bytes): other rows share it; an edit in it cannot be credited to this row alone.",
       "blocked_on_type": "TriangleMesh"
     },
     {
@@ -9419,18 +9790,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_005301",
-      "rva": "0x000e7360",
-      "size": 26,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "note": "NxPhysicsCollisionTests caught 1 of 6 mutations tried (5 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row.",
-      "blocked_on_type": "Pruner"
-    },
-    {
       "id": "phys_fn_005311",
       "rva": "0x000e7670",
       "size": 31,
@@ -9567,277 +9926,6 @@
       "phase_provenance": "translation_unit",
       "driving_phases": [],
       "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
-    },
-    {
-      "id": "phys_fn_001680",
-      "rva": "0x000338a0",
-      "size": 195,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001990",
-      "rva": "0x0004cc60",
-      "size": 633,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002017",
-      "rva": "0x0004e1a0",
-      "size": 915,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_005223",
-      "rva": "0x000e52d0",
-      "size": 270,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e52de (mov eax, dword ptr [esp + 0x18]) made `mov eax, dword ptr [esp + 0x1c]`; mismatches=3). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005305",
-      "rva": "0x000e7570",
-      "size": 89,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7582 (mov eax, dword ptr [esp + 0x18]) made `mov eax, dword ptr [esp + 0x1c]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005307",
-      "rva": "0x000e75d0",
-      "size": 21,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e75d6 (je Le75e2) made `jne Le75e2`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005238",
-      "rva": "0x000e5810",
-      "size": 86,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5814 (mov edi, dword ptr [esi + 0x3c]) made `mov edi, dword ptr [esi + 0x40]`; mismatches=3). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005309",
-      "rva": "0x000e75f0",
-      "size": 117,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7605 (shr eax, 5) made `shr eax, 6`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005552",
-      "rva": "0x000f1c60",
-      "size": 70,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1c66 (mov ecx, dword ptr [ecx + 0x4c]) made `mov ecx, dword ptr [ecx + 0x50]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005313",
-      "rva": "0x000e7690",
-      "size": 33,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e76a5 (push 0) made `push 1`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005554",
-      "rva": "0x000f1cb0",
-      "size": 93,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1cd1 (mov eax, dword ptr [edi + 0xc]) made `mov eax, dword ptr [edi + 0x10]`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005315",
-      "rva": "0x000e76c0",
-      "size": 391,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e771a (mov edx, dword ptr [eax]) made `mov edx, dword ptr [eax + 4]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005556",
-      "rva": "0x000f1d10",
-      "size": 49,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1d13 (mov eax, dword ptr [ecx + 0x48]) made `mov eax, dword ptr [ecx + 0x4c]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005317",
-      "rva": "0x000e7850",
-      "size": 816,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7879 (fld dword ptr [eax + 0x10]) made `fld dword ptr [eax + 0x14]`; mismatches=22). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005558",
-      "rva": "0x000f1d50",
-      "size": 93,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1d5c (jae Lf1daa) made `jb Lf1daa`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005248",
-      "rva": "0x000e5a00",
-      "size": 40,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5a03 (mov ecx, dword ptr [esi + 0x3c]) made `mov ecx, dword ptr [esi + 0x40]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005318",
-      "rva": "0x000e7b80",
-      "size": 136,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7bbe (lea ecx, [esp + 0x18]) made `lea ecx, [esp + 0x1c]`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005560",
-      "rva": "0x000f1db0",
-      "size": 49,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1dc7 (mov eax, dword ptr [esp + 0x14]) made `mov eax, dword ptr [esp + 0x18]`; mismatches=18). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005250",
-      "rva": "0x000e5a30",
-      "size": 93,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5a53 (mov ecx, dword ptr [eax + 0x18]) made `mov ecx, dword ptr [eax + 0x1c]`; mismatches=10). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005252",
-      "rva": "0x000e5a90",
-      "size": 28,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5a98 (je Le5aa7) made `jne Le5aa7`; mismatches=10). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005256",
-      "rva": "0x000e5de0",
-      "size": 633,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5e5e (test ah, 0x44) made `test ah, 0x45`; mismatches=2). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005468",
-      "rva": "0x000efa90",
-      "size": 503,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_005258",
-      "rva": "0x000e6060",
-      "size": 202,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e613c (mov eax, dword ptr [esp + 0x24]) made `mov eax, dword ptr [esp + 0x28]`; mismatches=11). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005481",
-      "rva": "0x000effc0",
-      "size": 252,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     }
   ],
   "method": "Most internal addresses are called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four rows 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772), and 0x000b3ac0 (phys_fn_004774) are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly. Public staged-pair rows phys_fn_002258, phys_fn_002047, and phys_fn_002049 run through NxPhysicsTriangleMeshApiTests and are independently mutation-falsified; measurements are in sections 14, 17, and 18 of evidence/phase4-falsification.md. Direct-call digests and staged-pair coverage lines are registered in tools/gate_targets.ps1."

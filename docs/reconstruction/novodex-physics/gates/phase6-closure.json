@@ -66,9 +66,10 @@
   "counts": {
     "differential_falsified": 179,
     "oracle_differential_falsified": 28,
-    "deferred_reconstructed_not_falsified": 131,
+    "deferred_reconstructed_not_falsified": 129,
     "deferred_not_reconstructed_in_phase": 1,
-    "deferred_not_independently_falsifiable": 94
+    "deferred_not_independently_falsifiable": 94,
+    "deferred_homeless_shared_code": 2
   },
   "closed": [
     {
@@ -2299,7 +2300,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_004041",
@@ -2308,7 +2309,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_004043",
@@ -2317,7 +2318,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_004046",
@@ -2341,10 +2342,10 @@
       "id": "phys_fn_004051",
       "rva": "0x00094130",
       "size": 409,
-      "reason": "reconstructed_not_falsified",
+      "reason": "homeless_shared_code",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "NxPhysicsCoreDumpTests caught 2 of 5 mutations tried (3 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
+      "note": "Not surveyed: the candidate function SceneDump::writeAsset (3504 bytes) is far larger than the row (409 bytes): other rows share it; an edit in it cannot be credited to this row alone."
     },
     {
       "id": "phys_fn_004053",
@@ -2353,7 +2354,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_004055",
@@ -2362,7 +2363,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_004059",
@@ -2380,7 +2381,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed: function not found."
     },
     {
       "id": "phys_fn_004123",
@@ -4177,10 +4178,10 @@
       "id": "phys_fn_004037",
       "rva": "0x00092060",
       "size": 409,
-      "reason": "reconstructed_not_falsified",
+      "reason": "homeless_shared_code",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed: the candidate function SceneDump::writeJoint (2468 bytes) is far larger than the row (409 bytes): other rows share it; an edit in it cannot be credited to this row alone."
     },
     {
       "id": "phys_fn_004062",
@@ -4189,7 +4190,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCoreDumpTests caught 3 of 6 mutations tried (3 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     }
   ]
 }
