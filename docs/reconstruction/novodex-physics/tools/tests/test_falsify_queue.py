@@ -53,5 +53,18 @@ class QueueTests(unittest.TestCase):
         self.assertEqual(sorted(r['id'] for b in fq.batches(rows, 4) for r in b), sorted(r['id'] for r in rows))
 
 
+
+class PlanTests(unittest.TestCase):
+    ROWS = [{'id': 'a', 'target': 'NxS1', 'group': 'joints'}, {'id': 'b', 'target': 'NxS2', 'group': 'joints'},
+            {'id': 'c', 'target': 'NxS1', 'group': 'joints'}, {'id': 'd', 'target': None, 'group': 'joints'},
+            {'id': 'e', 'target': 'NxO1', 'group': 'joints'}]
+
+    def test_plans_hold_only_staged_rows_with_distinct_targets(self):
+        plans, unplanned = fq.plans(self.ROWS, staged={'NxS1', 'NxS2'}, size=4)
+        self.assertEqual([[r['id'] for r in p] for p in plans], [['a', 'b'], ['c']])
+        self.assertTrue(all(r['staged'] for p in plans for r in p))
+        self.assertEqual({u['id']: u['why'] for u in unplanned}, {'d': 'no gated target named', 'e': 'target NxO1 is not a staged-pair gate'})
+
+
 if __name__ == '__main__':
     unittest.main()

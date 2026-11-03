@@ -77,6 +77,20 @@ def batches(rows, size):
     return out
 
 
+def plans(rows, staged, size):
+    """(batch plans, unplanned): plan rows are {id, target, staged: true, count_crash: true} for mutate_cpp --plan; a row
+    whose target is not a registered staged-pair gate (or is unnamed) is unplanned, with the reason."""
+    ok, unplanned = [], []
+    for r in rows:
+        if not r.get('target'):
+            unplanned.append({'id': r['id'], 'why': 'no gated target named'})
+        elif r['target'] not in staged:
+            unplanned.append({'id': r['id'], 'why': 'target %s is not a staged-pair gate' % r['target']})
+        else:
+            ok.append({'id': r['id'], 'target': r['target'], 'staged': True, 'count_crash': True})
+    return batches(ok, size), unplanned
+
+
 def main(argv=None):
     here = Path(__file__).resolve().parents[1]
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -84,6 +98,8 @@ def main(argv=None):
     ap.add_argument('--group')
     ap.add_argument('--out')
     ap.add_argument('--summary', action='store_true')
+    ap.add_argument('--plan-dir', help='write plan-<k>.json (staged-pair rows, no two sharing a target) and unplanned.json')
+    ap.add_argument('--batch-size', type=int, default=3)
     a = ap.parse_args(argv)
     queue = build_queue(json.load(open(a.inventory, encoding='utf-8')))
     if a.group:
@@ -96,6 +112,15 @@ def main(argv=None):
         for g, n in counts.most_common():
             print('%-18s rows=%5d bytes=%7d' % (g, n, sizes[g]))
         print('%-18s rows=%5d bytes=%7d' % ('total', len(queue), sum(sizes.values())))
+    if a.plan_dir:
+        import close_static_rows
+        _oracle, staged = close_static_rows.gate_targets(str(Path(a.inventory).parent / 'tools' / 'gate_targets.ps1'))
+        pl, un = plans(queue, set(staged), a.batch_size)
+        Path(a.plan_dir).mkdir(parents=True, exist_ok=True)
+        for k, rows in enumerate(pl):
+            (Path(a.plan_dir) / ('plan-%02d.json' % k)).write_text(json.dumps({'rows': rows}, indent=1), encoding='utf-8')
+        (Path(a.plan_dir) / 'unplanned.json').write_text(json.dumps(un, indent=1), encoding='utf-8')
+        print('%d plans, %d unplanned' % (len(pl), len(un)))
     if a.out:
         Path(a.out).write_text(json.dumps(queue, indent=1), encoding='utf-8')
         print('wrote %d rows to %s' % (len(queue), a.out))
