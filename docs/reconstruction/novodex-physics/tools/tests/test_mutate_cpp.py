@@ -97,10 +97,6 @@ class MutationTests(unittest.TestCase):
         self.assertEqual(mc.spread(items, 50), items)
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
 import struct
 
 
@@ -184,3 +180,75 @@ class NameTests(unittest.TestCase):
         self.assertEqual(mc.function_name_at(SRC, span), 'A::g')
         span = mc.find_span_by_marker(SRC, 'phys_fn_000123')
         self.assertEqual(mc.function_name_at(SRC, span), 'helper')
+
+
+import tempfile
+
+
+class SweepTests(unittest.TestCase):
+    """sweep_row with a fake compiler: the 'DLL' is a PE whose bytes change where the test says."""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.path = Path(self.dir) / 'f.cpp'
+        self.path.write_text(SRC, encoding='utf-8')
+        self.span = mc.find_function_span(SRC, 'A::f(int)')
+        self.muts = mc.spread(mc.cpp_mutations(SRC, *self.span), 4)
+        self.base = make_pe(bytes(256))
+        self.syms = [(0x1000, '?f@A@@QAEHH@Z'), (0x1080, '?g@A@@QBEHH@Z')]
+        self.end = 0x1100
+        self.rvas = [0x1010, 0x1020, 0x1090, 0x1030]    # the third mutation lands in A::g
+        self.built = []
+
+    def build_dll(self):
+        k = len(self.built)
+        self.built.append(self.path.read_text(encoding='utf-8'))
+        body = bytearray(256)
+        body[self.rvas[k % len(self.rvas)] - 0x1000] = 0xff
+        return make_pe(bytes(body))
+
+    def sweep(self, run, survey=False, control=None):
+        return mc.sweep_row(str(self.path), 'A::f', self.span, self.syms, self.end, self.base, run, self.build_dll,
+                            4, survey=survey, control=control)
+
+    def test_sweep_restores_source_when_run_raises(self):
+        def run(_):
+            raise RuntimeError('boom')
+        with self.assertRaises(RuntimeError):
+            self.sweep(run)
+        self.assertEqual(self.path.read_text(encoding='utf-8'), SRC)
+
+    def test_sweep_rejects_mutation_outside_range(self):
+        calls = []
+        def run(_):
+            calls.append(1)
+            return None
+        out = self.sweep(run, survey=True)
+        self.assertEqual(len(out['rejected']), 1)
+        self.assertEqual(len(calls), 3)
+
+    def test_sweep_stops_at_first_catch_unless_survey(self):
+        n = []
+        def run(_):
+            n.append(1)
+            return 5
+        out = self.sweep(run)
+        self.assertEqual(len(out['caught']), 1)
+        self.assertEqual(len(n), 1)
+        n.clear()
+        self.built.clear()
+        out = self.sweep(run, survey=True)
+        self.assertEqual(len(out['caught']), 3)
+
+    def test_survey_lists_survivors(self):
+        out = self.sweep(lambda _: None, survey=True)
+        self.assertEqual((len(out['caught']), len(out['survived']), len(out['rejected'])), (0, 3, 1))
+
+    def test_control_run_must_be_exact(self):
+        with self.assertRaises(mc.ControlNotExact):
+            self.sweep(lambda _: 1, control=lambda: 2)
+        self.assertEqual(self.path.read_text(encoding='utf-8'), SRC)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -375,3 +375,152 @@ def in_row_function(changed, syms, end, qualified):
     if first is None or not symbol_matches(first[0], qualified):
         return False
     return all(first[1] <= lo and hi <= first[2] for lo, hi in changed)
+
+
+# ---- one row ------------------------------------------------------------------------------------------------------
+
+from pathlib import Path
+
+
+class ControlNotExact(RuntimeError):
+    """The unmutated source already reports a difference, so every mutant would look caught."""
+
+
+def describe(text, m):
+    line = text.count('\n', 0, m[0]) + 1
+    return 'line %d: %s  ->  %s  (%s)' % (line, ' '.join(m[1].split())[:60], ' '.join(m[2].split())[:60], m[3])
+
+
+def sweep_row(path, qualified, span, syms, end, baseline, run, build_dll, limit, survey=False, control=None,
+              restore=None, write=None):
+    """Try up to `limit` single-site mutations spread over the function at `span` in `path`.
+
+    build_dll() rebuilds the candidate DLL from the (mutated) source on disk and returns its bytes; a mutation counts
+    only when every changed byte lies in the one linker-map function `qualified` (else it is `rejected`). run(mutated
+    text) returns the gate's detection count or None. Stops at the first catch unless `survey`. The file is restored
+    after every attempt and whatever happens, and restore() rebuilds the original once at the end.
+    Returns {'caught': [...], 'survived': [...], 'rejected': [...]} of (description, n or reason).
+    """
+    path = Path(path)
+    original = path.read_bytes()
+    text = original.decode('utf-8')
+    if write is None:
+        from mutate_rows import write_atomic as write
+    out = {'caught': [], 'survived': [], 'rejected': []}
+    try:
+        if control is not None and control():
+            raise ControlNotExact('the unmutated source already reports a difference')
+        for m in spread(cpp_mutations(text, span[0], span[1]), limit):
+            mutated = apply_mutation(text, m)
+            desc = describe(text, m)
+            write(path, mutated.encode('utf-8'))
+            try:
+                changed = pe_changed_rvas(baseline, build_dll())
+                if not changed:
+                    out['rejected'].append((desc, 'no change in the DLL'))
+                    continue
+                if not in_row_function(changed, syms, end, qualified):
+                    out['rejected'].append((desc, 'changed bytes outside %s' % qualified))
+                    continue
+                n = run(mutated)
+            finally:
+                write(path, original)
+            if n:
+                out['caught'].append((desc, n))
+                if not survey:
+                    break
+            else:
+                out['survived'].append((desc, None))
+    finally:
+        write(path, original)
+        if restore:
+            restore()
+    if path.read_bytes() != original:
+        raise RuntimeError('%s was not restored' % path)
+    return out
+
+
+# ---- command line -------------------------------------------------------------------------------------------------
+
+def locate(row, repo):
+    """(source path, text, span, qualified name) of a row's C++ function, or (path, text, None, reason)."""
+    rel = row.get('implementation') or row.get('source')
+    if not rel:
+        return None, None, None, 'no source file'
+    path = Path(repo) / rel
+    if not path.is_file():
+        return path, None, None, 'source file missing'
+    text = path.read_text(encoding='utf-8', errors='replace')
+    span = (find_function_span(text, row['implementation_symbol']) if row.get('implementation_symbol') else None) \
+        or find_span_by_marker(text, row['id'])
+    if span is None:
+        return path, text, None, 'function not found'
+    return path, text, span, function_name_at(text, span)
+
+
+def main(argv=None):
+    import argparse
+    import json
+    import mutate_rows as mr
+    here = Path(__file__).resolve().parent
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument('--row', required=True, help='phys_fn_NNNNNN')
+    ap.add_argument('--inventory', default=str(here.parent / 'inventory.json'))
+    ap.add_argument('--target', required=True)
+    g = ap.add_mutually_exclusive_group(required=True)
+    g.add_argument('--family')
+    g.add_argument('--staged', action='store_true')
+    ap.add_argument('--exe-arg', action='append', default=[])
+    ap.add_argument('--count-crash', action='store_true')
+    ap.add_argument('--limit', type=int, default=16)
+    ap.add_argument('--survey', action='store_true')
+    ap.add_argument('--map', default=str(mr.REPO / 'build' / 'Release' / 'NxPhysics.map'))
+    ap.add_argument('--dll', default=str(mr.REPO / 'build' / 'Release' / 'NxPhysics.dll'))
+    ap.add_argument('--log')
+    a = ap.parse_args(argv)
+    inv = json.load(open(a.inventory, encoding='utf-8'))
+    row = next(r for r in inv['functions'] if r['id'] == a.row)
+    path, text, span, qualified = locate(row, mr.REPO)
+    if span is None:
+        print('NOT LOCATED %s %s' % (a.row, qualified))
+        return 2
+    if not mr._build('NxPhysics', False):
+        print('BUILD FAILED (baseline)')
+        return 2
+    baseline = Path(a.dll).read_bytes()
+    syms = read_text_symbols(a.map)
+    sections, _ = _pe_layout(baseline)
+    end = sections[0][0] + sections[0][1]
+    real = mr._real_run(a.target, a.family, a.staged, a.count_crash, a.exe_arg)
+
+    def run(mutated):
+        kind, n = real(mutated)
+        run.kind = kind
+        return n or None
+    run.kind = 'mismatches'
+
+    def restore():
+        mr._build('NxPhysics', False)
+        mr._build(a.target, a.staged)
+    out = sweep_row(str(path), qualified, span, syms, end, baseline, run, lambda: (mr._build('NxPhysics', False) and Path(a.dll).read_bytes()) or b'',
+                    a.limit, survey=a.survey, control=lambda: run(text), restore=restore)
+    lines = []
+    for desc, n in out['caught']:
+        lines.append('CAUGHT %s %s %s=%s %s' % (a.row, a.target, 'stdout_delta' if a.staged else 'mismatches', n, desc))
+    summary = 'SURVEY %s %s tried=%d caught=%d survived=%d rejected=%d' % (
+        a.row, a.target, len(out['caught']) + len(out['survived']), len(out['caught']), len(out['survived']), len(out['rejected']))
+    if a.survey:
+        lines.append(summary)
+        lines += ['  SURVIVED ' + d for d, _ in out['survived']] + ['  rejected ' + d + '  [' + r + ']' for d, r in out['rejected']]
+    elif not out['caught']:
+        lines.append('NOT CAUGHT %s (%d survived, %d rejected)' % (a.row, len(out['survived']), len(out['rejected'])))
+    print('\n'.join(lines))
+    if a.log:
+        with open(a.log, 'a', encoding='utf-8') as f:
+            f.write('\n'.join(lines) + '\n')
+    return 0 if out['caught'] else 1
+
+
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())
