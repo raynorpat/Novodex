@@ -1,0 +1,30 @@
+SURVEY phys_fn_004037 NxPhysicsCoreDumpTests tried=8 caught=8 survived=0 rejected=0
+CAUGHT phys_fn_004037 NxPhysicsCoreDumpTests stdout_delta=38 line 825: desc.flags & NX_RJF_LIMIT_ENABLED  ->  !(desc.flags & NX_RJF_LIMIT_ENABLED)  (neg)
+SKIPPED phys_fn_003649 no unique map symbol for if
+SKIPPED phys_fn_004039 function not found
+SKIPPED phys_fn_004041 function not found
+SKIPPED phys_fn_004043 function not found
+SURVEY phys_fn_004048 NxPhysicsCoreDumpTests tried=6 caught=3 survived=3 rejected=2
+CAUGHT phys_fn_004048 NxPhysicsCoreDumpTests stdout_delta=136 line 1302: +  ->  -  (arith)
+  SURVIVED line 1347: +  ->  -  (arith)
+  SURVIVED line 1356: 2  ->  3  (const)
+  SURVIVED line 1359: isConvex  ->  !(isConvex)  (neg)
+  rejected line 1257: 4  ->  5  (const)  [changed bytes outside SceneDump::writeShape]
+  rejected line 1266: 3  ->  4  (const)  [changed bytes outside SceneDump::writeShape]
+SURVEY phys_fn_004051 NxPhysicsCoreDumpTests tried=5 caught=2 survived=3 rejected=3
+CAUGHT phys_fn_004051 NxPhysicsCoreDumpTests stdout_delta=3599 line 1465: !=  ->  ==  (cmp)
+  SURVIVED line 1580: <  ->  <=  (cmp)
+  SURVIVED line 1601: +  ->  -  (arith)
+  SURVIVED line 1609: ==  ->  !=  (cmp)
+  rejected line 1425: !file  ->  !(!file)  (neg)  [no change in the DLL]
+  rejected line 1502: nbShapes == 1  ->  !(nbShapes == 1)  (neg)  [no change in the DLL]
+  rejected line 1551: flags & frozen  ->  !(flags & frozen)  (neg)  [no change in the DLL]
+SKIPPED phys_fn_004053 function not found
+SKIPPED phys_fn_004055 function not found
+SKIPPED phys_fn_004061 function not found
+SURVEY phys_fn_004062 NxPhysicsCoreDumpTests tried=6 caught=4 survived=2 rejected=2
+CAUGHT phys_fn_004062 NxPhysicsCoreDumpTests stdout_delta=4241 line 1778: 32  ->  33  (const)
+  SURVIVED line 1722: <  ->  <=  (cmp)
+  SURVIVED line 1708: ==  ->  !=  (cmp)
+  rejected line 1698: file  ->  !(file)  (neg)  [no change in the DLL]
+  rejected line 1724: +  ->  -  (arith)  [no change in the DLL]

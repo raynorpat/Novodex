@@ -699,3 +699,33 @@ Per-row measurements (row, mutation, count):
 ## Testing pass
 
 - `phys_fn_005566`: 0x000f2091 mov ebx, dword ptr [esp + 8] -> mov ebx, dword ptr [esp + 12]; `NxPhysicsPhase6RowsTests` mismatches=36.
+
+## Testing pass
+
+- `phys_fn_001680`: Physics/src/Distance.cpp line 545: lineParam -> !(lineParam) (neg); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_001990`: Physics/src/PMap.cpp line 1898: 5 -> 6 (const); `NxPhysicsTriangleMeshApiTests` stdout_delta=32.
+- `phys_fn_002017`: Physics/src/PMap.cpp line 1984: != -> == (cmp); `NxPhysicsTriangleMeshApiTests` stdout_delta=32.
+
+## Testing pass
+
+- `phys_fn_005223`: Physics/src/opcode/PrunerOctree.cpp line 2014: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005305`: Physics/src/opcode/PrunerOctree.cpp line 472: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005307`: Physics/src/opcode/PrunerOctree.cpp line 521: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005238`: Physics/src/opcode/PrunerOctree.cpp line 2463: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005309`: Physics/src/opcode/PrunerOctree.cpp line 546: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005552`: Physics/src/opcode/PrunerOctree.cpp line 1501: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005313`: Physics/src/opcode/PrunerOctree.cpp line 601: 4 -> 5 (const); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005554`: Physics/src/opcode/PrunerOctree.cpp line 1531: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005315`: Physics/src/opcode/PrunerOctree.cpp line 656: 2 -> 3 (const); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005556`: Physics/src/opcode/PrunerOctree.cpp line 1581: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005317`: Physics/src/opcode/PrunerOctree.cpp line 956: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005558`: Physics/src/opcode/PrunerOctree.cpp line 1605: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005248`: Physics/src/opcode/PrunerOctree.cpp line 2657: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005318`: Physics/src/opcode/PrunerOctree.cpp line 1104: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005560`: Physics/src/opcode/PrunerOctree.cpp line 1655: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005250`: Physics/src/opcode/PrunerOctree.cpp line 2682: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005252`: Physics/src/opcode/PrunerOctree.cpp line 2730: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005256`: Physics/src/opcode/PrunerOctree.cpp line 3043: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005468`: Physics/src/opcode/IcePruner.cpp line 1442: + -> - (arith); `NxPhysicsSceneRaycastTests` stdout_delta=5167.
+- `phys_fn_005258`: Physics/src/opcode/PrunerOctree.cpp line 3276: + -> - (arith); `NxPhysicsCollisionTests` mismatches=1.
+- `phys_fn_005481`: Physics/src/opcode/IcePruner.cpp line 138: mNbTotal == mMaxNbObjects -> !(mNbTotal == mMaxNbObjects) (neg); `NxPhysicsSceneRaycastTests` stdout_delta=2811.

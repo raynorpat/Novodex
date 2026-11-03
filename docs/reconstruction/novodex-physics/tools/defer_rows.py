@@ -7,7 +7,7 @@ The manifest:
   {"doc": "evidence/falsify-<group>.md",
    "rows": {"phys_fn_NNNNNN": {"reason": "<one of the ledger reasons>", "note": "<what was tried and what it showed>"}}}
 
-The reason may be the entry's own (the note then records a partial survey, such as "5 caught, 4 survived"). The ledger's
+The reason may be the entry's own (the note then records a partial survey, such as "5 caught, 4 survived"), or "keep". The ledger's
 `deferred_<reason>` counts follow the move, and the row's inventory notes name the reason and the evidence file.
 """
 import argparse
@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from close_static_rows import _read, _write  # noqa: E402
 
 REASONS = ('reconstructed_not_falsified', 'not_independently_falsifiable', 'homeless_shared_code', 'unreachable_in_phase_2',
-           'not_reconstructed_in_phase', 'vendored_not_falsified', 'vendored_driven_divergent')
+           'not_reconstructed_in_phase', 'vendored_not_falsified', 'vendored_driven_divergent', 'blocked_on_later_phase')
 VENDORED = ('vendored_not_falsified', 'vendored_driven_divergent')
 
 
@@ -27,6 +27,9 @@ def defer(manifest, inventory, closures):
     by = {r['id']: r for r in inventory['functions']}
     for rid, spec in manifest['rows'].items():
         reason, note = spec.get('reason'), (spec.get('note') or '').strip()
+        if reason == 'keep':    # the entry keeps whatever reason it has; only its note changes
+            kept = [e['reason'] for e in closures[int(by[rid]['phase'])]['deferred'] if e['id'] == rid]
+            reason = kept[0] if kept else reason
         if reason not in REASONS:
             raise ValueError('%s: %r is not a deferral reason' % (rid, reason))
         if not note:

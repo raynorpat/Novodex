@@ -54,12 +54,13 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
-    "deferred_reconstructed_not_falsified": 809,
-    "deferred_not_reconstructed_in_phase": 17,
+    "deferred_reconstructed_not_falsified": 798,
+    "deferred_not_reconstructed_in_phase": 15,
     "deferred_vendored_not_falsified": 19,
-    "oracle_differential_falsified": 108,
-    "differential_falsified": 57,
-    "deferred_blocked_on_later_phase": 43
+    "oracle_differential_falsified": 128,
+    "differential_falsified": 61,
+    "deferred_blocked_on_later_phase": 7,
+    "deferred_not_independently_falsifiable": 25
   },
   "closed": [
     {
@@ -1745,6 +1746,326 @@
         6,
         7
       ]
+    },
+    {
+      "id": "phys_fn_001680",
+      "rva": "0x000338a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/Distance.cpp line 545: lineParam -> !(lineParam) (neg)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_001990",
+      "rva": "0x0004cc60",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "Physics/src/PMap.cpp line 1898: 5 -> 6 (const)",
+        "detected": "stdout_delta=32"
+      }
+    },
+    {
+      "id": "phys_fn_002017",
+      "rva": "0x0004e1a0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsTriangleMeshApiTests",
+      "falsification": {
+        "mutation": "Physics/src/PMap.cpp line 1984: != -> == (cmp)",
+        "detected": "stdout_delta=32"
+      }
+    },
+    {
+      "id": "phys_fn_005223",
+      "rva": "0x000e52d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2014: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005305",
+      "rva": "0x000e7570",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 472: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005307",
+      "rva": "0x000e75d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 521: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005238",
+      "rva": "0x000e5810",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2463: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005309",
+      "rva": "0x000e75f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 546: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005552",
+      "rva": "0x000f1c60",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1501: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005313",
+      "rva": "0x000e7690",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 601: 4 -> 5 (const)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005554",
+      "rva": "0x000f1cb0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1531: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005315",
+      "rva": "0x000e76c0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 656: 2 -> 3 (const)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005556",
+      "rva": "0x000f1d10",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1581: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005317",
+      "rva": "0x000e7850",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 956: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005558",
+      "rva": "0x000f1d50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1605: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005248",
+      "rva": "0x000e5a00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2657: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005318",
+      "rva": "0x000e7b80",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1104: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005560",
+      "rva": "0x000f1db0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 1655: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005250",
+      "rva": "0x000e5a30",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2682: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005252",
+      "rva": "0x000e5a90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 2730: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005256",
+      "rva": "0x000e5de0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 3043: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005468",
+      "rva": "0x000efa90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/IcePruner.cpp line 1442: + -> - (arith)",
+        "detected": "stdout_delta=5167"
+      }
+    },
+    {
+      "id": "phys_fn_005258",
+      "rva": "0x000e6060",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/PrunerOctree.cpp line 3276: + -> - (arith)",
+        "detected": "mismatches=1"
+      },
+      "discharged_by_phase": 7,
+      "driving_phases": [
+        7
+      ]
+    },
+    {
+      "id": "phys_fn_005481",
+      "rva": "0x000effc0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsSceneRaycastTests",
+      "falsification": {
+        "mutation": "Physics/src/opcode/IcePruner.cpp line 138: mNbTotal == mMaxNbObjects -> !(mNbTotal == mMaxNbObjects) (neg)",
+        "detected": "stdout_delta=2811"
+      }
     }
   ],
   "deferred": [
@@ -1755,7 +2076,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001496-mutation.patch (`jne` -> `je` at 0x0002ca43, the first unrolled comparison) gave hull_leaf mismatches=898, convex_hull 266 and support_maps 1154. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001498",
@@ -1764,7 +2085,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001500",
@@ -1773,7 +2094,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001514",
@@ -1782,7 +2103,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001514-mutation.patch (`fsub` -> `fadd` at 0x0002d387, the edge direction) gave polygon_interface FAILED (its tape 31,568 words against the oracle's 31,253: the axis counts differ). Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001516",
@@ -1791,7 +2112,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001516-mutation.patch (`fmul` -> `fadd` at 0x0002d591, the first polygon's dot product in this row's own extent) gave polygon_interface 33, contact_convex_convex 835, contact_convex_hulls 6534. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001518",
@@ -1800,7 +2121,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001518-mutation.patch (`jne` -> `je` at 0x0002d5f3, the first unrolled comparison) gave polygon_interface 290, contact_convex_convex 747, contact_convex_hulls 852. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001520",
@@ -1809,7 +2130,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001520-mutation.patch (`jne` -> `je` at 0x0002d6e3, the remainder loop's comparison) gave polygon_interface 365, contact_convex_convex 594, contact_convex_hulls 308. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001522",
@@ -1818,7 +2139,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001522-mutation.patch (`jne` -> `je` at 0x0002d774, the edge loop's comparison) gave polygon_interface 631, contact_convex_convex 1415, contact_convex_hulls 17116. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001537",
@@ -1827,7 +2148,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001539",
@@ -1836,7 +2157,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001541",
@@ -1845,7 +2166,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001550",
@@ -1854,7 +2175,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001550-mutation.patch (`fdivr` -> `fdiv` at 0x0002e1ac, the reciprocal of the dominant magnitude) gave support_maps mismatches=5723. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001558",
@@ -1863,7 +2184,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001560",
@@ -1872,7 +2193,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001558-mutation.patch (`fsubr` -> `fsub` at 0x0002e3b8, 1 - i*s on face 0/1 in this continuation of 001558) gave support_maps mismatches=853. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001567",
@@ -1881,7 +2202,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001569",
@@ -1890,7 +2211,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001573",
@@ -1899,7 +2220,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001573-mutation.patch (the `fchs` of t at 0x0002e770 removed) gave support_maps mismatches=983. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001579",
@@ -1908,7 +2229,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001581",
@@ -1917,7 +2238,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001581-mutation.patch (the first `fchs` at 0x0002e8fd removed) gave support_maps mismatches=437. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001591",
@@ -1926,7 +2247,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001593",
@@ -1935,7 +2256,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001595",
@@ -1944,7 +2265,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001597",
@@ -1953,7 +2274,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001599",
@@ -1962,7 +2283,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001601",
@@ -1971,7 +2292,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001602",
@@ -1980,7 +2301,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001603",
@@ -1989,7 +2310,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001605",
@@ -1998,7 +2319,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001607",
@@ -2007,7 +2328,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001609",
@@ -2016,7 +2337,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001611",
@@ -2025,7 +2346,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001613",
@@ -2034,7 +2355,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001615",
@@ -2043,7 +2364,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001617",
@@ -2052,7 +2373,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001619",
@@ -2061,7 +2382,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001621",
@@ -2070,7 +2391,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001623",
@@ -2079,7 +2400,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001625",
@@ -2088,7 +2409,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001627",
@@ -2097,7 +2418,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001629",
@@ -2106,7 +2427,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001631",
@@ -2115,7 +2436,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001633",
@@ -2124,7 +2445,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001635",
@@ -2133,7 +2454,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001637",
@@ -2142,7 +2463,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001670",
@@ -2151,7 +2472,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001674",
@@ -2160,7 +2481,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001676",
@@ -2169,7 +2490,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001678",
@@ -2178,16 +2499,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001680",
-      "rva": "0x000338a0",
-      "size": 195,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 2 of 6 mutations tried (4 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001682",
@@ -2196,7 +2508,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001684",
@@ -2205,7 +2517,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 8 mutations tried (8 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001686",
@@ -2223,16 +2535,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001694",
       "rva": "0x00034860",
       "size": 6266,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_001984",
@@ -2251,22 +2563,6 @@
       "phase_provenance": "callers",
       "driving_phases": [],
       "note": "the 256-entry bit-spreading table. Mutation S spreads two bits apart instead of three and comes out GREEN, re-measured on this branch: the table's only consumer is the Morton sort and sorting a uniform array is the identity. Every accepted fixture leaves a grid of nothing but 0xffffffff, so this row is structurally unfalsifiable by this harness. The candidate carried an `if(!mSpread) return;` after the allocation that the image does not have -- it stores through the table pointer at 0x0004cb85 with no test -- and nothing depended on it, so the port's review removed it: NxPhysicsAssetTests reads `asset coverage driven=30 accepted=13 rejected=16 errors=10`, `asset oracle digest=eaefc573` and `asset candidate mismatches=0` before and after, with transcripts identical once heap addresses are masked. evidence/phase4-pmap-reconstruction.md section 5"
-    },
-    {
-      "id": "phys_fn_001990",
-      "rva": "0x0004cc60",
-      "size": 633,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_002017",
-      "rva": "0x0004e1a0",
-      "size": 915,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_002037",
@@ -2311,7 +2607,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002056",
@@ -2320,7 +2616,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002058",
@@ -2329,7 +2625,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002061",
@@ -2338,7 +2634,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002063",
@@ -2347,19 +2643,19 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002067",
       "rva": "0x00051ef0",
       "size": 169,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase4-mesh-topology.md) and driven by NxPhysicsCollisionTests' mesh_topology family, exact, with row-aimed mutations rejected (the model delete flag `push 1` at 0x00051eff made `push 0`; mismatches=42). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_002069",
@@ -2408,7 +2704,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2i-002081-mutation.patch (`push 1` -> `push 0` at 0x00052260, NxBuildSmoothNormals' flip argument) gave mesh_vertex_normals 10,303 (contact_convex_heightfield 1,550,428). Measured on the build of d6c8919 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_convex_heightfield, contact_convex_mesh and mesh_vertex_normals mismatches=0, the splits at their 3 and 51 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2i. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002083",
@@ -2485,7 +2781,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2e-002144-mutation.patch (`faddp` -> `fsubp` at 0x000533a5, the dot product) gave mesh_normals mismatches=4311 (and step_smooth_normals 53,653 in NxPhysicsCollisionTests on the working tree). Measured in a throwaway `git archive` copy of 14c8ec7 (D:/nx2e), NxPhysicsThirdPartyTests rebuilt, between un-mutated controls built and run in the same session that read `thirdparty candidate mismatches=0`, with the oracle-side digest unmoved (`thirdparty oracle digest=a1b4f9a6` in every run). It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002158",
@@ -2517,7 +2813,8 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002174",
@@ -2525,7 +2822,8 @@
       "size": 148,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002186",
@@ -2534,7 +2832,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002188",
@@ -2543,7 +2841,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002217",
@@ -2552,7 +2850,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002219",
@@ -2561,7 +2859,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002221",
@@ -2570,7 +2868,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002223",
@@ -2579,7 +2877,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-002223-mutation.patch (`lea eax, [eax + eax*8]` -> `[eax + eax*4]` at 0x0005488c, the 0x24 stride) gave polygon_interface 209. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002225",
@@ -2588,7 +2886,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002227",
@@ -2597,7 +2895,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002229",
@@ -2606,7 +2904,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002231",
@@ -2615,7 +2913,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002233",
@@ -2624,7 +2922,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002235",
@@ -2633,7 +2931,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002237",
@@ -2642,19 +2940,19 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002241",
       "rva": "0x00054bb0",
       "size": 692,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "Transcribed from its listing (evidence/phase3-mesh-debug-mass.md) as a callee of the mesh shape's slot 4 (phys_fn_001397) and driven there by NxPhysicsCollisionTests' mesh_mass family, exact, with row-aimed mutations rejected (the cache sign test `jp` at 0x00054bd8 made `jnp`; mismatches=210). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "NxPhysicsCollisionTests caught 2 of 8 mutations tried (6 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_002249",
@@ -2663,7 +2961,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-002249-mutation.patch (the `fchs` at 0x000553aa removed, the negated direction of the second climb) gave polygon_interface 909, contact_convex_convex 8549, contact_convex_hulls 38164. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002251",
@@ -2679,7 +2977,8 @@
       "size": 59,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsInternalTests is not a staged-pair gate. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002260",
@@ -6145,7 +6444,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003240",
@@ -6154,7 +6453,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003241",
@@ -6163,7 +6462,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003243",
@@ -6172,7 +6471,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003245",
@@ -6181,7 +6480,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003247",
@@ -6190,7 +6489,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003249",
@@ -6199,7 +6498,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003251",
@@ -6208,7 +6507,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003253",
@@ -6217,7 +6516,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003255",
@@ -6226,7 +6525,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003259",
@@ -6235,7 +6534,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003263",
@@ -6244,7 +6543,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003267",
@@ -6253,7 +6552,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003270",
@@ -6262,7 +6561,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003272",
@@ -6271,7 +6570,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003275",
@@ -6280,7 +6579,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003277",
@@ -6289,7 +6588,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003279",
@@ -6298,7 +6597,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003281",
@@ -6594,7 +6893,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003349",
@@ -6603,7 +6902,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003351",
@@ -6612,7 +6911,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003353",
@@ -6621,7 +6920,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003355",
@@ -6630,7 +6929,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003357",
@@ -6639,7 +6938,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003359",
@@ -6648,7 +6947,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003361",
@@ -6657,7 +6956,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003363",
@@ -6666,7 +6965,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003365",
@@ -6675,7 +6974,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003367",
@@ -6684,7 +6983,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003369",
@@ -6693,7 +6992,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003371",
@@ -6702,7 +7001,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003372",
@@ -8220,94 +8519,82 @@
       "id": "phys_fn_005208",
       "rva": "0x000e50c0",
       "size": 8,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005210",
       "rva": "0x000e50d0",
       "size": 21,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005214",
       "rva": "0x000e5100",
       "size": 8,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005216",
       "rva": "0x000e5110",
       "size": 250,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 7 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005218",
       "rva": "0x000e5210",
       "size": 56,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005220",
       "rva": "0x000e5250",
       "size": 65,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005222",
       "rva": "0x000e52a0",
       "size": 48,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_005223",
-      "rva": "0x000e52d0",
-      "size": 270,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e52de (mov eax, dword ptr [esp + 0x18]) made `mov eax, dword ptr [esp + 0x1c]`; mismatches=3). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005225",
       "rva": "0x000e53e0",
       "size": 94,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 2 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005227",
       "rva": "0x000e5440",
       "size": 184,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 2 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005229",
@@ -8321,70 +8608,58 @@
       "id": "phys_fn_005232",
       "rva": "0x000e56d0",
       "size": 108,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005234",
       "rva": "0x000e5740",
       "size": 61,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5744 (mov edi, dword ptr [esi + 0x3c]) made `mov edi, dword ptr [esi + 0x40]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 4 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005236",
       "rva": "0x000e5780",
       "size": 141,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5784 (mov ebx, dword ptr [esp + 0x30]) made `mov ebx, dword ptr [esp + 0x34]`; mismatches=4). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005238",
-      "rva": "0x000e5810",
-      "size": 86,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5814 (mov edi, dword ptr [esi + 0x3c]) made `mov edi, dword ptr [esi + 0x40]`; mismatches=3). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005240",
       "rva": "0x000e5870",
       "size": 25,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e587e (mov dword ptr [esi + 0x3c], 0) made `mov dword ptr [esi + 0x40], 0`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005244",
       "rva": "0x000e58a0",
       "size": 121,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e58cf (je Le59eb) made `jne Le59eb`; mismatches=16). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005246",
@@ -8399,76 +8674,16 @@
       "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e58cf (je Le59eb) made `jne Le59eb`; mismatches=16). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
     },
     {
-      "id": "phys_fn_005248",
-      "rva": "0x000e5a00",
-      "size": 40,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5a03 (mov ecx, dword ptr [esi + 0x3c]) made `mov ecx, dword ptr [esi + 0x40]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005250",
-      "rva": "0x000e5a30",
-      "size": 93,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5a53 (mov ecx, dword ptr [eax + 0x18]) made `mov ecx, dword ptr [eax + 0x1c]`; mismatches=10). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005252",
-      "rva": "0x000e5a90",
-      "size": 28,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5a98 (je Le5aa7) made `jne Le5aa7`; mismatches=10). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
       "id": "phys_fn_005254",
       "rva": "0x000e5ab0",
       "size": 807,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5ab3 (mov eax, dword ptr [esp + 0x50]) made `mov eax, dword ptr [esp + 0x54]`; mismatches=12). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005256",
-      "rva": "0x000e5de0",
-      "size": 633,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e5e5e (test ah, 0x44) made `test ah, 0x45`; mismatches=2). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005258",
-      "rva": "0x000e6060",
-      "size": 202,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e613c (mov eax, dword ptr [esp + 0x24]) made `mov eax, dword ptr [esp + 0x28]`; mismatches=11). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_005260",
@@ -8603,109 +8818,25 @@
       "id": "phys_fn_005295",
       "rva": "0x000e7250",
       "size": 217,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7253 (fld dword ptr [ecx + 0xc]) made `fld dword ptr [ecx + 0x10]`; mismatches=366). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_005303",
       "rva": "0x000e7380",
       "size": 452,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e73bd (mov ebx, dword ptr [edx + 0x10]) made `mov ebx, dword ptr [edx + 0x14]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005305",
-      "rva": "0x000e7570",
-      "size": 89,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7582 (mov eax, dword ptr [esp + 0x18]) made `mov eax, dword ptr [esp + 0x1c]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005307",
-      "rva": "0x000e75d0",
-      "size": 21,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e75d6 (je Le75e2) made `jne Le75e2`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005309",
-      "rva": "0x000e75f0",
-      "size": 117,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7605 (shr eax, 5) made `shr eax, 6`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005313",
-      "rva": "0x000e7690",
-      "size": 33,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e76a5 (push 0) made `push 1`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005315",
-      "rva": "0x000e76c0",
-      "size": 391,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e771a (mov edx, dword ptr [eax]) made `mov edx, dword ptr [eax + 4]`; mismatches=24). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005317",
-      "rva": "0x000e7850",
-      "size": 816,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7879 (fld dword ptr [eax + 0x10]) made `fld dword ptr [eax + 0x14]`; mismatches=22). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005318",
-      "rva": "0x000e7b80",
-      "size": 136,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree family, exact, with row-aimed mutations rejected (the instruction at 0x000e7bbe (lea ecx, [esp + 0x18]) made `lea ecx, [esp + 0x1c]`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "NxPhysicsCollisionTests caught 1 of 7 mutations tried (6 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_005357",
@@ -8774,172 +8905,94 @@
       "id": "phys_fn_005464",
       "rva": "0x000ef850",
       "size": 18,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_005468",
-      "rva": "0x000efa90",
-      "size": 503,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_005481",
-      "rva": "0x000effc0",
-      "size": 252,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005483",
       "rva": "0x000f00c0",
       "size": 476,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005485",
       "rva": "0x000f02a0",
       "size": 622,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005541",
       "rva": "0x000f1600",
       "size": 444,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005543",
       "rva": "0x000f17c0",
       "size": 420,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005545",
       "rva": "0x000f1970",
       "size": 178,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f197a (fld dword ptr [ecx]) made `fld dword ptr [ecx + 4]`; mismatches=2). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005547",
       "rva": "0x000f1a30",
       "size": 56,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1a39 (mov esi, dword ptr [esp + 0xc]) made `mov esi, dword ptr [esp + 0x10]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005549",
       "rva": "0x000f1a70",
       "size": 80,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1a8f (je Lf1abd) made `jne Lf1abd`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_005550",
       "rva": "0x000f1ac0",
       "size": 412,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [
         7
       ],
       "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1af6 (fadd dword ptr [ecx]) made `fadd dword ptr [ecx + 4]`; mismatches=16). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005552",
-      "rva": "0x000f1c60",
-      "size": 70,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1c66 (mov ecx, dword ptr [ecx + 0x4c]) made `mov ecx, dword ptr [ecx + 0x50]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005554",
-      "rva": "0x000f1cb0",
-      "size": 93,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1cd1 (mov eax, dword ptr [edi + 0xc]) made `mov eax, dword ptr [edi + 0x10]`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005556",
-      "rva": "0x000f1d10",
-      "size": 49,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1d13 (mov eax, dword ptr [ecx + 0x48]) made `mov eax, dword ptr [ecx + 0x4c]`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005558",
-      "rva": "0x000f1d50",
-      "size": 93,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1d5c (jae Lf1daa) made `jb Lf1daa`; mismatches=20). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
-    },
-    {
-      "id": "phys_fn_005560",
-      "rva": "0x000f1db0",
-      "size": 49,
-      "reason": "blocked_on_later_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [
-        7
-      ],
-      "blocked_on_type": "Pruner",
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_octree_query family, exact, with row-aimed mutations rejected (the instruction at 0x000f1dc7 (mov eax, dword ptr [esp + 0x14]) made `mov eax, dword ptr [esp + 0x18]`; mismatches=18). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7."
+      "note": "NxPhysicsCollisionTests caught 3 of 8 mutations tried (5 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001526",
@@ -8948,7 +9001,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001552",
@@ -8957,7 +9010,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001554",
@@ -8966,7 +9019,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001563",
@@ -8975,7 +9028,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001565",
@@ -8984,7 +9037,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001571",
@@ -8993,7 +9046,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001575",
@@ -9002,7 +9055,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001577",
@@ -9011,7 +9064,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001585",
@@ -9020,7 +9073,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001587",
@@ -9029,7 +9082,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001589",
@@ -9038,7 +9091,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001657",
@@ -9047,7 +9100,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002052",
@@ -9056,7 +9109,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002060",
@@ -9065,7 +9118,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002065",
@@ -9074,7 +9127,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002140",
@@ -9083,7 +9136,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002142",
@@ -9092,18 +9145,18 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002148",
       "rva": "0x00053810",
       "size": 98,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x0005383f (mov dword ptr [esp + 0xc], 0xff7fffff) made `mov dword ptr [esp + 0x10], 0xff7fffff`; mismatches=2). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7.",
+      "note": "NxPhysicsCollisionTests caught 1 of 8 mutations tried (7 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row.",
       "blocked_on_type": "Pruner"
     },
     {
@@ -9137,12 +9190,12 @@
       "id": "phys_fn_002156",
       "rva": "0x000538e0",
       "size": 46,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
-      "note": "Transcribed from its listing (evidence/phase3-mesh-debug-mass.md) as a callee of the mesh shape's slot 4 (phys_fn_001397) and driven there by NxPhysicsCollisionTests' mesh_mass family, exact, with row-aimed mutations rejected (the row count `mov ecx, 3` at 0x000538ea made 2; mismatches=60). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7.",
+      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row.",
       "blocked_on_type": "TriangleMesh"
     },
     {
@@ -9152,7 +9205,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002166",
@@ -9161,7 +9214,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsTriangleMeshApiTests caught 0 of 1 mutations tried (1 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_002170",
@@ -9170,7 +9223,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002176",
@@ -9179,7 +9232,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002196",
@@ -9188,7 +9241,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002198",
@@ -9197,7 +9250,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002202",
@@ -9206,7 +9259,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002208",
@@ -9215,7 +9268,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002211",
@@ -9224,7 +9277,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002213",
@@ -9233,7 +9286,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002215",
@@ -9242,7 +9295,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002465",
@@ -9350,7 +9403,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003257",
@@ -9359,7 +9412,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003261",
@@ -9368,7 +9421,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003265",
@@ -9377,7 +9430,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003268",
@@ -9386,7 +9439,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003274",
@@ -9395,7 +9448,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_003296",
@@ -9539,7 +9592,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_004896",
@@ -9602,7 +9655,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005151",
@@ -9611,7 +9664,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005153",
@@ -9620,7 +9673,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005159",
@@ -9656,7 +9709,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005212",
@@ -9665,7 +9718,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005242",
@@ -9674,7 +9727,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005289",
@@ -9689,12 +9742,12 @@
       "id": "phys_fn_005301",
       "rva": "0x000e7360",
       "size": 26,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e7364 (mov dword ptr [eax + 0x20], ecx) made `mov dword ptr [eax + 0x24], ecx`; mismatches=1). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7.",
+      "note": "NxPhysicsCollisionTests caught 1 of 6 mutations tried (5 survived, 1 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row.",
       "blocked_on_type": "Pruner"
     },
     {
@@ -9710,12 +9763,12 @@
       "id": "phys_fn_005320",
       "rva": "0x000e7c10",
       "size": 44,
-      "reason": "blocked_on_later_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [
         7
       ],
-      "note": "Transcribed from its listing (evidence/phase4-pruner-octree.md) and driven by NxPhysicsCollisionTests' pruner_cluster family, exact, with row-aimed mutations rejected (the instruction at 0x000e7c19 (je Le7c32) made `jne Le7c32`; mismatches=11). NxPhysicsCollisionTests is registered to Phases 3 and 7 and no gate of Phase 4 drives it, so the closure waits for a passing Phase 7.",
+      "note": "None of the 5 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own).",
       "blocked_on_type": "Pruner"
     },
     {
@@ -9752,7 +9805,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005450",
@@ -9761,7 +9814,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005475",
@@ -9770,7 +9823,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005477",
@@ -9779,7 +9832,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005533",
@@ -9788,7 +9841,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005535",
@@ -9797,7 +9850,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005584",
@@ -9806,7 +9859,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005604",
@@ -9815,7 +9868,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005622",
@@ -9824,7 +9877,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_005640",
@@ -9833,7 +9886,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     }
   ],
   "method": "Most internal addresses are called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four rows 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772), and 0x000b3ac0 (phys_fn_004774) are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly. Public staged-pair rows phys_fn_002258, phys_fn_002047, and phys_fn_002049 run through NxPhysicsTriangleMeshApiTests and are independently mutation-falsified; measurements are in sections 14, 17, and 18 of evidence/phase4-falsification.md. Direct-call digests and staged-pair coverage lines are registered in tools/gate_targets.ps1."

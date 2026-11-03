@@ -610,3 +610,10 @@ and is closed. 002302, 002298, 002304, 002306, 002308, 002310, 002332, 002336 st
 calls take early or empty paths); 002400 is the simulation thread's endless loop and is ruled out by design. Phase 7 is
 recorded as `pass` (547 + 1 closed, 12 deferred, as phases 2-6 pass with deferrals), and the six carried obligations plus the
 disposition matrix and trajectory scenarios move to the Phase 8 audit.
+
+## Falsifying the remaining reconstructed rows (twenty-sixth slice)
+
+New tools: `falsify_queue.py`, `mutate_cpp.py`, `defer_rows.py`, `survey_to_deferrals.py`; `close_static_rows.py` closes C++ rows on a
+source mutation. 55 rows closed (18 joints, 37 collision/mesh/scene/pruner/other), 197 deferred after a survey with the counts in
+the ledger note, 321 deferred without a survey because no gate or family could be named; 792 rows (636 vendored, 114 undriven,
+17 unmapped, 25 others) are untouched. Details: `evidence/falsify-joints.md`, `evidence/falsify-first-party.md`.

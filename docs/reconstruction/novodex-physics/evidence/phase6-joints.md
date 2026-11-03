@@ -11502,3 +11502,8 @@ Phase 7 continuation 2026-10-19 — `phys_fn_004826`: the pairwise AABB helper m
 - `phys_fn_004360`: Physics/src/core/RevoluteJoint.cpp line 810: body1 -> !(body1) (neg); `NxPhysicsJointSlotTests` stdout_delta=26.
 - `phys_fn_004391`: Physics/src/core/JointSupport.cpp line 596: !((mFlags >> 10) & 1) -> !(!((mFlags >> 10) & 1)) (neg); `NxPhysicsJointSlotTests` stdout_delta=144.
 - `phys_fn_004393`: Physics/src/core/JointSupport.cpp line 708: arg1 >= 0.0f -> !(arg1 >= 0.0f) (neg); `NxPhysicsJointSlotTests` stdout_delta=20.
+
+## Testing pass
+
+- `phys_fn_004037`: Physics/src/core/SceneDump.cpp line 825: desc.flags & NX_RJF_LIMIT_ENABLED -> !(desc.flags & NX_RJF_LIMIT_ENABLED) (neg); `NxPhysicsCoreDumpTests` stdout_delta=38.
+- `phys_fn_004062`: Physics/src/core/SceneDump.cpp line 1778: 32 -> 33 (const); `NxPhysicsCoreDumpTests` stdout_delta=4241.

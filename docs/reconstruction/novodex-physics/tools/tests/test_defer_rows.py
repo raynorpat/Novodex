@@ -59,5 +59,20 @@ class DeferRowsTest(unittest.TestCase):
             run({'reason': 'homeless_shared_code', 'note': 'x'}, rows=rows)
 
 
+class KeepReasonTest(unittest.TestCase):
+    def test_keep_leaves_the_reason_and_updates_the_note(self):
+        rows = [inv_row(1), inv_row(2)]
+        clo = {6: ledger('phys_fn_000001', 'phys_fn_000002')}
+        clo[6]['deferred'][0]['reason'] = 'blocked_on_later_phase'
+        clo[6]['counts']['deferred_blocked_on_later_phase'] = 1
+        clo[6]['counts']['deferred_reconstructed_not_falsified'] = 1
+        manifest = {'doc': 'd', 'rows': {'phys_fn_000001': {'reason': 'keep', 'note': 'no gate family is named by its proof'}}}
+        defer_rows.defer(manifest, {'functions': rows}, clo)
+        e = clo[6]['deferred'][0]
+        self.assertEqual((e['reason'], e['note']), ('blocked_on_later_phase', 'no gate family is named by its proof'))
+        self.assertEqual(clo[6]['counts']['deferred_blocked_on_later_phase'], 1)
+        self.assertIn('blocked_on_later_phase', rows[0]['notes'])
+
+
 if __name__ == '__main__':
     unittest.main()

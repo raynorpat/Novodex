@@ -178,7 +178,7 @@ def falsify(manifest, inventory, closures, oracle_targets, staged_targets):
         phase = int(r['phase'])
         ledger = closures[phase]
         entries = [e for e in ledger['deferred'] if e['id'] == rid]
-        allowed = ('reconstructed_not_falsified', 'vendored_not_falsified') if source else ('reconstructed_not_falsified',)
+        allowed = ('reconstructed_not_falsified', 'vendored_not_falsified', 'not_reconstructed_in_phase', 'blocked_on_later_phase') if source else ('reconstructed_not_falsified',)
         if len(entries) != 1 or entries[0]['reason'] not in allowed:
             raise ValueError('%s: not a %s entry in the phase %d closure' % (rid, ' or '.join(allowed), phase))
         counts = ledger['counts']

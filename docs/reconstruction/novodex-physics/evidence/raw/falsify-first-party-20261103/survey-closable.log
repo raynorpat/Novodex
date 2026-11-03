@@ -1,0 +1,385 @@
+SURVEY phys_fn_001676 NxPhysicsCollisionTests tried=1 caught=0 survived=1 rejected=7
+  SURVIVED line 449: 3  ->  4  (const)
+  rejected line 452: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 452: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 456: (double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2]  ->  !((double) pmE[2] * dir[0] <= (double) pmE[0] * dir[2])  (neg)  [no change in the DLL]
+  rejected line 456: <=  ->  <  (cmp)  [no change in the DLL]
+  rejected line 459: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 463: <=  ->  <  (cmp)  [no change in the DLL]
+  rejected line 466: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001828 NxPhysicsCollisionTests tried=1 caught=1 survived=0 rejected=7
+CAUGHT phys_fn_001828 NxPhysicsCollisionTests mismatches=1 line 569: +  ->  -  (arith)
+  rejected line 588: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 594: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 601: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 607: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 625: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 634: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 640: 8  ->  9  (const)  [no change in the DLL]
+SURVEY phys_fn_001833 NxPhysicsCollisionTests tried=1 caught=1 survived=0 rejected=7
+CAUGHT phys_fn_001833 NxPhysicsCollisionTests mismatches=1 line 939: +  ->  -  (arith)
+  rejected line 942: 8  ->  9  (const)  [no change in the DLL]
+  rejected line 948: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 964: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 970: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 974: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 976: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 977: 8  ->  9  (const)  [no change in the DLL]
+SURVEY phys_fn_001844 NxPhysicsCollisionTests tried=1 caught=1 survived=0 rejected=7
+CAUGHT phys_fn_001844 NxPhysicsCollisionTests mismatches=1 line 2190: -  ->  +  (arith)
+  rejected line 2318: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 2467: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 2585: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 2704: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 2843: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 2988: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 3149: -  ->  +  (arith)  [no change in the DLL]
+SURVEY phys_fn_001849 NxPhysicsCollisionTests tried=1 caught=1 survived=0 rejected=7
+CAUGHT phys_fn_001849 NxPhysicsCollisionTests mismatches=1 line 3451: -  ->  +  (arith)
+  rejected line 3621: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 3744: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 3849: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 4003: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 4132: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 4294: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 4425: -  ->  +  (arith)  [no change in the DLL]
+SURVEY phys_fn_001670 NxPhysicsCollisionTests tried=1 caught=0 survived=1 rejected=7
+  SURVIVED line 73: -  ->  +  (arith)
+  rejected line 77: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 79: 8  ->  9  (const)  [no change in the DLL]
+  rejected line 84: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 100: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 111: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 117: >  ->  >=  (cmp)  [no change in the DLL]
+  rejected line 126: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001688 NxPhysicsCollisionTests tried=1 caught=0 survived=1 rejected=7
+  SURVIVED line 701: 2  ->  3  (const)
+  rejected line 703: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 704: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 712: >=  ->  >  (cmp)  [no change in the DLL]
+  rejected line 714: t <= 1.0f  ->  !(t <= 1.0f)  (neg)  [no change in the DLL]
+  rejected line 716: segmentParam  ->  !(segmentParam)  (neg)  [no change in the DLL]
+  rejected line 722: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 730: segmentParam  ->  !(segmentParam)  (neg)  [no change in the DLL]
+SURVEY phys_fn_001692 NxPhysicsCollisionTests tried=1 caught=0 survived=1 rejected=7
+  SURVIVED line 1102: -  ->  +  (arith)
+  rejected line 1106: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1110: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1113: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1119: <  ->  <=  (cmp)  [no change in the DLL]
+  rejected line 1129: <=  ->  <  (cmp)  [no change in the DLL]
+  rejected line 1140: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1147: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001694 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8
+  rejected line 1600: !nxSegmentTriangleTerms(segment, v0, v1, v2, &k)  ->  !(!nxSegmentTriangleTerms(segment, v0, v1, v2, &k))  (neg)  [changed bytes outside NxSegmentTriangleSquareDistance]
+  rejected line 1613: 10  ->  11  (const)  [no change in the DLL]
+  rejected line 1614: >=  ->  >  (cmp)  [no change in the DLL]
+  rejected line 1615: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 1622: end && triangleRegion == 0  ->  !(end && triangleRegion == 0)  (neg)  [no change in the DLL]
+  rejected line 1635: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 1650: end  ->  !(end)  (neg)  [no change in the DLL]
+  rejected line 1659: tParam  ->  !(tParam)  (neg)  [no change in the DLL]
+SURVEY phys_fn_001753 NxPhysicsCollisionTests tried=1 caught=0 survived=1 rejected=7
+  SURVIVED line 2682: 4  ->  5  (const)
+  rejected line 2702: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 2752: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 2785: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 2830: 80  ->  81  (const)  [no change in the DLL]
+  rejected line 2886: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 2901: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 2923: -  ->  +  (arith)  [no change in the DLL]
+SURVEY phys_fn_001760 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8
+  rejected line 112: +  ->  -  (arith)  [changed bytes outside NxTrianglePlane]
+  rejected line 114: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 120: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 123: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 126: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 141: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 167: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 178: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_001855 NxPhysicsCollisionTests tried=1 caught=0 survived=1 rejected=7
+  SURVIVED line 1589: 3  ->  4  (const)
+  rejected line 1595: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1613: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 1622: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 1642: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 1658: major == 0  ->  !(major == 0)  (neg)  [no change in the DLL]
+  rejected line 1680: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 1688: <  ->  <=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_001678 NxPhysicsCollisionTests tried=6 caught=2 survived=4 rejected=2
+CAUGHT phys_fn_001678 NxPhysicsCollisionTests mismatches=1 line 520: lineParam  ->  !(lineParam)  (neg)
+  SURVIVED line 485: >=  ->  >  (cmp)
+  SURVIVED line 505: -  ->  +  (arith)
+  SURVIVED line 516: delta >= 0.0  ->  !(delta >= 0.0)  (neg)
+  SURVIVED line 492: delta >= 0.0  ->  !(delta >= 0.0)  (neg)
+  rejected line 480: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 496: lineParam  ->  !(lineParam)  (neg)  [no change in the DLL]
+SURVEY phys_fn_001830 NxPhysicsCollisionTests tried=6 caught=1 survived=5 rejected=2
+CAUGHT phys_fn_001830 NxPhysicsCollisionTests mismatches=1 line 720: 8  ->  9  (const)
+  SURVIVED line 679: +  ->  -  (arith)
+  SURVIVED line 698: +  ->  -  (arith)
+  SURVIVED line 700: +  ->  -  (arith)
+  SURVIVED line 685: +  ->  -  (arith)
+  SURVIVED line 704: 5  ->  6  (const)
+  rejected line 672: 8  ->  9  (const)  [no change in the DLL]
+  rejected line 691: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_001834 NxPhysicsCollisionTests tried=6 caught=1 survived=5 rejected=2
+CAUGHT phys_fn_001834 NxPhysicsCollisionTests mismatches=1 line 1349: -  ->  +  (arith)
+  SURVIVED line 1054: +  ->  -  (arith)
+  SURVIVED line 1171: 8  ->  9  (const)
+  SURVIVED line 1237: +  ->  -  (arith)
+  SURVIVED line 1090: +  ->  -  (arith)
+  SURVIVED line 1287: +  ->  -  (arith)
+  rejected line 1007: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 1128: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_001846 NxPhysicsCollisionTests tried=6 caught=3 survived=3 rejected=2
+CAUGHT phys_fn_001846 NxPhysicsCollisionTests mismatches=1 line 2467: +  ->  -  (arith)
+  SURVIVED line 2318: +  ->  -  (arith)
+  SURVIVED line 2704: +  ->  -  (arith)
+  SURVIVED line 2843: +  ->  -  (arith)
+  rejected line 2190: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 2585: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_001851 NxPhysicsCollisionTests tried=6 caught=0 survived=6 rejected=2
+  SURVIVED line 4483: +  ->  -  (arith)
+  SURVIVED line 4551: +  ->  -  (arith)
+  SURVIVED line 4576: +  ->  -  (arith)
+  SURVIVED line 4503: +  ->  -  (arith)
+  SURVIVED line 4600: +  ->  -  (arith)
+  SURVIVED line 4639: +  ->  -  (arith)
+  rejected line 4452: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 4524: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_002264 NxPhysicsCcdSimulationTests tried=5 caught=0 survived=5 rejected=3
+  SURVIVED line 1088: 2  ->  3  (const)
+  SURVIVED line 1131: +  ->  -  (arith)
+  SURVIVED line 1135: +  ->  -  (arith)
+  SURVIVED line 1161: 6  ->  7  (const)
+  SURVIVED line 1179: 2  ->  3  (const)
+  rejected line 1053: 16  ->  17  (const)  [no change in the DLL]
+  rejected line 1062: 15  ->  16  (const)  [no change in the DLL]
+  rejected line 1107: sweepDistance * 0.5f > travel  ->  !(sweepDistance * 0.5f > travel)  (neg)  [no change in the DLL]
+SURVEY phys_fn_001680 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0
+CAUGHT phys_fn_001680 NxPhysicsCollisionTests mismatches=1 line 545: lineParam  ->  !(lineParam)  (neg)
+  SURVIVED line 551: <  ->  <=  (cmp)
+  SURVIVED line 553: +  ->  -  (arith)
+SURVEY phys_fn_001832 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0
+CAUGHT phys_fn_001832 NxPhysicsCollisionTests mismatches=1 line 742: +  ->  -  (arith)
+  SURVIVED line 805: 4  ->  5  (const)
+  SURVIVED line 822: +  ->  -  (arith)
+SURVEY phys_fn_001840 NxPhysicsCollisionTests tried=8 caught=6 survived=2 rejected=0
+CAUGHT phys_fn_001840 NxPhysicsCollisionTests mismatches=1 line 1772: +  ->  -  (arith)
+  SURVIVED line 1813: 8  ->  9  (const)
+  SURVIVED line 1821: +  ->  -  (arith)
+SURVEY phys_fn_001847 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8
+  rejected line 3181: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3209: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3233: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3256: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3288: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3314: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3343: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+  rejected line 3408: +  ->  -  (arith)  [changed bytes outside NxContactConvexHeightfield]
+SURVEY phys_fn_001684 NxPhysicsCollisionTests tried=8 caught=0 survived=8 rejected=0
+  SURVIVED line 592: -  ->  +  (arith)
+  SURVIVED line 598: +  ->  -  (arith)
+  SURVIVED line 600: 2  ->  3  (const)
+  SURVIVED line 605: 8  ->  9  (const)
+  SURVIVED line 624: dir[0] > 0.0f  ->  !(dir[0] > 0.0f)  (neg)
+  SURVIVED line 635: >  ->  >=  (cmp)
+  SURVIVED line 652: dir[2] > 0.0f  ->  !(dir[2] > 0.0f)  (neg)
+  SURVIVED line 672: 2  ->  3  (const)
+SKIPPED phys_fn_001686 function not found
+SURVEY phys_fn_001990 NxPhysicsTriangleMeshApiTests tried=4 caught=4 survived=0 rejected=4
+CAUGHT phys_fn_001990 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 1898: 5  ->  6  (const)
+  rejected line 1878: count && !ordered  ->  !(count && !ordered)  (neg)  [no change in the DLL]
+  rejected line 1925: !changeX && changeY && !changeZ  ->  !(!changeX && changeY && !changeZ)  (neg)  [no change in the DLL]
+  rejected line 1932: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 1934: 27  ->  28  (const)  [changed bytes outside PenetrationMap::encodeCellRun]
+SURVEY phys_fn_002067 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8
+  rejected line 71: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 88: +  ->  -  (arith)  [changed bytes outside nxMTReleaseRow]
+  rejected line 98: +  ->  -  (arith)  [changed bytes outside nxMTReleaseRow]
+  rejected line 108: +  ->  -  (arith)  [changed bytes outside nxMTReleaseRow]
+  rejected line 118: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 128: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 131: 8  ->  9  (const)  [changed bytes outside nxMTReleaseRow]
+  rejected line 139: 8  ->  9  (const)  [changed bytes outside nxMTReleaseRow]
+SURVEY phys_fn_002017 NxPhysicsTriangleMeshApiTests tried=6 caught=4 survived=2 rejected=2
+CAUGHT phys_fn_002017 NxPhysicsTriangleMeshApiTests stdout_delta=32 line 1984: !=  ->  ==  (cmp)
+  SURVIVED line 1965: >  ->  >=  (cmp)
+  SURVIVED line 1954: mCellCount && (!ordered || !group)  ->  !(mCellCount && (!ordered || !group))  (neg)
+  rejected line 1982: item.value == kPMapEmptyValue  ->  !(item.value == kPMapEmptyValue)  (neg)  [no change in the DLL]
+  rejected line 2029: ==  ->  !=  (cmp)  [no change in the DLL]
+SKIPPED phys_fn_002085 function not found
+SKIPPED phys_fn_002158 no unique map symbol for nxTriangleMeshBuildConvexData
+SKIPPED phys_fn_002087 function not found
+SKIPPED phys_fn_002164 no unique map symbol for TriangleMesh::loadFromDesc
+SKIPPED phys_fn_002089 function not found
+SURVEY phys_fn_002166 NxPhysicsTriangleMeshApiTests tried=1 caught=0 survived=1 rejected=0
+  SURVIVED line 1019: !mInternal.mVertices || !mInternal.mTriangles  ->  !(!mInternal.mVertices || !mInternal.mTriangles)  (neg)
+SKIPPED phys_fn_002091 function not found
+SKIPPED phys_fn_002168 no unique map symbol for TriangleMesh::loadPMap
+SKIPPED phys_fn_002093 function not found
+SKIPPED phys_fn_002251 no unique map symbol for TriangleMesh::TriangleMesh
+SKIPPED phys_fn_002260 no unique map symbol for TriangleMesh::loadFromDesc
+SURVEY phys_fn_004037 NxPhysicsCoreDumpTests tried=8 caught=8 survived=0 rejected=0
+CAUGHT phys_fn_004037 NxPhysicsCoreDumpTests stdout_delta=38 line 825: desc.flags & NX_RJF_LIMIT_ENABLED  ->  !(desc.flags & NX_RJF_LIMIT_ENABLED)  (neg)
+SKIPPED phys_fn_003649 no unique map symbol for if
+SKIPPED phys_fn_004039 function not found
+SKIPPED phys_fn_004041 function not found
+SKIPPED phys_fn_004043 function not found
+SURVEY phys_fn_004048 NxPhysicsCoreDumpTests tried=6 caught=3 survived=3 rejected=2
+CAUGHT phys_fn_004048 NxPhysicsCoreDumpTests stdout_delta=136 line 1302: +  ->  -  (arith)
+  SURVIVED line 1347: +  ->  -  (arith)
+  SURVIVED line 1356: 2  ->  3  (const)
+  SURVIVED line 1359: isConvex  ->  !(isConvex)  (neg)
+  rejected line 1257: 4  ->  5  (const)  [changed bytes outside SceneDump::writeShape]
+  rejected line 1266: 3  ->  4  (const)  [changed bytes outside SceneDump::writeShape]
+SURVEY phys_fn_004051 NxPhysicsCoreDumpTests tried=5 caught=2 survived=3 rejected=3
+CAUGHT phys_fn_004051 NxPhysicsCoreDumpTests stdout_delta=3599 line 1465: !=  ->  ==  (cmp)
+  SURVIVED line 1580: <  ->  <=  (cmp)
+  SURVIVED line 1601: +  ->  -  (arith)
+  SURVIVED line 1609: ==  ->  !=  (cmp)
+  rejected line 1425: !file  ->  !(!file)  (neg)  [no change in the DLL]
+  rejected line 1502: nbShapes == 1  ->  !(nbShapes == 1)  (neg)  [no change in the DLL]
+  rejected line 1551: flags & frozen  ->  !(flags & frozen)  (neg)  [no change in the DLL]
+SKIPPED phys_fn_004053 function not found
+SKIPPED phys_fn_004055 function not found
+SKIPPED phys_fn_004061 function not found
+SURVEY phys_fn_004062 NxPhysicsCoreDumpTests tried=6 caught=4 survived=2 rejected=2
+CAUGHT phys_fn_004062 NxPhysicsCoreDumpTests stdout_delta=4241 line 1778: 32  ->  33  (const)
+  SURVIVED line 1722: <  ->  <=  (cmp)
+  SURVIVED line 1708: ==  ->  !=  (cmp)
+  rejected line 1698: file  ->  !(file)  (neg)  [no change in the DLL]
+  rejected line 1724: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_001006 NxPhysicsShapeVtableTests tried=4 caught=1 survived=3 rejected=4
+CAUGHT phys_fn_001006 NxPhysicsShapeVtableTests mismatches=2 line 6629: 4  ->  5  (const)
+  SURVIVED line 6587: <  ->  <=  (cmp)
+  SURVIVED line 6612: 2  ->  3  (const)
+  SURVIVED line 6618: 2  ->  3  (const)
+  rejected line 6557: !mBase.nxFlagBitsDE(8) || !renderer  ->  !(!mBase.nxFlagBitsDE(8) || !renderer)  (neg)  [no change in the DLL]
+  rejected line 6578: 3  ->  4  (const)  [no change in the DLL]
+  rejected line 6599: 4  ->  5  (const)  [no change in the DLL]
+  rejected line 6607: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_000933 NxPhysicsActorDynamicSetterTests tried=4 caught=4 survived=0 rejected=4
+CAUGHT phys_fn_000933 NxPhysicsActorDynamicSetterTests stdout_delta=8 line 6855: 2  ->  3  (const)
+  rejected line 6850: 12  ->  13  (const)  [no change in the DLL]
+  rejected line 6854: 10  ->  11  (const)  [no change in the DLL]
+  rejected line 6856: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 6856: 6  ->  7  (const)  [no change in the DLL]
+SURVEY phys_fn_000837 NxPhysicsObjectLayoutTests tried=0 caught=0 survived=0 rejected=2
+  rejected line 5662: <  ->  <=  (cmp)  [no change in the DLL]
+  rejected line 5662: 9  ->  10  (const)  [no change in the DLL]
+SURVEY phys_fn_001730 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8
+  rejected line 752: <  ->  <=  (cmp)  [no change in the DLL]
+  rejected line 754: <  ->  <=  (cmp)  [no change in the DLL]
+  rejected line 756: >  ->  >=  (cmp)  [changed bytes outside NxRayAABBSlab]
+  rejected line 764: >  ->  >=  (cmp)  [no change in the DLL]
+  rejected line 771: entry > *tNear  ->  !(entry > *tNear)  (neg)  [no change in the DLL]
+  rejected line 778: *tNear > *tFar  ->  !(*tNear > *tFar)  (neg)  [changed bytes outside NxRayAABBSlab]
+  rejected line 780: <  ->  <=  (cmp)  [changed bytes outside NxRayAABBSlab]
+  rejected line 785: <  ->  <=  (cmp)  [changed bytes outside NxRayAABBSlab]
+SURVEY phys_fn_002156 NxPhysicsCollisionTests tried=1 caught=0 survived=1 rejected=4
+  SURVIVED line 4002: +  ->  -  (arith)
+  rejected line 3999: <  ->  <=  (cmp)  [no change in the DLL]
+  rejected line 3999: 9  ->  10  (const)  [no change in the DLL]
+  rejected line 4002: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 4004: +  ->  -  (arith)  [no change in the DLL]
+SURVEY phys_fn_001708 NxPhysicsCollisionTests tried=4 caught=1 survived=3 rejected=4
+CAUGHT phys_fn_001708 NxPhysicsCollisionTests mismatches=1 line 666: remaining == 0  ->  !(remaining == 0)  (neg)
+  SURVIVED line 689: NxRayTriIntersect(ray->orig, ray->dir, corners[0], corners[1  ->  !(NxRayTriIntersect(ray->orig, ray->dir, corners[0], corners  (neg)
+  SURVIVED line 689: 2  ->  3  (const)
+  SURVIVED line 692: !=  ->  ==  (cmp)
+  rejected line 665: -  ->  +  (arith)  [no change in the DLL]
+  rejected line 665: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 666: ==  ->  !=  (cmp)  [no change in the DLL]
+  rejected line 684: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001751 NxPhysicsCollisionTests tried=4 caught=0 survived=4 rejected=4
+  SURVIVED line 776: NxOverlapSphereBoxData(&sphere, &boxData)  ->  !(NxOverlapSphereBoxData(&sphere, &boxData))  (neg)
+  SURVIVED line 781: 2  ->  3  (const)
+  SURVIVED line 788: >  ->  >=  (cmp)
+  SURVIVED line 767: 2  ->  3  (const)
+  rejected line 764: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 766: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 768: <  ->  <=  (cmp)  [no change in the DLL]
+  rejected line 768: 9  ->  10  (const)  [no change in the DLL]
+SURVEY phys_fn_001774 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=2
+  rejected line 809: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 810: <  ->  <=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_001785 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=1
+  rejected line 830: >  ->  >=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_001789 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=2
+  rejected line 844: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 844: 2  ->  3  (const)  [no change in the DLL]
+SURVEY phys_fn_001791 NxPhysicsCollisionTests tried=4 caught=0 survived=4 rejected=4
+  SURVIVED line 868: 2  ->  3  (const)
+  SURVIVED line 868: 3  ->  4  (const)
+  SURVIVED line 869: 2  ->  3  (const)
+  SURVIVED line 858: 7  ->  8  (const)
+  rejected line 858: !(*((const NxU8*) box + 0xde) & 7)  ->  !(!(*((const NxU8*) box + 0xde) & 7))  (neg)  [no change in the DLL]
+  rejected line 858: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 864: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 865: 2  ->  3  (const)  [no change in the DLL]
+SKIPPED phys_fn_001008 source file missing
+SURVEY phys_fn_001012 NxPhysicsShapeVtableTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_000983 NxPhysicsActorDynamicSetterTests tried=7 caught=4 survived=3 rejected=0
+CAUGHT phys_fn_000983 NxPhysicsActorDynamicSetterTests stdout_delta=10 line 901: +  ->  -  (arith)
+  SURVIVED line 901: 4  ->  5  (const)
+  SURVIVED line 902: 4  ->  5  (const)
+  SURVIVED line 903: 4  ->  5  (const)
+SURVEY phys_fn_000839 NxPhysicsObjectLayoutTests tried=0 caught=0 survived=0 rejected=7
+  rejected line 5677: +  ->  -  (arith)  [changed bytes outside MassFrame::nxMassFrameMerge]
+  rejected line 5687: +  ->  -  (arith)  [changed bytes outside MassFrame::nxMassFrameMerge]
+  rejected line 5688: +  ->  -  (arith)  [changed bytes outside MassFrame::nxMassFrameMerge]
+  rejected line 5690: +  ->  -  (arith)  [changed bytes outside MassFrame::nxMassFrameMerge]
+  rejected line 5698: <  ->  <=  (cmp)  [changed bytes outside MassFrame::nxMassFrameMerge]
+  rejected line 5698: 9  ->  10  (const)  [changed bytes outside MassFrame::nxMassFrameMerge]
+  rejected line 5700: +  ->  -  (arith)  [changed bytes outside MassFrame::nxMassFrameMerge]
+SURVEY phys_fn_001732 NxPhysicsCollisionTests tried=0 caught=0 survived=0 rejected=8
+  rejected line 752: <  ->  <=  (cmp)  [changed bytes outside NxRayAABBSlab]
+  rejected line 754: <  ->  <=  (cmp)  [changed bytes outside NxRayAABBSlab]
+  rejected line 756: >  ->  >=  (cmp)  [changed bytes outside NxRayAABBSlab]
+  rejected line 764: >  ->  >=  (cmp)  [changed bytes outside NxRayAABBSlab]
+  rejected line 771: entry > *tNear  ->  !(entry > *tNear)  (neg)  [changed bytes outside NxRayAABBSlab]
+  rejected line 778: *tNear > *tFar  ->  !(*tNear > *tFar)  (neg)  [changed bytes outside NxRayAABBSlab]
+  rejected line 780: <  ->  <=  (cmp)  [changed bytes outside NxRayAABBSlab]
+  rejected line 785: <  ->  <=  (cmp)  [changed bytes outside NxRayAABBSlab]
+SURVEY phys_fn_002241 NxPhysicsCollisionTests tried=8 caught=2 survived=6 rejected=0
+CAUGHT phys_fn_002241 NxPhysicsCollisionTests mismatches=1 line 7382: 8  ->  9  (const)
+  SURVIVED line 7344: +  ->  -  (arith)
+  SURVIVED line 7360: +  ->  -  (arith)
+  SURVIVED line 7437: +  ->  -  (arith)
+  SURVIVED line 7465: +  ->  -  (arith)
+  SURVIVED line 7495: 8  ->  9  (const)
+  SURVIVED line 7513: +  ->  -  (arith)
+SKIPPED phys_fn_001371 source file missing
+SURVEY phys_fn_001253 NxPhysicsShapeVtableTests tried=0 caught=0 survived=0 rejected=8
+  rejected line 5198: 4  ->  5  (const)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+  rejected line 5199: 4  ->  5  (const)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+  rejected line 5200: 2  ->  3  (const)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+  rejected line 5204: ==  ->  !=  (cmp)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+  rejected line 5204: ==  ->  !=  (cmp)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+  rejected line 5205: ==  ->  !=  (cmp)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+  rejected line 5206: ==  ->  !=  (cmp)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+  rejected line 5206: ==  ->  !=  (cmp)  [changed bytes outside PlaneShape::nxPlaneSetEquation]
+SURVEY phys_fn_000993 NxPhysicsActorDynamicSetterTests tried=3 caught=1 survived=2 rejected=0
+CAUGHT phys_fn_000993 NxPhysicsActorDynamicSetterTests stdout_delta=308 line 939: 6  ->  7  (const)
+  SURVIVED line 934: radius <= 0.0f  ->  !(radius <= 0.0f)  (neg)
+  SURVIVED line 934: <=  ->  <  (cmp)
+SURVEY phys_fn_001259 NxPhysicsShapeVtableTests tried=4 caught=2 survived=2 rejected=4
+CAUGHT phys_fn_001259 NxPhysicsShapeVtableTests mismatches=36 line 7037: 14  ->  15  (const)
+  SURVIVED line 7051: 4  ->  5  (const)
+  SURVIVED line 7025: !mBase.nxFlagBitsDE(8) || !renderer  ->  !(!mBase.nxFlagBitsDE(8) || !renderer)  (neg)
+  rejected line 7032: guard == ref && guard == guard  ->  !(guard == ref && guard == guard)  (neg)  [no change in the DLL]
+  rejected line 7043: +  ->  -  (arith)  [no change in the DLL]
+  rejected line 7044: 2  ->  3  (const)  [no change in the DLL]
+  rejected line 7047: 4  ->  5  (const)  [no change in the DLL]
+SURVEY phys_fn_001369 NxPhysicsShapeVtableTests tried=6 caught=4 survived=2 rejected=2
+CAUGHT phys_fn_001369 NxPhysicsShapeVtableTests mismatches=2 line 4935: round < 2  ->  !(round < 2)  (neg)
+  SURVIVED line 4925: 12  ->  13  (const)
+  SURVIVED line 4912: !mBase.nxFlagBitsDE(8) || !renderer  ->  !(!mBase.nxFlagBitsDE(8) || !renderer)  (neg)
+  rejected line 4919: guard == ref && guard == guard  ->  !(guard == ref && guard == guard)  (neg)  [changed bytes outside SphereShape::nxSphereDebugRenderDispatch]
+  rejected line 4939: <  ->  <=  (cmp)  [no change in the DLL]
+SURVEY phys_fn_001373 NxPhysicsShapeVtableTests tried=0 caught=0 survived=0 rejected=0
+SURVEY phys_fn_001401 NxPhysicsShapeVtableTests tried=8 caught=8 survived=0 rejected=0
+CAUGHT phys_fn_001401 NxPhysicsShapeVtableTests mismatches=2 line 7178: +  ->  -  (arith)
+SKIPPED phys_fn_001403 source file missing

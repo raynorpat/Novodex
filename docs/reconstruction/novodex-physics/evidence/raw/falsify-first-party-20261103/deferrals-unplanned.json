@@ -1,0 +1,1289 @@
+{
+ "doc": "evidence/falsify-first-party.md",
+ "rows": {
+  "phys_fn_000875": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000887": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000889": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000903": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001283": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001672": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001674": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001682": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001755": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001757": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001758": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001762": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001764": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001766": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001768": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001770": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001772": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001777": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001779": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001781": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001783": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001793": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001795": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001797": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001799": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001801": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001803": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001805": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001807": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001809": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001810": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001812": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001814": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001816": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001818": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001820": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001822": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001824": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001826": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001836": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001838": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001842": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001857": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001859": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001861": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001863": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001865": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001867": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001869": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001870": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001872": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001874": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001903": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001905": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001907": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001909": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001911": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002354": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001205": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001239": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001591": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001593": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001595": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001597": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001599": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001601": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001602": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001603": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001605": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001607": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001609": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001611": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001613": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001615": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001617": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001619": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001621": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001623": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001625": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001627": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001629": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001631": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001633": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001635": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001637": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001641": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001643": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001647": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001651": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001653": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001661": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001667": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002065": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002081": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002172": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002174": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002186": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002188": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002211": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002213": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002215": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002217": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002219": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002221": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002223": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002225": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002227": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002229": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002231": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002233": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002235": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002237": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002249": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002253": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsInternalTests is not a staged-pair gate. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003347": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003349": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003351": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003353": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003355": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003357": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003359": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003361": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003363": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003365": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003367": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003369": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003371": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001537": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001539": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001541": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001542": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001546": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001548": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001550": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001556": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001558": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001560": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001567": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001569": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001573": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001579": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001581": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004859": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000509": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001018": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001028": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001032": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001033": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001037": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001039": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001041": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001279": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001945": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001955": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003983": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003985": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003987": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003989": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000827": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000833": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000929": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_000931": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001016": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001024": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001030": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001043": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001061": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001067": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001071": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001081": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001085": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001107": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001129": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001149": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001155": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001165": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001183": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001187": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001189": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001191": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001203": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001207": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001209": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001219": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001221": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001223": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001237": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001255": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001267": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001285": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001289": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001291": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001293": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001295": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001297": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001299": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001301": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001323": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001351": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001409": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001413": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001421": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001439": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001445": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001449": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001455": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001457": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001459": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001461": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001463": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001465": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001496": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001498": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001500": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001506": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001508": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001510": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001512": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001514": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001516": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001518": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001520": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001522": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001526": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001530": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001532": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001534": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001536": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001544": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001552": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001554": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001563": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001565": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001571": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001575": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001577": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001585": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001587": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001589": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001645": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001649": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001657": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001659": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001663": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001665": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001668": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001787": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_001965": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002052": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002054": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002056": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002058": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002060": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002061": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002063": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002140": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002142": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002144": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002160": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002170": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002176": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002196": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002198": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002202": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002208": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_002348": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003236": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003238": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003240": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003241": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003243": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003245": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003247": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003249": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003251": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003253": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003255": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003257": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003259": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003261": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003263": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003265": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003267": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003268": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003270": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003272": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003274": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003275": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003277": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_003279": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004147": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004157": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004163": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004186": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004248": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004387": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004407": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004409": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004411": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004415": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004763": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004764": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004776": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004778": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_004861": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005149": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005151": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005153": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005202": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005212": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005242": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005382": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005450": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005475": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005477": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005533": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005535": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005584": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005604": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005622": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  },
+  "phys_fn_005640": {
+   "reason": "keep",
+   "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
+  }
+ }
+}

@@ -53,11 +53,12 @@
     "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
   },
   "counts": {
-    "differential_falsified": 115,
-    "oracle_differential_falsified": 102,
-    "deferred_not_reconstructed_in_phase": 74,
-    "deferred_reconstructed_not_falsified": 99,
-    "deferred_blocked_on_later_phase": 2
+    "differential_falsified": 117,
+    "oracle_differential_falsified": 111,
+    "deferred_not_reconstructed_in_phase": 67,
+    "deferred_reconstructed_not_falsified": 88,
+    "deferred_blocked_on_later_phase": 1,
+    "deferred_not_independently_falsifiable": 8
   },
   "closed": [
     {
@@ -2921,6 +2922,136 @@
       "driving_phases": [
         6
       ]
+    },
+    {
+      "id": "phys_fn_001828",
+      "rva": "0x00041840",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 569: + -> - (arith)",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001833",
+      "rva": "0x00041ba0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 939: + -> - (arith)",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001844",
+      "rva": "0x000427d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 2190: - -> + (arith)",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001849",
+      "rva": "0x00043680",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 3451: - -> + (arith)",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001832",
+      "rva": "0x000419b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 742: + -> - (arith)",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_001840",
+      "rva": "0x00042460",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "Physics/src/ContactConvexHeightfield.cpp line 1772: + -> - (arith)",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_000933",
+      "rva": "0x000204e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Physics/src/ObjectModel.cpp line 6855: 2 -> 3 (const)",
+        "detected": "stdout_delta=8"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_000993",
+      "rva": "0x00021b70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsActorDynamicSetterTests",
+      "falsification": {
+        "mutation": "Physics/src/NpActor.cpp line 939: 6 -> 7 (const)",
+        "detected": "stdout_delta=308"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001259",
+      "rva": "0x000251f0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Physics/src/ObjectModel.cpp line 7037: 14 -> 15 (const)",
+        "detected": "mismatches=36"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001369",
+      "rva": "0x00027a30",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Physics/src/ObjectModel.cpp line 4935: round < 2 -> !(round < 2) (neg)",
+        "detected": "mismatches=2"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
+    },
+    {
+      "id": "phys_fn_001401",
+      "rva": "0x00028ed0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsShapeVtableTests",
+      "falsification": {
+        "mutation": "Physics/src/ObjectModel.cpp line 7178: + -> - (arith)",
+        "detected": "mismatches=2"
+      },
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        5
+      ]
     }
   ],
   "deferred": [
@@ -2964,7 +3095,8 @@
       "size": 50,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_000843",
@@ -2989,7 +3121,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-000875-mutation.patch (the `fchs` at 0x0001d92a removed, the swapped pair's normal) gave contact_emit_ext 19314, contact_convex_convex 1492, contact_convex_hulls 4574. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_000887",
@@ -2998,7 +3130,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "Reconstructed in Physics/src/Scene.cpp and driven against the pinned oracle; see evidence/convex-mesh-gap.md. No mutation aimed at this row is recorded."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_000889",
@@ -3007,7 +3139,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "Reconstructed in Physics/src/Scene.cpp and driven against the pinned oracle; see evidence/convex-mesh-gap.md. No mutation aimed at this row is recorded."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_000903",
@@ -3016,7 +3148,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "Reconstructed in Physics/src/Scene.cpp and driven against the pinned oracle; see evidence/convex-mesh-gap.md. No mutation aimed at this row is recorded."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_000925",
@@ -3032,16 +3164,8 @@
       "size": 7,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000933",
-      "rva": "0x000204e0",
-      "size": 188,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_000983",
@@ -3050,24 +3174,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000993",
-      "rva": "0x00021b70",
-      "size": 108,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsActorDynamicSetterTests caught 4 of 7 mutations tried (3 survived, 0 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001006",
       "rva": "0x00021cd0",
       "size": 1896,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "NxPhysicsShapeVtableTests caught 1 of 4 mutations tried (3 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001008",
@@ -3081,9 +3197,10 @@
       "id": "phys_fn_001012",
       "rva": "0x000225d0",
       "size": 15,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001016",
@@ -3091,7 +3208,8 @@
       "size": 419,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001018",
@@ -3100,7 +3218,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001024",
@@ -3108,7 +3226,8 @@
       "size": 87,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001028",
@@ -3117,7 +3236,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001030",
@@ -3125,7 +3244,8 @@
       "size": 267,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001032",
@@ -3134,7 +3254,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001033",
@@ -3143,7 +3263,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001037",
@@ -3152,7 +3272,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001039",
@@ -3161,7 +3281,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001041",
@@ -3170,7 +3290,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001043",
@@ -3178,7 +3298,8 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001061",
@@ -3186,7 +3307,8 @@
       "size": 37,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001067",
@@ -3194,7 +3316,8 @@
       "size": 92,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001071",
@@ -3202,7 +3325,8 @@
       "size": 36,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001081",
@@ -3210,7 +3334,8 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001085",
@@ -3218,7 +3343,8 @@
       "size": 43,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001107",
@@ -3226,7 +3352,8 @@
       "size": 43,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001129",
@@ -3234,7 +3361,8 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001149",
@@ -3242,7 +3370,8 @@
       "size": 43,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001155",
@@ -3250,7 +3379,8 @@
       "size": 92,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001165",
@@ -3258,7 +3388,8 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001183",
@@ -3266,7 +3397,8 @@
       "size": 36,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001187",
@@ -3274,7 +3406,8 @@
       "size": 43,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001189",
@@ -3282,7 +3415,8 @@
       "size": 92,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001191",
@@ -3290,7 +3424,8 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001203",
@@ -3298,7 +3433,8 @@
       "size": 36,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001205",
@@ -3306,7 +3442,8 @@
       "size": 84,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001207",
@@ -3314,7 +3451,8 @@
       "size": 37,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001209",
@@ -3322,7 +3460,8 @@
       "size": 39,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001219",
@@ -3330,7 +3469,8 @@
       "size": 39,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001221",
@@ -3338,7 +3478,8 @@
       "size": 39,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001223",
@@ -3346,7 +3487,8 @@
       "size": 39,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001237",
@@ -3354,7 +3496,8 @@
       "size": 36,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001239",
@@ -3362,15 +3505,17 @@
       "size": 92,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001253",
       "rva": "0x00024fc0",
       "size": 207,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_001255",
@@ -3378,15 +3523,8 @@
       "size": 315,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001259",
-      "rva": "0x000251f0",
-      "size": 351,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001267",
@@ -3394,7 +3532,8 @@
       "size": 116,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001279",
@@ -3403,7 +3542,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001283",
@@ -3411,7 +3550,8 @@
       "size": 7,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001285",
@@ -3419,7 +3559,8 @@
       "size": 8,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001287",
@@ -3435,7 +3576,8 @@
       "size": 43,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001291",
@@ -3443,7 +3585,8 @@
       "size": 21,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001293",
@@ -3451,7 +3594,8 @@
       "size": 8,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001295",
@@ -3459,7 +3603,8 @@
       "size": 43,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001297",
@@ -3467,7 +3612,8 @@
       "size": 33,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001299",
@@ -3475,7 +3621,8 @@
       "size": 23,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001301",
@@ -3483,7 +3630,8 @@
       "size": 43,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001323",
@@ -3494,7 +3642,7 @@
       "driving_phases": [
         3
       ],
-      "note": "reconstructed and driven through owner-present scene teardown; candidate differential and breakpoints for 001323, 001955 and 001945 are recorded in evidence/convex-mesh-gap-001323-owner-cdb-raw.txt."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001351",
@@ -3502,15 +3650,8 @@
       "size": 33,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001369",
-      "rva": "0x00027a30",
-      "size": 424,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001371",
@@ -3524,17 +3665,10 @@
       "id": "phys_fn_001373",
       "rva": "0x00027c10",
       "size": 17,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001401",
-      "rva": "0x00028ed0",
-      "size": 696,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "The function body has no operator the mutation set can change (calls and assignments only), so no source mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001403",
@@ -3550,7 +3684,8 @@
       "size": 41,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001413",
@@ -3558,7 +3693,8 @@
       "size": 30,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001421",
@@ -3566,7 +3702,8 @@
       "size": 17,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001439",
@@ -3574,7 +3711,8 @@
       "size": 15,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001445",
@@ -3583,7 +3721,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001445-mutation.patch (`fadd` -> `fsub` at 0x0002a7d3) gave hull_leaf mismatches=635, convex_hull 320 and support_maps 237. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001449",
@@ -3592,7 +3730,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001455",
@@ -3600,7 +3738,8 @@
       "size": 65,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001457",
@@ -3608,7 +3747,8 @@
       "size": 34,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001459",
@@ -3617,7 +3757,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001459-mutation.patch (`fadd` -> `fsub` at 0x0002adf7, the weighted sum) gave hull_leaf mismatches=42, convex_hull 448 and support_maps 262. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001461",
@@ -3626,7 +3766,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001463",
@@ -3635,7 +3775,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2f-001463-mutation.patch (`jne` -> `je` at 0x0002b006, the largest-area test) gave convex_hull mismatches=432. Measured on the build of 0701abc in this worktree: NxPhysicsThirdPartyTests rebuilt after each `git apply` and after each `git checkout`, between un-mutated controls before the first and after the last, both `thirdparty candidate mismatches=0`, with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001465",
@@ -3644,7 +3784,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001542",
@@ -3653,7 +3793,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001641",
@@ -3662,7 +3802,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001643",
@@ -3671,7 +3811,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001649",
@@ -3679,7 +3819,8 @@
       "size": 61,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001651",
@@ -3688,7 +3829,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2e-001651-mutation.patch (`jnp` -> `jp` at 0x00031ab0, the face-normal normalisation) gave mesh_normals mismatches=15539. Measured in a throwaway `git archive` copy of 14c8ec7 (D:/nx2e), NxPhysicsThirdPartyTests rebuilt, between un-mutated controls built and run in the same session that read `thirdparty candidate mismatches=0`, with the oracle-side digest unmoved (`thirdparty oracle digest=a1b4f9a6` in every run). It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001653",
@@ -3707,7 +3848,7 @@
       ],
       "blocked_on_type": "Shape",
       "vtable_slot": 7,
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2e-001653-mutation.patch (the first and last terms of relative0[0][0] swapped, 0x00031e6e/0x00031e72 <-> 0x00031e87/0x00031e8b) gave pose_pair mismatches=32. Measured in a throwaway `git archive` copy of 14c8ec7 (D:/nx2e), NxPhysicsThirdPartyTests rebuilt, between un-mutated controls built and run in the same session that read `thirdparty candidate mismatches=0`, with the oracle-side digest unmoved (`thirdparty oracle digest=a1b4f9a6` in every run). It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001663",
@@ -3715,7 +3856,8 @@
       "size": 19,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001665",
@@ -3723,7 +3865,8 @@
       "size": 95,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001667",
@@ -3732,7 +3875,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001668",
@@ -3740,7 +3883,8 @@
       "size": 40,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001692",
@@ -3749,7 +3893,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001708",
@@ -3758,7 +3902,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 1 of 4 mutations tried (3 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001751",
@@ -3767,7 +3911,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 4 mutations tried (4 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001753",
@@ -3776,7 +3920,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001755",
@@ -3784,7 +3928,8 @@
       "size": 386,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001757",
@@ -3796,7 +3941,7 @@
         4
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "matrix B [BOX][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001758",
@@ -3804,16 +3949,17 @@
       "size": 694,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001760",
       "rva": "0x0003c160",
       "size": 222,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_001762",
@@ -3821,7 +3967,8 @@
       "size": 493,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001764",
@@ -3829,7 +3976,8 @@
       "size": 1258,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001766",
@@ -3837,7 +3985,8 @@
       "size": 922,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001768",
@@ -3845,7 +3994,8 @@
       "size": 1053,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001770",
@@ -3853,7 +4003,8 @@
       "size": 1054,
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001772",
@@ -3865,16 +4016,16 @@
         4
       ],
       "blocked_on_type": "TriangleMesh",
-      "note": "matrix A [BOX][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001774",
       "rva": "0x0003d890",
       "size": 320,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 2 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_001777",
@@ -3883,7 +4034,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001779",
@@ -3892,7 +4043,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001781",
@@ -3901,7 +4052,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001783",
@@ -3910,16 +4061,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed, with an exact listing comparison and the Task 2k oracle differential recorded in evidence/convex-mesh-gap-2k-run.txt; no mutation was aimed at this row. It remains deferred at reconstructed_not_falsified because the plan promotes no row above reconstructed."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001785",
       "rva": "0x0003f390",
       "size": 471,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 1 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_001787",
@@ -3928,16 +4079,16 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "matrix B [PLANE][COMPOUND] and [MESH][COMPOUND]; it always returns false and is the cheapest row in either matrix. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001789",
       "rva": "0x0003f5b0",
       "size": 334,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "None of the 2 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_001791",
@@ -3946,7 +4097,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 4 mutations tried (4 survived, 4 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001793",
@@ -3954,7 +4105,8 @@
       "size": 345,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001795",
@@ -3963,7 +4115,7 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "matrix A's compound entry, shared by every cell of the compound column. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001797",
@@ -3972,7 +4124,7 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "matrix A [COMPOUND][COMPOUND]. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001799",
@@ -3980,7 +4132,8 @@
       "size": 409,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001801",
@@ -3988,7 +4141,8 @@
       "size": 346,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001803",
@@ -3997,7 +4151,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001803-mutation.patch (`fsub` -> `fadd` at 0x0003fde6, the first overlap) gave contact_convex_convex 9974, contact_convex_hulls 126475. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001805",
@@ -4006,7 +4160,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001805-mutation.patch (`fsub` -> `fadd` at 0x0003fe67) gave contact_convex_convex 29039, contact_convex_hulls 19794. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001807",
@@ -4015,7 +4169,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001807-mutation.patch (`faddp` -> `fsubp` at 0x0003ff00, the rotated normal) gave contact_convex_convex 18, contact_convex_hulls 31789. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001809",
@@ -4024,7 +4178,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001809-mutation.patch (`fadd` -> `fsub` at 0x00040025, the centre's plane value) gave contact_convex_convex 21240, contact_convex_hulls 28376. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001810",
@@ -4033,7 +4187,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001810-mutation.patch (`fmul` -> `fdiv` of 0.5f at 0x000401ac) gave contact_convex_convex 1648, contact_convex_hulls 15933. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001812",
@@ -4042,7 +4196,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001814",
@@ -4051,7 +4205,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001814-mutation.patch (`fadd` -> `fsub` at 0x000404a8, the plane value) gave contact_convex_convex 1586, contact_convex_hulls 21508. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001816",
@@ -4060,7 +4214,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001816-mutation.patch (`fsubp` -> `faddp` at 0x00040a3e, a cross product term) gave contact_convex_convex 18, contact_convex_hulls 4025. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001818",
@@ -4069,7 +4223,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001818-mutation.patch (the `fchs` at 0x00040e9c removed, the axis turned toward B) gave contact_convex_convex 4445, contact_convex_hulls 18676. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001820",
@@ -4078,7 +4232,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001820-mutation.patch (the translation's first word read from +0x34 at 0x00041259) gave contact_convex_convex 24808, contact_convex_hulls 108027. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001822",
@@ -4087,7 +4241,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001822own-mutation.patch (`faddp` -> `fsubp` at 0x000413e1, inside the pose transform (0x000413b5..0x000414e1)) gave convex_mesh_ray 1518, convex_mesh_ray.callee_divergent 840 (from 184); and evidence/convex-mesh-gap-2h-001822-mutation.patch (`fadd` -> `fsub` at 0x00041555, the origin's plane value) gave convex_mesh_ray 16580, convex_mesh_ray.callee_divergent 7709 (from 184). Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001824",
@@ -4096,7 +4250,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001824-mutation.patch (`faddp` -> `fsubp` at 0x000416a5, the first vertex's projection) gave convex_mesh_faces 15552, convex_mesh_edges 4575, convex_mesh_cross 5372. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001826",
@@ -4105,16 +4259,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001826-mutation.patch (`fsub` -> `fadd` at 0x000417fe, the first overlap) gave convex_mesh_faces 11419, convex_mesh_edges 3556, convex_mesh_cross 7572. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
-    },
-    {
-      "id": "phys_fn_001828",
-      "rva": "0x00041840",
-      "size": 235,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001828-mutation.patch (`faddp` -> `fsubp` at 0x00041875, the rotated normal) gave convex_mesh_faces 11657. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001830",
@@ -4123,25 +4268,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001830-mutation.patch (`fsub` -> `fadd` at 0x00041977, the first overlap) gave convex_mesh_faces 17642. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
-    },
-    {
-      "id": "phys_fn_001832",
-      "rva": "0x000419b0",
-      "size": 496,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001832-mutation.patch (`fadd` -> `fsub` at 0x00041a19, the point's plane value) gave convex_mesh_faces 114926. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
-    },
-    {
-      "id": "phys_fn_001833",
-      "rva": "0x00041ba0",
-      "size": 112,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001833-mutation.patch (`jp` -> `jnp` at 0x00041be7, the depth comparison) gave convex_mesh_edges 20684. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "NxPhysicsCollisionTests caught 1 of 6 mutations tried (5 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001834",
@@ -4150,7 +4277,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001834-mutation.patch (`faddp` -> `fsubp` at 0x00041cae, the plane normal taken into the mesh's frame) gave convex_mesh_edges 2034, convex_mesh_cross 5084. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "NxPhysicsCollisionTests caught 1 of 6 mutations tried (5 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001836",
@@ -4159,7 +4286,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001836-mutation.patch (`faddp` -> `fsubp` at 0x00042057, the plane taken into the hull's frame) gave convex_mesh_cross 8416. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001838",
@@ -4168,16 +4295,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001838-mutation.patch (`fsub` -> `fadd` at 0x00042249, the edge's z difference) gave convex_mesh_cross 36773. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
-    },
-    {
-      "id": "phys_fn_001840",
-      "rva": "0x00042460",
-      "size": 247,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001840-mutation.patch (`jp` -> `jnp` at 0x000424e3, the depth comparison) gave convex_mesh_edges 23010. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001842",
@@ -4186,16 +4304,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2h-001842-mutation.patch (`faddp` -> `fsubp` at 0x0004258d, the polygon normal's rotation) gave convex_mesh_contacts 451. Measured on the build of e02dc3d in this worktree (the Task 2h review): NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (convex_mesh_ray, convex_mesh_faces, convex_mesh_edges, convex_mesh_cross and convex_mesh_contacts mismatches=0, the split at its 184 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2h. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
-    },
-    {
-      "id": "phys_fn_001844",
-      "rva": "0x000427d0",
-      "size": 2170,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2i-001844-mutation.patch (`faddp` -> `fsubp` at 0x00042893, a hull vertex's world transform) gave contact_convex_heightfield 45,457. Measured on the build of d6c8919 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_convex_heightfield, contact_convex_mesh and mesh_vertex_normals mismatches=0, the splits at their 3 and 51 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2i. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001846",
@@ -4204,25 +4313,16 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2i-001846-mutation.patch (`fsub` -> `fadd` at 0x00043149, the triangle edge's z difference) gave contact_convex_heightfield 51,253. Measured on the build of d6c8919 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_convex_heightfield, contact_convex_mesh and mesh_vertex_normals mismatches=0, the splits at their 3 and 51 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2i. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "NxPhysicsCollisionTests caught 3 of 6 mutations tried (3 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001847",
       "rva": "0x000432d0",
       "size": 943,
-      "reason": "reconstructed_not_falsified",
+      "reason": "not_independently_falsifiable",
       "phase_provenance": "translation_unit",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2i-001847-mutation.patch (`fadd` -> `fsub` at 0x000434c3, the query box's centre) gave contact_convex_heightfield 16,807. Measured on the build of d6c8919 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_convex_heightfield, contact_convex_mesh and mesh_vertex_normals mismatches=0, the splits at their 3 and 51 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2i. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
-    },
-    {
-      "id": "phys_fn_001849",
-      "rva": "0x00043680",
-      "size": 2899,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2i-001849-mutation.patch (`fadd` -> `fsub` at 0x00043aca, the area-weighted centre's sum) gave contact_convex_mesh 10,999. Measured on the build of d6c8919 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_convex_heightfield, contact_convex_mesh and mesh_vertex_normals mismatches=0, the splits at their 3 and 51 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2i. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "None of the 8 source mutations tried changed this row's compiled function in NxPhysics.dll (compiler-generated or folded code with no body of its own)."
     },
     {
       "id": "phys_fn_001851",
@@ -4231,7 +4331,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2i-001851-mutation.patch (`fadd` -> `fsub` at 0x0004433d, the local bounds' centre) gave contact_convex_mesh 13,049. Measured on the build of d6c8919 in this worktree: NxPhysicsCollisionTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_convex_heightfield, contact_convex_mesh and mesh_vertex_normals mismatches=0, the splits at their 3 and 51 words), with every oracle-side line unmoved; the reproduction steps are in evidence/convex-mesh-gap.md, Task 2i. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "NxPhysicsCollisionTests caught 0 of 6 mutations tried (6 survived, 2 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001855",
@@ -4240,7 +4340,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "NxPhysicsCollisionTests caught 0 of 1 mutations tried (1 survived, 7 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_001857",
@@ -4251,7 +4351,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l review ruling: exercise 001857 directly with test-owned adjacency words derived from each mesh index buffer until the mesh/heightfield entry rows land. The helper ABI requires an adjacency object distinct from the vendored EdgeList image. Its instructions and outputs match exactly; the caller route will receive its own full differential in the remaining Task 2l work."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001859",
@@ -4262,7 +4362,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: listing-exact 001859 callback; static comparator checks the full extent and direct targets. Dynamic proof is pending the 001869/001861 caller path because ESI carries the shared triangle-pair Container."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001861",
@@ -4273,7 +4373,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: listing-exact AABB pass, including relocatable shared Container setup and all four direct call targets. Dynamic proof is pending the complete 001869/001865 entry differential."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001863",
@@ -4284,7 +4384,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: exact listing comparison for the 001861/001863 AABB pass. The continuation is statically reconstructed; dynamic proof is pending the complete mesh/height-field differential."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001865",
@@ -4295,7 +4395,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: exact listing comparison for the 001865/001867 OBB pass, all seven direct targets checked. Dynamic proof is pending the complete mesh/height-field differential."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001867",
@@ -4306,7 +4406,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: exact listing comparison for the 001865/001867 OBB pass, all seven direct targets checked. This continuation remains reconstructed_not_falsified pending the complete mesh/height-field differential."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001869",
@@ -4317,7 +4417,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: exact listing comparison for the 001869 entry and both pass targets. Dynamic proof is pending the full entry differential."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001870",
@@ -4328,7 +4428,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: listing-exact 001870 drove three independently built mesh pairs under both control words; oracle and candidate match in all six calls. No mutation probe was run, so the row remains reconstructed_not_falsified."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001872",
@@ -4339,7 +4439,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l partial: listing comparison and direct oracle/candidate differential; see evidence/convex-mesh-gap-2l-listing-compare.py and evidence/convex-mesh-gap-2l-run.txt and convex-mesh-gap-trace-2l.txt. No mutation probe run; remains reconstructed_not_falsified."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001874",
@@ -4350,7 +4450,7 @@
       "driving_phases": [
         3
       ],
-      "note": "Task 2l: listing-exact 001874 with 12 exact oracle/candidate checks under both x87 control words; see the sphere run and cdb trace. No mutation probe was run."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001901",
@@ -4368,7 +4468,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001903-mutation.patch (`jne` -> `je` at 0x00048b4a, the last vertex's side) gave contact_convex_convex 24645, contact_convex_hulls 94888 (the side test's `jp` -> `jnp` at 0x00048b9e, evidence/convex-mesh-gap-2g-001903-side-mutation.patch, stays invisible on the polytopes too, as it must: a point in a convex polygon has one crossing on each side of it). Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001905",
@@ -4377,7 +4477,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001905-mutation.patch (`fsub` -> `fadd` at 0x00048b7e, the edge's x difference in this continuation's own extent) gave contact_convex_convex 9945, contact_convex_hulls 75553. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001907",
@@ -4386,7 +4486,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001907-mutation.patch (`fsub` -> `fadd` at 0x00048c26, the edge direction) gave contact_convex_convex 3251, contact_convex_hulls 44740. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001909",
@@ -4395,7 +4495,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001909-mutation.patch (`fmul` -> `fadd` at 0x00048ed2, the first polygon's projection in this row's own extent) gave contact_convex_convex 5336, contact_convex_hulls 10572. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001911",
@@ -4404,7 +4504,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed, and a mutation aimed at this row WAS caught: evidence/convex-mesh-gap-2g-001911-mutation.patch (`fadd` -> `fsub` at 0x0004913e, the plane value) gave contact_convex_convex 205, contact_convex_hulls 244. Measured on the build of bd7b747 in this worktree (the Task 2g review): NxPhysicsCollisionTests and NxPhysicsThirdPartyTests rebuilt after each mutation and after each `git checkout`, between un-mutated controls before the first and after the last (contact_emit_ext, contact_convex_convex, contact_convex_hulls and polygon_interface mismatches=0, the splits at their 2 and 14 words), with every oracle-side line unmoved. It stays deferred because a closure needs the inventory at `dynamically_gated` (validate_inventory.py rejects an oracle_differential_falsified closure on a `reconstructed` row) and the convex-mesh gap plan promotes no row above `reconstructed`."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001945",
@@ -4413,7 +4513,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Reconstructed in Physics/src/opcode/IcePrunable.cpp and driven against the pinned oracle for null and allocated SweepAndPrune teardown, including compound-child dispatch (24 checks, seven frees); candidate cdb breakpoint hit. See evidence/convex-mesh-gap-001945-cdb-raw.txt. No mutation aimed at this row is recorded."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001955",
@@ -4422,7 +4522,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "Reconstructed in Physics/src/Scene.cpp and driven against the pinned oracle for multiple matching owner records, pair-map compaction, active owner-ID compaction, and no match. The candidate cdb breakpoint hit; see evidence/convex-mesh-gap-001955-cdb-raw.txt. No mutation aimed at this row is recorded."
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsCollisionTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_001965",
@@ -4430,13 +4530,14 @@
       "size": 22,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Not surveyed in the 2026-11-03 falsification pass: no gated target named. A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     },
     {
       "id": "phys_fn_002264",
       "rva": "0x00055eb0",
       "size": 1943,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [
         4,
@@ -4449,7 +4550,7 @@
       ],
       "blocked_on_type": "Shape",
       "vtable_slot": 7,
-      "note": "The earlier claim that the sweep could not be driven is superseded by NxPhysicsCcdSimulationTests, which enables NX_CONTINUOUS_CD and exercises the box path; replacing NxContinuousCdSweep with return true is caught (candidate exit 1, stdout_delta=3). See evidence/phase3-ccd-sweep-002264.md. The original historical blockers remain recorded pending review of their transitive proofs: the Phase 7 body-step row phys_fn_000754, the Phase 4 row phys_fn_005191, the shape slot-7 sweep path, previous pose at Shape+0x3c..+0x68, and the contact sink past +0x44. The Phase 3 row stays deferred until its remaining dependencies and a passing discharging phase are recorded."
+      "note": "NxPhysicsCcdSimulationTests caught 0 of 5 mutations tried (5 survived, 3 changed other code and were not counted); more than 2 survivors, so the gate does not yet cover this row."
     },
     {
       "id": "phys_fn_002344",
@@ -4478,7 +4579,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+      "note": "Not surveyed in the 2026-11-03 falsification pass: target NxPhysicsThirdPartyTests needs a family (its output is read by family). A gate that observes this row has to be chosen or written before a mutation can be aimed at it."
     }
   ]
 }

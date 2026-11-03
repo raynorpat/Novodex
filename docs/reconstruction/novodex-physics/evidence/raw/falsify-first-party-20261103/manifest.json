@@ -1,0 +1,117 @@
+{
+ "doc": "evidence/raw/falsify-first-party-20261103/survey-closable.log",
+ "rows": {
+  "phys_fn_001828": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "convex_mesh_faces",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 569: + -> - (arith)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_001833": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "convex_mesh_edges",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 939: + -> - (arith)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_001844": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "contact_convex_heightfield",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 2190: - -> + (arith)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_001849": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "contact_convex_mesh",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 3451: - -> + (arith)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_001680": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "line_box",
+   "mutation": "Physics/src/Distance.cpp line 545: lineParam -> !(lineParam) (neg)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_001832": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "convex_mesh_faces",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 742: + -> - (arith)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_001840": {
+   "gate": "NxPhysicsCollisionTests",
+   "family": "convex_mesh_edges",
+   "mutation": "Physics/src/ContactConvexHeightfield.cpp line 1772: + -> - (arith)",
+   "detected": "mismatches=1",
+   "source_mutation": true
+  },
+  "phys_fn_001990": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "Physics/src/PMap.cpp line 1898: 5 -> 6 (const)",
+   "detected": "stdout_delta=32",
+   "source_mutation": true
+  },
+  "phys_fn_002017": {
+   "gate": "NxPhysicsTriangleMeshApiTests",
+   "family": "NxPhysicsTriangleMeshApiTests",
+   "mutation": "Physics/src/PMap.cpp line 1984: != -> == (cmp)",
+   "detected": "stdout_delta=32",
+   "source_mutation": true
+  },
+  "phys_fn_004037": {
+   "gate": "NxPhysicsCoreDumpTests",
+   "family": "NxPhysicsCoreDumpTests",
+   "mutation": "Physics/src/core/SceneDump.cpp line 825: desc.flags & NX_RJF_LIMIT_ENABLED -> !(desc.flags & NX_RJF_LIMIT_ENABLED) (neg)",
+   "detected": "stdout_delta=38",
+   "source_mutation": true
+  },
+  "phys_fn_004062": {
+   "gate": "NxPhysicsCoreDumpTests",
+   "family": "NxPhysicsCoreDumpTests",
+   "mutation": "Physics/src/core/SceneDump.cpp line 1778: 32 -> 33 (const)",
+   "detected": "stdout_delta=4241",
+   "source_mutation": true
+  },
+  "phys_fn_000933": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "Physics/src/ObjectModel.cpp line 6855: 2 -> 3 (const)",
+   "detected": "stdout_delta=8",
+   "source_mutation": true
+  },
+  "phys_fn_000993": {
+   "gate": "NxPhysicsActorDynamicSetterTests",
+   "family": "NxPhysicsActorDynamicSetterTests",
+   "mutation": "Physics/src/NpActor.cpp line 939: 6 -> 7 (const)",
+   "detected": "stdout_delta=308",
+   "source_mutation": true
+  },
+  "phys_fn_001259": {
+   "gate": "NxPhysicsShapeVtableTests",
+   "family": "NxPhysicsShapeVtableTests",
+   "mutation": "Physics/src/ObjectModel.cpp line 7037: 14 -> 15 (const)",
+   "detected": "mismatches=36",
+   "source_mutation": true
+  },
+  "phys_fn_001369": {
+   "gate": "NxPhysicsShapeVtableTests",
+   "family": "NxPhysicsShapeVtableTests",
+   "mutation": "Physics/src/ObjectModel.cpp line 4935: round < 2 -> !(round < 2) (neg)",
+   "detected": "mismatches=2",
+   "source_mutation": true
+  },
+  "phys_fn_001401": {
+   "gate": "NxPhysicsShapeVtableTests",
+   "family": "NxPhysicsShapeVtableTests",
+   "mutation": "Physics/src/ObjectModel.cpp line 7178: + -> - (arith)",
+   "detected": "mismatches=2",
+   "source_mutation": true
+  }
+ }
+}
