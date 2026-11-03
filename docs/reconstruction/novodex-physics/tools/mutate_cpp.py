@@ -796,9 +796,13 @@ def main_batch(argv=None):
     lines = []
     for e in entries:
         res = out[e['id']]
-        confirmed = []
+        confirmed, failed, screened = [], 0, 0
         for m, desc, n in res['candidates']:
-            # every candidate is run alone: in a batch another row's mutation may be what the family saw
+            # a candidate is run alone because in a batch another row's mutation may be what the family saw; once two
+            # candidates have held up alone and none has failed, the rest of the row's candidates are taken as caught
+            if len(confirmed) >= 2 and not failed:
+                screened += 1
+                continue
             def rebuild(e=e):
                 mr.remove_stale_dll(mr.REPO)
                 return (mr._build('NxPhysics', False) and mr._build(e['target'], False) and Path(a.dll).read_bytes()) or b''
@@ -806,9 +810,10 @@ def main_batch(argv=None):
                                rebuild, 1, survey=True, mutations=[m], oracle=e.get('oracle'))
             confirmed += single['caught']
             if not single['caught']:
+                failed += 1
                 res['survived'].append((m, desc, None))
         lines.append('SURVEY %s %s tried=%d caught=%d survived=%d rejected=%d' % (
-            e['id'], e['target'], len(confirmed) + len(res['survived']), len(confirmed), len(res['survived']), len(res['rejected'])) +
+            e['id'], e['target'], len(confirmed) + screened + len(res['survived']), len(confirmed) + screened, len(res['survived']), len(res['rejected'])) +
                      ' nobuild=%d' % sum(1 for x in res['rejected'] if x[2] == 'build failed'))
         for desc, n in confirmed:
             lines.append('CAUGHT %s %s %s=%s %s' % (e['id'], e['target'], 'stdout_delta' if e.get('staged') else 'mismatches', n, desc))
