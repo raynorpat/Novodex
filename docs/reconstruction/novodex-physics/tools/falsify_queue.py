@@ -61,7 +61,7 @@ def build_queue(inventory):
         out.append({
             'id': r['id'], 'rva': _int(r['rva']), 'size': _int(r['size']), 'phase': r.get('phase'), 'state': r['state'],
             'source': cpp_file(r), 'symbol': r.get('implementation_symbol'), 'third_party': r.get('third_party'),
-            'target': m.group(0) if m else None, 'group': group_of(r)})
+            'target': m.group(0) if m else None, 'group': group_of(r), 'dynamic_proof': str(r.get('dynamic_proof') or '')})
     return out
 
 
@@ -69,7 +69,7 @@ def batches(rows, size):
     """Batches of at most `size` rows in which no two rows share a target (so a detection can be attributed)."""
     buckets = collections.OrderedDict()
     for r in rows:
-        buckets.setdefault(r.get('target'), []).append(r)
+        buckets.setdefault((r.get('target'), r.get('family')), []).append(r)
     out = []
     while any(buckets.values()):
         order = sorted((k for k in buckets if buckets[k]), key=lambda k: -len(buckets[k]))[:size]
@@ -80,7 +80,17 @@ def batches(rows, size):
 FAMILY_TARGETS = ('NxPhysicsCollisionTests', 'NxPhysicsPhase6RowsTests', 'NxPhysicsThirdPartyTests', 'NxPhysicsAssetTests')
 
 
-def plans(rows, staged, size, oracle=()):
+def family_of(row, families):
+    """The one family of the row's target that its proof text names, or None. A family name is an identifier with an
+    underscore or a dot in it (the generic words `build`, `compound` are not)."""
+    known = families.get(row.get('target')) or ()
+    tokens = set(re.findall(r'[A-Za-z][A-Za-z0-9_.]{3,}', row.get('dynamic_proof') or ''))
+    tokens = {t.rstrip('.') for t in tokens}
+    found = {t for t in tokens if t in known and ('_' in t or '.' in t)}
+    return next(iter(found)) if len(found) == 1 else None
+
+
+def plans(rows, staged, size, oracle=(), families=None):
     """(batch plans, unplanned): plan rows for mutate_cpp --plan. A staged-pair target is detected by its stdout delta; an
     oracle-differential target whose output is not read by family is detected by its output differing from the unmutated
     run (`oracle_only`); a family target needs a family chosen by hand and is unplanned, with the reason."""
@@ -92,7 +102,11 @@ def plans(rows, staged, size, oracle=()):
         elif t in staged:
             ok.append({'id': r['id'], 'target': t, 'staged': True, 'count_crash': True})
         elif t in FAMILY_TARGETS and t in oracle:
-            unplanned.append({'id': r['id'], 'why': 'target %s needs a family (its output is read by family)' % t})
+            fam = family_of(r, families or {})
+            if fam:
+                ok.append({'id': r['id'], 'target': t, 'family': fam, 'count_crash': True})
+            else:
+                unplanned.append({'id': r['id'], 'why': 'target %s needs a family (its output is read by family)' % t})
         elif t in oracle:
             ok.append({'id': r['id'], 'target': t, 'oracle_only': True, 'count_crash': True})
         else:
@@ -109,6 +123,7 @@ def main(argv=None):
     ap.add_argument('--summary', action='store_true')
     ap.add_argument('--plan-dir', help='write plan-<k>.json (staged-pair rows, no two sharing a target) and unplanned.json')
     ap.add_argument('--batch-size', type=int, default=3)
+    ap.add_argument('--families', help='a file with the family names the target prints, one per line (NxPhysicsCollisionTests default run)')
     ap.add_argument('--force-target', help='the gated target to try for rows whose proof names none')
     ap.add_argument('--exclude-log', action='append', default=[], help='skip rows that already have a SURVEY line in this mutate_cpp log')
     a = ap.parse_args(argv)
@@ -133,7 +148,8 @@ def main(argv=None):
     if a.plan_dir:
         import close_static_rows
         oracle, staged = close_static_rows.gate_targets(str(Path(a.inventory).parent / 'tools' / 'gate_targets.ps1'))
-        pl, un = plans(queue, set(staged), a.batch_size, set(oracle))
+        fams = {'NxPhysicsCollisionTests': set(x.strip() for x in open(a.families, encoding='utf-8'))} if a.families else {}
+        pl, un = plans(queue, set(staged), a.batch_size, set(oracle), fams)
         Path(a.plan_dir).mkdir(parents=True, exist_ok=True)
         for k, rows in enumerate(pl):
             (Path(a.plan_dir) / ('plan-%02d.json' % k)).write_text(json.dumps({'rows': rows}, indent=1), encoding='utf-8')

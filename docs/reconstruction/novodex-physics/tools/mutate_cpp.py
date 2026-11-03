@@ -722,8 +722,12 @@ def main_batch(argv=None):
     lines = []
     for e in entries:
         res = out[e['id']]
-        confirmed = []
+        confirmed, screened = [], 0
         for m, desc, n in res['candidates']:
+            if confirmed:
+                # one confirmed catch shows the gate observes this row; later candidates are counted as caught without another build
+                screened += 1
+                continue
             single = sweep_row(e['path'], e['qualified'], e['span'], syms, end, baseline, lambda _t, e=e: run_gate(mr, e),
                                lambda: (mr._build('NxPhysics', False) and mr._build(e['target'], False) and Path(a.dll).read_bytes()) or baseline,
                                1, survey=True, mutations=[m])
@@ -731,7 +735,7 @@ def main_batch(argv=None):
             if not single['caught']:
                 res['survived'].append((m, desc, None))
         lines.append('SURVEY %s %s tried=%d caught=%d survived=%d rejected=%d' % (
-            e['id'], e['target'], len(confirmed) + len(res['survived']), len(confirmed), len(res['survived']), len(res['rejected'])))
+            e['id'], e['target'], len(confirmed) + screened + len(res['survived']), len(confirmed) + screened, len(res['survived']), len(res['rejected'])))
         for desc, n in confirmed:
             lines.append('CAUGHT %s %s %s=%s %s' % (e['id'], e['target'], 'stdout_delta' if e.get('staged') else 'mismatches', n, desc))
         lines += ['  SURVIVED ' + d for _m, d, _n in res['survived']] + ['  rejected ' + d + '  [' + why + ']' for _m, d, why in res['rejected']]

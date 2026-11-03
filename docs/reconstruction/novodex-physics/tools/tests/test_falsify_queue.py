@@ -75,5 +75,29 @@ class OracleOnlyPlanTests(unittest.TestCase):
         self.assertEqual(unplanned, [{'id': 'b', 'why': 'target NxPhysicsCollisionTests needs a family (its output is read by family)'}])
 
 
+
+class FamilyTests(unittest.TestCase):
+    FAMS = {'NxPhysicsCollisionTests': {'convex_mesh_faces', 'box_box.random', 'build'}}
+
+    def row(self, rid, proof):
+        return {'id': rid, 'target': 'NxPhysicsCollisionTests', 'group': 'collision', 'dynamic_proof': proof}
+
+    def test_family_from_the_proof_text(self):
+        self.assertEqual(fq.family_of(self.row('a', 'oracle differential convex_mesh_faces (NxPhysicsCollisionTests: 0018)'), self.FAMS), 'convex_mesh_faces')
+
+    def test_generic_words_do_not_make_a_family(self):
+        self.assertIsNone(fq.family_of(self.row('a', 'we build and run it'), self.FAMS))
+
+    def test_two_candidate_families_are_ambiguous(self):
+        self.assertIsNone(fq.family_of(self.row('a', 'convex_mesh_faces and box_box.random both run it'), self.FAMS))
+
+    def test_plans_use_the_family_and_batch_by_it(self):
+        rows = [self.row('a', 'convex_mesh_faces x'), self.row('b', 'convex_mesh_faces y'), self.row('c', 'box_box.random z'), self.row('d', 'nothing')]
+        plans, unplanned = fq.plans(rows, staged=set(), size=4, oracle={'NxPhysicsCollisionTests'}, families=self.FAMS)
+        self.assertEqual([sorted(r['id'] for r in p) for p in plans], [['a', 'c'], ['b']])
+        self.assertEqual(plans[0][0]['family'] in ('convex_mesh_faces', 'box_box.random'), True)
+        self.assertEqual([u['id'] for u in unplanned], ['d'])
+
+
 if __name__ == '__main__':
     unittest.main()
