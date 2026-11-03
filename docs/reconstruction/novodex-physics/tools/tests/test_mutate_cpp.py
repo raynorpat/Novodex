@@ -99,3 +99,88 @@ class MutationTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+import struct
+
+
+def make_pe(section_bytes, va=0x1000, raw=0x400, debug=None):
+    """A minimal PE32 image: headers, one section, optionally a debug directory entry whose raw data is the last 16 bytes."""
+    head = bytearray(raw)
+    head[0:2] = b'MZ'
+    struct.pack_into('<I', head, 0x3c, 0x80)
+    head[0x80:0x84] = b'PE\0\0'
+    struct.pack_into('<HHIIIHH', head, 0x84, 0x14c, 1, 0x11111111, 0, 0, 0xe0, 0x2102)
+    opt = 0x98
+    struct.pack_into('<H', head, opt, 0x10b)
+    struct.pack_into('<I', head, opt + 28, 0x10000000)
+    struct.pack_into('<I', head, opt + 60, raw)
+    struct.pack_into('<I', head, opt + 64, 0xcafe0001)   # checksum
+    struct.pack_into('<I', head, opt + 92, 16)
+    sec = 0x80 + 24 + 0xe0
+    head[sec:sec + 8] = b'.text\0\0\0'
+    struct.pack_into('<IIII', head, sec + 8, len(section_bytes), va, len(section_bytes), raw)
+    if debug is not None:
+        dd = opt + 96 + 6 * 8
+        struct.pack_into('<II', head, dd, va + len(section_bytes) - 48, 28)
+    body = bytearray(section_bytes)
+    if debug is not None:
+        struct.pack_into('<IIHHIIII', body, len(body) - 48, 0, debug, 0, 0, 2, 16, va + len(body) - 16, raw + len(body) - 16)
+    return bytes(head) + bytes(body)
+
+
+class PeTests(unittest.TestCase):
+    def test_inside_requires_all_changes_in_range(self):
+        self.assertTrue(mc.inside([(0x1010, 0x1012), (0x1020, 0x1021)], 0x1000, 0x40))
+        self.assertFalse(mc.inside([(0x1010, 0x1012), (0x1040, 0x1041)], 0x1000, 0x40))
+
+    def test_inside_false_when_nothing_changed(self):
+        self.assertFalse(mc.inside([], 0x1000, 0x40))
+
+    def test_pe_diff_ignores_header_timestamp_and_checksum(self):
+        a = make_pe(bytes(range(64)) + bytes(64))
+        b = bytearray(a)
+        struct.pack_into('<I', b, 0x88, 0x22222222)
+        struct.pack_into('<I', b, 0x98 + 64, 0xcafe0002)
+        self.assertEqual(mc.pe_changed_rvas(a, bytes(b)), [])
+
+    def test_pe_diff_maps_file_offset_to_rva(self):
+        a = make_pe(bytes(range(64)) + bytes(64))
+        b = bytearray(a)
+        b[0x400 + 5] ^= 0xff
+        b[0x400 + 6] ^= 0xff
+        b[0x400 + 20] ^= 0xff
+        self.assertEqual(mc.pe_changed_rvas(a, bytes(b)), [(0x1005, 0x1007), (0x1014, 0x1015)])
+
+    def test_pe_diff_ignores_debug_directory_data(self):
+        a = make_pe(bytes(range(64)) + bytes(112), debug=1)
+        b = bytearray(a)
+        b[-1] ^= 0xff
+        b[-40] ^= 0xff
+        self.assertEqual(mc.pe_changed_rvas(a, bytes(b)), [])
+
+    def test_symbol_at_and_matches(self):
+        syms = [(0x1000, '?f@A@@QAEHH@Z'), (0x1040, '?g@A@@QBEHH@Z'), (0x1080, '_main')]
+        self.assertEqual(mc.symbol_at(syms, 0x1044, 0x1100), ('?g@A@@QBEHH@Z', 0x1040, 0x1080))
+        self.assertEqual(mc.symbol_at(syms, 0x1090, 0x1100), ('_main', 0x1080, 0x1100))
+        self.assertIsNone(mc.symbol_at(syms, 0x0fff, 0x1100))
+        self.assertTrue(mc.symbol_matches('?f@A@@QAEHH@Z', 'A::f'))
+        self.assertFalse(mc.symbol_matches('?g@A@@QBEHH@Z', 'A::f'))
+        self.assertTrue(mc.symbol_matches('?helper@@YAHH@Z', 'helper'))
+        self.assertTrue(mc.symbol_matches('_qh_facetvertices', 'qh_facetvertices'))
+        self.assertTrue(mc.symbol_matches('??0A@@QAE@XZ', 'A::A'))
+
+    def test_changes_inside_one_function_named_like_the_row(self):
+        syms = [(0x1000, '?f@A@@QAEHH@Z'), (0x1040, '?g@A@@QBEHH@Z')]
+        self.assertTrue(mc.in_row_function([(0x1010, 0x1012)], syms, 0x1100, 'A::f'))
+        self.assertFalse(mc.in_row_function([(0x1010, 0x1012)], syms, 0x1100, 'A::g'))
+        self.assertFalse(mc.in_row_function([(0x1010, 0x1012), (0x1044, 0x1045)], syms, 0x1100, 'A::f'))
+        self.assertFalse(mc.in_row_function([], syms, 0x1100, 'A::f'))
+
+
+class NameTests(unittest.TestCase):
+    def test_function_name_at(self):
+        span = mc.find_function_span(SRC, 'A::g(int) const')
+        self.assertEqual(mc.function_name_at(SRC, span), 'A::g')
+        span = mc.find_span_by_marker(SRC, 'phys_fn_000123')
+        self.assertEqual(mc.function_name_at(SRC, span), 'helper')

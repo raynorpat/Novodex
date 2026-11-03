@@ -236,3 +236,142 @@ def spread(muts, limit):
     if limit <= 1:
         return list(muts[:limit])
     return [muts[round(i * (n - 1) / (limit - 1))] for i in range(limit)]
+
+
+# ---- the compiled range -------------------------------------------------------------------------------------------
+
+import struct
+
+
+def function_name_at(text, span):
+    """The qualified name in the definition whose body starts at span[0] (`A::f`, `helper`, `~A`)."""
+    code = _blank(text, code_mask(text))
+    head = code[:span[0]]
+    cut = max(head.rfind(';'), head.rfind('}'), head.rfind('{'))
+    seg = re.sub(r'__declspec\s*\([^)]*\)', ' ', head[cut + 1:])
+    m = re.search(r'([~\w:]+)\s*\(', seg)
+    return m.group(1) if m else None
+
+
+def _pe_layout(image):
+    pe = struct.unpack_from('<I', image, 0x3c)[0]
+    nsec, = struct.unpack_from('<H', image, pe + 6)
+    opt_size, = struct.unpack_from('<H', image, pe + 20)
+    opt = pe + 24
+    sections = []
+    for i in range(nsec):
+        o = opt + opt_size + 40 * i
+        vsize, va, rawsize, rawptr = struct.unpack_from('<IIII', image, o + 8)
+        sections.append((va, max(vsize, 0), rawptr, rawsize))
+    dirs = {}
+    for k in (0, 6):
+        dirs[k] = struct.unpack_from('<II', image, opt + 96 + 8 * k)
+    return sections, dirs
+
+
+def _rva_to_off(sections, rva):
+    for va, vsize, rawptr, rawsize in sections:
+        if va <= rva < va + max(vsize, rawsize):
+            return rawptr + rva - va
+    return None
+
+
+def _ignored(image, sections, dirs):
+    """File-offset ranges that change on every link without the code changing: the debug directory, the data it
+    points at, and the export directory's time stamp."""
+    out = []
+    rva, size = dirs[6]
+    off = _rva_to_off(sections, rva) if rva else None
+    if off is not None:
+        out.append((off, off + size))
+        for k in range(size // 28):
+            f = struct.unpack_from('<IIHHIIII', image, off + 28 * k)
+            if f[5] and f[7]:
+                out.append((f[7], f[7] + f[5]))
+    rva, size = dirs[0]
+    off = _rva_to_off(sections, rva) if rva else None
+    if off is not None:
+        out.append((off + 4, off + 8))
+    return out
+
+
+def pe_changed_rvas(before, after):
+    """Merged [lo, hi) RVA ranges where the sections of two PE images differ; header fields and the link-time stamps
+    are not differences. A different section layout is reported as one range covering everything."""
+    sb, db = _pe_layout(before)
+    sa, da = _pe_layout(after)
+    if sb != sa:
+        return [(0, 0xffffffff)]
+    skip = _ignored(before, sb, db) + _ignored(after, sa, da)
+    changed = []
+    for va, vsize, rawptr, rawsize in sb:
+        n = min(rawsize, len(before) - rawptr, len(after) - rawptr)
+        a, b = before[rawptr:rawptr + n], after[rawptr:rawptr + n]
+        if a == b:
+            continue
+        for i in range(n):
+            if a[i] != b[i] and not any(lo <= rawptr + i < hi for lo, hi in skip):
+                rva = va + i
+                if changed and changed[-1][1] == rva:
+                    changed[-1] = (changed[-1][0], rva + 1)
+                else:
+                    changed.append((rva, rva + 1))
+    return changed
+
+
+def inside(changed, rva, size):
+    return bool(changed) and all(rva <= lo and hi <= rva + size for lo, hi in changed)
+
+
+def read_text_symbols(map_path):
+    """[(rva, decorated name)] sorted, for the code symbols of an MSVC linker map, and the end of the code."""
+    base = 0x10000000
+    syms = []
+    for line in open(map_path, encoding='latin-1'):
+        m = re.search(r'Preferred load address is ([0-9a-f]+)', line)
+        if m:
+            base = int(m.group(1), 16)
+        m = re.match(r'\s*0001:([0-9a-f]+)\s+(\S+)\s+([0-9a-f]{8})\s+(?:f\s+)?(?:i\s+)?\S+', line)
+        if m:
+            syms.append((int(m.group(3), 16) - base, m.group(2)))
+    syms.sort()
+    return syms
+
+
+def symbol_at(syms, rva, end):
+    """(name, lo, hi) of the symbol whose code contains rva, or None."""
+    best = None
+    for i, (a, name) in enumerate(syms):
+        if a <= rva:
+            hi = syms[i + 1][0] if i + 1 < len(syms) else end
+            best = (name, a, hi)
+        else:
+            break
+    return best if best and rva < best[2] else None
+
+
+def symbol_matches(decorated, qualified):
+    """True when a linker-map symbol can be the function `qualified` (`A::f`, `helper`, `qh_x`)."""
+    parts = qualified.split('::')
+    name = parts[-1]
+    scopes = parts[:-1]
+    if re.match(r'^[_@]?%s(@\d+)?$' % re.escape(name), decorated):
+        return True
+    tail = '@'.join(reversed(scopes))
+    if name.startswith('~'):
+        token = '??1' + (parts[-2] if scopes else name[1:]) + '@' + '@'.join(reversed(scopes[:-1]) if len(scopes) > 1 else []) + ('@' if len(scopes) > 1 else '') + '@'
+        return token.replace('@@@', '@@') in decorated or ('??1' + name[1:] + '@') in decorated
+    if scopes and name == scopes[-1]:
+        return ('??0' + name + '@') in decorated
+    token = '?' + name + '@' + (tail + '@' if tail else '') + '@'
+    return token in decorated
+
+
+def in_row_function(changed, syms, end, qualified):
+    """The changed ranges all lie inside one linker-map function, and it is the one named `qualified`."""
+    if not changed:
+        return False
+    first = symbol_at(syms, changed[0][0], end)
+    if first is None or not symbol_matches(first[0], qualified):
+        return False
+    return all(first[1] <= lo and hi <= first[2] for lo, hi in changed)
